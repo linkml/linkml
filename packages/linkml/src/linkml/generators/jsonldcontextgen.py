@@ -244,8 +244,18 @@ class ContextGenerator(Generator):
         cn = camelcase(cls.name)
         self.add_mappings(cls)
 
-        # SchemaLoader always synthesised class_uri; SchemaView may leave it None.
-        class_uri = cls.class_uri or self.schemaview.get_uri(cls, expand=False)
+        # SchemaLoader assigns the class @id following the same ``useuris`` policy
+        # as slots: the declared ``class_uri`` is preserved as a mapping, and when
+        # ``class_uri`` is unset *or* ``useuris`` is False (``--metauris``) the
+        # effective @id becomes the *model* URI (CamelCased class name under the
+        # class's ``from_schema`` default prefix) instead of the declared URI.
+        use_uris = self.useuris if self.useuris is not None else True
+        if cls.class_uri is not None and cls.class_uri not in cls.exact_mappings:
+            cls.exact_mappings.insert(0, cls.class_uri)
+        if cls.class_uri is None or not use_uris:
+            class_uri = self._synthesize_class_uri(cls)
+        else:
+            class_uri = cls.class_uri
         self._build_element_id(class_def, class_uri)
 
         # Build scoped context for slots whose range differs from the global definition.
@@ -525,29 +535,79 @@ class ContextGenerator(Generator):
             self.add_prefix(uri_prefix)
 
     def _synthesize_slot_uri(self, slot: SlotDefinition) -> str:
-        """Synthesise the default slot_uri the way SchemaLoader does.
+        """Synthesise the *model* slot_uri the way SchemaLoader does.
 
-        When a slot has no explicit ``slot_uri``, SchemaLoader derives it from
-        the slot's *aliased* name under the schema's default prefix (e.g. a slot
+        SchemaLoader derives the model URI from the slot's *aliased* name under
+        the default prefix of the slot's **own** ``from_schema`` (e.g. a slot
         ``extension_tag`` with ``alias: tag`` becomes ``<default_prefix>:tag``).
-        :meth:`SchemaView.get_uri` instead uses the raw slot name, which would
-        emit ``extension_tag``.  This helper reproduces the SchemaLoader result
-        so the generated @id matches historical output.
+        This must be independent of any declared ``slot_uri``: with ``--metauris``
+        a slot whose ``slot_uri`` is ``dcat:downloadURL`` must still yield the
+        model URI ``<from_schema_prefix>:download_url``, not ``dcat:download_url``.
+
+        :meth:`SchemaView.get_uri` computes exactly the right prefix from the
+        slot's ``from_schema`` but honours an existing ``slot_uri`` (wrong prefix)
+        and uses the raw slot name (wrong local part).  So the declared
+        ``slot_uri`` is temporarily cleared to force get_uri onto the model-URI
+        path, and the raw local part is then replaced with the aliased name.
 
         :param slot: the (induced) slot definition
-        :return: the synthesised slot_uri as a CURIE or URI
+        :return: the synthesised model slot_uri as a CURIE or URI
         """
-        # get_uri gives the correctly-prefixed base (CURIE or full URI) but uses
-        # the raw slot name for the local part.  Replace only that local part
-        # with the aliased name so the prefix/URI form is preserved even when the
-        # schema declares no default prefix.
-        base_uri = str(self.schemaview.get_uri(slot, expand=False))
+        saved_uri = slot.slot_uri
+        slot.slot_uri = None
+        try:
+            base_uri = str(self.schemaview.get_uri(slot, expand=False))
+        finally:
+            slot.slot_uri = saved_uri
         aliased = underscore(self.aliased_slot_name(slot))
-        # Split off the existing local part, keeping the delimiter.
+        # Split off the raw local part, keeping the prefix/namespace delimiter.
         match = re.search(r"[:/#][^:/#]*$", base_uri)
         if match:
             return base_uri[: match.start() + 1] + aliased
         return aliased
+
+    def _synthesize_class_uri(self, cls: ClassDefinition) -> str:
+        """Synthesise the *model* class_uri the way SchemaLoader does.
+
+        SchemaLoader derives the model URI from ``camelcase(cls.name)`` under the
+        default prefix of the class's own ``from_schema`` (see ``schemaloader.py``).
+        This must be independent of any declared ``class_uri`` so that
+        ``--metauris`` yields the model URI even when a ``class_uri`` is declared.
+        :meth:`SchemaView.get_uri` computes the right prefix from ``from_schema``
+        but honours an existing ``class_uri``; it is therefore temporarily cleared
+        to force the model-URI path.
+
+        :param cls: the class definition
+        :return: the synthesised model class_uri as a CURIE or URI
+        """
+        saved_uri = cls.class_uri
+        cls.class_uri = None
+        try:
+            return str(self.schemaview.get_uri(cls, expand=False))
+        finally:
+            cls.class_uri = saved_uri
+
+    def _apply_slot_uri_policy(self, slot: SlotDefinition) -> None:
+        """Set ``slot.slot_uri`` following SchemaLoader's ``useuris`` policy.
+
+        SchemaLoader (``schemaloader.py``) does two things the SchemaView path
+        must replicate so the emitted @id matches historical output:
+
+        1. Any explicitly-declared ``slot_uri`` is preserved as a mapping (so it
+           still surfaces via :meth:`add_mappings`).
+        2. When ``slot_uri`` is unset *or* ``useuris`` is False (``--metauris``),
+           the effective ``slot_uri`` becomes the *model* URI — the aliased slot
+           name under the schema's default prefix — instead of the declared URI.
+
+        ``useuris`` defaults to True (matching SchemaLoader) when unset.
+
+        :param slot: the induced slot definition to mutate in place
+        """
+        use_uris = self.useuris if self.useuris is not None else True
+        if slot.slot_uri is not None and slot.slot_uri not in slot.mappings:
+            slot.mappings.insert(0, slot.slot_uri)
+        if slot.slot_uri is None or not use_uris:
+            slot.slot_uri = self._synthesize_slot_uri(slot)
 
     def serialize(
         self,
@@ -595,12 +655,7 @@ class ContextGenerator(Generator):
 
         for slot_name in global_slot_names:
             induced = sv.induced_slot(slot_name)
-            # SchemaLoader synthesises the default slot_uri from the slot's
-            # aliased name (not its raw name), so a slot ``extension_tag`` with
-            # ``alias: tag`` yields ``<default_prefix>:tag``.  Replicate that so
-            # the emitted @id matches the SchemaLoader-era output.
-            if not induced.slot_uri:
-                induced.slot_uri = self._synthesize_slot_uri(induced)
+            self._apply_slot_uri_policy(induced)
             induced_slots.append(induced)
 
         # Attributes are visited as top-level slots only when they do not shadow a
@@ -616,21 +671,39 @@ class ContextGenerator(Generator):
                     continue
                 seen_attr_names.add(attr_name)
                 induced_attr = sv.induced_slot(attr_name, cls.name)
-                if not induced_attr.slot_uri:
-                    induced_attr.slot_uri = self._synthesize_slot_uri(induced_attr)
+                self._apply_slot_uri_policy(induced_attr)
                 induced_slots.append(induced_attr)
 
-        for induced in sorted(induced_slots, key=lambda s: self.aliased_slot_name(s)):
-            self.visit_slot(self.aliased_slot_name(induced), induced)
+        # Multiple slots may collapse onto the same JSON-LD @context key when they
+        # share an ``alias`` (e.g. ``alt_description_source`` with ``alias: source``
+        # collides with the canonical ``source`` slot).  SchemaLoader iterated
+        # ``schema.slots`` sorted by slot name (lower-cased) and wrote each entry
+        # under its aliased key, so for a colliding key the *position* is fixed by
+        # the first (alphabetically-lowest) slot name and the *value* is that of the
+        # last (alphabetically-highest) slot name.  Replicate that deterministically
+        # here (the ``global_slot_names`` set above is unordered, so we must not
+        # rely on iteration order).
+        winners: dict[str, SlotDefinition] = {}
+        sort_names: dict[str, str] = {}
+        for induced in induced_slots:
+            key = self.aliased_slot_name(induced)
+            name = induced.name.lower()
+            if key not in winners:
+                winners[key] = induced
+                sort_names[key] = name
+            else:
+                if name >= winners[key].name.lower():
+                    winners[key] = induced
+                if name < sort_names[key]:
+                    sort_names[key] = name
 
-        # visit each class, ordered by the local part of the class URI so the
-        # emitted @id keys match the SchemaLoader-era (URI-suffix-sorted) output.
-        def _class_uri_suffix(c: ClassDefinition) -> str:
-            uri = str(sv.get_uri(c, expand=False))
-            # Local part follows the last CURIE/URI delimiter.
-            return re.split(r"[:/#]", uri)[-1]
+        for key in sorted(winners, key=lambda k: sort_names[k]):
+            self.visit_slot(key, winners[key])
 
-        for cls in sorted(sv.all_classes(imports=imports).values(), key=_class_uri_suffix):
+        # visit each class, ordered by class name (lower-cased) so the emitted
+        # @id keys match the SchemaLoader-era output (Generator.visit_schema sorts
+        # ``schema.classes`` by ``name.lower()``).
+        for cls in sorted(sv.all_classes(imports=imports).values(), key=lambda c: c.name.lower()):
             self.visit_class(cls)
 
         return self.end_schema(
