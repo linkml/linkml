@@ -13,13 +13,65 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=uv run
 
+# Extra pytest flags (e.g. parallelism): `make test PYTEST_FLAGS="-n auto"`
+# Default: skip notebooks (they mutate the shared venv and always fail locally).
+PYTEST_FLAGS ?= --ignore=tests/linkml/test_notebooks
+
+# Wrap with coverage.py: `make test COVERAGE=true`
+ifdef COVERAGE
+RUNNER = $(RUN) coverage run -m pytest
+else
+RUNNER = $(RUN) pytest
+endif
+
 lint-fix:
 	$(RUN) tox -e format
 
 format: lint-fix
 
-test:
-	$(RUN) pytest
+# Fast tests (excludes slow, kroki).
+# Override test path: `make test-linkml TEST_PATH=tests/linkml/test_compliance/`
+.PHONY: test test-linkml test-linkml-runtime test-slow test-all
+
+test-linkml: TEST_PATH ?= tests/linkml/
+test-linkml:
+	$(RUNNER) $(TEST_PATH) \
+		--with-network \
+		-m "not kroki and not slow" \
+		$(PYTEST_FLAGS)
+
+test-linkml-runtime: TEST_PATH ?= tests/linkml_runtime/
+test-linkml-runtime:
+	$(RUNNER) $(TEST_PATH) \
+		--with-network \
+		-m "not kroki and not slow" \
+		$(PYTEST_FLAGS)
+
+test: test-linkml test-linkml-runtime
+
+# Slow tests only.
+test-slow: TEST_PATH ?= tests/linkml/
+test-slow:
+	$(RUNNER) $(TEST_PATH) \
+		--with-slow --with-biolink \
+		-m "slow and not kroki" \
+		$(PYTEST_FLAGS)
+
+# Full suite (fast + slow, no duplication).
+test-all: test test-slow
+
+# Determine which packages have changes in the current branch (vs main) and run
+# only their fast tests.
+.PHONY: test-branch
+test-branch:
+	base="$$(git merge-base HEAD main)"; \
+	changes="$$(git diff --name-only "$$base"...HEAD)"; \
+	linkml=; linkml_runtime=; \
+	if echo "$$changes" | grep -qE '^packages/linkml/|^tests/linkml/'; then linkml=1; fi; \
+	if echo "$$changes" | grep -qE '^packages/linkml_runtime/|^tests/linkml_runtime/'; then linkml_runtime=1; fi; \
+	if [ -n "$$linkml" ]; then $(MAKE) test-linkml; fi; \
+	if [ -n "$$linkml_runtime" ]; then $(MAKE) test-linkml-runtime; fi; \
+	if [ -z "$$linkml$$linkml_runtime" ]; then echo "No package changes detected (only infra/docs?). Running full fast suite."; $(MAKE) test; fi
 
 # Metamodel compatibility: download latest metamodel from linkml-model
 LINKML_MODEL_BRANCH ?= main

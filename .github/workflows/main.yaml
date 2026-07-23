@@ -89,11 +89,11 @@ jobs:
         # Notebook tests run their own `!uv pip install` cells that mutate the
         # shared venv; they run in the isolated `test_notebooks` job instead (#3583).
         run: |
-          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
+          make test-linkml PYTEST_FLAGS="--ignore=tests/linkml/test_notebooks -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing"
         shell: bash
       - name: Test linkml-runtime package
         run: |
-          uv run coverage run -m pytest tests/linkml_runtime/ --with-network -m "not kroki"
+          make test-linkml-runtime COVERAGE=true PYTEST_FLAGS="-n auto"
           uv run coverage xml -o coverage-linkml_runtime.xml
           uv run coverage report -m
         shell: bash
@@ -149,7 +149,7 @@ jobs:
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m "slow and not kroki" -n auto
+          make test-slow COVERAGE=true PYTEST_FLAGS="--ignore=tests/linkml/test_notebooks -n auto"
           uv run coverage xml -o coverage-linkml-slow.xml
           uv run coverage report -m
       - name: Upload linkml slow test coverage
