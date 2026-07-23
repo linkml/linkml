@@ -273,8 +273,8 @@ class SchemaView:
 
     schema: SchemaDefinition | None = None
     schema_map: dict[SchemaDefinitionName, SchemaDefinition] | None = None
-    importmap: Mapping[str, str] | None = None
-    """Optional mapping between schema names and local paths/URLs"""
+    importmap: Mapping[str, str | dict[str, Any]] | None = None
+    """Optional mapping between schema names and local paths/URLs, or in-memory schema dicts"""
     modifications: int = 0
     uuid: str | None = None
 
@@ -285,7 +285,7 @@ class SchemaView:
     def __init__(
         self,
         schema: str | Path | SchemaDefinition,
-        importmap: dict[str, str] | None = None,
+        importmap: dict[str, str | dict[str, Any]] | None = None,
         merge_imports: bool = False,
         base_dir: str | None = None,
     ) -> None:
@@ -293,8 +293,10 @@ class SchemaView:
 
         :param schema: schema or path to schema to be viewed
         :type schema: str | Path | SchemaDefinition
-        :param importmap: import mapping, defaults to None
-        :type importmap: dict[str, str] | None, optional
+        :param importmap: import mapping. Values may be file-path/URL strings or
+            in-memory schema dicts (loaded directly, without filesystem or network
+            access). Defaults to None.
+        :type importmap: dict[str, str | dict[str, Any]] | None, optional
         :param merge_imports: whether or not to merge imports, defaults to False
         :type merge_imports: bool, optional
         :param base_dir: base directory for import map, defaults to None
@@ -343,6 +345,7 @@ class SchemaView:
 
         - a URL (specified as either a full URL or a CURIE)
         - a local file path
+        - an in-memory schema dict supplied via the importmap
 
         The import should leave off the .yaml suffix.
 
@@ -367,6 +370,13 @@ class SchemaView:
 
         default_import_map = {"linkml:": str(SCHEMA_DIRECTORY)}
         importmap = {**default_import_map, **self.importmap}
+        # An importmap entry may be an in-memory schema dict, which is loaded
+        # directly without touching the filesystem or network.
+        mapped = importmap.get(str(imp))
+        if isinstance(mapped, dict):
+            from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
+            return YAMLLoader().load(mapped, target_class=SchemaDefinition)
         sname = map_import(importmap, self.namespaces, imp)
         if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
