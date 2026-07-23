@@ -1308,7 +1308,15 @@ slots:
     range: unique_key
     multivalued: true
     inlined: true
-    description: A collection of named unique keys for this class. Unique keys may be singular or compound.
+    description: >-
+      A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why there
+      are also called "compound keys". A unique key uniquely identifies instances of the class within a given container, meaning
+      there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key.
+    comments:
+      - >
+        Not to be confused with a "singular unique key", which is defined by means of the `key` slot, or with an "identifier",
+        which is defined by means of the "identifier" slot. Compound keys, singular unique keys, and identifiers all create a
+        unicity constraint, but singular unique keys and identifiers have additional effects that compound keys do not have.
     exact_mappings:
       - owl:hasKey
     in_subset:
@@ -1316,7 +1324,9 @@ slots:
       - BasicSubset
       - RelationalModelProfile
     see_also:
-      - https://linkml.io/linkml/schemas/constraints.html#unique-key
+      - https://linkml.io/linkml/schemas/constraints.html#unique-keys
+      - key
+      - identifier
 
   unique_key_name:
     domain: unique_key
@@ -1859,18 +1869,24 @@ slots:
     range: boolean
     inherited: true
     description: >-
-      True means that the key slot(s) uniquely identify the elements within a single container
+      True means that the slot is the "singular unique key" (also known more simply as the "key slot") of its class. Such a slot
+      uniquely identifies instances of the class within a single container, meaning there cannot be two (or more) instances of
+      the class (or instances of any of its descendants) with the same value for the key slot within the container.
     comments:
-      - key is inherited
-      - a given domain can have at most one key slot (restriction to be removed in the future)
-      - identifiers and keys are mutually exclusive.  A given domain cannot have both
-      - a key slot is automatically required.  Keys cannot be optional
+      - The key slot is inherited.
+      - A domain can have at most one key slot OR one identifier slot. However a domain can have both a key slot and any number
+        of compound keys.
+      - A key slot is automatically required. Singular unique keys cannot be optional.
+      - The presence of a key slot makes a class eligible for inlining as a dictionary.
     in_subset:
       - SpecificationSubset
       - BasicSubset
       - RelationalModelProfile
     see_also:
+      - https://linkml.io/linkml/schemas/constraints.html#singular-unique-keys
+      - https://linkml.io/linkml/schemas/inlining.html
       - unique_keys
+      - identifier
 
   identifier:
     rank: 5
@@ -1878,8 +1894,16 @@ slots:
     range: boolean
     inherited: true
     description: >-
-      True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per
-      container
+      True means that the slot is the identifier slot of its class. Such a slot uniquely identifies instances of the class
+      throughout an entire document, meaning there cannot be two (or more) instances of the class (or instances of any of its
+      descendants) with the same value for the identifier slot anywhere in the document.
+    comments:
+      - The identifier slot is inherited.
+      - A domain can have at most one identifier slot OR a key slot. However a domain can have both an identifier slot and any
+        number of compound keys.
+      - An identifier slot is automatically required. Identifiers cannot be optional.
+      - The presence of an identifier slot makes a class eligible for inlining as a dictionary.
+      - The presence of an identifier slot makes a class eligible for being referenced rather than inlined.
     aliases:
       - primary key
       - ID
@@ -1887,12 +1911,10 @@ slots:
       - code
     see_also:
       - https://en.wikipedia.org/wiki/Identifier
+      - https://linkml.io/linkml/schemas/constraints.html#unique-keys
+      - https://linkml.io/linkml/schemas/inlining.html
       - unique_keys
-    comments:
-      - identifier is inherited
-      - a key slot is automatically required.  Identifiers cannot be optional
-      - a given domain can have at most one identifier
-      - identifiers and keys are mutually exclusive.  A given domain cannot have both
+      - key
     in_subset:
       - SpecificationSubset
       - MinimalSubset
