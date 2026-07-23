@@ -1,11 +1,13 @@
 # LinkML CODEOWNERS — DRAFT (see linkml/linkml#3140)
 #
-# Opt-in model: no default (`*`) rule. Paths not listed here have no required
-# CODEOWNER and are reviewed normally. Rules only appear where someone has
-# explicitly volunteered to steward an area.
+# Default model: all paths require core-team approval unless a more specific
+# CODEOWNER rule applies. Later rules override earlier ones (last match wins),
+# so per-subsystem rules below take precedence over the default for their paths.
 #
 # Process for adding rules: docs/maintainers/codeowners.md
-# Later rules override earlier ones for matched paths.
+
+# --- Default: require core-team approval everywhere ---
+*  @linkml/core-team
 
 # --- CODEOWNERS and governance docs ---
 /.github/CODEOWNERS                         @linkml/core-team
@@ -13,7 +15,7 @@
 /docs/maintainers/codeowners.md             @linkml/core-team
 /docs/maintainers/generator-governance.md   @linkml/core-team
 
-# --- Per-subsystem ownership (opt-in) ---
+# --- Per-subsystem ownership (overrides the default for these paths) ---
 
 # pydanticgen:
 /packages/linkml/src/linkml/generators/pydanticgen/                  @sneakers-the-rat @kevinschaper
