@@ -8,7 +8,26 @@ This is a UV workspace monorepo that publishes **two PyPI packages**:
 | `linkml` | `packages/linkml/src/linkml/` | `tests/linkml/` | [linkml](https://pypi.org/project/linkml/) |
 | `linkml-runtime` | `packages/linkml_runtime/src/linkml_runtime/` | `tests/linkml_runtime/` | [linkml-runtime](https://pypi.org/project/linkml-runtime/) |
 
-All commands use `uv run` prefix (e.g., `uv run pytest`).
+## Testing
+
+Use Makefile targets (✅) instead of ad-hoc pytest commands. CI mirrors these targets for local-CI symmetry.
+
+| Target | Scope | Example with custom path |
+|---|---|---|
+| `make test-linkml` | Fast tests for `linkml` package | `make test-linkml TEST_PATH=tests/linkml/test_compliance/` |
+| `make test-linkml-runtime` | Fast tests for `linkml-runtime` package | `make test-linkml-runtime TEST_PATH=tests/linkml_runtime/test_foo.py` |
+| `make test` | Both fast targets (linkml + runtime) | — |
+| `make test-slow` | Slow-marked tests only | `make test-slow TEST_PATH=tests/linkml/test_biolink/` |
+| `make test-all` | Fast + slow, no duplication | — |
+
+**Flags** — append via `PYTEST_FLAGS`:
+- `make test PYTEST_FLAGS="-n auto"` — parallel execution
+- `make test PYTEST_FLAGS="-x --tb=short"` — stop on first failure, short traceback
+- `make test COVERAGE=true` — wrap with coverage.py (matches CI)
+
+Default `PYTEST_FLAGS` skips `tests/linkml/test_notebooks` (notebooks mutate the shared venv and always fail locally).
+
+When testing a branch, consider which files were modified and run the relevant target first. Fast tests before slow.
 
 ## Best Practices
 
