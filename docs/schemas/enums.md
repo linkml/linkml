@@ -83,7 +83,13 @@ Starting with LinkML 1.3, enums do not have to be a static hardcoded list; inste
 
 This allows the enum to be synced with some upstream source, and avoids hardcoding very long lists where there are a lot of possibilities.
 
-The following example defines an enumeration that selects any subtype of "neuron" from the OBO cell type ontology:
+There are several metaslots that can be used to support defining constraints for dynamic enums:
+- [reachable_from](https://linkml.io/linkml-model/latest/docs/reachable_from/)
+- [matches](https://linkml.io/linkml-model/latest/docs/matches/)
+- [include](https://linkml.io/linkml-model/latest/docs/include/) / [minus](https://linkml.io/linkml-model/latest/docs/minus/)
+
+The following example uses `reachable_from` to define an enumeration that selects any subtype of "neuron" from the OBO
+cell type ontology:
 
 ```yaml
 enums:
@@ -97,7 +103,22 @@ enums:
         - rdfs:subClassOf
 ```
 
-Arbitrarily nested boolean expressions can be used, combined with the [minus](https://w3id.org/linkml/minus) operator to subtract from sets:
+The `matches` metaslot provides an alternative approach using regular expressions to restrict values to a specific set of IRIs
+from a source ontology.
+
+This approach is particularly useful for SKOS collections or other non-OWL vocabularies where hierarchical relationships
+may not be available or where pattern-based matching is sufficient.
+
+```yaml
+enums:
+  MarinePlatformCategories:
+    matches:
+      source_ontology: "SDN:C16"
+      identifier_pattern: "http://vocab.nerc.ac.uk/collection/C16/current/.+/"
+```
+
+Arbitrarily nested boolean expressions can be used by combining the [include](https://w3id.org/linkml/include) and
+[minus](https://w3id.org/linkml/minus) operators to subtract from sets:
 
 ```yaml
 enums:
@@ -116,7 +137,7 @@ enums:
         - LOINC:5932-9
 ```
 
-Enums can extend other enums using [inherits](https://w3id.org/linkml/inherits):
+Lastly, enums can extend other enums using [inherits](https://w3id.org/linkml/inherits):
 
 ```yaml
 enums:
@@ -175,9 +196,16 @@ in your schema documentation.
 The [Ontology Access Kit](https://github.com/INCATools/ontology-access-kit) (OAK)
 has a tool called vskit for expanding value sets.
 
+vskit natively supports resolving many OBO ontologies. For ontologies not natively supported within vskit, prefix
+resolvers can be declared through a `config.yaml` file, and mapped to various backends such as BioPortal,
+Wikidata, or local .ttl files.
+
 To run:
 
 ```bash
 pip install oaklib
 vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
 ```
+
+Support for `reachable_from` expansions in vskit is limited to OWL ontologies, where each `relationship_type` must be
+declared as an `owl:ObjectProperty` in the source ontology.
