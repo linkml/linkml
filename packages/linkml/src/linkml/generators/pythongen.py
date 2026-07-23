@@ -73,7 +73,10 @@ class PythonGenerator(Generator):
         if isinstance(self.schema, Path):
             self.schema = str(self.schema)
         self.sourcefile = self.schema
-        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
+        # Forward importmap so URI-style imports (e.g. ``ex:schema/core`` backed
+        # by ``--importmap``) resolve to local files instead of falling through
+        # to HTTP on the first lazy access via ``PythonIfAbsentProcessor``.
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
         self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
         super().__post_init__()
         if self.format is None:
@@ -82,6 +85,18 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+
+    def slot_name(self, name: str) -> str:
+        """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
+        if the underscored name collides with a Python reserved keyword, so
+        that emissions like ``self.class`` become ``self.class_``. The
+        original slot name is preserved on the runtime ``Slot(name=...)``
+        argument, so schema lookups and URI resolution are unaffected.
+        """
+        pyname = super().slot_name(name)
+        if keyword.iskeyword(pyname):
+            pyname += "_"
+        return pyname
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -608,7 +623,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             type_model_uri = f'URIRef("{type_model_uri}")'
         else:
             ns, ln = type_model_uri.split(":", 1)
-            ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
+            ln_suffix = f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f'["{ln}"]'
             type_model_uri = f"{ns.upper()}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
@@ -1118,7 +1133,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if ns is None:
             return '"str(uriorcurie)"', None
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
+            ns.upper() + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
             ns.upper() + f".curie('{ln}')",
         )
 
@@ -1132,6 +1147,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_slot(self, slot: SlotDefinition) -> str:
         python_slot_name = underscore(slot.name)
+        # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
+        # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
+        if keyword.iskeyword(python_slot_name):
+            python_slot_name = python_slot_name + "_"
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)

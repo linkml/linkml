@@ -171,11 +171,12 @@ class Relationship(Base):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())
-    related_to: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
     type: Mapped[str | None] = mapped_column(Text())
+    related_to_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    related_to: Mapped[Person | None] = relationship(foreign_keys=[related_to_id])
 
     def __repr__(self):
-        return f"Relationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},related_to={self.related_to},type={self.type},)"
+        return f"Relationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},type={self.type},related_to_id={self.related_to_id},)"
 
 
 class WithLocation(Base):
@@ -186,10 +187,11 @@ class WithLocation(Base):
     __tablename__ = "WithLocation"
 
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
-    in_location: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
+    in_location_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
+    in_location: Mapped[Place | None] = relationship(foreign_keys=[in_location_id])
 
     def __repr__(self):
-        return f"WithLocation(id={self.id},in_location={self.in_location},)"
+        return f"WithLocation(id={self.id},in_location_id={self.in_location_id},)"
 
 
 class Container(Base):
@@ -473,7 +475,6 @@ class Organization(NamedThing):
 
     mission_statement: Mapped[str | None] = mapped_column(Text())
     founding_date: Mapped[str | None] = mapped_column(Text())
-    founding_location: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
     score: Mapped[Decimal | None] = mapped_column(Numeric())
     min_salary: Mapped[str | None] = mapped_column(Text())
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
@@ -481,6 +482,8 @@ class Organization(NamedThing):
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
     Container_id: Mapped[int | None] = mapped_column(Integer(), ForeignKey("Container.id"))
+    founding_location_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
+    founding_location: Mapped[Place | None] = relationship(foreign_keys=[founding_location_id])
 
     categories_rel: Mapped[list[OrganizationCategories]] = relationship()
     categories: AssociationProxy[list[str]] = association_proxy(
@@ -500,7 +503,7 @@ class Organization(NamedThing):
     has_news_events: Mapped[list[NewsEvent]] = relationship(secondary="Organization_has_news_event")
 
     def __repr__(self):
-        return f"Organization(mission_statement={self.mission_statement},founding_date={self.founding_date},founding_location={self.founding_location},score={self.score},min_salary={self.min_salary},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},Container_id={self.Container_id},)"
+        return f"Organization(mission_statement={self.mission_statement},founding_date={self.founding_date},score={self.score},min_salary={self.min_salary},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},Container_id={self.Container_id},founding_location_id={self.founding_location_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -512,11 +515,12 @@ class Concept(NamedThing):
 
     __tablename__ = "Concept"
 
-    code_system: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
     name: Mapped[str] = mapped_column(Text())
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
+    code_system_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
+    code_system: Mapped[CodeSystem | None] = relationship(foreign_keys=[code_system_id])
 
     mappings_rel: Mapped[list[ConceptMappings]] = relationship()
     mappings: AssociationProxy[list[str]] = association_proxy(
@@ -526,7 +530,7 @@ class Concept(NamedThing):
     )
 
     def __repr__(self):
-        return f"Concept(code_system={self.code_system},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},)"
+        return f"Concept(id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},code_system_id={self.code_system_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -541,12 +545,13 @@ class FamilialRelationship(Relationship):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())
-    related_to: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
     type: Mapped[str] = mapped_column(Enum('SIBLING_OF', 'PARENT_OF', 'CHILD_OF', name='FamilialRelationshipType'))
     Person_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    related_to_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    related_to: Mapped[Person | None] = relationship(foreign_keys=[related_to_id])
 
     def __repr__(self):
-        return f"FamilialRelationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},related_to={self.related_to},type={self.type},Person_id={self.Person_id},)"
+        return f"FamilialRelationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},type={self.type},Person_id={self.Person_id},related_to_id={self.related_to_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -561,12 +566,13 @@ class InterPersonalRelationship(Relationship):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())
-    related_to: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
     type: Mapped[str] = mapped_column(Text())
     Person_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    related_to_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    related_to: Mapped[Person | None] = relationship(foreign_keys=[related_to_id])
 
     def __repr__(self):
-        return f"InterPersonalRelationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},related_to={self.related_to},type={self.type},Person_id={self.Person_id},)"
+        return f"InterPersonalRelationship(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},type={self.type},Person_id={self.Person_id},related_to_id={self.related_to_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -579,16 +585,17 @@ class EmploymentEvent(Event):
     __tablename__ = "EmploymentEvent"
 
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
-    employed_at: Mapped[str | None] = mapped_column(Text(), ForeignKey("Organization.id"))
     salary: Mapped[str | None] = mapped_column(Text())
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())
     duration: Mapped[float | None] = mapped_column(Float())
     is_current: Mapped[bool | None] = mapped_column(Boolean())
     Person_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Person.id"))
+    employed_at_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Organization.id"))
+    employed_at: Mapped[Organization | None] = relationship(foreign_keys=[employed_at_id])
 
     def __repr__(self):
-        return f"EmploymentEvent(id={self.id},employed_at={self.employed_at},salary={self.salary},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},duration={self.duration},is_current={self.is_current},Person_id={self.Person_id},)"
+        return f"EmploymentEvent(id={self.id},salary={self.salary},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},duration={self.duration},is_current={self.is_current},Person_id={self.Person_id},employed_at_id={self.employed_at_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -601,7 +608,6 @@ class MedicalEvent(Event):
     __tablename__ = "MedicalEvent"
 
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
-    in_location: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())
     duration: Mapped[float | None] = mapped_column(Float())
@@ -611,9 +617,11 @@ class MedicalEvent(Event):
     diagnosis: Mapped[DiagnosisConcept | None] = relationship(foreign_keys=[diagnosis_id])
     procedure_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("ProcedureConcept.id"))
     procedure: Mapped[ProcedureConcept | None] = relationship(foreign_keys=[procedure_id])
+    in_location_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("Place.id"))
+    in_location: Mapped[Place | None] = relationship(foreign_keys=[in_location_id])
 
     def __repr__(self):
-        return f"MedicalEvent(id={self.id},in_location={self.in_location},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},duration={self.duration},is_current={self.is_current},Person_id={self.Person_id},diagnosis_id={self.diagnosis_id},procedure_id={self.procedure_id},)"
+        return f"MedicalEvent(id={self.id},started_at_time={self.started_at_time},ended_at_time={self.ended_at_time},duration={self.duration},is_current={self.is_current},Person_id={self.Person_id},diagnosis_id={self.diagnosis_id},procedure_id={self.procedure_id},in_location_id={self.in_location_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -625,11 +633,12 @@ class DiagnosisConcept(Concept):
 
     __tablename__ = "DiagnosisConcept"
 
-    code_system: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
     name: Mapped[str] = mapped_column(Text())
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
+    code_system_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
+    code_system: Mapped[CodeSystem | None] = relationship(foreign_keys=[code_system_id])
 
     mappings_rel: Mapped[list[DiagnosisConceptMappings]] = relationship()
     mappings: AssociationProxy[list[str]] = association_proxy(
@@ -639,7 +648,7 @@ class DiagnosisConcept(Concept):
     )
 
     def __repr__(self):
-        return f"DiagnosisConcept(code_system={self.code_system},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},)"
+        return f"DiagnosisConcept(id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},code_system_id={self.code_system_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -651,11 +660,12 @@ class ProcedureConcept(Concept):
 
     __tablename__ = "ProcedureConcept"
 
-    code_system: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
     name: Mapped[str] = mapped_column(Text())
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
+    code_system_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
+    code_system: Mapped[CodeSystem | None] = relationship(foreign_keys=[code_system_id])
 
     mappings_rel: Mapped[list[ProcedureConceptMappings]] = relationship()
     mappings: AssociationProxy[list[str]] = association_proxy(
@@ -665,7 +675,7 @@ class ProcedureConcept(Concept):
     )
 
     def __repr__(self):
-        return f"ProcedureConcept(code_system={self.code_system},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},)"
+        return f"ProcedureConcept(id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},code_system_id={self.code_system_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -677,11 +687,12 @@ class OperationProcedureConcept(ProcedureConcept):
 
     __tablename__ = "OperationProcedureConcept"
 
-    code_system: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
     name: Mapped[str] = mapped_column(Text())
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
+    code_system_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
+    code_system: Mapped[CodeSystem | None] = relationship(foreign_keys=[code_system_id])
 
     mappings_rel: Mapped[list[OperationProcedureConceptMappings]] = relationship()
     mappings: AssociationProxy[list[str]] = association_proxy(
@@ -691,7 +702,7 @@ class OperationProcedureConcept(ProcedureConcept):
     )
 
     def __repr__(self):
-        return f"OperationProcedureConcept(code_system={self.code_system},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},)"
+        return f"OperationProcedureConcept(id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},code_system_id={self.code_system_id},)"
 
     __mapper_args__ = {"concrete": True}
 
@@ -703,11 +714,12 @@ class ImagingProcedureConcept(ProcedureConcept):
 
     __tablename__ = "ImagingProcedureConcept"
 
-    code_system: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
     id: Mapped[str] = mapped_column(Text(), primary_key=True)
     name: Mapped[str] = mapped_column(Text())
     description: Mapped[str | None] = mapped_column(Text())
     depicted_by: Mapped[str | None] = mapped_column(Text())
+    code_system_id: Mapped[str | None] = mapped_column(Text(), ForeignKey("code system.id"))
+    code_system: Mapped[CodeSystem | None] = relationship(foreign_keys=[code_system_id])
 
     mappings_rel: Mapped[list[ImagingProcedureConceptMappings]] = relationship()
     mappings: AssociationProxy[list[str]] = association_proxy(
@@ -717,6 +729,6 @@ class ImagingProcedureConcept(ProcedureConcept):
     )
 
     def __repr__(self):
-        return f"ImagingProcedureConcept(code_system={self.code_system},id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},)"
+        return f"ImagingProcedureConcept(id={self.id},name={self.name},description={self.description},depicted_by={self.depicted_by},code_system_id={self.code_system_id},)"
 
     __mapper_args__ = {"concrete": True}

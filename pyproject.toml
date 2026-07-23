@@ -1,3 +1,8 @@
+[tool.uv]
+required-version = ">=0.9.17"
+exclude-newer = "7 days"
+constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
+
 [tool.uv.workspace]
 members = [
   "packages/linkml",
@@ -103,6 +108,7 @@ markers = [
   "sqlalchemygen: Tests for SQL Alchemy generator",
   "sqlddlgen: Tests for SQL DDL generator",
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
+  "sqlddlbigquerygen: Tests for BigQuery DDL generator",
   "owlgen: Tests for OWL generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",

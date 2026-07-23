@@ -1,0 +1,41 @@
+id: https://example.org/test-peer-cycle
+name: test_peer_cycle
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: test
+
+classes:
+  # Three mutually-recursive peer classes — none is an ancestor of the
+  # others, so the parent/child cycle skip in
+  # ``add_dependencies_by_association`` does NOT break this cycle. The
+  # ``allow_cycles=True`` flag on the sorter is what makes generation
+  # succeed; the three-pass polars template then handles the forward
+  # references between the generated ``*Struct`` types.
+  #
+  # This mirrors the shape of cycles in the real LinkML metamodel
+  # (e.g. ``path_expression`` ↔ ``schema_definition`` ↔ ``slot_definition``).
+  Alpha:
+    description: References Beta and itself.
+    attributes:
+      self_ref:
+        range: Alpha           # self-loop
+      to_beta:
+        range: Beta
+        inlined: true
+
+  Beta:
+    description: References Gamma.
+    attributes:
+      to_gamma:
+        range: Gamma
+        inlined: true
+
+  Gamma:
+    description: References Alpha — closes the three-node peer cycle.
+    attributes:
+      to_alpha:
+        range: Alpha
+        inlined: true
