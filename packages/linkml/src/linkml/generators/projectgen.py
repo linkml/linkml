@@ -52,14 +52,10 @@ GEN_MAP = {
     "sqltable": (SQLTableGenerator, "sqlschema/{name}.sql", {}),
     # JavaGenerator writes one file per class into a `directory` (passed to
     # serialize(), not the constructor) and returns None; see
-    # SELF_ROUTING_GENERATORS / SERIALIZE_ONLY_ARGS below.
+    # SERIALIZE_ONLY_ARGS below.
     "java": (JavaGenerator, "java/{name}.java", {"directory": "{parent}"}),
     "excel": (ExcelGenerator, "excel/{name}.xlsx", {"output": "{parent}/{name}.xlsx"}),
 }
-
-# Generators whose serialize() writes its own output files and returns None,
-# so ProjectGenerator must not route a returned string into a file.
-SELF_ROUTING_GENERATORS = {"excel", "java"}
 
 # Argument keys consumed by serialize() only, not by the generator constructor.
 SERIALIZE_ONLY_ARGS = {"directory"}
@@ -151,16 +147,17 @@ class ProjectGenerator:
                     serialize_args[k] = v
                 logger.info(f" {gen_name} ARGS: {serialize_args}")
 
-                if gen_name in SELF_ROUTING_GENERATORS:
-                    # Generator writes its own file(s) (excel workbook; one java
-                    # file per class into `directory`) and returns None.
-                    gen.serialize(**serialize_args)
-                else:
-                    gen_dump = gen.serialize(**serialize_args)
-                    if gen_path_full.suffix != "":
-                        logger.info(f"  WRITING TO: {gen_path_full}")
-                        with open(gen_path_full, "w", encoding="UTF-8") as stream:
-                            stream.write(gen_dump)
+                gen_dump = gen.serialize(**serialize_args)
+
+                if gen_dump is None:
+                    # Generator wrote its own file(s) during serialize() (e.g. excelgen's binary
+                    # xlsx workbook, or javagen's one-file-per-class output) and returns None.
+                    # Nothing to route to disk.
+                    continue
+                if gen_path_full.suffix != "":
+                    logger.info(f"  WRITING TO: {gen_path_full}")
+                    with open(gen_path_full, "w", encoding="UTF-8") as stream:
+                        stream.write(gen_dump)
 
 
 @click.command(name="project")
