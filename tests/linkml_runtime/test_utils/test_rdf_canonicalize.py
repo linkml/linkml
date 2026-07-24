@@ -502,3 +502,65 @@ def test_fallback_is_deterministic_across_processes(output_format):
     assert out_a == out_b, (
         "Fallback output differs across PYTHONHASHSEED values; blank-node canonicalization may be missing"
     )
+
+
+def _make_pathological_graph(n_pairs: int) -> Graph:
+    """Build a graph with ``n_pairs`` disjoint symmetric blank-node pairs.
+
+    Each pair ``(b1, p, b2), (b2, p, b1)`` is indistinguishable from every
+    other pair under local hashing, which is the structural pattern that
+    makes ``rdflib.compare.to_canonical_graph`` blow up (verified
+    empirically: 6 pairs already take several seconds; the real LinkML
+    metamodel's OWL graph, which has hundreds of similarly ambiguous
+    ``owl:Restriction``/``rdf:List`` blank nodes, does not finish in 20+
+    minutes). Also adds one literal-predicate triple so pyoxigraph rejects
+    the graph and it is routed into the rdflib fallback at all.
+    """
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    p = URIRef("http://example.com/p")
+    for _ in range(n_pairs):
+        b1, b2 = BNode(), BNode()
+        g.add((b1, p, b2))
+        g.add((b2, p, b1))
+    # Literal predicate -> pyoxigraph SyntaxError -> rdflib fallback.
+    g.add((URIRef("http://example.com/s"), Literal("not_a_predicate"), Literal("value")))
+    return g
+
+
+def test_fallback_timeout_prevents_hang_on_pathological_graph():
+    """A pathologically symmetric blank-node graph must not hang ``canonicalize_rdf_graph``.
+
+    Regression test for the OWL metamodel hang: 8 disjoint symmetric
+    blank-node pairs reliably exceed a short ``fallback_timeout``, forcing
+    the bounded subprocess canonicalization to be killed and the function to
+    degrade to non-canonical serialization instead of hanging.
+    """
+    g = _make_pathological_graph(8)
+
+    with pytest.warns(RDFCanonicalizationWarning, match="did not complete within"):
+        result = canonicalize_rdf_graph(g, output_format="turtle", fallback_timeout=1.0)
+
+    # Still valid, parseable RDF -- just not canonicalized.
+    parsed = Graph()
+    parsed.parse(data=result, format="turtle")
+    assert len(parsed) == len(g)
+
+
+def test_fallback_timeout_does_not_affect_small_graphs():
+    """Small non-pathological graphs still canonicalize fully within the default timeout.
+
+    Guards against the timeout being so aggressive that ordinary fallback
+    graphs (e.g. the existing ``test_fallback_on_invalid_rdf`` shape) start
+    degrading to non-canonical output.
+    """
+    g = _make_pathological_graph(2)
+
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result = canonicalize_rdf_graph(g, output_format="turtle")
+
+    # No second (timeout) warning should have fired; result is fully
+    # canonical and thus deterministic across repeated calls.
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result_again = canonicalize_rdf_graph(g, output_format="turtle")
+    assert result == result_again
