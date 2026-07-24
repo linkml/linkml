@@ -39,6 +39,10 @@ class RDFGenerator(Generator):
     context: list[str] = None
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
+    stable_blank_node_labels: bool = False
+    """If True, label blank nodes by a hash of their subtree content instead of
+    RDFC-1.0's ordinal ``c14nN`` labels, so a small schema change yields a small
+    diff (change-locality). Opt-in; output stays isomorphic to the default."""
 
     def __post_init__(self):
         self.original_schema = deepcopy(self.schema)
@@ -46,7 +50,7 @@ class RDFGenerator(Generator):
 
     def _data(self, g: Graph) -> str:
         fmt = "turtle" if self.format == "ttl" else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, stable_blank_node_labels=self.stable_blank_node_labels)
 
     def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
@@ -87,6 +91,16 @@ class RDFGenerator(Generator):
     show_default=True,
     multiple=True,
     help="JSONLD context file (default: vendored meta.context.jsonld)",
+)
+@click.option(
+    "--stable-blank-node-labels/--no-stable-blank-node-labels",
+    default=False,
+    show_default=True,
+    help=(
+        "Label blank nodes by a hash of their subtree content instead of RDFC-1.0's "
+        "ordinal c14nN labels, so a small schema change produces a small diff. "
+        "Opt-in; output stays isomorphic to the default."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

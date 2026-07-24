@@ -180,7 +180,7 @@ class RDFLibDumper(Dumper):
         :param prefix_map:
         :return:
         """
-        super().dump(element, to_file, schemaview=schemaview, fmt=fmt, prefix_map=prefix_map)
+        super().dump(element, to_file, schemaview=schemaview, fmt=fmt, prefix_map=prefix_map, **args)
 
     def dumps(
         self,
@@ -188,6 +188,7 @@ class RDFLibDumper(Dumper):
         schemaview: SchemaView = None,
         fmt: str | None = "turtle",
         prefix_map: dict[str, str] | Converter | None = None,
+        stable_blank_node_labels: bool = False,
     ) -> str:
         """
         Convert element into an RDF graph guided by the schema
@@ -196,9 +197,16 @@ class RDFLibDumper(Dumper):
         :param schemaview:
         :param fmt:
         :param prefix_map:
+        :param stable_blank_node_labels: if True, label blank nodes by a hash of their
+            subtree content instead of RDFC-1.0's ordinal ``c14nN`` labels, so a small
+            data change yields a small diff (change-locality).
         :return: serialization of rdflib Graph containing element
         """
-        return canonicalize_rdf_graph(self.as_rdf_graph(element, schemaview, prefix_map=prefix_map), output_format=fmt)
+        return canonicalize_rdf_graph(
+            self.as_rdf_graph(element, schemaview, prefix_map=prefix_map),
+            output_format=fmt,
+            stable_blank_node_labels=stable_blank_node_labels,
+        )
 
     def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
