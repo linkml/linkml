@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from linkml.generators.javagen import JavaBundle, JavaGenerator
@@ -298,3 +300,70 @@ def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as
     gen.serialize(directory=directory)
 
     assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
+
+
+def test_schema_annotation_sets_java_package_when_not_explicit(tmp_path):
+    """When no package argument is provided, use schema-level `annotations.java_package` if present."""
+    schema_str = """
+id: https://example.org/pkg
+name: pkg
+imports:
+  - linkml:types
+annotations:
+  java_package: org.example.fromschema
+classes:
+  Thing:
+    attributes:
+      id:
+        range: string
+"""
+
+    gen = JavaGenerator(schema_str)
+    gen.serialize(directory=str(tmp_path))
+
+    assert_file_contains(tmp_path / "Thing.java", "public class Thing", after="package org.example.fromschema")
+
+
+def test_explicit_package_overrides_schema_annotation(tmp_path):
+    """Explicit package argument must take precedence over schema annotation."""
+    schema_str = """
+id: https://example.org/pkg
+name: pkg
+imports:
+  - linkml:types
+annotations:
+  java_package: org.example.fromschema
+classes:
+  Thing:
+    attributes:
+      id:
+        range: string
+"""
+
+    gen = JavaGenerator(schema_str, package="org.example.explicit")
+    gen.serialize(directory=str(tmp_path))
+
+    assert_file_contains(tmp_path / "Thing.java", "public class Thing", after="package org.example.explicit")
+
+
+def test_invalid_schema_package_annotation_warns_but_is_used(tmp_path, caplog):
+    """An invalid Java package value warns but is still emitted verbatim."""
+    schema_str = """
+id: https://example.org/pkg
+name: pkg
+imports:
+  - linkml:types
+annotations:
+  java_package: 1bad.pkg
+classes:
+  Thing:
+    attributes:
+      id:
+        range: string
+"""
+
+    with caplog.at_level(logging.WARNING):
+        gen = JavaGenerator(schema_str)
+
+    assert gen.package == "1bad.pkg"
+    assert any("not a valid Java package name" in record.message for record in caplog.records)

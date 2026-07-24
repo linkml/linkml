@@ -46,6 +46,7 @@ JAVA_KEYWORDS = [
     "else",
     "enum",
     "extends",
+    "false",
     "final",
     "finally",
     "float",
@@ -60,6 +61,7 @@ JAVA_KEYWORDS = [
     "long",
     "native",
     "new",
+    "null",
     "package",
     "private",
     "protected",
@@ -75,6 +77,7 @@ JAVA_KEYWORDS = [
     "throw",
     "throws",
     "transient",
+    "true",
     "try",
     "void",
     "volatile",
@@ -82,6 +85,23 @@ JAVA_KEYWORDS = [
 ]
 
 TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
+
+
+def _is_valid_java_package(package_name: str) -> bool:
+    """Return True if ``package_name`` is a dot-separated list of legal Java identifiers.
+
+    Each name segment must be a valid Java identifier (letter/underscore/dollar start,
+    followed by letters/digits/underscore/dollar) and not a reserved keyword.
+    """
+    segments = package_name.split(".")
+    for segment in segments:
+        if not segment or not (segment[0].isalpha() or segment[0] in "_$"):
+            return False
+        if any(not (ch.isalnum() or ch in "_$") for ch in segment):
+            return False
+        if segment in JAVA_KEYWORDS:
+            return False
+    return True
 
 
 @dataclass
@@ -218,6 +238,8 @@ class JavaGenerator(OOCodeGenerator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
+    schema_package_annotation: str = "java_package"
+    """Schema-level annotation tag that, when present, sets the Java package name."""
 
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
@@ -226,6 +248,36 @@ class JavaGenerator(OOCodeGenerator):
         if self.template_file is not None:
             self.template_cache.force_template(Path(self.template_file))
         super().__post_init__()
+
+        # Package selection precedence:
+        # 1) explicit `package=` argument / `--package`
+        # 2) schema-level annotation (e.g. annotations.java_package)
+        # 3) OOCodeGenerator default (`example`)
+        if self.package in (None, "", "example"):
+            inferred_package = self._infer_package_from_schema_annotations()
+            if inferred_package:
+                self.package = inferred_package
+            elif self.package in (None, ""):
+                self.package = "example"
+
+    def _infer_package_from_schema_annotations(self) -> str | None:
+        annotations = getattr(self.schema, "annotations", None) or {}
+        if self.schema_package_annotation not in annotations:
+            return None
+        annotation = annotations[self.schema_package_annotation]
+        value = getattr(annotation, "value", annotation)
+        if value is None:
+            return None
+        package_name = str(value).strip()
+        if not package_name:
+            return None
+        if not _is_valid_java_package(package_name):
+            self.logger.warning(
+                "Schema annotation '%s' value %r is not a valid Java package name; using it as-is.",
+                self.schema_package_annotation,
+                package_name,
+            )
+        return package_name
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
