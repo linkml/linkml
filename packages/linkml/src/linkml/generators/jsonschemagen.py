@@ -21,6 +21,7 @@ from linkml_runtime.linkml_model.meta import (
     AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
+    Element,
     EnumDefinition,
     Example,
     PermissibleValue,
@@ -213,8 +214,8 @@ class JsonSchema(dict):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
 
-    def add_def(self, name: str, subschema: "JsonSchema") -> None:
-        canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+    def add_def(self, name: str, subschema: "JsonSchema", is_curie: bool = False) -> None:
+        canonical_name = name if self.PRESERVE_NAMES or is_curie else camelcase(name)
 
         if "$defs" not in self:
             self["$defs"] = {}
@@ -437,12 +438,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     slot's range type (CURIE for uriorcurie, full URI for uri, snake_case for string).
     """
 
+    use_curies: bool = False
+    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+
     def __post_init__(self):
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
 
         super().__post_init__()
+        if self.namespaces is None:
+            raise TypeError("Schema text must be supplied to JSON schema generator.  Preparsed schema will not work")
 
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
@@ -471,6 +477,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "additionalProperties": top_additional_properties,
             }
         )
+
+    def _curie(self, element: Element) -> str:
+        return self.schemaview.get_curie(element)
 
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
@@ -577,7 +586,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
 
-        self.top_level_schema.add_def(cls.name, class_subschema)
+        if self.use_curies:
+            self.top_level_schema.add_def(self._curie(cls), class_subschema, True)
+        else:
+            self.top_level_schema.add_def(cls.name, class_subschema)
 
         if (
             self.top_class is not None
@@ -601,6 +613,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
+            if self.use_curies:
+                prop_name = self._curie(slot)
+            else:
+                prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
             # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
             # so look it up on the schema's slot definition and wrap so item-level constraints apply.
@@ -618,9 +634,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 value_required = slot.required
             else:
                 value_required = properties_required
-            subschema.add_property(
-                self.aliased_slot_name(slot), prop, value_required=value_required, value_disallowed=value_disallowed
-            )
+            subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
             subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
@@ -941,14 +955,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        aliased_slot_name = self.aliased_slot_name(slot)
+        if self.use_curies:
+            prop_name = self._curie(slot)
+        else:
+            prop_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
         prop = self.after_generate_class_slot(
             SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
         ).schema_
-        subschema.add_property(
-            aliased_slot_name, prop, value_required=value_required, value_disallowed=value_disallowed
-        )
+        subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if slot.designates_type:
             type_value = get_type_designator_value(self.schemaview, slot, cls)
@@ -1021,6 +1036,14 @@ Top level class; slots of this class will become top level properties in the jso
     show_default=True,
     help="""
 Set additionalProperties=False if closed otherwise true if not closed at the global level
+""",
+)
+@click.option(
+    "--use-curies/--not-use-curies",
+    default=False,
+    show_default=True,
+    help="""
+Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
 """,
 )
 @click.option(

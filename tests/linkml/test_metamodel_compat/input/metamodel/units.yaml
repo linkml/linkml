@@ -6,6 +6,7 @@ license: https://creativecommons.org/publicdomain/zero/1.0/
 prefixes:
   linkml: https://w3id.org/linkml/
   qudt: http://qudt.org/schema/qudt/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
 
 default_prefix: linkml
 default_range: string

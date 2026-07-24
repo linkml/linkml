@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import sys
 import uuid
 import warnings
@@ -43,6 +44,7 @@ from linkml_runtime.utils.context_utils import map_import, parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.pattern import PatternResolver
+from linkml_runtime.utils.uri_validator import validate_curie, validate_uri
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -1448,23 +1450,121 @@ class SchemaView:
             if pfx == sfx(str(schema.id)):
                 uri = f"{pfx}{e_type_path}{e_name}"
         if expand:
-            return self.expand_curie(uri)
+            if ":" in uri:
+                return self.expand_curie(uri)
+            return uri
         return uri
 
-    def expand_curie(self, uri: str) -> str:
-        """Expand a URI or CURIE to a full URI.
+    def get_curie(
+        self,
+        element: ElementName | Element,
+        imports: bool = True,
+    ) -> str:
+        """Return the CURIE for a schema element, compressing full URIs where possible.
 
-        :param uri:
-        :return: URI as a string
+        This is the CURIE-returning companion to :meth:`get_uri`.  It first resolves
+        the element's declared URI via :meth:`get_uri`, then compresses it to a CURIE
+        using the schema's registered prefixes via :meth:`compress_uri`.
+
+        When the declared URI is already a CURIE (the common case) it is returned
+        unchanged.  When no URI is declared, :meth:`get_uri` constructs the fallback
+        ``"<default_prefix>:<element_name>"`` CURIE, which is then returned as-is.
+        When the URI is a full URI that cannot be compressed, a :exc:`ValueError` is
+        raised.
+
+        :param element: Name of schema element or element object.
+        :param imports: Include imports closure when resolving the element.
+        :return: A CURIE string such as ``"schema:Event"`` or ``"ex:something_else"``.
+        :raises ValueError: When the element's URI is a fully-qualified URI with no
+            matching prefix registered in the schema, or when it is not a valid URI or
+            CURIE.
         """
+        e = self.get_element(element, imports=imports)
+        uri = self.get_uri(e, imports=imports)
+        return self.compress_uri(uri)
+
+    def expand_curie(self, uri: str) -> str:
+        """Expand a CURIE to a full URI using the schema's registered prefixes.
+
+        This is the strict inverse of :meth:`compress_uri`.
+
+        Resolution order:
+
+        1. If *uri* is already a valid full URI (contains ``"://"``), return it
+           unchanged — no expansion needed.
+        2. If *uri* looks like a CURIE (contains ``":"`` with exactly one colon and a
+           registered prefix), return the concatenated full URI.
+        3. If *uri* looks like a CURIE but the prefix is not in the schema's registered
+           namespaces, try each ``default_curi_maps`` entry of every schema in the
+           schema_map (i.e. the schema itself and all its imports) to find the prefix.
+        4. If the prefix is still not found, raise :exc:`ValueError`.
+        5. If *uri* contains no ``":"`` at all (bare name), raise :exc:`ValueError`.
+
+        :param uri: A CURIE or full URI string.
+        :return: A full URI string.
+        :raises ValueError: When *uri* is a CURIE whose prefix cannot be resolved via
+            the schema's registered namespaces or any explicitly declared
+            ``default_curi_maps``, or when it is neither a CURIE nor a full URI.
+        """
+        if "://" in uri:
+            return uri
         if ":" in uri:
             parts = uri.split(":")
             if len(parts) == 2:
-                [pfx, local_id] = parts
+                pfx, local_id = parts
                 ns = self.namespaces()
                 if pfx in ns:
                     return ns[pfx] + local_id
-        return uri
+                # Fallback: try resolving via default_curi_maps declared in any
+                # schema in the schema_map. This handles cases where a sub-schema
+                # (e.g. units.yaml) uses a CURIE whose prefix is defined by a
+                # context map (e.g. semweb_context) that is declared in the
+                # sub-schema itself or one of its siblings/parents.
+                for s in self.schema_map.values():
+                    for cmap in s.default_curi_maps:
+                        tmp_ns = Namespaces()
+                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                        if pfx in tmp_ns:
+                            return tmp_ns[pfx] + local_id
+                raise ValueError(f"'{uri}' cannot be expanded: prefix '{pfx}' is not registered in the schema")
+        raise ValueError(f"'{uri}' is neither a CURIE nor a full URI")
+
+    def compress_uri(self, uri: str) -> str:
+        """Compress a URI or CURIE to a CURIE string using the schema's registered prefixes.
+
+        This is the inverse of :meth:`expand_curie`.
+
+        Resolution order:
+
+        1. Try to compress *uri* with
+           :meth:`~linkml_runtime.utils.namespaces.Namespaces.curie_for`.
+        2. If compression fails but *uri* is already a valid CURIE, return it as-is
+           (emitting a warning when it looks like a plain ``http(s)://`` URL to alert
+           callers that disambiguation is impossible).
+        3. If *uri* is a fully-qualified URI with no matching prefix, raise
+           :exc:`ValueError`.
+        4. If *uri* is neither a valid URI nor a valid CURIE, raise :exc:`ValueError`.
+
+        :param uri: A URI or CURIE string.
+        :return: A CURIE string such as ``"schema:Event"`` or ``"ex:something_else"``.
+        :raises ValueError: When *uri* is a fully-qualified URI whose namespace is not
+            registered, or when it is not a syntactically valid URI or CURIE.
+        """
+        ns = self.namespaces()
+        curie = ns.curie_for(uri) if validate_uri(uri) else None
+        if curie:
+            return curie
+        if validate_curie(uri):
+            if re.match("https?://.*", uri):
+                logger.warning(
+                    f"'{uri}' looks like a URL but no registered prefix matches it; "
+                    "it cannot be unambiguously compressed to a CURIE."
+                )
+            return uri
+        elif validate_uri(uri):
+            raise ValueError(f"'{uri}' cannot be converted to a CURIE, corresponding prefix not defined")
+        else:
+            raise ValueError(f"'{uri}' does not seem to be either a valid URI or a valid CURIE")
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_identifier(self, identifier: str) -> list[str]:
