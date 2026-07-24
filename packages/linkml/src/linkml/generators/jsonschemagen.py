@@ -423,7 +423,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     top_level_schema: JsonSchema = None
 
     include_null: bool = True
-    """Whether to include a "null" type in optional slots"""
+    """Whether optional (non-required) slots also accept an explicit JSON ``null``.
+
+    When ``True`` (default) an optional slot is rendered with ``null`` added to its
+    type (e.g. ``["string", "null"]``), so an explicit ``null`` value validates. When
+    ``False`` the slot keeps its bare type and optionality is expressed solely by
+    absence from ``required``.
+
+    JSON Schema treats presence (``required``, Validation 6.5.3) as separate from the
+    value type (``type``, Validation 6.1.1, where ``null`` is one of the value types),
+    and JSON ``null`` is a distinct value, not an absent member (RFC 8259 sec. 3). Set
+    this ``False`` for strict parity with reference schemas that declare a bare type
+    and forbid ``null``."""
 
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
@@ -1073,6 +1084,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=True,
     show_default=True,
     help="If set, expand subproperty_of constraints to enum constraints.",
+)
+@click.option(
+    "--include-null/--no-include-null",
+    default=True,
+    show_default=True,
+    help="If set (default), optional slots also accept an explicit JSON null. "
+    "Use --no-include-null to forbid explicit null on optional slots.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
