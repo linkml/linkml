@@ -17,6 +17,7 @@ from linkml_runtime.linkml_model import (
     ClassDefinitionName,
     EnumDefinition,
     Example,
+    PermissibleValue,
     Prefix,
     SchemaDefinition,
     SlotDefinition,
@@ -2371,6 +2372,363 @@ def test_dynamic_enum(schema_view_with_imports: SchemaView) -> None:
     # dynamic enums
     e = view.get_enum("HCAExample")
     assert set(e.include[0].reachable_from.source_nodes) == {"GO:0007049", "GO:0022403"}
+
+
+def test_materialize_derived_schema_materializes_intensional_enums() -> None:
+    """Materialize include/minus/inherits/concepts expressions into permissible values."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["BaseEnum"] = EnumDefinition(
+        name="BaseEnum",
+        permissible_values={
+            "A": {"text": "A"},
+            "B": {"text": "B"},
+        },
+    )
+    schema.enums["ComposedEnum"] = EnumDefinition(
+        name="ComposedEnum",
+        inherits=["BaseEnum"],
+        include=[
+            {
+                "permissible_values": {
+                    "C": {"text": "C"},
+                },
+                "concepts": ["EX:1"],
+            }
+        ],
+        minus=[
+            {
+                "permissible_values": {
+                    "B": {"text": "B"},
+                }
+            }
+        ],
+    )
+
+    view = SchemaView(schema)
+    derived = view.materialize_derived_schema()
+
+    composed = derived.enums["ComposedEnum"]
+    materialized_keys = {k for k in composed.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"A", "C", "EX:1"}
+    assert composed.permissible_values["EX:1"].meaning == "EX:1"
+
+
+def test_materialize_derived_schema_does_not_mutate_source_enums() -> None:
+    """Derived-schema enum materialization should not mutate the original schema."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["BaseEnum"] = EnumDefinition(
+        name="BaseEnum",
+        permissible_values={
+            "A": {"text": "A"},
+            "B": {"text": "B"},
+        },
+    )
+    schema.enums["ComposedEnum"] = EnumDefinition(name="ComposedEnum", inherits=["BaseEnum"])
+
+    source_view = SchemaView(schema)
+    _ = source_view.materialize_derived_schema()
+
+    assert schema.enums["ComposedEnum"].permissible_values == {}
+
+
+def test_materialize_derived_schema_uses_reachable_from_resolver() -> None:
+    """Reachability-based enum expressions can be materialized via configured resolver."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        reachable_from={
+            "source_ontology": "EX:onto",
+            "source_nodes": ["EX:root"],
+            "include_self": False,
+        },
+    )
+
+    seen_source_ontology: list[str] = []
+
+    def resolve_reachable_from(query: Any) -> dict[str, dict[str, str]]:
+        seen_source_ontology.append(str(query.source_ontology))
+        return {
+            "EX:A": {"text": "EX:A", "meaning": "EX:A"},
+            "EX:B": {"text": "EX:B", "meaning": "EX:B"},
+        }
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(reachable_from_resolver=resolve_reachable_from)
+    derived = view.materialize_derived_schema()
+
+    dynamic_enum = derived.enums["DynamicEnum"]
+    materialized_keys = {k for k in dynamic_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"EX:A", "EX:B"}
+    assert seen_source_ontology == ["EX:onto"]
+
+
+def test_materialize_derived_schema_uses_matches_resolver() -> None:
+    """Match-query enum expressions can be materialized via configured resolver."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        matches={
+            "source_ontology": "EX:onto",
+            "identifier_pattern": "^EX:",
+        },
+    )
+
+    seen_patterns: list[str] = []
+
+    def resolve_matches(query: Any) -> list[str]:
+        seen_patterns.append(str(query.identifier_pattern))
+        return ["EX:M1", "EX:M2"]
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(matches_resolver=resolve_matches)
+    derived = view.materialize_derived_schema()
+
+    dynamic_enum = derived.enums["DynamicEnum"]
+    materialized_keys = {k for k in dynamic_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"EX:M1", "EX:M2"}
+    assert seen_patterns == ["^EX:"]
+
+
+def test_materialize_derived_schema_uses_code_set_resolver() -> None:
+    """Code-set enum expressions can be materialized via configured resolver."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        code_set="EX:codes",
+        pv_formula="CURIE",
+    )
+
+    seen_code_sets: list[str] = []
+
+    def resolve_code_set(expr: Any) -> dict[str, dict[str, str]]:
+        seen_code_sets.append(str(expr.code_set))
+        return {
+            "EX:C1": {"text": "EX:C1", "meaning": "EX:C1"},
+            "EX:C2": {"text": "EX:C2", "meaning": "EX:C2"},
+        }
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(code_set_resolver=resolve_code_set)
+    derived = view.materialize_derived_schema()
+
+    dynamic_enum = derived.enums["DynamicEnum"]
+    materialized_keys = {k for k in dynamic_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"EX:C1", "EX:C2"}
+    assert seen_code_sets == ["EX:codes"]
+
+
+def test_configure_enum_materialization_resolvers_partial_config_leaves_others_noop() -> None:
+    """Configuring one resolver leaves the unset hooks as no-ops (empty, non-raising)."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["ReachableEnum"] = EnumDefinition(
+        name="ReachableEnum",
+        reachable_from={"source_ontology": "EX:onto", "source_nodes": ["EX:root"]},
+    )
+    schema.enums["MatchesEnum"] = EnumDefinition(
+        name="MatchesEnum",
+        matches={"source_ontology": "EX:onto", "identifier_pattern": "^EX:"},
+    )
+
+    matches_calls: list[str] = []
+
+    def resolve_matches(query: Any) -> list[str]:
+        matches_calls.append(str(query.identifier_pattern))
+        return ["EX:M1"]
+
+    view = SchemaView(schema)
+    # Only the matches resolver is configured; reachable_from/code_set stay no-op.
+    view.configure_enum_materialization_resolvers(matches_resolver=resolve_matches)
+    derived = view.materialize_derived_schema()
+
+    matches_keys = {k for k in derived.enums["MatchesEnum"].permissible_values if k != "_if_missing"}
+    assert matches_keys == {"EX:M1"}
+    assert matches_calls == ["^EX:"]
+
+    # The unconfigured reachable_from hook must not raise and must materialize to empty.
+    reachable_keys = {k for k in derived.enums["ReachableEnum"].permissible_values if k != "_if_missing"}
+    assert reachable_keys == set()
+
+
+def test_configure_enum_materialization_resolvers_accepts_permissible_value_instances() -> None:
+    """A resolver may return PermissibleValue instances directly, not just dicts."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        code_set="EX:codes",
+        pv_formula="CURIE",
+    )
+
+    def resolve_code_set(expr: Any) -> dict[str, PermissibleValue]:
+        return {
+            "EX:C1": PermissibleValue(text="EX:C1", meaning="EX:C1", description="first"),
+            "EX:C2": PermissibleValue(text="EX:C2", meaning="EX:C2"),
+        }
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(code_set_resolver=resolve_code_set)
+    derived = view.materialize_derived_schema()
+
+    pvs = derived.enums["DynamicEnum"].permissible_values
+    materialized_keys = {k for k in pvs if k != "_if_missing"}
+    assert materialized_keys == {"EX:C1", "EX:C2"}
+    assert pvs["EX:C1"].description == "first"
+    assert pvs["EX:C2"].meaning == "EX:C2"
+
+
+def test_configure_enum_materialization_resolvers_merges_with_static_values() -> None:
+    """Resolver output is merged with an enum's static permissible values (union)."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["MixedEnum"] = EnumDefinition(
+        name="MixedEnum",
+        permissible_values={"STATIC": {"text": "STATIC"}},
+        code_set="EX:codes",
+        pv_formula="CURIE",
+    )
+
+    def resolve_code_set(expr: Any) -> dict[str, dict[str, str]]:
+        return {"EX:C1": {"text": "EX:C1", "meaning": "EX:C1"}}
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(code_set_resolver=resolve_code_set)
+    derived = view.materialize_derived_schema()
+
+    materialized_keys = {k for k in derived.enums["MixedEnum"].permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"STATIC", "EX:C1"}
+
+
+def test_configure_enum_materialization_resolvers_preserves_is_open() -> None:
+    """A resolver-backed open enum keeps is_open while gaining materialized values."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["OpenDynamicEnum"] = EnumDefinition(
+        name="OpenDynamicEnum",
+        is_open=True,
+        code_set="EX:codes",
+        pv_formula="CURIE",
+    )
+
+    def resolve_code_set(expr: Any) -> list[str]:
+        return ["EX:C1", "EX:C2"]
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(code_set_resolver=resolve_code_set)
+    derived = view.materialize_derived_schema()
+
+    enum = derived.enums["OpenDynamicEnum"]
+    assert enum.is_open is True
+    materialized_keys = {k for k in enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"EX:C1", "EX:C2"}
+
+
+def test_configure_enum_materialization_resolvers_not_invoked_when_expression_absent() -> None:
+    """A configured resolver is never called for enums lacking its expression."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["StaticEnum"] = EnumDefinition(
+        name="StaticEnum",
+        permissible_values={"A": {"text": "A"}},
+    )
+
+    reachable_calls: list[Any] = []
+
+    def resolve_reachable_from(query: Any) -> dict[str, dict[str, str]]:
+        reachable_calls.append(query)
+        return {"EX:A": {"text": "EX:A"}}
+
+    view = SchemaView(schema)
+    view.configure_enum_materialization_resolvers(reachable_from_resolver=resolve_reachable_from)
+    derived = view.materialize_derived_schema()
+
+    assert reachable_calls == []
+    materialized_keys = {k for k in derived.enums["StaticEnum"].permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"A"}
+
+
+def test_configure_enum_materialization_resolvers_are_per_instance() -> None:
+    """Resolvers registered on one SchemaView do not leak to another instance."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        code_set="EX:codes",
+        pv_formula="CURIE",
+    )
+
+    def resolve_code_set(expr: Any) -> list[str]:
+        return ["EX:C1"]
+
+    configured = SchemaView(schema)
+    configured.configure_enum_materialization_resolvers(code_set_resolver=resolve_code_set)
+    unconfigured = SchemaView(schema)
+
+    configured_keys = {
+        k for k in configured.materialize_derived_schema().enums["DynamicEnum"].permissible_values if k != "_if_missing"
+    }
+    unconfigured_keys = {
+        k
+        for k in unconfigured.materialize_derived_schema().enums["DynamicEnum"].permissible_values
+        if k != "_if_missing"
+    }
+
+    assert configured_keys == {"EX:C1"}
+    assert unconfigured_keys == set()
+
+
+def test_materialize_derived_schema_applies_minus_after_include() -> None:
+    """``minus`` is applied last, removing values contributed by ``include``/``concepts``."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["ComposedEnum"] = EnumDefinition(
+        name="ComposedEnum",
+        permissible_values={"A": {"text": "A"}},
+        include=[
+            {"permissible_values": {"C": {"text": "C"}}, "concepts": ["EX:1"]},
+        ],
+        # C is added by include and EX:1 by concepts; minus must still remove both.
+        minus=[
+            {"permissible_values": {"C": {"text": "C"}}},
+            {"concepts": ["EX:1"]},
+        ],
+    )
+
+    view = SchemaView(schema)
+    derived = view.materialize_derived_schema()
+
+    composed = derived.enums["ComposedEnum"]
+    materialized_keys = {k for k in composed.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"A"}
+
+
+def test_materialize_derived_schema_handles_cyclic_inheritance(caplog) -> None:
+    """Cyclic enum inheritance terminates, materializes to empty, and logs a warning."""
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["EnumA"] = EnumDefinition(name="EnumA", inherits=["EnumB"])
+    schema.enums["EnumB"] = EnumDefinition(name="EnumB", inherits=["EnumA"])
+
+    view = SchemaView(schema)
+    with caplog.at_level(logging.WARNING, logger="linkml_runtime.utils.schemaview"):
+        derived = view.materialize_derived_schema()
+
+    for enum_name in ("EnumA", "EnumB"):
+        materialized_keys = {k for k in derived.enums[enum_name].permissible_values if k != "_if_missing"}
+        assert materialized_keys == set()
+    assert any("cyclic enum inheritance" in rec.message.lower() for rec in caplog.records)
+
+
+def test_materialize_derived_schema_external_expression_without_resolver_is_empty() -> None:
+    """Known limitation: external enum expressions with no resolver materialize to empty PVs.
+
+    A *closed* enum defined solely by ``reachable_from`` (or ``matches``/``code_set``)
+    with no resolver configured cannot be materialized locally, so its permissible
+    values stay empty and it is effectively unenforced until a resolver is registered.
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    schema.enums["DynamicEnum"] = EnumDefinition(
+        name="DynamicEnum",
+        reachable_from={"source_ontology": "EX:onto", "source_nodes": ["EX:root"]},
+    )
+
+    view = SchemaView(schema)  # no configure_enum_materialization_resolvers(...) call
+    derived = view.materialize_derived_schema()
+
+    materialized_keys = {k for k in derived.enums["DynamicEnum"].permissible_values if k != "_if_missing"}
+    assert materialized_keys == set()
 
 
 # dictionary mapping class name to id_prefixes

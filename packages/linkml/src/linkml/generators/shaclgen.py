@@ -417,6 +417,10 @@ class ShaclGenerator(Generator):
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
         enum = sv.get_enum(r)
+        # Open enums permit values outside of the permissible values, so we do not
+        # emit an sh:in membership constraint for them.
+        if enum.is_open:
+            return
         pv_node = BNode()
         Collection(
             g,

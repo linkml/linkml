@@ -14,7 +14,6 @@ LinkML supports enumerations, and goes beyond what is possible in frameworks lik
 
 The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:
 
-
 ```yaml
 enums:
   FamilialRelationshipType:
@@ -38,12 +37,11 @@ enums:
         description: inverse of the PARENT_OF relationship
 ```
 
-
 ## Mapping Permissible Values to Ontologies
 
 As an example, we will map the Permissible Values above to terms from the GA4GH [pedigree standard](https://github.com/GA4GH-Pedigree-Standard/) kinship ontology.
 
-We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007):
+We will first add a base prefix declaration (KIN concepts have PURLs of the form `http://purl.org/ga4gh/kin.owl#KIN_007`):
 
 ```yaml
 prefixes:
@@ -68,14 +66,34 @@ enums:
         meaning: kin:KIN_002
 ```
 
+## Open vs Closed Enums
+
+By default, enumerations are *closed*: a data value MUST be drawn from the set of permissible values, otherwise it is invalid.
+
+Sometimes you want an enumeration that documents a set of recommended or expected values, but still permits other values. You can declare such an enum as *open* by setting `is_open: true`:
+
+```yaml
+enums:
+  GenderEnum:
+    is_open: true
+    permissible_values:
+      male:
+      female:
+```
+
+With an open enum:
+
+- The permissible values are advisory - they document the recommended values (and are useful for autocomplete, dropdowns, and documentation), but data values that are not in the set are still valid.
+- In JSON Schema, an open enum maps to a plain `string` rather than a JSON Schema `enum` constraint.
+- When validating with the reference validator, an out-of-set value is reported at `INFO` severity rather than as an error.
+
+This is analogous to `allow-other="yes"` construct (NIST Metaschema).
+
+Closed enums (the default, or `is_open: false`) retain the original behavior: values MUST be drawn from the set of permissible values.
 
 ## Working with Enums in Python
 
-Enumerations are mapped directly to Python enums. See
-
- * [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb)
-
-for examples.
+Enumerations are mapped directly to Python enums. See [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb) for examples.
 
 ## Dynamic Enums
 
@@ -181,3 +199,28 @@ To run:
 pip install oaklib
 vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
 ```
+
+### SchemaView materialization
+
+In `linkml_runtime`, `SchemaView.materialize_derived_schema()` now materializes
+intensional enum expressions into explicit `permissible_values` in the derived schema.
+
+- Locally materialized: `permissible_values`, `inherits`, `include`, `minus`, `concepts`
+- Resolver-backed (optional): `reachable_from`, `matches`, `code_set` / `pv_formula`
+
+You can configure resolver callbacks when your toolchain has ontology/code-system access:
+
+```python
+from linkml_runtime.utils.schemaview import SchemaView
+
+sv = SchemaView("my_schema.yaml")
+sv.configure_enum_materialization_resolvers(
+  reachable_from_resolver=my_reachability_fn,
+  matches_resolver=my_match_fn,
+  code_set_resolver=my_codeset_fn,
+)
+derived = sv.materialize_derived_schema()
+```
+
+This keeps enum semantics explicit for downstream validation/generation while allowing
+different stacks to plug in their own dynamic expansion logic.
