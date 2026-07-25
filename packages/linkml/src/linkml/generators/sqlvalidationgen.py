@@ -381,7 +381,9 @@ class SQLValidationGenerator(Generator):
         """
         # Get the enum definition
         enum = sv.all_enums().get(slot.range)
-        if not enum or not enum.permissible_values:
+        # Open enums permit values outside of the permissible values, so no
+        # membership violation query is generated for them.
+        if not enum or not enum.permissible_values or enum.is_open:
             return None
 
         permissible_values = [str(v) for v in enum.permissible_values.keys()]
