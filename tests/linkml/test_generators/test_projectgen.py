@@ -20,6 +20,10 @@ def test_projectgen(kitchen_sink_path, tmp_path):
     check_contains("CREATE TABLE", "sqlschema", "kitchen_sink.sql")
     check_contains("ks:age_in_years a owl:DatatypeProperty", "owl", "kitchen_sink.owl.ttl")
     check_contains('"additionalProperties": false', "jsonschema", "kitchen_sink.schema.json")
+    # Excel writes its own binary file via serialize(); guard against regressions
+    # in the generic "generator returned None -> skip disk-routing" branch.
+    excel_out = tmp_path / "excel" / "kitchen_sink.xlsx"
+    assert excel_out.is_file() and excel_out.stat().st_size > 0
 
 
 def test_projectgen_java_package_from_config(kitchen_sink_path, tmp_path):
