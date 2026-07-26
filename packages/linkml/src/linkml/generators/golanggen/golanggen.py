@@ -25,7 +25,8 @@ from linkml.generators.golanggen.template import (
     Imports,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.utils.deprecation import deprecation_warning
+from linkml.utils.generator import read_generator_config_arg, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -613,9 +614,25 @@ _TEMPLATE_NAMES = [
 
 @shared_arguments(GolangGenerator)
 @click.option(
-    "--package-name",
+    "--package",
+    "package",
     type=str,
     help="Override the Go package name (default: derived from schema name)",
+)
+@click.option(
+    "--package-name",
+    "package_name",
+    type=str,
+    help="DEPRECATED alias for --package",
+)
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a gen-project-style YAML config file setting "
+    "'generator_args: {golang: {package: ...}}'. An explicit --package always "
+    "takes precedence over the config file. If not given, a 'config.yaml' in the current "
+    "working directory is used automatically if present.",
 )
 @click.option(
     "--alphabetical-sort/--no-alphabetical-sort",
@@ -656,7 +673,9 @@ Available templates to override:
 @click.command(name="golang")
 def cli(
     yamlfile,
+    package: str | None = None,
     package_name: str | None = None,
+    config_file=None,
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
     named_slot_types: bool = False,
@@ -672,13 +691,20 @@ def cli(
     - JSON tags for serialization
     - Struct embedding for inheritance
     """
+    if package_name is not None:
+        deprecation_warning("golanggen-package-name-option")
+        if package is None:
+            package = package_name
+    if package is None:
+        package = read_generator_config_arg(config_file, "golang", "package")
+
     if template_dir is not None:
         if not Path(template_dir).exists():
             raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
 
     gen = GolangGenerator(
         yamlfile,
-        package_name=package_name,
+        package_name=package,
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
         named_slot_types=named_slot_types,

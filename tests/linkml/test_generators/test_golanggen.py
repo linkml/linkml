@@ -1470,3 +1470,119 @@ classes:
 
     code = GolangGenerator(schema, mergeimports=True).serialize()
     assert 'IntDict []KeyedIntId `json:"int_dict,omitempty"`' in code
+
+
+# ---------------------------------------------------------------------------
+# CLI package configuration (--package, deprecated --package-name, --config-file)
+# ---------------------------------------------------------------------------
+
+
+def _golang_config_yaml(package: str) -> str:
+    """The same `generator_args.golang.package` shape used by gen-project's config.yaml."""
+    return f"generator_args:\n  golang:\n    package: {package}\n"
+
+
+def _invoke_cli(args):
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    return CliRunner().invoke(cli, args)
+
+
+def _write_simple_schema(tmp_path):
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+    return schema_file
+
+
+def test_cli_package_option(tmp_path):
+    """The canonical --package option overrides the schema-derived package name."""
+    schema_file = _write_simple_schema(tmp_path)
+
+    result = _invoke_cli([str(schema_file), "--package", "mypkg"])
+
+    assert result.exit_code == 0
+    assert "package mypkg" in result.output
+
+
+def test_cli_package_name_deprecated_but_works(tmp_path):
+    """--package-name still works but registers its deprecation."""
+    from linkml.utils import deprecation as dep_mod
+
+    schema_file = _write_simple_schema(tmp_path)
+
+    result = _invoke_cli([str(schema_file), "--package-name", "mypkg"])
+
+    assert result.exit_code == 0
+    assert "package mypkg" in result.output
+    assert "golanggen-package-name-option" in dep_mod.EMITTED
+
+
+def test_cli_package_overrides_deprecated_package_name(tmp_path):
+    """When both spellings are given, the canonical --package wins."""
+    schema_file = _write_simple_schema(tmp_path)
+
+    result = _invoke_cli([str(schema_file), "--package", "canonical", "--package-name", "legacy"])
+
+    assert result.exit_code == 0
+    assert "package canonical" in result.output
+
+
+def test_cli_config_file_sets_package(tmp_path):
+    """--config-file's `generator_args.golang.package` sets the package when no flag is given."""
+    schema_file = _write_simple_schema(tmp_path)
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_golang_config_yaml("mypkgfromconfig"))
+
+    result = _invoke_cli([str(schema_file), "--config-file", str(config_path)])
+
+    assert result.exit_code == 0
+    assert "package mypkgfromconfig" in result.output
+
+
+def test_cli_package_overrides_config_file(tmp_path):
+    """An explicit --package always takes precedence over --config-file."""
+    schema_file = _write_simple_schema(tmp_path)
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_golang_config_yaml("mypkgfromconfig"))
+
+    result = _invoke_cli([str(schema_file), "--config-file", str(config_path), "--package", "explicit"])
+
+    assert result.exit_code == 0
+    assert "package explicit" in result.output
+
+
+def test_cli_config_file_without_golang_section_falls_back_to_derived(tmp_path):
+    """A config file with no `generator_args.golang.package` falls back to schema-name derivation."""
+    schema_file = _write_simple_schema(tmp_path)
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example.java\n")
+
+    result = _invoke_cli([str(schema_file), "--config-file", str(config_path)])
+
+    assert result.exit_code == 0
+    assert "package simple" in result.output
+
+
+def test_cli_autodetects_config_yaml_in_cwd(tmp_path, monkeypatch):
+    """When --config-file is omitted, a `config.yaml` in the cwd is used automatically."""
+    schema_file = _write_simple_schema(tmp_path)
+    (tmp_path / "config.yaml").write_text(_golang_config_yaml("autocwdpkg"))
+    monkeypatch.chdir(tmp_path)
+
+    result = _invoke_cli([str(schema_file)])
+
+    assert result.exit_code == 0
+    assert "package autocwdpkg" in result.output
+
+
+def test_cli_no_config_yaml_in_cwd_falls_back_to_derived(tmp_path, monkeypatch):
+    """No config.yaml in cwd and no flags: package name is derived from the schema name."""
+    schema_file = _write_simple_schema(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    result = _invoke_cli([str(schema_file)])
+
+    assert result.exit_code == 0
+    assert "package simple" in result.output

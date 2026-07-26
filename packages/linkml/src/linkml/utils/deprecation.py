@@ -300,6 +300,16 @@ DEPRECATIONS = (
         recommendation="Use 'linkml validate schema.yaml' for schema validation without lint rules.",
         issue=3387,
     ),
+    Deprecation(
+        name="golanggen-package-name-option",
+        deprecated_in=SemVer.from_str("1.11.0"),
+        message=(
+            "The `--package-name` option of gen-golang has been renamed `--package` "
+            "for consistency with other package-scoped generators (e.g. gen-java)."
+        ),
+        recommendation="Use `--package` instead.",
+        issue=3780,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
