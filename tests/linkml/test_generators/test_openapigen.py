@@ -147,3 +147,24 @@ def test_renaming(input_path, kitchen_sink_path):
     assert "Person" not in schemas
     # all $ref values in the spec must use the renamed
     assert "Person" not in str(spec).replace("PersonResource", "")
+
+
+def test_template_text_preserved(input_path, kitchen_sink_path):
+    """Test that everything above ``components/schemas`` is emitted verbatim.
+
+    The generator no longer YAML round-trips the whole template (which would drop
+    comments and normalise quoting/styling). Only the ``components/schemas`` section
+    is regenerated; the header, paths and any comments above it must survive intact.
+    """
+    head_path = str(input_path("openapi/spec-comments.openapi.yaml"))
+    result = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
+    # comments are dropped by a YAML round-trip but preserved by text handling
+    assert "# top-level comment must survive round-trip" in result
+    assert "# this endpoint comment must survive" in result
+    # original quoting style is preserved (round-trip would normalise this)
+    assert "version: '1.0.0'" in result
+    # the untouched template prefix is emitted byte-for-byte
+    template_text = open(head_path).read()
+    schemas_marker = "\ncomponents:\n"
+    prefix = template_text[: template_text.index(schemas_marker) + len(schemas_marker)]
+    assert result.startswith(prefix)
