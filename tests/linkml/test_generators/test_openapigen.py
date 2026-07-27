@@ -236,3 +236,34 @@ def test_inline_enums_inlines_enum_schemas(input_path, kitchen_sink_path):
     assert any(member["enum"] == ["HIRE", "FIRE", "PROMOTION", "TRANSFER"] for member in inlined)
     # no dangling $ref to the removed enum schema remains
     assert "EmploymentEventType" not in str(spec)
+
+
+def test_no_dangling_references_for_valid_schema(openapi_spec):
+    """Test that a valid schema produces a spec whose every $ref resolves."""
+    schema_names = set(openapi_spec["components"]["schemas"].keys())
+
+    def _refs(obj):
+        if isinstance(obj, dict):
+            if "$ref" in obj and isinstance(obj["$ref"], str):
+                yield obj["$ref"]
+            for value in obj.values():
+                yield from _refs(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                yield from _refs(item)
+
+    for ref in _refs(openapi_spec):
+        assert ref.startswith("#/components/schemas/")
+        assert ref.removeprefix("#/components/schemas/") in schema_names
+
+
+def test_dangling_reference_raises(input_path, kitchen_sink_path):
+    """Test that a generated spec containing an unresolvable $ref is rejected.
+
+    The template declares a ``Foo`` schema sourced from a non-existent LinkML class,
+    so no schema is generated for it while an endpoint still references it. The
+    generator must detect the dangling ``$ref`` and fail loudly.
+    """
+    head_path = str(input_path("openapi/spec-dangling-ref.openapi.yaml"))
+    with pytest.raises(ValueError, match="Dangling .ref"):
+        OpenApiGenerator(kitchen_sink_path).serialize(head_path)
