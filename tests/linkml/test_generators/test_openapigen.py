@@ -72,6 +72,19 @@ def test_openapi_spec_nullable_type_conversion(openapi_spec):
     )
 
 
+def test_openapi_spec_schemas_are_extensible(openapi_spec):
+    """Test that generated class schemas are extensible (additionalProperties not false).
+
+    APIs are typically extended backwards-compatibly by adding new objects or new
+    attributes to existing objects. Closed schemas (additionalProperties: false) block
+    that, so the generated OpenAPI schemas must stay open.
+    """
+    for name, schema in openapi_spec["components"]["schemas"].items():
+        assert schema.get("additionalProperties") is not False, (
+            f"schema '{name}' is closed (additionalProperties: false), blocking API extension"
+        )
+
+
 def test_resources_presence_and_absence(openapi_spec):
     # ensure expected resource schemas are present
     assert "MarriageEvent" in openapi_spec["components"]["schemas"].keys()
