@@ -628,13 +628,16 @@ class SQLValidationGenerator(Generator):
         conditions are concatenated with OR -> De Morgan's law.
         :return: SQLAlchemy condition or None
         """
-        if not expression or not expression.slot_conditions:
+        if not expression:
             return None
 
         # Warn about unsupported features
         for attr in ("any_of", "all_of", "none_of", "exactly_one_of"):
             if getattr(expression, attr, None):
                 logger.warning(f"Rule class expression '{attr}' is not yet supported in SQL validation")
+
+        if not expression.slot_conditions:
+            return None
 
         all_conditions = []
         for slot_name, slot_condition in expression.slot_conditions.items():
@@ -665,8 +668,10 @@ class SQLValidationGenerator(Generator):
         :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
-        if not rule.postconditions or not rule.postconditions.slot_conditions:
-            logger.warning("Could not generate rule-based query: A rule needs to have a 'postcondition'.")
+        if not rule.postconditions:
+            logger.warning(
+                f"Could not generate rule-based query for class '{class_name}': a rule needs 'postconditions'."
+            )
             return None
 
         # Collect all referenced column names
@@ -684,14 +689,23 @@ class SQLValidationGenerator(Generator):
         where_parts = []
         if rule.preconditions:
             pre = self._class_expression_to_sqlalchemy(tbl, rule.preconditions, negate=False)
-            if pre is not None:
-                where_parts.append(pre)
+            if pre is None:
+                # Fail closed: dropping an untranslatable precondition would apply the
+                # postcondition check to every row, producing false-positive violations.
+                logger.warning(
+                    f"Could not generate rule-based query for class '{class_name}': preconditions exist "
+                    "but produced no SQL conditions (unsupported class expression or slot condition "
+                    "types?). Skipping the rule."
+                )
+                return None
+            where_parts.append(pre)
 
         post = self._class_expression_to_sqlalchemy(tbl, rule.postconditions, negate=True)
         if post is None:
             logger.warning(
-                "Could not generate rule-based query: postconditions exist but produced "
-                "no SQL conditions (unsupported slot condition types?)."
+                f"Could not generate rule-based query for class '{class_name}': postconditions exist but "
+                "produced no SQL conditions (unsupported class expression or slot condition types?). "
+                "Skipping the rule."
             )
             return None
         where_parts.append(post)

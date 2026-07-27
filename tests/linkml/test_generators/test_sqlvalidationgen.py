@@ -1064,6 +1064,43 @@ def test_rule_any_of_logs_warning(caplog):
     assert "age > 150" in sql
 
 
+@pytest.mark.parametrize("combinator", ["any_of", "all_of", "none_of", "exactly_one_of"])
+def test_rule_precondition_only_combinator_skips_rule(caplog, combinator):
+    """A precondition expressed purely via an unsupported combinator must skip the whole rule.
+
+    Dropping such a precondition would apply the postcondition to every row of the table,
+    producing false-positive violations.
+    """
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    **{
+                        combinator: [
+                            AnonymousClassExpression(
+                                slot_conditions={"type": SlotDefinition("type", equals_string="Human")}
+                            )
+                        ]
+                    }
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    with caplog.at_level(logging.WARNING):
+        sql = gen.generate_validation_queries()
+
+    assert combinator in caplog.text
+    assert "Skipping the rule" in caplog.text
+    # The rule must not be emitted at all: an unconditional "age > 150" check would flag
+    # non-Human rows that the precondition was meant to exclude.
+    assert "'rule'" not in sql
+    assert "age > 150" not in sql
+
+
 def test_rule_required_slot_condition():
     """Postcondition with required=True should produce IS NULL check in output."""
     slots = [
