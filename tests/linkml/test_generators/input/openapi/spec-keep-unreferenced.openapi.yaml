@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: Keep Unreferenced Test
+  version: '1.0.0'
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/person:
+    get:
+      security:
+        - PayloadSignature: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+components:
+  schemas:
+    Person:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: Person
+    OpaqueEvent:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: MarriageEvent

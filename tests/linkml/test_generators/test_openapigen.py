@@ -181,3 +181,28 @@ def test_template_text_preserved(input_path, kitchen_sink_path):
     schemas_marker = "\ncomponents:\n"
     prefix = template_text[: template_text.index(schemas_marker) + len(schemas_marker)]
     assert result.startswith(prefix)
+
+
+def test_unreferenced_schema_removed_by_default(input_path, kitchen_sink_path):
+    """Test that template schemas not referenced by any endpoint are removed by default."""
+    head_path = str(input_path("openapi/spec-keep-unreferenced.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "Person" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is declared in the template but no endpoint references it
+    assert "MarriageEvent" not in schemas
+
+
+def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_path):
+    """Test that keep_unreferenced retains template schemas not referenced by any endpoint.
+
+    Unreferenced sub-schemas can convey objects that are opaque to the API but relevant
+    to clients (e.g. present in provided artifacts). The keep_unreferenced flag makes
+    their removal switchable.
+    """
+    head_path = str(input_path("openapi/spec-keep-unreferenced.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, keep_unreferenced=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "Person" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
+    assert "MarriageEvent" in schemas
