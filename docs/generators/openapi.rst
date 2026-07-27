@@ -133,6 +133,17 @@ Using the *keep unreferenced* option (object constructor boolean argument
 that behavior so that all schemas provided in ``components/schemas`` are kept
 in the resulting OAD (OpenAPI Description) document.
 
+Inlining Enums
+^^^^^^^^^^^^^^
+
+By default enumerations are declared as separate schemas in the
+``components/schemas`` of the resulting OAD (OpenAPI Description) document.
+
+Using the *inline_enums* option (object constructor boolean argument
+``inline_enums``, CLI flag ``--inline-enums``) it's possible to change
+that behavior so that inlined into the using ``components/schemas``
+in the resulting OAD (OpenAPI Description) document.
+
 Docs
 ----
 
