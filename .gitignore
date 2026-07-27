@@ -2,6 +2,7 @@ metamodel/metamodel.py-PREV
 temp/
 output/
 *.db
+notebooks/tmp/
 
 # sphinx
 docs/_sources

@@ -1656,6 +1656,20 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
 
     assert view.get_uri("string") == "xsd:string"
 
+    # SubsetDefinition: multi-word names are camelcased when building the native URI.
+    # "subset A" -> "SubsetA"; the transformation is directly observable.
+    assert view.get_uri("subset A") == "ks:SubsetA"
+    assert view.get_uri("subset A", expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/SubsetA"
+    assert view.get_uri("subset B") == "ks:SubsetB"
+
+    # TypeDefinition and EnumDefinition: add multi-word names to the kitchen_sink schema
+    # so the camelcase transformation is directly observable (the fixture is function-scoped).
+    view.add_type(TypeDefinition(name="my custom type"))
+    assert view.get_uri("my custom type") == "ks:MyCustomType"
+
+    view.add_enum(EnumDefinition(name="relationship type"))
+    assert view.get_uri("relationship type") == "ks:RelationshipType"
+
 
 def test_uris_without_default_prefix() -> None:
     """Test if uri is correct if no default_prefix is defined for the schema.
@@ -2980,6 +2994,15 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
+        # Slots that inherit inlined/inlined_as_list via is_a without redeclaring it.
+        # Regression test for https://github.com/linkml/linkml/issues/3695:
+        # is_inlined() must traverse the slot's is_a chain, not only check the slot itself.
+        ("child_of_inlined_thing_with_id", True),
+        ("child_of_inlined_as_list_thing_with_id", True),
+        # Slots that inherit inlined/inlined_as_list via mixins without redeclaring it.
+        # is_inlined() must also traverse mixin ancestry, not only is_a chains.
+        ("child_via_inlined_mixin", True),
+        ("child_via_inlined_as_list_mixin", True),
     ],
 )
 def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
