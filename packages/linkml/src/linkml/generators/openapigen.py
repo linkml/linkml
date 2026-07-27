@@ -81,6 +81,7 @@ class OpenApiGenerator(Generator):
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
     keep_unreferenced: bool = False
+    inline_enums: bool = False
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_versions: dict[str, str] = field(
@@ -266,7 +267,32 @@ class OpenApiGenerator(Generator):
         openapi_schemas = cast(dict, self._fix_openapi_spec(openapi_schemas))
         if name_map:
             openapi_schemas = cast(dict, self._rename(name_map, openapi_schemas))
+        if self.inline_enums:
+            openapi_schemas = self._inline_enum_schemas(openapi_schemas)
         return openapi_schemas
+
+    def _inline_enum_schemas(self, data_schemas: dict) -> dict:
+        """Inline enum subschemas into their parents instead of separate entries."""
+        enum_schemas = {
+            name: schema
+            for name, schema in data_schemas.items()
+            if isinstance(schema, dict) and "enum" in schema and "properties" not in schema
+        }
+        if not enum_schemas:
+            return data_schemas
+
+        def _replace_refs(obj):
+            if isinstance(obj, dict):
+                if "$ref" in obj:
+                    ref_name = obj["$ref"].split("/")[-1]
+                    if ref_name in enum_schemas:
+                        return enum_schemas[ref_name]
+                return {k: _replace_refs(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [_replace_refs(item) for item in obj]
+            return obj
+
+        return {k: _replace_refs(v) for k, v in data_schemas.items() if k not in enum_schemas}
 
     def _find_schemas_line(self, template_text: str) -> int:
         """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
@@ -387,8 +413,15 @@ class OpenApiGenerator(Generator):
     default=False,
     help="Keep schemas listed in the template even if not referenced by any endpoint",
 )
+@click.option(
+    "--inline-enums",
+    "-e",
+    is_flag=True,
+    default=False,
+    help="Inline enum subschemas into their parent schemas instead of generating separate schema entries",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, template, keep_unreferenced, **args):
+def cli(yamlfile, template, keep_unreferenced, inline_enums, **args):
     """Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
     If no OpenAPI template is provided,
     a generic one with one exemplary class/type schema is printed out."""
@@ -400,6 +433,7 @@ def cli(yamlfile, template, keep_unreferenced, **args):
         OpenApiGenerator(
             yamlfile,
             keep_unreferenced=keep_unreferenced,
+            inline_enums=inline_enums,
             **args,
         ).serialize(template_file=template, **args),
         end="",
