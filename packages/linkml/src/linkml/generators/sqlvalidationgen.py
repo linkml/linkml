@@ -348,13 +348,17 @@ class SQLValidationGenerator(Generator):
         Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
         syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
 
+        NULL values are excluded regardless of ``negate``, since a NULL is not a pattern
+        violation but a required violation. This is needed since native sqlite has no
+        regexp implementation and some registered functions might fail if null is not excluded.
+
         :param col: SQLAlchemy column expression
         :param pattern: Regular expression pattern string
         :param negate: If True, return the violation condition; if False, the conformance condition
         :return: SQLAlchemy condition
         """
         match = col.regexp_match(literal(pattern, type_=Text()))
-        return ~match if negate else match
+        return and_(col.isnot(None), ~match if negate else match)
 
     def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """

@@ -1,6 +1,7 @@
 """Tests for SQL Validation Generator."""
 
 import logging
+import re
 import sqlite3
 
 import pytest
@@ -181,6 +182,21 @@ def test_dialect_specific_pattern(minimal_schema, dialect, pattern_syntax):
     queries = gen.generate_validation_queries()
 
     assert pattern_syntax in queries
+
+
+@pytest.mark.parametrize("dialect", ["postgresql", "sqlite"])
+def test_pattern_check_guards_against_null(minimal_schema, dialect):
+    """Pattern checks must exclude NULLs: absence of a value is the required constraint's concern.
+
+    On SQLite the guard is also what keeps NULLs out of the user-registered REGEXP
+    function, see test_pattern_check_ignores_nulls_sqlite.
+    """
+    gen = SQLValidationGenerator(minimal_schema, dialect=dialect)
+    queries = gen.generate_validation_queries()
+
+    pattern_query = next(q for q in queries.split("UNION ALL") if "'pattern'" in q)
+
+    assert "email IS NOT NULL" in pattern_query
 
 
 def test_with_kitchen_sink_schema(input_path):
@@ -562,6 +578,49 @@ def test_validation_interop_with_invalid_data(input_path, tmp_path):
     )
 
     conn.close()
+
+
+@pytest.mark.slow
+def test_pattern_check_ignores_nulls_sqlite(tmp_path):
+    """Executing pattern checks against SQLite must survive NULLs in the constrained column.
+
+    SQLite has no built-in REGEXP: the operator dispatches to a scalar function the
+    application registers, and SQLite hands that function a NULL argument rather than
+    short-circuiting the way a native operator would. The function registered here is
+    deliberately NULL-intolerant (the idiomatic implementation), so an unguarded pattern
+    check surfaces as sqlite3.OperationalError and takes down the entire UNION ALL query.
+
+    Unlike the other interop tests, this one leaves check_patterns enabled.
+    """
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    # optional, so NULL is a legal value despite the pattern
+    b.add_slot(SlotDefinition("email", pattern=r"^\S+@\S+$"))
+    b.add_class("Person", slots=["id", "email"])
+    b.add_defaults()
+    schema = b.schema
+
+    ddl = SQLTableGenerator(schema, dialect="sqlite").generate_ddl()
+    validation_sql = SQLValidationGenerator(schema, dialect="sqlite").generate_validation_queries()
+
+    conn = sqlite3.connect(str(tmp_path / "pattern_null_test.db"))
+    conn.create_function("regexp", 2, lambda pattern, value: re.search(pattern, value) is not None)
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+
+    cursor.execute('INSERT INTO "Person" (id, email) VALUES (?, ?)', ("P:001", "jane@example.com"))
+    cursor.execute('INSERT INTO "Person" (id, email) VALUES (?, ?)', ("P:002", None))
+    cursor.execute('INSERT INTO "Person" (id, email) VALUES (?, ?)', ("P:003", "not-an-email"))
+    conn.commit()
+
+    cursor.execute(validation_sql)
+    violations = cursor.fetchall()
+    conn.close()
+
+    pattern_violations = [v for v in violations if v[2] == "pattern"]
+    assert [v[3] for v in pattern_violations] == ["P:003"], (
+        f"Only the malformed email should be a pattern violation, got: {pattern_violations}"
+    )
 
 
 def _schema_with_rules(
