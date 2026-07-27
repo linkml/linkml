@@ -594,15 +594,15 @@ class SQLValidationGenerator(Generator):
 
         if slot_condition.equals_string is not None:
             lit = literal(slot_condition.equals_string, type_=Text())
-            conditions.append(col != lit if negate else col == lit)
+            conditions.append(or_(col != lit, col.is_(None)) if negate else col == lit)
 
         if slot_condition.equals_number is not None:
             lit_num = _literal_num(slot_condition.equals_number)
-            conditions.append(col != lit_num if negate else col == lit_num)
+            conditions.append(or_(col != lit_num, col.is_(None)) if negate else col == lit_num)
 
         if slot_condition.equals_string_in:
             lit_vals = [literal(v, type_=Text()) for v in slot_condition.equals_string_in]
-            conditions.append(col.notin_(lit_vals) if negate else col.in_(lit_vals))
+            conditions.append(or_(col.notin_(lit_vals), col.is_(None)) if negate else col.in_(lit_vals))
 
         range_cond = self._range_condition(
             col, slot_condition.minimum_value, slot_condition.maximum_value, negate=negate

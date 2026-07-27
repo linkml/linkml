@@ -836,6 +836,91 @@ def test_cli_check_rules_option(tmp_path):
     assert "'rule'" not in result.output
 
 
+@pytest.mark.parametrize(
+    "slot_condition_kwargs",
+    [
+        {"equals_string": "Alive"},
+        {"equals_number": 1},
+        {"equals_string_in": ["Alive", "Dormant"]},
+    ],
+)
+def test_rule_equals_postcondition_null_safe(slot_condition_kwargs):
+    """Negated equals-type postcondition checks must treat NULL as a violation.
+
+    SQL's three-valued logic makes `col != lit` and `col NOT IN (...)` evaluate to
+    NULL (not TRUE) when col is NULL, silently dropping the row from the WHERE
+    clause. The generated SQL must explicitly OR in an `IS NULL` check so that a
+    NULL value in a postcondition column is treated as failing the postcondition.
+    """
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"status": SlotDefinition("status", **slot_condition_kwargs)},
+                ),
+            )
+        ],
+        slots=[
+            SlotDefinition("id", identifier=True),
+            SlotDefinition("type"),
+            SlotDefinition("status"),
+        ],
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    rule_query = next(q for q in sql.split("UNION ALL") if "'rule'" in q)
+    assert "status IS NULL" in rule_query
+
+
+@pytest.mark.slow
+def test_rule_interop_equals_string_null_is_violation(tmp_path):
+    """A NULL value in a postcondition equals_string column must be detected as a violation."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"status": SlotDefinition("status", equals_string="Alive")},
+                ),
+            )
+        ],
+        slots=[
+            SlotDefinition("id", identifier=True),
+            SlotDefinition("type"),
+            SlotDefinition("status"),
+        ],
+    )
+    table_gen = SQLTableGenerator(schema, dialect="sqlite")
+    ddl = table_gen.generate_ddl()
+    val_gen = SQLValidationGenerator(schema, dialect="sqlite", check_patterns=False)
+    validation_sql = val_gen.generate_validation_queries()
+
+    db_path = tmp_path / "rule_null_test.db"
+    conn = sqlite3.connect(str(db_path))
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+
+    cursor.execute('INSERT INTO "LivingThings" (id, type, status) VALUES (?, ?, ?)', ("1", "Human", "Alive"))
+    cursor.execute('INSERT INTO "LivingThings" (id, type, status) VALUES (?, ?, ?)', ("2", "Elf", None))
+    cursor.execute('INSERT INTO "LivingThings" (id, type, status) VALUES (?, ?, ?)', ("3", "Human", None))
+    conn.commit()
+
+    cursor.execute(validation_sql)
+    violations = cursor.fetchall()
+    conn.close()
+
+    rule_violations = [v for v in violations if v[2] == "rule"]
+    violating_ids = {v[3] for v in rule_violations}
+    assert "3" in violating_ids, f"Expected record 3 (NULL status) to violate rule. Violations: {rule_violations}"
+    assert "2" not in violating_ids, f"Record 2 should not violate (precondition unmet). Violations: {rule_violations}"
+
+
 def test_rule_equals_number():
     """Precondition with equals_number."""
     schema = _schema_with_rules(
