@@ -12,6 +12,8 @@ import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator
 from openapi_spec_validator import validate as openapi_validate
 from openapi_spec_validator.validation.validators import SpecValidator as OaSpecValidator
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT4
 from yaml import MappingNode, ScalarNode
 
 from linkml._version import __version__
@@ -378,6 +380,38 @@ class OpenApiGenerator(Generator):
         schemas_yaml = yaml.dump(sanitized_data_schemas, sort_keys=False)
         indented_schemas = textwrap.indent(schemas_yaml, "    ")
         result = text_before_schemas + "  schemas:\n" + indented_schemas
+
+        # Check for dangling $ref references using the referencing library
+        result_obj = yaml.safe_load(result)
+        schemas = result_obj.get("components", {}).get("schemas", {})
+        registry = Registry().with_resources(
+            (
+                f"#/components/schemas/{name}",
+                Resource.from_contents(schema, default_specification=DRAFT4),
+            )
+            for name, schema in schemas.items()
+        )
+
+        def _collect_refs(obj, refs):
+            if isinstance(obj, dict):
+                if "$ref" in obj and isinstance(obj["$ref"], str) and obj["$ref"].startswith("#/"):
+                    refs.append(obj["$ref"])
+                for v in obj.values():
+                    _collect_refs(v, refs)
+            elif isinstance(obj, list):
+                for item in obj:
+                    _collect_refs(item, refs)
+
+        all_refs = []
+        _collect_refs(result_obj, all_refs)
+        dangling = []
+        for ref in all_refs:
+            try:
+                registry.get_or_retrieve(ref)
+            except Exception:
+                dangling.append(ref)
+        if dangling:
+            raise ValueError(f"Dangling $ref in generated OpenAPI spec: {','.join(dangling)}")
 
         # validate the generated output against the OpenAPI specification before returning
         openapi_validate(yaml.safe_load(result), cls=oad_validator_class)
