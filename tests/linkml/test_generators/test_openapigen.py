@@ -206,3 +206,33 @@ def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_pa
     assert "Person" in schemas
     # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
     assert "MarriageEvent" in schemas
+
+
+def test_enums_as_separate_schemas_by_default(openapi_spec):
+    """Test that enums are emitted as separate sub-schemas referenced via $ref by default."""
+    schemas = openapi_spec["components"]["schemas"]
+    # the enum has its own schema entry
+    assert "EmploymentEventType" in schemas
+    assert schemas["EmploymentEventType"]["enum"] == ["HIRE", "FIRE", "PROMOTION", "TRANSFER"]
+    # and is referenced, not inlined, by the owning class
+    type_schema = schemas["EmploymentEvent"]["properties"]["type"]
+    assert {"$ref": "#/components/schemas/EmploymentEventType"} in type_schema["anyOf"]
+
+
+def test_inline_enums_inlines_enum_schemas(input_path, kitchen_sink_path):
+    """Test that inline_enums inlines enum sub-schemas into their parents.
+
+    With the flag set, an enum no longer gets its own ``components/schemas`` entry;
+    instead its definition is inlined where it was referenced.
+    """
+    head_path = str(input_path("openapi/spec-head.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, inline_enums=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # the enum no longer has a standalone schema entry
+    assert "EmploymentEventType" not in schemas
+    # its values are inlined where it was referenced
+    type_schema = schemas["EmploymentEvent"]["properties"]["type"]
+    inlined = [member for member in type_schema["anyOf"] if member.get("enum")]
+    assert any(member["enum"] == ["HIRE", "FIRE", "PROMOTION", "TRANSFER"] for member in inlined)
+    # no dangling $ref to the removed enum schema remains
+    assert "EmploymentEventType" not in str(spec)
