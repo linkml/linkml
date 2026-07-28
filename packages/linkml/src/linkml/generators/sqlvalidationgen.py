@@ -10,13 +10,19 @@ import click
 from sqlalchemy import and_, cast, column, func, literal, null, or_, select, table, tuple_, union_all
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
-from sqlalchemy.sql.selectable import TableClause
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.selectable import Select, TableClause
 from sqlalchemy.types import Float, Integer, Text
 
 from linkml._version import __version__
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import SlotDefinition
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    AnonymousSlotExpression,
+    ClassRule,
+    SlotDefinition,
+)
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -632,7 +638,13 @@ class SQLValidationGenerator(Generator):
             where_condition=where_clause,
         )
 
-    def _slot_condition_to_sqlalchemy(self, tbl, slot_name, slot_condition, negate=False):
+    def _slot_condition_to_sqlalchemy(
+        self,
+        tbl: TableClause,
+        slot_name: str,
+        slot_condition: AnonymousSlotExpression,
+        negate: bool = False,
+    ) -> list[ColumnElement[bool]]:
         """
         Convert a single slot condition to SQLAlchemy WHERE clause(s).
 
@@ -671,7 +683,12 @@ class SQLValidationGenerator(Generator):
 
         return conditions
 
-    def _class_expression_to_sqlalchemy(self, tbl, expression, negate=False):
+    def _class_expression_to_sqlalchemy(
+        self,
+        tbl: TableClause,
+        expression: AnonymousClassExpression | None,
+        negate: bool = False,
+    ) -> ColumnElement[bool] | None:
         """
         Convert an AnonymousClassExpression to a composite WHERE clause.
 
@@ -706,7 +723,7 @@ class SQLValidationGenerator(Generator):
         else:
             return and_(*all_conditions)
 
-    def _generate_rule_violations(self, class_name, rule, identifier_slot_name):
+    def _generate_rule_violations(self, class_name: str, rule: ClassRule, identifier_slot_name: str) -> Select | None:
         """
         Generate query to find rows violating a rule's postconditions.
 
