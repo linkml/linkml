@@ -364,7 +364,7 @@ class OpenApiGenerator(Generator):
         # $defs. LinkML types are not part of $defs and are generated separately.
         # all_req_schemas contains all directly or transitively required schemas from
         # LinkML classes and types
-        json_schema = JsonSchemaGenerator(self.schemaview.schema, include_null=False).generate()
+        json_schema = JsonSchemaGenerator(self.schemaview.schema, include_null=False, preserve_names=True).generate()
         all_req_schemas: dict[str, dict] = json.loads(json_schema.to_json())["$defs"]
         for linkml_name in req_linkml_names:
             if linkml_name in self.schemaview.all_types():
