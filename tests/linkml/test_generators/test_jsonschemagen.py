@@ -1785,3 +1785,96 @@ def test_top_class_matches_regardless_of_case(tmp_path):
 
     assert schema["additionalProperties"] is False
     assert "name" in schema["properties"]
+
+
+NULLABLE_REQUIRED_SCHEMA = """
+id: https://example.org/nullable-required
+name: nullable_required
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  C:
+    tree_root: true
+    attributes:
+      req_normal:
+        required: true
+      req_nullable:
+        required: true
+        value_presence: UNCOMMITTED
+      opt:
+        required: false
+      req_nullable_ref:
+        required: true
+        value_presence: UNCOMMITTED
+        range: D
+        inlined: true
+      req_nullable_multivalued:
+        required: true
+        multivalued: true
+        value_presence: UNCOMMITTED
+  D:
+    attributes:
+      x:
+"""
+
+
+def test_required_slot_with_uncommitted_value_presence_is_nullable():
+    """A ``required`` slot with ``value_presence: UNCOMMITTED`` keeps its key in the
+    ``required`` list while allowing an explicit ``null`` value.
+
+    See: making a slot required but with a nullable value.
+    """
+    generated = json.loads(JsonSchemaGenerator(NULLABLE_REQUIRED_SCHEMA).serialize())
+    props = generated["$defs"]["C"]["properties"]
+    required = generated["$defs"]["C"]["required"]
+
+    # required and NOT NULLABLE
+    assert "req_normal" in required
+    assert props["req_normal"]["type"] == "string"
+
+    # required and NULLABLE
+    assert "req_nullable" in required
+    assert props["req_nullable"]["type"] == ["string", "null"]
+
+    # required, by-ref and NULLABLE
+    assert "req_nullable_ref" in required
+    assert {"type": "null"} in props["req_nullable_ref"]["anyOf"]
+
+    # required, multivalued and NULLABLE
+    assert "req_nullable_multivalued" in required
+    assert props["req_nullable_multivalued"]["type"] == ["array", "null"]
+
+    # optional and (therefore) NULLABLE
+    assert "opt" not in required
+    assert props["opt"]["type"] == ["string", "null"]
+
+
+def test_required_nullable_slot_validates_null_and_missing_key():
+    """The generated schema accepts an explicit ``null`` value but still rejects a
+    missing key for a ``required`` slot with ``value_presence: UNCOMMITTED``."""
+    generated = json.loads(JsonSchemaGenerator(NULLABLE_REQUIRED_SCHEMA).serialize())
+
+    # Explicit null for the nullable-required slots is valid
+    jsonschema.validate(
+        {
+            "req_normal": "x",
+            "req_nullable": None,
+            "req_nullable_ref": None,
+            "req_nullable_multivalued": None,
+        },
+        generated,
+    )
+
+    # Omitting the key entirely is still invalid (required means key must be present)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(
+            {
+                "req_normal": "x",
+                "req_nullable_ref": None,
+                "req_nullable_multivalued": None,
+            },
+            generated,
+        )
