@@ -698,100 +698,88 @@ def test_simple_rule_equals_string_and_maximum_value():
     assert "'rule'" in sql
 
 
-def test_rule_equals_string_in():
-    """Precondition with equals_string_in, postcondition with maximum_value."""
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                preconditions=AnonymousClassExpression(
-                    slot_conditions={
-                        "type": SlotDefinition("type", equals_string_in=["Human", "Elf"]),
-                    },
-                ),
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={"age": SlotDefinition("age", maximum_value=500)},
-                ),
-            )
-        ]
-    )
-    gen = SQLValidationGenerator(schema)
-    sql = gen.generate_validation_queries()
+@pytest.mark.parametrize(
+    "preconditions,postconditions,expected_sql,unexpected_sql",
+    [
+        pytest.param(
+            {"type": SlotDefinition("type", equals_string_in=["Human", "Elf"])},
+            {"age": SlotDefinition("age", maximum_value=500)},
+            ["IN", "'Human'", "'Elf'", "age > 500"],
+            [],
+            id="equals_string_in-precondition_maximum_value-postcondition",
+        ),
+        pytest.param(
+            {"type": SlotDefinition("type", equals_string="Adult")},
+            {"age": SlotDefinition("age", minimum_value=18)},
+            ["age < 18"],
+            [],
+            id="minimum_value-postcondition",
+        ),
+        pytest.param(
+            None,
+            {"age": SlotDefinition("age", maximum_value=200)},
+            ["age > 200"],
+            ["'Human'"],  # no preconditions → no precondition clause
+            id="postcondition-only",
+        ),
+        pytest.param(
+            {"type": SlotDefinition("type", equals_string="Human")},
+            {
+                "age": SlotDefinition("age", maximum_value=150),
+                "weight": SlotDefinition("weight", maximum_value=500),
+            },
+            ["age > 150", "weight > 500", " OR "],
+            [],
+            id="multiple-postcondition-slots",
+        ),
+        pytest.param(
+            {"type": SlotDefinition("type", equals_string="Human")},
+            {"name": SlotDefinition("name", required=True)},
+            ["name IS NULL"],
+            [],
+            id="required-postcondition",
+        ),
+        pytest.param(
+            {"age": SlotDefinition("age", equals_number=0)},
+            {"type": SlotDefinition("type", equals_string="Newborn")},
+            ["age = 0"],
+            [],
+            id="equals_number-precondition",
+        ),
+    ],
+)
+def test_rule_slot_condition_types(
+    preconditions: dict[str, SlotDefinition] | None,
+    postconditions: dict[str, SlotDefinition],
+    expected_sql: list[str],
+    unexpected_sql: list[str],
+) -> None:
+    """Various slot condition types in rule pre/postconditions.
 
-    assert "IN" in sql
-    assert "'Human'" in sql
-    assert "'Elf'" in sql
-    assert "age > 500" in sql
-
-
-def test_rule_minimum_value_postcondition():
-    """Postcondition with minimum_value should negate to < check."""
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                preconditions=AnonymousClassExpression(
-                    slot_conditions={"type": SlotDefinition("type", equals_string="Adult")},
-                ),
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={"age": SlotDefinition("age", minimum_value=18)},
-                ),
-            )
-        ]
-    )
-    gen = SQLValidationGenerator(schema)
-    sql = gen.generate_validation_queries()
-
-    assert "age < 18" in sql
-
-
-def test_rule_postcondition_only():
-    """Rule with no preconditions — only postcondition violation check."""
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={"age": SlotDefinition("age", maximum_value=200)},
-                ),
-            )
-        ]
-    )
-    gen = SQLValidationGenerator(schema)
-    sql = gen.generate_validation_queries()
-
-    assert "age > 200" in sql
-    # Should NOT have a precondition clause
-    assert "'Human'" not in sql
-
-
-def test_rule_multiple_postcondition_slots():
-    """Multiple slot_conditions in postconditions."""
+    :param preconditions: slot_conditions for the rule preconditions, or None for no preconditions
+    :param postconditions: slot_conditions for the rule postconditions
+    :param expected_sql: SQL fragments that must appear in the generated queries
+    :param unexpected_sql: SQL fragments that must not appear in the generated queries
+    """
     slots = [
         SlotDefinition("id", identifier=True),
         SlotDefinition("type"),
         SlotDefinition("age", range="integer"),
         SlotDefinition("weight", range="integer"),
+        SlotDefinition("name"),
     ]
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                preconditions=AnonymousClassExpression(
-                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
-                ),
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={
-                        "age": SlotDefinition("age", maximum_value=150),
-                        "weight": SlotDefinition("weight", maximum_value=500),
-                    },
-                ),
-            )
-        ],
-        slots=slots,
-    )
+    rule = ClassRule(postconditions=AnonymousClassExpression(slot_conditions=postconditions))
+    if preconditions is not None:
+        rule.preconditions = AnonymousClassExpression(slot_conditions=preconditions)
+
+    schema = _schema_with_rules([rule], slots=slots)
     gen = SQLValidationGenerator(schema)
     sql = gen.generate_validation_queries()
 
-    assert "age > 150" in sql
-    assert "weight > 500" in sql
-    assert " OR " in sql  # at least one OR concatenation
+    for fragment in expected_sql:
+        assert fragment in sql
+    for fragment in unexpected_sql:
+        assert fragment not in sql
 
 
 def test_check_rules_disabled():
@@ -941,26 +929,6 @@ def test_rule_interop_equals_string_null_is_violation(tmp_path):
     violating_ids = {v[3] for v in rule_violations}
     assert "3" in violating_ids, f"Expected record 3 (NULL status) to violate rule. Violations: {rule_violations}"
     assert "2" not in violating_ids, f"Record 2 should not violate (precondition unmet). Violations: {rule_violations}"
-
-
-def test_rule_equals_number():
-    """Precondition with equals_number."""
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                preconditions=AnonymousClassExpression(
-                    slot_conditions={"age": SlotDefinition("age", equals_number=0)},
-                ),
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={"type": SlotDefinition("type", equals_string="Newborn")},
-                ),
-            )
-        ]
-    )
-    gen = SQLValidationGenerator(schema)
-    sql = gen.generate_validation_queries()
-
-    assert "age = 0" in sql or "age = 0.0" in sql
 
 
 def test_rule_slot_names_resolved_to_sql_columns():
@@ -1149,33 +1117,6 @@ def test_rule_precondition_only_combinator_skips_rule(caplog, combinator):
     # non-Human rows that the precondition was meant to exclude.
     assert "'rule'" not in sql
     assert "age > 150" not in sql
-
-
-def test_rule_required_slot_condition():
-    """Postcondition with required=True should produce IS NULL check in output."""
-    slots = [
-        SlotDefinition("id", identifier=True),
-        SlotDefinition("type"),
-        SlotDefinition("name"),
-    ]
-    schema = _schema_with_rules(
-        [
-            ClassRule(
-                preconditions=AnonymousClassExpression(
-                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
-                ),
-                postconditions=AnonymousClassExpression(
-                    slot_conditions={"name": SlotDefinition("name", required=True)},
-                ),
-            )
-        ],
-        slots=slots,
-    )
-    gen = SQLValidationGenerator(schema)
-    sql = gen.generate_validation_queries()
-
-    # Negated required → IS NULL violation
-    assert "name IS NULL" in sql
 
 
 def test_postgresql_casts_invalid_value():
