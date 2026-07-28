@@ -941,6 +941,34 @@ def test_rule_equals_number():
     assert "age = 0" in sql or "age = 0.0" in sql
 
 
+def test_rule_slot_names_resolved_to_sql_columns():
+    """Rule slot names must be resolved through alias/underscore."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"driver status": SlotDefinition("driver status", equals_string="licensed")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age value": SlotDefinition("age value", minimum_value=18)},
+                ),
+            )
+        ],
+        slots=[
+            SlotDefinition("id", identifier=True),
+            SlotDefinition("driver status"),
+            SlotDefinition("age value", alias="personAge", range="integer"),
+        ],
+    )
+    validation_sql = SQLValidationGenerator(schema, dialect="sqlite").generate_validation_queries()
+
+    rule_query = next(q for q in validation_sql.split("UNION ALL") if "'rule'" in q)
+    assert "driver_status" in rule_query, f"Spaced slot name not underscored: {rule_query}"
+    assert "driver status" not in rule_query, f"Raw schema slot name leaked into SQL: {rule_query}"
+    assert "personAge" in rule_query, f"Alias not resolved: {rule_query}"
+    assert "age value" not in rule_query, f"Raw schema slot name leaked into SQL: {rule_query}"
+
+
 @pytest.mark.slow
 def test_rule_interop_sqlite(tmp_path):
     """End-to-end: create DB, insert violating data, run validation, verify detection."""

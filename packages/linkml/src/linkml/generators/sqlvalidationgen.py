@@ -190,13 +190,25 @@ class SQLValidationGenerator(Generator):
                 if class_def.abstract or class_def.mixin:
                     continue
                 identifier_slot_name = "id"  # default fallback
+                # Rules reference slots by schema name (or alias); map them to the SQL
+                # column names.
+                slot_name_map = {}
                 for slot in untransformed_sv.class_induced_slots(class_name):
+                    sql_name = underscore(slot.alias or slot.name)
+                    slot_name_map[slot.name] = sql_name
+                    if slot.alias:
+                        slot_name_map[slot.alias] = sql_name
                     if slot.identifier:
-                        identifier_slot_name = underscore(slot.alias or slot.name)
-                        break
+                        identifier_slot_name = sql_name
                 for rule in class_def.rules:
                     if rule.deactivated:
                         continue
+                    rule = copy.deepcopy(rule)
+                    for expr in (rule.preconditions, rule.postconditions):
+                        if expr and expr.slot_conditions:
+                            renamed = {slot_name_map.get(n, underscore(n)): c for n, c in expr.slot_conditions.items()}
+                            expr.slot_conditions.clear()
+                            expr.slot_conditions.update(renamed)
                     query = self._generate_rule_violations(class_name, rule, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
