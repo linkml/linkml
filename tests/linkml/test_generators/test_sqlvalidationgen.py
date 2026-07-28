@@ -149,6 +149,28 @@ def test_multi_column_unique_key():
     assert "||" in queries or "CONCAT" in queries
 
 
+def test_unique_key_with_aliased_slot():
+    """Unique key slots are given as slot names, but the columns are named after the alias."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("first name"))
+    b.add_slot(SlotDefinition("last name"))
+    b.add_class(
+        "Person",
+        slots=["id", "first name", "last name"],
+        slot_usage={"first name": SlotDefinition("first name", alias="given_name")},
+        unique_keys={"name_key": UniqueKey(unique_key_name="name_key", unique_key_slots=["first name", "last name"])},
+    )
+    b.add_defaults()
+
+    gen = SQLValidationGenerator(b.schema)
+    queries = gen.generate_validation_queries()
+
+    assert "unique_key" in queries
+    assert "GROUP BY given_name, last_name" in queries
+    assert "first_name" not in queries
+
+
 def test_enum_constraint():
     """Test generation of enum validation query."""
     b = SchemaBuilder()

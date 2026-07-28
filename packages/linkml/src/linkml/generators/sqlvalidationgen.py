@@ -108,8 +108,11 @@ class SQLValidationGenerator(Generator):
         """
         query_objects = []
 
-        # Transform schema to relational model
-        sqltr = RelationalModelTransformer(SchemaView(self.schema))
+        # Transform schema to relational model. The untransformed view is kept around:
+        # the transformer renames attributes to their alias and drops rules, so both
+        # unique_keys and rules need it to map schema slot names onto SQL column names.
+        source_sv = SchemaView(self.schema)
+        sqltr = RelationalModelTransformer(source_sv)
         sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
         tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
         schema = tr_result.schema
@@ -173,40 +176,41 @@ class SQLValidationGenerator(Generator):
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
                 slot_names = {s.name for s in induced_slots}
+                column_name_map = self._column_name_map(source_sv, class_name)
                 for _, uk in class_def.unique_keys.items():
-                    query = self._generate_unique_key_violations(class_name, slot_names, uk, identifier_slot_name)
+                    query = self._generate_unique_key_violations(
+                        class_name, slot_names, uk, identifier_slot_name, column_name_map
+                    )
                     if query is not None:
                         query_objects.append(query)
 
         # Check rules (precondition/postcondition constraints)
         if self.check_rules:
-            # We need to iterate over the untransformed schema, since the
+            # We need to iterate over the source schema, since the
             # RelationalModelTransformer removes rules
-            untransformed_sv = SchemaView(self.schema)
-            for class_name in untransformed_sv.all_classes():
-                class_def = untransformed_sv.get_class(class_name)
+            for class_name in source_sv.all_classes():
+                class_def = source_sv.get_class(class_name)
                 if not class_def.rules:
                     continue
                 if class_def.abstract or class_def.mixin:
                     continue
                 identifier_slot_name = "id"  # default fallback
+                for slot in source_sv.class_induced_slots(class_name):
+                    if slot.identifier:
+                        identifier_slot_name = underscore(slot.alias or slot.name)
+                        break
                 # Rules reference slots by schema name (or alias); map them to the SQL
                 # column names.
-                slot_name_map = {}
-                for slot in untransformed_sv.class_induced_slots(class_name):
-                    sql_name = underscore(slot.alias or slot.name)
-                    slot_name_map[slot.name] = sql_name
-                    if slot.alias:
-                        slot_name_map[slot.alias] = sql_name
-                    if slot.identifier:
-                        identifier_slot_name = sql_name
+                column_name_map = self._column_name_map(source_sv, class_name)
                 for rule in class_def.rules:
                     if rule.deactivated:
                         continue
                     rule = copy.deepcopy(rule)
                     for expr in (rule.preconditions, rule.postconditions):
                         if expr and expr.slot_conditions:
-                            renamed = {slot_name_map.get(n, underscore(n)): c for n, c in expr.slot_conditions.items()}
+                            renamed = {
+                                column_name_map.get(n, underscore(n)): c for n, c in expr.slot_conditions.items()
+                            }
                             expr.slot_conditions.clear()
                             expr.slot_conditions.update(renamed)
                     query = self._generate_rule_violations(class_name, rule, identifier_slot_name)
@@ -537,7 +541,33 @@ class SQLValidationGenerator(Generator):
             expr = expr + part
         return expr
 
-    def _generate_unique_key_violations(self, class_name: str, slot_names: set[str], uk, identifier_slot_name: str):
+    @staticmethod
+    def _column_name_map(sv: SchemaView, class_name: str) -> dict[str, str]:
+        """
+        Map the slot names of a class onto the column names the relational transform gives them.
+
+        The RelationalModelTransformer names each column after ``underscore(alias or name)``, while
+        unique_keys and rules reference slots by either their schema name or their alias, so both
+        are accepted as keys.
+
+        :param sv: SchemaView over the *untransformed* schema
+        :param class_name: Name of the class whose slots are mapped
+        :return: Mapping of slot name and alias onto SQL column name; empty if the class is not in
+            the schema (the transform may introduce classes of its own, e.g. linking tables)
+        """
+        if class_name not in sv.all_classes():
+            return {}
+        name_map = {}
+        for slot in sv.class_induced_slots(class_name):
+            sql_name = underscore(slot.alias or slot.name)
+            name_map[slot.name] = sql_name
+            if slot.alias:
+                name_map[slot.alias] = sql_name
+        return name_map
+
+    def _generate_unique_key_violations(
+        self, class_name: str, slot_names: set[str], uk, identifier_slot_name: str, column_name_map: dict[str, str]
+    ):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
 
@@ -547,14 +577,25 @@ class SQLValidationGenerator(Generator):
         :param slot_names: Set of valid slot names for this class
         :param uk: UniqueKey definition
         :param identifier_slot_name: Name of the identifier slot
+        :param column_name_map: Mapping of schema slot names and aliases onto SQL column names
         :return: SQLAlchemy select object or None
         """
         # Get column names from unique key slots (underscored for SQL)
         columns = []
+        unresolved = []
         for slot_name in uk.unique_key_slots:
-            sql_name = underscore(slot_name)
+            sql_name = column_name_map.get(slot_name, underscore(slot_name))
             if sql_name in slot_names:
                 columns.append(sql_name)
+            else:
+                unresolved.append(slot_name)
+
+        if unresolved:
+            logger.warning(
+                f"Skipping uniqueness constraint '{uk.unique_key_name}' on class '{class_name}': "
+                f"no column found for slots {unresolved}."
+            )
+            return None
 
         if not columns:
             return None
