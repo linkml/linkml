@@ -1,5 +1,5 @@
 # Import Maps
-Linkml includes the ability to import one or more model files. Syntax:
+LinkML includes the ability to import one or more model files. Syntax:
 ```yaml
 prefixes:
   linkml: https://w3id.org/linkml/
