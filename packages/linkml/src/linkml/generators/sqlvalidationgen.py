@@ -143,11 +143,12 @@ class SQLValidationGenerator(Generator):
                 induced_slots.append(slot)
 
             # Find the identifier slot for this class
-            identifier_slot_name = "id"  # default fallback
-            for induced in induced_slots:
-                if induced.identifier:
-                    identifier_slot_name = induced.name
-                    break
+            identifier_slot_name = self._identifier_slot_name(induced_slots)
+            if identifier_slot_name is None:
+                logger.warning(
+                    f"Class '{class_name}' has no identifier or key slot: there is no column to point at, "
+                    "so its violations are reported with a NULL record_id."
+                )
 
             for induced in induced_slots:
                 # Generate validation queries for each constraint type
@@ -200,11 +201,7 @@ class SQLValidationGenerator(Generator):
                     continue
                 if class_def.abstract or class_def.mixin:
                     continue
-                identifier_slot_name = "id"  # default fallback
-                for slot in source_sv.class_induced_slots(class_name):
-                    if slot.identifier:
-                        identifier_slot_name = underscore(slot.alias or slot.name)
-                        break
+                identifier_slot_name = self._identifier_slot_name(source_sv.class_induced_slots(class_name))
                 # Rules reference slots by schema name (or alias); map them to the SQL
                 # column names.
                 column_name_map = self._column_name_map(source_sv, class_name)
@@ -292,12 +289,47 @@ class SQLValidationGenerator(Generator):
         )
         return header
 
+    @staticmethod
+    def _identifier_slot_name(slots: list[SlotDefinition]) -> str | None:
+        """
+        Determine the column that identifies a record, for use as ``record_id``.
+
+        An ``identifier`` slot is preferred, falling back to a ``key`` slot. Both are
+        optional in LinkML, so a class may have neither, in which case there is no column
+        to point at.
+
+        :param slots: Induced slots of a class
+        :return: SQL column name of the identifying slot, or None if the class has none
+        """
+        key_slot_name = None
+        for slot in slots:
+            if slot.identifier:
+                return underscore(slot.alias or slot.name)
+            if slot.key and key_slot_name is None:
+                key_slot_name = underscore(slot.alias or slot.name)
+        return key_slot_name
+
+    @staticmethod
+    def _table(class_name: str, identifier_slot_name: str | None, *col_names: str) -> TableClause:
+        """
+        Build a table clause over the identifying column (if any) plus the given columns.
+
+        :param class_name: Name of the class/table
+        :param identifier_slot_name: Name of the identifying slot, or None if the class has none
+        :param col_names: Names of the other columns referenced by the query
+        :return: SQLAlchemy table object
+        """
+        names = [identifier_slot_name, *col_names] if identifier_slot_name else list(col_names)
+        # dict.fromkeys de-duplicates while preserving order: a constraint may be checked on the
+        # identifying column itself
+        return table(class_name, *[column(n) for n in dict.fromkeys(names)])
+
     def _build_violation_query(
         self,
         class_name: str,
         column_name: str,
         constraint_type: str,
-        identifier_slot_name: str,
+        identifier_slot_name: str | None,
         invalid_value,
         tbl: TableClause,
         where_condition=None,
@@ -308,7 +340,7 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param column_name: Name of the slot/constraint for column_name label
         :param constraint_type: Type of constraint violated
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :param invalid_value: Expression for invalid_value column (literal or column)
         :param where_condition: SQLAlchemy WHERE condition
         :param tbl: SQLAlchemy table object
@@ -317,11 +349,16 @@ class SQLValidationGenerator(Generator):
         # for postgres, all values in a column need to be of same type so we need to CAST them to text
         _invalid_value = cast(invalid_value, Text()) if self.dialect == "postgresql" else invalid_value
 
+        if identifier_slot_name:
+            record_id = column(identifier_slot_name)
+        else:
+            record_id = cast(null(), Text()) if self.dialect == "postgresql" else null()
+
         query = select(
             literal(class_name, type_=Text()).label("table_name"),
             literal(column_name, type_=Text()).label("column_name"),
             literal(constraint_type, type_=Text()).label("constraint_type"),
-            column(identifier_slot_name).label("record_id"),
+            record_id.label("record_id"),
             _invalid_value.label("invalid_value"),
         ).select_from(tbl)
 
@@ -382,16 +419,16 @@ class SQLValidationGenerator(Generator):
         match = col.regexp_match(literal(pattern, type_=Text()))
         return and_(col.isnot(None), ~match if negate else match)
 
-    def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
+    def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str | None):
         """
         Generate query to find NULL values in required fields.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with required=True
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
+        tbl = self._table(class_name, identifier_slot_name, slot.name)
 
         return self._build_violation_query(
             class_name=class_name,
@@ -403,16 +440,16 @@ class SQLValidationGenerator(Generator):
             where_condition=self._required_condition(tbl.c[slot.name], negate=True),
         )
 
-    def _generate_range_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
+    def _generate_range_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str | None):
         """
         Generate query to find minimum_value/maximum_value violations.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with min/max constraints
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object or None
         """
-        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
+        tbl = self._table(class_name, identifier_slot_name, slot.name)
         where_condition = self._range_condition(tbl.c[slot.name], slot.minimum_value, slot.maximum_value, negate=True)
         if where_condition is None:
             return None
@@ -427,16 +464,16 @@ class SQLValidationGenerator(Generator):
             where_condition=where_condition,
         )
 
-    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
+    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str | None):
         """
         Generate query to find pattern (regex) violations.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
+        tbl = self._table(class_name, identifier_slot_name, slot.name)
 
         return self._build_violation_query(
             class_name=class_name,
@@ -448,7 +485,7 @@ class SQLValidationGenerator(Generator):
             where_condition=self._pattern_condition(tbl.c[slot.name], slot.pattern, negate=True),
         )
 
-    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
+    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str | None):
         """
         Generate query to find identifier/key uniqueness violations.
 
@@ -456,10 +493,10 @@ class SQLValidationGenerator(Generator):
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with identifier=True or key=True
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
+        tbl = self._table(class_name, identifier_slot_name, slot.name)
 
         constraint_type = "identifier" if slot.identifier else "key"
 
@@ -482,7 +519,7 @@ class SQLValidationGenerator(Generator):
         )
 
     def _generate_enum_violations(
-        self, class_name: str, slot: SlotDefinition, sv: SchemaView, identifier_slot_name: str
+        self, class_name: str, slot: SlotDefinition, sv: SchemaView, identifier_slot_name: str | None
     ):
         """
         Generate query to find enum constraint violations.
@@ -492,7 +529,7 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param slot: Slot definition with enum range
         :param sv: SchemaView for looking up enum values
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object or None
         """
         # Get the enum definition
@@ -502,7 +539,7 @@ class SQLValidationGenerator(Generator):
 
         permissible_values = [literal(str(v), type_=Text()) for v in enum.permissible_values.keys()]
 
-        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
+        tbl = self._table(class_name, identifier_slot_name, slot.name)
 
         return self._build_violation_query(
             class_name=class_name,
@@ -572,7 +609,12 @@ class SQLValidationGenerator(Generator):
         return name_map
 
     def _generate_unique_key_violations(
-        self, class_name: str, slot_names: set[str], uk, identifier_slot_name: str, column_name_map: dict[str, str]
+        self,
+        class_name: str,
+        slot_names: set[str],
+        uk,
+        identifier_slot_name: str | None,
+        column_name_map: dict[str, str],
     ):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
@@ -582,7 +624,7 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param slot_names: Set of valid slot names for this class
         :param uk: UniqueKey definition
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :param column_name_map: Mapping of schema slot names and aliases onto SQL column names
         :return: SQLAlchemy select object or None
         """
@@ -607,7 +649,7 @@ class SQLValidationGenerator(Generator):
             return None
 
         # Main table with identifier and all columns
-        tbl = table(class_name, column(identifier_slot_name), *[column(col) for col in columns])
+        tbl = self._table(class_name, identifier_slot_name, *columns)
 
         concat_expr = self._concat_columns(columns)
 
@@ -723,7 +765,9 @@ class SQLValidationGenerator(Generator):
         else:
             return and_(*all_conditions)
 
-    def _generate_rule_violations(self, class_name: str, rule: ClassRule, identifier_slot_name: str) -> Select | None:
+    def _generate_rule_violations(
+        self, class_name: str, rule: ClassRule, identifier_slot_name: str | None
+    ) -> Select | None:
         """
         Generate query to find rows violating a rule's postconditions.
 
@@ -735,7 +779,7 @@ class SQLValidationGenerator(Generator):
 
         :param class_name: Name of the class/table
         :param rule: ClassRule with preconditions/postconditions
-        :param identifier_slot_name: Name of the identifier slot
+        :param identifier_slot_name: Name of the identifier slot, or None if the class has none
         :return: SQLAlchemy select object or None
         """
         if not rule.postconditions:
@@ -745,15 +789,15 @@ class SQLValidationGenerator(Generator):
             return None
 
         # Collect all referenced column names
-        col_names = {identifier_slot_name}
+        col_names = []
         if rule.preconditions and rule.preconditions.slot_conditions:
-            col_names.update(rule.preconditions.slot_conditions.keys())
-        col_names.update(rule.postconditions.slot_conditions.keys())
+            col_names.extend(rule.preconditions.slot_conditions.keys())
+        col_names.extend(rule.postconditions.slot_conditions.keys())
 
         postcondition_slot_names = list(rule.postconditions.slot_conditions.keys())
         column_name_label = ",".join(postcondition_slot_names)
 
-        tbl = table(class_name, *[column(c) for c in col_names])
+        tbl = self._table(class_name, identifier_slot_name, *col_names)
 
         # Build WHERE: precondition AND (negated postcondition)
         where_parts = []

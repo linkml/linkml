@@ -1142,3 +1142,109 @@ def test_include_comments_content(minimal_schema):
     assert "SQL Validation Queries" in queries
     assert "LinkML" in queries
     assert "-- " in queries  # comment marker
+
+
+@pytest.fixture
+def no_identifier_schema():
+    """Schema whose class has neither an identifier nor a key slot."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("value", range="integer", required=True, minimum_value=0))
+    b.add_class("Measurement", slots=["value"])
+    b.add_defaults()
+    return b.schema
+
+
+@pytest.mark.parametrize(
+    "slots,dialect,expected_record_id",
+    [
+        ([SlotDefinition("pid", identifier=True)], "sqlite", "pid AS record_id"),
+        ([SlotDefinition("code", key=True)], "sqlite", "code AS record_id"),
+        # an identifier wins over a key slot, regardless of declaration order
+        (
+            [SlotDefinition("code", key=True), SlotDefinition("pid", identifier=True)],
+            "sqlite",
+            "pid AS record_id",
+        ),
+        # a slot merely named 'id' is not an identifier and must not become the record_id
+        ([SlotDefinition("id")], "sqlite", "NULL AS record_id"),
+        ([], "sqlite", "NULL AS record_id"),
+        ([], "postgresql", "CAST(NULL AS TEXT) AS record_id"),
+    ],
+    ids=["identifier", "key_only", "identifier_wins_over_key", "plain_slot_named_id", "neither", "neither_postgres"],
+)
+def test_record_id_column_selection(slots, dialect, expected_record_id, caplog):
+    """The record_id is the identifier slot, else the key slot, else NULL.
+
+    A class needs neither in LinkML. Falling back to a hardcoded 'id' column would either
+    reference a column absent from the DDL - taking down the whole UNION ALL query - or
+    silently report an unrelated data slot as the identity of the violating record.
+    """
+    b = SchemaBuilder()
+    for slot in [*slots, SlotDefinition("name", required=True)]:
+        b.add_slot(slot)
+    b.add_class("Record", slots=[s.name for s in slots] + ["name"])
+    b.add_defaults()
+
+    gen = SQLValidationGenerator(b.schema, dialect=dialect, include_comments=False)
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.sqlvalidationgen"):
+        queries = gen.generate_validation_queries()
+
+    assert expected_record_id in queries
+    # leading space so this does not match a legitimate 'pid AS record_id'
+    assert " id AS record_id" not in queries
+    # a NULL record_id is announced, and only then
+    assert ("no identifier or key slot" in caplog.text) == ("NULL" in expected_record_id)
+
+
+def test_rule_on_class_without_identifier_selects_null_record_id():
+    """The rule path builds its own table clause, and must resolve the record_id the same way."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("status"))
+    b.add_slot(SlotDefinition("age", range="integer"))
+    b.add_class("Person", slots=["status", "age"])
+    b.add_defaults()
+    b.schema.classes["Person"].rules = [
+        ClassRule(
+            preconditions=AnonymousClassExpression(
+                slot_conditions={"status": SlotDefinition("status", equals_string="adult")}
+            ),
+            postconditions=AnonymousClassExpression(slot_conditions={"age": SlotDefinition("age", minimum_value=18)}),
+        )
+    ]
+
+    gen = SQLValidationGenerator(b.schema, include_comments=False)
+    queries = gen.generate_validation_queries()
+
+    assert "'rule'" in queries
+    assert "NULL AS record_id" in queries
+    assert "id AS record_id" not in queries
+
+
+@pytest.mark.slow
+def test_interop_class_without_identifier_executes(no_identifier_schema, tmp_path):
+    """Queries for an identifier-less class must run against the matching DDL.
+
+    SQLValidationGenerator transforms with NO_FOREIGN_KEYS, under which no surrogate
+    primary key is injected, so the corresponding DDL is the one without foreign keys.
+    """
+    ddl = SQLTableGenerator(no_identifier_schema, dialect="sqlite", use_foreign_keys=False).generate_ddl()
+    assert "id" not in ddl.split("CREATE TABLE")[1].split(";")[0]
+
+    conn = sqlite3.connect(str(tmp_path / "no_identifier.db"))
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+    cursor.execute('INSERT INTO "Measurement" (value) VALUES (?)', (5,))
+    cursor.execute('INSERT INTO "Measurement" (value) VALUES (?)', (-1,))
+    conn.commit()
+
+    validation_query = SQLValidationGenerator(no_identifier_schema, dialect="sqlite").generate_validation_queries()
+    cursor.execute(validation_query)
+    violations = cursor.fetchall()
+    conn.close()
+
+    # one range violation, reported without a record_id
+    assert len(violations) == 1
+    table_name, column_name, constraint_type, record_id, invalid_value = violations[0]
+    assert (table_name, column_name, constraint_type) == ("Measurement", "value", "range")
+    assert record_id is None
+    assert invalid_value == -1
