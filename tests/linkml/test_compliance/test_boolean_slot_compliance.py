@@ -93,11 +93,6 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     :return:
     """
     expected_json_schema = {"s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}, {"type": "null"}]}}
-    if use_default_range and not use_any_type:
-        # default_range is set to string, any no explicit range set.
-        # in this case the schema is violating monotonicity.
-        # TODO: undesired behavior, see https://github.com/linkml/linkml/issues/1483
-        expected_json_schema["s1"]["type"] = "string"
 
     classes = {
         CLASS_D: {

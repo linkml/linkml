@@ -1,5 +1,7 @@
 [tool.uv]
+required-version = ">=0.9.17"
 exclude-newer = "7 days"
+constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
 
 [tool.uv.workspace]
 members = [
