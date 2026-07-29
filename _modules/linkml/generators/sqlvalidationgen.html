@@ -405,24 +405,38 @@
           <h1>Source code for linkml.generators.sqlvalidationgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">and_</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">literal_column</span><span class="p">,</span> <span class="n">or_</span><span class="p">,</span> <span class="n">select</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">union_all</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">and_</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">null</span><span class="p">,</span> <span class="n">or_</span><span class="p">,</span> <span class="n">select</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">tuple_</span><span class="p">,</span> <span class="n">union_all</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.dialects</span><span class="w"> </span><span class="kn">import</span> <span class="n">postgresql</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.dialects</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqlite</span> <span class="k">as</span> <span class="n">sqlite_dialect</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.sql.elements</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnElement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.sql.selectable</span><span class="w"> </span><span class="kn">import</span> <span class="n">Select</span><span class="p">,</span> <span class="n">TableClause</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Text</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.transformers.relmodel_transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKeyPolicy</span><span class="p">,</span> <span class="n">RelationalModelTransformer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AnonymousClassExpression</span><span class="p">,</span>
+    <span class="n">AnonymousSlotExpression</span><span class="p">,</span>
+    <span class="n">ClassRule</span><span class="p">,</span>
+    <span class="n">SlotDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_literal_num</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a typed SQLAlchemy literal for a numeric value.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">literal</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Integer</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">Float</span><span class="p">())</span>
 
 
 <div class="viewcode-block" id="SQLValidationGenerator">
@@ -473,29 +487,7 @@
     <span class="n">check_patterns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">check_enums</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">check_unique_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dialect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the SQLAlchemy dialect object for the configured dialect.</span>
-
-<span class="sd">        :return: SQLAlchemy dialect instance</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dialect_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;postgresql&quot;</span><span class="p">:</span> <span class="n">postgresql</span><span class="o">.</span><span class="n">dialect</span><span class="p">(),</span>
-            <span class="s2">&quot;sqlite&quot;</span><span class="p">:</span> <span class="n">sqlite_dialect</span><span class="o">.</span><span class="n">dialect</span><span class="p">(),</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">dialect_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="p">,</span> <span class="n">sqlite_dialect</span><span class="o">.</span><span class="n">dialect</span><span class="p">())</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compile_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compile a SQLAlchemy query to SQL string for the configured dialect.</span>
-
-<span class="sd">        :param query: SQLAlchemy selectable object</span>
-<span class="sd">        :return: Compiled SQL string</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dialect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialect</span><span class="p">()</span>
-        <span class="n">compiled</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="n">compile_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;literal_binds&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">compiled</span><span class="p">)</span>
+    <span class="n">check_rules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="SQLValidationGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/sqlvalidation.html#linkml.generators.sqlvalidationgen.SQLValidationGenerator.serialize">[docs]</a>
@@ -532,38 +524,46 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query_objects</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># Transform schema to relational model</span>
-        <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
+        <span class="c1"># Transform schema to relational model. The untransformed view is kept around:</span>
+        <span class="c1"># the transformer renames attributes to their alias and drops rules, so both</span>
+        <span class="c1"># unique_keys and rules need it to map schema slot names onto SQL column names.</span>
+        <span class="n">source_sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">source_sv</span><span class="p">)</span>
         <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
         <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tgt_schema_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tgt_schema_name&quot;</span><span class="p">),</span> <span class="n">top_class</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;top_class&quot;</span><span class="p">))</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="c1"># Iterate through all classes</span>
-        <span class="k">for</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">class_def</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">class_def</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="n">class_def</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">class_def</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="n">class_def</span><span class="o">.</span><span class="n">mixin</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">class_def</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                <span class="c1"># skip if no attributes are present</span>
+            <span class="n">raw_induced_slots</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_induced_slots</span><span class="p">:</span>
                 <span class="k">continue</span>
+
+            <span class="n">induced_slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">raw_induced_slots</span><span class="p">:</span>
+                <span class="n">slot</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+                <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">induced_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
             <span class="c1"># Find the identifier slot for this class</span>
-            <span class="n">identifier_slot_name</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span>  <span class="c1"># default fallback</span>
-            <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
-                    <span class="n">identifier_slot_name</span> <span class="o">=</span> <span class="n">slot_name</span>
-                    <span class="k">break</span>
+            <span class="n">identifier_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identifier_slot_name</span><span class="p">(</span><span class="n">induced_slots</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">identifier_slot_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39; has no identifier or key slot: there is no column to point at, &quot;</span>
+                    <span class="s2">&quot;so its violations are reported with a NULL record_id.&quot;</span>
+                <span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="c1"># Get induced slot to capture inherited constraints</span>
-                <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-
+            <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">induced_slots</span><span class="p">:</span>
                 <span class="c1"># Generate validation queries for each constraint type</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_required</span> <span class="ow">and</span> <span class="n">induced</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                     <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_required_violations</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">induced</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">)</span>
-
                     <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">query_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
@@ -592,8 +592,41 @@
 
             <span class="c1"># Check unique_keys constraints (multi-column uniqueness)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_unique_keys</span> <span class="ow">and</span> <span class="n">class_def</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">:</span>
+                <span class="n">slot_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">induced_slots</span><span class="p">}</span>
+                <span class="n">column_name_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_name_map</span><span class="p">(</span><span class="n">source_sv</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">uk</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">unique_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_unique_key_violations</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">class_def</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">)</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_unique_key_violations</span><span class="p">(</span>
+                        <span class="n">class_name</span><span class="p">,</span> <span class="n">slot_names</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">column_name_map</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">query_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="c1"># Check rules (precondition/postcondition constraints)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_rules</span><span class="p">:</span>
+            <span class="c1"># We need to iterate over the source schema, since the</span>
+            <span class="c1"># RelationalModelTransformer removes rules</span>
+            <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">source_sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+                <span class="n">class_def</span> <span class="o">=</span> <span class="n">source_sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">class_def</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">class_def</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="n">class_def</span><span class="o">.</span><span class="n">mixin</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">identifier_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identifier_slot_name</span><span class="p">(</span><span class="n">source_sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">))</span>
+                <span class="c1"># Rules reference slots by schema name (or alias); map them to the SQL</span>
+                <span class="c1"># column names.</span>
+                <span class="n">column_name_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_name_map</span><span class="p">(</span><span class="n">source_sv</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">deactivated</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">rule</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">expr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">expr</span> <span class="ow">and</span> <span class="n">expr</span><span class="o">.</span><span class="n">slot_conditions</span><span class="p">:</span>
+                            <span class="n">renamed</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="n">column_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span> <span class="n">c</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">expr</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">}</span>
+                            <span class="n">expr</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                            <span class="n">expr</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">renamed</span><span class="p">)</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_rule_violations</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">query_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
@@ -620,6 +653,39 @@
             <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">result</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dialect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the SQLAlchemy dialect object for the configured dialect.</span>
+
+<span class="sd">        Only ``sqlite`` and ``postgresql`` are supported.  Any other value is</span>
+<span class="sd">        rejected: a warning is logged and the dialect is reset to ``sqlite``.</span>
+
+<span class="sd">        :return: SQLAlchemy dialect instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">supported</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;postgresql&quot;</span><span class="p">,</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Dialect &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="si">}</span><span class="s2">&#39; is not supported. &quot;</span>
+                <span class="s2">&quot;Only &#39;sqlite&#39; and &#39;postgresql&#39; are supported. Falling back to &#39;sqlite&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">=</span> <span class="s2">&quot;sqlite&quot;</span>
+        <span class="n">dialect_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;postgresql&quot;</span><span class="p">:</span> <span class="n">postgresql</span><span class="o">.</span><span class="n">dialect</span><span class="p">(),</span>
+            <span class="s2">&quot;sqlite&quot;</span><span class="p">:</span> <span class="n">sqlite_dialect</span><span class="o">.</span><span class="n">dialect</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">dialect_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compile_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile a SQLAlchemy query to SQL string for the configured dialect.</span>
+
+<span class="sd">        :param query: SQLAlchemy selectable object</span>
+<span class="sd">        :return: Compiled SQL string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dialect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialect</span><span class="p">()</span>
+        <span class="n">compiled</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="n">compile_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;literal_binds&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">compiled</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a header comment for the SQL output.&quot;&quot;&quot;</span>
         <span class="n">header</span> <span class="o">=</span> <span class="p">(</span>
@@ -633,111 +699,203 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">header</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_required_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_identifier_slot_name</span><span class="p">(</span><span class="n">slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the column that identifies a record, for use as ``record_id``.</span>
+
+<span class="sd">        An ``identifier`` slot is preferred, falling back to a ``key`` slot. Both are</span>
+<span class="sd">        optional in LinkML, so a class may have neither, in which case there is no column</span>
+<span class="sd">        to point at.</span>
+
+<span class="sd">        :param slots: Induced slots of a class</span>
+<span class="sd">        :return: SQL column name of the identifying slot, or None if the class has none</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key_slot_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="ow">and</span> <span class="n">key_slot_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">key_slot_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">key_slot_name</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">col_names</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TableClause</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a table clause over the identifying column (if any) plus the given columns.</span>
+
+<span class="sd">        :param class_name: Name of the class/table</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifying slot, or None if the class has none</span>
+<span class="sd">        :param col_names: Names of the other columns referenced by the query</span>
+<span class="sd">        :return: SQLAlchemy table object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">identifier_slot_name</span><span class="p">,</span> <span class="o">*</span><span class="n">col_names</span><span class="p">]</span> <span class="k">if</span> <span class="n">identifier_slot_name</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span>
+        <span class="c1"># dict.fromkeys de-duplicates while preserving order: a constraint may be checked on the</span>
+        <span class="c1"># identifying column itself</span>
+        <span class="k">return</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">column</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">names</span><span class="p">)])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_violation_query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">constraint_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">invalid_value</span><span class="p">,</span>
+        <span class="n">tbl</span><span class="p">:</span> <span class="n">TableClause</span><span class="p">,</span>
+        <span class="n">where_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a standardized violation query SELECT statement.</span>
+
+<span class="sd">        :param class_name: Name of the class/table</span>
+<span class="sd">        :param column_name: Name of the slot/constraint for column_name label</span>
+<span class="sd">        :param constraint_type: Type of constraint violated</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
+<span class="sd">        :param invalid_value: Expression for invalid_value column (literal or column)</span>
+<span class="sd">        :param where_condition: SQLAlchemy WHERE condition</span>
+<span class="sd">        :param tbl: SQLAlchemy table object</span>
+<span class="sd">        :return: SQLAlchemy select object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for postgres, all values in a column need to be of same type so we need to CAST them to text</span>
+        <span class="n">_invalid_value</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">invalid_value</span><span class="p">,</span> <span class="n">Text</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;postgresql&quot;</span> <span class="k">else</span> <span class="n">invalid_value</span>
+
+        <span class="k">if</span> <span class="n">identifier_slot_name</span><span class="p">:</span>
+            <span class="n">record_id</span> <span class="o">=</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">record_id</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">null</span><span class="p">(),</span> <span class="n">Text</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;postgresql&quot;</span> <span class="k">else</span> <span class="n">null</span><span class="p">()</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span>
+            <span class="n">literal</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
+            <span class="n">literal</span><span class="p">(</span><span class="n">column_name</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
+            <span class="n">literal</span><span class="p">(</span><span class="n">constraint_type</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
+            <span class="n">record_id</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
+            <span class="n">_invalid_value</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">where_condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">where_condition</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_required_condition</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">negate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a SQLAlchemy condition for a required (non-null) constraint.</span>
+
+<span class="sd">        :param col: SQLAlchemy column expression</span>
+<span class="sd">        :param negate: If True, return the violation condition (IS NULL);</span>
+<span class="sd">            if False, the conformance condition (IS NOT NULL)</span>
+<span class="sd">        :return: SQLAlchemy condition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">col</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_range_condition</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">negate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a SQLAlchemy condition for a range (minimum_value/maximum_value) constraint.</span>
+
+<span class="sd">        :param col: SQLAlchemy column expression</span>
+<span class="sd">        :param min_val: Minimum value (inclusive), or None</span>
+<span class="sd">        :param max_val: Maximum value (inclusive), or None</span>
+<span class="sd">        :param negate: If True, return the violation condition; if False, the conformance condition</span>
+<span class="sd">        :return: SQLAlchemy condition, or None if both bounds are None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">min_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span> <span class="o">&lt;</span> <span class="n">_literal_num</span><span class="p">(</span><span class="n">min_val</span><span class="p">)</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span> <span class="o">&gt;=</span> <span class="n">_literal_num</span><span class="p">(</span><span class="n">min_val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">max_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span> <span class="o">&gt;</span> <span class="n">_literal_num</span><span class="p">(</span><span class="n">max_val</span><span class="p">)</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span> <span class="o">&lt;=</span> <span class="n">_literal_num</span><span class="p">(</span><span class="n">max_val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">conditions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">or_</span><span class="p">(</span><span class="o">*</span><span class="n">conditions</span><span class="p">)</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">and_</span><span class="p">(</span><span class="o">*</span><span class="n">conditions</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pattern_condition</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">negate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a SQLAlchemy condition for a pattern (regex) constraint.</span>
+
+<span class="sd">        Uses SQLAlchemy&#39;s ``regexp_match`` which compiles to the dialect-specific</span>
+<span class="sd">        syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).</span>
+
+<span class="sd">        NULL values are excluded regardless of ``negate``, since a NULL is not a pattern</span>
+<span class="sd">        violation but a required violation. This is needed since native sqlite has no</span>
+<span class="sd">        regexp implementation and some registered functions might fail if null is not excluded.</span>
+
+<span class="sd">        :param col: SQLAlchemy column expression</span>
+<span class="sd">        :param pattern: Regular expression pattern string</span>
+<span class="sd">        :param negate: If True, return the violation condition; if False, the conformance condition</span>
+<span class="sd">        :return: SQLAlchemy condition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">regexp_match</span><span class="p">(</span><span class="n">literal</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">and_</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="o">~</span><span class="n">match</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">match</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_required_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find NULL values in required fields.</span>
 
 <span class="sd">        :param class_name: Name of the class/table</span>
 <span class="sd">        :param slot: Slot definition with required=True</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
 <span class="sd">        :return: SQLAlchemy select object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;required&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;NULL&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;required&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">null</span><span class="p">(),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_required_condition</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_range_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_range_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find minimum_value/maximum_value violations.</span>
 
 <span class="sd">        :param class_name: Name of the class/table</span>
 <span class="sd">        :param slot: Slot definition with min/max constraints</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
 <span class="sd">        :return: SQLAlchemy select object or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">literal_column</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">literal_column</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">conditions</span><span class="p">:</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">where_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_condition</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where_condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;range&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="o">*</span><span class="n">conditions</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;range&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="n">where_condition</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_pattern_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_pattern_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find pattern (regex) violations.</span>
 
-<span class="sd">        Handles dialect-specific regex syntax:</span>
-<span class="sd">        - PostgreSQL: ~ operator</span>
-<span class="sd">        - SQLite: REGEXP function (requires extension)</span>
-
 <span class="sd">        :param class_name: Name of the class/table</span>
 <span class="sd">        :param slot: Slot definition with pattern constraint</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
 <span class="sd">        :return: SQLAlchemy select object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span>
-
-        <span class="c1"># Generate dialect-specific pattern matching using SQLAlchemy</span>
-        <span class="c1"># We need to use literal_column for dialect-specific operators</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;postgresql&quot;</span><span class="p">:</span>
-            <span class="n">pattern_check</span> <span class="o">=</span> <span class="o">~</span><span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> ~ &#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">==</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">:</span>
-            <span class="c1"># SQLite REGEXP requires extension</span>
-            <span class="n">pattern_check</span> <span class="o">=</span> <span class="o">~</span><span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(REGEXP(&#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">) = 1)&quot;</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Default to PostgreSQL syntax</span>
-            <span class="n">pattern_check</span> <span class="o">=</span> <span class="o">~</span><span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> ~ &#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;pattern&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">and_</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">pattern_check</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;pattern&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pattern_condition</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_identifier_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_identifier_violations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find identifier/key uniqueness violations.</span>
 
@@ -745,10 +903,10 @@
 
 <span class="sd">        :param class_name: Name of the class/table</span>
 <span class="sd">        :param slot: Slot definition with identifier=True or key=True</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
 <span class="sd">        :return: SQLAlchemy select object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
         <span class="n">constraint_type</span> <span class="o">=</span> <span class="s2">&quot;identifier&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="k">else</span> <span class="s2">&quot;key&quot;</span>
 
@@ -760,23 +918,18 @@
             <span class="o">.</span><span class="n">having</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="c1"># Main query to find all records with those duplicate values</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">constraint_type</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">duplicate_subquery</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="n">constraint_type</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">duplicate_subquery</span><span class="p">),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_enum_violations</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find enum constraint violations.</span>
@@ -786,7 +939,7 @@
 <span class="sd">        :param class_name: Name of the class/table</span>
 <span class="sd">        :param slot: Slot definition with enum range</span>
 <span class="sd">        :param sv: SchemaView for looking up enum values</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
 <span class="sd">        :return: SQLAlchemy select object or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get the enum definition</span>
@@ -794,26 +947,84 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">enum</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">permissible_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">permissible_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">literal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
 
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;enum&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">and_</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">notin_</span><span class="p">(</span><span class="n">permissible_values</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">column</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="n">and_</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">notin_</span><span class="p">(</span><span class="n">permissible_values</span><span class="p">)),</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_concat_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a pipe-separated SQLAlchemy concatenation expression for the given column names</span>
+<span class="sd">        and casts these columns as TEXT.</span>
+<span class="sd">        This is necessary if several postconditions apply to different data types.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            precondition  -&gt; human has drivers license</span>
+<span class="sd">            postcondition -&gt; 1. human age &gt; 18, 2. human is &quot;adult&quot;</span>
+
+<span class="sd">            Data that does not conform then returns the following `invalid_value`:</span>
+<span class="sd">            16 | adult</span>
+<span class="sd">            22 | teenager</span>
+
+<span class="sd">        Here we need both the number and the adult/teenager status to be of type TEXT</span>
+<span class="sd">        to concat them.</span>
+
+<span class="sd">        :param col_names: list of column names to concatenate</span>
+<span class="sd">        :return: SQLAlchemy expression</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">column</span><span class="p">(</span><span class="n">col_names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">concat_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Build concatenation: CAST(col1 AS TEXT) || &#39;|&#39; || CAST(col2 AS TEXT) || ...</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_names</span><span class="p">):</span>
+            <span class="n">concat_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">column</span><span class="p">(</span><span class="n">col_name</span><span class="p">),</span> <span class="n">Text</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">concat_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">literal</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">()))</span>
+        <span class="n">expr</span> <span class="o">=</span> <span class="n">concat_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">concat_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">expr</span> <span class="o">=</span> <span class="n">expr</span> <span class="o">+</span> <span class="n">part</span>
+        <span class="k">return</span> <span class="n">expr</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_column_name_map</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map the slot names of a class onto the column names the relational transform gives them.</span>
+
+<span class="sd">        The RelationalModelTransformer names each column after ``underscore(alias or name)``, while</span>
+<span class="sd">        unique_keys and rules reference slots by either their schema name or their alias, so both</span>
+<span class="sd">        are accepted as keys.</span>
+
+<span class="sd">        :param sv: SchemaView over the *untransformed* schema</span>
+<span class="sd">        :param class_name: Name of the class whose slots are mapped</span>
+<span class="sd">        :return: Mapping of slot name and alias onto SQL column name; empty if the class is not in</span>
+<span class="sd">            the schema (the transform may introduce classes of its own, e.g. linking tables)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">name_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
+            <span class="n">sql_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">name_map</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sql_name</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span><span class="p">:</span>
+                <span class="n">name_map</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">sql_name</span>
+        <span class="k">return</span> <span class="n">name_map</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_unique_key_violations</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slot_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">uk</span><span class="p">,</span>
+        <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">column_name_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate query to find unique_keys violations (multi-column uniqueness).</span>
@@ -821,39 +1032,36 @@
 <span class="sd">        Finds individual records with duplicate combinations of values across multiple columns.</span>
 
 <span class="sd">        :param class_name: Name of the class/table</span>
-<span class="sd">        :param class_def: Class definition</span>
+<span class="sd">        :param slot_names: Set of valid slot names for this class</span>
 <span class="sd">        :param uk: UniqueKey definition</span>
-<span class="sd">        :param identifier_slot_name: Name of the identifier slot</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
+<span class="sd">        :param column_name_map: Mapping of schema slot names and aliases onto SQL column names</span>
 <span class="sd">        :return: SQLAlchemy select object or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get column names from unique key slots</span>
+        <span class="c1"># Get column names from unique key slots (underscored for SQL)</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unresolved</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">uk</span><span class="o">.</span><span class="n">unique_key_slots</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">class_def</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="n">sql_name</span> <span class="o">=</span> <span class="n">column_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">sql_name</span> <span class="ow">in</span> <span class="n">slot_names</span><span class="p">:</span>
+                <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sql_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">unresolved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unresolved</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Skipping uniqueness constraint &#39;</span><span class="si">{</span><span class="n">uk</span><span class="o">.</span><span class="n">unique_key_name</span><span class="si">}</span><span class="s2">&#39; on class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;no column found for slots </span><span class="si">{</span><span class="n">unresolved</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Main table with identifier and all columns</span>
-        <span class="n">tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">),</span> <span class="o">*</span><span class="p">[</span><span class="n">column</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="o">*</span><span class="n">columns</span><span class="p">)</span>
 
-        <span class="c1"># Build concatenated value expression (pipe-separated)</span>
-        <span class="c1"># Use CAST to ensure all values are strings before concatenation</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">concat_expr</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">column</span><span class="p">(</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">Text</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Build concatenation: CAST(col1 AS TEXT) || &#39;|&#39; || CAST(col2 AS TEXT) || ...</span>
-            <span class="n">concat_parts</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
-                <span class="n">concat_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">column</span><span class="p">(</span><span class="n">col</span><span class="p">),</span> <span class="n">Text</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">concat_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;|&#39;&quot;</span><span class="p">))</span>
-
-            <span class="c1"># Chain concatenation operations</span>
-            <span class="n">concat_expr</span> <span class="o">=</span> <span class="n">concat_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">concat_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                <span class="n">concat_expr</span> <span class="o">=</span> <span class="n">concat_expr</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="s2">&quot;||&quot;</span><span class="p">)(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">concat_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_concat_columns</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
 
         <span class="c1"># Subquery to find duplicate combinations</span>
         <span class="n">subquery_tbl</span> <span class="o">=</span> <span class="n">table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">column</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
@@ -870,24 +1078,173 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># For multiple columns, use tuple IN syntax</span>
             <span class="c1"># SQLAlchemy&#39;s tuple_() function handles this properly across dialects</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">tuple_</span>
-
             <span class="n">where_clause</span> <span class="o">=</span> <span class="n">tuple_</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">duplicate_subquery</span><span class="p">)</span>
 
-        <span class="c1"># Main query to find all records with duplicate combinations</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">select</span><span class="p">(</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">uk</span><span class="o">.</span><span class="n">unique_key_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">),</span>
-                <span class="n">literal_column</span><span class="p">(</span><span class="s2">&quot;&#39;unique_key&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;constraint_type&quot;</span><span class="p">),</span>
-                <span class="n">column</span><span class="p">(</span><span class="n">identifier_slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;record_id&quot;</span><span class="p">),</span>
-                <span class="n">concat_expr</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;invalid_value&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">select_from</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">where_clause</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">uk</span><span class="o">.</span><span class="n">unique_key_name</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;unique_key&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="n">concat_expr</span><span class="p">,</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="n">where_clause</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">query</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_slot_condition_to_sqlalchemy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tbl</span><span class="p">:</span> <span class="n">TableClause</span><span class="p">,</span>
+        <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">slot_condition</span><span class="p">:</span> <span class="n">AnonymousSlotExpression</span><span class="p">,</span>
+        <span class="n">negate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ColumnElement</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a single slot condition to SQLAlchemy WHERE clause(s).</span>
+
+<span class="sd">        :param tbl: SQLAlchemy table object</span>
+<span class="sd">        :param slot_name: Name of the slot/column</span>
+<span class="sd">        :param slot_condition: SlotDefinition with constraint properties</span>
+<span class="sd">        :param negate: If True, negate the condition (for postcondition violation detection)</span>
+<span class="sd">        :return: list of SQLAlchemy conditions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">tbl</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lit</span> <span class="o">=</span> <span class="n">literal</span><span class="p">(</span><span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_string</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="n">col</span> <span class="o">!=</span> <span class="n">lit</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span> <span class="o">==</span> <span class="n">lit</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lit_num</span> <span class="o">=</span> <span class="n">_literal_num</span><span class="p">(</span><span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="n">col</span> <span class="o">!=</span> <span class="n">lit_num</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span> <span class="o">==</span> <span class="n">lit_num</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
+            <span class="n">lit_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="n">Text</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">]</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">notin_</span><span class="p">(</span><span class="n">lit_vals</span><span class="p">),</span> <span class="n">col</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span> <span class="k">if</span> <span class="n">negate</span> <span class="k">else</span> <span class="n">col</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">lit_vals</span><span class="p">))</span>
+
+        <span class="n">range_cond</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_condition</span><span class="p">(</span>
+            <span class="n">col</span><span class="p">,</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">minimum_value</span><span class="p">,</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">range_cond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">range_cond</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pattern_condition</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">slot_condition</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_required_condition</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">conditions</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_class_expression_to_sqlalchemy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tbl</span><span class="p">:</span> <span class="n">TableClause</span><span class="p">,</span>
+        <span class="n">expression</span><span class="p">:</span> <span class="n">AnonymousClassExpression</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">negate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ColumnElement</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert an AnonymousClassExpression to a composite WHERE clause.</span>
+
+<span class="sd">        :param tbl: SQLAlchemy table object</span>
+<span class="sd">        :param expression: AnonymousClassExpression with slot_conditions</span>
+<span class="sd">        :param negate: If True, negate the expression (for postcondition violation detection). Note that negated</span>
+<span class="sd">        conditions are concatenated with OR -&gt; De Morgan&#39;s law.</span>
+<span class="sd">        :return: SQLAlchemy condition or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">expression</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Warn about unsupported features</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;any_of&quot;</span><span class="p">,</span> <span class="s2">&quot;all_of&quot;</span><span class="p">,</span> <span class="s2">&quot;none_of&quot;</span><span class="p">,</span> <span class="s2">&quot;exactly_one_of&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule class expression &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; is not yet supported in SQL validation&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">expression</span><span class="o">.</span><span class="n">slot_conditions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">all_conditions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">slot_condition</span> <span class="ow">in</span> <span class="n">expression</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slot_condition_to_sqlalchemy</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">slot_condition</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span><span class="p">)</span>
+            <span class="n">all_conditions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">conds</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_conditions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">negate</span><span class="p">:</span>
+            <span class="c1"># De Morgan&#39;s law: negating AND → OR</span>
+            <span class="k">return</span> <span class="n">or_</span><span class="p">(</span><span class="o">*</span><span class="n">all_conditions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">and_</span><span class="p">(</span><span class="o">*</span><span class="n">all_conditions</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_rule_violations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">ClassRule</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Select</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate query to find rows violating a rule&#39;s postconditions.</span>
+
+<span class="sd">        A violation occurs when the precondition is met but the postcondition is not.</span>
+
+<span class="sd">        Preconditions are concatenated with AND. Postconditions are concatenated with OR.</span>
+<span class="sd">        Postcondition is required, precondition is not required. If no precondition is given,</span>
+<span class="sd">        the postcondition applies to all entries.</span>
+
+<span class="sd">        :param class_name: Name of the class/table</span>
+<span class="sd">        :param rule: ClassRule with preconditions/postconditions</span>
+<span class="sd">        :param identifier_slot_name: Name of the identifier slot, or None if the class has none</span>
+<span class="sd">        :return: SQLAlchemy select object or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not generate rule-based query for class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;: a rule needs &#39;postconditions&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Collect all referenced column names</span>
+        <span class="n">col_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span> <span class="ow">and</span> <span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="o">.</span><span class="n">slot_conditions</span><span class="p">:</span>
+            <span class="n">col_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">col_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="n">postcondition_slot_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">column_name_label</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">postcondition_slot_names</span><span class="p">)</span>
+
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">identifier_slot_name</span><span class="p">,</span> <span class="o">*</span><span class="n">col_names</span><span class="p">)</span>
+
+        <span class="c1"># Build WHERE: precondition AND (negated postcondition)</span>
+        <span class="n">where_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">:</span>
+            <span class="n">pre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_expression_to_sqlalchemy</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pre</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Fail closed: dropping an untranslatable precondition would apply the</span>
+                <span class="c1"># postcondition check to every row, producing false-positive violations.</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not generate rule-based query for class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;: preconditions exist &quot;</span>
+                    <span class="s2">&quot;but produced no SQL conditions (unsupported class expression or slot condition &quot;</span>
+                    <span class="s2">&quot;types?). Skipping the rule.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">where_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pre</span><span class="p">)</span>
+
+        <span class="n">post</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_expression_to_sqlalchemy</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">post</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not generate rule-based query for class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;: postconditions exist but &quot;</span>
+                <span class="s2">&quot;produced no SQL conditions (unsupported class expression or slot condition types?). &quot;</span>
+                <span class="s2">&quot;Skipping the rule.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">where_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+
+        <span class="n">where_clause</span> <span class="o">=</span> <span class="n">and_</span><span class="p">(</span><span class="o">*</span><span class="n">where_parts</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">where_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">where_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_violation_query</span><span class="p">(</span>
+            <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+            <span class="n">column_name</span><span class="o">=</span><span class="n">column_name_label</span><span class="p">,</span>
+            <span class="n">constraint_type</span><span class="o">=</span><span class="s2">&quot;rule&quot;</span><span class="p">,</span>
+            <span class="n">identifier_slot_name</span><span class="o">=</span><span class="n">identifier_slot_name</span><span class="p">,</span>
+            <span class="n">invalid_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_concat_columns</span><span class="p">(</span><span class="n">postcondition_slot_names</span><span class="p">),</span>
+            <span class="n">tbl</span><span class="o">=</span><span class="n">tbl</span><span class="p">,</span>
+            <span class="n">where_condition</span><span class="o">=</span><span class="n">where_clause</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 
@@ -928,6 +1285,12 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate queries for unique key violations&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--check-rules/--no-check-rules&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate queries for rule (precondition/postcondition) violations&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--include-comments/--no-include-comments&quot;</span><span class="p">,</span>
