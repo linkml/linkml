@@ -53,7 +53,7 @@ jobs:
         run: uv run python scripts/generate_dashboard.py
 
       - name: Create PR with updated dashboard
-        uses: peter-evans/create-pull-request@v8.1.0
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
         with:
           commit-message: "docs: update feature dashboard from compliance tests"
           title: "docs: update feature dashboard"
