@@ -179,6 +179,11 @@ class PydanticBaseModel(PydanticTemplateModel):
     If True, optional multivalued slots default to an empty list and the serializer collapses empty
     lists to ``None`` when ``exclude_none`` is used.
     """
+    coerce_numbers_to_str: bool = False
+    """
+    Coerce numeric values to str for string-typed fields (part of YAMLRoot
+    input-form compatibility; see PydanticGenerator.coerce_input).
+    """
 
 
 class PydanticAttribute(PydanticTemplateModel):
@@ -210,6 +215,28 @@ class PydanticAttribute(PydanticTemplateModel):
     multivalued: bool | None = None
     pattern: str | None = None
     empty_list_for_multivalued_slots: bool = False
+    keyed_dict_key: str | None = None
+    """
+    Name of the key/identifier field of the range class for a multivalued slot
+    rendered as an inlined dict. When set, a ``mode="before"`` validator is
+    generated that injects each dict key into this field of its value.
+    """
+    keyed_dict_value: str | None = None
+    """
+    Name of the field a scalar entry value maps to for an inlined-as-dict slot
+    (positional second-slot semantics, e.g. ``prefixes: {pfx: url}``).
+    """
+    coerce_to_list: bool = False
+    """
+    When True (multivalued slots rendered as lists), a ``mode="before"``
+    validator is generated that wraps a single value into a singleton list.
+    """
+    inlined_list_key: str | None = None
+    """
+    For multivalued slots inlined as a list of objects: the identifier/key
+    slot (or first required slot) of the range class, allowing dict-keyed
+    input forms to normalize to a list with keys injected.
+    """
     meta: dict[str, Any] | None = None
     """
     Metadata for the slot to be included in a Field annotation
@@ -243,6 +270,46 @@ class PydanticValidator(PydanticAttribute):
     """
 
     template: ClassVar[str] = "validator.py.jinja"
+
+
+class KeyedCollectionCoercion(PydanticTemplateModel):
+    """
+    Module-level ``_coerce_keyed_collection`` helper function, injected once per
+    generated module when :class:`.PydanticKeyedDictValidator` validators are
+    generated (see ``PydanticGenerator.coerce_input``).
+    """
+
+    template: ClassVar[str] = "coerce_keyed_collection.py.jinja"
+
+
+class InlinedListCoercion(PydanticTemplateModel):
+    """
+    Module-level ``_coerce_inlined_list`` helper function, injected once per
+    generated module when :class:`.PydanticListValidator` validators need
+    dict-form normalization (see ``PydanticGenerator.coerce_input``).
+    """
+
+    template: ClassVar[str] = "coerce_inlined_list.py.jinja"
+
+
+class PydanticKeyedDictValidator(PydanticValidator):
+    """
+    Subclass of :class:`.PydanticValidator` rendering a ``mode="before"`` validator
+    that normalizes the input forms of an inlined-as-dict slot (key injection,
+    list-of-objects, bare keys) via the injected ``_coerce_keyed_collection`` helper.
+    """
+
+    template: ClassVar[str] = "keyed_dict_validator.py.jinja"
+
+
+class PydanticListValidator(PydanticValidator):
+    """
+    Subclass of :class:`.PydanticValidator` rendering a ``mode="before"`` validator
+    that wraps a single value into a singleton list for multivalued slots
+    rendered as lists.
+    """
+
+    template: ClassVar[str] = "list_validator.py.jinja"
 
 
 class PydanticClass(PydanticTemplateModel):
@@ -280,7 +347,24 @@ class PydanticClass(PydanticTemplateModel):
         if self.attributes is None:
             return None
 
-        return {k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None}
+        validators: dict[str, PydanticValidator] = {
+            k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None
+        }
+        validators.update(
+            {
+                f"{k}__keyed": PydanticKeyedDictValidator(**v.model_dump())
+                for k, v in self.attributes.items()
+                if v.keyed_dict_key is not None
+            }
+        )
+        validators.update(
+            {
+                f"{k}__list": PydanticListValidator(**v.model_dump())
+                for k, v in self.attributes.items()
+                if v.coerce_to_list
+            }
+        )
+        return validators
 
     @computed_field
     def validators(self) -> dict[str, PydanticValidator] | None:
