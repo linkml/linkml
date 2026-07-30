@@ -190,7 +190,7 @@ fields:
 - id: ended_at_time
   display_name: ended at time
 - id: cordialness
-  display_name: cordialness
+  display_name: FamilialRelationship_cordialness
 - id: type
   display_name: FamilialRelationship_type
 - id: related_to

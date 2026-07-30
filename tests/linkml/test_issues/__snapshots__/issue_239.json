@@ -1,7 +1,7 @@
 {
     "$defs": {
         "C": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "id": {},

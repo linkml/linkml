@@ -31016,10 +31016,9 @@
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
-        "subject",
+        "drug_to_entity_association_mixin_subject",
         "predicate",
-        "object",
-        "drug_to_entity_association_mixin_subject"
+        "object"
       ],
       "slot_usage": {},
       "defining_slots": [
@@ -31038,10 +31037,9 @@
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
-        "subject",
+        "chemical_to_entity_association_mixin_subject",
         "predicate",
-        "object",
-        "chemical_to_entity_association_mixin_subject"
+        "object"
       ],
       "slot_usage": {},
       "defining_slots": [

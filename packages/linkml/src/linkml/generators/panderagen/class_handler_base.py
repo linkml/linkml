@@ -22,7 +22,14 @@ class ClassHandlerBase:
         raise Exception(f"Unknown class or enum {cn}")
 
     def ordered_classes(self):
-        sorter = DependencySorter()
+        # Tolerate cycles: even with the parent/child association cycle skip
+        # in `add_dependencies_by_association`, the LinkML metamodel imports
+        # still contain peer cycles between mutually-recursive classes (e.g.
+        # path_expression ↔ schema_definition ↔ slot_definition ↔
+        # anonymous_class_expression). The three-pass polars template lets us
+        # emit those classes in arbitrary order, so we silently break any
+        # remaining cycles instead of raising.
+        sorter = DependencySorter(allow_cycles=True)
 
         self.add_dependencies_by_association(sorter)
         self.add_dependencies_for_hierarchy(sorter)
@@ -55,6 +62,11 @@ class ClassHandlerBase:
             for slot_name in sv.class_slots(cn):
                 slot = sv.induced_slot(slot_name, cn)
                 if slot.range and slot.range in sv.all_classes() and slot.range not in sv.all_enums():
+                    ## Skip if the range is cn itself or a descendant of cn.
+                    ## The hierarchy already orders parent before child, so adding
+                    ## cn --> slot.range here would create a cycle with child --> cn.
+                    if cn in sv.class_ancestors(slot.range, reflexive=True):
+                        continue
                     # Only add dependency if slot is inlined or range has no identifier
                     if slot.inlined or slot.inlined_as_list or sv.get_identifier_slot(slot.range) is None:
                         sorter.add_dependency(cn, slot.range)

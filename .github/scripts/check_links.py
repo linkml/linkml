@@ -41,6 +41,11 @@ SKIP_DOMAINS = {
     "xmlns.com",
     "unitsofmeasure.org",
     "upload.wikimedia.org",
+    # Bot-protected - always return 403, no useful signal from checking
+    "bioportal.bioontology.org",
+    "dl.acm.org",
+    "openai.com",
+    "platform.openai.com",
     # Namespace URIs - used as identifiers, not dereferenceable web pages
     "purl.obolibrary.org",
     "snomed.info",

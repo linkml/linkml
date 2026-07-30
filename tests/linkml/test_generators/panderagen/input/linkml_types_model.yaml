@@ -1,0 +1,29 @@
+id: https://example.org/test-linkml-types
+name: test_linkml_types
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: test
+
+classes:
+  LinkmlBuiltinTypesTable:
+    description: >-
+      Tests that LinkML builtin types with non-XSD URIs map to the correct Polars dtypes.
+      Covers date_or_datetime (linkml:DateOrDatetime), objectidentifier (shex:iri),
+      and nodeidentifier (shex:nonLiteral) — types that have no XSD typeof fallback.
+
+      date_or_datetime	linkml:DateOrDatetime	pl.Utf8 - Polars has no Date|Datetime union
+      objectidentifier	shex:iri	            pl.Utf8 - an IRI is a string
+      nodeidentifier	  shex:nonLiteral	      pl.Utf8 - a non-literal RDF node identifier
+    attributes:
+      dod_field:
+        range: date_or_datetime
+        required: true
+      oid_field:
+        range: objectidentifier
+        required: true
+      nid_field:
+        range: nodeidentifier
+        required: true

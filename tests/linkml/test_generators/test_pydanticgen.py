@@ -249,11 +249,47 @@ def test_pydantic_unmasked_keywords(input_path):
         mod = compile_python(code, PACKAGE)
     except SyntaxError as e:
         assert False, f"Failed to compile generated bindings: {str(e)}"
-    translation_dict = {"from": "eng", "to": "del"}
-    translation_inst = mod.Translation.model_validate(translation_dict)
-    assert translation_inst.from_ == mod.LanguageEnum("eng")
-    assert translation_inst.to == mod.LanguageEnum("del")
-    assert translation_inst.model_dump() == translation_dict
+    keyword_values = {
+        "False": "False",
+        "None": "None",
+        "True": "True",
+        "and": "and",
+        "as": "as",
+        "assert": "assert",
+        "async": "async",
+        "await": "await",
+        "break": "break",
+        "class": "class",
+        "continue": "continue",
+        "def": "def",
+        "del": "del",
+        "elif": "elif",
+        "else": "else",
+        "except": "except",
+        "finally": "finally",
+        "for": "for",
+        "from": "from",
+        "global": "global",
+        "if": "if",
+        "import": "import",
+        "in": "in",
+        "is": "is",
+        "lambda": "lambda",
+        "nonlocal": "nonlocal",
+        "not": "not",
+        "or": "or",
+        "pass": "pass",
+        "raise": "raise",
+        "return": "return",
+        "try": "try",
+        "while": "while",
+        "with": "with",
+        "yield": "yield",
+    }
+    thing = mod.Thing.model_validate(keyword_values)
+    for keyword, expected in keyword_values.items():
+        assert getattr(thing, f"{keyword}_") == mod.KeywordEnum(expected)
+    assert thing.model_dump() == keyword_values
 
 
 def test_pydantic_any_of():

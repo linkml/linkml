@@ -336,12 +336,17 @@ class RustProperty(RustTemplateModel):
 
     @computed_field
     def merge_strategy(self) -> str:
-        if self.type_.optional:
+        if self.type_.containerType == ContainerType.MAPPING:
+            # Maps merge per-key so an override (e.g. slot_usage annotations)
+            # folds into the inherited map instead of replacing it wholesale.
+            # Optional maps need a helper that handles the outer Option.
+            if self.type_.optional:
+                return "strategy = option_map_overwrite"
+            return "strategy = merge::hashmap::overwrite"
+        elif self.type_.optional:
             return "strategy = overwrite_except_none"
         elif self.type_.containerType == ContainerType.LIST:
             return "skip"
-        elif self.type_.containerType == ContainerType.MAPPING:
-            return "strategy = merge::hashmap::overwrite"
         else:
             return "skip"
 
@@ -356,6 +361,23 @@ class RustProperty(RustTemplateModel):
     def hasdefault(self) -> bool:
         return self.multivalued or not self.required
 
+    @computed_field
+    def skip_serializing_if(self) -> str | None:
+        """Serde predicate for omitting this field on serialization.
+
+        Optional (``Option<...>``) fields are skipped when ``None``; list and
+        mapping fields are skipped when empty. This keeps generated JSON/YAML
+        compact without changing the data model. Returns ``None`` for required
+        scalars, which must always serialize.
+        """
+        if self.type_.optional:
+            return "Option::is_none"
+        if self.type_.containerType == ContainerType.LIST:
+            return "Vec::is_empty"
+        if self.type_.containerType == ContainerType.MAPPING:
+            return "HashMap::is_empty"
+        return None
+
 
 class AsKeyValue(RustTemplateModel):
     """
@@ -366,6 +388,7 @@ class AsKeyValue(RustTemplateModel):
     name: str
     key_property_name: str
     key_property_type: str
+    key_property_aliases: list[str] = []
     value_property_name: str
     value_property_type: str
     can_convert_from_primitive: bool = False
@@ -818,6 +841,15 @@ class RustFile(RustTemplateModel):
     def needs_overwrite_except_none(self) -> bool:
         """Whether any struct uses the custom merge helper."""
         return any(s.generate_merge for s in self.structs)
+
+    @computed_field
+    def needs_option_map_overwrite(self) -> bool:
+        """Whether any merged optional map field needs the per-key helper."""
+        return any(
+            p.generate_merge and p.type_.optional and p.type_.containerType == ContainerType.MAPPING
+            for s in self.structs
+            for p in s.properties
+        )
 
 
 class RangeEnum(RustTemplateModel):

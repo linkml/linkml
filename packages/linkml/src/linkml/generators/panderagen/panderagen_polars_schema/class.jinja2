@@ -7,7 +7,14 @@
 {{ generator.get_class_name(cls.name) }}
 {%- endmacro -%}
 
-{%- macro render_schema(cls, generator) -%}
+{#- Pass 1: forward-declare an empty dict so the name is bound before any cross-ref. -#}
+{%- macro declare_empty_dict(cls, generator) -%}
+{{ schema_name(cls, generator) }}Dict = {}
+{%- endmacro -%}
+
+{#- Pass 2: populate the dict using pl.Struct(XDict) instead of XStruct so that no
+    *Struct name needs to be in scope yet — only *Dict names are required. -#}
+{%- macro populate_dict(cls, generator) -%}
     {{ schema_name(cls, generator) }}Dict = {{ '{' }}
     {%- if generator.roll_up_slots %}
     {%- set fields = cls.all_fields -%}
@@ -15,12 +22,22 @@
     {%- set fields = cls.fields -%}
     {%- endif -%}
     {%- for field in fields %}
-    {{ slot_macros.render_slot(field, generator) }}
+    {{ slot_macros.render_slot_dict_range(field, generator) }}
     {%- endfor %}
 {{ '}' }}
+{%- endmacro -%}
 
+{#- Pass 3: bind the named *Struct and *Schema from the now-populated dict. -#}
+{%- macro bind_struct_and_schema(cls, generator) -%}
 {{ schema_name(cls, generator) }}Struct = pl.Struct({{ schema_name(cls, generator) }}Dict)
 
 {{ schema_name(cls, generator) }} = pl.Schema({{ schema_name(cls, generator) }}Dict)
+{%- endmacro -%}
 
+{#- Legacy single-shot macro kept for back-compat; new top-level template uses the
+    three-pass macros above. -#}
+{%- macro render_schema(cls, generator) -%}
+{{ populate_dict(cls, generator) }}
+
+{{ bind_struct_and_schema(cls, generator) }}
 {%- endmacro -%}

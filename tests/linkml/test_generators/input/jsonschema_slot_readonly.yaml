@@ -1,0 +1,24 @@
+id: https://example.org/readonly-test
+name: readonly_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+slots:
+  managed:
+    readonly: assigned by the server
+  empty_reason:
+    readonly: ""
+  plain:
+    description: not read only
+
+classes:
+  Base:
+    slots:
+      - managed
+      - empty_reason
+      - plain
+  Sub:
+    is_a: Base

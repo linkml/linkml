@@ -1,6 +1,6 @@
 name: Check Sphinx external links
 env:
-  UV_VERSION: "0.7.13"
+  UV_VERSION: "0.11.21"
 on:
   push:
     branches: [main]
@@ -22,7 +22,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           version: ${{ env.UV_VERSION }}
 
