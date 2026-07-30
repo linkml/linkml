@@ -5,23 +5,24 @@ import os
 import re
 import textwrap
 from dataclasses import dataclass, field
-from io import UnsupportedOperation
 from typing import cast
 
 import click
 import yaml
-from openapi_spec_validator import OpenAPIV30SpecValidator
+from openapi_spec_validator import OpenAPIV30SpecValidator, OpenAPIV31SpecValidator
 from openapi_spec_validator import validate as openapi_validate
 from openapi_spec_validator.validation.validators import SpecValidator as OaSpecValidator
+from pydantic import BaseModel
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT4
 from yaml import MappingNode, ScalarNode
 
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator, json_schema_types
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
-SUPPORTED_OPENAPI_VERSIONS = ["3.0.3"]
+SUPPORTED_OPENAPI_VERSIONS = ["3.0.3", "3.1.0"]
 
 openapi_generic_template = """# TODO: remove this whole comment block after processing
 # This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.
@@ -84,10 +85,16 @@ class OpenApiGenerator(Generator):
     by the template's endpoints (and their transitive dependencies) are included in
     the ``components/schemas`` section.
 
-    Currently only one generation path is supported (others might follow):
+    Currently following generation paths are supported (others might follow):
+
     * **v3.0.3** — uses :class:`.JsonSchemaGenerator` and applies post-processing
       transforms (``const`` → ``enum``, nullable ``type`` lists → ``anyOf``,
       ``$defs`` → ``components/schemas``) required by OpenAPI 3.0.3.
+    * **v3.1.0** — uses :class:`.PydanticGenerator` to compile a Python module,
+      then calls :meth:`pydantic.BaseModel.model_json_schema` on each class.
+      Because OpenAPI 3.1.0 is fully aligned with JSON Schema 2020-12, no
+      post-processing transforms are needed beyond rewriting ``$defs`` references
+      and stripping ``linkml_meta`` annotations.
 
     The OpenAPI version to be generated is obtained from the template's top-level
     attribute `openapi`.
@@ -112,7 +119,7 @@ class OpenApiGenerator(Generator):
     # Mapping of OpenAPI version strings to validators from openapi-spec-validator.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_validators: dict[str, type[OaSpecValidator]] = field(
-        default_factory=lambda: {"3.0.3": OpenAPIV30SpecValidator},
+        default_factory=lambda: {"3.0.3": OpenAPIV30SpecValidator, "3.1.0": OpenAPIV31SpecValidator},
         init=False,
         repr=False,
     )
@@ -260,6 +267,43 @@ class OpenApiGenerator(Generator):
             raise TypeError(f"Unexpected type '{type(element)}', only 'dict' and 'list' supported.")
         return renamed_element
 
+    def _strip_linkml_meta(self, element: dict | list) -> dict | list:
+        """Remove ``linkml_meta`` annotations recursively from Pydantic JSON Schema output."""
+        if isinstance(element, dict):
+            element.pop("linkml_meta", None)
+            for value in element.values():
+                if isinstance(value, dict) or isinstance(value, list):
+                    self._strip_linkml_meta(value)
+        elif isinstance(element, list):
+            for item in element:
+                if isinstance(item, dict) or isinstance(item, list):
+                    self._strip_linkml_meta(item)
+        return element
+
+    def _rewrite_defs_refs(self, element: dict | list) -> dict | list:
+        """
+        Rewrite ``#/$defs/`` references to ``#/components/schemas/`` in-place.
+
+        This is the only structural transformation needed for OpenAPI 3.1.0,
+        since it is fully aligned with JSON Schema 2020-12.
+        """
+        if isinstance(element, dict):
+            keys_to_update = []
+            for key, value in element.items():
+                if isinstance(value, str) and value.startswith("#/$defs/"):
+                    keys_to_update.append((key, value.replace("#/$defs/", "#/components/schemas/")))
+                elif isinstance(value, dict) or isinstance(value, list):
+                    self._rewrite_defs_refs(value)
+            for key, new_value in keys_to_update:
+                element[key] = new_value
+        elif isinstance(element, list):
+            for i, item in enumerate(element):
+                if isinstance(item, str) and item.startswith("#/$defs/"):
+                    element[i] = item.replace("#/$defs/", "#/components/schemas/")
+                elif isinstance(item, dict) or isinstance(item, list):
+                    self._rewrite_defs_refs(item)
+        return element
+
     def _sanitize_schemas(self, name_map: dict[str, str], openapi_schemas: dict, req_linkml_names: set[str]) -> dict:
         """
         Prune unreachable schemas, remove redundant metadata, convert JSON Schema constructs
@@ -279,13 +323,47 @@ class OpenApiGenerator(Generator):
             openapi_schema.pop("title", None)
         if self._openapi_version == "3.0.3":
             openapi_schemas = cast(dict, self._fix_openapi_spec_v303(openapi_schemas))
+        elif self._openapi_version == "3.1.0":
+            openapi_schemas = cast(dict, self._strip_linkml_meta(openapi_schemas))
+            openapi_schemas = cast(dict, self._rewrite_defs_refs(openapi_schemas))
+            # OpenAPI 3.1 restricts components/schemas keys to ^[a-zA-Z0-9._-]+$
+            # (no spaces). Sanitize offending schema names and rewrite every $ref.
+            sanitize_map = self._sanitize_schema_names(openapi_schemas, reserved=set(name_map.values()))
+            if sanitize_map:
+                openapi_schemas = cast(dict, self._rename(sanitize_map, openapi_schemas))
         else:
-            raise UnsupportedOperation(f"OpenAPI version '{self._openapi_version}' is not supported")
+            raise ValueError(f"OpenAPI version '{self._openapi_version}' is not supported")
         if name_map:
             openapi_schemas = cast(dict, self._rename(name_map, openapi_schemas))
         if self.inline_enums:
             openapi_schemas = self._inline_enum_schemas(openapi_schemas)
         return openapi_schemas
+
+    # OpenAPI 3.1 schema-name pattern; keys under components/schemas must match it.
+    _OPENAPI_31_NAME_RE = re.compile(r"^[a-zA-Z0-9._-]+$")
+
+    def _sanitize_schema_names(self, openapi_schemas: dict, reserved: set[str]) -> dict[str, str]:
+        """Return a map of schema names invalid under OpenAPI 3.1 to sanitized equivalents.
+
+        OpenAPI 3.1 constrains ``components/schemas`` keys to ``^[a-zA-Z0-9._-]+$``,
+        so LinkML names containing spaces (or other disallowed characters) must be
+        rewritten. Any run of invalid characters collapses to a single underscore;
+        uniqueness is ensured against existing and already-reserved names.
+        """
+        existing = set(openapi_schemas.keys()) | reserved
+        name_map: dict[str, str] = {}
+        for name in openapi_schemas:
+            if self._OPENAPI_31_NAME_RE.match(name):
+                continue
+            base = re.sub(r"[^a-zA-Z0-9._-]+", "_", name).strip("_") or "schema"
+            candidate = base
+            suffix = 1
+            while candidate in existing or candidate in name_map.values():
+                candidate = f"{base}_{suffix}"
+                suffix += 1
+            name_map[name] = candidate
+            existing.add(candidate)
+        return name_map
 
     def _inline_enum_schemas(self, data_schemas: dict) -> dict:
         """Inline enum subschemas into their parents instead of separate entries."""
@@ -340,14 +418,45 @@ class OpenApiGenerator(Generator):
                 all_req_schemas[linkml_name] = self._generate_type_schema(linkml_name)
         return all_req_schemas
 
+    def _generate_schemas_v310(self, endpoint_ref_schema_names: set[str]) -> dict:
+        """Generate component schemas for OpenAPI v3.1.0 via :class:`.PydanticGenerator`."""
+        if not endpoint_ref_schema_names:
+            return {}
+        materialized_schema = self.schemaview.materialize_derived_schema()
+        module = PydanticGenerator(materialized_schema, extra_fields="allow").compile_module()
+        pydantic_classes = {
+            name: obj
+            for name, obj in vars(module).items()
+            if isinstance(obj, type) and issubclass(obj, BaseModel) and obj is not BaseModel
+        }
+        defined_types = {name: obj for name, obj in vars(module)["linkml_meta"]["types"].items()}
+
+        all_schemas = {}
+        for name, cls in pydantic_classes.items():
+            schema = cls.model_json_schema()
+            if "$defs" in schema:
+                all_schemas |= cls.model_json_schema()["$defs"]
+        if defined_types:
+            json_schema = JsonSchemaGenerator(
+                self.schemaview.schema, include_null=False, preserve_names=True
+            ).generate()
+            all_schemas |= json.loads(json_schema.to_json())["$defs"]
+
+        # LinkML types are not emitted as standalone Pydantic classes nor reliably as
+        # JSON Schema $defs (their constraints are inlined into referencing slots).
+        # Endpoint-referenced types must therefore be generated explicitly, mirroring
+        # the v3.0.3 path.
+        for linkml_name in endpoint_ref_schema_names:
+            if linkml_name not in all_schemas and linkml_name in self.schemaview.all_types():
+                all_schemas[linkml_name] = self._generate_type_schema(linkml_name)
+
+        return all_schemas
+
     def _generate_schemas(self, endpoint_ref_schema_names: set[str]) -> dict:
-        if self._openapi_version == "3.0.3":
-            all_req_schemas = self._generate_schemas_v303(endpoint_ref_schema_names)
+        if self._openapi_version == "3.1.0":
+            all_req_schemas = self._generate_schemas_v310(endpoint_ref_schema_names)
         else:
-            raise ValueError(
-                f"Unsupported OpenAPI version {self._openapi_version}. "
-                + f"Only supported versions are {','.join(self._openapi_versions)}"
-            )
+            all_req_schemas = self._generate_schemas_v303(endpoint_ref_schema_names)
         return all_req_schemas
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
@@ -392,10 +501,13 @@ class OpenApiGenerator(Generator):
             req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in openapi_schemas.keys()}
         else:
             req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names}
-        # when OpenAPI and LinkML names differ, record the synonym for later renaming
+        # when OpenAPI and LinkML names differ, record the synonym for later renaming.
+        # The template may declare a resource name (x-linkml-source mapping) for schemas
+        # referenced only by other schemas, not just those referenced directly by
+        # endpoints; every declared mapping must be honoured throughout the spec.
         name_map: dict[str, str] = {
             openapi_schemas[n]["x-linkml-source"]: n
-            for n in endpoint_ref_openapi_names
+            for n in openapi_schemas
             if n != openapi_schemas[n]["x-linkml-source"]
         }
 
