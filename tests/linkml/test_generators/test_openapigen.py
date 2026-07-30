@@ -1,6 +1,6 @@
 import pytest
 import yaml
-from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from openapi_spec_validator import OpenAPIV30SpecValidator, OpenAPIV31SpecValidator, validate
 from referencing.exceptions import PointerToNowhere
 
 from linkml.generators.openapigen import OpenApiGenerator
@@ -12,20 +12,36 @@ def gen_openapi_spec(head_path, kitchen_sink_path):
 
 
 @pytest.fixture
-def openapi_spec(input_path, kitchen_sink_path):
-    head_path = str(input_path("openapi/spec-head.openapi.yaml"))
+def templating(request):
+    """Templating (head path, validator) for openapi_spec.
+
+    Defaults to OpenAPI 3.0.3 when a test does not parametrize it indirectly.
+    """
+    return getattr(request, "param", ("openapi/spec-head-v30.openapi.yaml", OpenAPIV30SpecValidator))
+
+
+@pytest.fixture
+def openapi_spec(input_path, templating, kitchen_sink_path):
+    head_path = str(input_path(templating[0]))
     openapigen = OpenApiGenerator(kitchen_sink_path)
     return yaml.safe_load(openapigen.serialize(head_path))
 
 
-def test_openapi(input_path, kitchen_sink_path):
+@pytest.mark.parametrize(
+    "templating",
+    [
+        ("openapi/spec-head-v30.openapi.yaml", OpenAPIV30SpecValidator),
+        ("openapi/spec-head-v31.openapi.yaml", OpenAPIV31SpecValidator),
+    ],
+)
+def test_openapi(input_path, templating, kitchen_sink_path):
     """Test if generation succeeds without failure and returns valid YAML."""
-    head_path = str(input_path("openapi/spec-head.openapi.yaml"))
+    head_path = str(input_path(templating[0]))
     openapi_spec = gen_openapi_spec(head_path, kitchen_sink_path)
     # ensure that valid YAML has been generated
     assert yaml.safe_load(openapi_spec)
     # ensure that valid OpenAPI spec has been generated
-    assert validate(yaml.safe_load(openapi_spec), cls=OpenAPIV30SpecValidator) is None
+    assert validate(yaml.safe_load(openapi_spec), cls=templating[1]) is None
 
 
 def test_openapi_missing_template(kitchen_sink_path):
@@ -47,13 +63,39 @@ def test_openapi_spec_no_defs_references(openapi_spec):
         assert "#/$defs/" not in str(schema)
 
 
-def test_openapi_spec_const_to_enum_conversion(openapi_spec):
-    """Test that const values are converted to single-item enum arrays."""
+@pytest.mark.parametrize(
+    "templating",
+    [("openapi/spec-head-v31.openapi.yaml", OpenAPIV31SpecValidator)],
+    indirect=True,
+)
+def test_openapi_v31_no_linkml_meta(openapi_spec):
+    for schema in openapi_spec["components"]["schemas"].values():
+        assert "linkml_meta" not in str(schema)
+
+
+def test_openapi_v30_const_to_enum_conversion(openapi_spec):
+    """Test that const values are converted to single-item enum arrays (OpenAPI 3.0.3)."""
     person = openapi_spec["components"]["schemas"]["Person"]
     assert person["properties"]["species_name"]["enum"] == ["human"]
     assert person["properties"]["stomach_count"]["enum"] == [1]
     assert "const" not in person["properties"]["species_name"]
     assert "const" not in person["properties"]["stomach_count"]
+
+
+@pytest.mark.parametrize(
+    "templating",
+    [("openapi/spec-head-v31.openapi.yaml", OpenAPIV31SpecValidator)],
+    indirect=True,
+)
+def test_openapi_v31_const_preserved(openapi_spec):
+    """Test that const values are preserved as-is (OpenAPI 3.1.0)."""
+    person = openapi_spec["components"]["schemas"]["Person"]
+    species_name = person["properties"]["species_name"]
+    if "anyOf" in species_name:
+        const_branches = [b for b in species_name["anyOf"] if "const" in b]
+        assert len(const_branches) > 0, "const should be present in anyOf branches for v3.1.0"
+    else:
+        assert "const" in species_name, "const should be preserved in v3.1.0"
 
 
 def test_openapi_spec_class_level_title_stripped(openapi_spec):
@@ -77,12 +119,48 @@ def test_openapi_spec_schemas_are_extensible(openapi_spec):
 
     APIs are typically extended backwards-compatibly by adding new objects or new
     attributes to existing objects. Closed schemas (additionalProperties: false) block
-    that, so the generated OpenAPI schemas must stay open.
+    that, so the generated OpenAPI schemas must stay open — at every nesting level,
+    including inlined sub-schemas.
     """
-    for name, schema in openapi_spec["components"]["schemas"].items():
-        assert schema.get("additionalProperties") is not False, (
-            f"schema '{name}' is closed (additionalProperties: false), blocking API extension"
-        )
+
+    def _closed_paths(obj, path=""):
+        if isinstance(obj, dict):
+            if obj.get("additionalProperties") is False:
+                yield path or "<root>"
+            for key, value in obj.items():
+                yield from _closed_paths(value, f"{path}/{key}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                yield from _closed_paths(item, f"{path}[{i}]")
+
+    closed = list(_closed_paths(openapi_spec["components"]["schemas"]))
+    assert not closed, f"closed schemas (additionalProperties: false) block API extension: {closed}"
+
+
+@pytest.mark.parametrize(
+    "templating",
+    [("openapi/spec-head-v31.openapi.yaml", OpenAPIV31SpecValidator)],
+    indirect=True,
+)
+def test_openapi_v31_schemas_are_extensible(openapi_spec):
+    """Test that v3.1.0 (Pydantic path) also emits open schemas at every nesting level.
+
+    The Pydantic generator must be driven with ``extra_fields="allow"`` so no
+    ``additionalProperties: false`` leaks into the generated components.
+    """
+
+    def _closed_paths(obj, path=""):
+        if isinstance(obj, dict):
+            if obj.get("additionalProperties") is False:
+                yield path or "<root>"
+            for key, value in obj.items():
+                yield from _closed_paths(value, f"{path}/{key}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                yield from _closed_paths(item, f"{path}[{i}]")
+
+    closed = list(_closed_paths(openapi_spec["components"]["schemas"]))
+    assert not closed, f"closed schemas (additionalProperties: false) block API extension: {closed}"
 
 
 def test_resources_presence_and_absence(openapi_spec):
@@ -106,9 +184,12 @@ def test_printout_template(kitchen_sink_path):
     assert "https://w3id.org/linkml/tests/kitchen_sink" in output
 
 
-def test_schema_id_mismatch_raises(input_path, kitchen_sink_path):
+@pytest.mark.parametrize(
+    "template_path", ["openapi/spec-wrong-schema-id-v30.openapi.yaml", "openapi/spec-wrong-schema-id-v31.openapi.yaml"]
+)
+def test_schema_id_mismatch_raises(input_path, template_path, kitchen_sink_path):
     """Test that a mismatched x-linkml-schema raises ValueError with a descriptive message."""
-    head_path = str(input_path("openapi/spec-wrong-schema-id.openapi.yaml"))
+    head_path = str(input_path(template_path))
     with pytest.raises(ValueError, match="x-linkml-schema"):
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
 
@@ -150,9 +231,35 @@ def test_openapi_type_constraints(input_path):
         assert "#/$defs/" not in str(schema)
 
 
-def test_renaming(input_path, kitchen_sink_path):
+def test_openapi_v31_type_constraints(input_path):
+    """Test that a template schema backed by a LinkML type is generated on the v3.1.0 path.
+
+    LinkML types are not emitted as Pydantic classes; their constraints are inlined
+    into referencing slots. An endpoint that references a type directly (via
+    ``x-linkml-source``) must therefore still produce a standalone component schema,
+    otherwise the spec contains a dangling ``$ref``.
+    """
+    schema_path = str(input_path("openapi/schema_type_constraints.yaml"))
+    head_path = str(input_path("openapi/spec-types-v31.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # the type schema is exposed under the template's resource name, not dangling
+    code_str = schemas["CodeStringRef"]
+    assert code_str["type"] == "string"
+    assert code_str["pattern"] == "^[A-Z]{2,10}$"
+    assert code_str["description"] == "A 2-10 character uppercase code"
+    # the produced spec is valid OpenAPI 3.1.0 (no dangling reference)
+    assert validate(spec, cls=OpenAPIV31SpecValidator) is None
+    for schema in schemas.values():
+        assert "#/$defs/" not in str(schema)
+
+
+@pytest.mark.parametrize(
+    "template_path", ["openapi/spec-renaming-v30.openapi.yaml", "openapi/spec-renaming-v31.openapi.yaml"]
+)
+def test_renaming(input_path, template_path, kitchen_sink_path):
     """Test that resource names differing from LinkML class names are renamed throughout the spec."""
-    head_path = str(input_path("openapi/spec-renaming.openapi.yaml"))
+    head_path = str(input_path(template_path))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # resource is exposed under the template name, not the LinkML class name
@@ -204,8 +311,10 @@ def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_pa
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Person" in schemas
-    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
-    assert "MarriageEvent" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it,
+    # and is exposed under its OpenAPI resource name, not the LinkML class name
+    assert "OpaqueEvent" in schemas
+    assert "MarriageEvent" not in schemas
 
 
 def test_enums_as_separate_schemas_by_default(openapi_spec):
@@ -225,7 +334,7 @@ def test_inline_enums_inlines_enum_schemas(input_path, kitchen_sink_path):
     With the flag set, an enum no longer gets its own ``components/schemas`` entry;
     instead its definition is inlined where it was referenced.
     """
-    head_path = str(input_path("openapi/spec-head.openapi.yaml"))
+    head_path = str(input_path("openapi/spec-head-v30.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # the enum no longer has a standalone schema entry
