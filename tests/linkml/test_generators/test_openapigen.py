@@ -14,12 +14,13 @@ from linkml_runtime.loaders import YAMLLoader
 # Reusable YAML fragments
 # ---------------------------------------------------------------------------
 
-# OpenAPI versions the test-suite is driven with, mapped to the output format name
-# accepted by OpenApiGenerator (see OpenApiGenerator.valid_formats/_openapi_versions).
-# The two must stay in lockstep: extend this dict and the generator together when a
-# new OpenAPI version becomes supported.
-OAS_VERSIONS: dict[str, str] = {
-    "3.0.3": "openapi303",
+# OpenAPI versions the test-suite is driven with, mapped to the validator class from
+# openapi-spec-validator used to check the generated specs. The generator selects the
+# generation path from the template's top-level ``openapi`` attribute, so a version is
+# exercised simply by advertising it in the template. Extend this dict together with
+# the generator when a new OpenAPI version becomes supported.
+OAS_VALIDATORS: dict[str, type] = {
+    "3.0.3": OpenAPIV30SpecValidator,
 }
 
 # Default OpenAPI version used by templates/tests that are not version-parametrized.
@@ -423,14 +424,19 @@ TEMPLATE_RENAMED_TYPE = single_endpoint_template(
     description="ok",
 )
 
-TEMPLATE_RENAMING = single_endpoint_template(
-    "LinkML tests - renaming",
-    "/api/persons",
-    "PersonResource",
-    schema_id=KITCHEN_SINK_ID,
-    source="Person",
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+
+def template_renaming(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template exposing a LinkML class under a different OpenAPI resource name."""
+    return single_endpoint_template(
+        "LinkML tests - renaming",
+        "/api/persons",
+        "PersonResource",
+        schema_id=KITCHEN_SINK_ID,
+        source="Person",
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
 
 TEMPLATE_SHARED_RESPONSES = openapi_template(
     "Shared Responses Test",
@@ -469,14 +475,19 @@ TEMPLATE_REFERENCED_PARAMETER = openapi_template(
 """,
 )
 
-TEMPLATE_TYPES = single_endpoint_template(
-    "LinkML type constraints test",
-    "/api/code",
-    "CodeStringRef",
-    schema_id=TYPES_AND_ENUMS_ID,
-    source="CodeString",
-    comment="# OpenAPI template referring a Type defined in the LinkML schema",
-)
+
+def template_types(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint references a LinkML Type (constraints inlined)."""
+    return single_endpoint_template(
+        "LinkML type constraints test",
+        "/api/code",
+        "CodeStringRef",
+        schema_id=TYPES_AND_ENUMS_ID,
+        source="CodeString",
+        comment="# OpenAPI template referring a Type defined in the LinkML schema",
+        oas_version=oas_version,
+    )
+
 
 TEMPLATE_TYPES_ENUMS = single_endpoint_template(
     "Types and Enums Test",
@@ -487,14 +498,19 @@ TEMPLATE_TYPES_ENUMS = single_endpoint_template(
     header=TEMPLATE_SERVERS_SECURITY,
 )
 
-TEMPLATE_WRONG_SCHEMA_ID = single_endpoint_template(
-    "LinkML tests - wrong schema id",
-    "/api/endpoint1",
-    "Person",
-    schema_id=WRONG_SCHEMA_ID,
-    source="Person",
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+
+def template_wrong_schema_id(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose schema declares a mismatched ``x-linkml-schema`` id."""
+    return single_endpoint_template(
+        "LinkML tests - wrong schema id",
+        "/api/endpoint1",
+        "Person",
+        schema_id=WRONG_SCHEMA_ID,
+        source="Person",
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
 
 TEMPLATE_COMMENTS = openapi_template(
     "Comment Preservation Test",
@@ -622,27 +638,31 @@ def write_template(tmp_path: Path, text: str) -> str:
     return str(path)
 
 
-def gen_openapi_spec(head_path, kitchen_sink_path, format_name=None):
-    openapigen = OpenApiGenerator(kitchen_sink_path, format=format_name)
+def gen_openapi_spec(head_path, kitchen_sink_path):
+    openapigen = OpenApiGenerator(kitchen_sink_path)
     return openapigen.serialize(head_path)
 
 
-@pytest.fixture(params=list(OAS_VERSIONS))
-def openapi_spec(request, tmp_path, kitchen_sink_path):
-    oas_version, format_name = request.param, OAS_VERSIONS[request.param]
+@pytest.fixture(params=list(OAS_VALIDATORS))
+def oas_version(request):
+    """The OpenAPI version under test; drives the version-parametrized fixtures/tests."""
+    return request.param
+
+
+@pytest.fixture
+def openapi_spec(tmp_path, kitchen_sink_path, oas_version):
     head_path = write_template(tmp_path, template_head(oas_version=oas_version))
-    spec = yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path, format_name))
-    return spec
+    return yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path))
 
 
-def test_openapi(tmp_path, kitchen_sink_path):
+def test_openapi(tmp_path, kitchen_sink_path, oas_version):
     """Test if generation succeeds without failure and returns valid YAML."""
-    head_path = write_template(tmp_path, TEMPLATE_HEAD)
+    head_path = write_template(tmp_path, template_head(oas_version=oas_version))
     openapi_spec = gen_openapi_spec(head_path, kitchen_sink_path)
     # ensure that valid YAML has been generated
     assert yaml.safe_load(openapi_spec)
     # ensure that valid OpenAPI spec has been generated
-    assert validate(yaml.safe_load(openapi_spec), cls=OpenAPIV30SpecValidator) is None
+    assert validate(yaml.safe_load(openapi_spec), cls=OAS_VALIDATORS[oas_version]) is None
 
 
 def test_openapi_missing_template(kitchen_sink_path):
@@ -664,13 +684,21 @@ def test_openapi_spec_no_defs_references(openapi_spec):
         assert "#/$defs/" not in str(schema)
 
 
-def test_openapi_spec_const_to_enum_conversion(openapi_spec):
-    """Test that const values are converted to single-item enum arrays."""
+def test_openapi_spec_const_conversion(openapi_spec, oas_version):
+    """Test const handling per version: enum arrays on 3.0.3, preserved const on 3.1.0."""
     person = openapi_spec["components"]["schemas"]["Person"]
-    assert person["properties"]["species_name"]["enum"] == ["human"]
-    assert person["properties"]["stomach_count"]["enum"] == [1]
-    assert "const" not in person["properties"]["species_name"]
-    assert "const" not in person["properties"]["stomach_count"]
+    species_name = person["properties"]["species_name"]
+    stomach_count = person["properties"]["stomach_count"]
+    if oas_version == "3.0.3":
+        # OpenAPI 3.0 has no ``const``; the generator rewrites it to a single-item ``enum``
+        assert species_name["enum"] == ["human"]
+        assert stomach_count["enum"] == [1]
+        assert "const" not in species_name
+        assert "const" not in stomach_count
+    else:
+        # OpenAPI 3.1 is aligned with JSON Schema 2020-12, so ``const`` is kept as-is
+        assert "const" in str(species_name)
+        assert "const" in str(stomach_count)
 
 
 def test_openapi_spec_class_level_title_stripped(openapi_spec):
@@ -680,13 +708,17 @@ def test_openapi_spec_class_level_title_stripped(openapi_spec):
     assert person["properties"]["age_in_years"]["description"] == "number of years since birth"
 
 
-def test_openapi_spec_nullable_type_conversion(openapi_spec):
-    """Test that nullable type arrays are converted to anyOf."""
+def test_openapi_spec_nullable_type_conversion(openapi_spec, oas_version):
+    """Test nullable handling per version: anyOf on 3.0.3, native type arrays on 3.1.0."""
     emp_event = openapi_spec["components"]["schemas"]["EmploymentEvent"]
-    assert "anyOf" in emp_event["properties"]["type"]
-    assert "type" not in emp_event["properties"]["type"] or not isinstance(
-        emp_event["properties"]["type"]["type"], list
-    )
+    type_prop = emp_event["properties"]["type"]
+    if oas_version == "3.0.3":
+        # OpenAPI 3.0 forbids type arrays; nullable ``["x", "null"]`` becomes ``anyOf``
+        assert "anyOf" in type_prop
+        assert "type" not in type_prop or not isinstance(type_prop["type"], list)
+    else:
+        # OpenAPI 3.1 permits nullable type arrays and ``anyOf`` alike; either is valid
+        assert "anyOf" in type_prop or isinstance(type_prop.get("type"), list)
 
 
 def test_openapi_spec_schemas_are_extensible(openapi_spec):
@@ -694,12 +726,23 @@ def test_openapi_spec_schemas_are_extensible(openapi_spec):
 
     APIs are typically extended backwards-compatibly by adding new objects or new
     attributes to existing objects. Closed schemas (additionalProperties: false) block
-    that, so the generated OpenAPI schemas must stay open.
+    that, so the generated OpenAPI schemas must stay open -- at every nesting level,
+    including inlined sub-schemas (relevant for the v3.1.0 Pydantic path, which must be
+    driven with ``extra_fields="allow"``).
     """
-    for name, schema in openapi_spec["components"]["schemas"].items():
-        assert schema.get("additionalProperties") is not False, (
-            f"schema '{name}' is closed (additionalProperties: false), blocking API extension"
-        )
+
+    def _closed_paths(obj, path=""):
+        if isinstance(obj, dict):
+            if obj.get("additionalProperties") is False:
+                yield path or "<root>"
+            for key, value in obj.items():
+                yield from _closed_paths(value, f"{path}/{key}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                yield from _closed_paths(item, f"{path}[{i}]")
+
+    closed = list(_closed_paths(openapi_spec["components"]["schemas"]))
+    assert not closed, f"closed schemas (additionalProperties: false) block API extension: {closed}"
 
 
 def test_resources_presence_and_absence(openapi_spec):
@@ -716,16 +759,16 @@ def test_printout_template(kitchen_sink_path):
     """Test that printout_template returns a valid YAML generic template."""
     output = OpenApiGenerator(kitchen_sink_path).printout_template()
     parsed = yaml.safe_load(output)
-    assert parsed["openapi"] == "3.0.3"
+    assert parsed["openapi"] == "x.y.z"
     assert "paths" in parsed
     assert "schemas" in parsed["components"]
     # the schema id from kitchen_sink must appear in the template
     assert "https://w3id.org/linkml/tests/kitchen_sink" in output
 
 
-def test_schema_id_mismatch_raises(tmp_path, kitchen_sink_path):
+def test_schema_id_mismatch_raises(tmp_path, kitchen_sink_path, oas_version):
     """Test that a mismatched x-linkml-schema raises ValueError with a descriptive message."""
-    head_path = write_template(tmp_path, TEMPLATE_WRONG_SCHEMA_ID)
+    head_path = write_template(tmp_path, template_wrong_schema_id(oas_version=oas_version))
     with pytest.raises(ValueError, match="x-linkml-schema"):
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
 
@@ -780,25 +823,30 @@ def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize(str(template))
 
 
-def test_openapi_type_constraints(input_path, tmp_path):
-    """Test that LinkML types with constraints (e.g., pattern) are properly generated in the spec."""
+def test_openapi_type_constraints(input_path, tmp_path, oas_version):
+    """Test that a LinkML type (constraints inlined) still yields a standalone component schema.
+
+    On both the v3.0.3 (JsonSchema) and v3.1.0 (Pydantic) paths, LinkML types are not
+    emitted as classes; an endpoint referencing a type directly (via x-linkml-source)
+    must still produce a component schema, otherwise the spec has a dangling ``$ref``.
+    """
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_TYPES)
+    head_path = write_template(tmp_path, template_types(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
-    # the type schema is exposed under the template's resource name
+    # the type schema is exposed under the template's resource name, not dangling
     code_str = schemas["CodeStringRef"]
     assert code_str["type"] == "string"
     assert code_str["pattern"] == "^[A-Z]{2,10}$"
     assert code_str["description"] == "A 2-10 character uppercase code"
-    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
     for schema in schemas.values():
         assert "#/$defs/" not in str(schema)
 
 
-def test_renaming(tmp_path, kitchen_sink_path):
+def test_renaming(tmp_path, kitchen_sink_path, oas_version):
     """Test that resource names differing from LinkML class names are renamed throughout the spec."""
-    head_path = write_template(tmp_path, TEMPLATE_RENAMING)
+    head_path = write_template(tmp_path, template_renaming(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # resource is exposed under the template name, not the LinkML class name
