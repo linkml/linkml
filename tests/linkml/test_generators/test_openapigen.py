@@ -3,7 +3,7 @@ from textwrap import dedent
 
 import pytest
 import yaml
-from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from openapi_spec_validator import OpenAPIV30SpecValidator, OpenAPIV31SpecValidator, validate
 from referencing.exceptions import PointerToNowhere
 
 from linkml.generators.openapigen import OpenApiGenerator
@@ -21,6 +21,7 @@ from linkml_runtime.loaders import YAMLLoader
 # the generator when a new OpenAPI version becomes supported.
 OAS_VALIDATORS: dict[str, type] = {
     "3.0.3": OpenAPIV30SpecValidator,
+    "3.1.0": OpenAPIV31SpecValidator,
 }
 
 # Default OpenAPI version used by templates/tests that are not version-parametrized.
@@ -701,6 +702,14 @@ def test_openapi_spec_const_conversion(openapi_spec, oas_version):
         assert "const" in str(stomach_count)
 
 
+def test_openapi_v31_no_linkml_meta(tmp_path, kitchen_sink_path):
+    """Test that the v3.1.0 Pydantic path strips ``linkml_meta`` annotations from schemas."""
+    head_path = write_template(tmp_path, template_head(oas_version="3.1.0"))
+    spec = yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path))
+    for schema in spec["components"]["schemas"].values():
+        assert "linkml_meta" not in str(schema)
+
+
 def test_openapi_spec_class_level_title_stripped(openapi_spec):
     """Test that class-level title (redundant with dict key) is removed but property-level description preserved."""
     person = openapi_spec["components"]["schemas"]["Person"]
@@ -915,8 +924,10 @@ def test_keep_unreferenced_preserves_template_schema(tmp_path, kitchen_sink_path
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Person" in schemas
-    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
-    assert "MarriageEvent" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it,
+    # and is exposed under its OpenAPI resource name, not the LinkML class name
+    assert "OpaqueEvent" in schemas
+    assert "MarriageEvent" not in schemas
 
 
 def test_unreferenced_chain_pruned_by_default(tmp_path):
