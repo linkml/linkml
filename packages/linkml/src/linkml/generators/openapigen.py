@@ -287,11 +287,11 @@ class OpenApiGenerator(Generator):
                 )
             data_schema = openapi_schemas[endpoint_reference_name]
             # validate that linkml schema id is correct
-            if data_schema["x-linkml-schema"] != self.schema.id:
+            if data_schema["x-linkml-schema"] != self.schemaview.schema.id:
                 raise ValueError(
                     f"Template data schema '{endpoint_reference_name}' declares "
                     f"x-linkml-schema '{data_schema['x-linkml-schema']}' "
-                    f"but the loaded schema has id '{self.schema.id}'"
+                    f"but the loaded schema has id '{self.schemaview.schema.id}'"
                 )
             # if openapi schema name differs from linkml element name, add mapping
             linkml_element_name = data_schema["x-linkml-source"]
@@ -337,7 +337,7 @@ class OpenApiGenerator(Generator):
         first_element = next(iter(element_names))
         if re.search(r"[ :\d]", first_element):
             first_element = f'"{first_element}"'
-        return openapi_generic_template.format(linkml_schema_id=self.schema.id, data_schema=first_element)
+        return openapi_generic_template.format(linkml_schema_id=self.schemaview.schema.id, data_schema=first_element)
 
 
 @shared_arguments(OpenApiGenerator)
