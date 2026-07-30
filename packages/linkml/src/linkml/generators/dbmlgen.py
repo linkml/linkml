@@ -124,7 +124,17 @@ class DBMLGenerator(Generator):
                     )
 
                     if identifier_slot_name is None:
-                        raise ValueError(f"Referenced class '{slot.range}' does not have an identifier slot.")
+                        # Inlined / embedded references — where the referenced
+                        # class has no identifier — are a legitimate LinkML
+                        # pattern. DBML supports them: the foreign-key column
+                        # simply has no ``Ref:`` line. Skip rather than raise.
+                        self.logger.debug(
+                            "Skipping DBML relationship for %s.%s -> %s: referenced class has no identifier slot.",
+                            class_name,
+                            slot.name,
+                            slot.range,
+                        )
+                        continue
 
                     # Generate the DBML relationship
                     relationships.append(
