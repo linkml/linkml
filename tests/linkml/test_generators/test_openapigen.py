@@ -257,6 +257,27 @@ def test_no_dangling_references_for_valid_schema(openapi_spec):
         assert ref.removeprefix("#/components/schemas/") in schema_names
 
 
+def test_lowercase_class_name_preserved(input_path, kitchen_sink_path):
+    """Test that a lowercase LinkML class name is preserved, not camelCased, in the spec.
+
+    ``JsonSchemaGenerator`` camelCases ``$defs`` keys unless ``preserve_names=True``.
+    In kitchen_sink the class ``activity`` (lowercase) is transitively reachable from
+    ``Dataset`` via the ``activities`` slot. Without name preservation the emitted schema
+    is keyed ``Activity`` while the ``$ref`` from ``Dataset`` points to ``activity``,
+    yielding a missing schema and a dangling reference.
+    """
+    head_path = str(input_path("openapi/spec-lowercase-class.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # the LinkML name is preserved verbatim, not camelCased
+    assert "activity" in schemas
+    assert "Activity" not in schemas
+    # Dataset references the activity schema under its original name
+    assert schemas["Dataset"]["properties"]["activities"]["items"] == {"$ref": "#/components/schemas/activity"}
+    # the produced spec is valid (no dangling reference)
+    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+
+
 def test_dangling_reference_raises(input_path, kitchen_sink_path):
     """Test that a generated spec containing an unresolvable $ref is rejected.
 
