@@ -5,10 +5,13 @@ import os
 import re
 import textwrap
 from dataclasses import dataclass, field
+from typing import cast
 
 import click
 import yaml
-from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from openapi_spec_validator import OpenAPIV30SpecValidator
+from openapi_spec_validator import validate as openapi_validate
+from openapi_spec_validator.validation.validators import SpecValidator as OaSpecValidator
 from yaml import MappingNode, ScalarNode
 
 from linkml._version import __version__
@@ -47,6 +50,7 @@ components:
   schemas:
     # this resource name can differ from the name in the LinkML schema
     # it must only match the corresponding endpoint `$ref` references
+    # it creates a mapping between names in OpenAPI and LinkML
     {data_schema}:
       type: object
       description: Resource schema to be generated from the LinkML data model.
@@ -76,7 +80,6 @@ class OpenApiGenerator(Generator):
     uses_schemaloader = False
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
-    _renaming: dict[str, str] = field(default_factory=dict, init=False, repr=False)
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_versions: dict[str, str] = field(
@@ -86,11 +89,33 @@ class OpenApiGenerator(Generator):
     )
     # Mapping of OpenAPI version strings to validators from openapi-spec-validator.
     # Extend this dict when adding support for additional OpenAPI versions.
-    _openapi_validators: dict[str, type] = field(
+    _openapi_validators: dict[str, type[OaSpecValidator]] = field(
         default_factory=lambda: {"3.0.3": OpenAPIV30SpecValidator},
         init=False,
         repr=False,
     )
+
+    def _validate_oa_template(self, oa_validator_class: type[OaSpecValidator], expected_version: str, format_name: str):
+        """Validate the OpenAPI template"""
+        # Validate that the template declares the expected OpenAPI version
+        declared_version = self._template.get("openapi")
+        if declared_version != expected_version:
+            raise ValueError(
+                f"Template OpenAPI version is '{declared_version}', "
+                f"but format '{format_name}' requires version '{expected_version}'"
+            )
+        # Validate the input template against the OpenAPI specification.
+        # This also catches dangling $ref targets in endpoints.
+        openapi_validate(self._template, cls=oa_validator_class)
+        # Validation: every template schema must declare this LinkML schema.
+        if "components" in self._template and "schemas" in self._template["components"]:
+            for name, schema in self._template["components"]["schemas"].items():
+                if schema["x-linkml-schema"] != self.schemaview.schema.id:
+                    raise ValueError(
+                        f"Template data schema '{name}' declares "
+                        f"x-linkml-schema '{schema['x-linkml-schema']}' "
+                        f"but the loaded schema has id '{self.schemaview.schema.id}'"
+                    )
 
     def _find_referenced_schemas(self) -> set[str]:
         """Return the set of resource names referenced by the template's endpoints."""
@@ -116,7 +141,41 @@ class OpenApiGenerator(Generator):
                                     result.add(resource_name)
         return result
 
-    def _fix_openapi_spec(self, element: dict | list) -> dict | list | None:
+    def _generate_type_schema(self, type_name: str) -> dict:
+        """Build an OpenAPI-compatible JSON Schema for a LinkML TypeDefinition."""
+        type_def = self.schemaview.get_type(type_name)
+        typ, fmt = json_schema_types.get(type_def.base.lower(), ("string", None))
+        schema: dict = {}
+        if typ:
+            schema["type"] = str(typ)
+        if fmt:
+            schema["format"] = str(fmt)
+        if type_def.pattern:
+            schema["pattern"] = str(type_def.pattern)
+        if type_def.minimum_value is not None:
+            schema["minimum"] = str(type_def.minimum_value)
+        if type_def.maximum_value is not None:
+            schema["maximum"] = str(type_def.maximum_value)
+        if type_def.equals_string is not None:
+            schema["const"] = str(type_def.equals_string)
+        if type_def.equals_number is not None:
+            schema["const"] = str(type_def.equals_number)
+        if type_def.description:
+            schema["description"] = str(type_def.description)
+        return schema
+
+    def _find_references(self, element: dict | list, referenced_data_schemas: set[str]) -> None:
+        """Recursively collect all ``$ref`` target names from ``element`` into ``referenced_data_schemas``."""
+        if isinstance(element, dict):
+            if "$ref" in element:
+                referenced_data_schemas.add(element["$ref"].replace("#/$defs/", ""))
+            for value in element.values():
+                self._find_references(value, referenced_data_schemas)
+        elif isinstance(element, list):
+            for item in element:
+                self._find_references(item, referenced_data_schemas)
+
+    def _fix_openapi_spec(self, element: dict | list) -> dict | list:
         """
         Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:
 
@@ -148,85 +207,63 @@ class OpenApiGenerator(Generator):
                 fixed_element.append(item)
         return fixed_element
 
-    def _rename(self, element: dict | list) -> dict | list | None:
+    def _rename(self, name_map: dict[str, str], element: dict | list) -> dict | list:
         """
         If the resource names do not correspond the data schema names,
         then some renaming is needed so that OpenAPI resource names
         are properly referenced throughout the whole OpenAPI file.
         """
-        renamed_element = None
         if isinstance(element, dict):
-            renamed_element = {}
+            renamed_element: dict | list = {}
             for key, value in element.items():
-                if key in self._renaming:
-                    key = self._renaming[key]
+                if key in name_map:
+                    key = name_map[key]
                 if isinstance(value, dict | list):
-                    value = self._rename(value)
+                    value = self._rename(name_map, value)
                 elif isinstance(value, str) and value.startswith("#/components/schemas/"):
                     data_schema_name = value[len("#/components/schemas/") :]
-                    if data_schema_name in self._renaming:
-                        value = value.replace(data_schema_name, self._renaming[data_schema_name])
+                    if data_schema_name in name_map:
+                        value = value.replace(data_schema_name, name_map[data_schema_name])
                 renamed_element[key] = value
         elif isinstance(element, list):
-            renamed_element = []
+            renamed_element: dict | list = []
             for item in element:
                 if isinstance(item, dict | list):
-                    item = self._rename(item)
+                    item = self._rename(name_map, item)
                 elif isinstance(item, str) and item.startswith("#/components/schemas/"):
                     data_schema_name = item[len("#/components/schemas/") :]
-                    if data_schema_name in self._renaming:
-                        item = item.replace(data_schema_name, self._renaming[data_schema_name])
+                    if data_schema_name in name_map:
+                        item = item.replace(data_schema_name, name_map[data_schema_name])
                 renamed_element.append(item)
+        else:
+            raise TypeError(f"Unexpected type '{type(element)}', only 'dict' and 'list' supported.")
         return renamed_element
 
-    def _find_references(self, element: dict | list, referenced_data_schemas: set[str]) -> None:
-        """Recursively collect all ``$ref`` target names from ``element`` into ``referenced_data_schemas``."""
-        if isinstance(element, dict):
-            if "$ref" in element:
-                referenced_data_schemas.add(element["$ref"].replace("#/$defs/", ""))
-            for value in element.values():
-                self._find_references(value, referenced_data_schemas)
-        elif isinstance(element, list):
-            for item in element:
-                self._find_references(item, referenced_data_schemas)
-
-    def _sanitize_schemas(self, data_schemas: dict, endpoint_referenced_schemas: set[str]) -> dict:
-        """Remove schemas not transitively reachable from any endpoint-referenced data schema."""
-        referenced_schemas = endpoint_referenced_schemas.copy()
-        for data_schema in data_schemas.values():
-            self._find_references(data_schema, referenced_schemas)
-        while set(data_schemas.keys()).difference(referenced_schemas):
-            data_schema_names = list(data_schemas.keys())
-            for data_schema_name in data_schema_names:
-                if data_schema_name not in referenced_schemas:
-                    del data_schemas[data_schema_name]
-            referenced_schemas = endpoint_referenced_schemas.copy()
-            for data_schema in data_schemas.values():
-                self._find_references(data_schema, referenced_schemas)
-        return data_schemas
-
-    def _generate_type_schema(self, type_name: str) -> dict:
-        """Build an OpenAPI-compatible JSON Schema for a LinkML TypeDefinition."""
-        type_def = self.schemaview.get_type(type_name)
-        typ, fmt = json_schema_types.get(type_def.base.lower(), ("string", None))
-        schema: dict = {}
-        if typ:
-            schema["type"] = str(typ)
-        if fmt:
-            schema["format"] = str(fmt)
-        if type_def.pattern:
-            schema["pattern"] = str(type_def.pattern)
-        if type_def.minimum_value is not None:
-            schema["minimum"] = str(type_def.minimum_value)
-        if type_def.maximum_value is not None:
-            schema["maximum"] = str(type_def.maximum_value)
-        if type_def.equals_string is not None:
-            schema["const"] = str(type_def.equals_string)
-        if type_def.equals_number is not None:
-            schema["const"] = str(type_def.equals_number)
-        if type_def.description:
-            schema["description"] = str(type_def.description)
-        return schema
+    def _sanitize_schemas(
+        self, name_map: dict[str, str], openapi_schemas: dict, endpoint_ref_linkml_names: set[str]
+    ) -> dict:
+        """
+        Prune unreachable schemas, remove redundant metadata, convert JSON Schema constructs
+        to OpenAPI 3.0.3 compat, and apply any OpenAPI↔LinkML name renames.
+        """
+        referenced_schemas = endpoint_ref_linkml_names.copy()
+        for openapi_schema in openapi_schemas.values():
+            self._find_references(openapi_schema, referenced_schemas)
+        while set(openapi_schemas.keys()).difference(referenced_schemas):
+            openapi_schema_names = list(openapi_schemas.keys())
+            for openapi_schema_name in openapi_schema_names:
+                if openapi_schema_name not in referenced_schemas:
+                    del openapi_schemas[openapi_schema_name]
+            referenced_schemas = endpoint_ref_linkml_names.copy()
+            for openapi_schema in openapi_schemas.values():
+                self._find_references(openapi_schema, referenced_schemas)
+        # title always duplicates the schema dict key, so it is redundant in components/schemas
+        for openapi_schema in openapi_schemas.values():
+            openapi_schema.pop("title", None)
+        openapi_schemas = cast(dict, self._fix_openapi_spec(openapi_schemas))
+        if name_map:
+            openapi_schemas = cast(dict, self._rename(name_map, openapi_schemas))
+        return openapi_schemas
 
     def _find_schemas_line(self, template_text: str) -> int:
         """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
@@ -247,81 +284,73 @@ class OpenApiGenerator(Generator):
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
+        # load the template
         if not template_file:
             raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
             template_text = tf.read()
             self._template = yaml.safe_load(template_text)
-        # Determine the expected OpenAPI version from the active output format
+        # determine the expected OpenAPI version from the active output format
         format_name = getattr(self, "format", self.valid_formats[0]) or self.valid_formats[0]
         expected_version = self._openapi_versions.get(format_name)
         if expected_version is None:
             raise ValueError(f"Unsupported output format '{format_name}'")
-        validator_class = self._openapi_validators.get(expected_version)
-        if validator_class is None:
+
+        # get the corresponding OpenAPI validator
+        oa_validator_class = self._openapi_validators.get(expected_version)
+        if oa_validator_class is None:
             raise ValueError(f"No validator available for OpenAPI version {expected_version}")
-        # Validate that the template declares the expected OpenAPI version
-        declared_version = self._template.get("openapi")
-        if declared_version != expected_version:
-            raise ValueError(
-                f"Template OpenAPI version is '{declared_version}', "
-                f"but format '{format_name}' requires version '{expected_version}'"
-            )
-        # Validate the input template against the OpenAPI specification
-        validate(self._template, cls=validator_class)
-        if not isinstance(self._template.get("paths"), dict):
-            raise ValueError("OpenAPI template is missing required 'paths' section")
-        if not isinstance(self._template.get("components"), dict):
-            raise ValueError("OpenAPI template is missing required 'components' section")
-        endpoint_ref_schema_names = self._find_referenced_schemas()  # schemas referenced by OpenAPI endpoint(s)
-        openapi_schemas = self._template["components"]["schemas"]  # data schemas provided by the template
-        all_req_data_schemas = {}  # data schemas directly or transitively required by the API
-        self._renaming = {}  # openapi <-> linkml renaming map
-        directly_required_linkml_elements: set[str] = set()  # LinkML class/type names of directly-referenced schemas
-        # get only the data schemas that are really referenced from an endpoint
-        for endpoint_reference_name in endpoint_ref_schema_names:
-            if endpoint_reference_name not in openapi_schemas:
-                raise KeyError(
-                    f"data schema '{endpoint_reference_name}' referenced in one of the endpoints "
-                    "does not have a schema declaration"
-                )
-            data_schema = openapi_schemas[endpoint_reference_name]
-            # validate that linkml schema id is correct
-            if data_schema["x-linkml-schema"] != self.schemaview.schema.id:
-                raise ValueError(
-                    f"Template data schema '{endpoint_reference_name}' declares "
-                    f"x-linkml-schema '{data_schema['x-linkml-schema']}' "
-                    f"but the loaded schema has id '{self.schemaview.schema.id}'"
-                )
-            # if openapi schema name differs from linkml element name, add mapping
-            linkml_element_name = data_schema["x-linkml-source"]
-            if endpoint_reference_name != linkml_element_name:
-                self._renaming[linkml_element_name] = endpoint_reference_name
-            directly_required_linkml_elements.add(linkml_element_name)
-            if linkml_element_name in self.schemaview.all_types().keys():
-                all_req_data_schemas[linkml_element_name] = self._generate_type_schema(linkml_element_name)
-                continue
-            json_schema = JsonSchemaGenerator(
-                self.schemaview.schema, include_null=False, top_class=linkml_element_name
-            ).generate()
-            json_schema_classes = json.loads(json_schema.to_json())["$defs"]
-            all_req_data_schemas = all_req_data_schemas | json_schema_classes
-        sanitized_data_schemas = self._sanitize_schemas(all_req_data_schemas, directly_required_linkml_elements)
-        # title always duplicates the schema dict key, so it is redundant in components/schemas
-        for data_schema in sanitized_data_schemas.values():
-            data_schema.pop("title", None)
-        sanitized_data_schemas = self._fix_openapi_spec(sanitized_data_schemas)
-        if self._renaming:
-            sanitized_data_schemas = self._rename(sanitized_data_schemas)
-        # Replace the existing schemas section in the text template with the generated schemas
+        # validate the OpenAPI template before further processing
+        self._validate_oa_template(oa_validator_class, expected_version, format_name)
+        # if no schemas to instantiate, return the template itself
+        if (
+            "components" not in self._template
+            or "schemas" not in self._template["components"]
+            or not self._template["components"]["schemas"]
+        ):
+            return template_text
+
+        # Two namespaces exist: OpenAPI schema names (from the template's
+        # components/schemas keys) and LinkML element names (from the LinkML schema).
+        # Every schema has a name in both namespaces and the template declares the
+        # mapping between them in the x-linkml-schema values; they may be identical or differ.
+        # When they differ, name_map records the synonym (LinkML element name -> OpenAPI schema name).
+        endpoint_ref_openapi_names = self._find_referenced_schemas()  # OpenAPI names referenced by endpoints
+        openapi_schemas = self._template["components"]["schemas"]  # schemas provided by the OpenAPI template
+        # collect the LinkML names referenced by endpoints (seed for sanitizing below)
+        endpoint_ref_linkml_names: set[str] = {
+            openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names
+        }
+        # when OpenAPI and LinkML names differ, record the synonym for later renaming
+        name_map: dict[str, str] = {
+            openapi_schemas[n]["x-linkml-source"]: n
+            for n in endpoint_ref_openapi_names
+            if n != openapi_schemas[n]["x-linkml-source"]
+        }
+
+        # JsonSchemaGenerator.generate() emits every class/enum of the LinkML schema into
+        # $defs. LinkML types are not part of $defs and are generated separately.
+        # all_req_schemas contains all directly or transitively required schemas from
+        # LinkML classes and types
+        json_schema = JsonSchemaGenerator(self.schemaview.schema, include_null=False).generate()
+        all_req_schemas: dict[str, dict] = json.loads(json_schema.to_json())["$defs"]
+        for linkml_name in endpoint_ref_linkml_names:
+            if linkml_name in self.schemaview.all_types():
+                all_req_schemas[linkml_name] = self._generate_type_schema(linkml_name)
+
+        # sanitize schemas not transitively reachable from any endpoint-referenced schema
+        sanitized_data_schemas = self._sanitize_schemas(name_map, all_req_schemas, endpoint_ref_linkml_names)
+
+        # instantiate the real OpenAPI YAML replacing the schema placeholders
         lines = template_text.splitlines(keepends=True)
         schemas_line_idx = self._find_schemas_line(template_text)
         text_before_schemas = "".join(lines[:schemas_line_idx])
         schemas_yaml = yaml.dump(sanitized_data_schemas, sort_keys=False)
         indented_schemas = textwrap.indent(schemas_yaml, "    ")
         result = text_before_schemas + "  schemas:\n" + indented_schemas
-        # Validate the generated output against the OpenAPI specification
-        validate(yaml.safe_load(result), cls=validator_class)
+
+        # validate the generated output against the OpenAPI specification before returning
+        openapi_validate(yaml.safe_load(result), cls=oa_validator_class)
         return result
 
     def printout_template(self) -> str:
