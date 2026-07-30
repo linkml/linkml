@@ -34,6 +34,13 @@ def test_openapi_missing_template(kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize()
 
 
+def test_openapi_fixed_template(input_path, kitchen_sink_path):
+    """Test that serialize raises ValueError when no template file is provided."""
+    head_path = str(input_path("openapi/spec-fixed.openapi.yaml"))
+    oa_spec = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
+    assert open(head_path).read() == oa_spec
+
+
 def test_openapi_spec_no_defs_references(openapi_spec):
     """Test that all $defs references are converted to components/schemas."""
     for schema in openapi_spec["components"]["schemas"].values():
