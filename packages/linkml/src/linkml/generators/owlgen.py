@@ -943,7 +943,7 @@ class OwlSchemaGenerator(Generator):
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: element.pattern,  # TODO: map between ECMAScript and XSD regular expressions
+            XSD.pattern: self._structured_pattern_as_xsd(element),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -999,6 +999,21 @@ class OwlSchemaGenerator(Generator):
                 graph.add((x, constraint_prop, Literal(constraint_val)))
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
+
+    def _structured_pattern_as_xsd(
+        self,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+    ) -> str | None:
+        """Translate a materialized structured pattern to XML Schema regex semantics."""
+        pattern = element.pattern
+        structured_pattern = element.structured_pattern
+        if pattern is None or structured_pattern is None or not self.materialize_patterns:
+            return pattern
+        if structured_pattern.partial_match:
+            return f".*({pattern}).*"
+        if pattern.startswith("^(?:") and pattern.endswith(")$"):
+            return pattern[4:-2]
+        return pattern
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so

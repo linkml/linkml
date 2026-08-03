@@ -91,11 +91,39 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     assert BIZ["001"] in owl_classes
 
 
-def test_as_graph_materializes_structured_patterns(input_path) -> None:
-    """Materialize structured patterns when generating an OWL graph directly."""
-    graph = OwlSchemaGenerator(input_path("pattern-example.yaml")).as_graph()
+@pytest.mark.parametrize(
+    ("partial_match", "expected_pattern"),
+    [
+        (False, r"[a-z]+"),
+        (True, r".*([a-z]+).*"),
+    ],
+)
+def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
+    """Translate materialized structured patterns into XML Schema regex semantics."""
+    graph = OwlSchemaGenerator(
+        f"""
+id: https://example.org/pattern
+name: pattern
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: true
+      partial_match: {str(partial_match).lower()}
+classes:
+  C:
+    slots:
+      - value
+"""
+    ).as_graph()
 
-    assert Literal(r"^(?:\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, XSD.pattern)
+    patterns = list(graph.objects(None, XSD.pattern))
+    assert Literal(expected_pattern) in patterns, patterns
 
 
 def test_rdfs_profile(kitchen_sink_path):
