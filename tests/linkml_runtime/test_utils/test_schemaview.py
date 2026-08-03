@@ -3001,6 +3001,38 @@ slots:
     assert view.get_slot("value").pattern == expected_pattern
 
 
+def test_materialize_patterns_invalidates_cached_induced_slots() -> None:
+    """Refresh derived values once when pattern materialization changes the schema."""
+    view = SchemaView(
+        """
+id: https://example.org/pattern-cache
+name: pattern_cache
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  Container:
+    slots:
+      - value
+"""
+    )
+    assert view.induced_slot("value", "Container").pattern is None
+    assert view.modifications == 0
+
+    view.materialize_patterns()
+
+    assert view.induced_slot("value", "Container").pattern == r"^(?:[a-z]+)$"
+    assert view.modifications == 1
+
+    view.materialize_patterns()
+
+    assert view.modifications == 1
+
+
 def test_materialize_patterns_uses_defining_schema_settings(tmp_path: Path) -> None:
     """Resolve imported structured patterns with settings from their defining schema."""
     imported_schema = tmp_path / "imported.yaml"

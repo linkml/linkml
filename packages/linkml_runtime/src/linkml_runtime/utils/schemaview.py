@@ -2330,6 +2330,7 @@ class SchemaView:
         """
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
         resolvers: dict[str, PatternResolver] = {}
+        modified = False
 
         def resolver_for_definition(
             element_def: SlotDefinition | TypeDefinition,
@@ -2346,6 +2347,7 @@ class SchemaView:
             element_def: SlotDefinition | TypeDefinition,
             owning_class: ClassDefinition | None = None,
         ) -> None:
+            nonlocal modified
             if not element_def.structured_pattern:
                 return
             structured_pattern = element_def.structured_pattern
@@ -2357,7 +2359,9 @@ class SchemaView:
                 pattern = resolver.escape_uninterpolated(pattern)
             if not structured_pattern.partial_match:
                 pattern = f"^(?:{pattern})$"
-            element_def.pattern = pattern
+            if element_def.pattern != pattern:
+                element_def.pattern = pattern
+                modified = True
 
         for slot_definition in self.all_slots(imports=imports, attributes=False).values():
             materialize_pattern_into_definition(slot_definition)
@@ -2373,6 +2377,9 @@ class SchemaView:
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
                     materialize_pattern_into_definition(slot_definition, class_definition)
+
+        if modified:
+            self.set_modified()
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """Materialize a schema view into a schema definition."""
