@@ -176,7 +176,7 @@ def test_structured_pattern(framework, interpolated, partial_match, value: str, 
         core_elements=["structured_pattern"],
     )
     implementation_status = ValidationBehavior.IMPLEMENTS
-    if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
     check_data(
