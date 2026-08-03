@@ -78,8 +78,8 @@ def test_structured_pattern(input_path):
     assert pattern_gen.schemaview.get_slot("id").pattern == r"^P\d{7}"
     assert pattern_gen.schemaview.get_slot("name").pattern == r"^[A-Z0-9]\w+.*$"
     assert pattern_gen.schemaview.get_slot("nicknames").pattern == r"^[A-Z0-9]\w+.*$"
-    assert pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert pattern_gen.schemaview.get_slot("weight").pattern == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert pattern_gen.schemaview.get_slot("height").pattern == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert pattern_gen.schemaview.get_slot("weight").pattern == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_true(input_path, tmp_path):
@@ -139,8 +139,8 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
     with open(yaml_output_path) as f:
         yobj = yaml.safe_load(f)
 
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_false(input_path, tmp_path):
@@ -176,8 +176,8 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
     )
     with open(yaml_output_path) as f:
         yobj = yaml.safe_load(f)
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
     # Scenario 2: User sets `--no-materialize` AND also explicitly sets
     # `--no-materialize-attributes` and `--no-materialize-patterns`.

@@ -2961,9 +2961,44 @@ def test_materialize_patterns(sv_structured_patterns: SchemaView) -> None:
 
     height_slot = sv_structured_patterns.get_slot("height")
     weight_slot = sv_structured_patterns.get_slot("weight")
+    email_string_type = sv_structured_patterns.get_type("EmailString")
 
-    assert height_slot.pattern == r"\d+[\.\d+] (centimeter|meter|inch)"
-    assert weight_slot.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert height_slot.pattern == r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"
+    assert weight_slot.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
+    assert email_string_type.pattern == r"^(?:\S+@\S+{\.\w}+)$"
+
+
+@pytest.mark.parametrize(
+    ("interpolated", "partial_match", "expected_pattern"),
+    [
+        (True, True, r"[a-z]+"),
+        (True, False, r"^(?:[a-z]+)$"),
+        (False, True, r"\{word\}"),
+        (False, False, r"^(?:\{word\})$"),
+    ],
+)
+def test_materialize_patterns_expression_options(
+    interpolated: bool, partial_match: bool, expected_pattern: str
+) -> None:
+    """Honor interpolation and whole-string matching options."""
+    view = SchemaView(
+        f"""
+id: https://example.org/pattern-options
+name: pattern_options
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: {str(interpolated).lower()}
+      partial_match: {str(partial_match).lower()}
+"""
+    )
+
+    view.materialize_patterns()
+
+    assert view.get_slot("value").pattern == expected_pattern
 
 
 def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
@@ -2971,7 +3006,7 @@ def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> 
     sv_structured_patterns.materialize_patterns()
 
     name_slot_usage = sv_structured_patterns.get_class("FancyPersonInfo").slot_usage["name"]
-    assert name_slot_usage.pattern == r"\S+ \S+-\S+"
+    assert name_slot_usage.pattern == r"^(?:\S+ \S+-\S+)$"
 
 
 def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> None:
@@ -2979,7 +3014,7 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
     sv_structured_patterns.materialize_patterns()
 
     weight_attribute = sv_structured_patterns.get_class("ClassWithAttributes").attributes["weight"]
-    assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert weight_attribute.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
 
 
 @pytest.mark.parametrize(
