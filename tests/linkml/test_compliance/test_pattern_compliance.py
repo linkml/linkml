@@ -114,6 +114,7 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
         (True, False, "abc", False),
         (True, False, "abc def ghi", False),
         (True, True, "abc def ghi", True),
+        (True, True, "123 abc def", True),
         (False, False, "abc def", False),
         (False, True, "abc def", False),
         (False, False, "{word}{ws}{word}", True),

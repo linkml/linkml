@@ -28,7 +28,7 @@ MODEL_COLUMNS = [
     "any_type_column",
 ]
 
-MATERIALIZED_LENGTH_PATTERN = r'str_matches=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
+MATERIALIZED_LENGTH_PATTERN = r'str_contains=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
 
 
 @pytest.mark.parametrize("materialize_patterns", [True, False])
