@@ -973,6 +973,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             return False
 
     def generate(self) -> JsonSchema:
+        if self.materialize_patterns:
+            logger.info("Materializing patterns in the schema before generation")
+            self.schemaview.materialize_patterns()
+
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
 
@@ -990,9 +994,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        if self.materialize_patterns:
-            logger.info("Materializing patterns in the schema before serialization")
-            self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
 
@@ -1060,7 +1061,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     "--materialize-patterns/--no-materialize-patterns",
     default=True,  # Default set to True
     show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema.",
+    help="If set, patterns will be materialized from structured_patterns before generation.",
 )
 @click.option(
     "--preserve-names/--normalize-names",

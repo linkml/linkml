@@ -5,7 +5,7 @@ from enum import Enum
 import pytest
 from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF
+from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
@@ -89,6 +89,13 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     coll = Collection(g, enum_bnode)
     assert [BIZ["001"], BIZ["002"], BIZ["003"], BIZ["004"]] == list(coll)
     assert BIZ["001"] in owl_classes
+
+
+def test_as_graph_materializes_structured_patterns(input_path) -> None:
+    """Materialize structured patterns when generating an OWL graph directly."""
+    graph = OwlSchemaGenerator(input_path("pattern-example.yaml")).as_graph()
+
+    assert Literal(r"^(?:\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, XSD.pattern)
 
 
 def test_rdfs_profile(kitchen_sink_path):

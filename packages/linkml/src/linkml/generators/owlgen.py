@@ -135,6 +135,10 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
+
+    materialize_patterns: bool = True
+    """If True, materialize patterns from structured_patterns before generation."""
+
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
 
@@ -289,6 +293,9 @@ class OwlSchemaGenerator(Generator):
 
         :return:
         """
+        if self.materialize_patterns:
+            self.schemaview.materialize_patterns()
+
         if self.skip_vacuous_min_zero_cardinality_axioms is None:
             deprecation_warning("owlgen-skip-vacuous-min-zero-cardinality-default")
             self.skip_vacuous_min_zero_cardinality_axioms = False
@@ -1708,6 +1715,12 @@ class OwlSchemaGenerator(Generator):
     default=True,
     show_default=True,
     help="If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide",
+)
+@click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,
+    show_default=True,
+    help="If true, patterns will be materialized from structured_patterns before generation.",
 )
 @click.option(
     "--ontology-uri-suffix",

@@ -40,6 +40,14 @@ EXPECTED_suffix = [
     ),
 ]
 
+
+def test_as_graph_materializes_structured_patterns(input_path) -> None:
+    """Materialize structured patterns when generating a SHACL graph directly."""
+    graph = ShaclGenerator(input_path("pattern-example.yaml")).as_graph()
+
+    assert Literal(r"^(?:\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, SH.pattern)
+
+
 EXPECTED_any_of = [
     (
         rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"),

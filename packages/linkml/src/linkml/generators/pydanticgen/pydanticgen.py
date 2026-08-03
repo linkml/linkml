@@ -230,6 +230,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     If True, optional multivalued slots default to ``[]``; if False, they default to ``None``.
     """
 
+    materialize_patterns: bool = True
+    """
+    If True, patterns will be materialized from structured_patterns before generation.
+    """
+
     template_dir: str | Path | None = None
     """
     Override templates for each PydanticTemplateModel.
@@ -1115,6 +1120,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         sv: SchemaView
         sv = self.schemaview
 
+        if self.materialize_patterns:
+            sv.materialize_patterns()
+
         # imports
         imports = DEFAULT_IMPORTS
         if self.imports is not None:
@@ -1372,6 +1380,12 @@ Available templates to override:
     help="How to handle extra fields in BaseModel.",
 )
 @click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,
+    show_default=True,
+    help="If set, patterns will be materialized from structured_patterns before generation.",
+)
+@click.option(
     "--black",
     is_flag=True,
     default=False,
@@ -1406,6 +1420,7 @@ def cli(
     black: bool = False,
     meta: MetadataMode = "auto",
     emptylist_for_multivalued_slots: bool = False,
+    materialize_patterns: bool = True,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -1427,6 +1442,7 @@ def cli(
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
+        materialize_patterns=materialize_patterns,
         template_dir=template_dir,
         black=black,
         metadata_mode=meta,

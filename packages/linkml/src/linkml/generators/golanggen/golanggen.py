@@ -111,6 +111,11 @@ class GolangGenerator(OOCodeGenerator):
     alphabetical_sort: bool = False
     """Sort structs and enums alphabetically by name for deterministic output."""
 
+    materialize_patterns: bool = True
+    """
+    If True, patterns will be materialized from structured_patterns before generation.
+    """
+
     nullable_primitives: bool = True
     """
     Use pointer types for optional primitive fields (e.g. ``*string``, ``*int``, ``*bool``).
@@ -503,6 +508,10 @@ class GolangGenerator(OOCodeGenerator):
             GolangModule containing all generated structs and enums
         """
         sv: SchemaView = self.schemaview
+
+        if self.materialize_patterns:
+            sv.materialize_patterns()
+
         self._type_defs = {}
         self._needs_time = False
 
@@ -624,6 +633,12 @@ _TEMPLATE_NAMES = [
     help="Sort structs and enums alphabetically for deterministic output.",
 )
 @click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,  # Default set to True
+    show_default=True,
+    help="If set, patterns will be materialized from structured_patterns before generation.",
+)
+@click.option(
     "--nullable-primitives/--no-nullable-primitives",
     default=True,
     show_default=True,
@@ -659,6 +674,7 @@ def cli(
     package_name: str | None = None,
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
+    materialize_patterns: bool = True,
     named_slot_types: bool = False,
     template_dir: str | None = None,
     **args,
@@ -681,6 +697,7 @@ def cli(
         package_name=package_name,
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
+        materialize_patterns=materialize_patterns,
         named_slot_types=named_slot_types,
         template_dir=template_dir,
         **args,

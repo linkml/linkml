@@ -4,7 +4,7 @@ import re
 import pytest
 
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import cli
+from linkml.generators.panderagen import PanderaDataframeGenerator, cli
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 np = pytest.importorskip("numpy", reason="NumPY not installed")
@@ -27,6 +27,30 @@ MODEL_COLUMNS = [
     "multivalued_column",
     "any_type_column",
 ]
+
+MATERIALIZED_LENGTH_PATTERN = r'str_matches=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
+
+
+@pytest.mark.parametrize("materialize_patterns", [True, False])
+def test_materialize_patterns(test_inputs_dir, materialize_patterns):
+    """Materialize structured slot patterns only when requested."""
+    generator_args = {} if materialize_patterns else {"materialize_patterns": False}
+    code = PanderaDataframeGenerator(
+        str(test_inputs_dir / "pattern-example.yaml"),
+        **generator_args,
+    ).serialize()
+
+    assert (MATERIALIZED_LENGTH_PATTERN in code) is materialize_patterns
+
+
+@pytest.mark.parametrize("materialize_patterns", [True, False])
+def test_materialize_patterns_cli(cli_runner, test_inputs_dir, materialize_patterns):
+    """Forward the CLI pattern-materialization option to the generator."""
+    option = "--materialize-patterns" if materialize_patterns else "--no-materialize-patterns"
+    result = cli_runner.invoke(cli, [str(test_inputs_dir / "pattern-example.yaml"), option])
+
+    assert result.exit_code == 0, result.output
+    assert (MATERIALIZED_LENGTH_PATTERN in result.output) is materialize_patterns
 
 
 def test_pandera_basic_class_based(synthetic_pandera_schema):

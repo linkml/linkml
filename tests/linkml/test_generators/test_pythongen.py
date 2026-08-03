@@ -4,9 +4,10 @@ import re
 from types import ModuleType, SimpleNamespace
 
 import pytest
+from click.testing import CliRunner
 from jsonasobj2 import as_json
 
-from linkml.generators.pythongen import PythonGenerator
+from linkml.generators.pythongen import PythonGenerator, cli
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
@@ -18,6 +19,29 @@ def make_python(infile) -> ModuleType:
     pstr = str(PythonGenerator(infile, mergeimports=True).serialize())
     kitchen_module = compile_python(pstr)
     return kitchen_module
+
+
+@pytest.mark.parametrize("materialize_patterns", [True, False])
+def test_materialize_patterns(input_path, materialize_patterns):
+    """Materialize structured slot patterns only when requested."""
+    output = PythonGenerator(
+        input_path("pattern-example.yaml"),
+        materialize_patterns=materialize_patterns,
+    ).serialize()
+
+    materialized_pattern = r"pattern=re.compile(r'^(?:\d+[\.\d+] (centimeter|meter|inch))$')"
+    assert (materialized_pattern in output) is materialize_patterns
+
+
+@pytest.mark.parametrize("materialize_patterns", [True, False])
+def test_materialize_patterns_cli(input_path, materialize_patterns):
+    """Forward the CLI pattern-materialization option to the generator."""
+    option = "--materialize-patterns" if materialize_patterns else "--no-materialize-patterns"
+    result = CliRunner().invoke(cli, [str(input_path("pattern-example.yaml")), option])
+
+    assert result.exit_code == 0, result.output
+    materialized_pattern = r"pattern=re.compile(r'^(?:\d+[\.\d+] (centimeter|meter|inch))$')"
+    assert (materialized_pattern in result.output) is materialize_patterns
 
 
 def test_pythongen(kitchen_sink_path):

@@ -81,6 +81,8 @@ class SQLValidationGenerator(Generator):
     check_enums: bool = True
     check_unique_keys: bool = True
     check_rules: bool = True
+    materialize_patterns: bool = True
+    """If True, patterns will be materialized from structured_patterns before generation."""
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         """
@@ -113,6 +115,9 @@ class SQLValidationGenerator(Generator):
         :rtype: str
         """
         query_objects = []
+
+        if self.materialize_patterns:
+            self.schemaview.materialize_patterns()
 
         # Transform schema to relational model. The untransformed view is kept around:
         # the transformer renames attributes to their alias and drops rules, so both
@@ -862,6 +867,12 @@ class SQLValidationGenerator(Generator):
     default=True,
     show_default=True,
     help="Generate queries for pattern violations",
+)
+@click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,  # Default set to True
+    show_default=True,
+    help="If set, patterns will be materialized from structured_patterns before generation.",
 )
 @click.option(
     "--check-enums/--no-check-enums",

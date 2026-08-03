@@ -57,6 +57,11 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
+    materialize_patterns: bool = True
+    """
+    If True, patterns will be materialized from structured_patterns before generation.
+    """
+
     genmeta: bool = False
     dataclass_repr: bool = False
     """
@@ -85,6 +90,9 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+        if self.materialize_patterns:
+            self.schemaview.materialize_patterns()
+            SchemaView(self.schema).materialize_patterns(imports=False)
 
     def slot_name(self, name: str) -> str:
         """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
@@ -1353,6 +1361,12 @@ class {enum_name}(EnumDefinitionImpl):
     help="Generate Slot information",
 )
 @click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=True,
+    show_default=True,
+    help="If true, patterns will be materialized from structured_patterns before generation.",
+)
+@click.option(
     "--validate/--no-validate",
     default=False,
     show_default=True,
@@ -1365,6 +1379,7 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
+    materialize_patterns=True,
     validate=False,
     **args,
 ):
@@ -1378,6 +1393,7 @@ def cli(
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
+        materialize_patterns=materialize_patterns,
         **args,
     )
     if validate:
