@@ -3001,6 +3001,64 @@ slots:
     assert view.get_slot("value").pattern == expected_pattern
 
 
+def test_materialize_patterns_uses_defining_schema_settings(tmp_path: Path) -> None:
+    """Resolve imported structured patterns with settings from their defining schema."""
+    imported_schema = tmp_path / "imported.yaml"
+    imported_schema.write_text(
+        """
+id: https://example.org/imported
+name: imported
+settings:
+  word: "[a-z]+"
+slots:
+  imported_slot:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  ImportedClass:
+    slots:
+      - imported_slot
+    slot_usage:
+      imported_slot:
+        structured_pattern:
+          syntax: "{word}{word}"
+          interpolated: true
+    attributes:
+      imported_attribute:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+types:
+  ImportedType:
+    base: str
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+"""
+    )
+    view = SchemaView(str(root_schema))
+
+    view.materialize_patterns()
+
+    assert view.get_slot("imported_slot").pattern == r"^(?:[a-z]+)$"
+    imported_class = view.get_class("ImportedClass")
+    assert imported_class.slot_usage["imported_slot"].pattern == r"^(?:[a-z]+[a-z]+)$"
+    assert imported_class.attributes["imported_attribute"].pattern == r"^(?:[a-z]+)$"
+    assert view.get_type("ImportedType").pattern == r"^(?:[a-z]+)$"
+
+
 def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
     """Test pattern materialization with slot_usage."""
     sv_structured_patterns.materialize_patterns()

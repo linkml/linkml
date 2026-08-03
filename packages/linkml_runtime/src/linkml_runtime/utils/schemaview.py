@@ -2328,13 +2328,29 @@ class SchemaView:
 
         :param imports: include definitions from imported schemas, defaults to True
         """
-        resolver = PatternResolver(self)
+        schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
+        resolvers: dict[str, PatternResolver] = {}
 
-        def materialize_pattern_into_definition(element_def: SlotDefinition | TypeDefinition) -> None:
+        def resolver_for_definition(
+            element_def: SlotDefinition | TypeDefinition,
+            owning_class: ClassDefinition | None = None,
+        ) -> PatternResolver:
+            source = owning_class if owning_class is not None else element_def
+            schema_id = str(source.from_schema) if source.from_schema is not None else str(self.schema.id)
+            if schema_id not in resolvers:
+                schema = schemas_by_id.get(schema_id, self.schema)
+                resolvers[schema_id] = PatternResolver(SchemaView(schema))
+            return resolvers[schema_id]
+
+        def materialize_pattern_into_definition(
+            element_def: SlotDefinition | TypeDefinition,
+            owning_class: ClassDefinition | None = None,
+        ) -> None:
             if not element_def.structured_pattern:
                 return
             structured_pattern = element_def.structured_pattern
             pattern = structured_pattern.syntax
+            resolver = resolver_for_definition(element_def, owning_class)
             if structured_pattern.interpolated:
                 pattern = resolver.resolve(pattern)
             else:
@@ -2352,11 +2368,11 @@ class SchemaView:
         for class_definition in self.all_classes(imports=imports).values():
             if class_definition.slot_usage:
                 for slot_definition in class_definition.slot_usage.values():
-                    materialize_pattern_into_definition(slot_definition)
+                    materialize_pattern_into_definition(slot_definition, class_definition)
 
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
-                    materialize_pattern_into_definition(slot_definition)
+                    materialize_pattern_into_definition(slot_definition, class_definition)
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """Materialize a schema view into a schema definition."""
