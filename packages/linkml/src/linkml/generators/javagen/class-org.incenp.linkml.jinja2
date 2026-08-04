@@ -282,14 +282,14 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
     public String toString() {
 {%- set identifier_slot = gen.schemaview.get_identifier_slot(cls.source_class.name, use_key=True) %}
 {%- if identifier_slot %}
-        return "{{ cls.name }}({{ gen.get_slot_actual_name(identifier_slot) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
+        return "{{ cls.name }}({{ identifier_slot.alias|default(identifier_slot.name, true) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
 {%- else %}
         StringBuilder sb = new StringBuilder();
         Object o;
         sb.append("{{ cls.name }}(");
 {%- for slot in gen.schemaview.class_induced_slots(cls.source_class.name) %}
         if ( (o = this.{{ gen.get_read_accessor_name(slot) }}()) != null ) {
-            sb.append("{{ gen.get_slot_actual_name(slot) }}=");
+            sb.append("{{ slot.alias|default(slot.name, true) }}=");
             sb.append(o);
             sb.append(",");
         }
