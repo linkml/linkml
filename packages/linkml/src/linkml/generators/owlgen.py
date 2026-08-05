@@ -1009,11 +1009,14 @@ class OwlSchemaGenerator(Generator):
         structured_pattern = element.structured_pattern
         if pattern is None or structured_pattern is None or not self.materialize_patterns:
             return pattern
+        inner = pattern
+        if inner.startswith("^(?:") and inner.endswith(")$"):
+            inner = inner[4:-2]
+        if inner.startswith("^") and inner.endswith("$"):
+            inner = inner[1:-1]
         if structured_pattern.partial_match:
-            return f".*({pattern}).*"
-        if pattern.startswith("^(?:") and pattern.endswith(")$"):
-            return pattern[4:-2]
-        return pattern
+            return f".*({inner}).*"
+        return inner
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
