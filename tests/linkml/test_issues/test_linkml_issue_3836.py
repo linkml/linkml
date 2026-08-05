@@ -6,6 +6,8 @@ from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.loaders import json_loader
 
+pytestmark = [pytest.mark.pythongen, pytest.mark.pydanticgen]
+
 ASSOCIATION_URI = "https://example.org/Association"
 
 SCHEMA = """
