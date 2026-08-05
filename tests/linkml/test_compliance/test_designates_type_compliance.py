@@ -217,8 +217,11 @@ def test_designates_type(framework, description, type_range, object, is_valid, c
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework != PYDANTIC and framework != JSON_SCHEMA and framework != PYTHON_DATACLASSES:
         expected_behavior = ValidationBehavior.INCOMPLETE
-    if class_uri_mode and framework in [PYDANTIC, PYTHON_DATACLASSES]:
-        # Pydantic and dataclasses don't support using class_uri to override the type
+    if class_uri_mode and framework == PYDANTIC:
+        # Pydantic support for assigned class URIs remains incomplete.
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if class_uri_mode and framework == PYTHON_DATACLASSES and type_range != "uriorcurie":
+        # Dataclasses still lack assigned uri-range support.
         expected_behavior = ValidationBehavior.INCOMPLETE
     if description == "t1a2":
         expected_behavior = ValidationBehavior.INCOMPLETE
