@@ -5,6 +5,8 @@ from linkml.validator.validation_context import ValidationContext
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
 
+pytestmark = pytest.mark.jsonschemagen
+
 SCHEMA = """
 id: https://example.org/td-as-uriorcurie
 name: td_as_uriorcurie
