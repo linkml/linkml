@@ -136,7 +136,7 @@ tests-extra = [
 ]
 docs = [
   "furo >= 2023.03.27",
-  "sphinxcontrib-mermaid >= 0.7.1",
+  "sphinxcontrib-mermaid>=2.0.3",
   "sphinx",
   "sphinx-click",
   "sphinx-rtd-theme",
