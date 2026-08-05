@@ -10,7 +10,8 @@ from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition, TypeDefinition
+from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.formatutils import camelcase
 
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
@@ -186,6 +187,43 @@ class TemplateCache:
             with candidate.open("r") as f:
                 self.templates[candidate] = Template(f.read())
         return self.templates[candidate]
+
+
+def _find_root_schemas(schema_directory: Path) -> dict[Path, SchemaDefinition]:
+    """Finds all the root schemas in the specified directory.
+
+    A root schema, in the context of this method, in a schema that is not
+    imported by any other schema found under the specified directory.
+
+    :param schema_directory: The directory where to search for schemas.
+    :return: A dictionary where each key is the path to a root schema, and the
+        value is the corresponding SchemaDefinition read from it.
+    """
+
+    imported_paths: dict[Path, int] = {}
+    imported_ids: dict[str, int] = {}
+    all_schemas: dict[Path, SchemaDefinition] = {}
+
+    for schema_path in schema_directory.glob("**/*.yaml"):
+        schema = yaml_loader.load(schema_path.as_posix(), SchemaDefinition)
+        schema.source_file = schema_path.as_posix()
+        all_schemas[schema_path] = schema
+
+        for import_name in schema.imports:
+            parts = import_name.split(":", maxsplit=1)
+            if len(parts) == 1:
+                # Local file
+                imported_path = schema_path.parent / (import_name + ".yaml")
+                imported_paths[imported_path] = 1
+            else:
+                # Remote reference; it could refer to a schema available
+                # under the schema directory that has the same ID
+                prefix = schema.prefixes.get(parts[0])
+                if prefix is not None:
+                    imported_ids[prefix.prefix_reference + parts[1]] = 1
+
+    root_schemas = {p: s for p, s in all_schemas.items() if p not in imported_paths and s.id not in imported_ids}
+    return root_schemas
 
 
 @deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
@@ -444,7 +482,7 @@ class JavaGenerator(OOCodeGenerator):
         return slot.alias if slot.alias and self.use_aliases else slot.name
 
 
-@shared_arguments(JavaGenerator)
+@shared_arguments(JavaGenerator, accepts_directory_input=True)
 @click.option(
     "--output-directory",
     default="output",
@@ -508,6 +546,28 @@ def cli(
     if head is not None:
         deprecation_warning("metadata-flag")
         args["metadata"] = head
+
+    if yamlfile.is_dir():
+        # Generate code for all root schemas under the specified directory,
+        # inferring the package name from the directory hierarchy
+        for schema_path, schema in _find_root_schemas(yamlfile).items():
+            package_dir = schema_path.relative_to(yamlfile).parent
+            output_dir = Path(output_directory) / package_dir
+            package_name = package_dir.as_posix().replace("/", ".")
+            JavaGenerator(
+                schema,
+                base_dir=schema_path.parent.absolute().as_posix(),
+                package=package_name,
+                template_dir=template_dir,
+                template_file=template_file,
+                true_enums=true_enums,
+                use_aliases=use_aliases,
+                **args,
+            ).serialize(
+                output_dir, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
+            )
+        return
+
     JavaGenerator(
         yamlfile,
         package=package,
