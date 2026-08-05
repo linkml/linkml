@@ -15,6 +15,12 @@
 
 # --- Per-subsystem ownership (opt-in) ---
 
+# javagen
+/docs/generators/java.rst                            @gouttegd
+/packages/linkml/src/linkml/generators/javagen.py    @gouttegd
+/packages/linkml/src/linkml/generators/javagen/      @gouttegd
+/tests/linkml/test_generators/test_javagen.py        @gouttegd
+
 # pydanticgen:
 /packages/linkml/src/linkml/generators/pydanticgen/                  @sneakers-the-rat @kevinschaper
 /docs/generators/pydantic.rst                                        @sneakers-the-rat @kevinschaper

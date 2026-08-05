@@ -1,7 +1,7 @@
 name: Publish Python Package
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 env:
-  UV_VERSION: "0.7.13"
+  UV_VERSION: "0.11.21"
 on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
@@ -12,18 +12,18 @@ jobs:
     name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@v7.0.0
       with:
         python-version: 3.13
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v8.2.0
+      uses: astral-sh/setup-uv@v9.0.0
       with:
         version: ${{ env.UV_VERSION }}
 
@@ -56,6 +56,6 @@ jobs:
 
       - name: Publish package 📦 to PyPI
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.14.0
+        uses: pypa/gh-action-pypi-publish@v1.14.1
         with:
           verbose: true

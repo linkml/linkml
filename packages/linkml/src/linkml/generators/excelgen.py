@@ -28,7 +28,11 @@ class ExcelGenerator(Generator):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema)
+        # Forward importmap/base_dir; the call to ``super().__post_init__``
+        # above built a ``self.schemaview`` with these honoured, and this
+        # overwrite must not drop them or URI-style imports resolved via
+        # ``--importmap`` will fall through to HTTP.
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
 
     @staticmethod
     def create_workbook(workbook_path: Path) -> Workbook:

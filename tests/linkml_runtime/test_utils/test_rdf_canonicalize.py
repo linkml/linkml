@@ -433,3 +433,72 @@ def test_fallback_on_invalid_rdf():
     with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
         result = canonicalize_rdf_graph(g, output_format="turtle")
     assert "not_a_predicate" in result
+
+
+def test_fallback_preserves_relative_iri():
+    """Relative IRIs are preserved verbatim in the fallback, not resolved against the base.
+
+    The metamodel uses bare values such as ``status: testing`` on a
+    ``uriorcurie`` slot, which serialize to a scheme-less ``<testing>`` IRI
+    that pyoxigraph rejects.  The fallback must keep the value as-is rather
+    than silently rewriting it into an absolute IRI, so the underlying data
+    problem stays visible.
+    """
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    g.add((URIRef("http://example.com/s"), URIRef("http://purl.org/ontology/bibo/status"), URIRef("testing")))
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result = canonicalize_rdf_graph(g, output_format="turtle")
+    assert "<testing>" in result
+
+
+@pytest.mark.parametrize("output_format", ["turtle", "nt"])
+def test_fallback_is_deterministic_across_processes(output_format):
+    """The rdflib fallback produces byte-identical output across processes.
+
+    A graph containing a relative IRI (``<testing>``) forces the pyoxigraph
+    parse to fail, exercising the fallback path.  The graph also contains
+    several blank nodes: a plain ``graph.serialize()`` would label them
+    non-deterministically, so this test would fail without the blank-node
+    canonicalization in ``_deterministic_fallback_serialize``.  Two
+    subprocesses with different ``PYTHONHASHSEED`` values must agree byte for
+    byte.
+    """
+    program = textwrap.dedent(
+        f"""
+        from rdflib import BNode, Graph, Literal, URIRef
+        from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
+        g = Graph()
+        g.bind("ex", "http://example.com/")
+        # Relative IRI -> pyoxigraph SyntaxError -> rdflib fallback.
+        g.add((
+            URIRef("http://example.com/s"),
+            URIRef("http://purl.org/ontology/bibo/status"),
+            URIRef("testing"),
+        ))
+        for i in range(6):
+            bn = BNode()
+            g.add((URIRef("http://example.com/s"), URIRef("http://example.com/has"), bn))
+            g.add((bn, URIRef("http://example.com/q"), Literal(f"bn_{{i}}")))
+
+        print(canonicalize_rdf_graph(g, output_format={output_format!r}), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        env = {"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"}
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        return result.stdout
+
+    out_a = run("0")
+    out_b = run("42")
+    assert out_a == out_b, (
+        "Fallback output differs across PYTHONHASHSEED values; blank-node canonicalization may be missing"
+    )
