@@ -2431,7 +2431,7 @@ docs = [
     { name = "sphinx-click" },
     { name = "sphinx-jinja", specifier = ">=2.0.2" },
     { name = "sphinx-rtd-theme" },
-    { name = "sphinxcontrib-mermaid", specifier = ">=0.7.1" },
+    { name = "sphinxcontrib-mermaid", specifier = ">=2.0.3" },
     { name = "sphinxcontrib-programoutput", specifier = ">=0.17" },
 ]
 lint = [{ name = "black", specifier = ">=24.0.0" }]
@@ -4980,16 +4980,17 @@ wheels = [
 
 [[package]]
 name = "sphinxcontrib-mermaid"
-version = "1.0.0"
+version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "jinja2" },
     { name = "pyyaml" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/69/bf039237ad260073e8c02f820b3e00dc34f3a2de20aff7861e6b19d2f8c5/sphinxcontrib_mermaid-1.0.0.tar.gz", hash = "sha256:2e8ab67d3e1e2816663f9347d026a8dee4a858acdd4ad32dd1c808893db88146", size = 15153, upload-time = "2024-10-12T16:33:03.863Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/51/29/54cf1f7e03630ca4859caba25bc192698954d7c630377c62d1e264715c37/sphinxcontrib_mermaid-2.0.3.tar.gz", hash = "sha256:a6865ef6b65b225c5403a3170de63a04a07227cada11a4a71a6b87b4f9ed185a", size = 20764, upload-time = "2026-07-08T00:30:44.216Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cd/c8/784b9ac6ea08aa594c1a4becbd0dbe77186785362e31fd633b8c6ae0197a/sphinxcontrib_mermaid-1.0.0-py3-none-any.whl", hash = "sha256:60b72710ea02087f212028feb09711225fbc2e343a10d34822fe787510e1caa3", size = 9597, upload-time = "2024-10-12T16:33:02.303Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/57/b39c7a69b70a3ce999732bdb57fcaac78fb3cc8e2843a3daf1c1f821bc9d/sphinxcontrib_mermaid-2.0.3-py3-none-any.whl", hash = "sha256:f001ed36a55c108f6221a2d656a441c487ee30651b54db72b7c752a20c7a66e8", size = 15401, upload-time = "2026-07-08T00:30:42.877Z" },
 ]
 
 [[package]]
