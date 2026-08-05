@@ -1,7 +1,10 @@
+import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.loaders import json_loader
 
 
+@pytest.mark.pythongen
 def test_uriorcurie_designator_uses_full_class_uri_when_curie_is_unavailable():
     schema = """
 id: https://example.org/designator-test
