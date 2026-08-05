@@ -215,10 +215,6 @@ class JavaGenerator(OOCodeGenerator):
     template_dir: Path | None = None
     template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
 
-    gen_classvars: bool = True
-    gen_slots: bool = True
-    genmeta: bool = False
-
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
         if self.template_dir is not None:
@@ -489,9 +485,6 @@ def cli(
     generate_records=False,
     head=None,
     emit_metadata=None,
-    genmeta=False,
-    classvars=True,
-    slots=True,
     true_enums=False,
     use_aliases=False,
     extra_template=[],
@@ -520,9 +513,6 @@ def cli(
         package=package,
         template_dir=template_dir,
         template_file=template_file,
-        genmeta=genmeta,
-        gen_classvars=classvars,
-        gen_slots=slots,
         true_enums=true_enums,
         use_aliases=use_aliases,
         **args,
