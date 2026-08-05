@@ -45,19 +45,19 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
-| Pydantic | 29 | 34 | 1 | 0 | 64 | 45% |
-| Python DC | 16 | 38 | 10 | 0 | 64 | 25% |
-| JSON Schema | 39 | 23 | 2 | 0 | 64 | 61% |
-| Java | 0 | 24 | 40 | 0 | 64 | 0% |
-| SHACL | 19 | 25 | 20 | 0 | 64 | 30% |
-| ShEx | 0 | 24 | 40 | 0 | 64 | 0% |
-| OWL | 0 | 26 | 38 | 0 | 64 | 0% |
-| JSON-LD Ctx | 34 | 24 | 6 | 0 | 64 | 53% |
-| SQLite DDL | 12 | 40 | 12 | 0 | 64 | 19% |
-| Postgres DDL | 0 | 23 | 41 | 0 | 64 | 0% |
-| Pandera | 14 | 28 | 22 | 0 | 64 | 22% |
-| Polars Schema | 28 | 23 | 13 | 0 | 64 | 44% |
-| sql_ddl_bigquery | 0 | 24 | 40 | 0 | 64 | 0% |
+| Pydantic | 30 | 34 | 1 | 0 | 65 | 46% |
+| Python DC | 17 | 38 | 10 | 0 | 65 | 26% |
+| JSON Schema | 40 | 23 | 2 | 0 | 65 | 62% |
+| Java | 0 | 24 | 41 | 0 | 65 | 0% |
+| SHACL | 20 | 25 | 20 | 0 | 65 | 31% |
+| ShEx | 0 | 24 | 41 | 0 | 65 | 0% |
+| OWL | 0 | 26 | 39 | 0 | 65 | 0% |
+| JSON-LD Ctx | 35 | 24 | 6 | 0 | 65 | 54% |
+| SQLite DDL | 13 | 40 | 12 | 0 | 65 | 20% |
+| Postgres DDL | 0 | 23 | 42 | 0 | 65 | 0% |
+| Pandera | 15 | 28 | 22 | 0 | 65 | 23% |
+| Polars Schema | 29 | 23 | 13 | 0 | 65 | 45% |
+| sql_ddl_bigquery | 0 | 24 | 41 | 0 | 65 | 0% |
 
 ## Details by Category
 
@@ -115,6 +115,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | Enum aliases | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ✅ | ✅ | ❓ |
 | Enum hierarchy | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
 | Non-standard enum names | ⚠️ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ❓ | ❓ |
+| Optional enum nullability | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ✅ | ✅ | ❓ |
 | Static enums | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Typed permissible values | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
 
