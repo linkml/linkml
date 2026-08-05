@@ -1717,7 +1717,7 @@ class SchemaView:
             for anc_sn in reversed(slot_anc_names):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
                 for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
-                    if getattr(anc_slot, metaslot_name, None):
+                    if getattr(anc_slot, metaslot_name, None) is not None:
                         setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
         mix_max_value_dict = {
             "maximum_value": lambda x, y: min(x, y),

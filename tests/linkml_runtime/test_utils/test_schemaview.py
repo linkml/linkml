@@ -3511,3 +3511,35 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+def test_induced_slot_falsy_inherited_values() -> None:
+    """induced_slot must propagate inherited metaslot values of False and 0.
+
+    Regression test for https://github.com/linkml/linkml/issues/3845.
+    A child slot that explicitly sets a boolean to False or a numeric constraint to 0
+    must have those values respected, not silently dropped because they are falsy.
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+
+    # Boolean case: child overrides parent's required=True with required=False
+    view.add_slot(SlotDefinition("p_req_true", required=True))
+    view.add_slot(SlotDefinition("c_opt_out", is_a="p_req_true", required=False))
+
+    induced = view.induced_slot("c_opt_out")
+    assert induced.required is False, "Child's required=False must override parent's required=True"
+
+    # Boolean case: child overrides parent's multivalued=True with multivalued=False
+    view.add_slot(SlotDefinition("p_multi_true", multivalued=True))
+    view.add_slot(SlotDefinition("c_single", is_a="p_multi_true", multivalued=False))
+
+    induced = view.induced_slot("c_single")
+    assert induced.multivalued is False, "Child's multivalued=False must override parent's multivalued=True"
+
+    # Numeric case: parent minimum_value=0 must be inherited by child (0 is falsy but valid)
+    view.add_slot(SlotDefinition("p_minval_zero", minimum_value=0, range="integer"))
+    view.add_slot(SlotDefinition("c_minval", is_a="p_minval_zero"))
+
+    induced = view.induced_slot("c_minval")
+    assert induced.minimum_value == 0, "Parent's minimum_value=0 must be inherited (0 is a valid constraint)"
