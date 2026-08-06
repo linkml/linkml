@@ -97,13 +97,16 @@ def test_yaml_loader_leaves_source_file_unset_for_string():
     assert schema.source_file is None
 
 
-def test_yaml_loader_does_not_overwrite_existing_source_file(tmp_path):
-    """A ``source_file`` already present in the loaded schema is preserved, not clobbered."""
+def test_yaml_loader_overwrites_stale_source_file_in_schema(tmp_path):
+    """The loader-resolved path must win over any ``source_file`` value baked into the
+    YAML file itself.  The metamodel marks the slot ``readonly: supplied by the schema
+    loader``; a stale embedded value (e.g. written by a previous --metadata run) must
+    not silently redirect import resolution or linkml-lint --fix output."""
     schema_path = tmp_path / "schema.yaml"
-    schema_path.write_text(_SOURCE_FILE_SCHEMA + "source_file: original.yaml\n")
+    schema_path.write_text(_SOURCE_FILE_SCHEMA + "source_file: stale/original.yaml\n")
 
     schema = yaml_loader.load(str(schema_path), target_class=SchemaDefinition)
-    assert schema.source_file == "original.yaml"
+    assert schema.source_file == str(schema_path)
 
 
 def test_yaml_loader_does_not_inject_source_file_into_non_schema_class(tmp_path):

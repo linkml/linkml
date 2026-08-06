@@ -76,7 +76,11 @@ class YAMLLoader(Loader):
                 path_to_record = str(metadata.source_file)
 
             for target in result if isinstance(result, list) else [result]:
-                if isinstance(target, SchemaDefinition) and not target.source_file:
+                # Always overwrite: the metamodel marks source_file as
+                # ``readonly: supplied by the schema loader``.  A value
+                # serialised into the YAML by a previous --metadata run is
+                # stale content, not an authoritative path.
+                if isinstance(target, SchemaDefinition):
                     target.source_file = path_to_record
         return result
 
