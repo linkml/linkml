@@ -3586,3 +3586,35 @@ def test_induced_slot_boolean_metaslots_combine_with_or(
     view.add_class(ClassDefinition("C", slots=["child"]))
 
     assert getattr(view.induced_slot("child", "C"), metaslot_name) == expected
+
+
+@pytest.mark.parametrize(
+    ("parent_value", "child_value", "expected"),
+    [
+        (["a", "b"], None, ["a", "b"]),
+        (None, ["x"], ["x"]),
+        (["a"], ["x"], ["x"]),
+    ],
+)
+def test_induced_slot_inherits_multivalued_metaslot(
+    parent_value: list[str] | None, child_value: list[str] | None, expected: list[str]
+) -> None:
+    """A multivalued metaslot defaulting to an empty list must not clear an inherited value.
+
+    ``equals_string_in`` is backed by ``empty_list()``, so an unset child holds ``[]``
+    rather than ``None``. Treating that as a set value would overwrite whatever the
+    ancestor supplied.
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    parent = SlotDefinition("parent")
+    child = SlotDefinition("child", is_a="parent")
+    if parent_value is not None:
+        parent.equals_string_in = parent_value
+    if child_value is not None:
+        child.equals_string_in = child_value
+    view.add_slot(parent)
+    view.add_slot(child)
+    view.add_class(ClassDefinition("C", slots=["child"]))
+
+    assert view.induced_slot("child", "C").equals_string_in == expected
