@@ -11,12 +11,22 @@ Run with::
 """
 
 import socket
+import sys
 import uuid
 from pathlib import Path
 
 import pytest
 
 from linkml.generators.typedbgen import TypeDBGenerator
+
+# The typedb-driver wheel embeds a CPython 3.13 extension, so importing it on
+# 3.14 raises ImportError rather than ModuleNotFoundError. Skip before the
+# import is attempted; importorskip only treats a missing module as a skip.
+if sys.version_info >= (3, 14):
+    pytest.skip(
+        "typedb-driver native extension does not support Python 3.14",
+        allow_module_level=True,
+    )
 
 typedb = pytest.importorskip("typedb.driver", reason="typedb-driver not installed")
 
