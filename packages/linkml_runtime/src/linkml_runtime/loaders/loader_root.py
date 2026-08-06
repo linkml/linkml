@@ -46,7 +46,7 @@ class Loader(ABC):
 
     def load_source(
         self,
-        source: str | dict | TextIO,
+        source: str | dict | TextIO | Path,
         loader: Callable[[str | dict, FileInfo], dict | list | None],
         target_class: type[YAMLRoot | BaseModel],
         accept_header: str | None = "text/plain, application/yaml;q=0.9",
@@ -162,7 +162,7 @@ class Loader(ABC):
 
     def _read_source(
         self,
-        source: str | dict | TextIO,
+        source: str | dict | TextIO | Path,
         *,
         base_dir: str | None = None,
         metadata: FileInfo | None = None,
@@ -176,9 +176,9 @@ class Loader(ABC):
         if isinstance(source, dict):
             return source
 
-        # A ``Path`` (or other ``os.PathLike``) is a file location, but ``hbread`` would mistake it
-        # for stringable data and read its text as the source. Coerce to ``str`` so it is detected
-        # and resolved as a filename.
+        # A ``Path`` (or other ``os.PathLike``) is file location, but ``hbread``
+        # would mistake it for stringable data and read its text as the source.
+        # Coerce to ``str`` so it is detected and resolved as a filename.
         if isinstance(source, os.PathLike):
             source = str(source)
 

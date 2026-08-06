@@ -42,21 +42,23 @@ def load_raw_schema(
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
-    @param data: URL, file name, block of text, YAML object, open file handle or SchemaDefinition
-    @param source_file: Source file name for the schema if data is type TextIO
-    @param source_file_date: timestamp of source file if data is type TextIO
-    @param source_file_size: size of source file if data is type TextIO
-    @param base_dir: Working directory or base URL of sources
-    @param merge_modules: True means combine modules into one source, false means keep separate
-    @param metadata: False suppresses the source-file metadata this loader derives (``source_file``,
-        ``source_file_date``, ``source_file_size``, ``generation_date``). This is a load-time
-        suppression only -- whether a generator prints such metadata is decided by the generator.
-        A ``source_file`` declared by the schema itself is content, not loader metadata, and is
-        left alone. See https://github.com/linkml/linkml/issues/3699 for the ongoing work to move
-        this decision to serialization time.
-    @param emit_metadata: Legacy alias for ``metadata``; overrides it when supplied. Passing this
-        triggers the shared ``"metadata-flag"`` deprecation warning (see ``deprecation.py``).
-    @return: Un-processed Schema Definition object
+    :param data: URL, file name, block of text, YAML object, open file handle or SchemaDefinition
+    :param source_file: Source file name for the schema if data is type TextIO
+    :param source_file_date: timestamp of source file if data is type TextIO
+    :param source_file_size: size of source file if data is type TextIO
+    :param base_dir: Working directory or base URL of sources
+    :param merge_modules: True means combine modules into one source, false means keep separate
+    :param metadata: False suppresses the source-file metadata this loader derives
+        (``source_file``, ``source_file_date``, ``source_file_size``, ``generation_date``).
+        This is a load-time suppression only — whether a generator prints such metadata is
+        decided by the generator. A ``source_file`` declared by the schema itself is content,
+        not loader metadata, and is left alone. See
+        https://github.com/linkml/linkml/issues/3699 for the ongoing work to move this
+        decision to serialization time.
+    :param emit_metadata: Legacy alias for ``metadata``; overrides it when supplied. Passing
+        this triggers the shared ``"metadata-flag"`` deprecation warning (see
+        ``deprecation.py``).
+    :returns: Un-processed Schema Definition object
     """
 
     def _name_from_url(url) -> str:

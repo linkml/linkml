@@ -122,9 +122,7 @@ def test_yaml_loader_does_not_inject_source_file_into_non_schema_class(tmp_path)
     data_path.write_text("source_file: null\n")
 
     obj = yaml_loader.load(str(data_path), target_class=_ModelWithSourceFile)
-    assert obj.source_file is None, (
-        "YAMLLoader must not set source_file on non-SchemaDefinition objects"
-    )
+    assert obj.source_file is None, "YAMLLoader must not set source_file on non-SchemaDefinition objects"
 
 
 def test_json_loader_path():
