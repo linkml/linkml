@@ -3,7 +3,7 @@ required-version = ">=0.9.17"
 exclude-newer = "7 days"
 # cryptography 50.0.0 (2026-07-31) fixes GHSA-g6cj-pr64-35w5; the 7-day cooldown
 # lapses 2026-08-07T14:23Z. Remove this line after that date and re-lock.
-exclude-newer-package = { cryptography = "2026-08-06" }
+exclude-newer-package = { cryptography = "2026-08-07T00:00:00Z" }
 constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
 
 [tool.uv.workspace]
