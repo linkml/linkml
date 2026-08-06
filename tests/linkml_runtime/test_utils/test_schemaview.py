@@ -2350,7 +2350,7 @@ def test_permissible_value_relationships(schema_view_no_imports: SchemaView) -> 
     assert view.permissible_value_descendants("ANGRY_LION", animals) == ["ANGRY_LION"]
 
 
-@pytest.mark.parametrize("fn", ["parent", "children", "ancestors", "descendants"])
+@pytest.mark.parametrize("fn", ["parents", "children", "ancestors", "descendants"])
 def test_permissible_value_relationships_fail(schema_view_no_imports: SchemaView, fn: str) -> None:
     """Test permissible_value relationships with incorrect enum/PV pairs."""
     method_name = f"permissible_value_{fn}"

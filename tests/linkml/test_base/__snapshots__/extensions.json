@@ -11,6 +11,18 @@
     {
       "prefix_prefix": "linkml",
       "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "xsd",
+      "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix_prefix": "shex",
+      "prefix_reference": "http://www.w3.org/ns/shex#"
+    },
+    {
+      "prefix_prefix": "schema",
+      "prefix_reference": "http://schema.org/"
     }
   ],
   "emit_prefixes": [
@@ -443,6 +455,8 @@
     {
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "linkml": "https://w3id.org/linkml/",
+      "schema": "http://schema.org/",
+      "shex": "http://www.w3.org/ns/shex#",
       "@vocab": "https://w3id.org/linkml/",
       "tag": {
         "@type": "xsd:anyURI",

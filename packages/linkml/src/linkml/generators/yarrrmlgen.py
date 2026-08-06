@@ -8,6 +8,7 @@ import yaml
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.schema_prefix_merge import materialize_prefixes
 from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -45,6 +46,9 @@ class YarrrmlGenerator(Generator):
         super().__init__(schema, **kwargs)
 
         self.schemaview = SchemaView(schema)
+        # Merge prefixes contributed by imported sub-schemas onto the root schema
+        # so that imported prefix bindings are emitted in the generated YARRRML.
+        materialize_prefixes(self.schemaview)
         self.schema: SchemaDefinition = self.schemaview.schema
         self.format = format
         self.source: str = self._infer_source_suffix(raw_src) if raw_src else DEFAULT_SOURCE_JSON
@@ -196,7 +200,12 @@ class YarrrmlGenerator(Generator):
 
         px.setdefault("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 
-        has_user_prefix = any(k not in ("rdf", "linkml") for k in px)
+        # Prefixes propagated from imported sub-schemas (in particular
+        # ``linkml:types``) should not count as "user-declared", otherwise the
+        # fallback default ``ex`` would never be added for a schema that only
+        # imports the standard linkml types.
+        _builtin = {"rdf", "linkml", "xsd", "shex", "schema"}
+        has_user_prefix = any(k not in _builtin for k in px)
         if not has_user_prefix:
             px.setdefault("ex", "https://example.org/default#")
 

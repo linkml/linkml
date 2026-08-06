@@ -16,6 +16,7 @@ from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
+from linkml.utils.schema_prefix_merge import materialize_prefixes
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
@@ -189,6 +190,9 @@ class ShaclGenerator(Generator):
 
         ifabsent_processor = ShaclIfAbsentProcessor(sv)
 
+        # Merge prefixes contributed by imported sub-schemas onto the root schema
+        # so that imported prefix bindings are emitted in the generated SHACL.
+        materialize_prefixes(sv)
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 

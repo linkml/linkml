@@ -17,6 +17,15 @@ prefixes:
   CS:
     prefix_prefix: CS
     prefix_reference: http://ontologies-r.us/codesystems/
+  xsd:
+    prefix_prefix: xsd
+    prefix_reference: http://www.w3.org/2001/XMLSchema#
+  shex:
+    prefix_prefix: shex
+    prefix_reference: http://www.w3.org/ns/shex#
+  schema:
+    prefix_prefix: schema
+    prefix_reference: http://schema.org/
 default_prefix: evidence
 default_range: string
 subsets:

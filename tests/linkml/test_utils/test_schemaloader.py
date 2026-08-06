@@ -179,6 +179,20 @@ def test_importmap_in_memory_dict_not_mutated():
 
 def test_importmap_mixes_dict_and_path_values(input_path):
     """A single importmap can contain both a dict and a file-path entry."""
+    # Use a base dict whose prefixes do not collide with import_test_4.yaml
+    # (which declares ``base: http://example.org/``); the in-memory base
+    # schema declares ``base: http://example.org/base/``.
+    base_dict_no_conflict = {
+        "id": "http://example.org/base_alt",
+        "name": "base_alt",
+        "version": "0.1.0",
+        "prefixes": {"base_alt": "http://example.org/base_alt/"},
+        "default_prefix": "base_alt",
+        "default_range": "string",
+        "classes": {"Parent": {"slots": ["parent_slot"]}},
+        "slots": {"parent_slot": {"range": "string"}},
+        "types": {"string": {"uri": "xsd:string", "base": "str"}},
+    }
     main_dict = {
         "id": "http://example.org/main_mixed",
         "name": "main_mixed",
@@ -186,14 +200,14 @@ def test_importmap_mixes_dict_and_path_values(input_path):
         "default_prefix": "main",
         "default_range": "string",
         "imports": [
-            "http://example.org/base",
+            "http://example.org/base_alt",
             "http://example.org/import_test_4",
         ],
         "classes": {"Leaf": {"is_a": "Parent"}},
     }
     file_path = input_path("import_test_4.yaml").removesuffix(".yaml")
     importmap = {
-        "http://example.org/base": _base_schema_dict(),
+        "http://example.org/base_alt": base_dict_no_conflict,
         "http://example.org/import_test_4": file_path,
     }
     resolved = SchemaLoader(main_dict, importmap=importmap).resolve()
