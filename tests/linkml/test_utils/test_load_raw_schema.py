@@ -182,13 +182,27 @@ def test_metadata_true_accepts_schema_definition_input():
     assert schema.generation_date is not None
 
 
-def test_metadata_false_keeps_declared_source_file_over_resolved_path(input_path, tmp_path):
-    """A declared value wins over the resolved path even when loading from a file."""
+def test_metadata_false_clears_source_file_even_when_declared_in_file(tmp_path):
+    """A ``source_file`` embedded in a loaded *file* is stale loader output, not content.
+
+    The metamodel marks the slot ``readonly: supplied by the schema loader``, so on file loads
+    ``yaml_loader`` replaces any embedded value with the resolved path — which ``metadata=False``
+    then suppresses. Only inputs with no source location (dict, inline text, SchemaDefinition)
+    keep a caller-set value; see the tests above.
+    """
     schema_file = tmp_path / "declares_source_file.yaml"
     schema_file.write_text(SCHEMA_DECLARING_SOURCE_FILE)
 
-    schema = load_raw_schema(str(schema_file), metadata=False)
-    assert schema.source_file == DECLARED_SOURCE_FILE
+    assert load_raw_schema(str(schema_file), metadata=False).source_file is None
+
+
+def test_metadata_true_resolved_path_wins_over_declared_in_file(tmp_path):
+    """With metadata recording on, the loader-resolved path replaces a file-embedded value."""
+    schema_file = tmp_path / "declares_source_file.yaml"
+    schema_file.write_text(SCHEMA_DECLARING_SOURCE_FILE)
+
+    schema = load_raw_schema(str(schema_file))
+    assert schema.source_file == str(schema_file)
 
 
 def test_load_text(input_path):

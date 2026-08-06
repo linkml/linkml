@@ -53,24 +53,27 @@ class YAMLLoader(Loader):
         result = self._construct_target_class(data_as_dict, target_class)
         # When the source was a file (or URL), ``hbread`` resolves and records it on the metadata.
         # Propagate that to ``source_file`` (e.g. on a SchemaDefinition) so relative imports can be
-        # resolved against it. Inline string sources leave ``source_file`` unset, so this naturally
-        # distinguishes a path from schema text without inspecting the source itself.
-        # Gated on SchemaDefinition specifically it owns ``source_file`` in the metamodel; and avoid
-        # injecting loader path into random target classes that happen to have a ``source_file`` slot.
+        # resolved against it. Inline string sources without caller-supplied metadata leave
+        # ``source_file`` unset, so this naturally distinguishes a path from schema text.
+        # Gated on SchemaDefinition specifically because it owns ``source_file`` in the metamodel;
+        # this avoids injecting the loader path into other target classes that happen to have a
+        # ``source_file`` slot.
         if metadata.source_file:
             # Lazy import is cheap, avoids circular dependency between loaders and metamodel.
             from linkml_runtime.linkml_model.meta import SchemaDefinition
 
-            # Prefer the path exactly as the caller supplied it.  hbread always
-            # absolutizes, so using metadata.source_file would stamp a
-            # machine-absolute path onto a schema that was loaded via a relative
-            # path.  Two exceptions allow fall back to absolute value:
-            #   - base_dir was given: caller passed a bare filename to be
-            #     joined with base_dir, so resolved absolute path is the
-            #     meaningful anchor for later import resolution.
-            #   - source is a file-like object: there is no path string from
-            #     the caller to preserve.
-            if base_dir is None and isinstance(source, (str, os.PathLike)):
+            # Prefer the path exactly as the caller supplied it.  hbread always absolutizes, so
+            # using metadata.source_file would stamp a machine-absolute path onto a schema that
+            # was loaded via a relative path.  ``source`` is only the caller's *path* when its
+            # absolutized form is what hbread resolved - inline text with a caller-supplied
+            # ``source_file`` name is also a str, so an isinstance check alone would record the
+            # whole document as the path.  Everything else (URLs, file-like objects, inline text,
+            # base_dir joins) records the resolved location from the metadata.
+            if (
+                base_dir is None
+                and isinstance(source, str | os.PathLike)
+                and os.path.abspath(str(source)) == str(metadata.source_file)
+            ):
                 path_to_record = str(source)
             else:
                 path_to_record = str(metadata.source_file)

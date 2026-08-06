@@ -51,8 +51,11 @@ def load_raw_schema(
     :param metadata: False suppresses the source-file metadata this loader derives
         (``source_file``, ``source_file_date``, ``source_file_size``, ``generation_date``).
         This is a load-time suppression only — whether a generator prints such metadata is
-        decided by the generator. A ``source_file`` declared by the schema itself is content,
-        not loader metadata, and is left alone. See
+        decided by the generator. ``source_file`` is ``readonly: supplied by the schema
+        loader`` in the metamodel: for file/URL loads the loader-resolved path always wins
+        over a value embedded in the document, and ``metadata=False`` then clears it. A
+        caller-set ``source_file`` survives only on inputs with no source location (dict,
+        inline text, SchemaDefinition). See
         https://github.com/linkml/linkml/issues/3699 for the ongoing work to move this
         decision to serialization time.
     :param emit_metadata: Legacy alias for ``metadata``; overrides it when supplied. Passing
@@ -120,11 +123,13 @@ def load_raw_schema(
             schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
-    elif schema_metadata.source_file and schema.source_file == str(schema_metadata.source_file):
-        # ``metadata=False`` suppresses loader-derived source metadata. ``yaml_loader`` records the
-        # resolved path on any file/URL load, so clear it here to honor the flag and keep output
-        # free of machine-specific paths. A ``source_file`` the schema itself declared is content,
-        # not loader metadata, so it survives (see in-memory import path in ``schemaloader``).
+    elif schema_metadata.source_file:
+        # ``metadata=False`` suppresses loader-derived source metadata. Whenever the loader had a
+        # source location (file, URL, or caller-supplied name), ``yaml_loader`` overwrites
+        # ``source_file`` with it — the slot is ``readonly: supplied by the schema loader`` — so
+        # the value here is always loader-derived and clearing honors the flag. When the loader
+        # had no source location (dict, inline text, SchemaDefinition input), nothing was
+        # recorded and a caller-set value survives (see in-memory import path in ``schemaloader``).
         # TODO(#3699): this stripping belongs at serialization time, not load time.
         schema.source_file = None
     # Only set metamodel_version if the schema doesn't already define one.

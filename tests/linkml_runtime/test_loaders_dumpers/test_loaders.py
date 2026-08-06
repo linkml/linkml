@@ -97,6 +97,16 @@ def test_yaml_loader_leaves_source_file_unset_for_string():
     assert schema.source_file is None
 
 
+def test_yaml_loader_records_caller_supplied_name_for_string():
+    """Inline text with a caller-supplied ``source_file`` name records that name — never the
+    document itself. ``source`` is a str here too, so a bare isinstance check would stamp the
+    entire YAML text into ``source_file``."""
+    metadata = FileInfo()
+    metadata.source_file = "supplied-name.yaml"
+    schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition, metadata=metadata)
+    assert schema.source_file == "supplied-name.yaml"
+
+
 def test_yaml_loader_overwrites_stale_source_file_in_schema(tmp_path):
     """The loader-resolved path must win over any ``source_file`` value baked into the
     YAML file itself.  The metamodel marks the slot ``readonly: supplied by the schema
