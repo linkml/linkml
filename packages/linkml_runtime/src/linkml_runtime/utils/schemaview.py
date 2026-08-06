@@ -66,6 +66,32 @@ SCHEMA_ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
 
 WINDOWS = sys.platform == "win32"
 
+#: Inherited metaslots whose range is ``boolean``.
+#:
+#: The specification combines these with ``v1 OR v2`` rather than letting the more
+#: specific slot win, so a ``False`` on a child must not clear a ``True`` inherited
+#: from an ancestor. See the Combine Slots algorithm:
+#: https://linkml.io/linkml-model/latest/docs/specification/04derived-schemas/#algorithm-combine-slots
+#:
+#: ``test_boolean_inherited_metaslots_matches_metamodel`` asserts that this stays in
+#: sync with the metamodel.
+BOOLEAN_INHERITED_METASLOTS = frozenset(
+    {
+        "designates_type",
+        "identifier",
+        "inherited",
+        "inlined",
+        "inlined_as_list",
+        "key",
+        "list_elements_ordered",
+        "list_elements_unique",
+        "multivalued",
+        "recommended",
+        "required",
+        "shared",
+    }
+)
+
 CLASS_NAME = ClassDefinitionName | str
 SLOT_NAME = SlotDefinitionName | str
 SUBSET_NAME = SubsetDefinitionName | str
@@ -1717,8 +1743,15 @@ class SchemaView:
             for anc_sn in reversed(slot_anc_names):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
                 for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
-                    if getattr(anc_slot, metaslot_name, None):
-                        setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
+                    anc_value = getattr(anc_slot, metaslot_name, None)
+                    if anc_value is None:
+                        continue
+                    if metaslot_name in BOOLEAN_INHERITED_METASLOTS:
+                        # Boolean metaslots combine with OR, so only a True propagates.
+                        if anc_value:
+                            setattr(induced_slot, metaslot_name, True)
+                    else:
+                        setattr(induced_slot, metaslot_name, copy(anc_value))
         mix_max_value_dict = {
             "maximum_value": lambda x, y: min(x, y),
             "minimum_value": lambda x, y: max(x, y),

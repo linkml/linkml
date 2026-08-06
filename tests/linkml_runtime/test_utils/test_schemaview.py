@@ -29,6 +29,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import (
+    BOOLEAN_INHERITED_METASLOTS,
     CLASSES,
     ENUMS,
     PREFIXES,
@@ -3511,3 +3512,77 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+def test_boolean_inherited_metaslots_matches_metamodel() -> None:
+    """BOOLEAN_INHERITED_METASLOTS must list exactly the inherited metaslots ranged on boolean.
+
+    Guards against drift: if the metamodel gains or loses a boolean inherited metaslot,
+    the OR-combination branch in induced_slot has to learn about it.
+    """
+    metamodel = package_schemaview("linkml_runtime.linkml_model.meta")
+    induced = [metamodel.induced_slot(name, "slot_definition") for name in metamodel.class_slots("slot_definition")]
+    expected = {slot.name for slot in induced if slot.inherited and slot.range == "boolean"}
+    assert expected == BOOLEAN_INHERITED_METASLOTS
+
+
+@pytest.mark.parametrize(
+    ("metaslot_name", "value"),
+    [
+        ("minimum_value", 0),
+        ("maximum_value", 0),
+        ("minimum_cardinality", 0),
+        ("maximum_cardinality", 0),
+        ("exact_cardinality", 0),
+        ("equals_string", ""),
+        ("pattern", ""),
+    ],
+)
+def test_induced_slot_inherits_falsy_values(metaslot_name: str, value: int | str) -> None:
+    """A falsy but set metaslot on an ancestor slot must reach the induced slot.
+
+    The Combine Slots algorithm takes the ancestor value whenever the more specific
+    slot has none, so a parent's ``minimum_value: 0`` is a constraint, not an absence.
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_slot(SlotDefinition("parent", **{metaslot_name: value}))
+    view.add_slot(SlotDefinition("child", is_a="parent"))
+    view.add_class(ClassDefinition("C", slots=["child"]))
+
+    assert getattr(view.induced_slot("child", "C"), metaslot_name) == value
+
+
+@pytest.mark.parametrize(
+    ("metaslot_name", "parent_value", "child_value", "expected"),
+    [
+        ("required", True, False, True),
+        ("required", False, True, True),
+        ("required", True, None, True),
+        ("required", None, False, False),
+        ("multivalued", True, False, True),
+        ("multivalued", None, True, True),
+    ],
+)
+def test_induced_slot_boolean_metaslots_combine_with_or(
+    metaslot_name: str, parent_value: bool | None, child_value: bool | None, expected: bool
+) -> None:
+    """Boolean metaslots combine with OR, so a child cannot clear an inherited True.
+
+    This pins the specification behavior. Switching the ancestor walk to a plain
+    ``is not None`` test would let ``required: false`` on a child override a parent's
+    ``required: true``, which the Combine Slots algorithm does not permit.
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    parent = SlotDefinition("parent")
+    child = SlotDefinition("child", is_a="parent")
+    if parent_value is not None:
+        setattr(parent, metaslot_name, parent_value)
+    if child_value is not None:
+        setattr(child, metaslot_name, child_value)
+    view.add_slot(parent)
+    view.add_slot(child)
+    view.add_class(ClassDefinition("C", slots=["child"]))
+
+    assert getattr(view.induced_slot("child", "C"), metaslot_name) == expected

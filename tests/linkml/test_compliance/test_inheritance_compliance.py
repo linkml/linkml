@@ -790,3 +790,66 @@ def test_abstract_classes(
         target_class=target_class,
         description="default",
     )
+
+
+@feature_category("Core Structure", "Slot inheritance (is_a)")
+@pytest.mark.parametrize(
+    "description,value,is_valid",
+    [
+        ("value below the inherited minimum", -7, False),
+        ("value at the inherited minimum", 0, True),
+        ("value above the inherited minimum", 7, True),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_slot_inheritance_of_zero_valued_constraint(
+    framework: str, description: str, value: int, is_valid: bool
+) -> None:
+    """Tests that a minimum_value of zero on a parent slot is inherited by a child slot.
+
+    A falsy metaslot value is still a set value. The Combine Slots algorithm takes the
+    ancestor's value whenever the more specific slot has none, so a parent's
+    ``minimum_value: 0`` has to constrain the child rather than disappearing.
+
+    :param framework: all should support inherited numeric constraints
+    :param description: description of the data case
+    :param value: value to check against the inherited minimum
+    :param is_valid: whether the value should validate
+    :return:
+    """
+    slots = {
+        SLOT_S1: {
+            "range": "integer",
+            "minimum_value": 0,
+        },
+        SLOT_S2: {
+            "is_a": SLOT_S1,
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S2],
+        },
+    }
+    schema = validated_schema(
+        test_slot_inheritance_of_zero_valued_constraint,
+        "minimum_value_zero",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["is_a", "minimum_value"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if not is_valid and framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        description.replace(" ", "_"),
+        framework,
+        {SLOT_S2: value},
+        is_valid,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        coerced=False,
+        description="inherited minimum_value of zero",
+    )
