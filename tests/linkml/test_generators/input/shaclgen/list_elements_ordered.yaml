@@ -1,0 +1,40 @@
+id: https://w3id.org/linkml/examples/ordered_list
+name: ordered_list
+description: >-
+  Schema exercising SHACL generation for multivalued slots with
+  list_elements_ordered, which are serialized as rdf:List. See issue #3531.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/ordered_list/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Item:
+    attributes:
+      name:
+        identifier: true
+        slot_uri: ex:name
+  ColumnDesc:
+    tree_root: true
+    attributes:
+      atom:
+        identifier: true
+        slot_uri: ex:atom
+      scope:
+        description: ordered list of literals
+        multivalued: true
+        list_elements_ordered: true
+        slot_uri: ex:scope
+      items:
+        description: ordered list of inlined objects
+        multivalued: true
+        list_elements_ordered: true
+        inlined_as_list: true
+        range: Item
+        slot_uri: ex:items
+      tags:
+        description: unordered control slot (flat triples)
+        multivalued: true
+        slot_uri: ex:tags

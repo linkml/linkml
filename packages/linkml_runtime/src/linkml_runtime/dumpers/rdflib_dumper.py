@@ -5,6 +5,7 @@ from typing import Any
 from curies import Converter
 from pydantic import BaseModel
 from rdflib import XSD, Graph, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
 
@@ -140,23 +141,42 @@ class RDFLibDumper(Dumper):
             if isinstance(v_or_list, list):
                 vs = v_or_list
             elif isinstance(v_or_list, dict):
-                vs = v_or_list.values()
+                vs = list(v_or_list.values())
             else:
                 vs = [v_or_list]
+            vs = [v for v in vs if v is not None]
+            # Skip slots with no values before resolving the slot: an element may carry
+            # python attributes (e.g. defaults) that are not schema slots, and resolving
+            # those would raise. This mirrors the original per-value loop, which only
+            # touched the schema once it had a value to emit.
+            if not vs:
+                continue
+            if k in slot_name_map:
+                slot_name = slot_name_map[k].name
+            else:
+                logger.error(f"Slot {k} not in name map")
+                slot_name = k
+            slot = schemaview.induced_slot(slot_name, cn)
+            if slot.identifier:
+                continue
+            slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
+            if slot.multivalued and slot.list_elements_ordered:
+                # emit an ordered rdf:List (rdf:first/rdf:rest) so element order is part
+                # of the RDF semantics and survives canonicalization. This applies to
+                # both list- and dict-backed collections: ``vs`` is already in the
+                # correct (insertion) order for either form. See issue #3531.
+                nodes = [self.inject_triples(v, schemaview, graph, slot.range) for v in vs]
+                list_head = BNode()
+                Collection(graph, list_head, nodes)
+                graph.add((element_uri, slot_uri, list_head))
+                if slot.designates_type:
+                    type_added = True
+                continue
             for v in vs:
-                if v is None:
-                    continue
-                if k in slot_name_map:
-                    k = slot_name_map[k].name
-                else:
-                    logger.error(f"Slot {k} not in name map")
-                slot = schemaview.induced_slot(k, cn)
-                if not slot.identifier:
-                    slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
-                    v_node = self.inject_triples(v, schemaview, graph, slot.range)
-                    graph.add((element_uri, slot_uri, v_node))
-                    if slot.designates_type:
-                        type_added = True
+                v_node = self.inject_triples(v, schemaview, graph, slot.range)
+                graph.add((element_uri, slot_uri, v_node))
+                if slot.designates_type:
+                    type_added = True
         if not type_added:
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
