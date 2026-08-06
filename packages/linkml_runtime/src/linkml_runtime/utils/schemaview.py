@@ -75,6 +75,15 @@ WINDOWS = sys.platform == "win32"
 #:
 #: ``test_boolean_inherited_metaslots_matches_metamodel`` asserts that this stays in
 #: sync with the metamodel.
+#:
+#: This list is asserted rather than derived, and that is a known weak point rather
+#: than a preference. Deriving it from the metamodel at import time is circular,
+#: because ``linkml_runtime.utils.introspection`` imports ``SchemaView`` from this
+#: module. Deriving it from the ``SlotDefinition`` type annotations does work, but
+#: ``typing.get_type_hints`` has no precedent anywhere in this package. The tidiest
+#: fix is probably for the Python generator to emit the list next to
+#: ``_inherited_slots``, the same way that list is already produced. Until then the
+#: drift test is what keeps this honest.
 BOOLEAN_INHERITED_METASLOTS = frozenset(
     {
         "designates_type",
