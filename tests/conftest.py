@@ -102,8 +102,11 @@ class SnapshotFile(Snapshot):
             is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
                 self.eq_state = "\n".join(
-                    line.rstrip("\n")
-                    for line in difflib.ndiff(expected.splitlines(keepends=True), actual.splitlines(keepends=True))
+                    line.rstrip("\r\n")
+                    for line in difflib.ndiff(
+                        expected.splitlines(keepends=True),
+                        normalize_line_endings(actual).splitlines(keepends=True),
+                    )
                 )
             return is_eq
 
