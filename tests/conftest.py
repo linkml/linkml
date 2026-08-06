@@ -1,3 +1,4 @@
+import difflib
 import os
 import re
 import shutil
@@ -12,7 +13,6 @@ from pathlib import Path
 import docker
 import pytest
 import requests_cache
-from _pytest.assertion.util import _diff_text
 
 import tests
 from linkml.utils.deprecation import EMITTED
@@ -101,11 +101,9 @@ class SnapshotFile(Snapshot):
         else:
             is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
-                # TODO: probably better to use something other than this pytest
-                # private method. See https://docs.python.org/3/library/difflib.html
-                # highlighter is a no-op function for pytest 8.4+ compatibility
                 self.eq_state = "\n".join(
-                    _diff_text(actual, expected, lambda x, **kwargs: x, verbose=self.config.getoption("verbose"))
+                    line.rstrip("\n")
+                    for line in difflib.ndiff(expected.splitlines(keepends=True), actual.splitlines(keepends=True))
                 )
             return is_eq
 
