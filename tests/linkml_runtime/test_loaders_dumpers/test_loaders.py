@@ -83,6 +83,27 @@ def test_yaml_loader_does_not_overwrite_existing_source_file(tmp_path):
     assert schema.source_file == "original.yaml"
 
 
+def test_yaml_loader_does_not_inject_source_file_into_non_schema_class(tmp_path):
+    """Non-SchemaDefinition classes with a ``source_file`` attribute must not have the loader
+    path injected.  This guards against behaviour that would silently stamp an absolute path
+    onto arbitrary pydantic models or YAMLRoot subclasses."""
+
+    class _ModelWithSourceFile(YAMLRoot):
+        source_file: Optional[str] = None
+
+        def __init__(self, source_file: Optional[str] = None, **kwargs):
+            super().__init__(**kwargs)
+            self.source_file = source_file
+
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("source_file: null\n")
+
+    obj = yaml_loader.load(str(data_path), target_class=_ModelWithSourceFile)
+    assert obj.source_file is None, (
+        "YAMLLoader must not set source_file on non-SchemaDefinition objects"
+    )
+
+
 def test_json_loader_path():
     """Load obo_sample.json using Path object and check the results"""
     REPO_ROOT = Path(__file__).parent.parent.parent.parent

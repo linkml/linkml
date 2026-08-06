@@ -55,9 +55,14 @@ class YAMLLoader(Loader):
         # Propagate that to ``source_file`` (e.g. on a SchemaDefinition) so relative imports can be
         # resolved against it. Inline string sources leave ``source_file`` unset, so this naturally
         # distinguishes a path from schema text without inspecting the source itself.
+        # Gated on SchemaDefinition specifically it owns ``source_file`` in the metamodel; and avoid
+        # injecting loader path into random target classes that happen to have a ``source_file`` slot.
         if metadata.source_file:
+            # Lazy import is cheap, avoids circular dependency between loaders and metamodel.
+            from linkml_runtime.linkml_model.meta import SchemaDefinition
+
             for target in result if isinstance(result, list) else [result]:
-                if hasattr(target, "source_file") and not target.source_file:
+                if isinstance(target, SchemaDefinition) and not target.source_file:
                     target.source_file = str(metadata.source_file)
         return result
 
