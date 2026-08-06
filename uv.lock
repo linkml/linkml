@@ -10,11 +10,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-07-30T14:39:35.497721066Z"
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
-cryptography = { timestamp = "2026-07-31T14:39:35.495765427Z", span = "P6D" }
+cryptography = "2026-08-07T05:00:00Z"
 
 [manifest]
 members = [
