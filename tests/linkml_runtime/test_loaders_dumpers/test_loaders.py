@@ -91,6 +91,31 @@ def test_yaml_loader_absolutizes_source_file_when_base_dir_given(tmp_path):
     assert schema.source_file == str(schema_path)
 
 
+def test_yaml_loader_sets_source_file_for_url(tmp_path):
+    """A URL source records the resolved URL, and stays splittable by ``os.path.dirname``.
+
+    ``SchemaView.load_import`` derives ``base_dir`` that way, so a mangled URL breaks imports.
+    A ``file://`` URL exercises the real hbread URL path without a network dependency.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+    url = schema_path.as_uri()
+
+    schema = yaml_loader.load(url, target_class=SchemaDefinition)
+    assert schema.source_file == url
+    assert os.path.dirname(schema.source_file) == schema_path.parent.as_uri()
+
+
+def test_yaml_loader_sets_source_file_for_open_file_handle(tmp_path):
+    """An open file handle records the path behind it (hbread reads the handle's ``.name``)."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    with open(schema_path) as fh:
+        schema = yaml_loader.load(fh, target_class=SchemaDefinition)
+    assert schema.source_file == str(schema_path)
+
+
 def test_yaml_loader_leaves_source_file_unset_for_string():
     """Loading inline schema text leaves ``source_file`` unset (no path to record)."""
     schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition)
