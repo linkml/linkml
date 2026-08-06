@@ -68,6 +68,29 @@ def test_yaml_loader_sets_source_file_for_path(tmp_path):
     assert schema_from_path.source_file == str(schema_path)
 
 
+def test_yaml_loader_preserves_relative_source_file_path(tmp_path, monkeypatch):
+    """A schema loaded via a relative path (no base_dir) must keep relative path as
+    ``source_file``, not receive machine-absolute prefix from hbread."""
+    monkeypatch.chdir(tmp_path)
+    schema_dir = tmp_path / "schemas"
+    schema_dir.mkdir()
+    (schema_dir / "schema.yaml").write_text(_SOURCE_FILE_SCHEMA)
+
+    rel_path = "schemas/schema.yaml"
+    schema = yaml_loader.load(rel_path, target_class=SchemaDefinition)
+    assert schema.source_file == rel_path
+
+
+def test_yaml_loader_absolutizes_source_file_when_base_dir_given(tmp_path):
+    """When base_dir is supplied the loader resolves the filename against it, so
+    ``source_file`` must be the resulting absolute path, not the bare filename."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    schema = yaml_loader.load("schema.yaml", target_class=SchemaDefinition, base_dir=str(tmp_path))
+    assert schema.source_file == str(schema_path)
+
+
 def test_yaml_loader_leaves_source_file_unset_for_string():
     """Loading inline schema text leaves ``source_file`` unset (no path to record)."""
     schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition)

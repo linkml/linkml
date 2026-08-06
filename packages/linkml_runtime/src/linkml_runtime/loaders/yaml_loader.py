@@ -61,9 +61,23 @@ class YAMLLoader(Loader):
             # Lazy import is cheap, avoids circular dependency between loaders and metamodel.
             from linkml_runtime.linkml_model.meta import SchemaDefinition
 
+            # Prefer the path exactly as the caller supplied it.  hbread always
+            # absolutizes, so using metadata.source_file would stamp a
+            # machine-absolute path onto a schema that was loaded via a relative
+            # path.  Two exceptions allow fall back to absolute value:
+            #   - base_dir was given: caller passed a bare filename to be
+            #     joined with base_dir, so resolved absolute path is the
+            #     meaningful anchor for later import resolution.
+            #   - source is a file-like object: there is no path string from
+            #     the caller to preserve.
+            if base_dir is None and isinstance(source, (str, os.PathLike)):
+                path_to_record = str(source)
+            else:
+                path_to_record = str(metadata.source_file)
+
             for target in result if isinstance(result, list) else [result]:
                 if isinstance(target, SchemaDefinition) and not target.source_file:
-                    target.source_file = str(metadata.source_file)
+                    target.source_file = path_to_record
         return result
 
     def loads_any(
