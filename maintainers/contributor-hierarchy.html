@@ -502,9 +502,9 @@ timeframe</p></li>
 <p>Capabilities:</p>
 <ul class="simple">
 <li><p>All collaborator capabilities</p></li>
-<li><p>Can review and approve PRs anywhere in the monorepo (team write access is
-sufficient; CODEOWNER approval is only required for paths explicitly listed
-in the <a class="reference internal" href="codeowners.html"><span class="std std-doc">CODEOWNERS</span></a> file)</p></li>
+<li><p>Can review and approve PRs anywhere in the monorepo. By default, core-team
+approval is what the <a class="reference internal" href="codeowners.html"><span class="std std-doc">CODEOWNERS</span></a> file requires everywhere;
+paths with a per-subsystem rule additionally require that area’s CODEOWNER</p></li>
 <li><p>May invoke the <a class="reference internal" href="codeowners.html#avoiding-review-bottlenecks-the-1-month-fallback"><span class="std std-ref">1-month CODEOWNER fallback</span></a>
 to approve stalled PRs in areas with unresponsive CODEOWNERS</p></li>
 <li><p>Still subject to branch protection rules (cannot force-push, etc.)</p></li>

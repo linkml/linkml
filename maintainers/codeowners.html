@@ -418,24 +418,34 @@ file is how we route PRs to the people who actually maintain each area.</p>
 <p>For the underlying GitHub mechanics, see the upstream
 <a class="reference external" href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">CODEOWNERS documentation</a>.
 This page only covers how LinkML uses it.</p>
-<section id="the-linkml-model-opt-in-stewardship">
-<h2>The LinkML model: opt-in stewardship<a class="headerlink" href="#the-linkml-model-opt-in-stewardship" title="Link to this heading">¶</a></h2>
-<p>LinkML uses an <strong>opt-in</strong> model. The <code class="docutils literal notranslate"><span class="pre">CODEOWNERS</span></code> file contains:</p>
+<section id="the-linkml-model-core-team-default-with-per-area-stewardship">
+<h2>The LinkML model: core-team default with per-area stewardship<a class="headerlink" href="#the-linkml-model-core-team-default-with-per-area-stewardship" title="Link to this heading">¶</a></h2>
+<p>LinkML uses a <strong>default-rule</strong> model. The <code class="docutils literal notranslate"><span class="pre">CODEOWNERS</span></code> file contains:</p>
 <ul class="simple">
-<li><p><strong>No default (<code class="docutils literal notranslate"><span class="pre">*</span></code>) rule.</strong> Paths that no one has claimed are reviewed
-normally, exactly as they were before CODEOWNERS existed. CODEOWNERS does
-not create a new approval gate for the rest of the codebase.</p></li>
+<li><p><strong>A default (<code class="docutils literal notranslate"><span class="pre">*</span></code>) rule</strong> requiring <code class="docutils literal notranslate"><span class="pre">&#64;linkml/core-team</span></code> approval on any path
+not covered by a more specific rule. This closes the gap where a
+write-access holder could merge a PR touching an unclaimed area without any
+core-team sign-off. Because GitHub applies the <em>last</em> matching rule, the
+per-subsystem rules below still take precedence over the default for their
+own paths.</p></li>
 <li><p><strong>Per-generator / per-subsystem rules</strong> for specific directories (e.g.
 <code class="docutils literal notranslate"><span class="pre">packages/linkml/src/linkml/generators/pydanticgen/</span></code>,
 <code class="docutils literal notranslate"><span class="pre">packages/linkml/src/linkml/generators/yarrrmlgen.py</span></code>) where a contributor
-has explicitly volunteered to steward the code. The baseline for
-identifying candidate stewards per generator is
-<a class="reference internal" href="generator-governance.html"><span class="std std-doc">Generator and Validator Governance</span></a>, which
-records contributor history from <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">blame</span></code>.</p></li>
+has explicitly volunteered to steward the code. These override the default
+for their paths. The baseline for identifying candidate stewards per
+generator is <a class="reference internal" href="generator-governance.html"><span class="std std-doc">Generator and Validator Governance</span></a>,
+which records contributor history from <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">blame</span></code>.</p></li>
 <li><p><strong>Governance rules</strong> — <code class="docutils literal notranslate"><span class="pre">CODEOWNERS</span></code> itself and the governance documents in
 <code class="docutils literal notranslate"><span class="pre">docs/maintainers/</span></code> are owned by <code class="docutils literal notranslate"><span class="pre">&#64;linkml/core-team</span></code> to prevent accidental
 self-appointments.</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default rule only has teeth if the branch protection rule <strong>“Require
+review from Code Owners”</strong> is enabled on <code class="docutils literal notranslate"><span class="pre">main</span></code>. Without it, GitHub records
+the code-owner requirement but does not block merges. Enabling that setting
+requires <a class="reference internal" href="contributor-hierarchy.html"><span class="std std-doc">admin</span></a> access.</p>
+</div>
 <p>Implications:</p>
 <ul class="simple">
 <li><p>Being listed in <code class="docutils literal notranslate"><span class="pre">CODEOWNERS</span></code> does <strong>not</strong> grant repository write access.
@@ -794,7 +804,7 @@ history used to seed per-generator ownership groups</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">CODEOWNERS</a><ul>
-<li><a class="reference internal" href="#the-linkml-model-opt-in-stewardship">The LinkML model: opt-in stewardship</a><ul>
+<li><a class="reference internal" href="#the-linkml-model-core-team-default-with-per-area-stewardship">The LinkML model: core-team default with per-area stewardship</a><ul>
 <li><a class="reference internal" href="#expectations-of-codeowners">Expectations of CODEOWNERS</a></li>
 </ul>
 </li>
