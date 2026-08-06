@@ -99,6 +99,7 @@ markers = [
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",
   "jsonschemagen: Tests for Json Schema generator",
+  "multifilejsonschemagen: Tests for the multi-file Json Schema generator",
   "shaclgen: Tests for shacl generator",
   "shexgen: Tests for shex generator",
   "jsonldgen: Test for JSON-LD generator",
