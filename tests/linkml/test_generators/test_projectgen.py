@@ -77,6 +77,64 @@ def test_cli_malformed_config_file_errors(tmp_path, schema_path, config_yaml, wh
 
 
 @pytest.mark.parametrize(
+    ("config_yaml", "message"),
+    [
+        pytest.param(
+            "excludes: jsonldcontext\n",
+            "expected a YAML list of generator names at 'excludes'",
+            id="excludes-string",
+        ),
+        pytest.param(
+            "includes: python\n",
+            "expected a YAML list of generator names at 'includes'",
+            id="includes-string",
+        ),
+        pytest.param("excludes:\n  - 1\n", "expected a generator name in 'excludes'", id="excludes-non-name"),
+        pytest.param("directory: [a, b]\n", "expected a directory path at 'directory'", id="directory-list"),
+        pytest.param("1: x\n", "expected a configuration name at the top level", id="non-string-key"),
+    ],
+)
+def test_cli_malformed_config_file_values_error(tmp_path, schema_path, config_yaml, message):
+    """Keys that are not mappings get checked too, so the whole configuration is reported
+    against the key that holds the mistake rather than failing later during generation."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(config_yaml)
+
+    result = CliRunner().invoke(cli, ["--config-file", str(config_path), "-d", str(tmp_path / "out"), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert message in result.output
+    assert not isinstance(result.exception, AttributeError | TypeError)
+
+
+def test_cli_excludes_matches_whole_names_only(tmp_path, schema_path):
+    """`jsonld` is a substring of `jsonldcontext`, and names are matched with ``in``.
+    Excluding one generator must not quietly take out the other as well."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("excludes:\n  - jsonldcontext\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "--config-file",
+            str(config_path),
+            "-I",
+            "jsonld",
+            "-I",
+            "jsonldcontext",
+            "-d",
+            str(out_dir),
+            str(schema_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (out_dir / "jsonld" / "schema.jsonld").is_file()
+    assert not (out_dir / "jsonld" / "schema.context.jsonld").is_file()
+
+
+@pytest.mark.parametrize(
     ("arguments", "where"),
     [
         pytest.param("notamapping", "the top level", id="scalar"),

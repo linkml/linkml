@@ -109,6 +109,63 @@ def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR
     return {name: _config_mapping(section, f"'{prefix}{name}'", source) for name, section in args.items()}
 
 
+def _generator_names(value: Any, where: str, source: str) -> list[GENERATOR_NAME]:
+    """Check that a list of generator names really is a list of names, and hand it back.
+
+    A bare string is refused, not wrapped into a single-item list. That prevents a bare
+    string from being treated as a list by ``gen_name in excludes``, which on a string
+    searches the configured text for each generator name::
+
+        excludes: [jsonldcontext]  ->  "jsonld" in ["jsonldcontext"] -> False, generated
+        excludes: jsonldcontext    ->  "jsonld" in "jsonldcontext"   -> True, skipped
+
+    :param value: Whatever was found at this point in the configuration.
+    :param where: Where that was, for the error message, e.g. ``"'excludes'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The list of names, empty if nothing was configured.
+    :raises click.UsageError: if the value is not a list of names, nor empty.
+    """
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise click.UsageError(
+            f"{source}: expected a YAML list of generator names at {where}, found {type(value).__name__}"
+        )
+    for name in value:
+        if not isinstance(name, str):
+            raise click.UsageError(f"{source}: expected a generator name in {where}, found {type(name).__name__}")
+    return value
+
+
+def _project_config(value: Any, source: str) -> dict[str, Any]:
+    """Check a whole gen-project configuration, and hand it back.
+
+    Every part is checked where it was written, so a mistake is reported against the key
+    holding it instead of failing somewhere later in generation.
+
+    :param value: The configuration as read from YAML.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The validated configuration, empty if nothing was configured.
+    :raises click.UsageError: if any part of it has the wrong shape.
+    """
+    config_data = _config_mapping(value, "the top level", source)
+    for key in config_data:
+        # These become attribute names via setattr in cli(), which requires strings.
+        if not isinstance(key, str):
+            raise click.UsageError(
+                f"{source}: expected a configuration name at the top level, found {type(key).__name__}"
+            )
+    if "generator_args" in config_data:
+        config_data["generator_args"] = _generator_args(config_data["generator_args"], source, "generator_args.")
+    for key in ("includes", "excludes"):
+        if key in config_data:
+            config_data[key] = _generator_names(config_data[key], f"'{key}'", source)
+    directory = config_data.get("directory")
+    if directory is not None and not isinstance(directory, str):
+        raise click.UsageError(f"{source}: expected a directory path at 'directory', found {type(directory).__name__}")
+    return config_data
+
+
 @dataclass
 class ProjectConfiguration:
     """
@@ -269,12 +326,7 @@ def cli(
     """
     project_config = ProjectConfiguration()
     if config_file is not None:
-        config_data = _config_mapping(yaml.safe_load(config_file), "the top level", "--config-file")
-        if "generator_args" in config_data:
-            config_data["generator_args"] = _generator_args(
-                config_data["generator_args"], "--config-file", "generator_args."
-            )
-        for k, v in config_data.items():
+        for k, v in _project_config(yaml.safe_load(config_file), "--config-file").items():
             setattr(project_config, k, v)
     if exclude:
         project_config.excludes = list(exclude)
