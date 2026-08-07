@@ -55,7 +55,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "coverage >=6.2",
-    "requests-cache >=1.3.2",
+    "requests-cache>=1.3.3",
 ]
 
 [project.scripts]
@@ -64,7 +64,7 @@ linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 [project.optional-dependencies]
 dev = [
     "coverage",
-    "requests-cache >=1.3.2",
+    "requests-cache>=1.3.3",
 ]
 
 [tool.codespell]
