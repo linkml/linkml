@@ -1,7 +1,9 @@
+import pytest
 import yaml
 from click.testing import CliRunner
 
 from linkml.generators.linkmlgen import LinkmlGenerator, cli
+from linkml.utils.deprecation import EMITTED
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -67,11 +69,13 @@ def test_generate(kitchen_sink_path):
 def test_structured_pattern(input_path):
     # test that structured patterns are being expanded
     # and populated into the pattern property on a class
-    pattern_gen = LinkmlGenerator(
-        str(input_path("pattern-example.yaml")),
-        materialize_patterns=True,
-        format="yaml",
-    )
+    EMITTED.discard("materialize-patterns-generator-option")
+    with pytest.warns(DeprecationWarning, match="materialize_patterns"):
+        pattern_gen = LinkmlGenerator(
+            str(input_path("pattern-example.yaml")),
+            materialize_patterns=True,
+            format="yaml",
+        )
 
     pattern_gen.serialize()
     # log yaml_filename so developers can look at its contents

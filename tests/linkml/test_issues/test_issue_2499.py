@@ -1,10 +1,33 @@
+import json
+
+import pytest
+
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.utils.deprecation import EMITTED
 from tests import DEFAULT_LOG_LEVEL
 
 
-def test_json_schema_with_materialized_patterns(input_path, snapshot):
-    """Ensure JSON Schema generation correctly materializes structured patterns."""
-    json_schema = JsonSchemaGenerator(
-        input_path("issue_2499.yaml"), log_level=DEFAULT_LOG_LEVEL, materialize_patterns=True
-    ).serialize()
+def test_json_schema_resolves_structured_patterns_automatically(input_path, snapshot):
+    """Resolve structured patterns without modifying the source schema."""
+    generator = JsonSchemaGenerator(input_path("issue_2499.yaml"), log_level=DEFAULT_LOG_LEVEL)
+    identifier = generator.schemaview.get_slot("identifier")
+
+    assert identifier.pattern is None
+
+    json_schema = generator.serialize()
+
     assert json_schema == snapshot("issue_2499.json")
+    assert identifier.pattern is None
+
+
+@pytest.mark.parametrize("legacy_value", [True, False])
+def test_json_schema_materialize_patterns_option_is_deprecated(input_path, legacy_value: bool) -> None:
+    """Warn for either legacy value without allowing it to disable resolution."""
+    EMITTED.discard("materialize-patterns-generator-option")
+
+    with pytest.warns(DeprecationWarning, match="materialize_patterns"):
+        generator = JsonSchemaGenerator(input_path("issue_2499.yaml"), materialize_patterns=legacy_value)
+
+    generated_schema = json.loads(generator.serialize())
+    identifier = generated_schema["$defs"]["Thing"]["properties"]["identifier"]
+    assert identifier["pattern"] == r"^(?:^(https?://|(mailto|tel):)\w+$)$"

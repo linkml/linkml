@@ -3124,8 +3124,9 @@ types:
 
 
 def test_materialize_patterns(sv_structured_patterns: SchemaView) -> None:
-    """Test pattern materialization."""
-    sv_structured_patterns.materialize_patterns()
+    """Retain pattern materialization while warning callers that it mutates the schema."""
+    with pytest.warns(DeprecationWarning, match="resolve_pattern"):
+        sv_structured_patterns.materialize_patterns()
 
     height_slot = sv_structured_patterns.get_slot("height")
     weight_slot = sv_structured_patterns.get_slot("weight")

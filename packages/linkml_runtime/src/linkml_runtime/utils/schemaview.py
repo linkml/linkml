@@ -2385,11 +2385,21 @@ class SchemaView:
             s2.name = new_name
         return s2
 
+    @deprecated(
+        reason=(
+            "This method mutates asserted schema definitions. Use resolve_pattern() for a single definition, "
+            "or induced_slot() and induced_type() for induced definitions."
+        )
+    )
     def materialize_patterns(self, imports: bool = True) -> None:
-        """Materialize structured patterns into regular expressions.
+        """Materialize structured patterns into regular expressions in place.
 
         :param imports: include definitions from imported schemas, defaults to True
         """
+        self._materialize_patterns(imports)
+
+    def _materialize_patterns(self, imports: bool = True) -> None:
+        """Implement in-place pattern materialization for compatibility callers."""
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
         resolvers: dict[str, PatternResolver] = {}
         modified = False

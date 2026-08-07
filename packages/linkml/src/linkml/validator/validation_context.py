@@ -93,7 +93,6 @@ class ValidationContext:
                     top_class=self._target_class,
                     not_closed=not_closed,
                     include_range_class_descendants=include_range_class_descendants,
-                    materialize_patterns=True,
                 )
                 json_schema = jsonschema_gen.generate()
                 _json_schema_cache[cache_key] = json_schema
