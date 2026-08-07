@@ -29,7 +29,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaops import roll_down, roll_up
 from linkml_runtime.utils.schemaview import (
-    BOOLEAN_INHERITED_METASLOTS,
+    _BOOLEAN_INHERITED_METASLOTS,
     CLASSES,
     ENUMS,
     PREFIXES,
@@ -3515,7 +3515,7 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
 
 def test_boolean_inherited_metaslots_matches_metamodel() -> None:
-    """BOOLEAN_INHERITED_METASLOTS must list exactly the inherited metaslots ranged on boolean.
+    """_BOOLEAN_INHERITED_METASLOTS must list exactly the inherited metaslots ranged on boolean.
 
     Guards against drift: if the metamodel gains or loses a boolean inherited metaslot,
     the OR-combination branch in induced_slot has to learn about it.
@@ -3523,7 +3523,7 @@ def test_boolean_inherited_metaslots_matches_metamodel() -> None:
     metamodel = package_schemaview("linkml_runtime.linkml_model.meta")
     induced = [metamodel.induced_slot(name, "slot_definition") for name in metamodel.class_slots("slot_definition")]
     expected = {slot.name for slot in induced if slot.inherited and slot.range == "boolean"}
-    assert expected == BOOLEAN_INHERITED_METASLOTS
+    assert expected == _BOOLEAN_INHERITED_METASLOTS
 
 
 @pytest.mark.parametrize(

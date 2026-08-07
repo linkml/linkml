@@ -84,7 +84,7 @@ WINDOWS = sys.platform == "win32"
 #: fix is probably for the Python generator to emit the list next to
 #: ``_inherited_slots``, the same way that list is already produced. Until then the
 #: drift test is what keeps this honest.
-BOOLEAN_INHERITED_METASLOTS = frozenset(
+_BOOLEAN_INHERITED_METASLOTS = frozenset(
     {
         "designates_type",
         "identifier",
@@ -1760,7 +1760,7 @@ class SchemaView:
                         # than to None, so an empty one carries no information and must
                         # not clear a value inherited from a more distant ancestor.
                         continue
-                    if metaslot_name in BOOLEAN_INHERITED_METASLOTS:
+                    if metaslot_name in _BOOLEAN_INHERITED_METASLOTS:
                         # Boolean metaslots combine with OR, so only a True propagates.
                         if anc_value:
                             setattr(induced_slot, metaslot_name, True)
