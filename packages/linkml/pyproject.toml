@@ -120,7 +120,7 @@ bigquery = [
 tests-extra = [
   "pytest >= 7.4.0",
   "pytest-subtests >= 0.11.0",
-  "pytest-cov >= 4.1.0",
+  "pytest-cov>=7.1.0",
   "pytest-xdist >= 3.6.1",
   "numpy >= 1.24.3; python_version < '3.12'",
   "numpy >= 1.25.2; python_version >= '3.12'",
@@ -131,7 +131,7 @@ tests-extra = [
   "openapi-spec-validator >= 0.8.4",
 ]
 docs = [
-  "furo >= 2023.03.27",
+  "furo>=2025.12.19",
   "sphinxcontrib-mermaid>=2.0.3",
   "sphinx",
   "sphinx-click",
