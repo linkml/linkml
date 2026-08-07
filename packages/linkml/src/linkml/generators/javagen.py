@@ -9,7 +9,7 @@ from jinja2 import Template
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
-from linkml.utils.generator import read_generator_config_arg, shared_arguments
+from linkml.utils.generator import read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
@@ -533,7 +533,7 @@ def cli(
 ):
     """Generate java classes to represent a LinkML model"""
     if package is None:
-        package = read_generator_config_arg(config_file, "java", "package")
+        package = read_generator_config(config_file, "java").get("package")
         if package is not None and not _is_valid_java_package(str(package)):
             logging.warning("Config value %r is not a valid Java package name; using it as-is.", package)
     if generate_records:

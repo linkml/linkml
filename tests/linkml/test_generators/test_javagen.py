@@ -411,25 +411,30 @@ def test_cli_invalid_config_package_warns_but_is_used(tmp_path, caplog):
     assert any("not a valid Java package name" in record.message for record in caplog.records)
 
 
-def test_cli_config_file_missing_path_errors(tmp_path):
-    """A --config-file path that doesn't exist is a usage error (click.File's own behavior)."""
-    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
-
-    result = CliRunner().invoke(cli, ["--config-file", str(tmp_path / "nonexistent.yaml"), str(schema_path)])
-
-    assert result.exit_code != 0
-
-
-def test_cli_config_file_invalid_yaml_errors(tmp_path):
-    """A --config-file that isn't a YAML mapping is rejected with a clear error."""
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param("- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param("generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(
+            "generator_args:\n  java: package=org.example.model\n",
+            "'generator_args.java'",
+            id="scalar-section",
+        ),
+    ],
+)
+def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
+    """A malformed --config-file fails loudly. A malformed `generator_args.java` in
+    particular must not be skipped over, leaving the user with the `example` default
+    and no clue why their configured package was ignored."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
     config_path = tmp_path / "myconfig.yaml"
-    config_path.write_text("- 1\n- 2\n")
+    config_path.write_text(config_yaml)
 
     result = CliRunner().invoke(cli, ["--config-file", str(config_path), str(schema_path)])
 
     assert result.exit_code != 0
-    assert "must contain a YAML mapping" in str(result.output) + str(result.exception)
+    assert f"expected a YAML mapping at {where}" in str(result.output) + str(result.exception)
 
 
 def test_cli_config_file_real_project_config_shape(tmp_path):

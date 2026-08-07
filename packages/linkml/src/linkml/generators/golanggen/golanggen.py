@@ -26,7 +26,7 @@ from linkml.generators.golanggen.template import (
 )
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.deprecation import deprecation_warning
-from linkml.utils.generator import read_generator_config_arg, shared_arguments
+from linkml.utils.generator import read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -696,7 +696,7 @@ def cli(
         if package is None:
             package = package_name
     if package is None:
-        package = read_generator_config_arg(config_file, "golang", "package")
+        package = read_generator_config(config_file, "golang").get("package")
 
     if template_dir is not None:
         if not Path(template_dir).exists():
