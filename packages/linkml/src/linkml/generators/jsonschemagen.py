@@ -835,16 +835,22 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
 
             else:
-                if reference is not None:
-                    # for multivalued slots, nullability applies to the array (via array_of
-                    # below), not to the individual elements
-                    prop = JsonSchema.ref_for(
-                        reference, required=slot.required or slot_is_multivalued or not include_null
-                    )
-                elif typ and fmt is None:
-                    prop = JsonSchema({"type": typ})
-                elif typ:
-                    prop = JsonSchema({"type": typ, "format": fmt})
+                if not slot_is_boolean or slot.range != self.schemaview.schema.default_range:
+                    # When a slot uses boolean constraints (any_of, all_of, etc.) AND its range
+                    # was not set explicitly but inherited from the schema's default_range, the
+                    # boolean constraints already fully describe the type.  Emitting prop["type"]
+                    # from the default_range would duplicate that constraint.  Skip it.
+                    # An explicit range on a boolean slot is intentional and is kept.
+                    if reference is not None:
+                        # for multivalued slots, nullability applies to the array (via array_of
+                        # below), not to the individual elements
+                        prop = JsonSchema.ref_for(
+                            reference, required=slot.required or slot_is_multivalued or not include_null
+                        )
+                    elif typ and fmt is None:
+                        prop = JsonSchema({"type": typ})
+                    elif typ:
+                        prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
                     prop = JsonSchema.array_of(prop, include_null, required=slot.required)
