@@ -1,4 +1,3 @@
-import pytest
 import yaml
 from click.testing import CliRunner
 
@@ -70,12 +69,12 @@ def test_structured_pattern(input_path):
     # test that structured patterns are being expanded
     # and populated into the pattern property on a class
     EMITTED.discard("materialize-patterns-generator-option")
-    with pytest.warns(DeprecationWarning, match="materialize_patterns"):
-        pattern_gen = LinkmlGenerator(
-            str(input_path("pattern-example.yaml")),
-            materialize_patterns=True,
-            format="yaml",
-        )
+    pattern_gen = LinkmlGenerator(
+        str(input_path("pattern-example.yaml")),
+        materialize_patterns=True,
+        format="yaml",
+    )
+    assert "materialize-patterns-generator-option" in EMITTED
 
     pattern_gen.serialize()
     # log yaml_filename so developers can look at its contents
