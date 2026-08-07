@@ -99,8 +99,8 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     ],
 )
 def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
-    """Translate materialized structured patterns into XML Schema regex semantics."""
-    graph = OwlSchemaGenerator(
+    """Translate structured patterns without modifying the source schema."""
+    generator = OwlSchemaGenerator(
         f"""
 id: https://example.org/pattern
 name: pattern
@@ -120,10 +120,16 @@ classes:
     slots:
       - value
 """
-    ).as_graph()
+    )
+    value_slot = generator.schemaview.get_slot("value")
+
+    assert value_slot.pattern is None
+
+    graph = generator.as_graph()
 
     patterns = list(graph.objects(None, XSD.pattern))
     assert Literal(expected_pattern) in patterns, patterns
+    assert value_slot.pattern is None
 
 
 def test_rdfs_profile(kitchen_sink_path):

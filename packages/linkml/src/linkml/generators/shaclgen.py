@@ -113,9 +113,6 @@ class ShaclGenerator(Generator):
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
 
-    materialize_patterns: bool = True
-    """If True, patterns will be materialized from structured_patterns before generation."""
-
     default_language: str | None = None
     """Default BCP 47 language tag for human-readable string literals.
 
@@ -186,9 +183,6 @@ class ShaclGenerator(Generator):
         return canonicalize_rdf_graph(g, output_format=fmt)
 
     def as_graph(self) -> Graph:
-        if self.materialize_patterns:
-            self.schemaview.materialize_patterns()
-
         sv = self.schemaview
         g = Graph()
         g.bind("sh", SH)
@@ -456,7 +450,8 @@ class ShaclGenerator(Generator):
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        rt = sv.get_type(r)
+        # Types can inherit URI and pattern constraints.
+        rt = sv.induced_type(r)
         type_uri = rt.uri
         expanded = sv.get_uri(rt, expand=True) if type_uri else None
         if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
@@ -642,12 +637,6 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
-)
-@click.option(
-    "--materialize-patterns/--no-materialize-patterns",
-    default=True,
-    show_default=True,
-    help="If true, patterns will be materialized from structured_patterns before generation.",
 )
 @click.option(
     "--default-language",

@@ -140,12 +140,6 @@ DATAFRAME_GROUP = [
 @click.option("--template-path", help="Optional jinja2 template directory within module (not used with --package)")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation (not used with --package)")
 @click.option(
-    "--materialize-patterns/--no-materialize-patterns",
-    default=True,
-    show_default=True,
-    help="Materialize patterns from structured_patterns before generation.",
-)
-@click.option(
     "--generator-class",
     help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())} (not used with --package)",
     default="PanderaDataframeGenerator",

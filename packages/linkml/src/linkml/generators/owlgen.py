@@ -136,9 +136,6 @@ class OwlSchemaGenerator(Generator):
 
     add_ols_annotations: bool = True
 
-    materialize_patterns: bool = True
-    """If True, materialize patterns from structured_patterns before generation."""
-
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
 
@@ -293,9 +290,6 @@ class OwlSchemaGenerator(Generator):
 
         :return:
         """
-        if self.materialize_patterns:
-            self.schemaview.materialize_patterns()
-
         if self.skip_vacuous_min_zero_cardinality_axioms is None:
             deprecation_warning("owlgen-skip-vacuous-min-zero-cardinality-default")
             self.skip_vacuous_min_zero_cardinality_axioms = False
@@ -330,7 +324,9 @@ class OwlSchemaGenerator(Generator):
         for slot in sv.all_slots(imports=mergeimports, attributes=False).values():
             self.add_slot(slot, attribute=False)
         for typ in sv.all_types(imports=mergeimports).values():
-            self.add_type(typ)
+            # Type constraints are inherited, so emit the effective type rather
+            # than the asserted definition from the schema.
+            self.add_type(sv.induced_type(typ.name))
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
         for cls in sv.all_classes(imports=mergeimports).values():
@@ -1004,10 +1000,15 @@ class OwlSchemaGenerator(Generator):
         self,
         element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
     ) -> str | None:
-        """Translate a materialized structured pattern to XML Schema regex semantics."""
+        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
         pattern = element.pattern
         structured_pattern = element.structured_pattern
-        if pattern is None or structured_pattern is None or not self.materialize_patterns:
+        # OWL also processes anonymous expressions, which cannot be induced.
+        # Named definitions that reach this point without a pattern are raw
+        # schema elements, so resolve them locally without mutating the schema.
+        if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
+            pattern = self.schemaview.resolve_pattern(element)
+        if pattern is None or structured_pattern is None:
             return pattern
         inner = pattern
         if inner.startswith("^(?:") and inner.endswith(")$"):
@@ -1733,12 +1734,6 @@ class OwlSchemaGenerator(Generator):
     default=True,
     show_default=True,
     help="If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide",
-)
-@click.option(
-    "--materialize-patterns/--no-materialize-patterns",
-    default=True,
-    show_default=True,
-    help="If true, patterns will be materialized from structured_patterns before generation.",
 )
 @click.option(
     "--ontology-uri-suffix",

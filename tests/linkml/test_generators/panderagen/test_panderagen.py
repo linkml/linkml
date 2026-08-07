@@ -31,26 +31,17 @@ MODEL_COLUMNS = [
 MATERIALIZED_LENGTH_PATTERN = r'str_contains=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
 
 
-@pytest.mark.parametrize("materialize_patterns", [True, False])
-def test_materialize_patterns(test_inputs_dir, materialize_patterns):
-    """Materialize structured slot patterns only when requested."""
-    generator_args = {} if materialize_patterns else {"materialize_patterns": False}
-    code = PanderaDataframeGenerator(
-        str(test_inputs_dir / "pattern-example.yaml"),
-        **generator_args,
-    ).serialize()
+def test_structured_patterns_are_resolved_without_modifying_schema(test_inputs_dir) -> None:
+    """Generate regular patterns from structured patterns without modifying the schema."""
+    generator = PanderaDataframeGenerator(str(test_inputs_dir / "pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
 
-    assert (MATERIALIZED_LENGTH_PATTERN in code) is materialize_patterns
+    assert height_slot.pattern is None
 
+    code = generator.serialize()
 
-@pytest.mark.parametrize("materialize_patterns", [True, False])
-def test_materialize_patterns_cli(cli_runner, test_inputs_dir, materialize_patterns):
-    """Forward the CLI pattern-materialization option to the generator."""
-    option = "--materialize-patterns" if materialize_patterns else "--no-materialize-patterns"
-    result = cli_runner.invoke(cli, [str(test_inputs_dir / "pattern-example.yaml"), option])
-
-    assert result.exit_code == 0, result.output
-    assert (MATERIALIZED_LENGTH_PATTERN in result.output) is materialize_patterns
+    assert MATERIALIZED_LENGTH_PATTERN in code
+    assert height_slot.pattern is None
 
 
 def test_pandera_basic_class_based(synthetic_pandera_schema):

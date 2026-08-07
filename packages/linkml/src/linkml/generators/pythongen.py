@@ -57,10 +57,6 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
-    materialize_patterns: bool = True
-    """
-    If True, patterns will be materialized from structured_patterns before generation.
-    """
 
     genmeta: bool = False
     dataclass_repr: bool = False
@@ -90,9 +86,6 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
-        if self.materialize_patterns:
-            self.schemaview.materialize_patterns()
-            SchemaView(self.schema).materialize_patterns(imports=False)
 
     def slot_name(self, name: str) -> str:
         """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
@@ -1181,7 +1174,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             mappings = ", mappings = [" + ", ".join(map_texts) + "]"
         else:
             mappings = ""
-        pattern = f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
+        # Global slot definitions are emitted directly rather than through
+        # induced_slot(), so resolve structured patterns explicitly here
+        # without changing the source SlotDefinition.
+        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 
@@ -1361,12 +1358,6 @@ class {enum_name}(EnumDefinitionImpl):
     help="Generate Slot information",
 )
 @click.option(
-    "--materialize-patterns/--no-materialize-patterns",
-    default=True,
-    show_default=True,
-    help="If true, patterns will be materialized from structured_patterns before generation.",
-)
-@click.option(
     "--validate/--no-validate",
     default=False,
     show_default=True,
@@ -1379,7 +1370,6 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
-    materialize_patterns=True,
     validate=False,
     **args,
 ):
@@ -1393,7 +1383,6 @@ def cli(
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
-        materialize_patterns=materialize_patterns,
         **args,
     )
     if validate:

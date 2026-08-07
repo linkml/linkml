@@ -51,9 +51,6 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     gen_slots: bool = True
     genmeta: bool = False
     emit_metadata: bool = True
-    materialize_patterns: bool = True
-    """Materialize patterns from structured patterns before generation."""
-
     roll_up_slots: bool = False
     """whether to include all slots from parents and mixins explicitly in the generated model."""
 
@@ -282,9 +279,6 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         Create a data structure ready to pass to the serialization templates.
         """
         sv: SchemaView = self.schemaview
-
-        if self.materialize_patterns:
-            sv.materialize_patterns()
 
         module_name = sv.schema.name
 
