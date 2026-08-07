@@ -16,14 +16,16 @@ If these tests are reinstated then it will be necessary to create distinct subCl
 
 import logging
 import os
+import re
 from dataclasses import dataclass, field
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import TextIO, cast
 
+import click
 import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.generator import Generator
+from linkml.utils.generator import Generator, read_generator_config
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -726,3 +728,60 @@ def test_meta_neighborhood():
     #                            slotrefs={'is_a', 'apply_to', 'mixins', 'owner'},
     #                            typerefs={'boolean', 'datetime', 'uri', 'string', 'uriorcurie', 'ncname'},
     #                            subsetrefs=set()), neighbor_refs)
+
+
+CONFIG_YAML = b"""
+generator_args:
+  java:
+    package: org.example.model
+    mergeimports: true
+  golang:
+    package: mypackage
+"""
+
+
+@pytest.mark.parametrize(
+    ("generator_name", "expected"),
+    [
+        ("java", {"package": "org.example.model", "mergeimports": True}),
+        ("golang", {"package": "mypackage"}),
+    ],
+)
+def test_read_generator_config_returns_whole_section(generator_name, expected):
+    """Each generator gets its own section out of one shared config file, and gets all of
+    it in a single read - the file is a stream, so a second read would find nothing."""
+    assert read_generator_config(BytesIO(CONFIG_YAML), generator_name) == expected
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "generator_name"),
+    [
+        pytest.param(None, "java", id="no-config-file"),
+        pytest.param(b"", "java", id="empty-file"),
+        pytest.param(CONFIG_YAML, "rust", id="generator-absent"),
+        pytest.param(b"generator_args:\n  java:\n", "java", id="empty-section"),
+        pytest.param(b"generator_args:\n", "java", id="empty-generator-args"),
+        pytest.param(b"excludes:\n  - markdown\n", "java", id="no-generator-args"),
+    ],
+)
+def test_read_generator_config_absent_section_is_empty(config_yaml, generator_name):
+    """A section that is absent, or written but left empty, gives an empty dict."""
+    config_file = None if config_yaml is None else BytesIO(config_yaml)
+
+    assert read_generator_config(config_file, generator_name) == {}
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param(b"- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param(b"justastring\n", "the top level", id="top-level-scalar"),
+        pytest.param(b"generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(b"generator_args:\n  java: notamapping\n", "'generator_args.java'", id="scalar-section"),
+    ],
+)
+def test_read_generator_config_rejects_malformed_section(config_yaml, where):
+    """A scalar where a mapping belongs is a usage error naming the offending key -
+    never silently ignored, which would leave the generator on its default."""
+    with pytest.raises(click.UsageError, match=f"expected a YAML mapping at {re.escape(where)}"):
+        read_generator_config(BytesIO(config_yaml), "java")

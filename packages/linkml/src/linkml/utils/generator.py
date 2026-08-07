@@ -24,7 +24,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import IO, ClassVar, TextIO, Union, cast
+from typing import IO, Any, ClassVar, TextIO, Union, cast
 
 import click
 import yaml
@@ -993,31 +993,53 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
     return decorator
 
 
-def read_generator_config_arg(config_file: IO[bytes] | None, generator_name: str, arg: str):
-    """Read ``generator_args.<generator_name>.<arg>`` from a gen-project-style config file.
+def _config_mapping(value: Any, where: str) -> dict[str, Any]:
+    """Check that one level of a config file is a mapping, and hand it back.
 
-    The file format matches the project-wide config.yaml consumed by
-    ``gen-project --config-file`` (see ``ProjectConfiguration.generator_args`` in
-    projectgen.py), so one config.yaml can be shared between generators.
+    An empty value (``java:`` with nothing under it) reads as None saying "nothing
+    configured here", so it returns as empty mapping. Anything else that is not a
+    mapping is a mistake in the file, and says so rather than being skipped.
 
-    :param config_file: Open binary stream from an explicit ``--config-file`` option
-        (``click.File("rb")``), or None if no config file was given.
-    :param generator_name: Key under ``generator_args`` (e.g. ``"java"``, ``"golang"``).
-    :param arg: Key under ``generator_args.<generator_name>`` (e.g. ``"package"``).
-    :return: The configured value, or None if no config file / key was found.
-    :raises click.UsageError: if the config file is not a YAML mapping.
+    :param value: Whatever was found at this point in the file.
+    :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
+    :return: The mapping, empty if nothing was configured.
+    :raises click.UsageError: if the value is neither a mapping nor empty.
+    """
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise click.UsageError(f"--config-file: expected a YAML mapping at {where}, found {type(value).__name__}")
+    return value
+
+
+def read_generator_config(config_file: IO[bytes] | None, generator_name: str) -> dict[str, Any]:
+    """Read one generator's settings out of a gen-project-style config file.
+
+    This is the configuration file that ``gen-project --config-file`` reads so a
+    project can keep a singlefile and each generator can have its own section.
+
+    Reading consumes ``config_file``, so call this once and lookup each setting
+    on the returned dict. Calling it a second time with the same open file finds
+    nothing, because the file has already been read to the end.
+
+    >>> from io import BytesIO
+    >>> config_file = BytesIO(b"generator_args:\\n  java:\\n    package: org.example.model\\n")
+    >>> read_generator_config(config_file, "java").get("package")
+    'org.example.model'
+    >>> read_generator_config(None, "java")
+    {}
+
+    A malformed written section - a scalar where a mapping belongs - is a usage
+    error, so report it. Absent/empty sections are fine (empty dict).
+
+    :param config_file: The open file from ``--config-file``, or None if absent.
+    :param generator_name: Which section to read, e.g. ``"java"`` or ``"golang"``.
+    :return: That generator's settings, empty if the file has none for it.
+    :raises click.UsageError: if the file, or the part of it this generator reads, isn't
+        a YAML mapping.
     """
     if config_file is None:
-        return None
-    config_data = yaml.safe_load(config_file) or {}
-    if not isinstance(config_data, dict):
-        raise click.UsageError(
-            f"--config-file must contain a YAML mapping (e.g. 'generator_args: {{{generator_name}: {{{arg}: ...}}}}')"
-        )
-    generator_args = config_data.get("generator_args") or {}
-    if not isinstance(generator_args, dict):
-        return None
-    gen_args = generator_args.get(generator_name) or {}
-    if not isinstance(gen_args, dict):
-        return None
-    return gen_args.get(arg)
+        return {}
+    config_data = _config_mapping(yaml.safe_load(config_file), "the top level")
+    generator_args = _config_mapping(config_data.get("generator_args"), "'generator_args'")
+    return _config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'")
