@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from click.testing import CliRunner
 
@@ -157,12 +159,24 @@ def test_cli_unparseable_generator_arguments_errors(tmp_path, schema_path):
     result = CliRunner().invoke(cli, ["-A", "{unclosed", "-d", str(tmp_path / "out"), str(schema_path)])
 
     assert result.exit_code != 0
-    assert "must be a valid YAML blob" in result.output
+    assert "--generator-arguments is not valid YAML" in result.output
+
+
+def test_cli_unparseable_config_file_errors(tmp_path, schema_path):
+    """A --config-file that isn't valid YAML reports the same way as a bad -A blob."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("generator_args:\n  python: {unclosed\n")
+
+    result = CliRunner().invoke(cli, ["--config-file", str(config_path), "-d", str(tmp_path / "out"), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert "--config-file is not valid YAML" in result.output
 
 
 @pytest.mark.parametrize(
     "config_yaml",
     [
+        pytest.param("", id="empty-file"),
         pytest.param("generator_args:\n", id="empty-generator-args"),
         pytest.param("generator_args:\n  python:\n", id="empty-generator-section"),
         pytest.param("generator_args:\n  python:\n    genmeta: false\n", id="populated"),
@@ -194,3 +208,71 @@ def test_cli_valid_generator_arguments_generates(tmp_path, schema_path):
 
     assert result.exit_code == 0, result.output
     assert (out_dir / "schema.py").is_file()
+
+
+def _generated_json_schema(out_dir):
+    return (out_dir / "jsonschema" / "schema.schema.json").read_text()
+
+
+@pytest.mark.parametrize(
+    ("arguments", "expected"),
+    [
+        pytest.param("owl: {metaclasses: false}", '"additionalProperties": false', id="other-generator-kept"),
+        pytest.param("jsonschema: {not_closed: true}", '"additionalProperties": true', id="same-setting-overridden"),
+    ],
+)
+def test_cli_generator_arguments_layer_over_config_file(tmp_path, schema_path, arguments, expected):
+    """-A is layered over --config-file setting by setting. Naming one setting on the
+    command line used to discard everything the file configured."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("generator_args:\n  jsonschema:\n    not_closed: false\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "--config-file",
+            str(config_path),
+            "-A",
+            arguments,
+            "-I",
+            "jsonschema",
+            "-d",
+            str(out_dir),
+            str(schema_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert expected in _generated_json_schema(out_dir)
+
+
+@pytest.mark.parametrize(
+    ("attribute", "value", "message"),
+    [
+        pytest.param(
+            "generator_args", "notamapping", "expected a YAML mapping at 'generator_args'", id="generator-args-scalar"
+        ),
+        pytest.param(
+            "generator_args",
+            {"python": "notamapping"},
+            "expected a YAML mapping at 'generator_args.python'",
+            id="generator-section-scalar",
+        ),
+        pytest.param(
+            "excludes", "python", "expected a YAML list of generator names at 'excludes'", id="excludes-string"
+        ),
+        pytest.param(
+            "includes", "python", "expected a YAML list of generator names at 'includes'", id="includes-string"
+        ),
+    ],
+)
+def test_generate_checks_a_configuration_built_in_code(tmp_path, schema_path, attribute, value, message):
+    """A ProjectConfiguration assembled in code is checked the same way as one read from a
+    file, so using this as a library reports the mistake instead of failing part-way in."""
+    config = ProjectConfiguration()
+    config.directory = str(tmp_path / "out")
+    setattr(config, attribute, value)
+
+    with pytest.raises(ValueError, match=re.escape(message)):
+        ProjectGenerator().generate(str(schema_path), config)
