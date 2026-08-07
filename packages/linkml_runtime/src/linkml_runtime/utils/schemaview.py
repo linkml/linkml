@@ -1755,7 +1755,7 @@ class SchemaView:
                     anc_value = getattr(anc_slot, metaslot_name, None)
                     if anc_value is None:
                         continue
-                    if isinstance(anc_value, (list, dict)) and not anc_value:
+                    if isinstance(anc_value, list | dict) and not anc_value:
                         # Multivalued metaslots default to an empty collection rather
                         # than to None, so an empty one carries no information and must
                         # not clear a value inherited from a more distant ancestor.
