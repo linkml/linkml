@@ -34,10 +34,8 @@ Package Configuration
 The generated Go ``package`` clause is driven by the following precedence:
 
 1. ``--package`` command-line option (``--package-name`` is a deprecated alias)
-2. ``generator_args.golang.package`` set via an explicit ``--config-file``/``-C`` (see below)
-3. ``generator_args.golang.package`` set via a ``config.yaml`` auto-detected in the
-   current working directory (only checked when ``--config-file`` is not given)
-4. Fallback: derived from the schema name -- lowercased, truncated at the first
+2. ``generator_args.golang.package`` set via ``--config-file``/``-C`` (see below)
+3. Fallback: derived from the schema name -- lowercased, truncated at the first
    underscore, with any character outside ``[a-z0-9_]`` stripped (e.g. a schema
    named ``kitchen_sink`` yields ``package kitchen``)
 
@@ -60,10 +58,6 @@ project-wide ``config.yaml`` can be shared between them. ``package`` lives under
 ``gen-golang`` only ever reads ``generator_args.golang.package`` out of this file --
 every other key is ignored, so a full multi-generator project ``config.yaml`` can be
 passed as-is without modification.
-
-If ``--config-file`` is not given, ``gen-golang`` looks for a ``config.yaml`` in the
-current working directory (the conventional top-level directory of a project) and
-uses its ``generator_args.golang.package`` value automatically, if present.
 
 Deprecation note
 ----------------

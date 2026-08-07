@@ -38,9 +38,8 @@ Package Configuration
 The generated Java ``package`` statement is driven by the following precedence:
 
 1. ``--package`` command-line option (or ``package=...`` when using ``JavaGenerator`` programmatically)
-2. ``generator_args.java.package`` set via an explicit ``--config-file``/``-C`` (see :ref:`java-configuration-file` below)
-3. ``generator_args.java.package`` set via a project-level ``config.yaml`` (if detected and ``--config-file`` was omitted)
-4. Fallback default: ``example``
+2. ``generator_args.java.package`` set via ``--config-file``/``-C`` (see :ref:`java-configuration-file` below)
+3. Fallback default: ``example``
 
 NOTE:
     The package name is *not* configurable via schema-level annotations: LinkML
@@ -80,12 +79,6 @@ passed as-is without modification.
 
 An explicit ``--package`` command-line option always overrides a value set via
 ``--config-file``.
-
-If ``--config-file`` is not given, ``gen-java`` looks for a ``config.yaml`` in the
-current working directory (the conventional top-level directory of a project) and
-uses its ``generator_args.java.package`` value automatically, if present. This lets
-a project keep a single ``config.yaml`` at its root and simply run ``gen-java``
-from there without repeating ``--package`` or ``--config-file`` on every invocation.
 
 The same configuration-file mechanism is supported by ``gen-golang`` (see
 :doc:`golang`), which reads ``generator_args.golang.package`` from the same file.

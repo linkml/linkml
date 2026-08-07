@@ -631,8 +631,7 @@ _TEMPLATE_NAMES = [
     type=click.File("rb"),
     help="Path to a gen-project-style YAML config file setting "
     "'generator_args: {golang: {package: ...}}'. An explicit --package always "
-    "takes precedence over the config file. If not given, a 'config.yaml' in the current "
-    "working directory is used automatically if present.",
+    "takes precedence over the config file.",
 )
 @click.option(
     "--alphabetical-sort/--no-alphabetical-sort",

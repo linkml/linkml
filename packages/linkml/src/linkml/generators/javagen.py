@@ -484,8 +484,7 @@ class JavaGenerator(OOCodeGenerator):
     type=click.File("rb"),
     help="Path to a gen-project-style YAML config file setting "
     "'generator_args: {java: {package: ...}}'. An explicit --package always takes "
-    "precedence over the config file. If not given, a 'config.yaml' in the current "
-    "working directory is used automatically if present.",
+    "precedence over the config file.",
 )
 @click.option(
     "--template-dir",

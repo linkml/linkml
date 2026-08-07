@@ -450,41 +450,21 @@ def test_cli_config_file_real_project_config_shape(tmp_path):
     assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.fromrealproject")
 
 
-def test_cli_autodetects_config_yaml_in_cwd(tmp_path, monkeypatch):
-    """When --config-file is omitted, a `config.yaml` in the cwd is used automatically."""
+def test_cli_ignores_config_yaml_in_cwd(tmp_path, monkeypatch):
+    """A `config.yaml` in the cwd is never read implicitly: --config-file must be explicit."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
-    (tmp_path / "config.yaml").write_text(_java_config_yaml("org.example.autocwd"))
+    (tmp_path / "config.yaml").write_text(_java_config_yaml("org.example.cwd"))
     out_dir = tmp_path / "out"
     monkeypatch.chdir(tmp_path)
 
     result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
 
     assert result.exit_code == 0, result.output
-    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.autocwd")
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
 
 
-def test_cli_explicit_config_file_overrides_autodetected_cwd_config(tmp_path, monkeypatch):
-    """An explicit --config-file wins over an auto-detected config.yaml in the cwd."""
-    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
-    (tmp_path / "config.yaml").write_text(_java_config_yaml("org.example.autocwd"))
-    explicit_dir = tmp_path / "explicit"
-    explicit_dir.mkdir()
-    explicit_config_path = explicit_dir / "explicit_config.yaml"
-    explicit_config_path.write_text(_java_config_yaml("org.example.explicitfile"))
-    out_dir = tmp_path / "out"
-    monkeypatch.chdir(tmp_path)
-
-    result = CliRunner().invoke(
-        cli,
-        ["--config-file", str(explicit_config_path), "--output-directory", str(out_dir), str(schema_path)],
-    )
-
-    assert result.exit_code == 0, result.output
-    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.explicitfile")
-
-
-def test_cli_no_config_yaml_in_cwd_falls_back_to_default(tmp_path, monkeypatch):
-    """No config.yaml in cwd and no --config-file: falls through to the `example` default."""
+def test_cli_no_config_file_falls_back_to_default(tmp_path, monkeypatch):
+    """No --config-file: falls through to the `example` default."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
     out_dir = tmp_path / "out"
     monkeypatch.chdir(tmp_path)

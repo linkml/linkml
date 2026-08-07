@@ -1565,20 +1565,21 @@ def test_cli_config_file_without_golang_section_falls_back_to_derived(tmp_path):
     assert "package simple" in result.output
 
 
-def test_cli_autodetects_config_yaml_in_cwd(tmp_path, monkeypatch):
-    """When --config-file is omitted, a `config.yaml` in the cwd is used automatically."""
+def test_cli_ignores_config_yaml_in_cwd(tmp_path, monkeypatch):
+    """A `config.yaml` in the cwd is never read implicitly: --config-file must be explicit."""
     schema_file = _write_simple_schema(tmp_path)
-    (tmp_path / "config.yaml").write_text(_golang_config_yaml("autocwdpkg"))
+    (tmp_path / "config.yaml").write_text(_golang_config_yaml("cwdpkg"))
     monkeypatch.chdir(tmp_path)
 
     result = _invoke_cli([str(schema_file)])
 
     assert result.exit_code == 0
-    assert "package autocwdpkg" in result.output
+    assert "package cwdpkg" not in result.output
+    assert "package simple" in result.output
 
 
-def test_cli_no_config_yaml_in_cwd_falls_back_to_derived(tmp_path, monkeypatch):
-    """No config.yaml in cwd and no flags: package name is derived from the schema name."""
+def test_cli_no_config_file_falls_back_to_derived(tmp_path, monkeypatch):
+    """No --config-file: package name is derived from the schema name."""
     schema_file = _write_simple_schema(tmp_path)
     monkeypatch.chdir(tmp_path)
 
