@@ -9,23 +9,33 @@ For the underlying GitHub mechanics, see the upstream
 [CODEOWNERS documentation](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
 This page only covers how LinkML uses it.
 
-## The LinkML model: opt-in stewardship
+## The LinkML model: core-team default with per-area stewardship
 
-LinkML uses an **opt-in** model. The `CODEOWNERS` file contains:
+LinkML uses a **default-rule** model. The `CODEOWNERS` file contains:
 
-- **No default (`*`) rule.** Paths that no one has claimed are reviewed
-  normally, exactly as they were before CODEOWNERS existed. CODEOWNERS does
-  not create a new approval gate for the rest of the codebase.
+- **A default (`*`) rule** requiring `@linkml/core-team` approval on any path
+  not covered by a more specific rule. This closes the gap where a
+  write-access holder could merge a PR touching an unclaimed area without any
+  core-team sign-off. Because GitHub applies the *last* matching rule, the
+  per-subsystem rules below still take precedence over the default for their
+  own paths.
 - **Per-generator / per-subsystem rules** for specific directories (e.g.
   `packages/linkml/src/linkml/generators/pydanticgen/`,
   `packages/linkml/src/linkml/generators/yarrrmlgen.py`) where a contributor
-  has explicitly volunteered to steward the code. The baseline for
-  identifying candidate stewards per generator is
-  [Generator and Validator Governance](generator-governance.md), which
-  records contributor history from `git blame`.
+  has explicitly volunteered to steward the code. These override the default
+  for their paths. The baseline for identifying candidate stewards per
+  generator is [Generator and Validator Governance](generator-governance.md),
+  which records contributor history from `git blame`.
 - **Governance rules** — `CODEOWNERS` itself and the governance documents in
   `docs/maintainers/` are owned by `@linkml/core-team` to prevent accidental
   self-appointments.
+
+```{note}
+The default rule only has teeth if the branch protection rule **"Require
+review from Code Owners"** is enabled on `main`. Without it, GitHub records
+the code-owner requirement but does not block merges. Enabling that setting
+requires [admin](contributor-hierarchy.md) access.
+```
 
 Implications:
 
