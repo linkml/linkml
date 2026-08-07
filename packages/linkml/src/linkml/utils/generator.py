@@ -993,9 +993,6 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
     return decorator
 
 
-DEFAULT_CONFIG_FILENAME = "config.yaml"
-
-
 def read_generator_config_arg(config_file: IO[bytes] | None, generator_name: str, arg: str):
     """Read ``generator_args.<generator_name>.<arg>`` from a gen-project-style config file.
 
@@ -1004,20 +1001,15 @@ def read_generator_config_arg(config_file: IO[bytes] | None, generator_name: str
     projectgen.py), so one config.yaml can be shared between generators.
 
     :param config_file: Open binary stream from an explicit ``--config-file`` option
-        (``click.File("rb")``), or None to auto-detect ``config.yaml`` in the cwd.
+        (``click.File("rb")``), or None if no config file was given.
     :param generator_name: Key under ``generator_args`` (e.g. ``"java"``, ``"golang"``).
     :param arg: Key under ``generator_args.<generator_name>`` (e.g. ``"package"``).
     :return: The configured value, or None if no config file / key was found.
     :raises click.UsageError: if the config file is not a YAML mapping.
     """
     if config_file is None:
-        default_config_path = Path.cwd() / DEFAULT_CONFIG_FILENAME
-        if not default_config_path.is_file():
-            return None
-        with default_config_path.open("rb") as stream:
-            config_data = yaml.safe_load(stream) or {}
-    else:
-        config_data = yaml.safe_load(config_file) or {}
+        return None
+    config_data = yaml.safe_load(config_file) or {}
     if not isinstance(config_data, dict):
         raise click.UsageError(
             f"--config-file must contain a YAML mapping (e.g. 'generator_args: {{{generator_name}: {{{arg}: ...}}}}')"
