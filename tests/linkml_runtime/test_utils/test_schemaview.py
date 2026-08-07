@@ -3569,9 +3569,13 @@ def test_induced_slot_boolean_metaslots_combine_with_or(
 ) -> None:
     """Boolean metaslots combine with OR, so a child cannot clear an inherited True.
 
-    This pins the specification behavior. Switching the ancestor walk to a plain
-    ``is not None`` test would let ``required: false`` on a child override a parent's
-    ``required: true``, which the Combine Slots algorithm does not permit.
+    This asserts the specification behavior so it cannot change by accident. Switching
+    the loop over ``slot_ancestors``
+    in ``induced_slot`` to a plain ``is not None`` test would let ``required: false``
+    on a child override a parent's ``required: true``, which the Combine Slots
+    algorithm, the specification's rules for merging a slot with its parent, does not
+    permit. See
+    https://linkml.io/linkml-model/latest/docs/specification/04derived-schemas/#algorithm-combine-slots
     """
     schema = SchemaDefinition(id="test", name="test")
     view = SchemaView(schema)
