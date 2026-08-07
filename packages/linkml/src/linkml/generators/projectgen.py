@@ -70,6 +70,45 @@ def get_local_imports(schema_path: Path, dir: Path):
     return all_imports
 
 
+def _config_mapping(value: Any, where: str, source: str) -> ARG_DICT:
+    """Check that one level of a configuration is a mapping, and hand it back.
+
+    An empty value (``generator_args:`` with nothing under it) reads as None saying
+    "nothing configured here", so it returns as empty mapping. Anything else that is
+    not a mapping is a mistake in the configuration, and says so where it was given
+    rather than failing later.
+
+    :param value: Whatever was found at this point in the configuration.
+    :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The mapping, empty if nothing was configured.
+    :raises click.UsageError: if the value is neither a mapping nor empty.
+    """
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise click.UsageError(f"{source}: expected a YAML mapping at {where}, found {type(value).__name__}")
+    return value
+
+
+def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR_NAME, ARG_DICT]:
+    """Check a block of per-generator arguments: generator name to that generator's settings.
+
+    The block and each generator's settings within it both have to be mappings, since
+    the settings are unpacked into the generator's constructor.
+
+    :param value: The block as read from YAML.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :param prefix: Key path leading to the block, e.g. ``"generator_args."`` for a config
+        file, or empty when the block is the whole value (as with ``-A``).
+    :return: The validated block, empty if nothing was configured.
+    :raises click.UsageError: if the block, or any generator's settings, isn't a mapping.
+    """
+    where = f"'{prefix.rstrip('.')}'" if prefix else "the top level"
+    args = _config_mapping(value, where, source)
+    return {name: _config_mapping(section, f"'{prefix}{name}'", source) for name, section in args.items()}
+
+
 @dataclass
 class ProjectConfiguration:
     """
@@ -230,7 +269,12 @@ def cli(
     """
     project_config = ProjectConfiguration()
     if config_file is not None:
-        for k, v in yaml.safe_load(config_file).items():
+        config_data = _config_mapping(yaml.safe_load(config_file), "the top level", "--config-file")
+        if "generator_args" in config_data:
+            config_data["generator_args"] = _generator_args(
+                config_data["generator_args"], "--config-file", "generator_args."
+            )
+        for k, v in config_data.items():
             setattr(project_config, k, v)
     if exclude:
         project_config.excludes = list(exclude)
@@ -238,9 +282,10 @@ def cli(
         project_config.includes = list(include)
     if generator_arguments is not None:
         try:
-            project_config.generator_args = yaml.safe_load(generator_arguments)
-        except Exception:
-            raise Exception("Argument must be a valid YAML blob")
+            arguments = yaml.safe_load(generator_arguments)
+        except yaml.YAMLError as e:
+            raise click.UsageError(f"--generator-arguments must be a valid YAML blob: {e}") from e
+        project_config.generator_args = _generator_args(arguments, "--generator-arguments")
         logger.info(f"generator args: {project_config.generator_args}")
     if dir is not None:
         project_config.directory = dir
