@@ -95,7 +95,9 @@ class OpenApiGenerator(Generator):
         repr=False,
     )
 
-    def _validate_oa_template(self, oa_validator_class: type[OaSpecValidator], expected_version: str, format_name: str):
+    def _validate_oad_template(
+        self, oad_validator_class: type[OaSpecValidator], expected_version: str, format_name: str
+    ):
         """Validate the OpenAPI template"""
         # Validate that the template declares the expected OpenAPI version
         declared_version = self._template.get("openapi")
@@ -106,10 +108,12 @@ class OpenApiGenerator(Generator):
             )
         # Validate the input template against the OpenAPI specification.
         # This also catches dangling $ref targets in endpoints.
-        openapi_validate(self._template, cls=oa_validator_class)
+        openapi_validate(self._template, cls=oad_validator_class)
         # Validation: every template schema must declare this LinkML schema.
         if "components" in self._template and "schemas" in self._template["components"]:
             for name, schema in self._template["components"]["schemas"].items():
+                if "x-linkml-schema" not in schema:
+                    raise KeyError(f"Template data schema '{name}' is missing required 'x-linkml-schema'")
                 if schema["x-linkml-schema"] != self.schemaview.schema.id:
                     raise ValueError(
                         f"Template data schema '{name}' declares "
@@ -297,11 +301,11 @@ class OpenApiGenerator(Generator):
             raise ValueError(f"Unsupported output format '{format_name}'")
 
         # get the corresponding OpenAPI validator
-        oa_validator_class = self._openapi_validators.get(expected_version)
-        if oa_validator_class is None:
+        oad_validator_class = self._openapi_validators.get(expected_version)
+        if oad_validator_class is None:
             raise ValueError(f"No validator available for OpenAPI version {expected_version}")
         # validate the OpenAPI template before further processing
-        self._validate_oa_template(oa_validator_class, expected_version, format_name)
+        self._validate_oad_template(oad_validator_class, expected_version, format_name)
         # if no schemas to instantiate, return the template itself
         if (
             "components" not in self._template
@@ -350,7 +354,7 @@ class OpenApiGenerator(Generator):
         result = text_before_schemas + "  schemas:\n" + indented_schemas
 
         # validate the generated output against the OpenAPI specification before returning
-        openapi_validate(yaml.safe_load(result), cls=oa_validator_class)
+        openapi_validate(yaml.safe_load(result), cls=oad_validator_class)
         return result
 
     def printout_template(self) -> str:

@@ -123,7 +123,7 @@ def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
 
 def test_openapi_type_constraints(input_path):
     """Test that LinkML types with constraints (e.g., pattern) are properly generated in the spec."""
-    schema_path = str(input_path("openapi/test_schema_type_constraints.yaml"))
+    schema_path = str(input_path("openapi/schema_type_constraints.yaml"))
     head_path = str(input_path("openapi/spec-types.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     schemas = spec["components"]["schemas"]

@@ -1,3 +1,4 @@
+# LinkML schema providing constrained types
 id: https://w3id.org/linkml/tests/type_constraints
 name: type_constraints
 default_prefix: type_constraints

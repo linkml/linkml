@@ -1,3 +1,4 @@
+# OpenAPI template referring a Type defined in the LinkML schema
 openapi: 3.0.3
 info:
   title: LinkML type constraints test

@@ -1,3 +1,5 @@
+# OpenAPI template provided as template that is fully fixed
+# because there are no fields to be replaced
 openapi: 3.0.3
 info:
   title: LinkML tests
