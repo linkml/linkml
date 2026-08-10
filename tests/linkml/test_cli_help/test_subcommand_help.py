@@ -36,10 +36,16 @@ def _subcommands() -> list[tuple[str, click.Command]]:
     return [(f"{group_path} {name}", sub) for group_path, group in _groups() for name, sub in group.commands.items()]
 
 
+# Walked once at import time. Both tests parametrize over this same list, so their
+# values and ids cannot drift apart.
+SUBCOMMANDS: list[tuple[str, click.Command]] = _subcommands()
+SUBCOMMAND_IDS: list[str] = [path for path, _ in SUBCOMMANDS]
+
+
 @pytest.mark.parametrize(
     "path,command",
-    _subcommands(),
-    ids=[path for path, _ in _subcommands()],
+    SUBCOMMANDS,
+    ids=SUBCOMMAND_IDS,
 )
 def test_subcommand_has_short_help(path: str, command: click.Command) -> None:
     """Each subcommand renders a non-empty one-line description."""
@@ -51,8 +57,8 @@ def test_subcommand_has_short_help(path: str, command: click.Command) -> None:
 
 @pytest.mark.parametrize(
     "path,command",
-    _subcommands(),
-    ids=[path for path, _ in _subcommands()],
+    SUBCOMMANDS,
+    ids=SUBCOMMAND_IDS,
 )
 def test_short_help_is_not_cut_at_an_abbreviation(path: str, command: click.Command) -> None:
     """The one-line description does not end inside an abbreviation.

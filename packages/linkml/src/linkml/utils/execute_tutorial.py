@@ -264,7 +264,7 @@ def cli(inputs, directory):
     """
     Execute a tutorial markdown file, saving its outputs.
 
-    Tutorial files live in the /docs/intro/ directory. The outputs are written to
+    Tutorial files live in the docs/intro/ directory. The outputs are written to
     the directory given by --directory.
 
     Example:
