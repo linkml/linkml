@@ -38,7 +38,7 @@ LinkML enumerations can be rendered in two ways:
 * as plain `String` objects: that is, the enumeration themselves are
   *not* rendered at all, and slots whose range is set to an enumeration
   are rendered as `String`-typed fields;
-* as standard Java ``enum``  objects.
+* as standard Java ``enum`` objects.
 
 For backwards compatibility reasons, the default behavior is to render
 enumerations as `String` objects. Use the ``--true-enums`` option
@@ -91,7 +91,7 @@ With ``--use-aliases``, that slot will instead be rendered as:
 Of note, when using the ``org.incenp.linkml`` template variant, the slot
 alias, when present, is always used to determine how the slot is
 expected to be serialised in the JSON or YAML serialisations; the
-``--use-aliases`` option only affects the symbol use to represent the
+``--use-aliases`` option only affects the symbol used to represent the
 slot in the Java code.
 
 Generating Visitor Patterns
@@ -228,7 +228,7 @@ first one that it finds:
 
 * ``Foo-V.jinja2`` (the *V* variant template specific for the *Foo*
   class);
-* ``class-V.jinja``` (the generic *V* variant template for all classes);
+* ``class-V.jinja2`` (the generic *V* variant template for all classes);
 * ``Foo.jinja2`` (default template specific for the *Foo* class);
 * ``class.jinja2`` (generic default template for all classes).
 
