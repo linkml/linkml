@@ -262,8 +262,10 @@ def parse_file_to_blocks(input) -> list[Block]:
 @click.version_option(__version__, "-V", "--version")
 def cli(inputs, directory):
     """
-    Execute a tutorial markdown file (eg. those in the /docs/intro/ directory) and
-    save the outputs in the given directory
+    Execute a tutorial markdown file, saving its outputs.
+
+    Tutorial files live in the /docs/intro/ directory. The outputs are written to
+    the directory given by --directory.
 
     Example:
 

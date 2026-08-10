@@ -121,6 +121,14 @@ def cli(
     output: FILE_TYPE = None,
     **kwargs,
 ):
+    """
+    Emit a LinkML schema as LinkML, in YAML or JSON.
+
+    Induced slots can be materialized as attributes and structured patterns as
+    patterns; see the --materialize options. This is currently the only generator
+    that materializes a structured_pattern into a pattern, which is what makes the
+    resulting schema usable by validators that only understand pattern.
+    """
     # You can use the `--materialize` / `--no-materialize` for control
     # over both attribute and pattern materialization.
 
