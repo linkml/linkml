@@ -163,24 +163,25 @@ def test_assigned_enum(pythongen_module):
         p = Person()
         p.status = VitalStatus.ALIVE
 
-    In this case, the dict/json/yaml is inconveniently expanded
-
-    .. code:: python
-
-        {'status': {'text': 'ALIVE'}, 'roles': [{'text': 'ANALYST'}, {'text': 'INVESTIGATOR'}]}
+    Post Phase 1 (#723), ``VitalStatus.ALIVE`` is now an ``EnumDefinitionImpl``
+    instance (promoted at class-creation time by ``EnumDefinitionMeta``),
+    so post-init assignment stores the same enum instance that initial-time
+    construction would, and the dict/json/yaml form is the compact one.
     """
     mod = pythongen_module
     p = mod.Person()
     p.status = mod.VitalStatus.ALIVE
     p.roles = [mod.Role.ANALYST, mod.Role.INVESTIGATOR]
     pd = json_dumper.to_dict(p)
-    assert sorted(pd["roles"], key=str) == sorted([{"text": "ANALYST"}, {"text": "INVESTIGATOR"}], key=str)
+    assert pd["status"] == "ALIVE"
+    assert sorted(pd["roles"]) == sorted(["ANALYST", "INVESTIGATOR"])
     json_dumper.dumps(p)
     assert p.status == mod.VitalStatus.ALIVE
+    assert p.status == "ALIVE"
     assert sorted(p.roles, key=str) == sorted([mod.Role.INVESTIGATOR, mod.Role.ANALYST], key=str)
-    assert type(p.status) is PermissibleValue
-    assert type(p.status) is not mod.VitalStatus
-    assert type(p.roles[0]) is PermissibleValue
+    assert type(p.status) is mod.VitalStatus
+    assert type(p.status) is not PermissibleValue
+    assert type(p.roles[0]) is mod.Role
 
 
 def test_assigned_wrapped_enums(pythongen_module, schemaview):
