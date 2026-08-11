@@ -90,7 +90,7 @@ stepping-down process — exist within that frame.
 A few generators are self-contained enough that core-team review adds little.
 Where trusted, established community members know such an area well, we hand
 it to them outright: they review each other's changes and merge without
-core-team sign-off. 
+core-team sign-off.
 This does not preclude participants, at their discretion, from occasionally
 explicitly requesting approval from the core-team for some reason.
 
