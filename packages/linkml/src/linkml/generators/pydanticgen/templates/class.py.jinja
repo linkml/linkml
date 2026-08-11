@@ -10,6 +10,15 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
     {{ description | indent(width=4) }}
     """
     {% endif -%}
+    {% if extra %}
+      {% if extra in ("forbid", "allow", "ignore") %}
+    model_config = ConfigDict(extra = "{{ extra }}")
+      {% else %}
+    __pydantic_extra__: dict[str, {{ extra }}]
+    model_config = ConfigDict(extra = "allow")
+      {% endif %}
+
+    {% endif -%}
     {% if meta %}
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({{ meta | pprint | indent(width=8) }})
 

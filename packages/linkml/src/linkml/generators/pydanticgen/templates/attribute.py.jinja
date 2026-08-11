@@ -1,4 +1,8 @@
+{%- if as_annotated -%}
+Annotated[{{ range }}, Field(...
+{%- else -%}
 {{name}}: {{ range }} = Field(default={{ field }}
+{%- endif -%}
 {%- if alias %}, alias="{{alias}}"{% endif -%}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
@@ -17,3 +21,6 @@
 {%- if meta -%}
     , json_schema_extra = { "linkml_meta": {{ meta | pprint | indent(width=8) }} }
 {%- endif -%})
+{%- if as_annotated -%}
+]
+{%- endif -%}

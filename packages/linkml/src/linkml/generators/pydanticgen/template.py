@@ -154,7 +154,7 @@ class PydanticBaseModel(PydanticTemplateModel):
 
     default_name: ClassVar[str] = "ConfiguredBaseModel"
     name: str = Field(default_factory=lambda: PydanticBaseModel.default_name)
-    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    extra_fields: Literal["allow", "forbid", "ignore"] | None = "forbid"
     """
     Sets the ``extra`` model for pydantic models
     """
@@ -214,6 +214,11 @@ class PydanticAttribute(PydanticTemplateModel):
     """
     Metadata for the slot to be included in a Field annotation
     """
+    as_annotated: bool = False
+    """
+    If ``True``, render as Annotated[range, Field()] form,
+    rather than model field form.
+    """
 
     @computed_field
     def field(self) -> str:
@@ -266,6 +271,14 @@ class PydanticClass(PydanticTemplateModel):
     meta: dict[str, Any] | None = None
     """
     Metadata for the class to be included in a linkml_meta class attribute
+    """
+    extra: Literal["allow", "forbid", "ignore"] | PydanticAttribute | None = None
+    """
+    Per-class override for the ``extra`` argument of pydantic's ``ConfigDict``.
+
+    When set, emits ``model_config = ConfigDict(extra="...")`` in the generated
+    class body so the class overrides the base model's ``extra`` configuration.
+    Derived from the LinkML ``extra_slots`` metadata on the source class.
     """
     is_type_alias: bool = False
     """

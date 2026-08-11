@@ -554,17 +554,62 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
+        # If the class has extra_slots.allowed=true, disable dataclass init and generate
+        # a custom __init__ that accepts **kwargs so unknown attributes don't raise TypeError.
+        dataclass_decorator = ""
+        custom_init = ""
+        if slotdefs:
+            if self._extra_slots_allowed(cls) and not constructor:
+                dataclass_decorator = f"\n@dataclass(repr={self.dataclass_repr}, init=False)"
+                custom_init = self._gen_extra_slots_init(slotdefs)
+            else:
+                dataclass_decorator = f"\n@dataclass(repr={self.dataclass_repr})"
+
         cd_str = (
-            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
+            dataclass_decorator
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"
             + (f"\n\t{slotdefs}" if slotdefs else "")
+            + (f"\n{custom_init}" if custom_init else "")
             + (f"\n{postinits}" if postinits else "")
             + (f"\n{constructor}" if constructor else "")
         )
 
         return cd_str
+
+    @staticmethod
+    def _extra_slots_allowed(cls: ClassDefinition) -> bool:
+        """Return True when the class's ``extra_slots`` metadata permits unknown attributes."""
+        return bool(cls.extra_slots and cls.extra_slots.allowed)
+
+    def _gen_extra_slots_init(self, slotdefs_str: str) -> str:
+        """
+        Generate a custom ``__init__`` for classes whose ``extra_slots`` permits
+        unknown attributes. The signature accepts the schema-declared slots
+        plus ``**kwargs``, and forwards extras to the parent ``__init__`` so they
+        land as attributes on the instance.
+        """
+        # Extract slot names from the generated slotdefs.
+        # Each slot line is like: "slotname: Type = default"
+        slot_names = []
+        for line in slotdefs_str.split("\n\t"):
+            if ":" in line:
+                slot_name = line.split(":")[0].strip()
+                if slot_name:
+                    slot_names.append(slot_name)
+
+        init_params = ", ".join([f"{sn}=None" for sn in slot_names])
+        init_sig = f"(self, {init_params}, **kwargs: Any)" if init_params else "(self, **kwargs: Any)"
+
+        assignments = []
+        for sn in slot_names:
+            assignments.append(f"        if {sn} is not None:")
+            assignments.append(f"            self.{sn} = {sn}")
+
+        assignments_str = "\n".join(assignments) if assignments else "        pass"
+
+        return f"\n    def __init__{init_sig}:\n{assignments_str}\n        super().__init__(**kwargs)"
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
