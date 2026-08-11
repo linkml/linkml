@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from tests.linkml_runtime.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
+from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR, LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
 from tests.linkml_runtime.test_loaders_dumpers.environment import env
 from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.linkml_runtime.test_loaders_dumpers.models.termci_schema import Package
@@ -229,6 +229,91 @@ def test_rdf_loader_jsonld_graph_array_null_type_does_not_crash():
     result = RDFLoader().load(source, Package, fmt="json-ld")
     assert isinstance(result, Package)
     assert [cs.namespace for cs in result.system] == ["http://example.org/ns1"]
+
+
+def test_rdf_loader_jsonld_graph_array_frames_with_context():
+    """When `contexts` is supplied, the graph-array node is selected via real JSON-LD framing
+    (pyld) against the local obo_sample.ttl/termci_schema_inlined.context.jsonld fixtures used
+    by the (docker-server-gated) test_rdf_loader integration test above. Framing both picks the
+    right node and compacts its properties per the context - e.g. turning
+    "http://www.w3.org/ns/shacl#prefix" into "prefix" - which the naive @type-matching fallback
+    cannot do, since it has no context to compact field names with. Context content is resolved
+    from the local file directly, so this doesn't need the docker context server."""
+    ttl_path = Path(INPUT_DIR) / "obo_sample.ttl"
+    context_path = Path(LD_11_DIR) / "termci_schema_inlined.context.jsonld"
+
+    result = RDFLoader().load(str(ttl_path), Package, contexts=str(context_path), fmt="turtle")
+
+    assert isinstance(result, Package)
+    assert len(result.system) == 1
+    system = result.system[0]
+    assert system.namespace == "http://purl.obolibrary.org/obo/"
+    assert system.prefix == "OBO"
+    assert {c.code for c in system.contents} == {"C147557", "C147796"}
+
+
+def test_rdf_loader_jsonld_curie_type_is_not_a_mismatch(capsys):
+    """Framing compacts @type against the context, so the type often comes back as a CURIE
+    ("termci:Package") rather than a full URI. That is the same class, not a mismatch."""
+    source = json.dumps(
+        {
+            "@type": "termci:Package",
+            "system": {"http://example.org/ns1": {"namespace": "http://example.org/ns1", "prefix": "ex"}},
+        }
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert [cs.namespace for cs in result.system] == ["http://example.org/ns1"]
+    assert "mismatch" not in capsys.readouterr().out
+
+
+def test_rdf_loader_frames_with_dict_context():
+    """`contexts` accepts an already-parsed dict/JsonObj, not just a filename or URL. Such a
+    context must reach pyld as a plain dict, since pyld inspects it with isinstance(..., dict)."""
+    source = json.dumps(
+        [
+            {
+                "@id": "_:b0",
+                "@type": ["https://hotecosystem.org/termci/Package"],
+                "https://hotecosystem.org/termci/system": [{"@id": "http://example.org/s"}],
+            },
+            {"@id": "http://example.org/s", "http://www.w3.org/ns/shacl#prefix": [{"@value": "EX"}]},
+        ]
+    )
+    contexts = {
+        "@context": {
+            "termci": "https://hotecosystem.org/termci/",
+            "sh": "http://www.w3.org/ns/shacl#",
+            "system": {
+                "@id": "termci:system",
+                "@type": "@id",
+                "@context": {"namespace": "@id", "prefix": {"@id": "sh:prefix"}},
+            },
+        }
+    }
+    result = RDFLoader().load(source, Package, contexts=contexts, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [(cs.namespace, cs.prefix) for cs in result.system] == [("http://example.org/s", "EX")]
+
+
+def test_rdf_loader_relative_context_resolves_against_base_dir():
+    """A relative `contexts` location is anchored on the caller's base_dir. Reading the source
+    rewrites metadata.base_path to the source's own directory, which must not be used here."""
+    result = RDFLoader().load(
+        str(Path(INPUT_DIR) / "obo_sample.ttl"),
+        Package,
+        base_dir=LD_11_DIR,
+        contexts="termci_schema_inlined.context.jsonld",
+        fmt="turtle",
+    )
+    assert isinstance(result, Package)
+    assert result.system[0].prefix == "OBO"
+
+
+def test_rdf_loader_context_not_resolved_when_framing_unused():
+    """Framing only applies to a graph array, so a single-node document must load without
+    touching `contexts` at all - an unreachable context is not an error if it is never needed."""
+    source = json.dumps({"@type": "https://hotecosystem.org/termci/Package", "system": {}})
+    assert RDFLoader().load(source, Package, contexts="/nonexistent/ctx.jsonld", fmt="json-ld") is None
 
 
 def test_rdf_loader_jsonld_no_spurious_type_mismatch_warning(capsys):
