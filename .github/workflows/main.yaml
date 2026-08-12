@@ -121,8 +121,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.10", "3.13" ]
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.13"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -171,8 +171,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.13" ]
+        os: [ubuntu-latest]
+        python-version: ["3.10", "3.13"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
