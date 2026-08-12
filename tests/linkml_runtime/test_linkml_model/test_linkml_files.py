@@ -1,5 +1,6 @@
 import subprocess
 import tempfile
+from collections.abc import Callable, Iterator
 from importlib.util import find_spec
 from itertools import product
 from pathlib import Path
@@ -160,15 +161,18 @@ def _get_upstream_sha() -> str:
     return UPSTREAM_SHA_FILE.read_text().strip()
 
 
-def _git_show_file(sha: str, repo_path: str) -> str:
-    """Return the content of a file at a specific commit in the upstream repository.
+@pytest.fixture(scope="session")
+def upstream_file_reader() -> Iterator[Callable[[str], str]]:
+    """Read files from the vendored upstream commit, fetching it only once per session.
 
-    Uses the git protocol (``git fetch`` + ``git show``) to retrieve the file
-    without touching the GitHub REST API, avoiding IP-based rate limiting.
+    Uses the git protocol (``git fetch`` + ``git show``) rather than the GitHub REST
+    API to avoid IP-based rate limiting. The fetch is the expensive part, so it runs
+    a single time and every lookup reuses the same bare repository.
 
-    ``repo_path`` is the path inside the repository (e.g.
-    ``"linkml_model/model/schema/meta.yaml"``).
+    Yields a callable taking a path inside the repository (e.g.
+    ``"linkml_model/model/schema/meta.yaml"``) and returning its content.
     """
+    sha = _get_upstream_sha()
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["git", "init", "--bare", "-q", tmp], check=True)
         subprocess.run(
@@ -176,13 +180,17 @@ def _git_show_file(sha: str, repo_path: str) -> str:
             check=True,
             capture_output=True,
         )
-        result = subprocess.run(
-            ["git", "-C", tmp, "show", f"FETCH_HEAD:{repo_path}"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    return result.stdout
+
+        def read(repo_path: str) -> str:
+            result = subprocess.run(
+                ["git", "-C", tmp, "show", f"FETCH_HEAD:{repo_path}"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return result.stdout
+
+        yield read
 
 
 def _linkml_model_main_url(source: Source, fmt: Format) -> str:
@@ -193,7 +201,7 @@ def _linkml_model_main_url(source: Source, fmt: Format) -> str:
 
 @pytest.mark.network
 @pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
-def test_vendored_files_match_upstream(source, fmt):
+def test_vendored_files_match_upstream(source, fmt, upstream_file_reader):
     """Detect drift between vendored files and the upstream commit they were vendored from.
 
     Generators resolve these files locally instead of fetching from the network.
@@ -210,7 +218,7 @@ def test_vendored_files_match_upstream(source, fmt):
     repo_path = f"linkml_model/{Path(LOCAL_PATH_FOR(source, fmt)).relative_to(_LOCAL_BASE).as_posix()}"
 
     local_content = local_path.read_text()
-    upstream_content = _git_show_file(sha, repo_path)
+    upstream_content = upstream_file_reader(repo_path)
 
     assert local_content == upstream_content, (
         f"Vendored {local_path.name} differs from upstream {LINKML_MODEL_REPO} "

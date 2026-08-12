@@ -66,7 +66,11 @@ jobs:
         if: steps.run_tests.outcome == 'failure'
         run: |
           ISSUE_TITLE="Metamodel compatibility test failure"
-          ISSUE_BODY=$(cat <<'EOF'
+
+          # Build the body in a file rather than a shell variable: the test output is
+          # untrusted text that must not be re-evaluated by the shell.
+          {
+            cat <<EOF
           ## Metamodel Compatibility Test Failure
 
           The weekly metamodel compatibility test has failed. This indicates that the
@@ -75,23 +79,25 @@ jobs:
           **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
           ### Test Output (last 100 lines)
-          ```
-          $(tail -n 100 temp/test_output.txt)
-          ```
+          EOF
+            echo '```'
+            tail -n 100 temp/test_output.txt
+            echo '```'
+            cat <<'EOF'
 
           ### Next Steps
           1. Review the test output above
           2. Check for recent changes in [linkml-model](https://github.com/linkml/linkml-model)
           3. Update the linkml toolkit to handle any metamodel changes
           EOF
-          )
+          } > temp/issue_body.md
 
           if [ -n "${{ steps.check_issue.outputs.existing_issue }}" ]; then
-            gh issue comment "${{ steps.check_issue.outputs.existing_issue }}" --body "${ISSUE_BODY}"
+            gh issue comment "${{ steps.check_issue.outputs.existing_issue }}" --body-file temp/issue_body.md
           else
             gh issue create \
               --title "${ISSUE_TITLE}" \
-              --body "${ISSUE_BODY}" \
+              --body-file temp/issue_body.md \
               --label "metamodel-compat"
           fi
         env:
@@ -117,17 +123,33 @@ jobs:
           delete-branch: true
           labels: metamodel-compat
 
+      # Only the soft upstream-main comparison runs here. Scoping to that single test
+      # keeps an unrelated failure -- a hard UPSTREAM_SHA mismatch, a collection error --
+      # from being reported as upstream drift.
+      #
+      # pytest exit 1 means "tests failed", i.e. genuine drift. Anything else (2 interrupted,
+      # 3 internal error, 4 usage error, or a network blip killing the run) is a broken job,
+      # not drift, so it fails loudly instead of filing a misleading issue.
       - name: Check vendored files for drift against upstream main
         id: drift_tests
         if: always()
         run: |
           mkdir -p temp
+          set +e
           uv run pytest tests/linkml_runtime/test_linkml_model/test_linkml_files.py \
+            -k test_vendored_files_match_upstream_main \
             --with-network --with-upstream-main -v 2>&1 | tee temp/drift_output.txt
-        continue-on-error: true
+          PYTEST_RC=${PIPESTATUS[0]}
+          set -e
+          case "$PYTEST_RC" in
+            0) echo "drifted=false" >> $GITHUB_OUTPUT ;;
+            1) echo "drifted=true"  >> $GITHUB_OUTPUT ;;
+            *) echo "::error::Drift check did not run cleanly (pytest exit $PYTEST_RC); not reporting drift."
+               exit "$PYTEST_RC" ;;
+          esac
 
       - name: Check for existing drift issue
-        if: always() && steps.drift_tests.outcome == 'failure'
+        if: always() && steps.drift_tests.outputs.drifted == 'true'
         id: check_drift_issue
         run: |
           EXISTING_ISSUE=$(gh issue list --label "vendored-model-drift" --state open --json number --jq '.[0].number // empty')
@@ -136,41 +158,43 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create or update issue on drift
-        if: always() && steps.drift_tests.outcome == 'failure'
+        if: always() && steps.drift_tests.outputs.drifted == 'true'
         run: |
           ISSUE_TITLE="Vendored linkml-model files have drifted from upstream main"
-          ISSUE_BODY=$(cat <<'EOF'
+
+          {
+            cat <<EOF
           ## Vendored linkml-model Drift Detected
 
-          The vendored linkml-model files in `packages/linkml_runtime/src/linkml_runtime/linkml_model/`
-          have drifted from the upstream `main` branch of [linkml-model](https://github.com/linkml/linkml-model).
+          The vendored linkml-model files in \`packages/linkml_runtime/src/linkml_runtime/linkml_model/\`
+          have drifted from the upstream \`main\` branch of [linkml-model](https://github.com/linkml/linkml-model).
 
           This does not block any PR, but the vendored copies will likely need updating
-          **before the next release**. Run `make update_model` in `packages/linkml_runtime/`
+          **before the next release**. Run \`make update_model\` in \`packages/linkml_runtime/\`
           to re-vendor the files.
 
           **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
           ### Test Output (last 50 lines)
-          ```
-          $(tail -n 50 temp/drift_output.txt)
-          ```
           EOF
-          )
+            echo '```'
+            tail -n 50 temp/drift_output.txt
+            echo '```'
+          } > temp/drift_issue_body.md
 
           if [ -n "${{ steps.check_drift_issue.outputs.existing_issue }}" ]; then
-            gh issue comment "${{ steps.check_drift_issue.outputs.existing_issue }}" --body "${ISSUE_BODY}"
+            gh issue comment "${{ steps.check_drift_issue.outputs.existing_issue }}" --body-file temp/drift_issue_body.md
           else
             gh issue create \
               --title "${ISSUE_TITLE}" \
-              --body "${ISSUE_BODY}" \
+              --body-file temp/drift_issue_body.md \
               --label "vendored-model-drift"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Close drift issue if drift is resolved
-        if: always() && steps.drift_tests.outcome == 'success'
+        if: always() && steps.drift_tests.outputs.drifted == 'false'
         run: |
           EXISTING_ISSUE=$(gh issue list --label "vendored-model-drift" --state open --json number --jq '.[0].number // empty')
           if [ -n "${EXISTING_ISSUE}" ]; then
