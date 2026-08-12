@@ -267,11 +267,11 @@ linkml:extensions a linkml:SchemaDefinition,
     linkml:domain_of linkml:Extensible,
         linkml:Extension ;
     linkml:emit_prefixes "linkml" ;
-    linkml:generation_date "2026-05-05T18:49:25"^^xsd:dateTime ;
+    linkml:generation_date "2026-08-12T09:42:28"^^xsd:dateTime ;
     linkml:id "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
     linkml:imports "linkml:types"^^xsd:anyURI ;
     linkml:inlined true ;
-    linkml:metamodel_version "1.7.0" ;
+    linkml:metamodel_version "1.11.0" ;
     linkml:multivalued true ;
     linkml:owner linkml:Extensible ;
     linkml:range linkml:Extension ;
