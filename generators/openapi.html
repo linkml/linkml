@@ -523,7 +523,7 @@ output — unreferenced schemas are pruned automatically.</p>
 <h4>gen-openapi<a class="headerlink" href="#gen-openapi" title="Link to this heading">¶</a></h4>
 <p>Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
 If no OpenAPI template is provided,
-a generic one with placeholders for all the classes in the schema is printed out.</p>
+a generic one with one exemplary class/type schema is printed out.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -636,9 +636,9 @@ a generic one with placeholders for all the classes in the schema is printed out
 <dd><p>Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.</p>
 <p>The generator composes a user-provided OpenAPI template (containing the API header,
 paths/endpoints, and security schemes) with JSON Schema components generated from
-the LinkML schema via <a class="reference internal" href="json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a>. Only classes referenced by the
-template’s endpoints (and their transitive dependencies) are included in the
-<code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section.</p>
+the LinkML schema via <a class="reference internal" href="json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a>. Only data schemas referenced
+by the template’s endpoints (and their transitive dependencies) are included in
+the <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.openapigen.OpenApiGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/openapigen.html#OpenApiGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.openapigen.OpenApiGenerator.serialize" title="Link to this definition">¶</a></dt>
