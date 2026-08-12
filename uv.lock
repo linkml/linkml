@@ -2387,6 +2387,7 @@ dev = [
     { name = "openapi-spec-validator" },
     { name = "pandas" },
     { name = "pandera" },
+    { name = "pip" },
     { name = "polars-lts-cpu" },
     { name = "pyshacl" },
     { name = "pytest" },
@@ -2416,6 +2417,14 @@ docs = [
 lint = [
     { name = "black" },
 ]
+notebooks = [
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
+    { name = "pip" },
+]
 pandera = [
     { name = "pandas" },
     { name = "pandera" },
@@ -2427,7 +2436,13 @@ shacl = [
 tests = [
     { name = "black" },
     { name = "duckdb" },
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
     { name = "numpydantic" },
+    { name = "pip" },
     { name = "pyshacl" },
     { name = "sqlalchemy-bigquery" },
 ]
@@ -2506,6 +2521,7 @@ dev = [
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.19.0" },
+    { name = "pip" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
     { name = "pyshacl", specifier = ">=0.25.0" },
     { name = "pytest", specifier = ">=7.4.0" },
@@ -2532,6 +2548,14 @@ docs = [
     { name = "sphinxcontrib-programoutput", specifier = ">=0.17" },
 ]
 lint = [{ name = "black", specifier = ">=24.0.0" }]
+notebooks = [
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
+    { name = "pip" },
+]
 pandera = [
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.19.0" },
@@ -2541,7 +2565,13 @@ shacl = [{ name = "pyshacl", specifier = ">=0.25.0" }]
 tests = [
     { name = "black", specifier = ">=24.0.0" },
     { name = "duckdb", specifier = ">=1.5.2" },
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
     { name = "numpydantic", specifier = ">=1.6.1" },
+    { name = "pip" },
     { name = "pyshacl", specifier = ">=0.25.0" },
     { name = "sqlalchemy-bigquery", specifier = ">=1.9.0" },
 ]
@@ -3621,6 +3651,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/bf/20/22fe9384b7949e25fb1293bcfc84fb82590ff4ea6b37c95b24d26d793d86/pillow-12.3.0-pp311-pypy311_pp73-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:fbd139c8447d25dd750ab79ee274cc5e1fe80fc56340ab10b18a195e1b6eca3e", size = 5237776, upload-time = "2026-07-01T11:56:30.263Z" },
     { url = "https://files.pythonhosted.org/packages/08/14/f6ba68107680ffa74b39985f3f30884e41318fbc4250caa423c79b4788bb/pillow-12.3.0-pp311-pypy311_pp73-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e7e480451b9fa137494bccd3a7d69adbe8ac65a87d97be61e11f1b1050a5bac3", size = 5860358, upload-time = "2026-07-01T11:56:32.68Z" },
     { url = "https://files.pythonhosted.org/packages/36/54/0169bc772ec491108b62f644f8ecf1fe5d8ae5ebafde2ee2142210166903/pillow-12.3.0-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:04f01d28a6aaff387bf842a13be313df23ba0597a44f1a976c9feb3c6ff4711a", size = 7231786, upload-time = "2026-07-01T11:56:35.046Z" },
+]
+
+[[package]]
+name = "pip"
+version = "26.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/48/cb9b7a682f6fe01a4221e1728941dd4ac3cd9090a17db3779d6ff490b602/pip-26.1.1.tar.gz", hash = "sha256:d36762751d156a4ee895de8af39aa0abeeeb577f93a2eca6ab62467bbf0f8a78", size = 1840400, upload-time = "2026-05-04T19:02:21.248Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl", hash = "sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb", size = 1812777, upload-time = "2026-05-04T19:02:18.9Z" },
 ]
 
 [[package]]

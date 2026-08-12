@@ -76,10 +76,19 @@ typing = [
 shacl = [
     "pyshacl >= 0.25.0",
 ]
+notebooks = [
+  "ipykernel",
+  "ipython-genutils",
+  "jupyter",
+  "nbconvert",
+  "nbformat",
+  "pip",
+]
 tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
+  { include-group = "notebooks" },
   "duckdb>=1.5.2",
   "sqlalchemy-bigquery >= 1.9.0",
 ]
@@ -88,11 +97,6 @@ dev = [
   {include-group = "tests-extra" },
   {include-group = "pandera"},
   "chardet",
-  "ipykernel",
-  "ipython-genutils",
-  "jupyter",
-  "nbconvert",
-  "nbformat",
   "coverage >= 6.4.1",
   "tox >= 4",
   "tox-uv",
