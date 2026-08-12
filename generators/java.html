@@ -413,7 +413,7 @@
 <h1>Java<a class="headerlink" href="#java" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>The Java Generator produces java class files from a linkml model,
+<p>The Java generator produces java class files from a LinkML model,
 with optional support for user-supplied jinja2 templates to generate
 classes with alternate annotations or additional documentation.</p>
 </section>
@@ -597,12 +597,6 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Generates java code from a LinkML schema.</p>
 <p>This generators supports an arbitrary number of different styles through
 the use of “template variants“.</p>
-<p>Currently, two variants are available:</p>
-<ul class="simple">
-<li><p>the default variant represents LinkML classes as Java classes carrying
-Lombok annotations (<a class="reference external" href="https://projectlombok.org">https://projectlombok.org</a>);</p></li>
-<li><p>the <cite>records</cite> variant represents LinkML classes as Java 16 records.</p></li>
-</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_templates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rendered_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">JavaBundle</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/javagen.html#JavaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.serialize" title="Link to this definition">¶</a></dt>
@@ -637,24 +631,226 @@ are ignored (the bundle is used as-is).</p></li>
 
 </section>
 </section>
-<section id="additional-notes">
-<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Link to this heading">¶</a></h2>
-<p>The Java generator’s default template uses Project Lombok’s <a class="reference external" href="https://projectlombok.org/features/Data">&#64;Data</a> annotation, which provides getters, setters, equals and hashcode functionality.</p>
+<section id="configurable-behaviors">
+<h2>Configurable Behaviors<a class="headerlink" href="#configurable-behaviors" title="Link to this heading">¶</a></h2>
+<section id="rendering-of-enumerations">
+<h3>Rendering of Enumerations<a class="headerlink" href="#rendering-of-enumerations" title="Link to this heading">¶</a></h3>
+<p>LinkML enumerations can be rendered in two ways:</p>
+<ul class="simple">
+<li><p>as plain <cite>String</cite> objects: that is, the enumeration themselves are
+<em>not</em> rendered at all, and slots whose range is set to an enumeration
+are rendered as <cite>String</cite>-typed fields;</p></li>
+<li><p>as standard Java <code class="docutils literal notranslate"><span class="pre">enum</span></code> objects.</p></li>
+</ul>
+<p>For backwards compatibility reasons, the default behavior is to render
+enumerations as <cite>String</cite> objects. Use the <code class="docutils literal notranslate"><span class="pre">--true-enums</span></code> option
+(from the command line) or the <code class="docutils literal notranslate"><span class="pre">true_enums</span></code> named parameter (in the
+<cite>JavaGenerator</cite> constructor) to render LinkML enumerations as standard
+Java <code class="docutils literal notranslate"><span class="pre">enum</span></code> objects. Of note, this settings applies to all enumerations
+defined in the LinkML schema – it is not possible to render some
+enumerations as <cite>String</cite> objects and others as standard <code class="docutils literal notranslate"><span class="pre">enum</span></code>
+objects.</p>
 </section>
+<section id="use-of-slot-aliases">
+<h3>Use of Slot Aliases<a class="headerlink" href="#use-of-slot-aliases" title="Link to this heading">¶</a></h3>
+<p>Slots in a LinkML schema can optionally have an
+<a class="reference external" href="https://linkml.io/linkml-model/latest/docs/alias/">alias</a>, which, if
+present, is intended to be “used instead of the actual slot name”.</p>
+<p>By default, the Java generator always derives the name of a field in a
+class from the actual name of the slot, <em>not</em> from its alias. Use the
+<code class="docutils literal notranslate"><span class="pre">--use-aliases</span></code> option (from the command line) or the <code class="docutils literal notranslate"><span class="pre">use_aliases</span></code>
+named parameter (in the <cite>JavaGenerator</cite> constructor) to force the
+generator to honor the presence of a slot alias.</p>
+<p>For example, given the definition of the <code class="docutils literal notranslate"><span class="pre">slot_definitions</span></code> slot in
+LinkML’s own metamodel:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slot_definitions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema_definition</span>
+<span class="w">  </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot_definition</span>
+<span class="w">  </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slots</span>
+</pre></div>
+</div>
+<p>the generator will, by default, render this slot as a field named
+<code class="docutils literal notranslate"><span class="pre">slotDefinitions</span></code> (derived from the actual slot name, ignoring the
+<code class="docutils literal notranslate"><span class="pre">slots</span></code> alias):</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">SlotDefinition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">slotDefinitions</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">--use-aliases</span></code>, that slot will instead be rendered as:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">SlotDefinition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">slots</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Of note, when using the <code class="docutils literal notranslate"><span class="pre">org.incenp.linkml</span></code> template variant, the slot
+alias, when present, is always used to determine how the slot is
+expected to be serialised in the JSON or YAML serialisations; the
+<code class="docutils literal notranslate"><span class="pre">--use-aliases</span></code> option only affects the symbol used to represent the
+slot in the Java code.</p>
+</section>
+</section>
+<section id="generating-visitor-patterns">
+<h2>Generating Visitor Patterns<a class="headerlink" href="#generating-visitor-patterns" title="Link to this heading">¶</a></h2>
+<p>The Java generator includes a built-in feature to easily implement a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Visitor_pattern">visitor pattern</a> over
+a class hierarchy defined in a LinkML schema.</p>
+<p>Assuming the following schema (simplified excerpt from the
+<a class="reference external" href="https://w3id.org/kgcl/">KGCL Schema</a>):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Change</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Any change perform on an ontology or knowledge graph.</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type</span>
+
+<span class="w">  </span><span class="nt">SimpleChange</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Change</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A change that is about a single ontology element.</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">old_value</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">new_value</span>
+
+<span class="w">  </span><span class="nt">ComplexChange</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Change</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A change that is a composition of other changes.</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">change_set</span>
+
+<span class="w">  </span><span class="c1"># Several dozens of other subclasses (direct or indirect) of Change,</span>
+<span class="w">  </span><span class="c1"># representing various specialized types of change...</span>
+</pre></div>
+</div>
+<p>Calling the Java generator with <code class="docutils literal notranslate"><span class="pre">--visitor</span> <span class="pre">Change</span></code> (on the command
+line; <code class="docutils literal notranslate"><span class="pre">visitors=[&quot;Change&quot;]</span></code> when calling the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> method)
+will cause the generator to</p>
+<p>(a) create a <cite>IChangeVisitor</cite> interface containing a <code class="docutils literal notranslate"><span class="pre">visit</span></code> method
+for each subclass of <cite>Change</cite> (and for <cite>Change</cite> itself):</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">IChangeVisitor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">Change</span><span class="w"> </span><span class="n">visited</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">SimpleChange</span><span class="w"> </span><span class="n">visited</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">ComplexChange</span><span class="w"> </span><span class="n">visited</span><span class="p">);</span>
+<span class="w">    </span><span class="cm">/* and so on for all other subclasses... */</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(b) add a <code class="docutils literal notranslate"><span class="pre">accept(IChangeVisitor)</span></code> method to the <cite>Change</cite> class and to
+all its subclasses, e.g. in <code class="docutils literal notranslate"><span class="pre">SimpleChange.java</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SimpleChange</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Change</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/* Normal code generated for the SimpleChange class... */</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="n">IChangeVisitor</span><span class="w"> </span><span class="n">visitor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">visitor</span><span class="p">.</span><span class="na">visit</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="template-variants">
+<h2>Template Variants<a class="headerlink" href="#template-variants" title="Link to this heading">¶</a></h2>
+<p>The Java generator offers different templates allowing to generate
+different “flavors” of Java code to represent the same LinkML schema.</p>
+<p>A set of template (hereafter called a “template variant”) is selected on
+the command line by the <code class="docutils literal notranslate"><span class="pre">--template-variant</span></code> option, or in Python code
+by the <code class="docutils literal notranslate"><span class="pre">template_variant</span></code> named parameter to the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> method.</p>
+<p>LinkML currently provides three Java template variants:</p>
+<ul class="simple">
+<li><p>the default variant;</p></li>
+<li><p>the <cite>records</cite> variant;</p></li>
+<li><p>and the <cite>org.incenp.linkml</cite> variant.</p></li>
+</ul>
+<section id="default-variant">
+<h3>Default Variant<a class="headerlink" href="#default-variant" title="Link to this heading">¶</a></h3>
+<p>The default template variant (which is used when no other variant is
+explicitly requested) generates Java classes that use Project Lombok’s
+<a class="reference external" href="https://projectlombok.org/">&#64;Data</a> annotations to provide getters,
+setters, equals and hashcode functionality.</p>
+</section>
+<section id="records-variant">
+<h3>Records Variant<a class="headerlink" href="#records-variant" title="Link to this heading">¶</a></h3>
+<p>The <cite>records</cite> variant represents LinkML classes as Java
+<a class="reference external" href="https://openjdk.org/jeps/359">Record classes</a>, which are intended to
+hold <em>immutable data</em>.</p>
+<p>Note that Record classes are only available since Java 14 as a feature
+preview, and as an official feature since Java 16.</p>
+<p>Also note that a Record class cannot extend another class. If a class
+<cite>Bar</cite> is defined in a LinkML schema as extending a class <cite>Foo</cite>, the
+<cite>records</cite> variant will generate a Java <cite>Bar</cite> class that will contain all
+the slots from the <cite>Foo</cite> class but that will <em>not</em> be a subclass of
+<cite>Foo</cite> (meaning for example that it will not be possible to assign an
+instance of <cite>Bar</cite> to a <cite>Foo</cite>-typed slot). This makes the <cite>records</cite>
+variant unlikely to be suitable for schemas that have complex class
+hierarchies.</p>
+</section>
+<section id="org-incenp-linkml-variant">
+<h3>org.incenp.linkml Variant<a class="headerlink" href="#org-incenp-linkml-variant" title="Link to this heading">¶</a></h3>
+<p>The <cite>org.incenp.linkml</cite> variant generates Java code that is suitable for
+use with the <a class="reference external" href="https://incenp.org/dvlpt/linkml-java/">LinkML-Java</a>
+runtime library – that is, code that meets the requirements set forth in
+the <a class="reference external" href="https://incenp.org/dvlpt/linkml-java/linkml-core/codegen.html">runtime documentation</a>.</p>
+<p>This allows to use said runtime to easily load data (conformant to the
+LinkML schema from which the code was generated) from files into the
+Java in-memory representation, and conversely to dump data from the
+Java representation into files.</p>
+</section>
+</section>
+<section id="template-selection-logic">
+<h2>Template Selection Logic<a class="headerlink" href="#template-selection-logic" title="Link to this heading">¶</a></h2>
+<p>The template selection logic used by the Java generator allows to
+fine-tune which template is used for any given class or enum.</p>
+<p>When generating the code for a given class <em>Foo</em>, and assuming a
+template variant <em>V</em> has been requested (with <code class="docutils literal notranslate"><span class="pre">--template-variant=V</span></code>),
+the generator will look up for the following template files, using the
+first one that it finds:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Foo-V.jinja2</span></code> (the <em>V</em> variant template specific for the <em>Foo</em>
+class);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class-V.jinja2</span></code> (the generic <em>V</em> variant template for all classes);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Foo.jinja2</span></code> (default template specific for the <em>Foo</em> class);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class.jinja2</span></code> (generic default template for all classes).</p></li>
+</ul>
+<p>When no variant is explicitly requested, the first two lookups are
+skipped, meaning the generator will look up first for <code class="docutils literal notranslate"><span class="pre">Foo.jinja2</span></code> and
+then for <code class="docutils literal notranslate"><span class="pre">class.jinja2</span></code>.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">--true-enums</span></code> option is enabled, the same logic will also be
+used to find the template file to render an enumeration <em>Bar</em>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bar-V.jinja2</span></code> (the <em>V</em> variant template specific for the <em>Bar</em>
+enumeration);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enum-V.jinja2</span></code> (the generic <em>V</em> variant template for all
+enumerations);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Bar.jinja2</span></code> (default template specific for the <em>Bar</em> enumeration);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enum.jinja2</span></code> (generic default template for all enumerations).</p></li>
+</ul>
+<p>By default, all templates are looked up in the generator’s internal
+template directory. Use the <code class="docutils literal notranslate"><span class="pre">--template-dir=D</span></code> option to make the
+generator look up first in the specified directory <em>D</em>; any template
+file found in that directory will take precedence over the templates
+from the internal directory.</p>
+<p>Lastly, use the <code class="docutils literal notranslate"><span class="pre">--template-file=F</span></code> option to force the generator to
+always use the specified template. This overrides all the logic
+described above.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <section id="biolink-example">
-<h2>Biolink Example<a class="headerlink" href="#biolink-example" title="Link to this heading">¶</a></h2>
-<p>Begin by downloading the Biolink Model YAML and adding a virtual environment and installing linkml.</p>
+<h3>Biolink Example<a class="headerlink" href="#biolink-example" title="Link to this heading">¶</a></h3>
+<p>This example illustrates how to generate a Java package containing a
+Java representation of the Biolink model, using the default
+(Lombok-dependent) templates.</p>
+<p>This assumes a working installation of LinkML. Check the
+<a class="reference internal" href="../intro/install.html"><span class="doc">Quick Install Guide</span></a> if needed.</p>
+<p>Begin by downloading the YAML file containing the Biolink schema:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-OJ<span class="w"> </span>https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.yaml
-python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
-<span class="nb">source</span><span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span>linkml
 </pre></div>
 </div>
-<p>Now generate the classes using the <cite>gen-java</cite> command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-java<span class="w"> </span>--package<span class="w"> </span>org.biolink.model<span class="w"> </span>--output-directory<span class="w"> </span>org/biolink/model<span class="w"> </span>biolink-model.yaml
+<p>Now generate the classes using the <cite>generate java</cite> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span>java<span class="w"> </span>--package<span class="w"> </span>org.biolink.model<span class="w"> </span><span class="se">\</span>
+<span class="w">                     </span>--output-directory<span class="w"> </span>org/biolink/model<span class="w"> </span><span class="se">\</span>
+<span class="w">                     </span>biolink-model.yaml
 </pre></div>
 </div>
-<p>Finally, fetch the Lombok jar, build the java classes and package into a jar file</p>
+<p>Finally, fetch the Lombok jar, build the java classes and package into a
+jar file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-OJ<span class="w"> </span>https://repo1.maven.org/maven2/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar
 javac<span class="w"> </span>org/biolink/model/*.java<span class="w"> </span>-cp<span class="w"> </span>lombok-1.18.20.jar
 jar<span class="w"> </span>-cf<span class="w"> </span>biolink-model.jar<span class="w"> </span>org
@@ -662,8 +858,9 @@ jar<span class="w"> </span>-cf<span class="w"> </span>biolink-model.jar<span cla
 </div>
 </section>
 <section id="alternate-template-example">
-<h2>Alternate Template Example<a class="headerlink" href="#alternate-template-example" title="Link to this heading">¶</a></h2>
-<p>Here is an alternate template using Hibernate JPA annotations, named <cite>example_template.java.jinja2</cite></p>
+<h3>Alternate Template Example<a class="headerlink" href="#alternate-template-example" title="Link to this heading">¶</a></h3>
+<p>Here is an alternate template using Hibernate JPA annotations, named
+<code class="docutils literal notranslate"><span class="pre">example_template.java.jinja2</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>package {{ doc.package }};
 
 import java.util.List;
@@ -686,11 +883,15 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
 }
 </pre></div>
 </div>
-<p>The alternate template for the generator can be specified with the <cite>–template_file</cite> option</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">java</span> <span class="o">--</span><span class="n">package</span> <span class="n">org</span><span class="o">.</span><span class="n">biolink</span><span class="o">.</span><span class="n">model</span> <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">directory</span> <span class="n">org</span><span class="o">/</span><span class="n">biolink</span><span class="o">/</span><span class="n">model</span> \
-         <span class="o">--</span><span class="n">template_file</span> <span class="n">example_template</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">jinja2</span> <span class="n">biolink</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">yaml</span>
+<p>The alternate template for the generator can be specified with the
+<code class="docutils literal notranslate"><span class="pre">--template-file</span></code> option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">linkml</span> <span class="n">generate</span> <span class="n">java</span> <span class="o">--</span><span class="n">package</span> <span class="n">org</span><span class="o">.</span><span class="n">biolink</span><span class="o">.</span><span class="n">model</span> \
+                     <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">directory</span> <span class="n">org</span><span class="o">/</span><span class="n">biolink</span><span class="o">/</span><span class="n">model</span> \
+                     <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="n">file</span> <span class="n">example_template</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">jinja2</span> \
+                     <span class="n">biolink</span><span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">yaml</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
@@ -765,9 +966,24 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
+<li><a class="reference internal" href="#configurable-behaviors">Configurable Behaviors</a><ul>
+<li><a class="reference internal" href="#rendering-of-enumerations">Rendering of Enumerations</a></li>
+<li><a class="reference internal" href="#use-of-slot-aliases">Use of Slot Aliases</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generating-visitor-patterns">Generating Visitor Patterns</a></li>
+<li><a class="reference internal" href="#template-variants">Template Variants</a><ul>
+<li><a class="reference internal" href="#default-variant">Default Variant</a></li>
+<li><a class="reference internal" href="#records-variant">Records Variant</a></li>
+<li><a class="reference internal" href="#org-incenp-linkml-variant">org.incenp.linkml Variant</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#template-selection-logic">Template Selection Logic</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
 <li><a class="reference internal" href="#biolink-example">Biolink Example</a></li>
 <li><a class="reference internal" href="#alternate-template-example">Alternate Template Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
