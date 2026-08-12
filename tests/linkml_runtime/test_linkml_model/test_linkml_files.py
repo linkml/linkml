@@ -1,3 +1,4 @@
+import re
 import subprocess
 import tempfile
 from collections.abc import Callable, Iterator
@@ -152,13 +153,14 @@ def _get_upstream_sha() -> str:
 
     Returns the 40-character hex SHA written to ``UPSTREAM_SHA`` at vendoring time.
     """
-    assert UPSTREAM_SHA_FILE.exists(), (
-        f"{UPSTREAM_SHA_FILE} not found. Run 'make update_model' in packages/linkml_runtime/ to regenerate it."
+    regenerate = "Run 'make update_model' in packages/linkml_runtime/ to regenerate it."
+    assert UPSTREAM_SHA_FILE.exists(), f"{UPSTREAM_SHA_FILE} not found. {regenerate}"
+
+    sha = UPSTREAM_SHA_FILE.read_text().strip()
+    assert re.fullmatch(r"[0-9a-f]{40}", sha), (
+        f"{UPSTREAM_SHA_FILE} does not contain a 40-character hex commit SHA (got {sha!r}). {regenerate}"
     )
-    assert len(open(UPSTREAM_SHA_FILE).read()) > 0, (
-        f"{UPSTREAM_SHA_FILE} is empty. Run 'make update_model' in packages/linkml_runtime/ to regenerate it."
-    )
-    return UPSTREAM_SHA_FILE.read_text().strip()
+    return sha
 
 
 @pytest.fixture(scope="session")

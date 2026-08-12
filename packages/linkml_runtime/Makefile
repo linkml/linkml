@@ -17,10 +17,13 @@ update_model:
 		curl -fsSL "https://api.github.com/repos/linkml/linkml-model/releases?per_page=1" \
 		| python3 -c "import sys, json; releases = json.load(sys.stdin); print(releases[0]['tag_name'])"))
 
-	# Resolve the tag to its commit SHA via the Git refs API
+	# Resolve the tag to its commit SHA. The commits endpoint dereferences the ref for
+	# us, so this yields a commit SHA for annotated tags as well as lightweight ones --
+	# /git/refs/tags returns the tag *object* SHA for annotated tags, which is not
+	# something `git fetch <sha>` can resolve.
 	$(eval LINKML_MODEL_SHA := $(shell \
-		curl -fsSL "https://api.github.com/repos/linkml/linkml-model/git/refs/tags/$(LINKML_MODEL_TAG)" \
-		| python3 -c "import sys, json; d = json.load(sys.stdin); print(d['object']['sha'])"))
+		curl -fsSL "https://api.github.com/repos/linkml/linkml-model/commits/$(LINKML_MODEL_TAG)" \
+		| python3 -c "import sys, json; print(json.load(sys.stdin)['sha'])"))
 
 	@echo "Vendoring linkml-model $(LINKML_MODEL_TAG) @ $(LINKML_MODEL_SHA)"
 
