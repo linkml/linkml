@@ -71,7 +71,7 @@ lint = [
     "black >= 24.0.0",
 ]
 typing = [
-    "numpydantic >= 1.6.1",
+    "numpydantic>=1.10.0",
 ]
 shacl = [
     "pyshacl >= 0.25.0",
@@ -80,7 +80,7 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "duckdb>=1.5.2",
+  "duckdb>=1.5.5",
   "sqlalchemy-bigquery >= 1.9.0",
 ]
 dev = [
@@ -111,7 +111,7 @@ tests-rustgen = [
   "maturin>=1.14.1"
 ]
 typedb = [
-  "typedb-driver >= 3.0, < 4.0",
+  "typedb-driver>=3.12.1,<4.0",
 ]
 bigquery = [
   "sqlalchemy-bigquery >= 1.9.0",
