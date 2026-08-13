@@ -18,7 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       typedb:
-        image: typedb/typedb:3.8.0
+        # Keep in step with typedb-driver in packages/linkml/pyproject.toml: the
+        # driver refuses to connect to a server on a different network protocol.
+        image: typedb/typedb:3.12.1
         ports:
           - 1729:1729
         options: >-
