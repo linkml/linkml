@@ -2474,7 +2474,7 @@ requires-dist = [
     { name = "isodate", specifier = ">=0.6.0" },
     { name = "jinja2", specifier = ">=3.1.0" },
     { name = "jsonasobj2", specifier = ">=1.0.3,<2.0.0" },
-    { name = "jsonschema", extras = ["format"], specifier = ">=4.0.0" },
+    { name = "jsonschema", extras = ["format"], specifier = ">=4.26.0" },
     { name = "linkml-runtime", editable = "packages/linkml_runtime" },
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "openpyxl" },

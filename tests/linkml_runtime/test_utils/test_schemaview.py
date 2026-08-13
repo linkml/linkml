@@ -57,7 +57,7 @@ SCHEMA_RULES_IMPORT = INPUT_DIR_PATH / "rules_import" / "base.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
 CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
-CREATURE_SCHEMA_RAW_URL = "https://github.com/linkml/linkml/raw/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
+CREATURE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
 
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
