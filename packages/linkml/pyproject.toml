@@ -57,7 +57,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "pyshexc >= 0.10.3",
     "python-dateutil",
     "pyyaml",
-    "rdflib >=6.0.0",
+    "rdflib>=7.6.0",
     "requests >= 2.22",
     "sqlalchemy>=2.0.51",
     "watchdog >= 0.9.0",
@@ -93,7 +93,7 @@ dev = [
   "jupyter",
   "nbconvert",
   "nbformat",
-  "coverage >= 6.4.1",
+  "coverage>=7.15.4",
   "tox >= 4",
   "tox-uv",
   "myst-nb >= 1.0.0; python_version >= '3.10'",
@@ -103,7 +103,7 @@ dev = [
 ]
 
 pandera = [
-  "pandera >= 0.19.0",
+  "pandera>=0.32.1",
   "polars-lts-cpu >= 1.0.0",
   "pandas"
 ]

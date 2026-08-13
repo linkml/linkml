@@ -43,7 +43,7 @@ dependencies = [
     "jsonschema>=4.26.0",
     "prefixcommons >=0.1.12",
     "pyyaml",
-    "rdflib >=6.0.0",
+    "rdflib>=7.6.0",
     "requests",
     "prefixmaps >=0.1.4",
     "curies>=0.14.6",
@@ -54,7 +54,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage >=6.2",
+    "coverage>=7.15.4",
     "requests-cache>=1.3.3",
 ]
 
