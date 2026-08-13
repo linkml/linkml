@@ -9,6 +9,12 @@ env:
   UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
   UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
 
+concurrency:
+  # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
+  # so each PR is its own group and never cancels another's runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches:
