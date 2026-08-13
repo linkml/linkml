@@ -2645,7 +2645,7 @@ requires-dist = [
     { name = "isodate", marker = "python_full_version < '3.11'", specifier = ">=0.7.2,<1.0.0" },
     { name = "json-flattener", specifier = ">=0.1.9" },
     { name = "jsonasobj2", specifier = "==1.*,>=1.0.0,>=1.0.4" },
-    { name = "jsonschema", specifier = ">=3.2.0" },
+    { name = "jsonschema", specifier = ">=4.26.0" },
     { name = "prefixcommons", specifier = ">=0.1.12" },
     { name = "prefixmaps", specifier = ">=0.1.4" },
     { name = "pydantic", specifier = ">=1.10.2,<3.0.0" },
