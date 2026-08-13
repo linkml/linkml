@@ -139,7 +139,7 @@ docs = [
   "myst-parser",
   "matplotlib >= 3.7",
   "sphinx-jinja >= 2.0.2",
-  "sphinxcontrib-programoutput >= 0.17",
+  "sphinxcontrib-programoutput>=0.20",
 ]
 
 [tool.uv.sources]
