@@ -2488,7 +2488,7 @@ requires-dist = [
     { name = "pyshexc", specifier = ">=0.10.3" },
     { name = "python-dateutil" },
     { name = "pyyaml" },
-    { name = "rdflib", specifier = ">=6.0.0" },
+    { name = "rdflib", specifier = ">=7.6.0" },
     { name = "requests", specifier = ">=2.22" },
     { name = "sphinx-click", specifier = ">=6.0.0" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
@@ -2623,7 +2623,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=1.10.2,<3.0.0" },
     { name = "pyoxigraph", specifier = ">=0.5.6" },
     { name = "pyyaml" },
-    { name = "rdflib", specifier = ">=6.0.0" },
+    { name = "rdflib", specifier = ">=7.6.0" },
     { name = "requests" },
     { name = "requests-cache", marker = "extra == 'dev'", specifier = ">=1.3.3" },
 ]
@@ -4572,15 +4572,15 @@ wheels = [
 
 [[package]]
 name = "rdflib"
-version = "7.2.1"
+version = "7.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "isodate", marker = "python_full_version < '3.11'" },
     { name = "pyparsing" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8d/99/d2fec85e5f6bdfe4367dea143119cb4469bf48710487939df0abf7e22003/rdflib-7.2.1.tar.gz", hash = "sha256:cf9b7fa25234e8925da8b1fb09700f8349b5f0f100e785fb4260e737308292ac", size = 4873802, upload-time = "2025-09-19T02:33:36.492Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/f5/18bb77b7af9526add0c727a3b2048959847dc5fb030913e2918bf384fec3/rdflib-7.6.0.tar.gz", hash = "sha256:6c831288d5e4a5a7ece85d0ccde9877d512a3d0f02d7c06455d00d6d0ea379df", size = 4943826, upload-time = "2026-02-13T07:15:55.938Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/31/98/7fa830bb4b9da21905683a5352aa0a01a1f3082328ae976aad341e980c23/rdflib-7.2.1-py3-none-any.whl", hash = "sha256:1a175bc1386a167a42fbfaba003bfa05c164a2a3ca3cb9c0c97f9c9638ca6ac2", size = 565423, upload-time = "2025-09-19T02:33:30.889Z" },
+    { url = "https://files.pythonhosted.org/packages/10/c2/6604a71269e0c1bd75656d5a001432d16f2cc5b8c057140ec797155c295e/rdflib-7.6.0-py3-none-any.whl", hash = "sha256:30c0a3ebf4c0e09215f066be7246794b6492e054e782d7ac2a34c9f70a15e0dd", size = 615416, upload-time = "2026-02-13T07:15:46.487Z" },
 ]
 
 [package.optional-dependencies]
