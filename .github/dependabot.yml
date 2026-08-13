@@ -31,7 +31,9 @@ updates:
           - "*"
         update-types:
           - "patch"
-    open-pull-requests-limit: 10
+    # Bounds rebase storms: every open PR runs the full matrix, and dependabot
+    # rebases all of them when main moves.
+    open-pull-requests-limit: 3
     # Wait 7 days after a release before opening an update PR, giving time for
     # malware/CVE advisories to surface (mirrors the uv `exclude-newer` cooldown).
     cooldown:
