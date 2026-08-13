@@ -433,7 +433,7 @@ class JavaGenerator(OOCodeGenerator):
         """Indicates whether a class requires handling of extra slots.
 
         A Java class representing a LinkML class requires special code to
-        handle extra slots iff (1) the LinkML class is configured to allow
+        handle extra slots if (1) the LinkML class is configured to allow
         extra slots and (2) none of its parent classes are already
         configured to allow extra slots.
         """
