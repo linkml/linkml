@@ -71,7 +71,7 @@ lint = [
     "black >= 24.0.0",
 ]
 typing = [
-    "numpydantic >= 1.6.1",
+    "numpydantic>=1.10.0",
 ]
 shacl = [
     "pyshacl >= 0.25.0",

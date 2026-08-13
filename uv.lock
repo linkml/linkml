@@ -2513,7 +2513,7 @@ dev = [
     { name = "nbformat" },
     { name = "numpy", marker = "python_full_version < '3.12'", specifier = ">=1.24.3" },
     { name = "numpy", marker = "python_full_version >= '3.12'", specifier = ">=1.25.2" },
-    { name = "numpydantic", specifier = ">=1.6.1" },
+    { name = "numpydantic", specifier = ">=1.10.0" },
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.19.0" },
@@ -2552,7 +2552,7 @@ shacl = [{ name = "pyshacl", specifier = ">=0.25.0" }]
 tests = [
     { name = "black", specifier = ">=24.0.0" },
     { name = "duckdb", specifier = ">=1.5.2" },
-    { name = "numpydantic", specifier = ">=1.6.1" },
+    { name = "numpydantic", specifier = ">=1.10.0" },
     { name = "pyshacl", specifier = ">=0.25.0" },
     { name = "sqlalchemy-bigquery", specifier = ">=1.9.0" },
 ]
@@ -2571,7 +2571,7 @@ tests-extra = [
 ]
 tests-rustgen = [{ name = "maturin", specifier = ">=1.14.1" }]
 typedb = [{ name = "typedb-driver", specifier = ">=3.0,<4.0" }]
-typing = [{ name = "numpydantic", specifier = ">=1.6.1" }]
+typing = [{ name = "numpydantic", specifier = ">=1.10.0" }]
 
 [[package]]
 name = "linkml-runtime"
@@ -3319,7 +3319,7 @@ wheels = [
 
 [[package]]
 name = "numpydantic"
-version = "1.7.0"
+version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -3327,9 +3327,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/59/ba/6bf5e0a7cc3fbfbb02a7824926cad73c58df374322eb7728b378023a76dc/numpydantic-1.7.0.tar.gz", hash = "sha256:268285bee026d9dfdf23efeee13f60c3b75d47de2ffdf2e58b4f0c17a6824e3b", size = 80412, upload-time = "2025-10-11T05:23:56.654Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/95/5c/0cfed22c6483338c73d2faf182d863c47836e5f8f34e65b70aea345e7b72/numpydantic-1.10.0.tar.gz", hash = "sha256:a17d5ccc3b893c4a2e539c81c2f18960d70884ad7fcaa09c9eb56a95e8daf4a3", size = 98771, upload-time = "2026-06-22T22:04:46.251Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/e0/42f0ea229a8b5ada24a1eae4f5522b80ab65b4083f5cea4c7372bc894af3/numpydantic-1.7.0-py3-none-any.whl", hash = "sha256:81314ed00423efa954a711a48003dba5382156e899f677f405ce043f5296b090", size = 86734, upload-time = "2025-10-11T05:23:55.003Z" },
+    { url = "https://files.pythonhosted.org/packages/69/15/0dd8e1ff306f97bee18a3ef024bb694f9043ee57474c57f7330f90804cae/numpydantic-1.10.0-py3-none-any.whl", hash = "sha256:1c62a445d305da69a5fa4510f7e7e1c25218f58fe462e5d59548042f1f769e66", size = 101858, upload-time = "2026-06-22T22:04:44.918Z" },
 ]
 
 [[package]]
