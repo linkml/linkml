@@ -232,6 +232,16 @@ def test_refined_ranges(input_path):
     assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]
 
 
+def test_inherited_extra_slots(input_path, tmp_path):
+    """Test that we don't generate redundant extension holders."""
+    gen = JavaGenerator(input_path("redundant_extra_slots.yaml"))
+    assert gen.needs_extra_slots(gen.schemaview.get_class("Foo"))
+    assert not gen.needs_extra_slots(gen.schemaview.get_class("Bar"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "Foo.java", "private Map<String, Object> extraSlots;")
+    assert_file_contains(tmp_path / "Bar.java", "private Map<String, Object> extraSlots;", invert=True)
+
+
 def test_render_returns_bundle(kitchen_sink_path, tmp_path):
     """`render()` returns a `JavaBundle` with rendered files but touches no disk."""
     gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
