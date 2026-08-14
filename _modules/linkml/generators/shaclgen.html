@@ -421,7 +421,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.language_tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageTagResolver</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ElementName</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PresenceEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedNode</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span>
@@ -549,6 +549,22 @@
 <span class="sd">    ignores any per-slot ``in_language``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">emit_rules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.</span>
+
+<span class="sd">    When ``True`` (default), recognised rule patterns are translated into</span>
+<span class="sd">    SHACL-SPARQL constraints (``sh:SPARQLConstraint``) on the corresponding</span>
+<span class="sd">    ``sh:NodeShape``.  Currently two patterns are recognised:</span>
+
+<span class="sd">    * *Boolean guard* — a precondition with ``value_presence: PRESENT`` on a</span>
+<span class="sd">      value slot and a postcondition with ``equals_string: &quot;true&quot;`` on a</span>
+<span class="sd">      boolean flag slot.</span>
+<span class="sd">    * *Exclusive value* — a precondition with ``equals_string`` on a slot and</span>
+<span class="sd">      a postcondition with ``maximum_cardinality`` on the *same* slot.</span>
+
+<span class="sd">    See `W3C SHACL §5 &lt;https://www.w3.org/TR/shacl/#sparql-constraints&gt;`_</span>
+<span class="sd">    and `linkml/linkml#2464 &lt;https://github.com/linkml/linkml/issues/2464&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ttl&quot;</span><span class="p">]</span>
@@ -799,9 +815,238 @@
                 <span class="k">if</span> <span class="n">default_value</span><span class="p">:</span>
                     <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">defaultValue</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_rules</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_rules</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">class_uri_with_suffix</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">g</span>
 
     <span class="n">LINKML_ANY_URI</span> <span class="o">=</span> <span class="s2">&quot;https://w3id.org/linkml/Any&quot;</span>
+
+    <span class="c1"># -------------------------------------------------------------------</span>
+    <span class="c1"># Rules → sh:sparql</span>
+    <span class="c1"># -------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">shape_uri</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.</span>
+
+<span class="sd">        Each recognised rule is converted into an ``sh:SPARQLConstraint``</span>
+<span class="sd">        attached to *shape_uri*.  Unrecognised patterns are logged at</span>
+<span class="sd">        ``DEBUG`` level and silently skipped.</span>
+
+<span class="sd">        Currently recognised patterns:</span>
+
+<span class="sd">        * **Boolean guard** — a *precondition* with</span>
+<span class="sd">          ``value_presence: PRESENT`` on a value slot and a *postcondition*</span>
+<span class="sd">          with ``equals_string: &quot;true&quot;`` on a boolean flag slot.</span>
+
+<span class="sd">        * **Exclusive value** — a *precondition* with ``equals_string`` on</span>
+<span class="sd">          a slot and a *postcondition* with ``maximum_cardinality`` on the</span>
+<span class="sd">          *same* slot.  Enforces that when a specific value is present in a</span>
+<span class="sd">          multivalued slot, the total number of values must not exceed the</span>
+<span class="sd">          given cardinality (typically 1 for mutual exclusion).</span>
+
+<span class="sd">        See `W3C SHACL §5 &lt;https://www.w3.org/TR/shacl/#sparql-constraints&gt;`_.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;deactivated&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;bidirectional&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Rule in class </span><span class="si">%r</span><span class="s2"> has bidirectional=true; &quot;</span>
+                    <span class="s2">&quot;SHACL-SPARQL generation does not support bidirectional rules. &quot;</span>
+                    <span class="s2">&quot;Skipping this rule entirely.&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;open_world&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Rule in class </span><span class="si">%r</span><span class="s2"> has open_world=true; &quot;</span>
+                    <span class="s2">&quot;SHACL operates under closed-world assumption. &quot;</span>
+                    <span class="s2">&quot;The constraint is emitted but may not match open-world semantics.&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;elseconditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Rule in class </span><span class="si">%r</span><span class="s2"> has elseconditions; &quot;</span>
+                    <span class="s2">&quot;only the forward (if/then) branch is emitted as sh:sparql. &quot;</span>
+                    <span class="s2">&quot;The else branch cannot be represented in SHACL-SPARQL.&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">sparql_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule_to_sparql</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">rule</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sparql_query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping unsupported rule pattern in class </span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;(no description)&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">constraint</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">shape_uri</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">sparql</span><span class="p">,</span> <span class="n">constraint</span><span class="p">))</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">constraint</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">SPARQLConstraint</span><span class="p">))</span>
+
+            <span class="n">message</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">constraint</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">message</span><span class="p">)))</span>
+
+            <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">constraint</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">sparql_query</span><span class="p">)))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rule_to_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">rule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a ``ClassRule`` to a SPARQL SELECT query string.</span>
+
+<span class="sd">        Returns ``None`` when the rule does not match any supported pattern.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pre</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;preconditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">&quot;postconditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pre</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">post</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">pre_slots</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pre</span><span class="p">,</span> <span class="s2">&quot;slot_conditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">post_slots</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s2">&quot;slot_conditions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="c1"># Pattern: boolean guard</span>
+        <span class="c1"># preconditions: exactly one slot with value_presence PRESENT</span>
+        <span class="c1"># postconditions: exactly one slot with equals_string &quot;true&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pre_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">post_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">pre_slot_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">pre_slots</span><span class="p">))</span>
+            <span class="n">post_slot_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">post_slots</span><span class="p">))</span>
+
+            <span class="n">pre_cond</span> <span class="o">=</span> <span class="n">pre_slots</span><span class="p">[</span><span class="n">pre_slot_name</span><span class="p">]</span>
+            <span class="n">post_cond</span> <span class="o">=</span> <span class="n">post_slots</span><span class="p">[</span><span class="n">post_slot_name</span><span class="p">]</span>
+
+            <span class="c1"># Note: PresenceEnum.PRESENT is a PermissibleValue, but parsed schemas</span>
+            <span class="c1"># return PresenceEnum instances — wrapping ensures type-compatible comparison.</span>
+            <span class="n">is_value_present</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pre_cond</span><span class="p">,</span> <span class="s2">&quot;value_presence&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">)</span>
+            <span class="n">is_flag_true</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">post_cond</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+
+            <span class="k">if</span> <span class="n">is_value_present</span> <span class="ow">and</span> <span class="n">is_flag_true</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_boolean_guard_sparql</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">post_slot_name</span><span class="p">,</span> <span class="n">pre_slot_name</span><span class="p">)</span>
+
+            <span class="c1"># Pattern: exclusive value</span>
+            <span class="c1"># preconditions: slot X has equals_string (a specific enum value)</span>
+            <span class="c1"># postconditions: same slot X has maximum_cardinality N</span>
+            <span class="c1"># Semantics: &quot;If value V is present in slot X, then X has at most N values.&quot;</span>
+            <span class="n">pre_equals</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pre_cond</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">post_max_card</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">post_cond</span><span class="p">,</span> <span class="s2">&quot;maximum_cardinality&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pre_equals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">post_max_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pre_slot_name</span> <span class="o">==</span> <span class="n">post_slot_name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_exclusive_value_sparql</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">pre_slot_name</span><span class="p">,</span> <span class="n">pre_equals</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">post_max_card</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_boolean_guard_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">flag_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a SPARQL SELECT query for the boolean-guard pattern.</span>
+
+<span class="sd">        The query detects violations where the value property is present</span>
+<span class="sd">        but the boolean flag is absent or not ``true``.</span>
+
+<span class="sd">        Conforms to `SHACL §5.3.1</span>
+<span class="sd">        &lt;https://www.w3.org/TR/shacl/#sparql-constraints-prebound&gt;`_:</span>
+<span class="sd">        ``$this`` is pre-bound to each focus node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flag_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slot_uri</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">flag_slot_name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+        <span class="n">value_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slot_uri</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">value_slot_name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT $this WHERE </span><span class="se">{{\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    OPTIONAL </span><span class="se">{{</span><span class="s2"> $this &lt;</span><span class="si">{</span><span class="n">flag_uri</span><span class="si">}</span><span class="s2">&gt; ?flag . </span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    OPTIONAL </span><span class="se">{{</span><span class="s2"> $this &lt;</span><span class="si">{</span><span class="n">value_uri</span><span class="si">}</span><span class="s2">&gt; ?value . </span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    FILTER (</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;        ( !BOUND(?flag) || str(?flag) != &quot;true&quot; ) &amp;&amp;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;        BOUND(?value)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    )</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_exclusive_value_sparql</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sv</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+        <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">value_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">max_card</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a SPARQL SELECT query for the exclusive-value pattern.</span>
+
+<span class="sd">        Detects violations where a specific value is present in a multivalued</span>
+<span class="sd">        slot but the total number of values exceeds *max_card*.</span>
+
+<span class="sd">        For the common case ``max_card == 1``, the query checks whether the</span>
+<span class="sd">        exclusive value coexists with any other value (simple existence test).</span>
+<span class="sd">        For ``max_card &gt; 1``, a subquery counts all values and checks against</span>
+<span class="sd">        the limit.</span>
+
+<span class="sd">        The exclusive value is resolved to its full IRI via the slot&#39;s enum</span>
+<span class="sd">        ``meaning`` field.  If the slot is not an enum or the value has no</span>
+<span class="sd">        ``meaning``, the value is compared as a plain literal.</span>
+
+<span class="sd">        Conforms to `SHACL §5.3.1</span>
+<span class="sd">        &lt;https://www.w3.org/TR/shacl/#sparql-constraints-prebound&gt;`_:</span>
+<span class="sd">        ``$this`` is pre-bound to each focus node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slot_uri</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+        <span class="n">value_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_enum_value_ref</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">value_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_card</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;SELECT $this WHERE </span><span class="se">{{\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    $this &lt;</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">value_ref</span><span class="si">}</span><span class="s2"> .</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    $this &lt;</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="s2">&gt; ?other .</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    FILTER (?other != </span><span class="si">{</span><span class="n">value_ref</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT $this WHERE </span><span class="se">{{\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    $this &lt;</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">value_ref</span><span class="si">}</span><span class="s2"> .</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    </span><span class="se">{{\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;        SELECT $this (COUNT(?val) AS ?count)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;        WHERE </span><span class="se">{{</span><span class="s2"> $this &lt;</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="s2">&gt; ?val . </span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;        GROUP BY $this</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;        HAVING (?count &gt; </span><span class="si">{</span><span class="n">max_card</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    </span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_enum_value_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve an enum value name to a SPARQL term (IRI or literal).</span>
+
+<span class="sd">        Looks up the slot&#39;s range as an enum, finds the permissible value</span>
+<span class="sd">        matching *value_name*, and returns its ``meaning`` as a full IRI</span>
+<span class="sd">        wrapped in angle brackets.  Falls back to a quoted literal if the</span>
+<span class="sd">        slot is not an enum or the value lacks a ``meaning``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="p">:</span>
+            <span class="n">range_name</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+            <span class="k">if</span> <span class="n">range_name</span> <span class="ow">and</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
+                <span class="n">enum</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">range_name</span><span class="p">)</span>
+                <span class="n">pv</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pv</span> <span class="ow">and</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
+                    <span class="n">iri</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">value_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_slot_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a slot name to a full IRI string for use in SPARQL queries.</span>
+
+<span class="sd">        Mirrors the resolution logic used for ``sh:path`` in the main slot loop:</span>
+<span class="sd">        prefer ``sv.get_uri()`` for slots registered in the schema map, fall</span>
+<span class="sd">        back to ``default_prefix:underscored_name``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot</span> <span class="ow">and</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">element_by_schema_map</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pfx</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
+        <span class="k">return</span> <span class="n">sv</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pfx</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an sh:class constraint for range class *r*.</span>
@@ -1069,6 +1314,17 @@
         <span class="s2">&quot;</span><span class="si">{description}</span><span class="s2"> (slot description), </span><span class="si">{comments}</span><span class="s2"> (slot comments joined with &#39;; &#39;), &quot;</span>
         <span class="s2">&quot;</span><span class="si">{class}</span><span class="s2"> (class name), </span><span class="si">{path}</span><span class="s2"> (fully-expanded property IRI). &quot;</span>
         <span class="s1">&#39;Example: &quot;</span><span class="si">{name}</span><span class="s1"> (</span><span class="si">{class}</span><span class="s1">): </span><span class="si">{description}</span><span class="s1"> [</span><span class="si">{comments}</span><span class="s1">]&quot;&#39;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--emit-rules/--no-emit-rules&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Emit sh:sparql constraints from LinkML rules: blocks. &quot;</span>
+        <span class="s2">&quot;When enabled (default), recognised rule patterns (e.g. boolean-guard) &quot;</span>
+        <span class="s2">&quot;are translated into SHACL-SPARQL constraints on the corresponding &quot;</span>
+        <span class="s2">&quot;sh:NodeShape. Use --no-emit-rules to suppress rule generation.&quot;</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
