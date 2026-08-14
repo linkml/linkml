@@ -615,13 +615,6 @@
 
     <span class="n">yaml_loader</span> <span class="o">=</span> <span class="n">YAMLLoader</span><span class="p">()</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
-        <span class="c1"># if &quot;\n&quot; not in path and &quot;://&quot; not in path:</span>
-        <span class="c1"># only set path if the input is not a yaml string or URL.</span>
-        <span class="c1"># Setting the source path is necessary for relative imports;</span>
-        <span class="c1"># while initializing a schema with a yaml string is possible, there</span>
-        <span class="c1"># should be no expectation of relative imports working.</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">return</span> <span class="n">schema</span>
 
 

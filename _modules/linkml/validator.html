@@ -441,11 +441,11 @@
 <span class="sd">        used in place of the default and ``closed`` is ignored.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-            <span class="n">schema</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="n">SchemaDefinition</span><span class="p">(</span><span class="o">**</span><span class="n">schema</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="c1"># The loader records ``source_file`` on the schema when ``schema`` is a path,</span>
+            <span class="c1"># which is needed to resolve relative imports.</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">):</span>

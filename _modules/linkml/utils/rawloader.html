@@ -441,7 +441,7 @@
 <div class="viewcode-block" id="load_raw_schema">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.rawloader.load_raw_schema">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_raw_schema</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
     <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">source_file_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">source_file_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -452,14 +452,26 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and flatten SchemaDefinition from a file name, a URL or a block of text</span>
 
-<span class="sd">    @param data: URL, file name or block of text YAML Object or open file handle</span>
-<span class="sd">    @param source_file: Source file name for the schema if data is type TextIO</span>
-<span class="sd">    @param source_file_date: timestamp of source file if data is type TextIO</span>
-<span class="sd">    @param source_file_size: size of source file if data is type TextIO</span>
-<span class="sd">    @param base_dir: Working directory or base URL of sources</span>
-<span class="sd">    @param merge_modules: True means combine modules into one source, false means keep separate</span>
-<span class="sd">    @param emit_metadata: True means add source file info to the output</span>
-<span class="sd">    @return: Un-processed Schema Definition object</span>
+<span class="sd">    :param data: URL, file name, block of text, YAML object, open file handle or SchemaDefinition</span>
+<span class="sd">    :param source_file: Source file name for the schema if data is type TextIO</span>
+<span class="sd">    :param source_file_date: timestamp of source file if data is type TextIO</span>
+<span class="sd">    :param source_file_size: size of source file if data is type TextIO</span>
+<span class="sd">    :param base_dir: Working directory or base URL of sources</span>
+<span class="sd">    :param merge_modules: True means combine modules into one source, false means keep separate</span>
+<span class="sd">    :param metadata: False suppresses the source-file metadata this loader derives</span>
+<span class="sd">        (``source_file``, ``source_file_date``, ``source_file_size``, ``generation_date``).</span>
+<span class="sd">        This is a load-time suppression only — whether a generator prints such metadata is</span>
+<span class="sd">        decided by the generator. ``source_file`` is ``readonly: supplied by the schema</span>
+<span class="sd">        loader`` in the metamodel: for file/URL loads the loader-resolved path always wins</span>
+<span class="sd">        over a value embedded in the document, and ``metadata=False`` then clears it. A</span>
+<span class="sd">        caller-set ``source_file`` survives only on inputs with no source location (dict,</span>
+<span class="sd">        inline text, SchemaDefinition). See</span>
+<span class="sd">        https://github.com/linkml/linkml/issues/3699 for the ongoing work to move this</span>
+<span class="sd">        decision to serialization time.</span>
+<span class="sd">    :param emit_metadata: Legacy alias for ``metadata``; overrides it when supplied. Passing</span>
+<span class="sd">        this triggers the shared ``&quot;metadata-flag&quot;`` deprecation warning (see</span>
+<span class="sd">        ``deprecation.py``).</span>
+<span class="sd">    :returns: Un-processed Schema Definition object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_name_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -478,10 +490,13 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
+    <span class="c1"># Records what the loader itself derived about the source. Created up front so the metadata</span>
+    <span class="c1"># handling below can rely on it regardless of which input branch was taken.</span>
+    <span class="n">schema_metadata</span> <span class="o">=</span> <span class="n">FileInfo</span><span class="p">()</span>
+
     <span class="c1"># Convert the input into a valid SchemaDefinition</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span><span class="p">):</span>
         <span class="c1"># TODO: Build a generic loader that detects type from suffix or content and invokes the appropriate loader</span>
-        <span class="n">schema_metadata</span> <span class="o">=</span> <span class="n">FileInfo</span><span class="p">()</span>
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">source_file</span>
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">source_file_date</span>
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">source_file_size</span>
@@ -518,6 +533,15 @@
             <span class="n">schema</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">src_date</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_size</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATETIME_FORMAT</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file</span><span class="p">:</span>
+        <span class="c1"># ``metadata=False`` suppresses loader-derived source metadata. Whenever the loader had a</span>
+        <span class="c1"># source location (file, URL, or caller-supplied name), ``yaml_loader`` overwrites</span>
+        <span class="c1"># ``source_file`` with it — the slot is ``readonly: supplied by the schema loader`` — so</span>
+        <span class="c1"># the value here is always loader-derived and clearing honors the flag. When the loader</span>
+        <span class="c1"># had no source location (dict, inline text, SchemaDefinition input), nothing was</span>
+        <span class="c1"># recorded and a caller-set value survives (see in-memory import path in ``schemaloader``).</span>
+        <span class="c1"># TODO(#3699): this stripping belongs at serialization time, not load time.</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Only set metamodel_version if the schema doesn&#39;t already define one.</span>
     <span class="c1"># This allows schemas (like the metamodel itself) to specify their own version</span>
     <span class="c1"># rather than inheriting from the currently installed runtime.</span>

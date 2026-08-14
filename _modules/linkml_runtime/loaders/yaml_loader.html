@@ -416,6 +416,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DupCheckYamlLoader</span><span class="p">,</span> <span class="n">YAMLRoot</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
 
@@ -427,7 +429,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">load_as_dict</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">FileInfo</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">FileInfo</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="n">FileInfo</span><span class="p">()</span>
@@ -447,15 +449,52 @@
 <a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.loaders.YAMLLoader.load_any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_any</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">target_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">YAMLRoot</span> <span class="o">|</span> <span class="n">BaseModel</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metadata</span><span class="p">:</span> <span class="n">FileInfo</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">_</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAMLRoot</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">FileInfo</span><span class="p">()</span>
         <span class="n">data_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_as_dict</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_target_class</span><span class="p">(</span><span class="n">data_as_dict</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_target_class</span><span class="p">(</span><span class="n">data_as_dict</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
+        <span class="c1"># When the source was a file (or URL), ``hbread`` resolves and records it on the metadata.</span>
+        <span class="c1"># Propagate that to ``source_file`` (e.g. on a SchemaDefinition) so relative imports can be</span>
+        <span class="c1"># resolved against it. Inline string sources without caller-supplied metadata leave</span>
+        <span class="c1"># ``source_file`` unset, so this naturally distinguishes a path from schema text.</span>
+        <span class="c1"># Gated on SchemaDefinition specifically because it owns ``source_file`` in the metamodel;</span>
+        <span class="c1"># this avoids injecting the loader path into other target classes that happen to have a</span>
+        <span class="c1"># ``source_file`` slot.</span>
+        <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">source_file</span><span class="p">:</span>
+            <span class="c1"># Lazy import is cheap, avoids circular dependency between loaders and metamodel.</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaDefinition</span>
+
+            <span class="c1"># Prefer the path exactly as the caller supplied it.  hbread always absolutizes, so</span>
+            <span class="c1"># using metadata.source_file would stamp a machine-absolute path onto a schema that</span>
+            <span class="c1"># was loaded via a relative path.  ``source`` is only the caller&#39;s *path* when its</span>
+            <span class="c1"># absolutized form is what hbread resolved - inline text with a caller-supplied</span>
+            <span class="c1"># ``source_file`` name is also a str, so an isinstance check alone would record the</span>
+            <span class="c1"># whole document as the path.  Everything else (URLs, file-like objects, inline text,</span>
+            <span class="c1"># base_dir joins) records the resolved location from the metadata.</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">base_dir</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">))</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">path_to_record</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path_to_record</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">result</span><span class="p">]:</span>
+                <span class="c1"># Always overwrite: the metamodel marks source_file as</span>
+                <span class="c1"># ``readonly: supplied by the schema loader``.  A value</span>
+                <span class="c1"># serialised into the YAML by a previous --metadata run is</span>
+                <span class="c1"># stale content, not an authoritative path.</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">):</span>
+                    <span class="n">target</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">path_to_record</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="YAMLLoader.loads_any">
