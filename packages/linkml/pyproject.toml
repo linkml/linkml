@@ -81,7 +81,7 @@ tests = [
   { include-group = "typing" },
   { include-group = "shacl" },
   "duckdb>=1.5.5",
-  "sqlalchemy-bigquery >= 1.9.0",
+  "sqlalchemy-bigquery>=1.17.2",
 ]
 dev = [
   {include-group = "tests" },
@@ -132,7 +132,7 @@ tests-extra = [
 ]
 docs = [
   "furo>=2025.12.19",
-  "sphinxcontrib-mermaid>=2.0.3",
+  "sphinxcontrib-mermaid>=2.1.0",
   "sphinx",
   "sphinx-click",
   "sphinx-rtd-theme",
