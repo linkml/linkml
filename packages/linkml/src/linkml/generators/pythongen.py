@@ -1003,6 +1003,15 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     or slot.range in self.schema.enums
                 ):
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
+                elif slot.range in self.schema.classes and self.schema.classes[slot.range].abstract:
+                    # The slot range is abstract, so we cannot safely call
+                    # AbstractType(**data) when data may contain fields that exist
+                    # only on a concrete child class. Let linkml-runtime helper
+                    # choose the correct concrete class from the provided keys.
+                    rlines.append(
+                        f"\tself.{aliased_slot_name} = "
+                        f"{base_type_name}._instantiate_for_kwargs(as_dict(self.{aliased_slot_name}))"
+                    )
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
         elif slot.inlined:
@@ -1038,9 +1047,18 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 sn = f"self.{aliased_slot_name}"
                 rlines.append(f"if not isinstance({sn}, list):")
                 rlines.append(f"\t{sn} = [{sn}] if {sn} is not None else []")
-                rlines.append(
-                    f"{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**as_dict(v)) for v in {sn}]"
-                )
+                # Same abstract-range rule as above, but for each element in the
+                # inlined list: let linkml-runtime helper choose the concrete subclass
+                if slot.range in self.schema.classes and self.schema.classes[slot.range].abstract:
+                    rlines.append(
+                        f"{sn} = [v if isinstance(v, {base_type_name}) "
+                        f"else {base_type_name}._instantiate_for_kwargs(as_dict(v)) for v in {sn}]"
+                    )
+                else:
+                    rlines.append(
+                        f"{sn} = [v if isinstance(v, {base_type_name}) "
+                        f"else {base_type_name}(**as_dict(v)) for v in {sn}]"
+                    )
         else:
             # Multivalued and not inlined
             # TODO: JsonObj([...]) will fail here as well
