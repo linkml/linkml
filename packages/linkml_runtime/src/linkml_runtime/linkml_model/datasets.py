@@ -1,5 +1,5 @@
 # Auto generated from datasets.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-05-05T18:49:10
+# Generation date: 2026-08-12T09:42:09
 # Schema: datasets
 #
 # id: https://w3id.org/linkml/datasets
@@ -17,7 +17,7 @@ from linkml_runtime.utils.metamodelcore import URI, URIorCURIE, XSDDateTime, emp
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
