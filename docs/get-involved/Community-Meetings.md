@@ -27,9 +27,9 @@ Join the LinkML community for regular sessions featuring presentations on LinkML
 
 | Date | Presenter 1	| Topic 1	| Presenter 2	| Topic 2 |
 | :---: | :---: | :---: | :----: | :---: |
-| November 19, 2026|Open slot!| Volunteers welcome| Open slot!| Volunteers welcome| 
-| October 15, 2026|Open slot!| Volunteers welcome| Open slot!| Volunteers welcome| 
-| September 17, 2026| Matt Gehring| Use of LinkML at [sniff.world](https://sniff.world/)| Open slot!| Volunteers welcome| 
+| November 19, 2026|Open slot!| Volunteers welcome| Open slot!| Volunteers welcome|
+| October 15, 2026|Open slot!| Volunteers welcome| Open slot!| Volunteers welcome|
+| September 17, 2026| Matt Gehring| Use of LinkML at [sniff.world](https://sniff.world/)| Open slot!| Volunteers welcome|
 | August 20, 2026| Patrick Golden| Use of LinkML in the [Zebrafish Toxicology Phenotype Atlas Project](https://zappfish.org/)|Alex Anderson| schema-to-schema mapping and data conversion at [PNNL](https://www.pnnl.gov/)|
 | [July 16, 2026](https://docs.google.com/presentation/d/1A05qfTbmI8RXyvoBSplpjSU9e4OP6BlIKJvQ1-eWhGw/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Sierra Moxon | LinkML Microschemas |Stephan Heunis |[The ORINOCO project at Research Center Jülich - building self-hostable research information infrastructure](https://pool.psychoinformatics.de/ui/?sh%3ANodeShape=xyzri%3AXYZProject&pid=xyzrins%3Aprojects%2Forinoco) |
 | [June 18, 2026](https://docs.google.com/presentation/d/1mA3xBfPglJLtMPbDLXT8lJ7SAu6iDPNL_HBJs_DZuB0/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Anh Nguyet Vu | Adopting LinkML at Sage: Workflows, Wins, and Works in Progress | Cory Levinson | OAE Data Protocol: Data standardization for carbon removal research and deployment with LinkML |
