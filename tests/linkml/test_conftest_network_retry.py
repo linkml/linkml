@@ -84,8 +84,11 @@ def test_non_transient_failure_is_not_retried():
     assert calls["n"] == 1
 
 
-def test_retry_is_actually_installed_during_a_session():
+def test_retry_is_actually_installed_during_a_session(pytestconfig):
     """The autouse fixture has patched urlopen; without this the rest is theory."""
+    if pytestconfig.getoption("--without-cache"):
+        pytest.skip("retry_transient_network is disabled by --without-cache")
+
     import urllib.request
 
     assert urllib.request.urlopen.__name__ == "wrapped", (
@@ -94,12 +97,16 @@ def test_retry_is_actually_installed_during_a_session():
     )
 
 
-def test_requests_sessions_get_a_retrying_adapter():
+def test_requests_sessions_get_a_retrying_adapter(pytestconfig):
     """New requests Sessions carry retries and remain cached."""
+    if pytestconfig.getoption("--without-cache"):
+        pytest.skip("retry_transient_network is disabled by --without-cache")
+
     import requests
 
     session = requests.Session()
-    assert session.get_adapter("https://example.invalid").max_retries.total == NETWORK_RETRY_ATTEMPTS
+    # Retry.total counts retries, so a total of N-1 means N attempts.
+    assert session.get_adapter("https://example.invalid").max_retries.total == NETWORK_RETRY_ATTEMPTS - 1
     assert hasattr(session, "cache"), "requests_cache should still be installed"
 
 

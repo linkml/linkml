@@ -427,7 +427,9 @@ def retry_transient_network(pytestconfig):
         original_session_init(self, *args, **kwargs)
         adapter = HTTPAdapter(
             max_retries=Retry(
-                total=NETWORK_RETRY_ATTEMPTS,
+                # Retry.total counts retries, not attempts, so subtract one to
+                # make both paths try the same number of times.
+                total=NETWORK_RETRY_ATTEMPTS - 1,
                 backoff_factor=NETWORK_RETRY_BACKOFF_SECONDS,
                 status_forcelist=sorted(TRANSIENT_HTTP_STATUS),
                 allowed_methods=None,
