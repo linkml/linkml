@@ -707,6 +707,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">consolidate_cardinality_axioms</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">sv</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">()</span>  <span class="c1"># populate schema_map with all imported sub-schemas</span>
+        <span class="n">sv</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">cache_clear</span><span class="p">()</span>  <span class="c1"># ensure namespace cache is rebuilt with the full schema_map</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span>
         <span class="n">owl_id</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">id</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology_uri_suffix</span><span class="p">:</span>
