@@ -1,8 +1,12 @@
 import difflib
+import http.client
 import os
 import re
 import shutil
 import sys
+import time
+import urllib.error
+import urllib.request
 import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable
@@ -12,7 +16,10 @@ from pathlib import Path
 
 import docker
 import pytest
+import requests
 import requests_cache
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 import tests
 from linkml.utils.deprecation import EMITTED
@@ -352,6 +359,90 @@ def pytest_runtest_setup(item):
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+NETWORK_RETRY_ATTEMPTS = 3
+NETWORK_RETRY_BACKOFF_SECONDS = 2
+
+TRANSIENT_HTTP_STATUS = frozenset({429, 500, 502, 503, 504})
+"""Server-side statuses that mean "try again", not "this resource is wrong"."""
+
+
+def _is_transient(exc: BaseException) -> bool:
+    """Return True if ``exc`` looks like a transient network failure.
+
+    Deliberately narrow. A 404 or a bad URL is a real failure and must keep
+    failing; only server-side and connection-level errors are retried, so a
+    genuinely broken upstream still surfaces rather than being papered over.
+    """
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in TRANSIENT_HTTP_STATUS
+    return isinstance(exc, urllib.error.URLError | http.client.HTTPException | ConnectionError | TimeoutError)
+
+
+def with_urlopen_retry(inner: Callable) -> Callable:
+    """Wrap a ``urlopen``-like callable so transient failures are retried.
+
+    Non-transient failures propagate on the first attempt, so a genuinely
+    broken upstream still fails rather than being retried into silence.
+    """
+
+    def wrapped(*args, **kwargs):
+        for attempt in range(1, NETWORK_RETRY_ATTEMPTS + 1):
+            try:
+                return inner(*args, **kwargs)
+            except Exception as exc:
+                if attempt == NETWORK_RETRY_ATTEMPTS or not _is_transient(exc):
+                    raise
+                time.sleep(NETWORK_RETRY_BACKOFF_SECONDS * attempt)
+
+    return wrapped
+
+
+@pytest.fixture(scope="session", autouse=True)
+def retry_transient_network(pytestconfig):
+    """Retry transient network failures raised through ``urllib``.
+
+    ``requests_cache`` below only patches ``requests``. Several dependencies --
+    ``hbreader`` when reading schemas, and ``rdflib.parser`` -- fetch via
+    ``urllib.request.urlopen`` instead, so they bypass the cache entirely and a
+    momentary 503 or dropped connection fails an unrelated test.
+
+    Retrying rather than caching is deliberate: a cache would also hide genuine
+    upstream breakage, which these tests exist to notice.
+    """
+    if pytestconfig.getoption("--without-cache"):
+        yield
+        return
+
+    original_urlopen = urllib.request.urlopen
+
+    # requests-based fetches (prefixcommons resolving default_curi_maps, for one)
+    # go through requests_cache below, but it is cleared at session start, so the
+    # first fetch of each URL in a run is still live. Mount a retrying adapter on
+    # every new Session; this composes with requests_cache, which subclasses Session.
+    original_session_init = requests.sessions.Session.__init__
+
+    def session_init_with_retry(self, *args, **kwargs):
+        original_session_init(self, *args, **kwargs)
+        adapter = HTTPAdapter(
+            max_retries=Retry(
+                total=NETWORK_RETRY_ATTEMPTS,
+                backoff_factor=NETWORK_RETRY_BACKOFF_SECONDS,
+                status_forcelist=sorted(TRANSIENT_HTTP_STATUS),
+                allowed_methods=None,
+            )
+        )
+        self.mount("http://", adapter)
+        self.mount("https://", adapter)
+
+    urllib.request.urlopen = with_urlopen_retry(original_urlopen)
+    requests.sessions.Session.__init__ = session_init_with_retry
+    try:
+        yield
+    finally:
+        urllib.request.urlopen = original_urlopen
+        requests.sessions.Session.__init__ = original_session_init
 
 
 @pytest.fixture(scope="session", autouse=True)
