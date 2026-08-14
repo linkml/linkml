@@ -1,14 +1,16 @@
+import json
 import os
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import ClassVar, Optional, TextIO, Union
 
 import pytest
 from hbreader import FileInfo
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from tests.linkml_runtime.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
+from tests.linkml_runtime.test_loaders_dumpers import INPUT_DIR, LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
 from tests.linkml_runtime.test_loaders_dumpers.environment import env
 from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.linkml_runtime.test_loaders_dumpers.models.termci_schema import Package
@@ -67,11 +69,11 @@ def test_yaml_load_to_dict():
     assert "system" in data
 
 
-@pytest.mark.skip(reason="This test will not work until https://github.com/digitalbazaar/pyld/issues/149 is fixed")
+@pytest.mark.integration
 def test_rdf_loader(context_server):
     """Load obo_sample.ttl and obo_sample.jsonld, emit yaml and check the results"""
     if context_server == LD_11_DIR:
-        pytest.skip("*****> Loading skipped until JSON-LD processor can handle non-http files")
+        pytest.skip("local context server required - start docker server per jsonld_context/README.md")
 
     contexts = os.path.join(context_server, "termci_schema_inlined.context.jsonld")
     fmt = "turtle"
@@ -103,3 +105,220 @@ def test_rdf_loader(context_server):
     loader_test("obo_sample.ttl", Package, RDFLoaderWrapper())
     fmt = "json-ld"
     loader_test("obo_sample.jsonld", Package, RDFLoaderWrapper())
+
+
+def test_rdf_loader_jsonld_single_node():
+    """A JSON-LD document that is a single top-level node is loaded as before."""
+    source = json.dumps(
+        {
+            "@type": "https://hotecosystem.org/termci/Package",
+            "system": {"http://example.org/ns1": {"namespace": "http://example.org/ns1", "prefix": "ex"}},
+        }
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [cs.namespace for cs in result.system] == ["http://example.org/ns1"]
+
+
+def test_rdf_loader_jsonld_graph_array_picks_matching_type():
+    """rdflib's json-ld serialization produces a flat array of nodes (a graph). The loader must
+    find the node whose @type matches target_class rather than blindly taking the whole array."""
+    source = json.dumps(
+        [
+            {
+                "@id": "_:b0",
+                "@type": "https://hotecosystem.org/termci/ConceptSystem",
+                "system": {"http://example.org/wrong": {"namespace": "http://example.org/wrong", "prefix": "wrong"}},
+            },
+            {
+                "@id": "_:b1",
+                "@type": "https://hotecosystem.org/termci/Package",
+                "system": {"http://example.org/right": {"namespace": "http://example.org/right", "prefix": "right"}},
+            },
+        ]
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [cs.namespace for cs in result.system] == ["http://example.org/right"]
+
+
+def test_rdf_loader_jsonld_graph_array_matches_type_list():
+    """A node's @type may itself be a list of URIs (multiple rdf:type values); a match anywhere
+    in that list should be picked."""
+    source = json.dumps(
+        [
+            {
+                "@id": "_:b0",
+                "@type": [
+                    "http://www.w3.org/ns/prov#Entity",
+                    "https://hotecosystem.org/termci/Package",
+                ],
+                "system": {"http://example.org/right": {"namespace": "http://example.org/right", "prefix": "right"}},
+            }
+        ]
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [cs.namespace for cs in result.system] == ["http://example.org/right"]
+
+
+def test_rdf_loader_jsonld_graph_array_no_match_falls_back_to_first_node():
+    """If no node's @type matches target_class, fall back to the first dict node in the graph
+    rather than dropping the data entirely."""
+    source = json.dumps(
+        [
+            {
+                "@id": "_:b0",
+                "@type": "https://hotecosystem.org/termci/Something",
+                "system": {"http://example.org/only": {"namespace": "http://example.org/only", "prefix": "only"}},
+            },
+            {"@id": "_:b1", "@type": "https://hotecosystem.org/termci/SomethingElse"},
+        ]
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [cs.namespace for cs in result.system] == ["http://example.org/only"]
+
+
+def test_rdf_loader_jsonld_empty_graph_array_returns_none():
+    """An empty graph array has no node to load and should yield no result rather than erroring."""
+    result = RDFLoader().load("[]  ", Package, fmt="json-ld")
+    assert result is None
+
+
+def test_rdf_loader_jsonld_non_dict_non_list_returns_none():
+    """A JSON-LD payload that is neither an object nor an array (e.g. a bare scalar) has no
+    node data to load."""
+    result = RDFLoader().load(json.dumps("not a node"), Package, fmt="json-ld")
+    assert result is None
+
+
+def test_rdf_loader_jsonld_graph_array_matches_pydantic_basemodel_class_uri():
+    """Pydantic BaseModel targets expose class identity via linkml_meta['class_uri'] rather than
+    the class_class_uri/class_name attributes that only exist on generated YAMLRoot dataclasses.
+    The graph-array matcher must use that too, and must not crash on this class shape."""
+
+    class PydanticPackage(BaseModel):
+        linkml_meta: ClassVar[dict] = {"class_uri": "https://hotecosystem.org/termci/Package"}
+        marker: str = ""
+
+    source = json.dumps(
+        [
+            {"@id": "_:b0", "@type": "https://hotecosystem.org/termci/Other", "marker": "wrong"},
+            {"@id": "_:b1", "@type": "https://hotecosystem.org/termci/Package", "marker": "right"},
+        ]
+    )
+    result = RDFLoader().load(source, PydanticPackage, fmt="json-ld")
+    assert isinstance(result, PydanticPackage)
+    assert result.marker == "right"
+
+
+def test_rdf_loader_jsonld_graph_array_null_type_does_not_crash():
+    """A node with an explicit `@type: null` must not blow up the graph-array matcher, which
+    should treat it as untyped rather than raising."""
+    source = json.dumps(
+        [
+            {"@id": "_:b0", "@type": None, "system": {}},
+            {
+                "@id": "_:b1",
+                "@type": "https://hotecosystem.org/termci/Package",
+                "system": {"http://example.org/ns1": {"namespace": "http://example.org/ns1", "prefix": "ex"}},
+            },
+        ]
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [cs.namespace for cs in result.system] == ["http://example.org/ns1"]
+
+
+def test_rdf_loader_jsonld_graph_array_frames_with_context():
+    """When `contexts` is supplied, the graph-array node is selected via real JSON-LD framing
+    (pyld) against the local obo_sample.ttl/termci_schema_inlined.context.jsonld fixtures used
+    by the (docker-server-gated) test_rdf_loader integration test above. Framing both picks the
+    right node and compacts its properties per the context - e.g. turning
+    "http://www.w3.org/ns/shacl#prefix" into "prefix" - which the naive @type-matching fallback
+    cannot do, since it has no context to compact field names with. Context content is resolved
+    from the local file directly, so this doesn't need the docker context server."""
+    ttl_path = Path(INPUT_DIR) / "obo_sample.ttl"
+    context_path = Path(LD_11_DIR) / "termci_schema_inlined.context.jsonld"
+
+    result = RDFLoader().load(str(ttl_path), Package, contexts=str(context_path), fmt="turtle")
+
+    assert isinstance(result, Package)
+    assert len(result.system) == 1
+    system = result.system[0]
+    assert system.namespace == "http://purl.obolibrary.org/obo/"
+    assert system.prefix == "OBO"
+    assert {c.code for c in system.contents} == {"C147557", "C147796"}
+
+
+def test_rdf_loader_jsonld_curie_type_is_not_a_mismatch(capsys):
+    """Framing compacts @type against the context, so the type often comes back as a CURIE
+    ("termci:Package") rather than a full URI. That is the same class, not a mismatch."""
+    source = json.dumps(
+        {
+            "@type": "termci:Package",
+            "system": {"http://example.org/ns1": {"namespace": "http://example.org/ns1", "prefix": "ex"}},
+        }
+    )
+    result = RDFLoader().load(source, Package, fmt="json-ld")
+    assert [cs.namespace for cs in result.system] == ["http://example.org/ns1"]
+    assert "mismatch" not in capsys.readouterr().out
+
+
+def test_rdf_loader_frames_with_dict_context():
+    """`contexts` accepts an already-parsed dict/JsonObj, not just a filename or URL. Such a
+    context must reach pyld as a plain dict, since pyld inspects it with isinstance(..., dict)."""
+    source = json.dumps(
+        [
+            {
+                "@id": "_:b0",
+                "@type": ["https://hotecosystem.org/termci/Package"],
+                "https://hotecosystem.org/termci/system": [{"@id": "http://example.org/s"}],
+            },
+            {"@id": "http://example.org/s", "http://www.w3.org/ns/shacl#prefix": [{"@value": "EX"}]},
+        ]
+    )
+    contexts = {
+        "@context": {
+            "termci": "https://hotecosystem.org/termci/",
+            "sh": "http://www.w3.org/ns/shacl#",
+            "system": {
+                "@id": "termci:system",
+                "@type": "@id",
+                "@context": {"namespace": "@id", "prefix": {"@id": "sh:prefix"}},
+            },
+        }
+    }
+    result = RDFLoader().load(source, Package, contexts=contexts, fmt="json-ld")
+    assert isinstance(result, Package)
+    assert [(cs.namespace, cs.prefix) for cs in result.system] == [("http://example.org/s", "EX")]
+
+
+def test_rdf_loader_relative_context_resolves_against_base_dir():
+    """A relative `contexts` location is anchored on the caller's base_dir. Reading the source
+    rewrites metadata.base_path to the source's own directory, which must not be used here."""
+    result = RDFLoader().load(
+        str(Path(INPUT_DIR) / "obo_sample.ttl"),
+        Package,
+        base_dir=LD_11_DIR,
+        contexts="termci_schema_inlined.context.jsonld",
+        fmt="turtle",
+    )
+    assert isinstance(result, Package)
+    assert result.system[0].prefix == "OBO"
+
+
+def test_rdf_loader_context_not_resolved_when_framing_unused():
+    """Framing only applies to a graph array, so a single-node document must load without
+    touching `contexts` at all - an unreachable context is not an error if it is never needed."""
+    source = json.dumps({"@type": "https://hotecosystem.org/termci/Package", "system": {}})
+    assert RDFLoader().load(source, Package, contexts="/nonexistent/ctx.jsonld", fmt="json-ld") is None
+
+
+def test_rdf_loader_jsonld_no_spurious_type_mismatch_warning(capsys):
+    """A correctly-typed load should not print an 'input type mismatch' warning just because
+    @type carries a full URI rather than the bare class name."""
+    source = json.dumps({"@type": "https://hotecosystem.org/termci/Package", "system": {}})
+    RDFLoader().load(source, Package, fmt="json-ld")
+    assert "mismatch" not in capsys.readouterr().out
