@@ -425,6 +425,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">linkml_files</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AnonymousSlotExpression</span><span class="p">,</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">ClassDefinitionName</span><span class="p">,</span>
     <span class="n">DefinitionName</span><span class="p">,</span>
@@ -754,23 +755,37 @@
         <span class="k">def</span><span class="w"> </span><span class="nf">add_enum_ref</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">rval</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
+        <span class="k">def</span><span class="w"> </span><span class="nf">add_one_range</span><span class="p">(</span><span class="n">range_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inlined</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">range_name</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+                <span class="n">add_type_ref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">range_name</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+                <span class="n">add_enum_ref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">range_name</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">range_name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                        <span class="n">identifier_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">identifier_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+                            <span class="n">add_type_ref</span><span class="p">(</span><span class="n">TypeDefinition</span><span class="p">(</span><span class="n">identifier_range</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rval</span><span class="o">.</span><span class="n">add_entry</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">,</span> <span class="n">identifier_range</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">inlined</span><span class="p">:</span>
+                        <span class="n">rval</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
         <span class="k">def</span><span class="w"> </span><span class="nf">add_slot_range</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-                    <span class="n">add_type_ref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">])</span>
-                <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
-                    <span class="n">add_enum_ref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-                            <span class="n">identifier_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="k">if</span> <span class="n">identifier_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-                                <span class="n">add_type_ref</span><span class="p">(</span><span class="n">TypeDefinition</span><span class="p">(</span><span class="n">identifier_range</span><span class="p">))</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">rval</span><span class="o">.</span><span class="n">add_entry</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">,</span> <span class="n">identifier_range</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">:</span>
-                            <span class="n">rval</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="n">add_one_range</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">))</span>
+            <span class="c1"># any_of/exactly_one_of branches can each declare their own range (e.g. a</span>
+            <span class="c1"># boolean branch needing `Bool` from linkml_runtime.utils.metamodelcore),</span>
+            <span class="c1"># which the bare `slot.range` check above never sees. Each branch&#39;s own</span>
+            <span class="c1"># inlined status is resolved via the same priority rules as the</span>
+            <span class="c1"># postinit/annotation codegen (_resolve_branch_inlined), so the two</span>
+            <span class="c1"># can&#39;t end up importing a class that the generated code never</span>
+            <span class="c1"># actually references (or vice versa).</span>
+            <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">):</span>
+                <span class="n">branch_range</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">range</span> <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">range</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+                <span class="n">add_one_range</span><span class="p">(</span><span class="n">branch_range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_branch_inlined</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">branch_range</span><span class="p">))</span>
 
         <span class="n">rval</span> <span class="o">=</span> <span class="n">ImportList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -1164,6 +1179,78 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Optional[</span><span class="si">{</span><span class="n">range_type</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_boolean_combinator_branch_slots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AnonymousSlotExpression</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expand `any_of`/`exactly_one_of` branches into synthetic single-range slots.</span>
+
+<span class="sd">        For a single-valued slot with a non-empty `branches` list (`slot.any_of` or</span>
+<span class="sd">        `slot.exactly_one_of`), return one synthetic SlotDefinition per branch: a</span>
+<span class="sd">        shallow copy of `slot` with `.range` replaced by the branch&#39;s own range (or</span>
+<span class="sd">        the parent&#39;s range if a branch omits one) and `.any_of`/`.exactly_one_of`</span>
+<span class="sd">        cleared, so it can be fed back into `class_reference_type`/`gen_postinit`</span>
+<span class="sd">        without infinite recursion.</span>
+
+<span class="sd">        Returns None (falling back to today&#39;s single-range behavior) if the slot is</span>
+<span class="sd">        multivalued (multivalued any_of/exactly_one_of is a separate, larger</span>
+<span class="sd">        undertaking), `branches` is empty, or a branch&#39;s range can&#39;t be resolved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">branches</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">branch_slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
+            <span class="n">branch_range</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">range</span> <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">range</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">branch_range</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">bslot</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+            <span class="n">bslot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">branch_range</span>
+            <span class="n">bslot</span><span class="o">.</span><span class="n">any_of</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bslot</span><span class="o">.</span><span class="n">exactly_one_of</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bslot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_branch_inlined</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">branch_range</span><span class="p">)</span>
+            <span class="n">branch_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bslot</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">branch_slots</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_branch_inlined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch</span><span class="p">:</span> <span class="n">AnonymousSlotExpression</span><span class="p">,</span> <span class="n">branch_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether an any_of/exactly_one_of branch&#39;s class range should be treated as</span>
+<span class="sd">        inlined (embedded) rather than referenced by identifier.</span>
+
+<span class="sd">        Deliberately does NOT just inherit the container slot&#39;s own `.inlined`.</span>
+<span class="sd">        SchemaLoader.resolve() auto-forces a slot&#39;s `.inlined` to True whenever its</span>
+<span class="sd">        OWN declared range (e.g. an abstract `Any`/`Anything` placeholder class used</span>
+<span class="sd">        to hold the any_of/exactly_one_of union) has no identifier slot --</span>
+<span class="sd">        regardless of whether the schema author ever asked for embedding. That</span>
+<span class="sd">        forced value says nothing about whether THIS branch&#39;s concrete class should</span>
+<span class="sd">        be embedded or referenced by identifier, so blindly copying it would wrongly</span>
+<span class="sd">        force every identifier-bearing branch (e.g. a class meant to be referenced</span>
+<span class="sd">        by ID, matching a bare string value) into dict-embedding coercion instead.</span>
+
+<span class="sd">        Priority, mirroring the analogous jsonschemagen fix in PR #3688:</span>
+<span class="sd">        1. the branch&#39;s own explicit `inlined` (e.g. `any_of: [{range: X,</span>
+<span class="sd">           inlined: true}, ...]`), if the schema author set one directly;</span>
+<span class="sd">        2. otherwise, a class range with no identifier slot at all MUST be</span>
+<span class="sd">           inlined, since there is no identifier to reference it by;</span>
+<span class="sd">        3. otherwise, default to not-inlined (reference by identifier).</span>
+
+<span class="sd">        This is the single source of truth for the decision, shared by</span>
+<span class="sd">        `_boolean_combinator_branch_slots` (annotation/coercion codegen) and</span>
+<span class="sd">        `gen_import_list` (import collection), so the two can&#39;t disagree about</span>
+<span class="sd">        whether a given branch&#39;s class needs to be imported for embedding.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">branch</span><span class="o">.</span><span class="n">inlined</span>
+        <span class="k">return</span> <span class="n">branch_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="n">branch_range</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flatten_boolean_combinator_range</span><span class="p">(</span><span class="n">range_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten a `Union[A, B]`-shaped string (as produced by class_identifier_path</span>
+<span class="sd">        for a non-inlined-by-default range) into its component type names, so that</span>
+<span class="sd">        joining multiple branches doesn&#39;t nest as `Union[Union[dict, D], int]`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">range_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Union[&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">range_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">range_str</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Union[&quot;</span><span class="p">)</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">range_str</span><span class="p">]</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">class_reference_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the type of slot referencing a class</span>
@@ -1172,6 +1259,24 @@
 <span class="sd">        :param cls: owning class.  Used for generating key references</span>
 <span class="sd">        :return: Python class reference type, most proximal type, most proximal type name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+            <span class="n">branch_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boolean_combinator_branch_slots</span><span class="p">(</span>
+                <span class="n">slot</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">branch_slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">branch_results</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">class_reference_type</span><span class="p">(</span><span class="n">bslot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span> <span class="k">for</span> <span class="n">bslot</span> <span class="ow">in</span> <span class="n">branch_slots</span><span class="p">]</span>
+                <span class="n">flat</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">range_str</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">branch_results</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten_boolean_combinator_range</span><span class="p">(</span><span class="n">range_str</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">part</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">flat</span><span class="p">:</span>
+                            <span class="n">flat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+                <span class="n">combined</span> <span class="o">=</span> <span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+                <span class="c1"># prox_type/prox_type_name aren&#39;t well-defined for a multi-branch</span>
+                <span class="c1"># union; gen_postinit resolves per-branch names itself (it never</span>
+                <span class="c1"># consumes these for any_of/exactly_one_of slots), so return the</span>
+                <span class="c1"># first branch&#39;s values defensively for any other caller.</span>
+                <span class="k">return</span> <span class="n">combined</span><span class="p">,</span> <span class="n">branch_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">branch_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
         <span class="n">rangelist</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_range_path</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="p">)</span>
@@ -1344,6 +1449,125 @@
             <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rlines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rlines</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_boolean_combinator_coercion_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bslot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">bname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mirrors the per-range classification in gen_postinit&#39;s single-range coercion</span>
+<span class="sd">        (empty-class / identifier-or-type-or-enum / embedded-dict) for ONE any_of or</span>
+<span class="sd">        exactly_one_of branch, producing a constructor expression that coerces a</span>
+<span class="sd">        local variable named `value` into `bname`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">branch_range</span> <span class="o">=</span> <span class="n">bslot</span><span class="o">.</span><span class="n">range</span>
+        <span class="k">if</span> <span class="n">branch_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">branch_range</span><span class="p">]</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bname</span><span class="si">}</span><span class="s2">()&quot;</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="n">branch_range</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bslot</span><span class="o">.</span><span class="n">inlined</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">branch_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
+            <span class="ow">or</span> <span class="n">branch_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bname</span><span class="si">}</span><span class="s2">(value)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bname</span><span class="si">}</span><span class="s2">(**as_dict(value))&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_gen_boolean_combinator_postinit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+        <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span>
+        <span class="n">branch_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">],</span>
+        <span class="n">require_exactly_one</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the __post_init__ coercion block for a single-valued slot ranged</span>
+<span class="sd">        over `any_of` (require_exactly_one=False) or `exactly_one_of`</span>
+<span class="sd">        (require_exactly_one=True).</span>
+
+<span class="sd">        any_of: candidates are tried in declared order; the first one that can be</span>
+<span class="sd">        constructed from the raw value wins. This is a deliberate, documented</span>
+<span class="sd">        tie-break for genuinely ambiguous data (e.g. a dict that structurally</span>
+<span class="sd">        satisfies more than one candidate&#39;s required fields) -- not an attempt to</span>
+<span class="sd">        guess the &quot;best&quot; match.</span>
+
+<span class="sd">        exactly_one_of: every candidate must be tried (no early exit), since</span>
+<span class="sd">        detecting a violation (0 or 2+ matches) requires knowing how many candidates</span>
+<span class="sd">        actually succeed, not just whether one did.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">rlines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;if self._is_empty(self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">self.MissingRequiredField(&quot;</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1">&quot;)&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Resolve each branch&#39;s runtime (unquoted) type name via the same single-range</span>
+        <span class="c1"># call class_reference_type already makes for a plain slot, then de-dup by that</span>
+        <span class="c1"># name, preserving declared order -- this *is* the tie-break. Branches without</span>
+        <span class="c1"># their own `range` (e.g. constraint-only exactly_one_of options) can resolve to</span>
+        <span class="c1"># the same runtime type; deduping the lambdas themselves (not just the isinstance</span>
+        <span class="c1"># guard/label) keeps exactly_one_of from treating two identical candidates as two</span>
+        <span class="c1"># independent matches.</span>
+        <span class="n">branch_names</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">class_reference_type</span><span class="p">(</span><span class="n">bslot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">bslot</span> <span class="ow">in</span> <span class="n">branch_slots</span><span class="p">]</span>
+        <span class="n">seen_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">dedup_branch_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dedup_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bslot</span><span class="p">,</span> <span class="n">bname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">branch_slots</span><span class="p">,</span> <span class="n">branch_names</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">bname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_names</span><span class="p">:</span>
+                <span class="n">seen_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bname</span><span class="p">)</span>
+                <span class="n">dedup_branch_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bslot</span><span class="p">)</span>
+                <span class="n">dedup_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bname</span><span class="p">)</span>
+        <span class="n">tuple_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dedup_names</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dedup_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">union_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dedup_names</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dedup_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">dedup_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">guard</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;if not isinstance(self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">, (</span><span class="si">{</span><span class="n">tuple_str</span><span class="si">}</span><span class="s2">)):&quot;</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;if self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> is not None and not isinstance(self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">, (</span><span class="si">{</span><span class="n">tuple_str</span><span class="si">}</span><span class="s2">)):&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lambdas</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;lambda: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_boolean_combinator_coercion_expr</span><span class="p">(</span><span class="n">bslot</span><span class="p">,</span><span class="w"> </span><span class="n">bname</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">bslot</span><span class="p">,</span> <span class="n">bname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dedup_branch_slots</span><span class="p">,</span> <span class="n">dedup_names</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dedup_branch_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># A single-element parenthesized expression is not a tuple in Python --</span>
+            <span class="c1"># `(lambda: ...)` is just the lambda itself, not a 1-tuple containing it --</span>
+            <span class="c1"># so `for _coerce in (...)` would try to iterate the function object.</span>
+            <span class="n">lambdas</span> <span class="o">+=</span> <span class="s2">&quot;,&quot;</span>
+
+        <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">guard</span><span class="p">)</span>
+        <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">value = self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">require_exactly_one</span><span class="p">:</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">for _coerce in (</span><span class="si">{</span><span class="n">lambdas</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">try:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = _coerce()&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">break&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">except (ValueError, TypeError):&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">continue&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">else:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">raise ValueError(f&quot;None of the candidate types </span><span class="si">{</span><span class="n">union_label</span><span class="si">}</span><span class="s1"> could be constructed &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;from </span><span class="se">{{</span><span class="s1">value!r</span><span class="se">}}</span><span class="s1"> for slot </span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1">&quot;)&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">_matches = []&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">for _coerce in (</span><span class="si">{</span><span class="n">lambdas</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">try:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">_matches.append(_coerce())&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">except (ValueError, TypeError):&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">continue&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">if len(_matches) == 1:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = _matches[0]&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">elif len(_matches) == 0:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">raise ValueError(f&quot;None of the candidate types </span><span class="si">{</span><span class="n">union_label</span><span class="si">}</span><span class="s1"> could be constructed &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;from </span><span class="se">{{</span><span class="s1">value!r</span><span class="se">}}</span><span class="s1"> for slot </span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1">&quot;)&#39;</span>
+            <span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">else:&quot;</span><span class="p">)</span>
+            <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">raise ValueError(f&quot;Value </span><span class="se">{{</span><span class="s1">value!r</span><span class="se">}}</span><span class="s1"> for slot </span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1"> ambiguously matches &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2">len(_matches)</span><span class="se">}}</span><span class="s2"> candidate types in exactly_one_of (expected exactly 1): &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">[type(_m).__name__ for _m in _matches]</span><span class="se">}}</span><span class="s1">&quot;)&#39;</span>
+            <span class="p">)</span>
+        <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\t\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rlines</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_postinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python post init rules for slot in class&quot;&quot;&quot;</span>
         <span class="n">rlines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1356,6 +1580,21 @@
             <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = sfx(str(self.id))&quot;</span><span class="p">)</span>
             <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\t\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rlines</span><span class="p">)</span>
+
+        <span class="c1"># any_of/exactly_one_of range unions: this must be checked before the</span>
+        <span class="c1"># is_class_unconstrained short-circuit below, since a slot like</span>
+        <span class="c1"># `range: Any, any_of: [ClassA, ClassB]` (range Any&#39;s class_uri is</span>
+        <span class="c1"># linkml:Any) would otherwise be treated as unconstrained and get zero</span>
+        <span class="c1"># coercion at all -- exactly the pattern that needs this fix the most.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
+                <span class="n">branch_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boolean_combinator_branch_slots</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">branch_slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_boolean_combinator_postinit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">branch_slots</span><span class="p">,</span> <span class="n">require_exactly_one</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">:</span>
+                <span class="n">branch_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boolean_combinator_branch_slots</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">branch_slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_boolean_combinator_postinit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">branch_slots</span><span class="p">,</span> <span class="n">require_exactly_one</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]):</span>
