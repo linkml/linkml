@@ -600,6 +600,151 @@ def test_multivalued_slot_exact_cardinality(input_path):
     ) in g
 
 
+def test_zero_maximum_cardinality_emits_maxcount(input_path):
+    """Test that maximum_cardinality: 0 correctly emits sh:maxCount 0.
+
+    Regression test for the bug where Python truthiness check
+    `if s.maximum_cardinality:` would skip the value 0 (falsy),
+    failing to emit sh:maxCount 0 in the generated SHACL shape.
+    The fix uses `if s.maximum_cardinality is not None:` instead.
+
+    This is the primary mechanism for suppressing inherited slots on
+    subclasses via slot_usage (e.g., OWL maxCardinality 0 pattern).
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the ChildWithZeroMaxCard shape
+    child_uri = URIRef("https://w3id.org/linkml/examples/cardinality/ChildWithZeroMaxCard")
+    restricted_slot_uri = URIRef("https://w3id.org/linkml/examples/cardinality/restricted_slot")
+
+    # Get all property shapes for the child class
+    prop_nodes = list(g.objects(child_uri, SH.property))
+    assert prop_nodes, "ChildWithZeroMaxCard should have property shapes"
+
+    # Find the property shape for restricted_slot
+    restricted_prop_node = None
+    for pn in prop_nodes:
+        if (pn, SH.path, restricted_slot_uri) in g:
+            restricted_prop_node = pn
+            break
+    assert restricted_prop_node is not None, "Should have a property shape for restricted_slot"
+
+    # The critical assertion: sh:maxCount 0 must be emitted
+    max_count_values = list(g.objects(restricted_prop_node, SH.maxCount))
+    assert len(max_count_values) == 1, f"Expected exactly one sh:maxCount, got {max_count_values}"
+    assert max_count_values[0] == rdflib.term.Literal(
+        0, datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")
+    ), f"sh:maxCount should be 0, got {max_count_values[0]}"
+
+
+def test_zero_exact_cardinality_emits_both_counts(input_path):
+    """Test that exact_cardinality: 0 emits both sh:minCount 0 and sh:maxCount 0.
+
+    Same truthiness bug as maximum_cardinality: `if s.exact_cardinality:`
+    skips value 0 (falsy). The fix uses `is not None` instead.
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    child_uri = URIRef("https://w3id.org/linkml/examples/cardinality/ChildWithZeroExactCard")
+    restricted_slot_uri = URIRef("https://w3id.org/linkml/examples/cardinality/restricted_slot")
+
+    prop_nodes = list(g.objects(child_uri, SH.property))
+    assert prop_nodes, "ChildWithZeroExactCard should have property shapes"
+
+    restricted_prop_node = None
+    for pn in prop_nodes:
+        if (pn, SH.path, restricted_slot_uri) in g:
+            restricted_prop_node = pn
+            break
+    assert restricted_prop_node is not None, "Should have a property shape for restricted_slot"
+
+    XSD_INT = rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")
+
+    min_count_values = list(g.objects(restricted_prop_node, SH.minCount))
+    assert len(min_count_values) == 1, f"Expected exactly one sh:minCount, got {min_count_values}"
+    assert min_count_values[0] == rdflib.term.Literal(0, datatype=XSD_INT)
+
+    max_count_values = list(g.objects(restricted_prop_node, SH.maxCount))
+    assert len(max_count_values) == 1, f"Expected exactly one sh:maxCount, got {max_count_values}"
+    assert max_count_values[0] == rdflib.term.Literal(0, datatype=XSD_INT)
+
+
+def test_zero_minimum_cardinality_emits_mincount(input_path):
+    """Test that minimum_cardinality: 0 emits sh:minCount 0.
+
+    Same truthiness bug as maximum_cardinality: `if s.minimum_cardinality:`
+    skips value 0 (falsy). The fix uses `is not None` instead. sh:minCount 0
+    is vacuously satisfied (W3C SHACL 4.2.2) but is emitted for consistency
+    with owlgen (owl:minCardinality 0) and to faithfully reflect the schema.
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    child_uri = URIRef("https://w3id.org/linkml/examples/cardinality/ChildWithZeroMinCard")
+    restricted_slot_uri = URIRef("https://w3id.org/linkml/examples/cardinality/restricted_slot")
+
+    prop_nodes = list(g.objects(child_uri, SH.property))
+    assert prop_nodes, "ChildWithZeroMinCard should have property shapes"
+
+    restricted_prop_node = None
+    for pn in prop_nodes:
+        if (pn, SH.path, restricted_slot_uri) in g:
+            restricted_prop_node = pn
+            break
+    assert restricted_prop_node is not None, "Should have a property shape for restricted_slot"
+
+    XSD_INT = rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")
+
+    min_count_values = list(g.objects(restricted_prop_node, SH.minCount))
+    assert len(min_count_values) == 1, f"Expected exactly one sh:minCount, got {min_count_values}"
+    assert min_count_values[0] == rdflib.term.Literal(0, datatype=XSD_INT)
+
+
+def test_explicit_minimum_cardinality_overrides_required(input_path):
+    """An explicit minimum_cardinality: 0 takes precedence over required: true.
+
+    The generator resolves min-count with an ``elif`` cascade in which an
+    explicit ``minimum_cardinality`` wins and ``required`` is only the fallback.
+    This mirrors owlgen.py (``if slot.minimum_cardinality is not None ... elif
+    slot.required``), so ``required: true`` + ``minimum_cardinality: 0`` yields
+    ``sh:minCount 0`` (not 1). The combination is a schema contradiction; the
+    explicit, more specific constraint is emitted.
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    child_uri = URIRef("https://w3id.org/linkml/examples/cardinality/ChildWithRequiredAndZeroMinCard")
+    restricted_slot_uri = URIRef("https://w3id.org/linkml/examples/cardinality/restricted_slot")
+
+    prop_nodes = list(g.objects(child_uri, SH.property))
+    assert prop_nodes, "ChildWithRequiredAndZeroMinCard should have property shapes"
+
+    restricted_prop_node = None
+    for pn in prop_nodes:
+        if (pn, SH.path, restricted_slot_uri) in g:
+            restricted_prop_node = pn
+            break
+    assert restricted_prop_node is not None, "Should have a property shape for restricted_slot"
+
+    XSD_INT = rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer")
+
+    min_count_values = list(g.objects(restricted_prop_node, SH.minCount))
+    assert len(min_count_values) == 1, f"Expected exactly one sh:minCount, got {min_count_values}"
+    assert min_count_values[0] == rdflib.term.Literal(0, datatype=XSD_INT), (
+        f"explicit minimum_cardinality: 0 should override required: true (minCount 0, not 1), got {min_count_values[0]}"
+    )
+
+
 def test_exclude_imports(input_path):
     shacl = ShaclGenerator(
         input_path("shaclgen/exclude_imports.yaml"), mergeimports=True, exclude_imports=True
