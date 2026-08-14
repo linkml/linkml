@@ -1,0 +1,24 @@
+# OpenAPI template provided as template that is fully fixed
+# because there are no fields to be replaced
+openapi: 3.0.3
+info:
+  title: LinkML tests
+  version: 1.0.0
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/endpoint1:
+    post:
+      security:
+        - PayloadSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Success
