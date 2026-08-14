@@ -300,6 +300,8 @@ class OwlSchemaGenerator(Generator):
             self.consolidate_cardinality_axioms = False
 
         sv = self.schemaview
+        sv.imports_closure()  # populate schema_map with all imported sub-schemas
+        sv.namespaces.cache_clear()  # ensure namespace cache is rebuilt with the full schema_map
         schema = sv.schema
         owl_id = schema.id
         if self.ontology_uri_suffix:
