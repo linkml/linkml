@@ -20,9 +20,10 @@ updates:
 
   - package-ecosystem: "uv"
     directory: "/"
+    # Daily refills the three open slots as they drain, rather than once a week.
+    # The limit below, not the interval, is what bounds concurrent CI load.
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
     groups:
       # Individual pull requests for major/minor updates and grouped for patch updates
       patch-updates:
