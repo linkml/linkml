@@ -3052,7 +3052,7 @@ class ArrayExpression(YAMLRoot):
                 try:
                     self.maximum_number_dimensions = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[int, Bool] could be constructed from {value!r} for slot maximum_number_dimensions")
