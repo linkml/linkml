@@ -171,7 +171,7 @@ class AnyOfSimpleType(YAMLRoot):
                 try:
                     self.attribute1 = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[str, int] could be constructed from {value!r} for slot attribute1")
@@ -197,7 +197,7 @@ class AnyOfClasses(YAMLRoot):
                 try:
                     self.attribute2 = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[PersonId, OrganizationId] could be constructed from {value!r} for slot attribute2")
@@ -223,7 +223,7 @@ class AnyOfEnums(YAMLRoot):
                 try:
                     self.attribute3 = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[DiagnosisType, EmploymentEventType] could be constructed from {value!r} for slot attribute3")
@@ -249,7 +249,7 @@ class AnyOfMix(YAMLRoot):
                 try:
                     self.attribute4 = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[int, PersonId, EmploymentEventType] could be constructed from {value!r} for slot attribute4")
@@ -695,7 +695,7 @@ class EmploymentEvent(Event):
                 try:
                     self.type = _coerce()
                     break
-                except Exception:
+                except (ValueError, TypeError):
                     continue
             else:
                 raise ValueError(f"None of the candidate types Union[CordialnessEnum, EmploymentEventType] could be constructed from {value!r} for slot type")

@@ -1091,9 +1091,21 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
 
         # Resolve each branch's runtime (unquoted) type name via the same single-range
-        # call class_reference_type already makes for a plain slot.
+        # call class_reference_type already makes for a plain slot, then de-dup by that
+        # name, preserving declared order -- this *is* the tie-break. Branches without
+        # their own `range` (e.g. constraint-only exactly_one_of options) can resolve to
+        # the same runtime type; deduping the lambdas themselves (not just the isinstance
+        # guard/label) keeps exactly_one_of from treating two identical candidates as two
+        # independent matches.
         branch_names = [self.class_reference_type(bslot, cls)[2] for bslot in branch_slots]
-        dedup_names = list(dict.fromkeys(branch_names))  # de-dup, preserve declared order -- this *is* the tie-break
+        seen_names: set[str] = set()
+        dedup_branch_slots: list[SlotDefinition] = []
+        dedup_names: list[str] = []
+        for bslot, bname in zip(branch_slots, branch_names):
+            if bname not in seen_names:
+                seen_names.add(bname)
+                dedup_branch_slots.append(bslot)
+                dedup_names.append(bname)
         tuple_str = ", ".join(dedup_names) + ("," if len(dedup_names) == 1 else "")
         union_label = f"Union[{', '.join(dedup_names)}]" if len(dedup_names) > 1 else dedup_names[0]
 
@@ -1104,9 +1116,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         )
         lambdas = ", ".join(
             f"lambda: {self._boolean_combinator_coercion_expr(bslot, bname)}"
-            for bslot, bname in zip(branch_slots, branch_names)
+            for bslot, bname in zip(dedup_branch_slots, dedup_names)
         )
-        if len(branch_slots) == 1:
+        if len(dedup_branch_slots) == 1:
             # A single-element parenthesized expression is not a tuple in Python --
             # `(lambda: ...)` is just the lambda itself, not a 1-tuple containing it --
             # so `for _coerce in (...)` would try to iterate the function object.
@@ -1119,7 +1131,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append("\t\ttry:")
             rlines.append(f"\t\t\tself.{aliased_slot_name} = _coerce()")
             rlines.append("\t\t\tbreak")
-            rlines.append("\t\texcept Exception:")
+            rlines.append("\t\texcept (ValueError, TypeError):")
             rlines.append("\t\t\tcontinue")
             rlines.append("\telse:")
             rlines.append(
@@ -1131,7 +1143,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append(f"\tfor _coerce in ({lambdas}):")
             rlines.append("\t\ttry:")
             rlines.append("\t\t\t_matches.append(_coerce())")
-            rlines.append("\t\texcept Exception:")
+            rlines.append("\t\texcept (ValueError, TypeError):")
             rlines.append("\t\t\tcontinue")
             rlines.append("\tif len(_matches) == 1:")
             rlines.append(f"\t\tself.{aliased_slot_name} = _matches[0]")

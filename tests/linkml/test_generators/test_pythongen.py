@@ -501,6 +501,55 @@ classes:
     assert isinstance(t.thing, py_module.P)
 
 
+def test_any_of_rdf_export_regression_1521():
+    """Regression test for the originally-reported symptom of issue #1521: a slot
+    coerced via any_of into an identifier-less embedded class used to stay an
+    untyped JsonObj at runtime, and exporting it to RDF crashed with
+    `ValueError: Class JsonObj not found in schema`. The compliance suite's
+    test_slot_any_of case runs with exclude_rdf=True, so nothing else in the suite
+    exercises this path."""
+    schema = """id: https://example.org/any-of-rdf
+name: any-of-rdf
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  Dataset:
+    attributes:
+      title:
+        range: string
+  Catalogue:
+    attributes:
+      label:
+        range: string
+  Container:
+    attributes:
+      cid:
+        identifier: true
+      item:
+        range: Any
+        any_of:
+          - range: Dataset
+          - range: Catalogue
+"""
+    py_module = make_python(schema)
+    c = py_module.Container(cid="ex:C1", item={"title": "T"})
+    assert isinstance(c.item, py_module.Dataset)
+
+    from linkml_runtime import SchemaView
+    from linkml_runtime.dumpers import rdflib_dumper
+
+    rdf = rdflib_dumper.dumps(c, schemaview=SchemaView(schema))
+    assert "ex:Dataset" in rdf
+
+
 def test_any_of_raises_value_error_when_no_candidate_fits():
     py_module = make_python(_ANY_OF_SCHEMA)
     with pytest.raises(ValueError, match="None of the candidate types"):
@@ -641,7 +690,10 @@ classes:
           - range: integer
 """
     code = PythonGenerator(schema).serialize()
-    class_c = code[code.index("class C(") : code.index("class D(")]
+    assert "s1: Optional[Union[Union[dict, Any], list[Union[dict, Any]]]] = empty_list()" in code
+    class_c_start = code.index("class C(")
+    class_c_end = code.index("\nclass ", class_c_start + 1)
+    class_c = code[class_c_start:class_c_end]
     assert "__post_init__" not in class_c
 
 
