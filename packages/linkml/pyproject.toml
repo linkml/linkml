@@ -74,7 +74,7 @@ typing = [
     "numpydantic>=1.10.0",
 ]
 shacl = [
-    "pyshacl >= 0.25.0",
+    "pyshacl>=0.40.1",
 ]
 tests = [
   { include-group = "lint" },
