@@ -95,7 +95,7 @@ biolink:Activity a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "activity" ;
 	rdfs:subClassOf biolink:ActivityAndBehavior , biolink:NamedThing ;
 	skos:definition "An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities." ;
-	skos:exactMatch STY:T052 , <http://purl.obolibrary.org/obo/NCIT_C43431> , prov:Activity ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C43431> , STY:T052 , prov:Activity ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch STY:T056 , STY:T057 , STY:T058 , STY:T062 , STY:T064 , STY:T065 , STY:T066 .
 biolink:ActivityAndBehavior a owl:Class , linkml:ClassDefinition ;
@@ -163,7 +163,7 @@ biolink:AnatomicalEntity a owl:Class , linkml:ClassDefinition ;
 	skos:definition "A subcellular location, cell type or gross anatomical part" ;
 	skos:exactMatch STY:T017 , STY:T029 , STY:T030 , <http://purl.obolibrary.org/obo/CARO_0000000> , <http://purl.obolibrary.org/obo/FMA_62955> , <http://purl.obolibrary.org/obo/UBERON_0001062> , SIO:001262 , UMLSSG:ANAT , WIKIDATA:Q4936952 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch STY:T031 , <http://purl.obolibrary.org/obo/EMAPA_0> , <http://purl.obolibrary.org/obo/FBbt_10000000> , <http://purl.obolibrary.org/obo/GO_0110165> , <http://purl.obolibrary.org/obo/MA_0000001> , <http://purl.obolibrary.org/obo/NCIT_C12219> , WBbt:0000100 , <http://purl.obolibrary.org/obo/XAO_0000000> , <http://purl.obolibrary.org/obo/ZFA_0100000> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C12219> , STY:T031 , <http://purl.obolibrary.org/obo/EMAPA_0> , <http://purl.obolibrary.org/obo/FBbt_10000000> , <http://purl.obolibrary.org/obo/GO_0110165> , <http://purl.obolibrary.org/obo/MA_0000001> , WBbt:0000100 , <http://purl.obolibrary.org/obo/XAO_0000000> , <http://purl.obolibrary.org/obo/ZFA_0100000> ;
 	skos:relatedMatch SNOMEDCT:123037004 .
 biolink:AnatomicalEntityToAnatomicalEntityAssociation a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "anatomical entity to anatomical entity association" ;
@@ -550,7 +550,7 @@ biolink:ChemicalMixture a owl:Class , linkml:ClassDefinition ;
 	skos:closeMatch dcid:ChemicalCompound ;
 	skos:definition "A chemical mixture is a chemical entity composed of two or more molecular entities." ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_C20401> , SNOMEDCT:49616005 .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C20401> , SNOMEDCT:49616005 .
 biolink:ChemicalOrDrugOrTreatment a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "chemical or drug or treatment" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
@@ -707,7 +707,7 @@ biolink:Cohort a owl:Class , linkml:ClassDefinition ;
 biolink:CommonDataElement a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "common data element" ;
 	rdfs:subClassOf biolink:InformationContentEntity ;
-	skos:closeMatch <http://purl.obolibrary.org/obo/NCIT_C19984> ;
+	skos:closeMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C19984> ;
 	skos:definition "A Common Data Element (CDE) is a standardized, precisely defined question, paired with a set of allowable responses, used systematically across different sites, studies, or clinical trials to ensure consistent data collection. Multiple CDEs (from one or more Collections) can be curated into Forms. (https://cde.nlm.nih.gov/home)" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:ComplexChemicalExposure a owl:Class , linkml:ClassDefinition ;
@@ -803,7 +803,7 @@ biolink:Disease a owl:Class , linkml:ClassDefinition ;
 	rdfs:subClassOf biolink:DiseaseOrPhenotypicFeature ;
 	skos:altLabel "condition" , "disorder" , "medical condition" ;
 	skos:definition "A disorder of structure or function, especially one that produces specific signs, phenotypes or symptoms or that affects a specific location and is not simply a direct result of physical injury.  A disposition to undergo pathological processes that exists in an organism because of one or more disorders in that organism." ;
-	skos:exactMatch STY:T047 , <http://purl.obolibrary.org/obo/DOID_4> , <http://purl.obolibrary.org/obo/MONDO_0000001> , <http://purl.obolibrary.org/obo/NCIT_C2991> , SIO:010299 , dcid:Disease , UMLSSG:DISO , WIKIDATA:Q12136 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2991> , STY:T047 , <http://purl.obolibrary.org/obo/DOID_4> , <http://purl.obolibrary.org/obo/MONDO_0000001> , SIO:010299 , dcid:Disease , UMLSSG:DISO , WIKIDATA:Q12136 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch STY:T019 , STY:T020 , STY:T048 , STY:T049 , STY:T191 , <http://purl.obolibrary.org/obo/MONDO_0042489> .
 biolink:DiseaseOrPhenotypicFeature a owl:Class , linkml:ClassDefinition ;
@@ -1012,7 +1012,7 @@ biolink:EpidemiologicalOutcome a owl:Class , linkml:ClassDefinition ;
 	rdfs:subClassOf biolink:Outcome ;
 	skos:definition "An epidemiological outcome, such as societal disease burden, resulting from an exposure event." ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:relatedMatch <http://purl.obolibrary.org/obo/NCIT_C19291> .
+	skos:relatedMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C19291> .
 biolink:EpigenomicEntity a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "epigenomic entity" ;
 	rdfs:subClassOf _:c14n1335 , _:c14n292 , _:c14n827 ;
@@ -1021,7 +1021,7 @@ biolink:Event a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "event" ;
 	rdfs:subClassOf biolink:NamedThing ;
 	skos:definition "Something that happens at a given place and time." ;
-	skos:exactMatch STY:T051 , <http://purl.obolibrary.org/obo/NCIT_C25499> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25499> , STY:T051 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:EvidenceType a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "evidence type" ;
@@ -1120,13 +1120,13 @@ biolink:Fungus a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "fungus" ;
 	rdfs:subClassOf biolink:CellularOrganism ;
 	skos:definition "A kingdom of eukaryotic, heterotrophic organisms that live as saprobes or parasites, including mushrooms, yeasts, smuts, molds, etc. They reproduce either sexually or asexually, and have life cycles that range from simple to complex. Filamentous fungi refer to those that grow as multicellular colonies (mushrooms and molds)." ;
-	skos:exactMatch STY:T004 , <http://purl.obolibrary.org/obo/FOODON_03411261> , <http://purl.obolibrary.org/obo/NCIT_C14209> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C14209> , STY:T004 , <http://purl.obolibrary.org/obo/FOODON_03411261> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch <http://purl.obolibrary.org/obo/FOODON_03315605> , <http://purl.obolibrary.org/obo/NCBITaxon_1670606> .
 biolink:Gene a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "gene" ;
 	rdfs:subClassOf biolink:BiologicalEntity , biolink:ChemicalEntityOrGeneOrGeneProduct , biolink:GeneOrGeneProduct , biolink:GenomicEntity , biolink:OntologyClass , biolink:PhysicalEssence , _:c14n1481 , _:c14n1621 , _:c14n223 , _:c14n46 , _:c14n819 ;
-	skos:broadMatch <http://purl.obolibrary.org/obo/NCIT_C45822> ;
+	skos:broadMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C45822> ;
 	skos:definition "A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene locus may include regulatory regions, transcribed regions and/or other functional sequence regions." ;
 	skos:exactMatch <http://purl.obolibrary.org/obo/SO_0000704> , SIO:010035 , dcid:Gene , WIKIDATA:Q7187 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
@@ -1150,9 +1150,9 @@ biolink:GeneFamily a owl:Class , linkml:ClassDefinition ;
 	rdfs:subClassOf biolink:BiologicalEntity , biolink:ChemicalEntityOrGeneOrGeneProduct , biolink:GeneGroupingMixin ;
 	skos:altLabel "orthogroup" , "protein family" ;
 	skos:definition "any grouping of multiple genes or gene products related by common descent" ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C26004> , WIKIDATA:Q2278983 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26004> , WIKIDATA:Q2278983 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_C20130> , SIO:001380 , WIKIDATA:Q417841 .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C20130> , SIO:001380 , WIKIDATA:Q417841 .
 biolink:GeneGroupingMixin a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "gene grouping mixin" ;
 	rdfs:subClassOf _:c14n510 , _:c14n658 ;
@@ -1370,7 +1370,7 @@ biolink:GeneProductMixin a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "gene product mixin" ;
 	rdfs:subClassOf biolink:GeneOrGeneProduct , _:c14n399 , _:c14n551 , _:c14n830 , _:c14n866 ;
 	skos:definition "The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/GENO_0000907> , <http://purl.obolibrary.org/obo/NCIT_C26548> , WIKIDATA:Q424689 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26548> , <http://purl.obolibrary.org/obo/GENO_0000907> , WIKIDATA:Q424689 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:GeneRegulatesGeneAssociation a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "gene regulates gene association" ;
@@ -1449,7 +1449,7 @@ biolink:GeneticInheritance a owl:Class , linkml:ClassDefinition ;
 	skos:altLabel "inheritance" ;
 	skos:closeMatch STY:T045 ;
 	skos:definition "The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive, etc." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/GENO_0000141> , <http://purl.obolibrary.org/obo/HP_0000005> , <http://purl.obolibrary.org/obo/NCIT_C45827> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C45827> , <http://purl.obolibrary.org/obo/GENO_0000141> , <http://purl.obolibrary.org/obo/HP_0000005> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:Genome a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "genome" ;
@@ -1566,7 +1566,7 @@ biolink:Human a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "human" ;
 	rdfs:subClassOf biolink:Mammal , biolink:SubjectOfInvestigation ;
 	skos:definition "A member of the the species Homo sapiens." ;
-	skos:exactMatch STY:T016 , <http://purl.obolibrary.org/obo/NCBITaxon_9606> , <http://purl.obolibrary.org/obo/NCIT_C14225> , SIO:000485 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C14225> , STY:T016 , <http://purl.obolibrary.org/obo/NCBITaxon_9606> , SIO:000485 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:IndividualOrganism a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "individual organism" ;
@@ -1593,7 +1593,7 @@ biolink:Invertebrate a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "invertebrate" ;
 	rdfs:subClassOf biolink:CellularOrganism ;
 	skos:definition "An animal lacking a vertebral column. This group consists of 98% of all animal species." ;
-	skos:exactMatch STY:T011 , <http://purl.obolibrary.org/obo/FOODON_00002452> , <http://purl.obolibrary.org/obo/NCIT_C14228> , <http://purl.obolibrary.org/obo/OMIT_0008565> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C14228> , STY:T011 , <http://purl.obolibrary.org/obo/FOODON_00002452> , <http://purl.obolibrary.org/obo/OMIT_0008565> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:relatedMatch <http://purl.obolibrary.org/obo/NCBITaxon_1767184> .
 biolink:IriType a owl:Class , linkml:TypeDefinition ;
@@ -1699,7 +1699,7 @@ biolink:Mammal a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "mammal" ;
 	rdfs:subClassOf biolink:CellularOrganism , biolink:SubjectOfInvestigation ;
 	skos:definition "A member of the class Mammalia, a clade of endothermic amniotes distinguished from reptiles and birds by the possession of hair, three middle ear bones, mammary glands, and a neocortex" ;
-	skos:exactMatch STY:T015 , <http://purl.obolibrary.org/obo/FOODON_03411134> , <http://purl.obolibrary.org/obo/NCBITaxon_40674> , <http://purl.obolibrary.org/obo/NCIT_C14234> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C14234> , STY:T015 , <http://purl.obolibrary.org/obo/FOODON_03411134> , <http://purl.obolibrary.org/obo/NCBITaxon_40674> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:MappingCollection a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "mapping collection" ;
@@ -1944,9 +1944,9 @@ biolink:PathologicalProcess a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "pathological process" ;
 	rdfs:subClassOf biolink:BiologicalProcess , biolink:PathologicalEntityMixin ;
 	skos:definition "A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/MPATH_596> , <http://purl.obolibrary.org/obo/NCIT_C16956> , <http://purl.obolibrary.org/obo/OBI_1110122> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C16956> , <http://purl.obolibrary.org/obo/MPATH_596> , <http://purl.obolibrary.org/obo/OBI_1110122> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch STY:T037 , STY:T046 , <http://purl.obolibrary.org/obo/NCIT_C19151> , EFO:0009708 .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C19151> , STY:T037 , STY:T046 , EFO:0009708 .
 biolink:PathologicalProcessExposure a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "pathological process exposure" ;
 	rdfs:subClassOf biolink:Attribute , biolink:ExposureEvent ;
@@ -1994,7 +1994,7 @@ biolink:PhenotypicFeature a owl:Class , linkml:ClassDefinition ;
 	skos:altLabel "endophenotype" , "phenotype" , "sign" , "symptom" , "trait" ;
 	skos:broadMatch <http://purl.obolibrary.org/obo/BFO_0000019> , <http://purl.obolibrary.org/obo/PATO_0000001> ;
 	skos:definition "A combination of entity and quality that makes up a phenotyping statement. An observable characteristic of an individual resulting from the interaction of its genotype with its molecular and physical environment." ;
-	skos:exactMatch MESH:D010641 , <http://identifiers.org/umls/C4021819> , <http://purl.obolibrary.org/obo/NCIT_C16977> , <http://purl.obolibrary.org/obo/UPHENO_0001001> , SIO:010056 , SNOMEDCT:8116006 , WIKIDATA:Q104053 ;
+	skos:exactMatch MESH:D010641 , <http://identifiers.org/umls/C4021819> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C16977> , <http://purl.obolibrary.org/obo/UPHENO_0001001> , SIO:010056 , SNOMEDCT:8116006 , WIKIDATA:Q104053 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch STY:T184 , STY:T190 , <http://purl.obolibrary.org/obo/APO_0000017> , <http://purl.obolibrary.org/obo/FBcv_0001347> , FYPO:0000001 , <http://purl.obolibrary.org/obo/HP_0000118> , <http://purl.obolibrary.org/obo/MP_0000001> , <http://purl.obolibrary.org/obo/TO_0000387> , <http://purl.obolibrary.org/obo/WBPhenotype_0000886> , XPO:00000000 , <http://purl.obolibrary.org/obo/ZP_00000000> , WIKIDATA:Q169872 , WIKIDATA:Q25203551 .
 biolink:PhenotypicFeatureToDiseaseAssociation a owl:Class , linkml:ClassDefinition ;
@@ -2054,7 +2054,7 @@ biolink:PlanetaryEntity a owl:Class , linkml:ClassDefinition ;
 biolink:Plant a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "plant" ;
 	rdfs:subClassOf biolink:CellularOrganism ;
-	skos:exactMatch STY:T002 , <http://purl.obolibrary.org/obo/NCIT_C14258> , <http://purl.obolibrary.org/obo/NCIT_C79659> , <http://purl.obolibrary.org/obo/PO_0000003> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C14258> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C79659> , STY:T002 , <http://purl.obolibrary.org/obo/PO_0000003> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:Polypeptide a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "polypeptide" ;
@@ -2122,14 +2122,14 @@ biolink:ProteinDomain a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "protein domain" ;
 	rdfs:subClassOf biolink:BiologicalEntity , biolink:ChemicalEntityOrGeneOrGeneProduct , biolink:GeneGroupingMixin ;
 	skos:definition "A conserved part of protein sequence and (tertiary) structure that can evolve, function, and exist independently of the rest of the protein chain. Protein domains maintain their structure and function independently of the proteins in which they are found. e.g. an SH3 domain." ;
-	skos:exactMatch <http://identifiers.org/umls/C1514562> , <http://purl.obolibrary.org/obo/NCIT_C13379> , SIO:001379 ;
+	skos:exactMatch <http://identifiers.org/umls/C1514562> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C13379> , SIO:001379 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:ProteinFamily a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "protein family" ;
 	rdfs:subClassOf biolink:BiologicalEntity , biolink:ChemicalEntityOrGeneOrGeneProduct , biolink:GeneGroupingMixin ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C26004> , WIKIDATA:Q2278983 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C26004> , WIKIDATA:Q2278983 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_C20130> , SIO:001380 , WIKIDATA:Q417841 .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C20130> , SIO:001380 , WIKIDATA:Q417841 .
 biolink:ProteinIsoform a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "protein isoform" ;
 	rdfs:subClassOf biolink:GeneProductIsoformMixin , biolink:Protein ;
@@ -2398,7 +2398,7 @@ biolink:Study a owl:Class , linkml:ClassDefinition ;
 	rdfs:subClassOf biolink:Activity ;
 	skos:closeMatch <http://purl.obolibrary.org/obo/SEPIO_0000004> , SIO:001066 ;
 	skos:definition "a detailed investigation and/or analysis" ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C63536> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C63536> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch SIO:000994 .
 biolink:StudyPopulation a owl:Class , linkml:ClassDefinition ;
@@ -2419,7 +2419,7 @@ biolink:StudyVariable a owl:Class , linkml:ClassDefinition ;
 	skos:closeMatch <http://purl.obolibrary.org/obo/STATO_0000258> , SIO:000367 ;
 	skos:definition "a variable that is used as a measure in the investigation of a study" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_C142192> .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C142192> .
 biolink:SubjectOfInvestigation a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "subject of investigation" ;
 	skos:definition "An entity that has the role of being studied in an investigation, study, or experiment" ;
@@ -2637,7 +2637,7 @@ biolink:affects a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:editorialNote "Use of the 'affects' predicate implies that the affected entity already exists, unlike predicates such as 'affects likelihood of' and 'prevents' where the effect concerns whether or when something may or may not come into existence." ;
 	skos:exactMatch SEMMEDDB:AFFECTS , DGIdb:affects ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch CTD:inferred , CTD:prediction_hypothesis , GOREL:0001006 , <http://purl.obolibrary.org/obo/NCIT_R100> , <http://purl.obolibrary.org/obo/NCIT_R101> , <http://purl.obolibrary.org/obo/NCIT_R102> , <http://purl.obolibrary.org/obo/NCIT_R113> , <http://purl.obolibrary.org/obo/NCIT_R124> , <http://purl.obolibrary.org/obo/NCIT_R133> , <http://purl.obolibrary.org/obo/NCIT_R146> , <http://purl.obolibrary.org/obo/NCIT_R150> , <http://purl.obolibrary.org/obo/NCIT_R158> , <http://purl.obolibrary.org/obo/NCIT_R160> , <http://purl.obolibrary.org/obo/NCIT_R173> , <http://purl.obolibrary.org/obo/NCIT_R23> , <http://purl.obolibrary.org/obo/NCIT_R25> , <http://purl.obolibrary.org/obo/NCIT_R30> , <http://purl.obolibrary.org/obo/NCIT_R72> , <http://purl.obolibrary.org/obo/NCIT_gene_mapped_to_disease> , RO:0002263 , RO:0002264 , RO:0002343 , RO:0002355 , RO:0002591 , RO:0002592 , RO:0012003 , <http://purl.obolibrary.org/obo/SNOMED_has_pathological_process> , <http://purl.obolibrary.org/obo/UPHENO_0000001> , UBERGRAPH:is_decrease_of , UBERGRAPH:is_increase_of ;
+	skos:narrowMatch CTD:inferred , CTD:prediction_hypothesis , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R100> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R101> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R102> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R113> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R124> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R133> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R146> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R150> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R158> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R160> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R173> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R23> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R25> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R30> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R72> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#gene_mapped_to_disease> , GOREL:0001006 , RO:0002263 , RO:0002264 , RO:0002343 , RO:0002355 , RO:0002591 , RO:0002592 , RO:0012003 , <http://purl.obolibrary.org/obo/SNOMED_has_pathological_process> , <http://purl.obolibrary.org/obo/UPHENO_0000001> , UBERGRAPH:is_decrease_of , UBERGRAPH:is_increase_of ;
 	skos:relatedMatch <http://identifiers.org/drugbank/pathway> ;
 	biolink:canonical_predicate true .
 biolink:affects_likelihood_of a owl:ObjectProperty , linkml:SlotDefinition ;
@@ -2849,9 +2849,9 @@ biolink:biomarker_for a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:subPropertyOf biolink:correlated_with ;
 	skos:broadMatch RO:0002607 ;
 	skos:definition "holds between a measurable chemical entity and a disease or phenotypic feature, where the entity is used as an indicator of the presence or state of the disease or feature." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_R39> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R39> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R47> , <http://purl.obolibrary.org/obo/NCIT_genetic_biomarker_related_to> , <http://purl.obolibrary.org/obo/NCIT_is_molecular_abnormality_of_disease> , orphanet:465410 ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R47> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#genetic_biomarker_related_to> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#is_molecular_abnormality_of_disease> , orphanet:465410 ;
 	biolink:canonical_predicate true .
 biolink:bonferonni_adjusted_p_value a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "bonferonni adjusted p value" ;
@@ -2891,7 +2891,7 @@ biolink:capable_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a physical entity and process or function, where the continuant alone has the ability to carry out the process or function." ;
 	skos:exactMatch RO:0002215 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R52> , RO:0002500 ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R52> , RO:0002500 ;
 	biolink:canonical_predicate true .
 biolink:catalyst_qualifier a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "catalyst qualifier" ;
@@ -2934,7 +2934,7 @@ biolink:causes a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between two entities where the occurrence, existence, or activity of one causes the occurrence or generation of the other" ;
 	skos:exactMatch RO:0003303 , <http://purl.obolibrary.org/obo/SNOMED_cause_of> , SEMMEDDB:CAUSES , WIKIDATA_PROPERTY:P1542 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/umls/has_physiologic_effect> , GOREL:0000040 , <http://purl.obolibrary.org/obo/MONDO_disease_causes_feature> , <http://purl.obolibrary.org/obo/MONDO_disease_triggers> , <http://purl.obolibrary.org/obo/NCIT_allele_has_abnormality> , <http://purl.obolibrary.org/obo/NCIT_biological_process_has_result_biological_process> , <http://purl.obolibrary.org/obo/NCIT_chemical_or_drug_has_physiologic_effect> , <http://purl.obolibrary.org/obo/NCIT_chemical_or_drug_initiates_biological_process> , <http://purl.obolibrary.org/obo/NCIT_chromosome_mapped_to_disease> , <http://purl.obolibrary.org/obo/NCIT_disease_has_normal_tissue_origin> , <http://purl.obolibrary.org/obo/NCIT_process_initiates_biological_process> , RO:0002256 , RO:0002315 , RO:0002507 , RO:0002509 , RO:0004001 , <http://purl.obolibrary.org/obo/SNOMED_causative_agent_of> , <http://purl.obolibrary.org/obo/SNOMED_has_realization> , NBO-PROPERTY:in_response_to , orphanet:317343 , orphanet:317344 , orphanet:317346 , orphanet:410295 , orphanet:410296 ;
+	skos:narrowMatch <http://identifiers.org/umls/has_physiologic_effect> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#allele_has_abnormality> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#biological_process_has_result_biological_process> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#chemical_or_drug_has_physiologic_effect> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#chemical_or_drug_initiates_biological_process> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#chromosome_mapped_to_disease> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#disease_has_normal_tissue_origin> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#process_initiates_biological_process> , GOREL:0000040 , <http://purl.obolibrary.org/obo/MONDO_disease_causes_feature> , <http://purl.obolibrary.org/obo/MONDO_disease_triggers> , RO:0002256 , RO:0002315 , RO:0002507 , RO:0002509 , RO:0004001 , <http://purl.obolibrary.org/obo/SNOMED_causative_agent_of> , <http://purl.obolibrary.org/obo/SNOMED_has_realization> , NBO-PROPERTY:in_response_to , orphanet:317343 , orphanet:317344 , orphanet:317346 , orphanet:410295 , orphanet:410296 ;
 	biolink:canonical_predicate true .
 biolink:chapter a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:BookChapter ;
@@ -2957,7 +2957,7 @@ biolink:chemically_similar_to a owl:ObjectProperty , owl:SymmetricProperty , lin
 	rdfs:subPropertyOf biolink:similar_to ;
 	skos:definition "holds between one small molecule entity and another that it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity." ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/CHEBI_has_functional_parent> , <http://purl.obolibrary.org/obo/CHEBI_has_parent_hydride> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_acid_of> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_base_of> , <http://purl.obolibrary.org/obo/CHEBI_is_enantiomer_of> , <http://purl.obolibrary.org/obo/CHEBI_is_tautomer_of> , <http://purl.obolibrary.org/obo/NCIT_has_salt_form> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_salt_form> , <http://purl.obolibrary.org/obo/CHEBI_has_functional_parent> , <http://purl.obolibrary.org/obo/CHEBI_has_parent_hydride> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_acid_of> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_base_of> , <http://purl.obolibrary.org/obo/CHEBI_is_enantiomer_of> , <http://purl.obolibrary.org/obo/CHEBI_is_tautomer_of> ;
 	biolink:canonical_predicate true .
 biolink:chi_squared_statistic a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "chi squared statistic" ;
@@ -3054,7 +3054,7 @@ biolink:condition_associated_with_gene a owl:ObjectProperty , linkml:SlotDefinit
 	skos:altLabel "disease associated with gene" ;
 	skos:definition "holds between a gene and a disease or phenotypic feature that may be influenced, contribute to, or be correlated with the gene or its alleles/products" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R176> , RO:0004000 .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R176> , RO:0004000 .
 biolink:condition_exacerbated_by a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:DiseaseOrPhenotypicFeature ;
 	rdfs:label "condition exacerbated by" ;
@@ -3115,7 +3115,7 @@ biolink:contraindicated_in a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:subPropertyOf biolink:related_to_at_instance_level ;
 	skos:definition "Holds between a substance, procedure, or activity and a medical condition or circumstance, where an authority has established that the substance, procedure, or activity should not be applied as an intervention in patients with the condition or circumstance because it can result in detrimental outcomes." ;
 	skos:editorialNote "This predicate relates the intervention with a specific disease, phenotype, or other medical circumstance that puts patients at high risk for detrimental outcomes.  This may be a different condition from the one that the drug would be used to treat (e.g. pseudoephedrine is contraindicated in people with high-blood pressure as a treatment for nasal congestion), a biological state (e.g. isotretinoin is contraindicated in people who are pregnant as a treatment for acne), or being on a different medication (e.g. aspirin is contraindicated in people taking warfarin as a preventative treatment for stroke)." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C37933> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C37933> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	biolink:canonical_predicate true ;
 	biolink:opposite_of "treats" .
@@ -3255,7 +3255,7 @@ biolink:diagnoses a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "diagnoses" ;
 	rdfs:range biolink:DiseaseOrPhenotypicFeature ;
 	rdfs:subPropertyOf biolink:related_to_at_instance_level ;
-	skos:closeMatch <http://purl.obolibrary.org/obo/NCIT_C15220> , SIO:001331 ;
+	skos:closeMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C15220> , SIO:001331 ;
 	skos:definition "a relationship that identifies the nature of (an illness or other problem) by examination of the symptoms." ;
 	skos:exactMatch DrugCentral:5271 , SEMMEDDB:DIAGNOSES ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
@@ -3326,9 +3326,9 @@ biolink:drug_regulatory_status_world_wide a owl:ObjectProperty , linkml:SlotDefi
 	rdfs:range biolink:ApprovalStatusEnum ;
 	skos:altLabel "max phase" ;
 	skos:definition "An agglomeration of drug regulatory status worldwide. Not specific to FDA." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C172573> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C172573> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch REPODB:clinically_tested_approved_unknown_phase , REPODB:clinically_tested_suspended_phase_0 , REPODB:clinically_tested_suspended_phase_1 , REPODB:clinically_tested_suspended_phase_1_or_phase_2 , REPODB:clinically_tested_suspended_phase_2 , REPODB:clinically_tested_suspended_phase_2_or_phase_3 , REPODB:clinically_tested_suspended_phase_3 , REPODB:clinically_tested_terminated_phase_0 , REPODB:clinically_tested_terminated_phase_1 , REPODB:clinically_tested_terminated_phase_1_or_phase_2 , REPODB:clinically_tested_terminated_phase_2 , REPODB:clinically_tested_terminated_phase_2_or_phase_3 , REPODB:clinically_tested_terminated_phase_3 , REPODB:clinically_tested_withdrawn_phase_0 , REPODB:clinically_tested_withdrawn_phase_1 , REPODB:clinically_tested_withdrawn_phase_1_or_phase_2 , REPODB:clinically_tested_withdrawn_phase_2 , REPODB:clinically_tested_withdrawn_phase_2_or_phase_3 , REPODB:clinically_tested_withdrawn_phase_3 , <http://purl.obolibrary.org/obo/NCIT_R172> , <http://purl.obolibrary.org/obo/NCIT_regimen_has_accepted_use_for_disease> .
+	skos:narrowMatch REPODB:clinically_tested_approved_unknown_phase , REPODB:clinically_tested_suspended_phase_0 , REPODB:clinically_tested_suspended_phase_1 , REPODB:clinically_tested_suspended_phase_1_or_phase_2 , REPODB:clinically_tested_suspended_phase_2 , REPODB:clinically_tested_suspended_phase_2_or_phase_3 , REPODB:clinically_tested_suspended_phase_3 , REPODB:clinically_tested_terminated_phase_0 , REPODB:clinically_tested_terminated_phase_1 , REPODB:clinically_tested_terminated_phase_1_or_phase_2 , REPODB:clinically_tested_terminated_phase_2 , REPODB:clinically_tested_terminated_phase_2_or_phase_3 , REPODB:clinically_tested_terminated_phase_3 , REPODB:clinically_tested_withdrawn_phase_0 , REPODB:clinically_tested_withdrawn_phase_1 , REPODB:clinically_tested_withdrawn_phase_1_or_phase_2 , REPODB:clinically_tested_withdrawn_phase_2 , REPODB:clinically_tested_withdrawn_phase_2_or_phase_3 , REPODB:clinically_tested_withdrawn_phase_3 , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R172> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#regimen_has_accepted_use_for_disease> .
 biolink:editor a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:Agent ;
 	rdfs:label "editor" ;
@@ -3418,7 +3418,7 @@ biolink:expressed_in a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a gene or gene product and an anatomical entity in which it is expressed" ;
 	skos:exactMatch RO:0002206 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R46> , <http://purl.obolibrary.org/obo/NCIT_R49> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R46> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R49> ;
 	biolink:canonical_predicate true .
 biolink:expresses a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:AnatomicalEntity ;
@@ -3483,7 +3483,7 @@ biolink:gene_associated_with_condition a owl:ObjectProperty , linkml:SlotDefinit
 	skos:broadMatch <http://purl.obolibrary.org/obo/GENO_0000840> , <http://purl.obolibrary.org/obo/GENO_0000841> ;
 	skos:definition "holds between a gene and a disease or phenotypic feature that the gene or its alleles/products may influence, contribute to, or correlate with" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R175> , <http://purl.obolibrary.org/obo/NCIT_R38> , <http://purl.obolibrary.org/obo/NCIT_R48> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R175> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R38> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R48> ;
 	biolink:canonical_predicate true .
 biolink:gene_fusion_with a owl:ObjectProperty , owl:SymmetricProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:Gene ;
@@ -3571,7 +3571,7 @@ biolink:has_attribute a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "connects any entity to an attribute" ;
 	skos:exactMatch SIO:000008 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/drugbank/category> , <http://identifiers.org/umls/has_structural_class> , <http://identifiers.org/umls/has_supported_concept_property> , <http://identifiers.org/umls/has_supported_concept_relationship> , <http://identifiers.org/umls/may_be_qualified_by> , LOINC:has_action_guidance , LOINC:has_adjustment , LOINC:has_aggregation_view , LOINC:has_approach_guidance , LOINC:has_divisor , LOINC:has_exam , LOINC:has_method , LOINC:has_modality_subtype , LOINC:has_object_guidance , LOINC:has_scale , LOINC:has_suffix , LOINC:has_time_aspect , LOINC:has_time_modifier , LOINC:has_timing_of , INO:0000154 , <http://purl.obolibrary.org/obo/NCIT_R88> , <http://purl.obolibrary.org/obo/NCIT_eo_disease_has_property_or_attribute> , <http://purl.obolibrary.org/obo/NCIT_has_data_element> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_administration_method> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_basic_dose_form> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_intended_site> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_release_characteristics> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_state_of_matter> , <http://purl.obolibrary.org/obo/NCIT_has_pharmaceutical_transformation> , <http://purl.obolibrary.org/obo/NCIT_is_qualified_by> , <http://purl.obolibrary.org/obo/NCIT_qualifier_applies_to> , <http://purl.obolibrary.org/obo/NCIT_role_has_domain> , <http://purl.obolibrary.org/obo/NCIT_role_has_range> , <http://purl.obolibrary.org/obo/OMIM_has_inheritance_type> , RO:0000053 , RO:0000086 , RO:0000087 , <http://purl.obolibrary.org/obo/SNOMED_has_access> , <http://purl.obolibrary.org/obo/SNOMED_has_clinical_course> , <http://purl.obolibrary.org/obo/SNOMED_has_count_of_base_of_active_ingredient> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_administration_method> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_release_characteristic> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_transformation> , <http://purl.obolibrary.org/obo/SNOMED_has_finding_context> , <http://purl.obolibrary.org/obo/SNOMED_has_finding_informer> , <http://purl.obolibrary.org/obo/SNOMED_has_inherent_attribute> , <http://purl.obolibrary.org/obo/SNOMED_has_intent> , <http://purl.obolibrary.org/obo/SNOMED_has_interpretation> , <http://purl.obolibrary.org/obo/SNOMED_has_laterality> , <http://purl.obolibrary.org/obo/SNOMED_has_measurement_method> , <http://purl.obolibrary.org/obo/SNOMED_has_method> , <http://purl.obolibrary.org/obo/SNOMED_has_priority> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_context> , <http://purl.obolibrary.org/obo/SNOMED_has_process_duration> , <http://purl.obolibrary.org/obo/SNOMED_has_property> , <http://purl.obolibrary.org/obo/SNOMED_has_revision_status> , <http://purl.obolibrary.org/obo/SNOMED_has_scale_type> , <http://purl.obolibrary.org/obo/SNOMED_has_severity> , <http://purl.obolibrary.org/obo/SNOMED_has_specimen> , <http://purl.obolibrary.org/obo/SNOMED_has_state_of_matter> , <http://purl.obolibrary.org/obo/SNOMED_has_subject_relationship_context> , <http://purl.obolibrary.org/obo/SNOMED_has_surgical_approach> , <http://purl.obolibrary.org/obo/SNOMED_has_technique> , <http://purl.obolibrary.org/obo/SNOMED_has_temporal_context> , <http://purl.obolibrary.org/obo/SNOMED_has_time_aspect> , <http://purl.obolibrary.org/obo/SNOMED_has_units> , OBAN:association_has_object_property , OBAN:association_has_subject_property , HANCESTRO:0301 , HANCESTRO:0308 , EFO:is_executed_in , orphanet:C016 , orphanet:C017 , CPT:has_possibly_included_panel_element .
+	skos:narrowMatch <http://identifiers.org/drugbank/category> , <http://identifiers.org/umls/has_structural_class> , <http://identifiers.org/umls/has_supported_concept_property> , <http://identifiers.org/umls/has_supported_concept_relationship> , <http://identifiers.org/umls/may_be_qualified_by> , LOINC:has_action_guidance , LOINC:has_adjustment , LOINC:has_aggregation_view , LOINC:has_approach_guidance , LOINC:has_divisor , LOINC:has_exam , LOINC:has_method , LOINC:has_modality_subtype , LOINC:has_object_guidance , LOINC:has_scale , LOINC:has_suffix , LOINC:has_time_aspect , LOINC:has_time_modifier , LOINC:has_timing_of , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R88> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#eo_disease_has_property_or_attribute> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_data_element> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_administration_method> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_basic_dose_form> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_intended_site> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_release_characteristics> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_state_of_matter> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#has_pharmaceutical_transformation> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#is_qualified_by> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#qualifier_applies_to> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#role_has_domain> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#role_has_range> , INO:0000154 , <http://purl.obolibrary.org/obo/OMIM_has_inheritance_type> , RO:0000053 , RO:0000086 , RO:0000087 , <http://purl.obolibrary.org/obo/SNOMED_has_access> , <http://purl.obolibrary.org/obo/SNOMED_has_clinical_course> , <http://purl.obolibrary.org/obo/SNOMED_has_count_of_base_of_active_ingredient> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_administration_method> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_release_characteristic> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form_transformation> , <http://purl.obolibrary.org/obo/SNOMED_has_finding_context> , <http://purl.obolibrary.org/obo/SNOMED_has_finding_informer> , <http://purl.obolibrary.org/obo/SNOMED_has_inherent_attribute> , <http://purl.obolibrary.org/obo/SNOMED_has_intent> , <http://purl.obolibrary.org/obo/SNOMED_has_interpretation> , <http://purl.obolibrary.org/obo/SNOMED_has_laterality> , <http://purl.obolibrary.org/obo/SNOMED_has_measurement_method> , <http://purl.obolibrary.org/obo/SNOMED_has_method> , <http://purl.obolibrary.org/obo/SNOMED_has_priority> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_context> , <http://purl.obolibrary.org/obo/SNOMED_has_process_duration> , <http://purl.obolibrary.org/obo/SNOMED_has_property> , <http://purl.obolibrary.org/obo/SNOMED_has_revision_status> , <http://purl.obolibrary.org/obo/SNOMED_has_scale_type> , <http://purl.obolibrary.org/obo/SNOMED_has_severity> , <http://purl.obolibrary.org/obo/SNOMED_has_specimen> , <http://purl.obolibrary.org/obo/SNOMED_has_state_of_matter> , <http://purl.obolibrary.org/obo/SNOMED_has_subject_relationship_context> , <http://purl.obolibrary.org/obo/SNOMED_has_surgical_approach> , <http://purl.obolibrary.org/obo/SNOMED_has_technique> , <http://purl.obolibrary.org/obo/SNOMED_has_temporal_context> , <http://purl.obolibrary.org/obo/SNOMED_has_time_aspect> , <http://purl.obolibrary.org/obo/SNOMED_has_units> , OBAN:association_has_object_property , OBAN:association_has_subject_property , HANCESTRO:0301 , HANCESTRO:0308 , EFO:is_executed_in , orphanet:C016 , orphanet:C017 , CPT:has_possibly_included_panel_element .
 biolink:has_attribute_type a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:Attribute ;
 	rdfs:label "has attribute type" ;
@@ -3600,7 +3600,7 @@ biolink:has_biomarker a owl:ObjectProperty , linkml:SlotDefinition ;
 	owl:inverseOf biolink:biomarker_for ;
 	skos:definition "holds between a disease or phenotypic feature and a measurable chemical entity that is used as an indicator of the presence or state of the disease or feature.\n # metabolite" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_disease_has_molecular_abnormality> , <http://purl.obolibrary.org/obo/NCIT_disease_is_marked_by_gene> .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#disease_has_molecular_abnormality> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#disease_is_marked_by_gene> .
 biolink:has_catalyst a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "has catalyst" ;
 	rdfs:subPropertyOf biolink:has_participant ;
@@ -3751,9 +3751,9 @@ biolink:has_gene_product a owl:ObjectProperty , linkml:SlotDefinition ;
 	owl:inverseOf biolink:gene_product_of ;
 	skos:closeMatch <http://purl.obolibrary.org/obo/PR_has_gene_template> ;
 	skos:definition "holds between a gene and a transcribed and/or translated product generated from it" ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_gene_encodes_gene_product> , RO:0002205 , WIKIDATA_PROPERTY:P688 ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#gene_encodes_gene_product> , RO:0002205 , WIKIDATA_PROPERTY:P688 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R178> .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R178> .
 biolink:has_increased_amount a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "has increased amount" ;
 	rdfs:subPropertyOf biolink:related_to_at_instance_level ;
@@ -3816,7 +3816,7 @@ biolink:has_molecular_consequence a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:altLabel "allele has activity" ;
 	skos:definition "connects a sequence variant to a class describing the molecular consequence. E.g.  SO:0001583" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_allele_has_activity> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#allele_has_activity> ;
 	biolink:canonical_predicate true .
 biolink:has_nearby_variant a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:GenomicEntity ;
@@ -3886,7 +3886,7 @@ biolink:has_output a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a process and a continuant, where the continuant is an output of the process" ;
 	skos:exactMatch RO:0002234 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R31> , <http://purl.obolibrary.org/obo/OBI_0000299> , RO:0002296 , RO:0002297 , RO:0002298 , RO:0002299 , RO:0002588 , RO:0004008 , PathWhiz:has_right_element ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R31> , <http://purl.obolibrary.org/obo/OBI_0000299> , RO:0002296 , RO:0002297 , RO:0002298 , RO:0002299 , RO:0002588 , RO:0004008 , PathWhiz:has_right_element ;
 	biolink:canonical_predicate true ;
 	biolink:opposite_of "has input" .
 biolink:has_part a owl:ObjectProperty , linkml:SlotDefinition ;
@@ -3896,7 +3896,7 @@ biolink:has_part a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between wholes and their parts (material entities or processes)" ;
 	skos:exactMatch RXNORM:consists_of , RXNORM:has_part , <http://purl.obolibrary.org/obo/BFO_0000051> , <http://purl.obolibrary.org/obo/BFO_0000055> , RO:0001019 , WIKIDATA_PROPERTY:P527 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/meddra/has_member> , <http://identifiers.org/umls/has_component> , LOINC:has_component , LOINC:has_member , NDDF:has_ingredient , RXNORM:has_ingredient , <http://purl.obolibrary.org/obo/BFO_0000117> , <http://purl.obolibrary.org/obo/FMA_has_constitutional_part> , <http://purl.obolibrary.org/obo/FMA_has_member> , <http://purl.obolibrary.org/obo/FMA_has_part> , <http://purl.obolibrary.org/obo/FOODON_00001563> , <http://purl.obolibrary.org/obo/FOODON_00002420> , <http://purl.obolibrary.org/obo/MONDO_disease_has_major_feature> , <http://purl.obolibrary.org/obo/NCIT_R50> , <http://purl.obolibrary.org/obo/NCIT_complex_has_physical_part> , RO:0002104 , RO:0002180 , RO:0002351 , RO:0002473 , RO:0002524 , RO:0002551 , <http://purl.obolibrary.org/obo/SNOMED_has_component> , PathWhiz:has_element_in_bound , PathWhiz:has_protein_in_complex ;
+	skos:narrowMatch <http://identifiers.org/meddra/has_member> , <http://identifiers.org/umls/has_component> , LOINC:has_component , LOINC:has_member , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R50> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#complex_has_physical_part> , NDDF:has_ingredient , RXNORM:has_ingredient , <http://purl.obolibrary.org/obo/BFO_0000117> , <http://purl.obolibrary.org/obo/FMA_has_constitutional_part> , <http://purl.obolibrary.org/obo/FMA_has_member> , <http://purl.obolibrary.org/obo/FMA_has_part> , <http://purl.obolibrary.org/obo/FOODON_00001563> , <http://purl.obolibrary.org/obo/FOODON_00002420> , <http://purl.obolibrary.org/obo/MONDO_disease_has_major_feature> , RO:0002104 , RO:0002180 , RO:0002351 , RO:0002473 , RO:0002524 , RO:0002551 , <http://purl.obolibrary.org/obo/SNOMED_has_component> , PathWhiz:has_element_in_bound , PathWhiz:has_protein_in_complex ;
 	biolink:canonical_predicate true ;
 	biolink:opposite_of "lacks part" .
 biolink:has_participant a owl:ObjectProperty , linkml:SlotDefinition ;
@@ -3908,7 +3908,7 @@ biolink:has_participant a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a process and a continuant, where the continuant is somehow involved in the process" ;
 	skos:exactMatch RO:0000057 , RO:has_participant ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch LOINC:has_subject , <http://purl.obolibrary.org/obo/BFO_0000167> , <http://purl.obolibrary.org/obo/NCIT_process_involves_gene> , <http://purl.obolibrary.org/obo/OBI_0000293> , RO:0002565 , RO:0004007 , RO:0004020 , RO:0004021 , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_device> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_device> , <http://purl.obolibrary.org/obo/SNOMED_has_recipient_category> , NBO-PROPERTY:has_participant , PathWhiz:has_bound , PathWhiz:has_compound , PathWhiz:has_element_collection , PathWhiz:has_enzyme , PathWhiz:has_nucleic_acid , PathWhiz:has_protein , PathWhiz:has_reaction ;
+	skos:narrowMatch LOINC:has_subject , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#process_involves_gene> , <http://purl.obolibrary.org/obo/BFO_0000167> , <http://purl.obolibrary.org/obo/OBI_0000293> , RO:0002565 , RO:0004007 , RO:0004020 , RO:0004021 , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_device> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_device> , <http://purl.obolibrary.org/obo/SNOMED_has_recipient_category> , NBO-PROPERTY:has_participant , PathWhiz:has_bound , PathWhiz:has_compound , PathWhiz:has_element_collection , PathWhiz:has_enzyme , PathWhiz:has_nucleic_acid , PathWhiz:has_protein , PathWhiz:has_reaction ;
 	biolink:canonical_predicate true .
 biolink:has_percentage a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "has percentage" ;
@@ -3922,12 +3922,12 @@ biolink:has_phenotype a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:range biolink:PhenotypicFeature ;
 	rdfs:subPropertyOf biolink:related_to_at_instance_level ;
 	skos:altLabel "disease presents symptom" ;
-	skos:broadMatch <http://purl.obolibrary.org/obo/NCIT_R108> , <http://purl.obolibrary.org/obo/NCIT_R115> ;
+	skos:broadMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R108> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R115> ;
 	skos:definition "holds between a biological entity and a phenotype, where a phenotype is construed broadly as any kind of quality of an organism part, a collection of these qualities, or a change in quality or qualities (e.g. abnormally increased temperature). In SNOMEDCT, disorders with keyword 'characterized by' should translate into this predicate." ;
 	skos:editorialNote "check the range" ;
 	skos:exactMatch RO:0002200 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R89> , RO:0004022 , RO:0004029 , DOID-PROPERTY:has_symptom ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R89> , RO:0004022 , RO:0004029 , DOID-PROPERTY:has_symptom ;
 	biolink:canonical_predicate true .
 biolink:has_plasma_membrane_part a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "has plasma membrane part" ;
@@ -4029,7 +4029,7 @@ biolink:has_side_effect a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:altLabel "adverse drug reaction" ;
 	skos:definition "An unintended, but predictable, secondary effect shown to be correlated with a therapeutic agent, drug or treatment. Side effects happen at normal, recommended doses or treatments, and are unrelated to the intended purpose of the medication." ;
 	skos:editorialNote "Side effects are listed on drug labels. There can be positive side effects, while adverse events are always negative. Aeolus, Sider are both resources that provide side effects." ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C2861> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2861> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	biolink:canonical_predicate true .
 biolink:has_splice_site_variant a owl:ObjectProperty , linkml:SlotDefinition ;
@@ -4189,7 +4189,7 @@ biolink:in_linkage_disequilibrium_with a owl:ObjectProperty , owl:SymmetricPrope
 	rdfs:label "in linkage disequilibrium with" ;
 	rdfs:subPropertyOf biolink:related_to_at_instance_level ;
 	skos:definition "holds between two sequence variants, the presence of which are correlated in a population" ;
-	skos:exactMatch <http://purl.obolibrary.org/obo/NCIT_C16798> ;
+	skos:exactMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C16798> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	biolink:canonical_predicate true .
 biolink:in_pathway_with a owl:ObjectProperty , owl:SymmetricProperty , linkml:SlotDefinition ;
@@ -4549,7 +4549,7 @@ biolink:located_in a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a material entity and a material entity or site within which it is located (but of which it is not considered a part)" ;
 	skos:exactMatch <http://purl.obolibrary.org/obo/FMA_has_location> , RO:0001025 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/hmdb/at_cellular_location> , <http://identifiers.org/hmdb/at_tissue> , <http://identifiers.org/hmdb/in_biospecimen> , LOINC:has_imaging_focus , <http://purl.obolibrary.org/obo/BSPO_0000107> , <http://purl.obolibrary.org/obo/BSPO_0000108> , <http://purl.obolibrary.org/obo/BSPO_0000120> , <http://purl.obolibrary.org/obo/BSPO_0000121> , <http://purl.obolibrary.org/obo/BSPO_0000122> , <http://purl.obolibrary.org/obo/BSPO_0000123> , <http://purl.obolibrary.org/obo/BSPO_0000124> , <http://purl.obolibrary.org/obo/BSPO_0000125> , <http://purl.obolibrary.org/obo/BSPO_0000126> , <http://purl.obolibrary.org/obo/BSPO_0001100> , <http://purl.obolibrary.org/obo/BSPO_0001101> , <http://purl.obolibrary.org/obo/BSPO_0001107> , <http://purl.obolibrary.org/obo/BSPO_0015101> , <http://purl.obolibrary.org/obo/BSPO_0015102> , <http://purl.obolibrary.org/obo/BSPO_0015202> , <http://purl.obolibrary.org/obo/FMA_has_location> , GOREL:0001004 , <http://purl.obolibrary.org/obo/NCIT_R100> , <http://purl.obolibrary.org/obo/NCIT_R145> , <http://purl.obolibrary.org/obo/NCIT_R155> , <http://purl.obolibrary.org/obo/NCIT_R156> , <http://purl.obolibrary.org/obo/NCIT_R165> , <http://purl.obolibrary.org/obo/NCIT_R166> , <http://purl.obolibrary.org/obo/NCIT_R167> , <http://purl.obolibrary.org/obo/NCIT_R168> , <http://purl.obolibrary.org/obo/NCIT_R169> , <http://purl.obolibrary.org/obo/NCIT_R170> , <http://purl.obolibrary.org/obo/NCIT_R171> , <http://purl.obolibrary.org/obo/NCIT_R40> , RO:0002303 , <http://purl.obolibrary.org/obo/SNOMED_has_finding_site> , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_procedure_site> , <http://purl.obolibrary.org/obo/SNOMED_has_inherent_location> , UBERON_CORE:in_central_side_of , UBERON_CORE:in_innermost_side_of , UBERON_CORE:in_outermost_side_of , EFO:0000784 ;
+	skos:narrowMatch <http://identifiers.org/hmdb/at_cellular_location> , <http://identifiers.org/hmdb/at_tissue> , <http://identifiers.org/hmdb/in_biospecimen> , LOINC:has_imaging_focus , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R100> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R145> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R155> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R156> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R165> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R166> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R167> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R168> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R169> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R170> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R171> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R40> , <http://purl.obolibrary.org/obo/BSPO_0000107> , <http://purl.obolibrary.org/obo/BSPO_0000108> , <http://purl.obolibrary.org/obo/BSPO_0000120> , <http://purl.obolibrary.org/obo/BSPO_0000121> , <http://purl.obolibrary.org/obo/BSPO_0000122> , <http://purl.obolibrary.org/obo/BSPO_0000123> , <http://purl.obolibrary.org/obo/BSPO_0000124> , <http://purl.obolibrary.org/obo/BSPO_0000125> , <http://purl.obolibrary.org/obo/BSPO_0000126> , <http://purl.obolibrary.org/obo/BSPO_0001100> , <http://purl.obolibrary.org/obo/BSPO_0001101> , <http://purl.obolibrary.org/obo/BSPO_0001107> , <http://purl.obolibrary.org/obo/BSPO_0015101> , <http://purl.obolibrary.org/obo/BSPO_0015102> , <http://purl.obolibrary.org/obo/BSPO_0015202> , <http://purl.obolibrary.org/obo/FMA_has_location> , GOREL:0001004 , RO:0002303 , <http://purl.obolibrary.org/obo/SNOMED_has_finding_site> , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_procedure_site> , <http://purl.obolibrary.org/obo/SNOMED_has_inherent_location> , UBERON_CORE:in_central_side_of , UBERON_CORE:in_innermost_side_of , UBERON_CORE:in_outermost_side_of , EFO:0000784 ;
 	biolink:canonical_predicate true .
 biolink:location_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:NamedThing ;
@@ -4561,7 +4561,7 @@ biolink:location_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between material entity or site and a material entity that is located within it (but not considered a part of it)" ;
 	skos:exactMatch <http://purl.obolibrary.org/obo/FMA_location_of> , RO:0001015 , SEMMEDDB:LOCATION_OF , WIKIDATA_PROPERTY:P276 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_Anatomic_Structure_Has_Location_Role> , <http://purl.obolibrary.org/obo/SNOMED_inherent_location_of> .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Anatomic_Structure_Has_Location_Role> , <http://purl.obolibrary.org/obo/SNOMED_inherent_location_of> .
 biolink:location_of_disease a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "location of disease" ;
 	rdfs:subPropertyOf biolink:related_to ;
@@ -4623,7 +4623,7 @@ biolink:mechanism_of_action a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:range linkml:Boolean ;
 	rdfs:subPropertyOf biolink:association_slot ;
 	skos:definition "a boolean flag to indicate if the edge is part of a path or subgraph of a knowledge graph that constitutes the mechanism of action for a result." ;
-	skos:exactMatch LOINC:MTHU019741 , MI:2044 , <http://purl.obolibrary.org/obo/NCIT_C54680> ;
+	skos:exactMatch LOINC:MTHU019741 , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54680> , MI:2044 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:member_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "member of" ;
@@ -4912,7 +4912,7 @@ biolink:p_value a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:subPropertyOf biolink:association_slot ;
 	skos:altLabel "unadjusted p value" ;
 	skos:definition "A quantitative confidence value that represents the probability of obtaining a result at least as extreme as that actually obtained, assuming that the actual value was the result of chance alone." ;
-	skos:exactMatch EDAM-DATA:1669 , <http://purl.obolibrary.org/obo/NCIT_C44185> , <http://purl.obolibrary.org/obo/OBI_0000175> ;
+	skos:exactMatch EDAM-DATA:1669 , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C44185> , <http://purl.obolibrary.org/obo/OBI_0000175> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
 biolink:pages a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:Publication ;
@@ -4936,7 +4936,7 @@ biolink:part_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between parts and wholes (material entities or processes)" ;
 	skos:exactMatch RXNORM:constitutes , RXNORM:part_of , <http://purl.obolibrary.org/obo/BFO_0000050> , <http://purl.obolibrary.org/obo/FMA_part_of> , SEMMEDDB:PART_OF , WIKIDATA_PROPERTY:P361 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/drugbank/component_of> , <http://identifiers.org/meddra/member_of> , <http://identifiers.org/umls/component_of> , <http://identifiers.org/umls/has_owning_affiliate> , <http://identifiers.org/umls/owning_subsection_of> , LOINC:component_of , LOINC:has_supersystem , LOINC:member_of , LOINC:multipart_of , NDDF:ingredient_of , RXNORM:ingredient_of , RXNORM:ingredients_of , RXNORM:precise_ingredient_of , <http://purl.obolibrary.org/obo/BSPO_0001106> , <http://purl.obolibrary.org/obo/BSPO_0001108> , <http://purl.obolibrary.org/obo/BSPO_0001113> , <http://purl.obolibrary.org/obo/BSPO_0001115> , <http://purl.obolibrary.org/obo/CHEBI_is_substituent_group_from> , <http://purl.obolibrary.org/obo/FMA_constitutional_part_of> , <http://purl.obolibrary.org/obo/FMA_member_of> , <http://purl.obolibrary.org/obo/FMA_regional_part_of> , <http://purl.obolibrary.org/obo/FMA_related_developmental_entity_of> , <http://purl.obolibrary.org/obo/MONDO_part_of_progression_of_disease> , <http://purl.obolibrary.org/obo/NCIT_R27> , <http://purl.obolibrary.org/obo/NCIT_R82> , <http://purl.obolibrary.org/obo/NCIT_is_component_of_chemotherapy_regimen> , RO:0002007 , RO:0002350 , RO:0002376 , RO:0002380 , RO:0002571 , RO:0002572 , RO:0002576 , <http://purl.obolibrary.org/obo/SNOMED_active_ingredient_of> , <http://purl.obolibrary.org/obo/SNOMED_basis_of_strength_substance_of> , <http://purl.obolibrary.org/obo/SNOMED_component_of> , <http://purl.obolibrary.org/obo/SNOMED_direct_substance_of> , <http://purl.obolibrary.org/obo/SNOMED_during> , <http://purl.obolibrary.org/obo/SNOMED_focus_of> , <http://purl.obolibrary.org/obo/SNOMED_has_dependent> , <http://purl.obolibrary.org/obo/SNOMED_part_anatomy_structure_of> , <http://purl.obolibrary.org/obo/SNOMED_precise_active_ingredient_of> , <http://purl.obolibrary.org/obo/UBERON_subdivision_of> , UBERON_CORE:layer_part_of , UBERON_CORE:subdivision_of , UBERON_CORE:trunk_part_of , CPT:panel_element_of , CPT:panel_element_of_possibly_included , VANDF:ingredient_of .
+	skos:narrowMatch <http://identifiers.org/drugbank/component_of> , <http://identifiers.org/meddra/member_of> , <http://identifiers.org/umls/component_of> , <http://identifiers.org/umls/has_owning_affiliate> , <http://identifiers.org/umls/owning_subsection_of> , LOINC:component_of , LOINC:has_supersystem , LOINC:member_of , LOINC:multipart_of , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R27> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R82> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#is_component_of_chemotherapy_regimen> , NDDF:ingredient_of , RXNORM:ingredient_of , RXNORM:ingredients_of , RXNORM:precise_ingredient_of , <http://purl.obolibrary.org/obo/BSPO_0001106> , <http://purl.obolibrary.org/obo/BSPO_0001108> , <http://purl.obolibrary.org/obo/BSPO_0001113> , <http://purl.obolibrary.org/obo/BSPO_0001115> , <http://purl.obolibrary.org/obo/CHEBI_is_substituent_group_from> , <http://purl.obolibrary.org/obo/FMA_constitutional_part_of> , <http://purl.obolibrary.org/obo/FMA_member_of> , <http://purl.obolibrary.org/obo/FMA_regional_part_of> , <http://purl.obolibrary.org/obo/FMA_related_developmental_entity_of> , <http://purl.obolibrary.org/obo/MONDO_part_of_progression_of_disease> , RO:0002007 , RO:0002350 , RO:0002376 , RO:0002380 , RO:0002571 , RO:0002572 , RO:0002576 , <http://purl.obolibrary.org/obo/SNOMED_active_ingredient_of> , <http://purl.obolibrary.org/obo/SNOMED_basis_of_strength_substance_of> , <http://purl.obolibrary.org/obo/SNOMED_component_of> , <http://purl.obolibrary.org/obo/SNOMED_direct_substance_of> , <http://purl.obolibrary.org/obo/SNOMED_during> , <http://purl.obolibrary.org/obo/SNOMED_focus_of> , <http://purl.obolibrary.org/obo/SNOMED_has_dependent> , <http://purl.obolibrary.org/obo/SNOMED_part_anatomy_structure_of> , <http://purl.obolibrary.org/obo/SNOMED_precise_active_ingredient_of> , <http://purl.obolibrary.org/obo/UBERON_subdivision_of> , UBERON_CORE:layer_part_of , UBERON_CORE:subdivision_of , UBERON_CORE:trunk_part_of , CPT:panel_element_of , CPT:panel_element_of_possibly_included , VANDF:ingredient_of .
 biolink:part_qualifier a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "part qualifier" ;
 	rdfs:subPropertyOf biolink:qualifier ;
@@ -4951,7 +4951,7 @@ biolink:participates_in a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a continuant and a process, where the continuant is somehow involved in the process" ;
 	skos:exactMatch <http://purl.obolibrary.org/obo/BFO_0000056> , RO:0000056 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/drugbank/pathway> , <http://identifiers.org/hmdb/in_pathway> , LOINC:is_given_pharmaceutical_substance_for , <http://purl.obolibrary.org/obo/NCIT_R130> , <http://purl.obolibrary.org/obo/NCIT_R131> , <http://purl.obolibrary.org/obo/NCIT_R37> , <http://purl.obolibrary.org/obo/NCIT_R51> , <http://purl.obolibrary.org/obo/NCIT_R53> , <http://purl.obolibrary.org/obo/OBI_0000295> , RO:0002216 , RO:0002505 , <http://purl.obolibrary.org/obo/SNOMED_has_direct_device> .
+	skos:narrowMatch <http://identifiers.org/drugbank/pathway> , <http://identifiers.org/hmdb/in_pathway> , LOINC:is_given_pharmaceutical_substance_for , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R130> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R131> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R37> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R51> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R53> , <http://purl.obolibrary.org/obo/OBI_0000295> , RO:0002216 , RO:0002505 , <http://purl.obolibrary.org/obo/SNOMED_has_direct_device> .
 biolink:phase a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:CodingSequence ;
 	rdfs:label "phase" ;
@@ -4980,7 +4980,7 @@ biolink:physically_interacts_with a owl:ObjectProperty , owl:SymmetricProperty ,
 	skos:closeMatch <http://identifiers.org/drugbank/target> , CHEMBL.MECHANISM:binding_agent , CHEMBL.MECHANISM:chelating_agent , CHEMBL.MECHANISM:cross-linking_agent , CHEMBL.MECHANISM:oxidative_enzyme , CHEMBL.MECHANISM:sequestering_agent , CHEMBL.MECHANISM:substrate ;
 	skos:definition "holds between two entities that make physical contact as part of some interaction. does not imply a causal relationship." ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/drugbank/drug-interaction> , <http://purl.obolibrary.org/obo/FMA_adheres_to> , <http://purl.obolibrary.org/obo/NCIT_A7> , <http://purl.obolibrary.org/obo/PR_non-covalently_bound_to> ;
+	skos:narrowMatch <http://identifiers.org/drugbank/drug-interaction> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#A7> , <http://purl.obolibrary.org/obo/FMA_adheres_to> , <http://purl.obolibrary.org/obo/PR_non-covalently_bound_to> ;
 	biolink:canonical_predicate true .
 biolink:plasma_membrane_part_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "plasma membrane part of" ;
@@ -5084,7 +5084,7 @@ biolink:produces a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between a material entity and a product that is generated through the intentional actions or functioning of the material entity" ;
 	skos:exactMatch RO:0003000 , SEMMEDDB:PRODUCES , WIKIDATA_PROPERTY:P1056 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_R29> , <http://purl.obolibrary.org/obo/SNOMED_has_process_output> , <http://purl.obolibrary.org/obo/SNOMED_specimen_procedure_of> ;
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R29> , <http://purl.obolibrary.org/obo/SNOMED_has_process_output> , <http://purl.obolibrary.org/obo/SNOMED_specimen_procedure_of> ;
 	skos:relatedMatch GOREL:0001010 ;
 	biolink:canonical_predicate true .
 biolink:promotes_condition a owl:ObjectProperty , linkml:SlotDefinition ;
@@ -5169,7 +5169,7 @@ biolink:reaction_direction a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:subPropertyOf biolink:association_slot ;
 	skos:definition "the direction of a reaction as constrained by the direction enum (ie: left_to_right, neutral, etc.)" ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://purl.obolibrary.org/obo/NCIT_C42677> .
+	skos:narrowMatch <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C42677> .
 biolink:reaction_side a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "reaction side" ;
 	rdfs:range biolink:ReactionSideEnum ;
@@ -5213,7 +5213,7 @@ biolink:related_to a owl:ObjectProperty , owl:SymmetricProperty , linkml:SlotDef
 	skos:definition "A relationship that is asserted between two named things" ;
 	skos:exactMatch <http://identifiers.org/umls/related_to> ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch MESH:RO , MESH:has_mapping_qualifier , MESH:mapped_to , <http://identifiers.org/hmdb/disease> , <http://identifiers.org/hmdb/has_protein_association> , <http://identifiers.org/umls/RO> , <http://identifiers.org/umls/RQ> , <http://identifiers.org/umls/class_code_classified_by> , <http://identifiers.org/umls/exhibited_by> , <http://identifiers.org/umls/has_context_binding> , <http://identifiers.org/umls/has_form> , <http://identifiers.org/umls/has_mapping_qualifier> , <http://identifiers.org/umls/larger_than> , <http://identifiers.org/umls/mapped_to> , <http://identifiers.org/umls/owning_section_of> , LOINC:has_answer , LOINC:has_challenge , LOINC:has_evaluation , LOINC:mapped_to , LOINC:mth_has_expanded_form , HCPCS:mapped_to , RXNORM:has_form , RXNORM:reformulated_to , <http://purl.obolibrary.org/obo/BFO_0000054> , <http://purl.obolibrary.org/obo/BTO_related_to> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_acid_of> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_base_of> , <http://purl.obolibrary.org/obo/FMA_connected_to> , <http://purl.obolibrary.org/obo/FMA_continuous_with> , <http://purl.obolibrary.org/obo/FMA_homonym_of> , <http://purl.obolibrary.org/obo/FMA_related_developmental_entity_of> , GOREL:0002005 , GOREL:0012006 , IAO:0000136 , <http://purl.obolibrary.org/obo/MONDO_disease_shares_features_of> , <http://purl.obolibrary.org/obo/NCIT_disease_may_have_associated_disease> , <http://purl.obolibrary.org/obo/NCIT_human_disease_maps_to_eo_disease> , <http://purl.obolibrary.org/obo/NCIT_is_abnormal_cell_of_disease> , <http://purl.obolibrary.org/obo/NCIT_is_related_to_endogenous_product> , <http://purl.obolibrary.org/obo/PATO_reciprocal_of> , RO:0000052 , RO:0000053 , RO:0002001 , RO:0002002 , RO:0002003 , RO:0002008 , RO:0002084 , RO:0002092 , RO:0002093 , RO:0002134 , RO:0002150 , RO:0002159 , RO:0002176 , RO:0002177 , RO:0002178 , RO:0002179 , RO:0002314 , RO:0002322 , RO:0002328 , RO:0002332 , RO:0002338 , RO:0002339 , RO:0002341 , RO:0002342 , RO:0002344 , RO:0002348 , RO:0002349 , RO:0002356 , RO:0002371 , RO:0002372 , RO:0002373 , RO:0002374 , RO:0002385 , RO:0002387 , RO:0002451 , RO:0002494 , RO:0002495 , RO:0002568 , RO:0002573 , RO:0004026 , RO:0004027 , RO:0009001 , RO:0009004 , <http://purl.obolibrary.org/obo/SNOMED_has_associated_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_associated_procedure> , <http://purl.obolibrary.org/obo/SNOMED_has_direct_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_disposition> , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_modification> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_specimen_source_morphology> , <http://purl.obolibrary.org/obo/SNOMED_inheres_in> , <http://purl.obolibrary.org/obo/SNOMED_is_interpreted_by> , <http://purl.obolibrary.org/obo/SNOMED_relative_to_part_of> , <http://purl.obolibrary.org/obo/UBERON_synapsed_by> , UBERON_NONAMESPACE:connected_to , UBERON_NONAMESPACE:innervated_by , NBO-PROPERTY:is_about , UBERON_CORE:protects , EFO:0006351 , SEMMEDDB:ADMINISTERED_TO , SEMMEDDB:ASSOCIATED_WITH , SEMMEDDB:compared_with , SEMMEDDB:higher_than , SEMMEDDB:lower_than , CPT:has_add_on_code , CPT:mapped_to ;
+	skos:narrowMatch MESH:RO , MESH:has_mapping_qualifier , MESH:mapped_to , <http://identifiers.org/hmdb/disease> , <http://identifiers.org/hmdb/has_protein_association> , <http://identifiers.org/umls/RO> , <http://identifiers.org/umls/RQ> , <http://identifiers.org/umls/class_code_classified_by> , <http://identifiers.org/umls/exhibited_by> , <http://identifiers.org/umls/has_context_binding> , <http://identifiers.org/umls/has_form> , <http://identifiers.org/umls/has_mapping_qualifier> , <http://identifiers.org/umls/larger_than> , <http://identifiers.org/umls/mapped_to> , <http://identifiers.org/umls/owning_section_of> , LOINC:has_answer , LOINC:has_challenge , LOINC:has_evaluation , LOINC:mapped_to , LOINC:mth_has_expanded_form , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#disease_may_have_associated_disease> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#human_disease_maps_to_eo_disease> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#is_abnormal_cell_of_disease> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#is_related_to_endogenous_product> , HCPCS:mapped_to , RXNORM:has_form , RXNORM:reformulated_to , <http://purl.obolibrary.org/obo/BFO_0000054> , <http://purl.obolibrary.org/obo/BTO_related_to> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_acid_of> , <http://purl.obolibrary.org/obo/CHEBI_is_conjugate_base_of> , <http://purl.obolibrary.org/obo/FMA_connected_to> , <http://purl.obolibrary.org/obo/FMA_continuous_with> , <http://purl.obolibrary.org/obo/FMA_homonym_of> , <http://purl.obolibrary.org/obo/FMA_related_developmental_entity_of> , GOREL:0002005 , GOREL:0012006 , IAO:0000136 , <http://purl.obolibrary.org/obo/MONDO_disease_shares_features_of> , <http://purl.obolibrary.org/obo/PATO_reciprocal_of> , RO:0000052 , RO:0000053 , RO:0002001 , RO:0002002 , RO:0002003 , RO:0002008 , RO:0002084 , RO:0002092 , RO:0002093 , RO:0002134 , RO:0002150 , RO:0002159 , RO:0002176 , RO:0002177 , RO:0002178 , RO:0002179 , RO:0002314 , RO:0002322 , RO:0002328 , RO:0002332 , RO:0002338 , RO:0002339 , RO:0002341 , RO:0002342 , RO:0002344 , RO:0002348 , RO:0002349 , RO:0002356 , RO:0002371 , RO:0002372 , RO:0002373 , RO:0002374 , RO:0002385 , RO:0002387 , RO:0002451 , RO:0002494 , RO:0002495 , RO:0002568 , RO:0002573 , RO:0004026 , RO:0004027 , RO:0009001 , RO:0009004 , <http://purl.obolibrary.org/obo/SNOMED_has_associated_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_associated_procedure> , <http://purl.obolibrary.org/obo/SNOMED_has_direct_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_disposition> , <http://purl.obolibrary.org/obo/SNOMED_has_indirect_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_modification> , <http://purl.obolibrary.org/obo/SNOMED_has_procedure_morphology> , <http://purl.obolibrary.org/obo/SNOMED_has_specimen_source_morphology> , <http://purl.obolibrary.org/obo/SNOMED_inheres_in> , <http://purl.obolibrary.org/obo/SNOMED_is_interpreted_by> , <http://purl.obolibrary.org/obo/SNOMED_relative_to_part_of> , <http://purl.obolibrary.org/obo/UBERON_synapsed_by> , UBERON_NONAMESPACE:connected_to , UBERON_NONAMESPACE:innervated_by , NBO-PROPERTY:is_about , UBERON_CORE:protects , EFO:0006351 , SEMMEDDB:ADMINISTERED_TO , SEMMEDDB:ASSOCIATED_WITH , SEMMEDDB:compared_with , SEMMEDDB:higher_than , SEMMEDDB:lower_than , CPT:has_add_on_code , CPT:mapped_to ;
 	biolink:canonical_predicate true .
 biolink:related_to_at_concept_level a owl:ObjectProperty , owl:SymmetricProperty , linkml:SlotDefinition ;
 	rdfs:label "related to at concept level" ;
@@ -5460,7 +5460,7 @@ biolink:subclass_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between two classes where the domain class is a specialization of the range class" ;
 	skos:exactMatch MESH:isa , RXNORM:isa , <http://purl.obolibrary.org/obo/GO_isa> , rdfs:subClassOf , SEMMEDDB:ISA , CHEMBL.MECHANISM:subset_of , VANDF:isa , WIKIDATA_PROPERTY:P279 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch LOINC:has_archetype , LOINC:has_parent_group , LOINC:is_presence_guidance_for , NDDF:has_dose_form , RXNORM:has_dose_form , RXNORM:has_doseformgroup , <http://purl.obolibrary.org/obo/CHEBI_has_parent_hydride> , <http://purl.obolibrary.org/obo/NCIT_A11> , <http://purl.obolibrary.org/obo/NCIT_A14> , <http://purl.obolibrary.org/obo/NCIT_A16> , <http://purl.obolibrary.org/obo/NCIT_A3> , <http://purl.obolibrary.org/obo/NCIT_R36> , <http://purl.obolibrary.org/obo/NCIT_R42> , <http://purl.obolibrary.org/obo/NCIT_gene_product_has_chemical_classification> , <http://purl.obolibrary.org/obo/SNOMED_entire_anatomy_structure_of> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form> , rdfs:subPropertyOf ;
+	skos:narrowMatch LOINC:has_archetype , LOINC:has_parent_group , LOINC:is_presence_guidance_for , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#A11> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#A14> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#A16> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#A3> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R36> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#R42> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#gene_product_has_chemical_classification> , NDDF:has_dose_form , RXNORM:has_dose_form , RXNORM:has_doseformgroup , <http://purl.obolibrary.org/obo/CHEBI_has_parent_hydride> , <http://purl.obolibrary.org/obo/SNOMED_entire_anatomy_structure_of> , <http://purl.obolibrary.org/obo/SNOMED_has_dose_form> , rdfs:subPropertyOf ;
 	biolink:canonical_predicate true .
 biolink:subject a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:Association ;
@@ -5576,7 +5576,7 @@ biolink:superclass_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "holds between two classes where the domain class is a super class of the range class" ;
 	skos:exactMatch MESH:inverse_isa , RXNORM:inverse_isa , <http://purl.obolibrary.org/obo/GO_inverse_isa> , CHEMBL.MECHANISM:superset_of , VANDF:inverse_isa , WIKIDATA:Q66088480 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch <http://identifiers.org/umls/RB> , <http://purl.obolibrary.org/obo/NCIT_cdrh_parent_of> , <http://purl.obolibrary.org/obo/NCIT_ctcae_5_parent_of> , <http://purl.obolibrary.org/obo/NCIT_subset_includes_concept> , <http://purl.obolibrary.org/obo/OMIM_has_manifestation> , <http://purl.obolibrary.org/obo/SNOMED_has_basic_dose_form> .
+	skos:narrowMatch <http://identifiers.org/umls/RB> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#cdrh_parent_of> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#ctcae_5_parent_of> , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#subset_includes_concept> , <http://purl.obolibrary.org/obo/OMIM_has_manifestation> , <http://purl.obolibrary.org/obo/SNOMED_has_basic_dose_form> .
 biolink:support_graphs a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "support graphs" ;
 	rdfs:subPropertyOf biolink:association_slot ;
@@ -5824,7 +5824,7 @@ biolink:treats a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "Holds between an intervention (substance, procedure, or activity) and a medical condition (disease or phenotypic feature), and states that the intervention is, in some population(s),  able to ameliorate, stabilize, or cure the condition or delay, prevent, or reduce the risk  of it manifesting in the first place. ‘Treats’ edges should be asserted (knowledge_level: assertion) only in cases where there is strong supporting evidence - i.e. in some population(s) the intervention is approved for the condition, passed phase 3 or in phase 4 trials for the condition, or is an otherwise  established treatment in the medical community (e.g. a widely-accepted or formally recommended  off-label use). In the absence of such evidence, weaker predicates should be used in  asserted edges (e.g. ‘in clinical trials for’ or ‘beneficial in models of’). ‘Treats’ edges based on weaker or indirect forms of evidence can however be created as predictions  (knowledge_level: prediction) and should point to the more foundational asserted edges that  support them." ;
 	skos:exactMatch <http://identifiers.org/drugbank/treats> , WIKIDATA_PROPERTY:P2175 ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
-	skos:narrowMatch REPODB:clinically_tested_approved_unknown_phase , REPODB:clinically_tested_suspended_phase_0 , REPODB:clinically_tested_suspended_phase_1 , REPODB:clinically_tested_suspended_phase_1_or_phase_2 , REPODB:clinically_tested_suspended_phase_2 , REPODB:clinically_tested_suspended_phase_2_or_phase_3 , REPODB:clinically_tested_suspended_phase_3 , REPODB:clinically_tested_terminated_phase_0 , REPODB:clinically_tested_terminated_phase_1 , REPODB:clinically_tested_terminated_phase_1_or_phase_2 , REPODB:clinically_tested_terminated_phase_2 , REPODB:clinically_tested_terminated_phase_2_or_phase_3 , REPODB:clinically_tested_terminated_phase_3 , REPODB:clinically_tested_withdrawn_phase_0 , REPODB:clinically_tested_withdrawn_phase_1 , REPODB:clinically_tested_withdrawn_phase_1_or_phase_2 , REPODB:clinically_tested_withdrawn_phase_2 , REPODB:clinically_tested_withdrawn_phase_2_or_phase_3 , REPODB:clinically_tested_withdrawn_phase_3 , <http://purl.obolibrary.org/obo/NCIT_regimen_has_accepted_use_for_disease> , RO:0002606 , <http://purl.obolibrary.org/obo/SNOMED_plays_role> ;
+	skos:narrowMatch REPODB:clinically_tested_approved_unknown_phase , REPODB:clinically_tested_suspended_phase_0 , REPODB:clinically_tested_suspended_phase_1 , REPODB:clinically_tested_suspended_phase_1_or_phase_2 , REPODB:clinically_tested_suspended_phase_2 , REPODB:clinically_tested_suspended_phase_2_or_phase_3 , REPODB:clinically_tested_suspended_phase_3 , REPODB:clinically_tested_terminated_phase_0 , REPODB:clinically_tested_terminated_phase_1 , REPODB:clinically_tested_terminated_phase_1_or_phase_2 , REPODB:clinically_tested_terminated_phase_2 , REPODB:clinically_tested_terminated_phase_2_or_phase_3 , REPODB:clinically_tested_terminated_phase_3 , REPODB:clinically_tested_withdrawn_phase_0 , REPODB:clinically_tested_withdrawn_phase_1 , REPODB:clinically_tested_withdrawn_phase_1_or_phase_2 , REPODB:clinically_tested_withdrawn_phase_2 , REPODB:clinically_tested_withdrawn_phase_2_or_phase_3 , REPODB:clinically_tested_withdrawn_phase_3 , <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#regimen_has_accepted_use_for_disease> , RO:0002606 , <http://purl.obolibrary.org/obo/SNOMED_plays_role> ;
 	skos:relatedMatch <http://purl.obolibrary.org/obo/MONDO_disease_responds_to> ;
 	biolink:canonical_predicate true .
 biolink:treats_or_applied_or_studied_to_treat a owl:ObjectProperty , linkml:SlotDefinition ;
