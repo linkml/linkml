@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import sys
+import warnings
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -155,8 +156,39 @@ class Generator(metaclass=abc.ABCMeta):
     """Path to output file. Note all generators may not implement this
     uniformly, see https://github.com/linkml/linkml/issues/923"""
 
-    namespaces: Namespaces | None = None
-    """All prefix expansions used"""
+    _namespaces: Namespaces | None = None
+    """All prefix expansions used (SchemaLoader path only).  SchemaView-based
+    generators should use self.schemaview.namespaces() instead."""
+
+    @property
+    def namespaces(self) -> Namespaces | None:
+        """Return the namespace registry.
+
+        On the SchemaLoader path (``uses_schemaloader=True``) this returns the
+        pre-built :class:`~linkml_runtime.utils.namespaces.Namespaces` object
+        populated by SchemaLoader.
+
+        On the SchemaView path (``uses_schemaloader=False``) accessing this
+        property is a sign of a hybrid design anti-pattern.  A deprecation
+        warning is emitted and the call is transparently forwarded to
+        ``self.schemaview.namespaces()`` so that existing callers continue to
+        work while being nudged towards the correct API.
+        """
+        if not self.uses_schemaloader and self.schemaview is not None:
+            warnings.warn(
+                f"{type(self).__name__} uses SchemaView (uses_schemaloader=False) but "
+                "self.namespaces was accessed.  Use self.schemaview.namespaces() for URI "
+                "resolution instead; self.namespaces is a SchemaLoader-era artifact that "
+                "is not populated on the SchemaView path.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return self.schemaview.namespaces()
+        return self._namespaces
+
+    @namespaces.setter
+    def namespaces(self, value: Namespaces | None) -> None:
+        self._namespaces = value
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
@@ -231,7 +263,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = gen.schema
             self.synopsis = gen.synopsis
             self.loaded = gen.loaded
-            self.namespaces = gen.namespaces
+            self._namespaces = gen.namespaces
             self.base_dir = gen.base_dir
             self.importmap = gen.importmap
             self.source_file_data = gen.source_file_date
@@ -260,7 +292,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = loader.schema
             self.synopsis = loader.synopsis
             self.loaded = loader.loaded
-            self.namespaces = loader.namespaces
+            self._namespaces = loader.namespaces
             self.base_dir = loader.base_dir
             self.importmap = loader.importmap
             self.source_file_data = loader.source_file_date
@@ -269,18 +301,24 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema_defaults = loader.schema_defaults
 
     def _init_namespaces(self):
-        if self.namespaces is None:
-            self.namespaces = Namespaces()
+        # SchemaView-based generators do not need a pre-built namespace map;
+        # they use self.schemaview.namespaces() directly.  Populating
+        # self._namespaces on the SchemaView path would silently produce a
+        # broken map (Prefix objects instead of URI strings) and is unnecessary.
+        if not self.uses_schemaloader:
+            return
+        if self._namespaces is None:
+            self._namespaces = Namespaces()
             if isinstance(self.schema.prefixes, dict):
                 for key, value in self.schema.prefixes.items():
-                    self.namespaces[key] = value
+                    self._namespaces[key] = value
             elif isinstance(self.schema.prefixes, JsonObj):
                 prefixes = vars(self.schema.prefixes)
                 for key, value in prefixes.items():
-                    self.namespaces[key] = value
+                    self._namespaces[key] = value
             else:
                 for prefix in self.schema.prefixes.values():
-                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+                    self._namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
@@ -851,6 +889,8 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(defn, SlotDefinition):
             mappings.append(defn.slot_uri)
         for mapping in mappings:
+            if mapping is None:
+                continue
             if "://" in str(mapping):
                 mcurie = self.namespaces.curie_for(mapping)
                 if mcurie is None:
@@ -874,6 +914,8 @@ class Generator(metaclass=abc.ABCMeta):
 
         @param ncname: name to add
         """
+        if ncname is None:
+            return
         if ncname not in self.namespaces:
             self.logger.warning(f"Unrecognized prefix: {ncname}")
             self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
