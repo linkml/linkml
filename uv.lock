@@ -2548,7 +2548,7 @@ dev = [
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.32.1" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
-    { name = "pyshacl", specifier = ">=0.25.0" },
+    { name = "pyshacl", specifier = ">=0.40.1" },
     { name = "pytest", specifier = ">=7.4.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-subtests", specifier = ">=0.11.0" },
@@ -2578,12 +2578,12 @@ pandera = [
     { name = "pandera", specifier = ">=0.32.1" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
 ]
-shacl = [{ name = "pyshacl", specifier = ">=0.25.0" }]
+shacl = [{ name = "pyshacl", specifier = ">=0.40.1" }]
 tests = [
     { name = "black", specifier = ">=24.0.0" },
     { name = "duckdb", specifier = ">=1.5.5" },
     { name = "numpydantic", specifier = ">=1.10.0" },
-    { name = "pyshacl", specifier = ">=0.25.0" },
+    { name = "pyshacl", specifier = ">=0.40.1" },
     { name = "sqlalchemy-bigquery", specifier = ">=1.17.2" },
 ]
 tests-extra = [
@@ -3419,14 +3419,14 @@ wheels = [
 
 [[package]]
 name = "owlrl"
-version = "7.1.4"
+version = "7.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "rdflib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d1/fc/ce12482d096d65fff01af58f555a6f25e9dbf416fad5d99f91eaab0e11ca/owlrl-7.1.4.tar.gz", hash = "sha256:60bd4067e346b9111f0a2924565afe97ac6595b98b2bbe953928b5113971daf7", size = 44420, upload-time = "2025-07-29T00:17:27.608Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cb/08/50dd7fd0c64775d3d6309f35c0cc9a9d635f392f94ee2c4f9122404f7f86/owlrl-7.6.2.tar.gz", hash = "sha256:c743f35c2d908396e77823852bb1ebbce88340cd49961493983bec42c93283a8", size = 48564, upload-time = "2026-07-08T08:38:26.462Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/78/f857ff1a7207e967dc5e8414bbcc15e0aa5cf45f693b1d2ebe2afb3eb1ce/owlrl-7.1.4-py3-none-any.whl", hash = "sha256:e78b46020169783345636da93a467d318f18700c483184dd15e885850cf64775", size = 51981, upload-time = "2025-07-29T00:17:26.229Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/5e/314be7440bf28dbd47f85321a7434c5b74179a762228487d6493c01bddce/owlrl-7.6.2-py3-none-any.whl", hash = "sha256:83347bf7f133979e87b2b18695d51d25510b99cec3f6919b5df05d4fbf058ae0", size = 55814, upload-time = "2026-07-08T08:38:23.842Z" },
 ]
 
 [[package]]
@@ -4202,7 +4202,7 @@ wheels = [
 
 [[package]]
 name = "pyshacl"
-version = "0.30.1"
+version = "0.40.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "importlib-metadata", marker = "python_full_version < '3.12'" },
@@ -4211,9 +4211,9 @@ dependencies = [
     { name = "prettytable" },
     { name = "rdflib", extra = ["html"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/32/1602c3f4ab567b6d020bdd630c348fcf25d899f9e2b7a50385b10761673c/pyshacl-0.30.1.tar.gz", hash = "sha256:df712ac961b1ee7bcf0b27fa71ecab7785a135b2af69783ce30cb05fe41bcaf5", size = 1392238, upload-time = "2025-03-14T23:28:15.702Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1f/b8/f92465fead905b7c5365631a3997107c896cf1e32f4f9a163bdaee54e4fb/pyshacl-0.40.1.tar.gz", hash = "sha256:011e3cf1a68b31747cb762ba3d755ae1bdcc464c8fad0dc212a9adc550719552", size = 1444205, upload-time = "2026-07-28T01:37:36.499Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/12/3747eff45147d416c054881b7c0902b21ac7767b905f666c714233688c81/pyshacl-0.30.1-py3-none-any.whl", hash = "sha256:d7e0c21b25e948bb643dbc5db6258da64a90a8ac89055c1fe562b469031072aa", size = 1290522, upload-time = "2025-03-14T23:28:12.72Z" },
+    { url = "https://files.pythonhosted.org/packages/03/90/7f35a79db93032ef20db5b740062b54afba32a2c2475a6f0a43c141a69de/pyshacl-0.40.1-py3-none-any.whl", hash = "sha256:27dd58c8ddfa103303b4a8c40b2c666332ffc912dbcd3137f7adc7b7bc5e6bda", size = 1306209, upload-time = "2026-07-28T01:37:34.298Z" },
 ]
 
 [[package]]
