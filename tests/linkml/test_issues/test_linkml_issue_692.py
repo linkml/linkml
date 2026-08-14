@@ -100,7 +100,7 @@ def test_owlgen_xsd_prefixes_from_imported_schema_are_expanded():
     sv = gen.schemaview
     string_type = sv.get_type("string")
     expanded = sv.get_uri(string_type, expand=True)
-    assert "://" in expanded, (
+    assert expanded == "http://www.w3.org/2001/XMLSchema#string", (
         f"get_uri(expand=True) for built-in type 'string' returned {expanded!r} — "
         "an unexpanded CURIE rather than a full URI. "
         "The xsd: prefix from the imported schema was not in the namespace cache."
