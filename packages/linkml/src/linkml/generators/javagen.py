@@ -196,12 +196,6 @@ class JavaGenerator(OOCodeGenerator):
 
     This generators supports an arbitrary number of different styles through
     the use of “template variants“.
-
-    Currently, two variants are available:
-
-    - the default variant represents LinkML classes as Java classes carrying
-      Lombok annotations (https://projectlombok.org);
-    - the `records` variant represents LinkML classes as Java 16 records.
     """
 
     # ClassVars

@@ -34,6 +34,13 @@ def test_openapi_missing_template(kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize()
 
 
+def test_openapi_fixed_template(input_path, kitchen_sink_path):
+    """Test that serialize raises ValueError when no template file is provided."""
+    head_path = str(input_path("openapi/spec-fixed.openapi.yaml"))
+    oa_spec = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
+    assert open(head_path).read() == oa_spec
+
+
 def test_openapi_spec_no_defs_references(openapi_spec):
     """Test that all $defs references are converted to components/schemas."""
     for schema in openapi_spec["components"]["schemas"].values():
@@ -112,6 +119,22 @@ def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
     # The OpenAPI validator resolves $ref and catches a missing target
     with pytest.raises(PointerToNowhere):
         OpenApiGenerator(kitchen_sink_path).serialize(str(template))
+
+
+def test_openapi_type_constraints(input_path):
+    """Test that LinkML types with constraints (e.g., pattern) are properly generated in the spec."""
+    schema_path = str(input_path("openapi/schema_type_constraints.yaml"))
+    head_path = str(input_path("openapi/spec-types.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # the type schema is exposed under the template's resource name
+    code_str = schemas["CodeStringRef"]
+    assert code_str["type"] == "string"
+    assert code_str["pattern"] == "^[A-Z]{2,10}$"
+    assert code_str["description"] == "A 2-10 character uppercase code"
+    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    for schema in schemas.values():
+        assert "#/$defs/" not in str(schema)
 
 
 def test_renaming(input_path, kitchen_sink_path):
