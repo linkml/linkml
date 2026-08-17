@@ -203,3 +203,97 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Nothing updates UPSTREAM_SHA automatically -- `make update_model` is run by
+      # hand -- so a new linkml-model (pre)release can sit unadopted indefinitely
+      # with every check still green. This notices that. Comparing against the
+      # newest release rather than main is deliberate: main moves constantly, but a
+      # release means someone upstream decided something was ready to take.
+      #
+      # Resolution is delegated to `make print_latest_model_release`, the same
+      # target `make update_model` uses, so this check and the vendoring command
+      # cannot disagree about what "latest" means.
+      - name: Check whether the vendored pin is behind the latest release
+        id: pin_check
+        if: always()
+        run: |
+          PINNED=$(tr -d '[:space:]' < packages/linkml_runtime/src/linkml_runtime/linkml_model/UPSTREAM_SHA)
+          read -r TAG LATEST < <(make -C packages/linkml_runtime -s print_latest_model_release)
+
+          # Fail loudly rather than guessing: with no outputs set, neither the
+          # open-issue nor the close-issue step below will fire.
+          if [ -z "${PINNED}" ] || [ -z "${TAG}" ] || [ -z "${LATEST}" ]; then
+            echo "::error::Could not resolve the vendored pin or the latest release (pinned='${PINNED}' tag='${TAG}' latest='${LATEST}')"
+            exit 1
+          fi
+
+          echo "pinned=${PINNED}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "latest=${LATEST}" >> "$GITHUB_OUTPUT"
+          if [ "${PINNED}" = "${LATEST}" ]; then
+            echo "Vendored pin matches ${TAG}."
+            echo "stale=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Vendored pin ${PINNED} is behind ${TAG} (${LATEST})."
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for existing stale-pin issue
+        if: always() && steps.pin_check.outputs.stale == 'true'
+        id: check_pin_issue
+        run: |
+          EXISTING_ISSUE=$(gh issue list --label "vendored-model-stale-pin" --state open --json number --jq '.[0].number // empty')
+          echo "existing_issue=${EXISTING_ISSUE}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update issue when the pin is stale
+        if: always() && steps.pin_check.outputs.stale == 'true'
+        run: |
+          ISSUE_TITLE="Vendored linkml-model pin is behind the latest release"
+          mkdir -p temp
+
+          {
+            cat <<EOF
+          ## Vendored linkml-model Pin Is Stale
+
+          A newer linkml-model (pre)release exists than the one the vendored copy is
+          pinned to. Nothing adopts it automatically.
+
+          | | |
+          | --- | --- |
+          | Pinned (\`UPSTREAM_SHA\`) | \`${{ steps.pin_check.outputs.pinned }}\` |
+          | Latest release | \`${{ steps.pin_check.outputs.tag }}\` |
+          | Its commit | \`${{ steps.pin_check.outputs.latest }}\` |
+
+          To adopt it, run \`make update_model\` in \`packages/linkml_runtime/\` and
+          commit the result. Expect generated-artifact snapshots to need regenerating
+          in the same change.
+
+          This does not block any PR. It stays open until the pin is updated.
+
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+          } > temp/stale_pin_issue.md
+
+          if [ -n "${{ steps.check_pin_issue.outputs.existing_issue }}" ]; then
+            gh issue comment "${{ steps.check_pin_issue.outputs.existing_issue }}" --body-file temp/stale_pin_issue.md
+          else
+            gh issue create \
+              --title "${ISSUE_TITLE}" \
+              --body-file temp/stale_pin_issue.md \
+              --label "vendored-model-stale-pin"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close stale-pin issue once the pin is current
+        if: always() && steps.pin_check.outputs.stale == 'false'
+        run: |
+          EXISTING_ISSUE=$(gh issue list --label "vendored-model-stale-pin" --state open --json number --jq '.[0].number // empty')
+          if [ -n "${EXISTING_ISSUE}" ]; then
+            gh issue close "${EXISTING_ISSUE}" \
+              --comment "Vendored pin now matches ${{ steps.pin_check.outputs.tag }}. Closing."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
