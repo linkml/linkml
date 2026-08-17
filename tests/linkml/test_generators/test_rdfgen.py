@@ -80,6 +80,30 @@ def test_annotation_extensions():
         assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
 
 
+def test_generation_date_opt_out():
+    """``include_generation_date=False`` suppresses the generation_date timestamp triple.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516 (bullet 2): the
+    load-time ``generation_date`` stamp is serialized as a data triple in RDF output,
+    which defeats byte-stable/reproducible generation. The default still emits it; the
+    flag drops it and makes repeated runs identical.
+    """
+    generation_date = URIRef("https://w3id.org/linkml/generation_date")
+
+    default_graph = Graph()
+    default_graph.parse(data=RDFGenerator(schema, mergeimports=False).serialize(), format="turtle")
+    assert list(default_graph.triples((None, generation_date, None))), "generation_date should be present by default"
+
+    suppressed = RDFGenerator(schema, mergeimports=False, include_generation_date=False).serialize()
+    suppressed_graph = Graph()
+    suppressed_graph.parse(data=suppressed, format="turtle")
+    assert not list(suppressed_graph.triples((None, generation_date, None))), "generation_date should be suppressed"
+
+    # With the timestamp gone, output is byte-stable across runs.
+    rerun = RDFGenerator(schema, mergeimports=False, include_generation_date=False).serialize()
+    assert suppressed == rerun
+
+
 @pytest.mark.network
 def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_rdf(input_path):
     generated_rdf = RDFGenerator(input_path("linkml_issue_388.yaml")).serialize(context=[METAMODEL_CONTEXT_URI])
