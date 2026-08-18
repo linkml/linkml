@@ -4093,7 +4093,7 @@ linkml:unique_keys OIO:inSubset linkml:BasicSubset , linkml:RelationalModelProfi
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "Not to be confused with a \"singular unique key\", which is defined by means of the `key` slot, or with an \"identifier\", which is defined by means of the \"identifier\" slot. Compound keys, singular unique keys, and identifiers all create a unicity constraint, but singular unique keys and identifiers have additional effects that compound keys do not have.\n" ;
 	linkml:definition_uri "https://w3id.org/linkml/unique_keys"^^xsd:anyURI ;
-	linkml:description "A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why there are also called \"compound keys\". A unique key uniquely identifies instances of the class within a given container, meaning there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key." ;
+	linkml:description "A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why they are also called \"compound keys\". A unique key uniquely identifies instances of the class within a given container, meaning there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key." ;
 	linkml:domain linkml:ClassDefinition ;
 	linkml:domain_of linkml:ClassDefinition ;
 	linkml:inlined true ;

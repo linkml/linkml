@@ -45,7 +45,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "isodate >= 0.6.0",
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
-    "jsonschema[format] >= 4.0.0",
+    "jsonschema[format]>=4.26.0",
     "linkml-runtime >= 1.10.0, < 2.0.0",
     "openpyxl",
     "parse",
@@ -57,7 +57,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "pyshexc >= 0.10.3",
     "python-dateutil",
     "pyyaml",
-    "rdflib >=6.0.0",
+    "rdflib>=7.6.0",
     "requests >= 2.22",
     "sqlalchemy>=2.0.51",
     "watchdog >= 0.9.0",
@@ -71,17 +71,17 @@ lint = [
     "black >= 24.0.0",
 ]
 typing = [
-    "numpydantic >= 1.6.1",
+    "numpydantic>=1.10.0",
 ]
 shacl = [
-    "pyshacl >= 0.25.0",
+    "pyshacl>=0.40.1",
 ]
 tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "duckdb>=1.5.2",
-  "sqlalchemy-bigquery >= 1.9.0",
+  "duckdb>=1.5.5",
+  "sqlalchemy-bigquery>=1.17.2",
 ]
 dev = [
   {include-group = "tests" },
@@ -93,17 +93,17 @@ dev = [
   "jupyter",
   "nbconvert",
   "nbformat",
-  "coverage >= 6.4.1",
+  "coverage>=7.15.4",
   "tox >= 4",
   "tox-uv",
   "myst-nb >= 1.0.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
-  "rich >= 13.7.1",
+  "rich>=15.0.0",
   "gql>=4.0.0",
 ]
 
 pandera = [
-  "pandera >= 0.19.0",
+  "pandera>=0.32.1",
   "polars-lts-cpu >= 1.0.0",
   "pandas"
 ]
@@ -111,7 +111,7 @@ tests-rustgen = [
   "maturin>=1.14.1"
 ]
 typedb = [
-  "typedb-driver >= 3.0, < 4.0",
+  "typedb-driver>=3.12.2,<4.0",
 ]
 bigquery = [
   "sqlalchemy-bigquery >= 1.9.0",
@@ -132,14 +132,14 @@ tests-extra = [
 ]
 docs = [
   "furo>=2025.12.19",
-  "sphinxcontrib-mermaid>=2.0.3",
+  "sphinxcontrib-mermaid>=2.1.0",
   "sphinx",
   "sphinx-click",
   "sphinx-rtd-theme",
   "myst-parser",
   "matplotlib >= 3.7",
   "sphinx-jinja >= 2.0.2",
-  "sphinxcontrib-programoutput >= 0.17",
+  "sphinxcontrib-programoutput>=0.20",
 ]
 
 [tool.uv.sources]

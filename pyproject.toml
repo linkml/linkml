@@ -82,6 +82,7 @@ filterwarnings = [
 ]
 markers = [
   "network: mark tests that make external network requests",
+  "upstream_main: soft-fail tests that compare vendored files against linkml-model main branch",
   "slow: mark test as slow to run",
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",
