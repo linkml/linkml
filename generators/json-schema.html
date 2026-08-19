@@ -694,6 +694,22 @@ validating the body of the <code class="docutils literal notranslate"><span clas
 </pre></div>
 </div>
 </section>
+<section id="optional-slots-and-null">
+<h3>Optional slots and null<a class="headerlink" href="#optional-slots-and-null" title="Link to this heading">¶</a></h3>
+<p>By default, optional (non-required) slots accept an explicit JSON <code class="docutils literal notranslate"><span class="pre">null</span></code> in
+addition to their base type — the generator emits <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">[&quot;string&quot;,</span> <span class="pre">&quot;null&quot;]</span></code>
+for an optional string slot. This is convenient for producers that serialise
+missing values as <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+<p>Some target schemas forbid explicit <code class="docutils literal notranslate"><span class="pre">null</span></code> on optional properties (a property
+must either be present with a typed value or absent). Use
+<code class="docutils literal notranslate"><span class="pre">--no-include-null</span></code> to restrict optional slots to their base type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span>--no-include-null<span class="w"> </span>personinfo.yaml
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">--no-include-null</span></code> the optional string slot above is emitted as
+<code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;string&quot;</span></code>, so instance documents carrying <code class="docutils literal notranslate"><span class="pre">&quot;slot&quot;:</span> <span class="pre">null</span></code> fail
+validation. The default (<code class="docutils literal notranslate"><span class="pre">--include-null</span></code>) preserves the previous behaviour.</p>
+</section>
 <section id="patterns">
 <h3>Patterns<a class="headerlink" href="#patterns" title="Link to this heading">¶</a></h3>
 <p>Both LinkML and JSON-Schema support the same subset of <a class="reference external" href="https://www.ecma-international.org/publications-and-standards/standards/ecma-262/">ECMA-262</a>
@@ -915,6 +931,17 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-include-null">
+<span id="cmdoption-gen-json-schema-no-include-null"></span><span class="sig-name descname"><span class="pre">--include-null</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-null</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-include-null" title="Link to this definition">¶</a></dt>
+<dd><p>If set (default), optional slots also accept an explicit JSON null. Use –no-include-null to forbid explicit null on optional slots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-V">
 <span id="cmdoption-gen-json-schema-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
@@ -1116,6 +1143,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <li><a class="reference internal" href="#inheritance">Inheritance</a></li>
 <li><a class="reference internal" href="#composition">Composition</a></li>
 <li><a class="reference internal" href="#inlining">Inlining</a></li>
+<li><a class="reference internal" href="#optional-slots-and-null">Optional slots and null</a></li>
 <li><a class="reference internal" href="#patterns">Patterns</a></li>
 <li><a class="reference internal" href="#rules">Rules</a></li>
 <li><a class="reference internal" href="#uniqueness-constraints">Uniqueness constraints</a></li>
