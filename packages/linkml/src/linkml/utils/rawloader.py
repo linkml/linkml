@@ -31,7 +31,7 @@ SchemaDefinition.MissingRequiredField = mrf
 
 
 def load_raw_schema(
-    data: str | dict | TextIO | Path,
+    data: str | dict | TextIO | Path | SchemaDefinition,
     source_file: str | None = None,
     source_file_date: str | None = None,
     source_file_size: int | None = None,
@@ -42,14 +42,26 @@ def load_raw_schema(
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
-    @param data: URL, file name or block of text YAML Object or open file handle
-    @param source_file: Source file name for the schema if data is type TextIO
-    @param source_file_date: timestamp of source file if data is type TextIO
-    @param source_file_size: size of source file if data is type TextIO
-    @param base_dir: Working directory or base URL of sources
-    @param merge_modules: True means combine modules into one source, false means keep separate
-    @param emit_metadata: True means add source file info to the output
-    @return: Un-processed Schema Definition object
+    :param data: URL, file name, block of text, YAML object, open file handle or SchemaDefinition
+    :param source_file: Source file name for the schema if data is type TextIO
+    :param source_file_date: timestamp of source file if data is type TextIO
+    :param source_file_size: size of source file if data is type TextIO
+    :param base_dir: Working directory or base URL of sources
+    :param merge_modules: True means combine modules into one source, false means keep separate
+    :param metadata: False suppresses the source-file metadata this loader derives
+        (``source_file``, ``source_file_date``, ``source_file_size``, ``generation_date``).
+        This is a load-time suppression only — whether a generator prints such metadata is
+        decided by the generator. ``source_file`` is ``readonly: supplied by the schema
+        loader`` in the metamodel: for file/URL loads the loader-resolved path always wins
+        over a value embedded in the document, and ``metadata=False`` then clears it. A
+        caller-set ``source_file`` survives only on inputs with no source location (dict,
+        inline text, SchemaDefinition). See
+        https://github.com/linkml/linkml/issues/3699 for the ongoing work to move this
+        decision to serialization time.
+    :param emit_metadata: Legacy alias for ``metadata``; overrides it when supplied. Passing
+        this triggers the shared ``"metadata-flag"`` deprecation warning (see
+        ``deprecation.py``).
+    :returns: Un-processed Schema Definition object
     """
 
     def _name_from_url(url) -> str:
@@ -68,10 +80,13 @@ def load_raw_schema(
     if isinstance(data, Path):
         data = str(data)
 
+    # Records what the loader itself derived about the source. Created up front so the metadata
+    # handling below can rely on it regardless of which input branch was taken.
+    schema_metadata = FileInfo()
+
     # Convert the input into a valid SchemaDefinition
     if isinstance(data, str | dict | TextIO):
         # TODO: Build a generic loader that detects type from suffix or content and invokes the appropriate loader
-        schema_metadata = FileInfo()
         schema_metadata.source_file = source_file
         schema_metadata.source_file_date = source_file_date
         schema_metadata.source_file_size = source_file_size
@@ -108,6 +123,15 @@ def load_raw_schema(
             schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
+    elif schema_metadata.source_file:
+        # ``metadata=False`` suppresses loader-derived source metadata. Whenever the loader had a
+        # source location (file, URL, or caller-supplied name), ``yaml_loader`` overwrites
+        # ``source_file`` with it — the slot is ``readonly: supplied by the schema loader`` — so
+        # the value here is always loader-derived and clearing honors the flag. When the loader
+        # had no source location (dict, inline text, SchemaDefinition input), nothing was
+        # recorded and a caller-set value survives (see in-memory import path in ``schemaloader``).
+        # TODO(#3699): this stripping belongs at serialization time, not load time.
+        schema.source_file = None
     # Only set metamodel_version if the schema doesn't already define one.
     # This allows schemas (like the metamodel itself) to specify their own version
     # rather than inheriting from the currently installed runtime.
