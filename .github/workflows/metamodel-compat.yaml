@@ -238,6 +238,19 @@ jobs:
             echo "stale=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # gh issue create fails outright on an unknown label, so create it here rather
+      # than depending on someone having made it by hand. --force makes this a no-op
+      # when it already exists.
+      - name: Ensure the stale-pin label exists
+        if: always() && steps.pin_check.outputs.stale == 'true'
+        run: |
+          gh label create "vendored-model-stale-pin" \
+            --description "Vendored linkml-model pin is behind the latest release" \
+            --color "FBCA04" \
+            --force
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Check for existing stale-pin issue
         if: always() && steps.pin_check.outputs.stale == 'true'
         id: check_pin_issue

@@ -23,13 +23,25 @@ import sys
 import urllib.request
 
 BASE = "https://api.github.com/repos/linkml/linkml-model"
+TIMEOUT_SECONDS = 30
 
-releases = json.load(urllib.request.urlopen(BASE + "/releases?per_page=1"))
+
+def get(path):
+    # urlopen has no default timeout, so a wedged API would hang the weekly job
+    # until the runner limit rather than failing.
+    with urllib.request.urlopen(BASE + path, timeout=TIMEOUT_SECONDS) as response:
+        return json.load(response)
+
+
+# Releases are ordered newest-first and the list includes drafts for anyone with
+# push access. A draft is not something to vendor -- its tag may not exist yet --
+# so skip them. Prereleases are kept: release candidates are exactly what we pin to.
+releases = [release for release in get("/releases?per_page=10") if not release["draft"]]
 if not releases:
-    sys.exit("No linkml-model releases returned. Refusing to guess a revision.")
+    sys.exit("No published linkml-model releases returned. Refusing to guess a revision.")
 
 tag = releases[0]["tag_name"]
-sha = json.load(urllib.request.urlopen(BASE + "/commits/" + tag))["sha"]
+sha = get("/commits/" + tag)["sha"]
 print(tag, sha)
 endef
 export LATEST_MODEL_RELEASE_PY
