@@ -1,4 +1,4 @@
-"""Tests for the transient-network retry installed by ``tests/conftest.py``.
+"""Tests for the transient-network retry in :mod:`tests.network_retry`.
 
 Several dependencies fetch over ``urllib`` rather than ``requests`` --
 ``hbreader`` when reading schemas, and ``rdflib.parser`` -- so they bypass
@@ -15,13 +15,13 @@ import urllib.error
 
 import pytest
 
-from tests.conftest import NETWORK_RETRY_ATTEMPTS, _is_transient, with_urlopen_retry
+from tests.network_retry import NETWORK_RETRY_ATTEMPTS, _is_transient, with_urlopen_retry
 
 
 @pytest.fixture(autouse=True)
 def _no_backoff_sleep(monkeypatch):
     """Keep the retry tests fast; the backoff itself is not under test."""
-    monkeypatch.setattr("tests.conftest.time.sleep", lambda _seconds: None)
+    monkeypatch.setattr("tests.network_retry.time.sleep", lambda _seconds: None)
 
 
 @pytest.mark.parametrize(
