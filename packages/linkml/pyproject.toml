@@ -111,7 +111,7 @@ tests-rustgen = [
   "maturin>=1.14.1"
 ]
 typedb = [
-  "typedb-driver>=3.12.2,<4.0",
+  "typedb-driver>=3.12.3,<4.0",
 ]
 bigquery = [
   "sqlalchemy-bigquery >= 1.9.0",
