@@ -81,6 +81,7 @@ languages such as Python, Javascript, or Java.
    java
    typescript
    rust
+   zod
 
 Database
 --------
