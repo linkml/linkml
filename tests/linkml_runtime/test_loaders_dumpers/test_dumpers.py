@@ -135,7 +135,14 @@ def test_rdf_dumper(test_package):
         f.write(txt)
 
 
-@pytest.mark.skip(reason="Waiting until PyLD learns to handle relative context URI's")
+@pytest.mark.skip(
+    reason="Blocked on three separate defects:"
+    "https://github.com/linkml/linkml/issues/3883 (Package.context.jsonld is 0-byte)"
+    "https://github.com/linkml/linkml/issues/3886 (rdf_dumper.py contexts )"
+    "rdflib resolves scoped (term-level) relative @context references against process CWD"
+    "process CWD rather than the enclosing context's URL."
+    "This test needs a context server (see jsonld_context/README.md)"
+)
 def test_nested_contexts(test_package):
     """Test JSON-LD with fully nested contexts"""
     from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
