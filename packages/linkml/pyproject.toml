@@ -51,7 +51,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "parse",
     "prefixcommons >= 0.1.7",
     "prefixmaps >= 0.2.2",
-    "pydantic >= 2.0.0, < 3.0.0",
+    "pydantic>=2.13.4,<3.0.0",
     "pyjsg >= 0.12.3",
     "pyshex >= 0.9.0",
     "pyshexc >= 0.10.3",
@@ -59,7 +59,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "pyyaml",
     "rdflib>=7.6.0",
     "requests >= 2.22",
-    "sqlalchemy>=2.0.51",
+    "sqlalchemy>=2.0.52",
     "watchdog >= 0.9.0",
     "typing-extensions >= 4.6.0; python_version < '3.12'",
     "sphinx-click (>=6.0.0)",
@@ -94,9 +94,9 @@ dev = [
   "nbconvert",
   "nbformat",
   "coverage>=7.15.4",
-  "tox >= 4",
+  "tox>=4.59.0",
   "tox-uv",
-  "myst-nb >= 1.0.0; python_version >= '3.10'",
+  "myst-nb>=1.4.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
   "rich>=15.0.0",
   "gql>=4.0.0",
@@ -111,7 +111,7 @@ tests-rustgen = [
   "maturin>=1.14.1"
 ]
 typedb = [
-  "typedb-driver>=3.12.2,<4.0",
+  "typedb-driver>=3.12.3,<4.0",
 ]
 bigquery = [
   "sqlalchemy-bigquery >= 1.9.0",
@@ -126,7 +126,7 @@ tests-extra = [
   "numpy >= 1.25.2; python_version >= '3.12'",
   "requests-cache >= 1.3.2",
   "mock >= 5.1.0",
-  "testcontainers == 3.7.1",
+  "testcontainers==4.15.0",
   "jsonpatch >= 1.33",
   "openapi-spec-validator >= 0.8.4",
 ]
