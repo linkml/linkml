@@ -616,6 +616,59 @@ def test_import_map(importmap: dict[str, Any]) -> None:
     assert ACTIVITY not in view.all_classes(imports=False)
 
 
+def _write_redirect_tree(tmp_path: Path, sub_imports: list[str]) -> Path:
+    """``root_dir/main.yaml`` imports ``sub``, which an importmap redirects to
+    ``elsewhere/sub.yaml``; ``sub``'s own imports must resolve next to it, not next to ``main``.
+    Returns the path to ``main.yaml``."""
+    root_dir = tmp_path / "root_dir"
+    elsewhere = tmp_path / "elsewhere"
+    root_dir.mkdir()
+    elsewhere.mkdir()
+    (root_dir / "main.yaml").write_text(
+        "id: https://example.org/main\nname: main\ndefault_range: string\nimports: [sub]\n"
+        "classes:\n  Thing:\n    slots: [sub_slot]\n"
+    )
+    (elsewhere / "sub.yaml").write_text(
+        f"id: https://example.org/sub\nname: sub\ndefault_range: string\nimports: {sub_imports}\nslots:\n  sub_slot:\n"
+    )
+    (elsewhere / "leaf.yaml").write_text(
+        "id: https://example.org/leaf\nname: leaf\ndefault_range: string\nslots:\n  leaf_slot:\n"
+    )
+    return root_dir / "main.yaml"
+
+
+@pytest.mark.parametrize("importmap_value", ["../elsewhere/sub", "ABSOLUTE"])
+def test_importmap_redirected_schema_resolves_own_relative_imports(tmp_path: Path, importmap_value: str) -> None:
+    """A schema redirected outside the root tree by an importmap resolves its own relative
+    imports next to itself, not in the root schema's directory (#3499)."""
+    main = _write_redirect_tree(tmp_path, sub_imports=["./leaf"])
+    if importmap_value == "ABSOLUTE":
+        importmap_value = str(tmp_path / "elsewhere" / "sub")
+
+    view = SchemaView(str(main), importmap={"sub": importmap_value})
+    slots = view.all_slots(imports=True)
+    assert "sub_slot" in slots
+    assert "leaf_slot" in slots
+
+
+def test_importmap_redirected_schema_resolves_nested_relative_imports(tmp_path: Path) -> None:
+    """Relative imports resolve against the importing schema at every depth below a redirect."""
+    main = _write_redirect_tree(tmp_path, sub_imports=["./nested/deep"])
+    nested = tmp_path / "elsewhere" / "nested"
+    nested.mkdir()
+    (nested / "deep.yaml").write_text(
+        "id: https://example.org/deep\nname: deep\ndefault_range: string\nimports: [./deepest]\nslots:\n  deep_slot:\n"
+    )
+    (nested / "deepest.yaml").write_text(
+        "id: https://example.org/deepest\nname: deepest\ndefault_range: string\nslots:\n  deepest_slot:\n"
+    )
+
+    view = SchemaView(str(main), importmap={"sub": "../elsewhere/sub"})
+    slots = view.all_slots(imports=True)
+    assert "deep_slot" in slots
+    assert "deepest_slot" in slots
+
+
 def test_merge_imports_kwargs(schema_view_with_imports: SchemaView, sv_merged_imports_keyword: SchemaView) -> None:
     """Ensure that imports are or are not merged, depending on the kwargs."""
 
