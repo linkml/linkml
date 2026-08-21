@@ -19,6 +19,7 @@ from linkml.utils.deprecation import EMITTED
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
+from tests.network_retry import install as install_network_retry
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
@@ -352,6 +353,26 @@ def pytest_runtest_setup(item):
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def retry_transient_network(pytestconfig):
+    """Retry transient network failures raised through ``urllib`` and ``requests``.
+
+    See :mod:`tests.network_retry` for why this retries rather than caches. Note
+    that this covers the pytest process only; notebook tests run their code in a
+    separate kernel process and install the same retry there via
+    ``tests/_kernel_startup/sitecustomize.py``.
+    """
+    if pytestconfig.getoption("--without-cache"):
+        yield
+        return
+
+    uninstall = install_network_retry()
+    try:
+        yield
+    finally:
+        uninstall()
 
 
 @pytest.fixture(scope="session", autouse=True)
