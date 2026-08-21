@@ -4,7 +4,7 @@ import re
 import pytest
 
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import cli
+from linkml.generators.panderagen import PanderaDataframeGenerator, cli
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 np = pytest.importorskip("numpy", reason="NumPY not installed")
@@ -27,6 +27,21 @@ MODEL_COLUMNS = [
     "multivalued_column",
     "any_type_column",
 ]
+
+MATERIALIZED_LENGTH_PATTERN = r'str_contains=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
+
+
+def test_structured_patterns_are_resolved_without_modifying_schema(test_inputs_dir) -> None:
+    """Generate regular patterns from structured patterns without modifying the schema."""
+    generator = PanderaDataframeGenerator(str(test_inputs_dir / "pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
+
+    assert height_slot.pattern is None
+
+    code = generator.serialize()
+
+    assert MATERIALIZED_LENGTH_PATTERN in code
+    assert height_slot.pattern is None
 
 
 def test_pandera_basic_class_based(synthetic_pandera_schema):
