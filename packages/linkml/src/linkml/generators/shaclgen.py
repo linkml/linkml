@@ -639,13 +639,19 @@ class ShaclGenerator(Generator):
         return sv.expand_curie(f"{pfx}:{underscore(slot_name)}")
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
-        """Add an sh:class constraint for range class *r*.
+        """Add a class/shape constraint for range class *r*.
 
         Skips the constraint when *r* resolves to ``linkml:Any`` — the
-        LinkML meta-type representing an unconstrained range.  Emitting
-        ``sh:class linkml:Any`` in SHACL output is incorrect because the
-        ``linkml:Any`` class is never instantiated in real data; it would
-        cause every instance to fail validation.
+        LinkML meta-type representing an unconstrained range.
+
+        In default mode (``use_class_uri_names=True``): emits ``sh:class <class_uri>``
+        so validators check the RDF type hierarchy.
+
+        In native names mode (``use_class_uri_names=False``): emits ``sh:node <native_shape_uri>``
+        instead of ``sh:class``.  Using ``sh:class`` with a native shape URI (e.g.
+        ``dcatapplus:Resource``) is incorrect because data nodes are never typed as
+        that URI — it is a shape identifier, not an RDF class.  ``sh:node`` correctly
+        validates the referenced node against the named shape.
         """
         sv = self.schemaview
         cls = sv.get_class(r)
@@ -653,11 +659,14 @@ class ShaclGenerator(Generator):
             return
         if self.use_class_uri_names:
             range_ref = sv.get_uri(r, expand=True)
+            if range_ref == self.LINKML_ANY_URI:
+                return
+            func(SH["class"], URIRef(range_ref))
         else:
             range_ref = sv.get_uri(r, expand=True, native=True)
-        if range_ref == self.LINKML_ANY_URI:
-            return
-        func(SH["class"], URIRef(range_ref))
+            if range_ref == self.LINKML_ANY_URI:
+                return
+            func(SH["node"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
