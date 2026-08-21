@@ -1,3 +1,4 @@
+import pytest
 import yaml
 from click.testing import CliRunner
 
@@ -24,6 +25,27 @@ def test_linkmlgen_prefixes():
     parsed = yaml.safe_load(yaml_text)
     assert parsed["name"] == "EquipmentSchema"
     assert "equipment_schema" in parsed["prefixes"]
+
+
+def test_schemaview_generator_namespaces_access_warns(kitchen_sink_path):
+    """Accessing self.namespaces on a uses_schemaloader=False generator must
+    emit a DeprecationWarning and still return a usable Namespaces object.
+
+    self.namespaces is a SchemaLoader-era artifact.  SchemaView-based generators
+    should use self.schemaview.namespaces() directly.  The warning flags any
+    hybrid use so that it can be migrated to the correct API.
+    """
+    gen = LinkmlGenerator(kitchen_sink_path, format="yaml")
+    assert not gen.uses_schemaloader
+
+    with pytest.warns(DeprecationWarning, match="self.namespaces.*SchemaLoader-era"):
+        ns = gen.namespaces
+
+    # The returned value must still be a functional Namespaces object
+    # forwarded from self.schemaview.namespaces() so that existing callers
+    # continue to work while being migrated.
+    assert ns is not None
+    assert ns is gen.schemaview.namespaces()
 
 
 def test_generate(kitchen_sink_path):
