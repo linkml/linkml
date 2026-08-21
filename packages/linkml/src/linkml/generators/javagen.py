@@ -1,5 +1,6 @@
 import logging
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
@@ -188,6 +190,32 @@ class TemplateCache:
         return self.templates[candidate]
 
 
+def _find_root_schemas(schema_directory: Path, importmap: str | Mapping[str, str] | None = None) -> list[Path]:
+    """Finds all the root schemas in the specified directory.
+
+    A root schema, in the context of this method, in a schema that is not
+    imported by any other schema found under the specified directory.
+
+    :param schema_directory: The directory where to search for schemas.
+    :param importmap: The import map to use, if any.
+    :return: A list of paths to root schemas.
+    """
+
+    # This is woefully inefficient as we have to load each schema
+    # through SchemaView, but this is necessary to ensure that we
+    # use the very same import resolution logic as the generator.
+    imported_ids: dict[str, int] = {}
+    schema_ids: dict[Path, str] = {}
+    for schema_path in schema_directory.glob("**/*.yaml"):
+        view = SchemaView(schema_path, importmap=importmap)
+        schema_ids[schema_path] = view.schema.id
+        for s in view.all_schema():
+            if s.id != view.schema.id:
+                imported_ids[s.id] = 1
+    root_schemas = [p for p, i in schema_ids.items() if i not in imported_ids]
+    return root_schemas
+
+
 @deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class JavaGenerator(OOCodeGenerator):
@@ -208,10 +236,6 @@ class JavaGenerator(OOCodeGenerator):
     template_file: str | None = None
     template_dir: Path | None = None
     template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
-
-    gen_classvars: bool = True
-    gen_slots: bool = True
-    genmeta: bool = False
 
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
@@ -442,7 +466,7 @@ class JavaGenerator(OOCodeGenerator):
         return slot.alias if slot.alias and self.use_aliases else slot.name
 
 
-@shared_arguments(JavaGenerator)
+@shared_arguments(JavaGenerator, accepts_directory_input=True)
 @click.option(
     "--output-directory",
     default="output",
@@ -483,13 +507,11 @@ def cli(
     generate_records=False,
     head=None,
     emit_metadata=None,
-    genmeta=False,
-    classvars=True,
-    slots=True,
     true_enums=False,
     use_aliases=False,
     extra_template=[],
     visitor=[],
+    importmap=None,
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
@@ -509,16 +531,36 @@ def cli(
     if head is not None:
         deprecation_warning("metadata-flag")
         args["metadata"] = head
+
+    if yamlfile.is_dir():
+        # Generate code for all root schemas under the specified directory,
+        # inferring the package name from the directory hierarchy
+        for schema_path in _find_root_schemas(yamlfile, importmap):
+            package_dir = schema_path.relative_to(yamlfile).parent
+            output_dir = Path(output_directory) / package_dir
+            package_name = package_dir.as_posix().replace("/", ".")
+            JavaGenerator(
+                schema_path,
+                importmap=importmap,
+                package=package_name,
+                template_dir=template_dir,
+                template_file=template_file,
+                true_enums=true_enums,
+                use_aliases=use_aliases,
+                **args,
+            ).serialize(
+                output_dir, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
+            )
+        return
+
     JavaGenerator(
         yamlfile,
         package=package,
         template_dir=template_dir,
         template_file=template_file,
-        genmeta=genmeta,
-        gen_classvars=classvars,
-        gen_slots=slots,
         true_enums=true_enums,
         use_aliases=use_aliases,
+        importmap=importmap,
         **args,
     ).serialize(
         output_directory, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
