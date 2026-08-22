@@ -1023,10 +1023,15 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 """
                 )
                 for prop in lookup_by_props[1:]:
+                    lookup_call = (
+                        "cls._class_for_uri(type_designator_value)"
+                        if prop == "class_class_uri" and slot_range == "uriorcurie"
+                        else f'cls._class_for("{prop}", type_designator_value)'
+                    )
                     rlines.append(
                         f"""
             if target_cls is None:
-                target_cls = cls._class_for("{prop}", type_designator_value)
+                target_cls = {lookup_call}
 """
                     )
                 rlines.append(
