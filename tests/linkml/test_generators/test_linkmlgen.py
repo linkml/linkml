@@ -30,7 +30,7 @@ def test_linkmlgen_prefixes():
 
 def test_schemaview_generator_namespaces_access_warns(kitchen_sink_path):
     """Accessing self.namespaces on a uses_schemaloader=False generator must
-    emit a DeprecationWarning and still return a usable Namespaces object.
+    emit a UserWarning and still return a usable Namespaces object.
 
     self.namespaces is a SchemaLoader-era artifact.  SchemaView-based generators
     should use self.schemaview.namespaces() directly.  The warning flags any
@@ -39,7 +39,7 @@ def test_schemaview_generator_namespaces_access_warns(kitchen_sink_path):
     gen = LinkmlGenerator(kitchen_sink_path, format="yaml")
     assert not gen.uses_schemaloader
 
-    with pytest.warns(DeprecationWarning, match="self.namespaces.*SchemaLoader-era"):
+    with pytest.warns(UserWarning, match="self.namespaces.*SchemaLoader-era"):
         ns = gen.namespaces
 
     # The returned value must still be a functional Namespaces object
