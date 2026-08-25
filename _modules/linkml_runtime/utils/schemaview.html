@@ -2239,6 +2239,39 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pattern_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatternResolver</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a pattern resolver configured with one schema&#39;s settings.&quot;&quot;&quot;</span>
+        <span class="n">schemas_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">schema</span> <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_schema</span><span class="p">()}</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">schemas_by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PatternResolver</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SchemaView.resolve_pattern">
+<a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.resolve_pattern">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the effective regular-expression pattern for a slot or type definition.</span>
+
+<span class="sd">        Structured patterns are resolved using settings from the schema that defined the</span>
+<span class="sd">        supplied definition. The definition and underlying schemas are not modified.</span>
+
+<span class="sd">        :param definition: slot or type definition whose pattern should be resolved</span>
+<span class="sd">        :return: asserted or materialized regular-expression pattern, if present</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">structured_pattern</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">structured_pattern</span>
+        <span class="k">if</span> <span class="n">structured_pattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">definition</span><span class="o">.</span><span class="n">pattern</span>
+
+        <span class="n">resolver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_resolver</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">definition</span><span class="o">.</span><span class="n">from_schema</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
+        <span class="k">if</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">interpolated</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">escape_uninterpolated</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">partial_match</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;^(?:</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">)$&quot;</span>
+        <span class="k">return</span> <span class="n">pattern</span></div>
+
+
 <div class="viewcode-block" id="SchemaView.induced_slot">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_slot">[docs]</a>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -2271,8 +2304,8 @@
             <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="c1"># traverse ancestors (reflexive), starting with</span>
             <span class="c1"># the main class</span>
-            <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">an</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">class_ancestor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_ancestor</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                     <span class="n">slot</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span>
                     <span class="n">slot_comes_from_attribute</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2302,11 +2335,22 @@
 
         <span class="c1"># copy the slot, as it will be modified</span>
         <span class="n">induced_slot</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+
+        <span class="c1"># Resolve patterns on each copied definition *before* inheritance. `pattern`</span>
+        <span class="c1"># and `structured_pattern` are inherited as separate metaslots, so resolving</span>
+        <span class="c1"># only the final induced slot could combine them from different layers. For</span>
+        <span class="c1"># example, a child slot_usage&#39;s explicit `pattern` could otherwise be</span>
+        <span class="c1"># overwritten by a parent&#39;s inherited `structured_pattern`.</span>
+        <span class="n">induced_slot</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_pattern</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_comes_from_attribute</span><span class="p">:</span>
             <span class="n">slot_anc_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_ancestors</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># inheritable slot: first propagate from ancestors</span>
             <span class="k">for</span> <span class="n">anc_sn</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">slot_anc_names</span><span class="p">):</span>
                 <span class="n">anc_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">anc_sn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">anc_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">anc_slot</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">)</span>
+                <span class="n">anc_slot</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_pattern</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="n">SlotDefinition</span><span class="o">.</span><span class="n">_inherited_slots</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
                     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">)))</span>
@@ -2314,17 +2358,36 @@
             <span class="s2">&quot;maximum_value&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
             <span class="s2">&quot;minimum_value&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
         <span class="p">}</span>
+        <span class="n">class_ancestors</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Prepare materialized copies of slot_usage definitions before the generic</span>
+        <span class="c1"># metaslot loop below. This keeps a structured pattern and the regular pattern</span>
+        <span class="c1"># derived from it at the same inheritance priority. It also preserves enough</span>
+        <span class="c1"># provenance to select the correct settings: slot_usage definitions do not</span>
+        <span class="c1"># reliably carry `from_schema`, and that information cannot be recovered</span>
+        <span class="c1"># after all usages have been merged into `induced_slot`.</span>
+        <span class="n">resolved_slot_usages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">class_ancestor</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">class_ancestors</span><span class="p">):</span>
+            <span class="n">owning_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_ancestor</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span>
+            <span class="n">asserted_slot_usage</span> <span class="o">=</span> <span class="n">owning_class</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">asserted_slot_usage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resolved_slot_usages</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">class_ancestor</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="n">slot_usage</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">asserted_slot_usage</span><span class="p">)</span>
+            <span class="c1"># A slot_usage is defined as part of its owning class, so interpolate its</span>
+            <span class="c1"># structured pattern using that class&#39;s schema rather than the base slot&#39;s.</span>
+            <span class="n">slot_usage</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">=</span> <span class="n">owning_class</span><span class="o">.</span><span class="n">from_schema</span>
+            <span class="n">slot_usage</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_pattern</span><span class="p">(</span><span class="n">slot_usage</span><span class="p">)</span>
+            <span class="n">resolved_slot_usages</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">class_ancestor</span><span class="p">,</span> <span class="n">slot_usage</span><span class="p">))</span>
+
         <span class="c1"># iterate through all metaslots, and potentially populate metaslot value for induced slot</span>
         <span class="k">for</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metaslots_for_slot</span><span class="p">():</span>
             <span class="c1"># inheritance of slots; priority order</span>
             <span class="c1">#   slot-level assignment &lt; ancestor slot_usage &lt; self slot_usage</span>
             <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">propagated_from</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">propagated_from</span><span class="p">):</span>
-                <span class="n">induced_slot</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">an</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">an</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span>
-                <span class="n">anc_slot_usage</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="n">v2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot_usage</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">class_ancestor</span><span class="p">,</span> <span class="n">anc_slot_usage</span> <span class="ow">in</span> <span class="n">resolved_slot_usages</span><span class="p">:</span>
+                <span class="n">induced_slot</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">class_ancestor</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot_usage</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">anc_slot_usage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">v</span> <span class="o">=</span> <span class="n">v2</span>
                 <span class="k">elif</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="n">mix_max_value_dict</span><span class="p">:</span>
@@ -2455,18 +2518,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate an induced type.</span>
 
 <span class="sd">        :param type_name:</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: induced type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">type_name</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
-            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">uri</span>
-            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">base</span>
-            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">repr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">t</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">repr</span>
-        <span class="k">return</span> <span class="n">t</span></div>
+        <span class="n">induced_type</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">type_name</span><span class="p">))</span>
+        <span class="c1"># Resolve each copied ancestor before propagating inheritable metaslots. This</span>
+        <span class="c1"># lets an ancestor&#39;s materialized pattern be inherited while a child&#39;s explicit</span>
+        <span class="c1"># pattern or structured pattern still overrides it through the normal order.</span>
+        <span class="k">for</span> <span class="n">ancestor_name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_ancestors</span><span class="p">(</span><span class="n">type_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="n">type_ancestor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">ancestor_name</span><span class="p">))</span>
+            <span class="n">type_ancestor</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_pattern</span><span class="p">(</span><span class="n">type_ancestor</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="n">TypeDefinition</span><span class="o">.</span><span class="n">_inherited_slots</span><span class="p">:</span>  <span class="c1"># noqa: SLF001</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">type_ancestor</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_empty</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_type</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">induced_type</span></div>
 
 
 <div class="viewcode-block" id="SchemaView.induced_enum">
@@ -3001,28 +3066,74 @@
 
 <div class="viewcode-block" id="SchemaView.materialize_patterns">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">materialize_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Materialize schema by expanding structured patterns into regular expressions based on composite patterns provided in the settings dictionary.&quot;&quot;&quot;</span>
-        <span class="n">resolver</span> <span class="o">=</span> <span class="n">PatternResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="nd">@deprecated</span><span class="p">(</span>
+        <span class="n">reason</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;This method mutates asserted schema definitions. Use resolve_pattern() for a single definition, &quot;</span>
+            <span class="s2">&quot;or induced_slot() and induced_type() for induced definitions.&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">materialize_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Materialize structured patterns into regular expressions in place.</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">structured_pattern</span><span class="p">:</span>
+<span class="sd">        :param imports: include definitions from imported schemas, defaults to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_materialize_patterns</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_materialize_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement in-place pattern materialization for compatibility callers.&quot;&quot;&quot;</span>
+        <span class="n">schemas_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">schema</span> <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_schema</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)}</span>
+        <span class="n">resolvers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PatternResolver</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">modified</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">resolver_for_definition</span><span class="p">(</span>
+            <span class="n">element_def</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="n">TypeDefinition</span><span class="p">,</span>
+            <span class="n">owning_class</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatternResolver</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">owning_class</span> <span class="k">if</span> <span class="n">owning_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">element_def</span>
+            <span class="n">schema_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">from_schema</span><span class="p">)</span> <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">from_schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">schema_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resolvers</span><span class="p">:</span>
+                <span class="n">schema</span> <span class="o">=</span> <span class="n">schemas_by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+                <span class="n">resolvers</span><span class="p">[</span><span class="n">schema_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">PatternResolver</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">resolvers</span><span class="p">[</span><span class="n">schema_id</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">materialize_pattern_into_definition</span><span class="p">(</span>
+            <span class="n">element_def</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="n">TypeDefinition</span><span class="p">,</span>
+            <span class="n">owning_class</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">nonlocal</span> <span class="n">modified</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">element_def</span><span class="o">.</span><span class="n">structured_pattern</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
-            <span class="n">slot_definition</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="n">structured_pattern</span> <span class="o">=</span> <span class="n">element_def</span><span class="o">.</span><span class="n">structured_pattern</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
+            <span class="n">resolver</span> <span class="o">=</span> <span class="n">resolver_for_definition</span><span class="p">(</span><span class="n">element_def</span><span class="p">,</span> <span class="n">owning_class</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">interpolated</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">escape_uninterpolated</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">structured_pattern</span><span class="o">.</span><span class="n">partial_match</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;^(?:</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">)$&quot;</span>
+            <span class="k">if</span> <span class="n">element_def</span><span class="o">.</span><span class="n">pattern</span> <span class="o">!=</span> <span class="n">pattern</span><span class="p">:</span>
+                <span class="n">element_def</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+                <span class="n">modified</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">materialize_pattern_into_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">type_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_types</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">materialize_pattern_into_definition</span><span class="p">(</span><span class="n">type_definition</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
+                    <span class="n">materialize_pattern_into_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">,</span> <span class="n">class_definition</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span></div>
+                    <span class="n">materialize_pattern_into_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">,</span> <span class="n">class_definition</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">modified</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SchemaView.materialize_derived_schema">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema">[docs]</a>

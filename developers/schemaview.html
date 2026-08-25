@@ -1487,7 +1487,7 @@ to infer missing values, for inheritable slots</p>
 <dd class="field-odd"><p><strong>type_name</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>induced type</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1631,8 +1631,13 @@ or the URL of the source file, if it is a URL.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">
-<span class="sig-name descname"><span class="pre">materialize_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.materialize_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns" title="Link to this definition">¶</a></dt>
-<dd><p>Materialize schema by expanding structured patterns into regular expressions based on composite patterns provided in the settings dictionary.</p>
+<span class="sig-name descname"><span class="pre">materialize_patterns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.materialize_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns" title="Link to this definition">¶</a></dt>
+<dd><p>Materialize structured patterns into regular expressions in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>imports</strong> – include definitions from imported schemas, defaults to True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1720,6 +1725,22 @@ then this element is NOT copied.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>all direct parent enum names (is_a)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.resolve_pattern">
+<span class="sig-name descname"><span class="pre">resolve_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition" title="linkml_runtime.linkml_model.meta.TypeDefinition"><span class="pre">TypeDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.resolve_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.resolve_pattern" title="Link to this definition">¶</a></dt>
+<dd><p>Return the effective regular-expression pattern for a slot or type definition.</p>
+<p>Structured patterns are resolved using settings from the schema that defined the
+supplied definition. The definition and underlying schemas are not modified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>definition</strong> – slot or type definition whose pattern should be resolved</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>asserted or materialized regular-expression pattern, if present</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2111,6 +2132,7 @@ LinkML 1.2 allows the use of range expressions, where ranges can be defined as u
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.permissible_value_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.permissible_value_ancestors()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.permissible_value_descendants"><code class="docutils literal notranslate"><span class="pre">SchemaView.permissible_value_descendants()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.permissible_value_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.permissible_value_parents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.resolve_pattern"><code class="docutils literal notranslate"><span class="pre">SchemaView.resolve_pattern()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.set_modified"><code class="docutils literal notranslate"><span class="pre">SchemaView.set_modified()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_ancestors()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_applicable_range_elements"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_applicable_range_elements()</span></code></a></li>

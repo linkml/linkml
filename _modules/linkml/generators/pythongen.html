@@ -465,6 +465,7 @@
     <span class="c1"># ObjectVars</span>
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">dataclass_repr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1819,7 +1820,11 @@
             <span class="n">mappings</span> <span class="o">=</span> <span class="s2">&quot;, mappings = [&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">map_texts</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mappings</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">                   pattern=re.compile(r&#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39;)&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># Global slot definitions are emitted directly rather than through</span>
+        <span class="c1"># induced_slot(), so resolve structured patterns explicitly here</span>
+        <span class="c1"># without changing the source SlotDefinition.</span>
+        <span class="n">resolved_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">resolve_pattern</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">                   pattern=re.compile(r&#39;</span><span class="si">{</span><span class="n">resolved_pattern</span><span class="si">}</span><span class="s2">&#39;)&quot;</span> <span class="k">if</span> <span class="n">resolved_pattern</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;slots.</span><span class="si">{</span><span class="n">python_slot_name</span><span class="si">}</span><span class="s2"> = Slot(uri=</span><span class="si">{</span><span class="n">slot_uri</span><span class="si">}</span><span class="s2">, name=&quot;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;, curie=</span><span class="si">{</span><span class="n">slot_curie</span><span class="si">}</span><span class="s2">,</span>
 <span class="s2">                   model_uri=</span><span class="si">{</span><span class="n">slot_model_uri</span><span class="si">}</span><span class="s2">, domain=</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">, range=</span><span class="si">{</span><span class="n">rnge</span><span class="si">}{</span><span class="n">mappings</span><span class="si">}{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">)&quot;&quot;&quot;</span>
 

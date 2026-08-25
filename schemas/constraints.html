@@ -581,7 +581,14 @@ allows you to provide patterns in a more structured way, and to <em>reuse</em> s
 <span class="w">      </span><span class="nt">partial_match</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </pre></div>
 </div>
-<p>You can use <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">gen-linkml</span></a> to expand these into structured patterns</p>
+<p>Generators that emit pattern constraints resolve structured patterns automatically. This
+resolution does not add a <code class="docutils literal notranslate"><span class="pre">pattern</span></code> to the actual schema definition.</p>
+<p>Python applications can obtain the effective regular expression without modifying the
+schema by using <code class="docutils literal notranslate"><span class="pre">SchemaView.resolve_pattern()</span></code> for a particular slot or type definition.
+<code class="docutils literal notranslate"><span class="pre">SchemaView.induced_slot()</span></code> and <code class="docutils literal notranslate"><span class="pre">SchemaView.induced_type()</span></code> also resolve structured
+patterns while applying inheritance and class-specific slot usage.</p>
+<p>The older <code class="docutils literal notranslate"><span class="pre">materialize_patterns</span></code> generator options are deprecated.
+<code class="docutils literal notranslate"><span class="pre">SchemaView.materialize_patterns()</span></code> is also deprecated because it mutates the schema.</p>
 </section>
 <section id="minimum-and-maximum-values">
 <h2>Minimum and Maximum values<a class="headerlink" href="#minimum-and-maximum-values" title="Link to this heading">¶</a></h2>

@@ -419,6 +419,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.type_designators</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_type_designator_value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_range_associated_slots</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -804,7 +805,8 @@
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">]</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;schema.json&quot;</span>
-    <span class="n">materialize_patterns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">materialize_patterns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deprecated compatibility option; structured patterns are resolved automatically.&quot;&quot;&quot;</span>
 
     <span class="c1"># @deprecated(&quot;Use top_class&quot;)</span>
     <span class="n">topClass</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -856,6 +858,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;topClass is deprecated - use top_class&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span>
@@ -1410,9 +1415,6 @@
 <div class="viewcode-block" id="JsonSchemaGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Materializing patterns in the schema before serialization&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">materialize_patterns</span><span class="p">()</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 </div>
@@ -1480,9 +1482,8 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--materialize-patterns/--no-materialize-patterns&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Default set to True</span>
-    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If set, patterns will be materialized in the generated JSON Schema.&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Deprecated compatibility option; structured patterns are resolved automatically.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--preserve-names/--normalize-names&quot;</span><span class="p">,</span>

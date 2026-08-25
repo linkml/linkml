@@ -432,11 +432,16 @@ need to redundantly assert this, as this can be inferred.</p>
 <h2>Materializing a derived model<a class="headerlink" href="#materializing-a-derived-model" title="Link to this heading">¶</a></h2>
 <p>Use <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">gen-linkml</span></a> to create a derived schema saved as YAML</p>
 <p>This can be useful for feeding to basic tools that do not need to implement logic for inheritance</p>
+<p>Pattern-aware generators derive regular expressions from <code class="docutils literal notranslate"><span class="pre">structured_pattern</span></code>
+automatically. Explicit pattern materialization options are deprecated.</p>
 </section>
 <section id="programmatically-inferring-models">
 <h2>Programmatically inferring models<a class="headerlink" href="#programmatically-inferring-models" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Python developers can use SchemaView, see <a class="reference internal" href="../developers/manipulating-schemas.html"><span class="doc std std-doc">developers guide</span></a></p></li>
+<li><p>Python developers can use SchemaView, see <a class="reference internal" href="../developers/manipulating-schemas.html"><span class="doc std std-doc">developers guide</span></a>.
+<code class="docutils literal notranslate"><span class="pre">resolve_pattern()</span></code> resolves a particular slot or type definition, while
+<code class="docutils literal notranslate"><span class="pre">induced_slot()</span></code> and <code class="docutils literal notranslate"><span class="pre">induced_type()</span></code> include pattern inheritance as part of the
+effective definition.</p></li>
 <li><p>Javascript developers can use the javascript equivalent in <a class="reference external" href="https://github.com/linkml/linkml-runtime.js">linkml-runtime.js</a></p></li>
 </ul>
 </section>

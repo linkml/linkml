@@ -410,6 +410,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_to_file</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_dumper</span><span class="p">,</span> <span class="n">yaml_dumper</span>
@@ -437,10 +438,13 @@
     <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="n">materialize_attributes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">materialize_patterns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">materialize_patterns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deprecated option for materializing patterns into the serialized schema.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: consider moving up a level</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="c1"># Forward importmap/base_dir; the call to ``super().__post_init__``</span>
         <span class="c1"># above built a ``self.schemaview`` with these honoured, and this</span>
@@ -472,7 +476,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_attributes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">materialize_classes</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">materialize_patterns</span><span class="p">()</span>
+            <span class="c1"># Preserve the deprecated generator option&#39;s behavior without</span>
+            <span class="c1"># producing a second warning from SchemaView&#39;s public wrapper.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">_materialize_patterns</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
             <span class="n">json_str</span> <span class="o">=</span> <span class="n">json_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
@@ -505,7 +511,7 @@
     <span class="s2">&quot;--materialize/--no-materialize&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Materialize both, induced slots as attributes and structured patterns as patterns&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Materialize induced slots as attributes and use the deprecated structured-pattern materialization behavior&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--materialize-attributes/--no-materialize-attributes&quot;</span><span class="p">,</span>
@@ -517,7 +523,7 @@
     <span class="s2">&quot;--materialize-patterns/--no-materialize-patterns&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Materialize structured patterns as patterns&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Deprecated: materialize structured patterns as patterns&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
