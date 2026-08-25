@@ -184,8 +184,13 @@ class Generator(metaclass=abc.ABCMeta):
                 UserWarning,
                 stacklevel=3,
             )
+
+        # Return the namespace map, preferring an explicitly injected one.
+        if self._namespaces is not None:
+            return self._namespaces
+        if not self.uses_schemaloader and self.schemaview is not None:
             return self.schemaview.namespaces()
-        return self._namespaces
+        return None
 
     @namespaces.setter
     def namespaces(self, value: Namespaces | None) -> None:
