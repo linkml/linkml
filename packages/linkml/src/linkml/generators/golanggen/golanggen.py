@@ -503,6 +503,7 @@ class GolangGenerator(OOCodeGenerator):
             GolangModule containing all generated structs and enums
         """
         sv: SchemaView = self.schemaview
+
         self._type_defs = {}
         self._needs_time = False
 
