@@ -3,6 +3,7 @@ import yaml
 from click.testing import CliRunner
 
 from linkml.generators.linkmlgen import LinkmlGenerator, cli
+from linkml.utils.deprecation import EMITTED
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -89,19 +90,21 @@ def test_generate(kitchen_sink_path):
 def test_structured_pattern(input_path):
     # test that structured patterns are being expanded
     # and populated into the pattern property on a class
+    EMITTED.discard("materialize-patterns-generator-option")
     pattern_gen = LinkmlGenerator(
         str(input_path("pattern-example.yaml")),
         materialize_patterns=True,
         format="yaml",
     )
+    assert "materialize-patterns-generator-option" in EMITTED
 
     pattern_gen.serialize()
     # log yaml_filename so developers can look at its contents
     assert pattern_gen.schemaview.get_slot("id").pattern == r"^P\d{7}"
     assert pattern_gen.schemaview.get_slot("name").pattern == r"^[A-Z0-9]\w+.*$"
     assert pattern_gen.schemaview.get_slot("nicknames").pattern == r"^[A-Z0-9]\w+.*$"
-    assert pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert pattern_gen.schemaview.get_slot("weight").pattern == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert pattern_gen.schemaview.get_slot("height").pattern == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert pattern_gen.schemaview.get_slot("weight").pattern == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_true(input_path, tmp_path):
@@ -161,8 +164,8 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
     with open(yaml_output_path) as f:
         yobj = yaml.safe_load(f)
 
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_false(input_path, tmp_path):
@@ -198,8 +201,8 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
     )
     with open(yaml_output_path) as f:
         yobj = yaml.safe_load(f)
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
     # Scenario 2: User sets `--no-materialize` AND also explicitly sets
     # `--no-materialize-attributes` and `--no-materialize-patterns`.
