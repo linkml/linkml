@@ -175,14 +175,15 @@ class Generator(metaclass=abc.ABCMeta):
         ``self.schemaview.namespaces()`` so that existing callers continue to
         work while being nudged towards the correct API.
         """
+        # Emit a warning when a SchemaView-based generator reads self.namespaces.
         if not self.uses_schemaloader and self.schemaview is not None:
             warnings.warn(
                 f"{type(self).__name__} uses SchemaView (uses_schemaloader=False) but "
                 "self.namespaces was accessed.  Use self.schemaview.namespaces() for URI "
                 "resolution instead; self.namespaces is a SchemaLoader-era artifact that "
                 "is not populated on the SchemaView path.",
-                DeprecationWarning,
-                stacklevel=2,
+                UserWarning,
+                stacklevel=3,
             )
             return self.schemaview.namespaces()
         return self._namespaces
