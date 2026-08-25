@@ -79,3 +79,11 @@ class PatternResolver:
             converted = converted[: item["start"]] + item["string"] + converted[item["end"] :]
 
         return converted
+
+    @lru_cache
+    def escape_uninterpolated(self, pattern: str) -> str:
+        """Escape setting tokens so they remain literal in non-interpolated patterns."""
+        return self.var_name.sub(
+            lambda match: re.escape(match.group(0)) if match.group(1) in self.format_spec else match.group(0),
+            pattern,
+        )

@@ -40,6 +40,24 @@ EXPECTED_suffix = [
     ),
 ]
 
+
+def test_as_graph_materializes_structured_patterns(input_path) -> None:
+    """Resolve structured patterns without modifying the source schema."""
+    generator = ShaclGenerator(input_path("pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
+    email_type = generator.schemaview.get_type("EmailString")
+
+    assert height_slot.pattern is None
+    assert email_type.pattern is None
+
+    graph = generator.as_graph()
+
+    assert Literal(r"^(?:\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, SH.pattern)
+    assert Literal(r"^(?:\S+@\S+{\.\w}+)$") in graph.objects(None, SH.pattern)
+    assert height_slot.pattern is None
+    assert email_type.pattern is None
+
+
 EXPECTED_any_of = [
     (
         rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"),
