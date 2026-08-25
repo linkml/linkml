@@ -29,7 +29,6 @@ from typing import ClassVar, TextIO, Union, cast
 
 import click
 from click import Argument, Command, Option
-from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
@@ -257,8 +256,6 @@ class Generator(metaclass=abc.ABCMeta):
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
 
-        self._init_namespaces()
-
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
         # other generators.
@@ -305,26 +302,6 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_size = loader.source_file_size
             self.schema_location = loader.schema_location
             self.schema_defaults = loader.schema_defaults
-
-    def _init_namespaces(self):
-        # SchemaView-based generators do not need a pre-built namespace map;
-        # they use self.schemaview.namespaces() directly.  Populating
-        # self._namespaces on the SchemaView path would silently produce a
-        # broken map (Prefix objects instead of URI strings) and is unnecessary.
-        if not self.uses_schemaloader:
-            return
-        if self._namespaces is None:
-            self._namespaces = Namespaces()
-            if isinstance(self.schema.prefixes, dict):
-                for key, value in self.schema.prefixes.items():
-                    self._namespaces[key] = value
-            elif isinstance(self.schema.prefixes, JsonObj):
-                prefixes = vars(self.schema.prefixes)
-                for key, value in prefixes.items():
-                    self._namespaces[key] = value
-            else:
-                for prefix in self.schema.prefixes.values():
-                    self._namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
