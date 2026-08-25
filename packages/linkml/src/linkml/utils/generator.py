@@ -283,12 +283,13 @@ class Generator(metaclass=abc.ABCMeta):
                 for prefix in self.schema.prefixes.values():
                     self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
-    def serialize(self, **kwargs) -> str:
+    def serialize(self, **kwargs) -> str | None:
         """
         Generate output in the required format
 
         :param kwargs: Generator specific parameters
-        :return: Generated output
+        :return: Generated output, or None if the generator writes its output
+            directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)
         """
         out = ""
 

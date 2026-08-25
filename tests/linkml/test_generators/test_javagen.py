@@ -1,5 +1,3 @@
-import logging
-
 import pytest
 from click.testing import CliRunner
 
@@ -393,22 +391,34 @@ def test_cli_config_file_without_java_package_falls_back_to_default(tmp_path):
     assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
 
 
-def test_cli_invalid_config_package_warns_but_is_used(tmp_path, caplog):
-    """An invalid Java package name from the config file warns but is still emitted verbatim."""
+def test_cli_invalid_config_package_errors(tmp_path):
+    """An invalid Java package name from the config file is rejected rather than emitted verbatim."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
     config_path = tmp_path / "myconfig.yaml"
     config_path.write_text(_java_config_yaml("1bad.pkg"))
     out_dir = tmp_path / "out"
 
-    with caplog.at_level(logging.WARNING):
-        result = CliRunner().invoke(
-            cli,
-            ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
-        )
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
 
-    assert result.exit_code == 0, result.output
-    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package 1bad.pkg")
-    assert any("not a valid Java package name" in record.message for record in caplog.records)
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
+
+
+def test_cli_invalid_explicit_package_errors(tmp_path):
+    """An invalid Java package name passed via --package is rejected, matching the config-file behavior."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--package", "1bad.pkg", "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
 
 
 @pytest.mark.parametrize(

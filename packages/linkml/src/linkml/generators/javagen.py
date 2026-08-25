@@ -534,8 +534,8 @@ def cli(
     """Generate java classes to represent a LinkML model"""
     if package is None:
         package = read_generator_config(config_file, "java").get("package")
-        if package is not None and not _is_valid_java_package(str(package)):
-            logging.warning("Config value %r is not a valid Java package name; using it as-is.", package)
+    if package is not None and not _is_valid_java_package(str(package)):
+        raise click.UsageError(f"{package!r} is not a valid Java package name")
     if generate_records:
         template_variant = "records"
     if template_file is not None:
