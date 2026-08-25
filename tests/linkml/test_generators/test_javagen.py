@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from linkml.generators.javagen import JavaBundle, JavaGenerator
@@ -267,16 +269,20 @@ def test_render_template_variant(kitchen_sink_path):
     assert "public record Address(String street, String city, BigDecimal altitude)" in bundle.files["Address.java"]
 
 
-def test_render_visitors(kitchen_sink_path):
+def test_render_visitors(kitchen_sink_path, caplog):
     """`render(visitors=[...])` emits the visitor interface and adds `accept()` to visited classes."""
     gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
-    bundle = gen.render(visitors=["Concept"])
+    with caplog.at_level(logging.INFO, logger="linkml.generators.javagen"):
+        bundle = gen.render(visitors=["Concept", "InexistingClass"])
 
     assert "IConceptVisitor.java" in bundle.files
     assert "public void visit(DiagnosisConcept visited);" in bundle.files["IConceptVisitor.java"]
     # A class in the visited hierarchy carries the accept() method.
     assert "ProcedureConcept.java" in bundle.files
     assert "public void accept(IConceptVisitor visitor)" in bundle.files["ProcedureConcept.java"]
+
+    # A warning should be emitted if a class to visit can't be found in the schema
+    assert any("InexistingClass does not appear to be a valid name" for msg in caplog.messages)
 
 
 def test_render_true_enums(kitchen_sink_path):

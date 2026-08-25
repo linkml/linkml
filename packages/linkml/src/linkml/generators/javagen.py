@@ -13,6 +13,8 @@ from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
 
 TYPEMAP = {
@@ -290,6 +292,8 @@ class JavaGenerator(OOCodeGenerator):
         if visitors is not None:
             for visitor in visitors:
                 visited_name = visitor
+                if self.schemaview.get_class(visited_name) is None:
+                    logger.warning(f"{visited_name} does not appear to be a valid name for a class to visit")
                 visitor_name = "I" + camelcase(visited_name) + "Visitor"
                 oodocs.append(OOVisitorDocument(name=visitor_name, package=self.package, visited_object=visited_name))
         else:
