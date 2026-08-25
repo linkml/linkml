@@ -210,13 +210,6 @@ def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
 
     yaml_loader = YAMLLoader()
     schema: SchemaDefinition = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
-    if "\n" not in path:
-        # if "\n" not in path and "://" not in path:
-        # only set path if the input is not a yaml string or URL.
-        # Setting the source path is necessary for relative imports;
-        # while initializing a schema with a yaml string is possible, there
-        # should be no expectation of relative imports working.
-        schema.source_file = path
     return schema
 
 

@@ -1,5 +1,5 @@
 # Auto generated from array.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-05-05T18:49:10
+# Generation date: 2026-08-12T09:42:08
 # Schema: arrays
 #
 # id: https://w3id.org/linkml/lib/arrays
@@ -19,7 +19,7 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

@@ -23,6 +23,7 @@ prefixes:
   mediatypes: https://www.iana.org/assignments/media-types/
   oslc: http://open-services.net/ns/core#
   bibo: http://purl.org/ontology/bibo/
+  dcterms: http://purl.org/dc/terms/
 
 default_prefix: datasets
 default_range: string

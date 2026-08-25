@@ -46,7 +46,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
 | Pydantic | 30 | 34 | 1 | 0 | 65 | 46% |
-| Python DC | 17 | 38 | 10 | 0 | 65 | 26% |
+| Python DC | 18 | 37 | 10 | 0 | 65 | 28% |
 | JSON Schema | 40 | 23 | 2 | 0 | 65 | 62% |
 | Java | 0 | 24 | 41 | 0 | 65 | 0% |
 | SHACL | 20 | 25 | 20 | 0 | 65 | 31% |
@@ -76,7 +76,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | Class boolean constraints with required | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Class boolean with expressions | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | Slot all_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Slot any_of | ✅ | ⚠️ | ⚠️ | ❓ | ❓ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ |
+| Slot any_of | ✅ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ |
 | Slot boolean with expressions | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | Slot exactly_one_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Slot none_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
