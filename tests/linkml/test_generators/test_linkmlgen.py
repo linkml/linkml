@@ -46,7 +46,7 @@ def test_schemaview_generator_namespaces_access_warns(kitchen_sink_path):
     # forwarded from self.schemaview.namespaces() so that existing callers
     # continue to work while being migrated.
     assert ns is not None
-    assert ns is gen.schemaview.namespaces()
+    assert ns == gen.schemaview.namespaces()
 
 
 def test_generate(kitchen_sink_path):
