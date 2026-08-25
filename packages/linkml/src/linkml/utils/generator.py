@@ -156,9 +156,16 @@ class Generator(metaclass=abc.ABCMeta):
     """Path to output file. Note all generators may not implement this
     uniformly, see https://github.com/linkml/linkml/issues/923"""
 
-    _namespaces: Namespaces | None = None
-    """All prefix expansions used (SchemaLoader path only).  SchemaView-based
-    generators should use self.schemaview.namespaces() instead."""
+    _namespaces: ClassVar[Namespaces | None] = None
+    """Class-level sentinel default for the private backing store of the
+    :attr:`namespaces` property. Declaring it as a ``ClassVar`` keeps it out of
+    the dataclass-generated ``__init__`` while still providing a safe default
+    read (``None``) before the instance attribute is assigned. The public,
+    constructor-visible name is the field ``namespaces``.  On ``main`` that was a
+    plain dataclass field, so ``namespaces=`` was an implicit constructor kwarg;
+    it is preserved here so external callers/subclasses relying on it are not
+    silently broken by the switch to a property-backed field.
+    """
 
     @property
     def namespaces(self) -> Namespaces | None:
@@ -169,7 +176,7 @@ class Generator(metaclass=abc.ABCMeta):
         populated by SchemaLoader.
 
         On the SchemaView path (``uses_schemaloader=False``) accessing this
-        property is a sign of a hybrid design anti-pattern.  A deprecation
+        property is a sign of a hybrid design anti-pattern. A deprecation
         warning is emitted and the call is transparently forwarded to
         ``self.schemaview.namespaces()`` so that existing callers continue to
         work while being nudged towards the correct API.
@@ -194,7 +201,22 @@ class Generator(metaclass=abc.ABCMeta):
 
     @namespaces.setter
     def namespaces(self, value: Namespaces | None) -> None:
+        """Save passed namespace registry in the private backing store of the
+        :attr:`namespaces` property."""
         self._namespaces = value
+
+    namespaces: Namespaces | None = namespaces
+    """Constructor kwarg backing the ``namespaces`` property (see above).
+
+    This does NOT create a second attribute that shadows the property.
+    A dataclass "field" is just an *annotation* plus a *default value*;
+    the only real class attribute named ``namespaces`` remains the
+    ``namespaces`` property object.
+    ``@dataclass`` reads that property object as the field's default and bakes it
+    into the generated ``__init__`` as ``namespaces=<property object>``
+    -- it does not overwrite the property, so attribute access still goes through
+    the getter/setter.
+    """
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
@@ -222,6 +244,13 @@ class Generator(metaclass=abc.ABCMeta):
     """If set, include extra schema outside of the imports mechanism"""
 
     def __post_init__(self) -> None:
+        # The ``namespaces`` dataclass field defaults to the property object
+        # itself (see its declaration).  When no ``namespaces=`` kwarg is passed,
+        # the generated __init__ routes that default through the property setter
+        # into ``self._namespaces``; normalise that sentinel back to ``None`` so
+        # the SchemaLoader/SchemaView paths can populate it as usual.
+        if self._namespaces is Generator.__dict__["namespaces"]:
+            self._namespaces = None
         if not self.logger:
             self.logger = logger
         if self.log_level is not None:
