@@ -615,7 +615,13 @@ def test_pydantic_pattern_multivalued(input_path) -> None:
         str(input_path("pattern-example.yaml")),
         package="pattern-example",
     )
+    height_slot = gen.schemaview.get_slot("height")
+    assert height_slot.pattern is None
+
     code = gen.serialize()
+    assert r"^(?:\d+[\.\d+] (centimeter|meter|inch))$" in code
+    assert height_slot.pattern is None
+
     module = compile_python(code, "pattern-example")
 
     # name and nicknames must match "^[A-Z0-9]\w+.*$"
