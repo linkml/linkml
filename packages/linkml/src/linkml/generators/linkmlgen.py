@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import click
 
 from linkml._version import __version__
+from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
@@ -30,12 +31,25 @@ class LinkmlGenerator(Generator):
     requires_metamodel = False
 
     materialize_attributes: bool = False
-    materialize_patterns: bool = False
+    materialize_patterns: bool | None = None
+    """Deprecated option for materializing patterns into the serialized schema."""
 
     def __post_init__(self):
         # TODO: consider moving up a level
+        if self.materialize_patterns is not None:
+            deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
         super().__post_init__()
-        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
+        # Forward importmap/base_dir; the call to ``super().__post_init__``
+        # above built a ``self.schemaview`` with these honoured, and this
+        # overwrite must not drop them or URI-style imports resolved via
+        # ``--importmap`` will fall through to HTTP when ``mergeimports``
+        # triggers ``imports_closure()``.
+        self.schemaview = SchemaView(
+            self.schema,
+            merge_imports=self.mergeimports,
+            base_dir=self.base_dir,
+            importmap=self.importmap,
+        )
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attributes, in place"""
@@ -50,7 +64,9 @@ class LinkmlGenerator(Generator):
         if self.materialize_attributes:
             self.materialize_classes()
         if self.materialize_patterns:
-            self.schemaview.materialize_patterns()
+            # Preserve the deprecated generator option's behavior without
+            # producing a second warning from SchemaView's public wrapper.
+            self.schemaview._materialize_patterns()
 
         if self.format == "json":
             json_str = json_dumper.dumps(self.schemaview.schema)
@@ -81,7 +97,7 @@ class LinkmlGenerator(Generator):
     "--materialize/--no-materialize",
     default=True,
     show_default=True,
-    help="Materialize both, induced slots as attributes and structured patterns as patterns",
+    help="Materialize induced slots as attributes and use the deprecated structured-pattern materialization behavior",
 )
 @click.option(
     "--materialize-attributes/--no-materialize-attributes",
@@ -93,7 +109,7 @@ class LinkmlGenerator(Generator):
     "--materialize-patterns/--no-materialize-patterns",
     default=True,
     show_default=True,
-    help="Materialize structured patterns as patterns",
+    help="Deprecated: materialize structured patterns as patterns",
 )
 @click.option(
     "-o",

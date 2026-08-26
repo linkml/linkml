@@ -126,13 +126,9 @@
                             "type": "string"
                         },
                         {
-                            "type": "string"
-                        },
-                        {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfClasses",
@@ -153,8 +149,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfEnums",
@@ -178,8 +173,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfMix",
@@ -200,8 +194,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfSimpleType",
@@ -274,7 +267,14 @@
                     "type": "string"
                 },
                 "long_id": {
-                    "$ref": "#/$defs/LongEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LongEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "type": [
@@ -501,8 +501,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "EmploymentEvent",
@@ -610,7 +609,14 @@
             "description": "",
             "properties": {
                 "cordialness": {
-                    "$ref": "#/$defs/CordialnessEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CordialnessEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
@@ -949,7 +955,14 @@
                     "type": "string"
                 },
                 "is_living": {
-                    "$ref": "#/$defs/LifeStatusEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LifeStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "pattern": "^\\S+ \\S+$",
@@ -1040,7 +1053,14 @@
             "description": "",
             "properties": {
                 "cordialness": {
-                    "$ref": "#/$defs/CordialnessEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CordialnessEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",

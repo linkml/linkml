@@ -135,6 +135,7 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
+
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
 
@@ -300,6 +301,8 @@ class OwlSchemaGenerator(Generator):
             self.consolidate_cardinality_axioms = False
 
         sv = self.schemaview
+        sv.imports_closure()  # populate schema_map with all imported sub-schemas
+        sv.namespaces.cache_clear()  # ensure namespace cache is rebuilt with the full schema_map
         schema = sv.schema
         owl_id = schema.id
         if self.ontology_uri_suffix:
@@ -323,7 +326,9 @@ class OwlSchemaGenerator(Generator):
         for slot in sv.all_slots(imports=mergeimports, attributes=False).values():
             self.add_slot(slot, attribute=False)
         for typ in sv.all_types(imports=mergeimports).values():
-            self.add_type(typ)
+            # Type constraints are inherited, so emit the effective type rather
+            # than the asserted definition from the schema.
+            self.add_type(sv.induced_type(typ.name))
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
         for cls in sv.all_classes(imports=mergeimports).values():
@@ -482,8 +487,14 @@ class OwlSchemaGenerator(Generator):
             # If user selects add_root_classes, then all classes will be subclasses of LinkML:ClassDefinition
             if cls.mixin and self.mixins_as_expressions:
                 self.graph.add((cls_uri, RDFS.subClassOf, self._mixin_grouping_class_uri()))
+                self._declare_grouping_class(
+                    self._mixin_grouping_class_uri(),
+                    label="mixin",
+                    description="Grouping class for LinkML mixins referenced via add_root_classes.",
+                )
             else:
                 self.graph.add((cls_uri, RDFS.subClassOf, URIRef(ClassDefinition.class_class_uri)))
+                self._declare_grouping_class(URIRef(ClassDefinition.class_class_uri), ClassDefinition.class_name)
         if self.has_profile(MetadataProfile.ols):
             # Add annotations for browser hints. See https://www.ebi.ac.uk/ols/docs/installation-guide
             if cls.is_a is None:
@@ -930,7 +941,7 @@ class OwlSchemaGenerator(Generator):
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: element.pattern,  # TODO: map between ECMAScript and XSD regular expressions
+            XSD.pattern: self._structured_pattern_as_xsd(element),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -986,6 +997,29 @@ class OwlSchemaGenerator(Generator):
                 graph.add((x, constraint_prop, Literal(constraint_val)))
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
+
+    def _structured_pattern_as_xsd(
+        self,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+    ) -> str | None:
+        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
+        pattern = element.pattern
+        structured_pattern = element.structured_pattern
+        # OWL also processes anonymous expressions, which cannot be induced.
+        # Named definitions that reach this point without a pattern are raw
+        # schema elements, so resolve them locally without mutating the schema.
+        if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
+            pattern = self.schemaview.resolve_pattern(element)
+        if pattern is None or structured_pattern is None:
+            return pattern
+        inner = pattern
+        if inner.startswith("^(?:") and inner.endswith(")$"):
+            inner = inner[4:-2]
+        if inner.startswith("^") and inner.endswith("$"):
+            inner = inner[1:-1]
+        if structured_pattern.partial_match:
+            return f".*({inner}).*"
+        return inner
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
@@ -1142,6 +1176,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
+            self._declare_grouping_class(URIRef(EnumDefinition.class_class_uri), EnumDefinition.class_name)
         if self.metaclasses:
             g.add(
                 (
@@ -1192,6 +1227,7 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
+                    self._declare_grouping_class(URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name)
         if all([pv is not None for pv in pv_uris]):
             # every single PV in the enum is not-null
             all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
@@ -1531,6 +1567,43 @@ class OwlSchemaGenerator(Generator):
     def _mixin_grouping_class_uri() -> URIRef:
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
+    def _declare_grouping_class(
+        self,
+        uri: URIRef,
+        metamodel_class_name: str | None = None,
+        label: str | None = None,
+        description: str | None = None,
+    ) -> None:
+        """Declare a metamodel grouping class referenced by ``add_root_classes`` as an ``owl:Class``.
+
+        When ``add_root_classes`` is set, schema elements are made ``rdfs:subClassOf`` metamodel
+        classes such as ``linkml:EnumDefinition``. Those parent classes were referenced but never
+        declared, so RDF-only consumers (for example OLS) treat the parent as a dangling reference
+        and drop the grouping from the class hierarchy. This emits a minimal ``owl:Class``
+        declaration with an ``rdfs:label`` and ``skos:definition`` sourced from the metamodel,
+        making the grouping renderable without a reasoning step. Idempotent.
+
+        :param uri: URI of the grouping class to declare
+        :param metamodel_class_name: name of the metamodel class to source label/definition from
+        :param label: explicit label, used when the URI has no corresponding metamodel class
+        :param description: explicit definition, used as a fallback
+        """
+        if (uri, RDF.type, OWL.Class) in self.graph:
+            return
+        self.graph.add((uri, RDF.type, OWL.Class))
+        if metamodel_class_name is not None:
+            meta_class = self.metamodel_schemaview.get_class(metamodel_class_name)
+            if meta_class is not None:
+                # Prefer a metamodel title; otherwise use the UpperCamelCase form of the
+                # metamodel name (matching the class IRI local name and the LinkML model
+                # docs, e.g. "EnumDefinition"), not the raw snake_case name.
+                label = meta_class.title or camelcase(meta_class.name) or label
+                description = meta_class.description or description
+        if label is not None:
+            self.graph.add((uri, RDFS.label, Literal(label)))
+        if description is not None:
+            self.graph.add((uri, SKOS.definition, Literal(description)))
+
     def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)
         return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
@@ -1569,14 +1642,6 @@ class OwlSchemaGenerator(Generator):
         if native is None:
             # never use native unless type shadowing with objects is enabled
             native = self.type_objects
-        if native:
-            # UGLY HACK: Currently schemaview does not camelcase types
-            e = self.schemaview.get_element(tn, imports=True)
-            if e.from_schema is not None:
-                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
-                pfx = schema.default_prefix
-                if pfx == "linkml":
-                    return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
         expanded = self.schemaview.get_uri(t, expand=True, native=native)
         if expanded.startswith("xsd:"):

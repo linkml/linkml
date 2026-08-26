@@ -13,6 +13,8 @@ from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
 
 TYPEMAP = {
@@ -101,6 +103,25 @@ class OOVisitorDocument(OOCustomDocument):
         self.type = "_visitor"
 
 
+@dataclass
+class JavaBundle:
+    """In-memory result of rendering a LinkML schema to Java source.
+
+    A ``JavaBundle`` is the output of :meth:`JavaGenerator.render`. It carries
+    the rendered Java source for every file that would be written to disk by
+    :meth:`JavaGenerator.serialize`, keyed by filename.
+
+    Mirrors render/serialize split used by `rustgen.RustGenerator` (FileResult /
+    CrateResult) and `pydanticgen.PydanticGenerator` (PydanticModule).
+    """
+
+    files: dict[str, str] = field(default_factory=dict)
+    """Rendered Java source, keyed by filename (e.g. ``"Address.java"``)."""
+
+    package: str = ""
+    """Java package name the rendered files belong to (informational)."""
+
+
 class TemplateCache:
     """Cache for template objects.
 
@@ -177,12 +198,6 @@ class JavaGenerator(OOCodeGenerator):
 
     This generators supports an arbitrary number of different styles through
     the use of “template variants“.
-
-    Currently, two variants are available:
-
-    - the default variant represents LinkML classes as Java classes carrying
-      Lombok annotations (https://projectlombok.org);
-    - the `records` variant represents LinkML classes as Java 16 records.
     """
 
     # ClassVars
@@ -242,17 +257,17 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
-    def serialize(
+    def render(
         self,
-        directory: str,
         template_variant: str | None = None,
         extra_templates: list[str] | None = None,
         visitors: list[str] | None = None,
-        **kwargs,
-    ) -> None:
-        """Generate and write the Java code to files.
+    ) -> JavaBundle:
+        """Render the schema to an in-memory :class:`JavaBundle`.
 
-        :param directory: The directory where to write the code files.
+        Pure counterpart of :meth:`serialize`: returns the rendered Java
+        source for every file without touching the filesystem.
+
         :param template_variant: The name of the template variant to use, if any.
         :param extra_templates: A list of additional templates from which to generate
             additional code files. For example, if set to `[Foo,Bar]`, this will
@@ -266,6 +281,8 @@ class JavaGenerator(OOCodeGenerator):
             `IFooVisitor` interface, and the generated code for both the `Foo`
             class and all its descendants will include a `accept(IFooVisitor)`
             method.
+        :return: A :class:`JavaBundle` whose ``files`` maps each output filename
+            (e.g. ``"Address.java"``) to its rendered source.
         """
         oodocs = self.create_documents()
         # Create additional documents for additional templates and visitors
@@ -275,11 +292,14 @@ class JavaGenerator(OOCodeGenerator):
         if visitors is not None:
             for visitor in visitors:
                 visited_name = visitor
+                if self.schemaview.get_class(visited_name) is None:
+                    logger.warning(f"{visited_name} does not appear to be a valid name for a class to visit")
                 visitor_name = "I" + camelcase(visited_name) + "Visitor"
                 oodocs.append(OOVisitorDocument(name=visitor_name, package=self.package, visited_object=visited_name))
         else:
             visitors = []
-        self.directory = directory
+
+        files: dict[str, str] = {}
         for oodoc in oodocs:
             cls = None
             enum = None
@@ -306,8 +326,52 @@ class JavaGenerator(OOCodeGenerator):
                 model_version=self.schema.version,
             )
 
-            os.makedirs(directory, exist_ok=True)
-            filename = f"{oodoc.name}.java"
+            files[f"{oodoc.name}.java"] = code
+
+        return JavaBundle(files=files, package=self.package)
+
+    def serialize(
+        self,
+        directory: str | Path,
+        template_variant: str | None = None,
+        extra_templates: list[str] | None = None,
+        visitors: list[str] | None = None,
+        rendered_module: JavaBundle | None = None,
+        **kwargs,
+    ) -> None:
+        """Generate the Java code and write it to ``directory``, one file per class.
+
+        Java requires one public class per file, so there is no meaningful
+        single-string serialization of a schema; callers that want the
+        generated code in memory should use :meth:`render` and work from the
+        returned :class:`JavaBundle` instead.
+
+        :param directory: The directory where to write the code files.
+        :param template_variant: The name of the template variant to use, if any.
+            Ignored when ``rendered_module`` is provided.
+        :param extra_templates: A list of additional templates from which to generate
+            additional code files. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
+        :param visitors: A list of class names for which to generate a visitor
+            interface. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
+        :param rendered_module: Optional pre-computed :class:`JavaBundle` to
+            write instead of calling :meth:`render` afresh. Allows caller to
+            render once and inspect/write multiple times. When supplied,
+            ``template_variant``, ``extra_templates``, and ``visitors``
+            are ignored (the bundle is used as-is).
+        """
+        bundle = (
+            rendered_module
+            if rendered_module is not None
+            else self.render(
+                template_variant=template_variant,
+                extra_templates=extra_templates,
+                visitors=visitors,
+            )
+        )
+        os.makedirs(directory, exist_ok=True)
+        for filename, code in bundle.files.items():
             path = os.path.join(directory, filename)
             with open(path, "w", encoding="UTF-8") as stream:
                 stream.write(code)
@@ -322,28 +386,16 @@ class JavaGenerator(OOCodeGenerator):
         :param name: A class name.
         :returns: True if cls has any ancestor with the specified name.
         """
-        if cls.is_a is None:
-            return False
-        elif cls.is_a == name:
-            return True
-        else:
-            return self.has_ancestor(self.schemaview.get_class(cls.is_a), name)
+        return name in self.schemaview.class_ancestors(cls.name, mixins=False, reflexive=False)
 
-    def get_descendants(self, name: str, _descendants=None) -> list[str]:
+    def get_descendants(self, name: str) -> list[str]:
         """Gets all the descendants of a class.
 
         :param name: A class name.
-        :param _descendants: The list to which to append the names of the
-            descendant classes.
         :returns: A flat list of the names of all classes that inherit from
             the named class.
         """
-        if _descendants is None:
-            _descendants = []
-        for child in self.schemaview.class_children(name):
-            _descendants.append(child)
-            self.get_descendants(child, _descendants)
-        return _descendants
+        return self.schemaview.class_descendants(name, mixins=False, reflexive=False)
 
     def get_class_name(self, name: str) -> str:
         """Converts a LinkML class name to a Java class name."""
@@ -380,6 +432,22 @@ class JavaGenerator(OOCodeGenerator):
 
     def get_slot_actual_name(self, slot: SlotDefinition) -> str:
         return slot.alias if slot.alias and self.use_aliases else slot.name
+
+    def needs_extra_slots(self, klass: ClassDefinition) -> bool:
+        """Indicates whether a class requires handling of extra slots.
+
+        A Java class representing a LinkML class requires special code to
+        handle extra slots if (1) the LinkML class is configured to allow
+        extra slots and (2) none of its parent classes are already
+        configured to allow extra slots.
+        """
+        if klass.extra_slots is None or not klass.extra_slots.allowed:
+            return False
+        for ancestor in self.schemaview.class_ancestors(klass.name, mixins=False, reflexive=False):
+            ancestor_extra_slots = self.schemaview.get_class(ancestor).extra_slots
+            if ancestor_extra_slots is not None and ancestor_extra_slots.allowed:
+                return False
+        return True
 
 
 @shared_arguments(JavaGenerator)

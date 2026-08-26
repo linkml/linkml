@@ -4,7 +4,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import click
 from jsonasobj2 import as_dict
@@ -14,6 +14,7 @@ from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
@@ -57,10 +58,29 @@ _base_implied_patterns: dict[str, str] = {
 }
 
 
+def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
+    """Return *subschemas* with duplicate entries removed, preserving order.
+
+    Two subschemas are considered duplicates when their JSON representations are
+    identical.  This can occur, for example, when multiple ``any_of`` branches
+    point to different classes whose identifier slot shares the same scalar type
+    (e.g. both ``Person.id`` and ``Organization.id`` have ``range: string``),
+    producing redundant ``{"type": "string"}`` entries.
+    """
+    seen: set[str] = set()
+    result: list[JsonSchema] = []
+    for schema in subschemas:
+        key = json.dumps(schema, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            result.append(schema)
+    return result
+
+
 def _slot_examples_for_json_schema(
-    examples: list[Example],
+    examples: dict | Example | list[dict | Example] | None,
     *,
-    json_schema_type: str | None = None,
+    json_schema_type: list[str] | str | None = None,
     is_array_valued: bool,
 ) -> list:
     """Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects
@@ -132,12 +152,12 @@ def _slot_examples_for_json_schema(
     if not examples:
         return []
 
-    def _coerce_string_to_type(v: str, json_schema_type: str, is_array_valued: bool) -> Any:
+    def _coerce_string_to_type(v: str, json_schema_type: str | None, is_array_valued: bool) -> Any:
         """Coerce string to JSON type, falling back to the original on failure."""
 
         try:
             # Example.value is typed as Optional[str] in the LinkML metamodel. A list
-            # written in YAML as  value: ["a", "b"]  is coerced to its Python str()
+            # written in YAML as value: ["a", "b"] is coerced to its Python str()
             # representation "['a', 'b']" on load. Recover the original list with
             # ast.literal_eval when the string looks like a Python list literal.
             if is_array_valued and isinstance(v, str) and v.strip().startswith("["):
@@ -166,7 +186,7 @@ def _slot_examples_for_json_schema(
     merged_example = []
     direct_examples = []
 
-    for ex in examples:
+    for ex in cast(list[Example], examples):  # Element.__post_init__() ensures list
         if ex.object is not None:
             value = as_dict(ex.object)
         elif ex.value is not None:
@@ -378,7 +398,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     valid_formats = ["json"]
     uses_schemaloader = False
     file_extension = "schema.json"
-    materialize_patterns: bool = False
+    materialize_patterns: bool | None = None
+    """Deprecated compatibility option; structured patterns are resolved automatically."""
 
     # @deprecated("Use top_class")
     topClass: str | None = None
@@ -404,7 +425,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     top_level_schema: JsonSchema = None
 
     include_null: bool = True
-    """Whether to include a "null" type in optional slots"""
+    """Whether optional (non-required) slots also accept an explicit JSON ``null``.
+
+    When ``True`` (default) an optional slot is rendered with ``null`` added to its
+    type (e.g. ``["string", "null"]``), so an explicit ``null`` value validates. When
+    ``False`` the slot keeps its bare type and optionality is expressed solely by
+    absence from ``required``.
+
+    JSON Schema treats presence (``required``, Validation 6.5.3) as separate from the
+    value type (``type``, Validation 6.1.1, where ``null`` is one of the value types),
+    and JSON ``null`` is a distinct value, not an absent member (RFC 8259 sec. 3). Set
+    this ``False`` for strict parity with reference schemas that declare a bare type
+    and forbid ``null``."""
 
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
@@ -419,6 +451,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     def __post_init__(self):
+        if self.materialize_patterns is not None:
+            deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
@@ -553,7 +588,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Include class-level examples if present. Each Example on a class is an
         # independent full-instance example (same semantics as single-valued slots).
-        if getattr(cls, "examples", None):
+        if cls.examples:
             class_examples = _slot_examples_for_json_schema(cls.examples, is_array_valued=False)
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
@@ -765,7 +800,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if slot.examples:
                 prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
             return prop
-        slot_is_multivalued = "multivalued" in slot and slot.multivalued
+        slot_is_multivalued = cast(bool, "multivalued" in slot and slot.multivalued)
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
 
@@ -816,12 +851,22 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
 
             else:
-                if reference is not None:
-                    prop = JsonSchema.ref_for(reference)
-                elif typ and fmt is None:
-                    prop = JsonSchema({"type": typ})
-                elif typ:
-                    prop = JsonSchema({"type": typ, "format": fmt})
+                if not slot_is_boolean or slot.range != self.schemaview.schema.default_range:
+                    # When a slot uses boolean constraints (any_of, all_of, etc.) AND its range
+                    # was not set explicitly but inherited from the schema's default_range, the
+                    # boolean constraints already fully describe the type.  Emitting prop["type"]
+                    # from the default_range would duplicate that constraint.  Skip it.
+                    # An explicit range on a boolean slot is intentional and is kept.
+                    if reference is not None:
+                        # for multivalued slots, nullability applies to the array (via array_of
+                        # below), not to the individual elements
+                        prop = JsonSchema.ref_for(
+                            reference, required=slot.required or slot_is_multivalued or not include_null
+                        )
+                    elif typ and fmt is None:
+                        prop = JsonSchema({"type": typ})
+                    elif typ:
+                        prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
                     prop = JsonSchema.array_of(prop, include_null, required=slot.required)
@@ -857,19 +902,27 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
-            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            bool_subschema["anyOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            bool_subschema["allOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            bool_subschema["allOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            bool_subschema["oneOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                "anyOf": _deduplicate_subschemas(
+                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                )
             }
 
         if bool_subschema:
@@ -953,9 +1006,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        if self.materialize_patterns:
-            logger.info("Materializing patterns in the schema before serialization")
-            self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
 
@@ -1021,9 +1071,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 )
 @click.option(
     "--materialize-patterns/--no-materialize-patterns",
-    default=True,  # Default set to True
-    show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema.",
+    default=None,
+    help="Deprecated compatibility option; structured patterns are resolved automatically.",
 )
 @click.option(
     "--preserve-names/--normalize-names",
@@ -1036,6 +1085,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=True,
     show_default=True,
     help="If set, expand subproperty_of constraints to enum constraints.",
+)
+@click.option(
+    "--include-null/--no-include-null",
+    default=True,
+    show_default=True,
+    help="If set (default), optional slots also accept an explicit JSON null. "
+    "Use --no-include-null to forbid explicit null on optional slots.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

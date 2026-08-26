@@ -5,7 +5,7 @@ from enum import Enum
 import pytest
 from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF
+from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
@@ -91,6 +91,47 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     assert BIZ["001"] in owl_classes
 
 
+@pytest.mark.parametrize(
+    ("partial_match", "expected_pattern"),
+    [
+        (False, r"[a-z]+"),
+        (True, r".*([a-z]+).*"),
+    ],
+)
+def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
+    """Translate structured patterns without modifying the source schema."""
+    generator = OwlSchemaGenerator(
+        f"""
+id: https://example.org/pattern
+name: pattern
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: true
+      partial_match: {str(partial_match).lower()}
+classes:
+  C:
+    slots:
+      - value
+"""
+    )
+    value_slot = generator.schemaview.get_slot("value")
+
+    assert value_slot.pattern is None
+
+    graph = generator.as_graph()
+
+    patterns = list(graph.objects(None, XSD.pattern))
+    assert Literal(expected_pattern) in patterns, patterns
+    assert value_slot.pattern is None
+
+
 def test_rdfs_profile(kitchen_sink_path):
     owl = OwlSchemaGenerator(
         kitchen_sink_path,
@@ -151,6 +192,84 @@ def test_rule_none_of_ignores_empty_slot_expression() -> None:
     assert (EX.MappingRule, RDF.type, OWL.Class) in g
     assert list(g.objects(None, OWL.complementOf)) == []
     assert list(g.objects(None, OWL.datatypeComplementOf)) == []
+
+
+def test_add_root_classes_declares_grouping_classes() -> None:
+    """``add_root_classes`` must declare the metamodel grouping classes it references.
+
+    Regression test for https://github.com/linkml/linkml/issues/3605. With ``add_root_classes``,
+    enums, classes, and permissible values are made ``rdfs:subClassOf`` ``linkml:EnumDefinition`` /
+    ``linkml:ClassDefinition`` / ``linkml:PermissibleValue``. Previously those parents were never
+    declared as ``owl:Class``, so RDF-only consumers (such as OLS) treated them as dangling
+    references and dropped the grouping. Each referenced grouping class must now be declared as an
+    ``owl:Class`` with an ``rdfs:label`` sourced from the metamodel.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    for grouping_uri in (LINKML.EnumDefinition, LINKML.ClassDefinition, LINKML.PermissibleValue):
+        assert (grouping_uri, RDF.type, OWL.Class) in g, f"{grouping_uri} not declared as owl:Class"
+        assert next(g.objects(grouping_uri, RDFS.label), None) is not None, f"{grouping_uri} missing rdfs:label"
+
+
+def test_add_root_classes_declares_mixin_grouping_class() -> None:
+    """The ``mixins_as_expressions`` path must declare its synthetic mixin grouping class.
+
+    Companion to :func:`test_add_root_classes_declares_grouping_classes`, covering the branch a
+    root mixin takes when ``mixins_as_expressions`` is set. Such a class is made
+    ``rdfs:subClassOf`` the synthetic ``ClassDefinition#Mixin`` grouping class; that grouping class
+    must itself be declared as an ``owl:Class`` with an ``rdfs:label`` so RDF-only consumers (such
+    as OLS) keep the grouping rather than treating it as a dangling reference.
+    """
+    from linkml_runtime.linkml_model.meta import ClassDefinition as MetaClassDefinition
+
+    sb = SchemaBuilder()
+    sb.add_class(MetaClassDefinition("RootMixin", mixin=True))
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        mixins_as_expressions=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    mixin_grouping_uri = URIRef(str(MetaClassDefinition.class_class_uri) + "#Mixin")
+    assert (mixin_grouping_uri, RDF.type, OWL.Class) in g, "mixin grouping class not declared as owl:Class"
+    assert (mixin_grouping_uri, RDFS.label, Literal("mixin")) in g, "mixin grouping class missing rdfs:label 'mixin'"
+
+
+def test_grouping_classes_not_declared_without_add_root_classes() -> None:
+    """Grouping-class declarations are emitted only when ``add_root_classes`` is set."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (LINKML.EnumDefinition, RDF.type, OWL.Class) not in g
 
 
 @pytest.mark.network

@@ -25,6 +25,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    json-schema
    protobuf
    graphql
+   openapi
 
 
 Linked Data Standards

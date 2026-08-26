@@ -114,11 +114,12 @@ def test_initialized_enums(pythongen_module, schemaview):
         {'status': 'ALIVE', 'roles': ['ANALYST', 'INVESTIGATOR']}
 
     However, the user should be aware that the type of person.role
-    is NOT PermissibleValue, it is the enum, i.e
+    is NOT PermissibleValue, it is the enum. Equality across the two forms
+    is supported (see linkml/linkml#1203), but identity / type checks differ.
 
     .. code:: python
 
-        p.status != mod.VitalStatus.ALIVE
+        p.status == mod.VitalStatus.ALIVE  # True (1203)
         p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
 
     """
@@ -134,10 +135,13 @@ def test_initialized_enums(pythongen_module, schemaview):
     p_json = json_dumper.dumps(p)
     p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
     assert p_roundtrip == p
-    # Current behavior: when enums are created at time of initialization,
-    # they are created as Enum instances, NOT permissible value instances
+    # When enums are created at time of initialization, they are stored as
+    # ``EnumDefinitionImpl`` instances rather than ``PermissibleValue``
+    # instances.  Since linkml/linkml#1203 equality bridges the two forms
+    # (and bare strings), so all of these comparisons return True.
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
-    assert p.status != mod.VitalStatus.ALIVE
+    assert p.status == mod.VitalStatus.ALIVE
+    assert p.status == "ALIVE"
     assert sorted(p.roles, key=str) == sorted([mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)], key=str)
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
@@ -223,7 +227,8 @@ def test_assigned_wrapped_enums(pythongen_module, schemaview):
     p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
     assert p_roundtrip == p
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
-    assert p.status != mod.VitalStatus.ALIVE
+    assert p.status == mod.VitalStatus.ALIVE
+    assert p.status == "ALIVE"
     assert sorted(p.roles, key=str) == sorted([mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)], key=str)
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
