@@ -80,28 +80,32 @@ def test_annotation_extensions():
         assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
 
 
-def test_generation_date_opt_out():
-    """``include_generation_date=False`` suppresses the generation_date timestamp triple.
+def test_generation_date_suppressed_by_default():
+    """The generation_date timestamp triple is off by default and opt-in via the flag.
 
     Regression test for https://github.com/linkml/linkml/issues/3516 (bullet 2): the
     load-time ``generation_date`` stamp is serialized as a data triple in RDF output,
-    which defeats byte-stable/reproducible generation. The default still emits it; the
-    flag drops it and makes repeated runs identical.
+    which defeats byte-stable/reproducible generation. It is suppressed by default;
+    ``include_generation_date=True`` restores the old behaviour for callers that want it.
     """
     generation_date = URIRef("https://w3id.org/linkml/generation_date")
 
+    default_output = RDFGenerator(schema, mergeimports=False).serialize()
     default_graph = Graph()
-    default_graph.parse(data=RDFGenerator(schema, mergeimports=False).serialize(), format="turtle")
-    assert list(default_graph.triples((None, generation_date, None))), "generation_date should be present by default"
-
-    suppressed = RDFGenerator(schema, mergeimports=False, include_generation_date=False).serialize()
-    suppressed_graph = Graph()
-    suppressed_graph.parse(data=suppressed, format="turtle")
-    assert not list(suppressed_graph.triples((None, generation_date, None))), "generation_date should be suppressed"
+    default_graph.parse(data=default_output, format="turtle")
+    assert not list(default_graph.triples((None, generation_date, None))), (
+        "generation_date should be suppressed by default"
+    )
 
     # With the timestamp gone, output is byte-stable across runs.
-    rerun = RDFGenerator(schema, mergeimports=False, include_generation_date=False).serialize()
-    assert suppressed == rerun
+    rerun = RDFGenerator(schema, mergeimports=False).serialize()
+    assert default_output == rerun
+
+    opted_in = Graph()
+    opted_in.parse(data=RDFGenerator(schema, mergeimports=False, include_generation_date=True).serialize())
+    assert list(opted_in.triples((None, generation_date, None))), (
+        "generation_date should be present when explicitly requested"
+    )
 
 
 @pytest.mark.network

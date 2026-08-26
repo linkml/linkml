@@ -130,8 +130,10 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
-    include_generation_date: bool = True
-    """False suppresses the generation_date timestamp, for reproducible (byte-stable) output"""
+    include_generation_date: bool = False
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible (byte-stable) across runs; the date of generation is normally recoverable
+    from version control."""
 
     useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
@@ -222,7 +224,7 @@ class Generator(metaclass=abc.ABCMeta):
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
 
-        # Drop the load-time generation_date stamp when reproducible output is requested.
+        # Drop the load-time generation_date stamp unless it was explicitly asked for.
         # This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD
         # generators, so clearing it here covers every generator uniformly.
         if not self.include_generation_date and self.schema is not None:
@@ -964,9 +966,10 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
         f.params.append(
             Option(
                 ("--generation-date/--no-generation-date", "include_generation_date"),
-                default=True,
+                default=False,
                 show_default=True,
-                help="Include the generation_date timestamp (use --no-generation-date for reproducible output)",
+                help="Stamp output with the generation_date timestamp. Off by default so output is "
+                "reproducible across runs.",
             )
         )
         f.params.append(
