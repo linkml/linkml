@@ -283,6 +283,24 @@ class Generator(metaclass=abc.ABCMeta):
                 for prefix in self.schema.prefixes.values():
                     self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Validate ``generator_args`` before any generator is built from them.
+
+        ``gen-project`` calls this once per selected generator, all before any
+        output is generated, and the generator CLIs (e.g. ``gen-java``) call it
+        on their resolved options before construction -- so a bad configuration
+        value is caught up front rather than surfacing later as a generic
+        exception raised somewhere during schema loading, which it would then be
+        indistinguishable from. The default implementation does nothing;
+        override to check specific keys eagerly.
+
+        :param args: The merged ``generator_args`` for this generator (defaults
+            plus any user-supplied ``generator_args`` section), before path
+            interpolation.
+        :raises click.UsageError: if a value is invalid.
+        """
+
     def serialize(self, **kwargs) -> str | None:
         """
         Generate output in the required format
@@ -1017,7 +1035,7 @@ def read_generator_config(config_file: IO[bytes] | None, generator_name: str) ->
     """Read one generator's settings out of a gen-project-style config file.
 
     This is the configuration file that ``gen-project --config-file`` reads so a
-    project can keep a singlefile and each generator can have its own section.
+    project can keep a single file and each generator can have its own section.
 
     Reading consumes ``config_file``, so call this once and lookup each setting
     on the returned dict. Calling it a second time with the same open file finds
@@ -1036,11 +1054,17 @@ def read_generator_config(config_file: IO[bytes] | None, generator_name: str) ->
     :param config_file: The open file from ``--config-file``, or None if absent.
     :param generator_name: Which section to read, e.g. ``"java"`` or ``"golang"``.
     :return: That generator's settings, empty if the file has none for it.
-    :raises click.UsageError: if the file, or the part of it this generator reads, isn't
-        a YAML mapping.
+    :raises click.UsageError: if the file is not parseable as YAML, or if the file, or
+        the part of it this generator reads, isn't a YAML mapping.
     """
     if config_file is None:
         return {}
-    config_data = _config_mapping(yaml.safe_load(config_file), "the top level")
+    try:
+        parsed = yaml.safe_load(config_file)
+    except yaml.YAMLError as e:
+        # unparsable YAML is a mistake in the file, so report it the same way a
+        # misshapen one is, rather than as a traceback
+        raise click.UsageError(f"--config-file: could not parse as YAML: {e}") from e
+    config_data = _config_mapping(parsed, "the top level")
     generator_args = _config_mapping(config_data.get("generator_args"), "'generator_args'")
     return _config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'")

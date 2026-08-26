@@ -3,7 +3,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 import click
 import yaml
@@ -30,36 +30,70 @@ logger = logging.getLogger(__name__)
 PATH_FSTRING = str
 GENERATOR_NAME = str
 ARG_DICT = dict[str, Any]
-CONFIG_TUPLE = tuple[type[Generator], PATH_FSTRING, ARG_DICT]
-GEN_MAP: dict[GENERATOR_NAME, CONFIG_TUPLE]
+
+
+class GeneratorConfig(NamedTuple):
+    """How gen-project drives one generator.
+
+    A NamedTuple rather than a plain tuple so that ``serialize_only`` can be left
+    off the entries that don't need it, and so fields can be read by name; entries
+    still unpack positionally.
+    """
+
+    generator: type[Generator]
+    """The generator class to instantiate."""
+
+    path_fstring: PATH_FSTRING
+    """Output path template for the generated artefact, e.g. ``"owl/{name}.owl.ttl"``."""
+
+    default_args: ARG_DICT
+    """Arguments applied before any user-supplied ``generator_args``."""
+
+    serialize_only: frozenset[str] = frozenset()
+    """Keys to pass to ``serialize()`` but NOT to the constructor.
+
+    Scoped per generator so that a name which is serialize-only here (JavaGenerator's
+    ``directory``) is not dropped from a different generator's constructor call, where
+    the same name is a genuine constructor argument (dotgen, docgen and plantumlgen all
+    take ``directory`` that way).
+    """
+
+
+# Retained as the previous name for this entry type.
+CONFIG_TUPLE = GeneratorConfig
+
+GEN_MAP: dict[GENERATOR_NAME, GeneratorConfig]
 GEN_MAP = {
-    "graphql": (GraphqlGenerator, "graphql/{name}.graphql", {}),
-    "jsonldcontext": (ContextGenerator, "jsonld/{name}.context.jsonld", {}),
-    "jsonld": (
+    "graphql": GeneratorConfig(GraphqlGenerator, "graphql/{name}.graphql", {}),
+    "jsonldcontext": GeneratorConfig(ContextGenerator, "jsonld/{name}.context.jsonld", {}),
+    "jsonld": GeneratorConfig(
         JSONLDGenerator,
         "jsonld/{name}.jsonld",
         {"context": "{parent}/{name}.context.jsonld"},
     ),
-    "jsonschema": (JsonSchemaGenerator, "jsonschema/{name}.schema.json", {}),
-    "owl": (OwlSchemaGenerator, "owl/{name}.owl.ttl", {}),
-    "prefixmap": (PrefixGenerator, "prefixmap/{name}.yaml", {}),
-    "proto": (ProtoGenerator, "protobuf/{name}.proto", {}),
-    "python": (PythonGenerator, "{name}.py", {}),
-    #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {}),
-    #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}),
-    "shex": (ShExGenerator, "shex/{name}.shex", {}),
-    "shacl": (ShaclGenerator, "shacl/{name}.shacl.ttl", {}),
-    "sqltable": (SQLTableGenerator, "sqlschema/{name}.sql", {}),
+    "jsonschema": GeneratorConfig(JsonSchemaGenerator, "jsonschema/{name}.schema.json", {}),
+    "owl": GeneratorConfig(OwlSchemaGenerator, "owl/{name}.owl.ttl", {}),
+    "prefixmap": GeneratorConfig(PrefixGenerator, "prefixmap/{name}.yaml", {}),
+    "proto": GeneratorConfig(ProtoGenerator, "protobuf/{name}.proto", {}),
+    "python": GeneratorConfig(PythonGenerator, "{name}.py", {}),
+    #    'rdf': GeneratorConfig(RDFGenerator, 'rdf/{name}.ttl', {}),
+    #    'rdf': GeneratorConfig(
+    #        RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}
+    #    ),
+    "shex": GeneratorConfig(ShExGenerator, "shex/{name}.shex", {}),
+    "shacl": GeneratorConfig(ShaclGenerator, "shacl/{name}.shacl.ttl", {}),
+    "sqltable": GeneratorConfig(SQLTableGenerator, "sqlschema/{name}.sql", {}),
     # JavaGenerator writes one file per class directly into `directory`
     # (a serialize()-time argument, not a constructor argument) and its
-    # serialize() always returns None; see SERIALIZE_ONLY_ARGS below.
-    "java": (JavaGenerator, "java/{name}.java", {"directory": "{parent}"}),
-    "excel": (ExcelGenerator, "excel/{name}.xlsx", {"output": "{parent}/{name}.xlsx"}),
+    # serialize() always returns None.
+    "java": GeneratorConfig(
+        JavaGenerator,
+        "java/{name}.java",
+        {"directory": "{parent}"},
+        serialize_only=frozenset({"directory"}),
+    ),
+    "excel": GeneratorConfig(ExcelGenerator, "excel/{name}.xlsx", {"output": "{parent}/{name}.xlsx"}),
 }
-
-# Argument keys that must be passed to serialize() but NOT to the generator's
-# constructor (currently only JavaGenerator's `directory`).
-SERIALIZE_ONLY_ARGS = {"directory"}
 
 
 @lru_cache
@@ -100,6 +134,30 @@ class ProjectGenerator:
     def generate(schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
             raise Exception("Must pass directory")
+
+        # Resolve which generators run and with what merged arguments, rejecting
+        # any bad `generator_args` value before anything at all is generated or
+        # written -- a typo in the config for the last generator must not leave
+        # behind a half-built project. This is the only place a `generator_args`
+        # value gets checked; a ValueError raised later while actually
+        # constructing a generator is therefore a genuine failure (e.g. an
+        # unloadable schema) and is left to propagate with its own traceback,
+        # rather than being caught and mistaken for a bad config value.
+        selected: list[tuple[GENERATOR_NAME, GeneratorConfig, ARG_DICT]] = []
+        for gen_name, gen_config in GEN_MAP.items():
+            if config.includes is not None and config.includes != [] and gen_name not in config.includes:
+                logger.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
+                continue
+            if config.excludes is not None and gen_name in config.excludes:
+                logger.info(f"Skipping {gen_name} as it is in exclusion list")
+                continue
+            all_gen_args = {
+                **gen_config.default_args,
+                **config.generator_args.get(gen_name, {}),
+            }
+            gen_config.generator.validate_generator_args(all_gen_args)
+            selected.append((gen_name, gen_config, all_gen_args))
+
         output_dir = Path(config.directory)
         output_dir.mkdir(parents=True, exist_ok=True)
         if config.mergeimports:
@@ -107,41 +165,36 @@ class ProjectGenerator:
         else:
             all_schemas = get_local_imports(schema_path, Path(schema_path).parent)
         logger.debug(f"ALL_SCHEMAS = {all_schemas}")
-        for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
-            if config.includes is not None and config.includes != [] and gen_name not in config.includes:
-                logger.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
-                continue
-            if config.excludes is not None and gen_name in config.excludes:
-                logger.info(f"Skipping {gen_name} as it is in exclusion list")
-                continue
+        for gen_name, gen_config, all_gen_args in selected:
             logger.info(f"Generating: {gen_name}")
             for local_path in all_schemas:
                 logger.info(f" SCHEMA: {local_path}")
                 name = Path(local_path).stem
-                gen_path = gen_path_fmt.format(name=name)
+                gen_path = gen_config.path_fstring.format(name=name)
                 gen_path_full = output_dir / gen_path
                 parent_dir = gen_path_full.parent
                 logger.info(f" PARENT={parent_dir}")
                 parent_dir.mkdir(parents=True, exist_ok=True)
-                all_gen_args = {
-                    **default_gen_args,
-                    **config.generator_args.get(gen_name, {}),
-                }
                 gen: Generator
+
+                # Per-schema copy: the `output` value is interpolated per schema
+                # below and must not mutate `all_gen_args`, which is shared
+                # across schemas.
+                schema_gen_args = dict(all_gen_args)
 
                 # special check for output key because ExcelGenerator and
                 # SSSOMGenerator read in output file name during initialization
-                if "output" in all_gen_args:
-                    all_gen_args["output"] = all_gen_args["output"].format(name=name, parent=parent_dir)
+                if "output" in schema_gen_args:
+                    schema_gen_args["output"] = schema_gen_args["output"].format(name=name, parent=parent_dir)
 
-                # Some generators (e.g. JavaGenerator) accept `directory`
-                # only in serialize(), not in their constructor; so keep
+                # Some generators (e.g. JavaGenerator) accept an arg only in
+                # serialize(), not in their constructor; keep this generator's
                 # serialize-only keys out of the constructor call.
-                constructor_args = {k: v for k, v in all_gen_args.items() if k not in SERIALIZE_ONLY_ARGS}
-                gen = gen_cls(local_path, **constructor_args)
+                constructor_args = {k: v for k, v in schema_gen_args.items() if k not in gen_config.serialize_only}
+                gen = gen_config.generator(local_path, **constructor_args)
 
                 serialize_args = {"mergeimports": config.mergeimports}
-                for k, v in all_gen_args.items():
+                for k, v in schema_gen_args.items():
                     # all ARG_DICT values are interpolatable
                     if isinstance(v, str):
                         v = v.format(name=name, parent=parent_dir)
@@ -255,6 +308,8 @@ def cli(
         project_config.directory = dir
     project_config.mergeimports = mergeimports
     gen = ProjectGenerator()
+    # A bad `generator_args` value surfaces from Generator.validate_generator_args()
+    # as a click.UsageError, which click reports on its own; nothing to catch here.
     gen.generate(yamlfile, project_config)
 
 

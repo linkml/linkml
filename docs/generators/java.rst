@@ -102,6 +102,9 @@ The generated Java ``package`` statement is driven by the following precedence:
 2. ``generator_args.java.package`` set via ``--config-file``/``-C`` (see :ref:`java-configuration-file` below)
 3. Fallback default: ``example``
 
+The package name is validated wherever it comes from. An invalid name (``1bad.pkg``,
+``org.class.model``) is reported as an error.
+
 NOTE:
     The package name is *not* configurable via schema-level annotations: LinkML
     classes, slots, and enums live in a single global namespace regardless of

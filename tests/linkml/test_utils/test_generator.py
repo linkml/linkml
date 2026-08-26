@@ -750,3 +750,24 @@ def test_read_generator_config_rejects_malformed_section(config_yaml, where):
     never silently ignored, which would leave the generator on its default."""
     with pytest.raises(click.UsageError, match=f"expected a YAML mapping at {re.escape(where)}"):
         read_generator_config(BytesIO(config_yaml), "java")
+
+
+@pytest.mark.parametrize(
+    "config_yaml",
+    [
+        pytest.param(b"generator_args:\n  java:\n   package: [unclosed\n", id="unclosed-bracket"),
+        pytest.param(b"generator_args:\n\tjava:\n\t\tpackage: x\n", id="tab-indent"),
+    ],
+)
+def test_read_generator_config_rejects_unparsable_yaml(config_yaml):
+    """A file that isn't valid YAML at all is reported as a usage error, like a misshapen
+    one, rather than escaping as a raw parser traceback."""
+    with pytest.raises(click.UsageError, match="could not parse as YAML"):
+        read_generator_config(BytesIO(config_yaml), "java")
+
+
+def test_validate_generator_args_default_is_a_noop():
+    """The base implementation accepts anything -- generators that have no config value
+    worth checking up front (which is most of them) need not override it."""
+    Generator.validate_generator_args({})
+    Generator.validate_generator_args({"anything": "goes", "even": None})

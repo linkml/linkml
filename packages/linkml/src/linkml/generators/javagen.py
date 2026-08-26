@@ -1,7 +1,9 @@
 import logging
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import click
 from jinja2 import Template
@@ -244,6 +246,15 @@ class JavaGenerator(OOCodeGenerator):
         super().__post_init__()
         if self.package in (None, ""):
             self.package = "example"
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        if not _is_valid_java_package(str(self.package)):
+            raise ValueError(f"{self.package!r} is not a valid Java package name")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        package = args.get("package")
+        if package not in (None, "") and not _is_valid_java_package(str(package)):
+            raise click.UsageError(f"{package!r} is not a valid Java package name")
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
@@ -534,8 +545,7 @@ def cli(
     """Generate java classes to represent a LinkML model"""
     if package is None:
         package = read_generator_config(config_file, "java").get("package")
-    if package is not None and not _is_valid_java_package(str(package)):
-        raise click.UsageError(f"{package!r} is not a valid Java package name")
+    JavaGenerator.validate_generator_args({"package": package})
     if generate_records:
         template_variant = "records"
     if template_file is not None:
@@ -552,7 +562,11 @@ def cli(
     if head is not None:
         deprecation_warning("metadata-flag")
         args["metadata"] = head
-    JavaGenerator(
+    # The package was already validated above; a ValueError raised while actually
+    # constructing the generator here is therefore a genuine failure (e.g. an
+    # unloadable schema), not a bad package name, and is left to propagate with
+    # its own traceback rather than being caught and mistaken for one.
+    generator = JavaGenerator(
         yamlfile,
         package=package,
         template_dir=template_dir,
@@ -563,7 +577,8 @@ def cli(
         true_enums=true_enums,
         use_aliases=use_aliases,
         **args,
-    ).serialize(
+    )
+    generator.serialize(
         output_directory, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
     )
 

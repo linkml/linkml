@@ -437,10 +437,57 @@ def test_package_name_derived():
     assert module.package_name == "simple"
 
 
-def test_package_name_override():
-    """Test that --package-name overrides the derived value."""
-    module = GolangGenerator(schema=SIMPLE_SCHEMA, package_name="mypkg").render()
+def test_package_override():
+    """`package` overrides the derived value, spelled the same as JavaGenerator's."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, package="mypkg").render()
     assert module.package_name == "mypkg"
+
+
+def test_deprecated_package_name_kwarg_still_sets_package():
+    """`package_name=` remains accepted as a deprecated alias for `package=`, and records
+    its own deprecation rather than the generic metadata-flag one."""
+    from linkml.utils import deprecation as dep_mod
+
+    dep_mod.EMITTED.discard("golanggen-package-name-option")
+    gen = GolangGenerator(schema=SIMPLE_SCHEMA, package_name="legacypkg")
+
+    assert gen.package == "legacypkg"
+    assert gen.render().package_name == "legacypkg"
+    assert "golanggen-package-name-option" in dep_mod.EMITTED
+
+
+@pytest.mark.parametrize("package", ["1bad", "bad-pkg", "bad pkg", "bad.pkg", "type", "package"])
+def test_constructor_invalid_package_errors(package):
+    """An invalid package passed directly to the generator is rejected."""
+    with pytest.raises(ValueError, match="is not a valid Go package name"):
+        GolangGenerator(schema=SIMPLE_SCHEMA, package=package)
+
+
+def test_constructor_non_string_package_errors():
+    """A non-string package (e.g. an unquoted number from a config file) is coerced and rejected
+    rather than crashing, mirroring JavaGenerator's ``str(package)`` handling."""
+    with pytest.raises(ValueError, match="is not a valid Go package name"):
+        GolangGenerator(schema=SIMPLE_SCHEMA, package=123)
+
+
+def test_derived_package_name_escapes_go_keyword():
+    """A schema name deriving to a Go reserved word is escaped rather than emitting
+    uncompilable Go (``package type``)."""
+    schema = SIMPLE_SCHEMA.replace("name: simple_test", "name: type_test")
+    assert GolangGenerator(schema=schema).render().package_name == "type_"
+
+
+def test_derived_package_name_falls_back_when_nothing_usable():
+    """A schema name that sanitises to nothing (leading underscore) falls back to the
+    default package instead of emitting a bare ``package`` clause."""
+    schema = SIMPLE_SCHEMA.replace("name: simple_test", "name: _private")
+    assert GolangGenerator(schema=schema).render().package_name == "example"
+
+
+def test_empty_package_uses_derived_default():
+    """An empty package is treated as unset and derived from the schema name, mirroring
+    JavaGenerator's ``in (None, "")`` handling."""
+    assert GolangGenerator(schema=SIMPLE_SCHEMA, package="").render().package_name == "simple"
 
 
 TIME_SCHEMA = """
@@ -1539,6 +1586,58 @@ def test_cli_package_option(tmp_path):
 
     assert result.exit_code == 0
     assert "package mypkg" in result.output
+
+
+def test_cli_invalid_package_errors(tmp_path):
+    """An invalid Go package name passed via --package is rejected rather than emitted verbatim."""
+    schema_file = _write_simple_schema(tmp_path)
+
+    result = _invoke_cli([str(schema_file), "--package", "1 bad-pkg"])
+
+    assert result.exit_code != 0
+    assert "not a valid Go package name" in result.output
+
+
+def test_cli_does_not_mistake_a_schema_error_for_a_bad_package(tmp_path):
+    """A broken schema (not a bad package) must surface as its own error, not get caught by
+    the package check and misreported as a package problem. The invocation was fine; the
+    schema is broken -- `--help` sends the user in the wrong direction."""
+    import click
+
+    schema_file = tmp_path / "bad.yaml"
+    schema_file.write_text("justastring\n", encoding="UTF-8")
+
+    result = _invoke_cli([str(schema_file)])
+
+    assert result.exit_code != 0
+    assert not isinstance(result.exception, click.UsageError)
+    assert "not a valid Go package name" not in str(result.exception)
+    assert "Unexpected type" in str(result.exception)
+
+
+def test_cli_invalid_config_package_errors(tmp_path):
+    """An invalid Go package name from the config file is rejected."""
+    schema_file = _write_simple_schema(tmp_path)
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_golang_config_yaml("1bad.pkg"))
+
+    result = _invoke_cli([str(schema_file), "--config-file", str(config_path)])
+
+    assert result.exit_code != 0
+    assert "not a valid Go package name" in result.output
+
+
+def test_cli_unquoted_numeric_config_package_errors_cleanly(tmp_path):
+    """An unquoted numeric package (parsed by YAML as an int) is rejected with a usage
+    error instead of crashing with an unhandled TypeError."""
+    schema_file = _write_simple_schema(tmp_path)
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_golang_config_yaml("123"))
+
+    result = _invoke_cli([str(schema_file), "--config-file", str(config_path)])
+
+    assert result.exit_code != 0
+    assert "not a valid Go package name" in result.output
 
 
 def test_cli_package_name_deprecated_but_works(tmp_path):

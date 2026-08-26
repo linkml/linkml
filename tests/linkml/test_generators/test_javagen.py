@@ -1,3 +1,6 @@
+import logging
+
+import click
 import pytest
 from click.testing import CliRunner
 
@@ -421,6 +424,29 @@ def test_cli_invalid_explicit_package_errors(tmp_path):
     assert "not a valid Java package name" in result.output
 
 
+def test_cli_does_not_mistake_a_schema_error_for_a_bad_package(tmp_path):
+    """A broken schema (not a bad package) must surface as its own error, not get caught by
+    the package check and misreported as a package problem. The invocation was fine; the
+    schema is broken -- `--help` sends the user in the wrong direction."""
+    schema_path = tmp_path / "bad.yaml"
+    schema_path.write_text("justastring\n", encoding="UTF-8")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert not isinstance(result.exception, click.UsageError)
+    assert "not a valid Java package name" not in str(result.exception)
+    assert "Unexpected type" in str(result.exception)
+
+
+@pytest.mark.parametrize("package", ["1bad.pkg", "org.class.model", "org..model", "org.my-model"])
+def test_constructor_invalid_package_errors(kitchen_sink_path, package):
+    """An invalid package passed directly to the generator (as gen-project does) is rejected."""
+    with pytest.raises(ValueError, match="is not a valid Java package name"):
+        JavaGenerator(kitchen_sink_path, package=package)
+
+
 @pytest.mark.parametrize(
     ("config_yaml", "where"),
     [
@@ -444,7 +470,7 @@ def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
     result = CliRunner().invoke(cli, ["--config-file", str(config_path), str(schema_path)])
 
     assert result.exit_code != 0
-    assert f"expected a YAML mapping at {where}" in str(result.output) + str(result.exception)
+    assert f"expected a YAML mapping at {where}" in result.output
 
 
 def test_cli_config_file_real_project_config_shape(tmp_path):
