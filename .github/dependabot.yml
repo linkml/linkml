@@ -20,9 +20,10 @@ updates:
 
   - package-ecosystem: "uv"
     directory: "/"
+    # Daily refills the three open slots as they drain, rather than once a week.
+    # The limit below, not the interval, is what bounds concurrent CI load.
     schedule:
-      interval: "weekly"
-      day: "sunday"
+      interval: "daily"
     groups:
       # Individual pull requests for major/minor updates and grouped for patch updates
       patch-updates:
@@ -31,7 +32,9 @@ updates:
           - "*"
         update-types:
           - "patch"
-    open-pull-requests-limit: 10
+    # Bounds rebase storms: every open PR runs the full matrix, and dependabot
+    # rebases all of them when main moves.
+    open-pull-requests-limit: 3
     # Wait 7 days after a release before opening an update PR, giving time for
     # malware/CVE advisories to surface (mirrors the uv `exclude-newer` cooldown).
     cooldown:
