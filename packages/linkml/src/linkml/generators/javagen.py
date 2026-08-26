@@ -13,6 +13,8 @@ from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
 
 TYPEMAP = {
@@ -290,6 +292,8 @@ class JavaGenerator(OOCodeGenerator):
         if visitors is not None:
             for visitor in visitors:
                 visited_name = visitor
+                if self.schemaview.get_class(visited_name) is None:
+                    logger.warning(f"{visited_name} does not appear to be a valid name for a class to visit")
                 visitor_name = "I" + camelcase(visited_name) + "Visitor"
                 oodocs.append(OOVisitorDocument(name=visitor_name, package=self.package, visited_object=visited_name))
         else:
@@ -382,28 +386,16 @@ class JavaGenerator(OOCodeGenerator):
         :param name: A class name.
         :returns: True if cls has any ancestor with the specified name.
         """
-        if cls.is_a is None:
-            return False
-        elif cls.is_a == name:
-            return True
-        else:
-            return self.has_ancestor(self.schemaview.get_class(cls.is_a), name)
+        return name in self.schemaview.class_ancestors(cls.name, mixins=False, reflexive=False)
 
-    def get_descendants(self, name: str, _descendants=None) -> list[str]:
+    def get_descendants(self, name: str) -> list[str]:
         """Gets all the descendants of a class.
 
         :param name: A class name.
-        :param _descendants: The list to which to append the names of the
-            descendant classes.
         :returns: A flat list of the names of all classes that inherit from
             the named class.
         """
-        if _descendants is None:
-            _descendants = []
-        for child in self.schemaview.class_children(name):
-            _descendants.append(child)
-            self.get_descendants(child, _descendants)
-        return _descendants
+        return self.schemaview.class_descendants(name, mixins=False, reflexive=False)
 
     def get_class_name(self, name: str) -> str:
         """Converts a LinkML class name to a Java class name."""
@@ -440,6 +432,22 @@ class JavaGenerator(OOCodeGenerator):
 
     def get_slot_actual_name(self, slot: SlotDefinition) -> str:
         return slot.alias if slot.alias and self.use_aliases else slot.name
+
+    def needs_extra_slots(self, klass: ClassDefinition) -> bool:
+        """Indicates whether a class requires handling of extra slots.
+
+        A Java class representing a LinkML class requires special code to
+        handle extra slots if (1) the LinkML class is configured to allow
+        extra slots and (2) none of its parent classes are already
+        configured to allow extra slots.
+        """
+        if klass.extra_slots is None or not klass.extra_slots.allowed:
+            return False
+        for ancestor in self.schemaview.class_ancestors(klass.name, mixins=False, reflexive=False):
+            ancestor_extra_slots = self.schemaview.get_class(ancestor).extra_slots
+            if ancestor_extra_slots is not None and ancestor_extra_slots.allowed:
+                return False
+        return True
 
 
 @shared_arguments(JavaGenerator)
