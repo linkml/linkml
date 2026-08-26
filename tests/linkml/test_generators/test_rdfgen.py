@@ -1,3 +1,8 @@
+import os
+import subprocess
+import sys
+import textwrap
+
 import pytest
 import rdflib
 from rdflib import Graph, URIRef
@@ -106,6 +111,42 @@ def test_generation_date_suppressed_by_default():
     assert list(opted_in.triples((None, generation_date, None))), (
         "generation_date should be present when explicitly requested"
     )
+
+
+def test_output_is_byte_identical_across_processes():
+    """RDF output is byte-identical across fresh processes with different hash seeds.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516. Two things can
+    make repeated generation differ: the ``generation_date`` timestamp (now suppressed
+    by default) and ``PYTHONHASHSEED``-dependent iteration order upstream of
+    canonicalization. Running in-process would catch neither, so each run gets its own
+    interpreter with a deliberately different seed.
+    """
+    program = textwrap.dedent(
+        f"""
+        from linkml.generators.rdfgen import RDFGenerator
+        print(RDFGenerator({schema!r}, mergeimports=False).serialize(), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
+        env = {**os.environ, "PYTHONHASHSEED": seed}
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        return result.stdout
+
+    outputs = [run(seed) for seed in ("0", "1", "42")]
+
+    # Empty output would be trivially "identical" and hide a broken generator.
+    assert outputs[0].strip(), "generator produced no output"
+    assert len(set(outputs)) == 1, "RDF output differs across PYTHONHASHSEED values"
 
 
 @pytest.mark.network
