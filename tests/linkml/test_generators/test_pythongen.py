@@ -20,6 +20,19 @@ def make_python(infile) -> ModuleType:
     return kitchen_module
 
 
+def test_structured_patterns_are_resolved_without_modifying_schema(input_path) -> None:
+    """Generate regular patterns from structured patterns without modifying the schema."""
+    generator = PythonGenerator(input_path("pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
+
+    assert height_slot.pattern is None
+
+    output = generator.serialize()
+    materialized_pattern = r"pattern=re.compile(r'^(?:\d+[\.\d+] (centimeter|meter|inch))$')"
+    assert materialized_pattern in output
+    assert height_slot.pattern is None
+
+
 def test_pythongen(kitchen_sink_path):
     """python"""
     kitchen_module = make_python(kitchen_sink_path)

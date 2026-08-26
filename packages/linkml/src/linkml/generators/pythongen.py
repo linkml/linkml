@@ -58,6 +58,7 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
+
     genmeta: bool = False
     dataclass_repr: bool = False
     """
@@ -1412,7 +1413,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             mappings = ", mappings = [" + ", ".join(map_texts) + "]"
         else:
             mappings = ""
-        pattern = f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
+        # Global slot definitions are emitted directly rather than through
+        # induced_slot(), so resolve structured patterns explicitly here
+        # without changing the source SlotDefinition.
+        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 
