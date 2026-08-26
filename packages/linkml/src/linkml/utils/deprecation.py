@@ -300,6 +300,17 @@ DEPRECATIONS = (
         recommendation="Use 'linkml validate schema.yaml' for schema validation without lint rules.",
         issue=3387,
     ),
+    Deprecation(
+        name="materialize-patterns-generator-option",
+        deprecated_in=SemVer.from_str("1.12.0"),
+        removed_in=SemVer.from_str("1.13.0"),
+        message=(
+            "The `materialize_patterns` generator option and corresponding CLI flags are deprecated. "
+            "Pattern-aware generators now resolve structured patterns automatically."
+        ),
+        recommendation="Remove the `materialize_patterns` option from generator calls and command lines.",
+        issue=1557,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
@@ -334,6 +345,7 @@ def deprecation_warning(name: str, stack_level: int = 3):
 
 
 METADATA_FLAG = "metadata-flag"
+MATERIALIZE_PATTERNS_GENERATOR_OPTION = "materialize-patterns-generator-option"
 T = TypeVar("T")
 
 
