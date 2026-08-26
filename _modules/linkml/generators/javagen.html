@@ -418,6 +418,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 <span class="n">DEFAULT_TEMPLATE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;javagen&quot;</span>
 
 <span class="n">TYPEMAP</span> <span class="o">=</span> <span class="p">{</span>
@@ -697,6 +699,8 @@
         <span class="k">if</span> <span class="n">visitors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">visitor</span> <span class="ow">in</span> <span class="n">visitors</span><span class="p">:</span>
                 <span class="n">visited_name</span> <span class="o">=</span> <span class="n">visitor</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">visited_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">visited_name</span><span class="si">}</span><span class="s2"> does not appear to be a valid name for a class to visit&quot;</span><span class="p">)</span>
                 <span class="n">visitor_name</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">visited_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;Visitor&quot;</span>
                 <span class="n">oodocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OOVisitorDocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">visitor_name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">visited_object</span><span class="o">=</span><span class="n">visited_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -792,28 +796,16 @@
 <span class="sd">        :param name: A class name.</span>
 <span class="sd">        :returns: True if cls has any ancestor with the specified name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ancestor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_descendants</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all the descendants of a class.</span>
 
 <span class="sd">        :param name: A class name.</span>
-<span class="sd">        :param _descendants: The list to which to append the names of the</span>
-<span class="sd">            descendant classes.</span>
 <span class="sd">        :returns: A flat list of the names of all classes that inherit from</span>
 <span class="sd">            the named class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">_descendants</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_descendants</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-            <span class="n">_descendants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_descendants</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">_descendants</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_descendants</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_class_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a LinkML class name to a Java class name.&quot;&quot;&quot;</span>
@@ -849,7 +841,23 @@
             <span class="k">return</span> <span class="s2">&quot;get&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_slot_actual_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_aliases</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span></div>
+        <span class="k">return</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_aliases</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">needs_extra_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">klass</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Indicates whether a class requires handling of extra slots.</span>
+
+<span class="sd">        A Java class representing a LinkML class requires special code to</span>
+<span class="sd">        handle extra slots if (1) the LinkML class is configured to allow</span>
+<span class="sd">        extra slots and (2) none of its parent classes are already</span>
+<span class="sd">        configured to allow extra slots.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">klass</span><span class="o">.</span><span class="n">extra_slots</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">klass</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">allowed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">klass</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">ancestor_extra_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">ancestor</span><span class="p">)</span><span class="o">.</span><span class="n">extra_slots</span>
+            <span class="k">if</span> <span class="n">ancestor_extra_slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ancestor_extra_slots</span><span class="o">.</span><span class="n">allowed</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 
