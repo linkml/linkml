@@ -88,7 +88,11 @@ def test_hbreader_resolves_through_the_guard():
     would pass even if no consumer resolved through it.
     """
     content = hbreader.hbread(f"{GITHUB_RAW_MAIN}{CREATURE_SCHEMA_RELPATH}")
-    assert content == (REPO_ROOT / CREATURE_SCHEMA_RELPATH).read_text()
+    # Compared as raw bytes: hbreader decodes the response without translating
+    # newlines, and ``.gitattributes`` sets ``text=auto``, so the working tree
+    # copy has CRLF on Windows. ``read_text`` would normalise it and never match.
+    expected = (REPO_ROOT / CREATURE_SCHEMA_RELPATH).read_bytes().decode("utf-8")
+    assert content == expected
 
 
 def test_schemaview_loads_a_remote_url_offline():
@@ -101,7 +105,9 @@ def test_schemaview_loads_a_remote_url_offline():
 def test_file_urls_are_not_blocked(tmp_path: Path):
     """``file://`` never touches the network, so it passes straight through."""
     target = tmp_path / "local.yaml"
-    target.write_text("name: local\n")
+    # write_bytes, not write_text: text mode would translate the newline to CRLF
+    # on Windows, which hbreader then hands back untranslated.
+    target.write_bytes(b"name: local\n")
     assert hbreader.hbread(target.as_uri()) == "name: local\n"
 
 
