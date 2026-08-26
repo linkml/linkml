@@ -19,7 +19,7 @@ from linkml.utils.deprecation import EMITTED
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
-from tests.network_retry import install as install_network_retry
+from tests.offline_network import install as install_offline_network
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
@@ -355,20 +355,19 @@ def pytest_assertrepr_compare(config, op, left, right):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
 
 
-@pytest.fixture(scope="session", autouse=True)
-def retry_transient_network(pytestconfig):
-    """Retry transient network failures raised through ``urllib`` and ``requests``.
+@pytest.fixture(autouse=True)
+def serve_network_from_disk(request):
+    """Serve mapped URLs from local files; block unmapped network access.
 
-    See :mod:`tests.network_retry` for why this retries rather than caches. Note
-    that this covers the pytest process only; notebook tests run their code in a
-    separate kernel process and install the same retry there via
-    ``tests/_kernel_startup/sitecustomize.py``.
+    See :mod:`tests.offline_network` for the mapping and the reasoning. Tests
+    marked ``network`` are the ones that genuinely need the network -- they get
+    the real thing.
     """
-    if pytestconfig.getoption("--without-cache"):
+    if request.node.get_closest_marker("network"):
         yield
         return
 
-    uninstall = install_network_retry()
+    uninstall = install_offline_network()
     try:
         yield
     finally:

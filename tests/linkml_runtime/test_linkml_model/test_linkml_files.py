@@ -114,6 +114,7 @@ def test_github_io_path(source, fmt):
     assert res.status_code != 404, url
 
 
+@pytest.mark.network
 @pytest.mark.skipif(not HAVE_REQUESTS_CACHE, reason="Need to cache this")
 @pytest.mark.parametrize("source,fmt", W3ID_FORMATS)
 def test_url_for_format(source, fmt):
