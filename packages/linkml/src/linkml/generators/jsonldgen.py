@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import click
-from jsonasobj2 import as_json, items, loads
+from jsonasobj2 import as_dict, as_json, items, loads
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
@@ -201,6 +201,16 @@ class JSONLDGenerator(Generator):
             if slot.owner is not None:
                 slot.owner = ClassDefinitionName(slot.owner)
         self.schema.slots.update(materialized)
+        # Induced/copied elements carry initialized-empty container metaslots; drop them so
+        # they do not serialize as spurious empty blank nodes.
+        for collection in (
+            self.schema.types,
+            self.schema.slots,
+            self.schema.enums,
+            self.schema.subsets,
+        ):
+            for element in collection.values():
+                self._strip_empty_containers(element)
         # Drop redundant ``alias`` on slots whose alias is merely the normalized name;
         # keep it only where it carries information (e.g. mangled attribute/usage slots,
         # whose alias is the base slot name). This matches the historical output.
@@ -228,6 +238,22 @@ class JSONLDGenerator(Generator):
             slot.inlined = True
         if slot.inlined and slot.inlined_as_list is None and slot.multivalued:
             slot.inlined_as_list = True
+
+    @staticmethod
+    def _strip_empty_containers(element: YAMLRoot) -> None:
+        """Drop empty inline dictionaries (``alt_descriptions``, ``annotations``,
+        ``extensions``, ``local_names``) from an element.
+
+        SchemaView's ``induced_slot`` copies these container metaslots as initialized-empty
+        ``JsonObj`` instances. ``as_json`` serializes any set field, so these empty
+        containers would appear as spurious empty blank nodes in the RDF serialization.
+        Removing them from ``__dict__`` keeps the output free of that noise, matching the
+        behaviour of slots that never had the container populated.
+        """
+        for field_name in ("alt_descriptions", "annotations", "extensions", "local_names"):
+            value = getattr(element, field_name, None)
+            if value is not None and not as_dict(value):
+                element.__dict__.pop(field_name, None)
 
     def _merge_imported_schema_metadata(self) -> None:
         """Merge schema-level metadata contributed by imported schemas.
@@ -310,6 +336,7 @@ class JSONLDGenerator(Generator):
     def _visit(self, node: Any) -> Any | None:
         if isinstance(node, YAMLRoot | dict):
             if isinstance(node, YAMLRoot):
+                self._strip_empty_containers(node)
                 node = self._add_type(node)
             for k, v in list(items(node)):
                 if v:
