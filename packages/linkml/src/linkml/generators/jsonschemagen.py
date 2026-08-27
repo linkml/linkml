@@ -14,6 +14,7 @@ from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
@@ -397,7 +398,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     valid_formats = ["json"]
     uses_schemaloader = False
     file_extension = "schema.json"
-    materialize_patterns: bool = False
+    materialize_patterns: bool | None = None
+    """Deprecated compatibility option; structured patterns are resolved automatically."""
 
     # @deprecated("Use top_class")
     topClass: str | None = None
@@ -449,6 +451,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     def __post_init__(self):
+        if self.materialize_patterns is not None:
+            deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
@@ -1001,9 +1006,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        if self.materialize_patterns:
-            logger.info("Materializing patterns in the schema before serialization")
-            self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
 
@@ -1069,9 +1071,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 )
 @click.option(
     "--materialize-patterns/--no-materialize-patterns",
-    default=True,  # Default set to True
-    show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema.",
+    default=None,
+    help="Deprecated compatibility option; structured patterns are resolved automatically.",
 )
 @click.option(
     "--preserve-names/--normalize-names",
