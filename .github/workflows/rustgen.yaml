@@ -3,6 +3,12 @@ name: Build and test linkml (rustgen)
 env:
   UV_VERSION: "0.11.21"
 
+concurrency:
+  # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
+  # so each PR is its own group and never cancels another's runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   pull_request:
     branches:
