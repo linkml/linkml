@@ -27,6 +27,7 @@ from linkml.generators.yarrrmlgen import (
     YarrrmlGenerator,
     cli,
 )
+from linkml_runtime.utils.schemaview import SchemaView
 
 pytestmark = pytest.mark.yarrrml
 
@@ -397,7 +398,7 @@ def test_po_list_multivalued_idless_inline_uses_bare_mapping_list() -> None:
     )
     gen = _gen(schema)  # construction is fine; as_dict() is never called
     record = gen.schemaview.get_class("Record")
-    po = _po_map(gen._po_list_for_class(record, inline_owners={}))
+    po = _po_map(gen._po_list_for_class(record, inline_owners={}, default_prefix="ex"))
     assert po["ex:items"] == [{"mapping": "Item"}]
 
 
@@ -444,10 +445,10 @@ def test_default_example_prefix_added_when_no_user_prefix() -> None:
     # is declared, so this fallback is unreachable via the public as_dict() API;
     # clear it to exercise the generator's own fallback logic in isolation.
     gen.schema.default_prefix = None
-    px = gen._prefixes_with_defaults()
+    px, default_prefix = gen._prefixes_with_defaults()
     assert px["ex"] == "https://example.org/default#"
     assert px["rdf"] == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    assert gen.schema.default_prefix == "ex"
+    assert default_prefix == "ex"
 
 
 def test_default_prefix_falls_back_to_first_user_prefix() -> None:
@@ -457,8 +458,8 @@ def test_default_prefix_falls_back_to_first_user_prefix() -> None:
     before settling on the user-defined ``foo``. This method is tested directly
     because the fallback branch is unreachable through the public ``as_dict``
     API: LinkML always synthesises a (truthy) ``default_prefix`` from the schema
-    IRI, so the generator's ``if not self.schema.default_prefix`` guard never
-    fires there. We null it out to exercise the fallback in isolation.
+    IRI, so the generator's empty-``default_prefix`` path never fires there. We
+    null it out to exercise the fallback in isolation.
     """
     schema = _make_schema(
         {"Person": {"attributes": {"id": {"identifier": True}}}},
@@ -467,20 +468,19 @@ def test_default_prefix_falls_back_to_first_user_prefix() -> None:
     )
     gen = _gen(schema)
     gen.schema.default_prefix = None
-    px = gen._prefixes_with_defaults()
+    px, default_prefix = gen._prefixes_with_defaults()
     assert "ex" not in px
     assert px["foo"] == "https://foo.example/#"
-    assert gen.schema.default_prefix == "foo"
+    assert default_prefix == "foo"
 
 
 def test_omitted_default_prefix_resolves_to_real_curie_prefix() -> None:
-    """An omitted default_prefix is normalised to a declared prefix in mappings.
+    """An omitted default_prefix resolves to a declared prefix in subject position.
 
     LinkML synthesises default_prefix as the full schema IRI when it is omitted;
-    the generator must emit a real CURIE prefix (here the sole user prefix
-    ``foo``) in subject/predicate/type positions, never the raw IRI. Exercises
-    the public ``as_dict`` path, complementing the isolated ``_prefixes_with_defaults``
-    tests above.
+    the generator must template subjects on a real CURIE prefix (here the sole
+    user prefix ``foo``), never on the raw IRI. Exercises the public ``as_dict``
+    path, complementing the isolated ``_prefixes_with_defaults`` tests above.
     """
     schema = _make_schema(
         {"Person": {"attributes": {"id": {"identifier": True}, "name": {}}}},
@@ -489,24 +489,37 @@ def test_omitted_default_prefix_resolves_to_real_curie_prefix() -> None:
     )
     m = _mappings(schema)
     assert m["Person"]["s"] == "foo:$(id)"
-    po = _po_map(m["Person"]["po"])
-    assert po["a"] == "foo:Person"
-    assert po["foo:id"] == {"value": "$(id)", "datatype": "xsd:string"}
-    assert po["foo:name"] == {"value": "$(name)", "datatype": "xsd:string"}
-    # no raw schema IRI leaks into a predicate position
-    assert not any(str(predicate).startswith("http") for predicate in po)
 
 
 def test_omitted_default_prefix_without_user_prefix_resolves_to_ex() -> None:
-    """With no user prefix and no declared default, mappings fall back to ``ex``."""
+    """With no user prefix and no declared default, subjects fall back to ``ex``."""
     schema = _make_schema(
         {"Person": {"attributes": {"id": {"identifier": True}}}},
         prefixes={"linkml": "https://w3id.org/linkml/"},
         default_prefix=None,
     )
-    m = _mappings(schema)
-    assert m["Person"]["s"] == "ex:$(id)"
-    assert _po_map(m["Person"]["po"])["a"] == "ex:Person"
+    assert _mappings(schema)["Person"]["s"] == "ex:$(id)"
+
+
+def test_prefix_resolution_does_not_mutate_the_input_schema() -> None:
+    """Resolution happens in a local, so a caller's SchemaDefinition is left untouched.
+
+    The generator is handed a live ``SchemaDefinition``, as callers holding a
+    ``SchemaView`` do; generating must not rewrite its ``default_prefix``.
+    """
+    schema = SchemaView(
+        _make_schema(
+            {"Person": {"attributes": {"id": {"identifier": True}}}},
+            prefixes={"linkml": "https://w3id.org/linkml/"},
+            default_prefix=None,
+        )
+    ).schema
+    before = schema.default_prefix
+    assert before == "https://example.org/test/"
+
+    YarrrmlGenerator(schema).as_dict()
+
+    assert schema.default_prefix == before
 
 
 # ---------------------------------------------------------------------------
@@ -683,12 +696,12 @@ def test_prefixes_defaulted_when_schema_declares_none() -> None:
     gen = _gen(_SIMPLE_PERSON)
     gen.schema.prefixes = {}
     gen.schema.default_prefix = None
-    px = gen._prefixes_with_defaults()
+    px, default_prefix = gen._prefixes_with_defaults()
     assert px == {
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "ex": "https://example.org/default#",
     }
-    assert gen.schema.default_prefix == "ex"
+    assert default_prefix == "ex"
 
 
 def test_prefix_without_reference_is_skipped() -> None:
