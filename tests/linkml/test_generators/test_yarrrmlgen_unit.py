@@ -474,31 +474,48 @@ def test_default_prefix_falls_back_to_first_user_prefix() -> None:
     assert default_prefix == "foo"
 
 
-def test_omitted_default_prefix_resolves_to_real_curie_prefix() -> None:
-    """An omitted default_prefix resolves to a declared prefix in subject position.
+def test_synthesised_default_prefix_is_declared_not_discarded() -> None:
+    """A default_prefix holding the schema IRI is bound to a prefix, keeping the namespace.
 
-    LinkML synthesises default_prefix as the full schema IRI when it is omitted;
-    the generator must template subjects on a real CURIE prefix (here the sole
-    user prefix ``foo``), never on the raw IRI. Exercises the public ``as_dict``
-    path, complementing the isolated ``_prefixes_with_defaults`` tests above.
+    LinkML synthesises default_prefix as the full schema IRI when it is omitted.
+    Using it verbatim produced malformed CURIEs (``https://example.org/test/:$(id)``),
+    so it is declared under ``ex`` instead — the schema's own namespace is kept
+    rather than being replaced by an unrelated declared prefix or a placeholder.
     """
     schema = _make_schema(
         {"Person": {"attributes": {"id": {"identifier": True}, "name": {}}}},
         prefixes={"foo": "https://foo.example/#", "linkml": "https://w3id.org/linkml/"},
         default_prefix=None,
     )
-    m = _mappings(schema)
-    assert m["Person"]["s"] == "foo:$(id)"
+    doc = _gen(schema).as_dict()
+    assert doc["prefixes"]["ex"] == "https://example.org/test/"
+    assert doc["prefixes"]["foo"] == "https://foo.example/#"
+    assert doc["mappings"]["Person"]["s"] == "ex:$(id)"
 
 
-def test_omitted_default_prefix_without_user_prefix_resolves_to_ex() -> None:
-    """With no user prefix and no declared default, subjects fall back to ``ex``."""
+def test_synthesised_default_prefix_avoids_clobbering_a_declared_ex() -> None:
+    """``ex`` already bound to a different namespace is left alone; a free name is used."""
     schema = _make_schema(
         {"Person": {"attributes": {"id": {"identifier": True}}}},
-        prefixes={"linkml": "https://w3id.org/linkml/"},
+        prefixes={"ex": "https://foo.example/#", "linkml": "https://w3id.org/linkml/"},
         default_prefix=None,
     )
-    assert _mappings(schema)["Person"]["s"] == "ex:$(id)"
+    doc = _gen(schema).as_dict()
+    assert doc["prefixes"]["ex"] == "https://foo.example/#"
+    assert doc["prefixes"]["ex1"] == "https://example.org/test/"
+    assert doc["mappings"]["Person"]["s"] == "ex1:$(id)"
+
+
+def test_synthesised_default_prefix_reuses_a_matching_declaration() -> None:
+    """A prefix already declared for the schema namespace is reused, not duplicated."""
+    schema = _make_schema(
+        {"Person": {"attributes": {"id": {"identifier": True}}}},
+        prefixes={"own": "https://example.org/test/", "linkml": "https://w3id.org/linkml/"},
+        default_prefix=None,
+    )
+    doc = _gen(schema).as_dict()
+    assert "ex" not in doc["prefixes"]
+    assert doc["mappings"]["Person"]["s"] == "own:$(id)"
 
 
 def test_prefix_resolution_does_not_mutate_the_input_schema() -> None:

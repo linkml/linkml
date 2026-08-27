@@ -36,6 +36,25 @@ DEFAULT_ITERATOR = "$[*]"
 RESERVED_PREFIXES = ("rdf", "linkml")
 
 
+def _bind_prefix(px: dict[str, str], namespace: str, preferred: str = "ex") -> str:
+    """Return the CURIE prefix in ``px`` bound to ``namespace``, declaring one if needed.
+
+    An existing declaration of the namespace is reused; otherwise ``preferred`` is
+    added, suffixed (``ex1``, ``ex2``, ...) if that name is already taken by a
+    different namespace.
+    """
+    for prefix, reference in px.items():
+        if reference == namespace:
+            return prefix
+
+    prefix, n = preferred, 1
+    while prefix in px:
+        prefix, n = f"{preferred}{n}", n + 1
+
+    px[prefix] = namespace
+    return prefix
+
+
 class YarrrmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.3.0"
@@ -199,9 +218,9 @@ class YarrrmlGenerator(Generator):
         Returns ``(prefixes, default_prefix)``, where ``prefixes`` always includes
         ``rdf`` and ``default_prefix`` is always one of its keys. LinkML synthesises
         ``schema.default_prefix`` from the schema IRI when it is omitted; that IRI is
-        not a usable CURIE prefix, so it is resolved to a declared one here. The
-        resolved prefix is returned rather than written back to ``self.schema``, so
-        generating leaves a caller's schema untouched.
+        not a usable CURIE prefix, so it is declared under a prefix name here — which
+        keeps the schema's own namespace rather than substituting a placeholder. The
+        schema is not modified.
         """
         px: dict[str, str] = {}
 
@@ -212,18 +231,22 @@ class YarrrmlGenerator(Generator):
 
         px.setdefault("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 
-        has_user_prefix = any(k not in RESERVED_PREFIXES for k in px)
-        if not has_user_prefix:
-            px.setdefault("ex", "https://example.org/default#")
-
-        # Replace a missing default_prefix, or one that is not a usable CURIE
-        # prefix (e.g. the full schema IRI LinkML synthesises when it is omitted),
-        # with a real declared prefix.
         default_prefix = str(self.schema.default_prefix) if self.schema.default_prefix else ""
-        if default_prefix not in px:
-            default_prefix = "ex" if "ex" in px else next((k for k in px if k not in RESERVED_PREFIXES), "")
 
-        return px, default_prefix
+        if default_prefix in px:
+            return px, default_prefix
+
+        if default_prefix:
+            # A namespace IRI rather than a declared prefix: bind it to a name so
+            # CURIEs are well formed and the schema's namespace is preserved.
+            return px, _bind_prefix(px, default_prefix)
+
+        # No default_prefix at all: use a declared prefix, else an example namespace.
+        for prefix in px:
+            if prefix not in RESERVED_PREFIXES:
+                return px, prefix
+
+        return px, _bind_prefix(px, "https://example.org/default#")
 
     def _iterator_for_class(self, c: ClassDefinition) -> str:
         return self.iterator_template.replace("{Class}", c.name)
