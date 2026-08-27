@@ -481,6 +481,19 @@ internal representation.</p>
 <h2>Loading from and dumping to YAML<a class="headerlink" href="#loading-from-and-dumping-to-yaml" title="Link to this heading">¶</a></h2>
 <p>The native YAML representation for LinkML is essentially identical to
 JSON.</p>
+<p>Importantly, this means that YAML-specific features, such as the
+automatic typing of untagged nodes into non-numeric scalars (e.g.
+dates) or, conversely, the explicit typing of nodes through tags, are
+not expected to be used and can lead to undefined behaviours.</p>
+<p>For example, a date-typed slot MUST be serialised in YAML as a string
+(as it would be in JSON):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">epoch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1970-01-01&quot;</span>
+</pre></div>
+</div>
+<p>and NOT as a date scalar, even though this is legal in YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">epoch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1970-01-01</span>
+</pre></div>
+</div>
 <p>In future there may be support for a <em>direct</em> translation to YAML that
 utilizes YAML tags to encode typing information.</p>
 </section>
