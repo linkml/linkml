@@ -173,6 +173,13 @@ class JSONLDGenerator(Generator):
                 materialized[slot_name] = induced
                 self._slot_base_name[slot_name] = slot_name
 
+        # Infer ``inlined``/``inlined_as_list`` for class-ranged slots. SchemaView's
+        # ``induced_slot`` only propagates a declared value; it does not infer. LinkML
+        # semantics require a class range with no identifier slot to be inlined, so
+        # replicate that here to keep the serialized slot description accurate.
+        for slot in materialized.values():
+            self._infer_inlined(slot)
+
         # All SchemaView reads are done; now populate the flat visitor collections.
         self.schema.types.update(induced_types)
         self.schema.subsets.update(subsets)
@@ -196,41 +203,6 @@ class JSONLDGenerator(Generator):
         for slot in self.schema.slots.values():
             if slot.alias and slot.alias == underscore(slot.name):
                 slot.__dict__.pop("alias", None)
-        # Apply inlined/inlined_as_list inference, mirroring SchemaLoader (schemaloader.py:436-509).
-        # Only auto-set inlined/inlined_as_list when they are None; NEVER clobber an explicit
-        # value declared in the schema. inlined_as_list is inferred from whether the range class
-        # has an identifier or key slot.
-        for slot in self.schema.slots.values():
-            range_cls = self.schema.classes.get(str(slot.range) if slot.range else "")
-            if range_cls is None:
-                continue
-            # Determine whether the range class has an identifier/key slot, taking
-            # inheritance into account. SchemaLoader ran this check after is_a slot
-            # merging, so inherited identifiers count. We walk the is_a chain manually
-            # over the merged schema instead of using SchemaView.get_identifier_slot,
-            # which has the side effect of populating ``domain_of`` on slots (via
-            # induced_slot) in import order, corrupting later serialisation.
-            range_has_identifier = self._class_has_identifier(range_cls.name)
-            if range_has_identifier:
-                # Range HAS an identifier: default to dictionary inlining (inlined_as_list=False)
-                # only when inlined=True was requested and inlined_as_list is unspecified.
-                if slot.inlined is True and slot.inlined_as_list is None:
-                    slot.inlined_as_list = False
-                elif slot.inlined is None and slot.inlined_as_list is True:
-                    slot.inlined = True
-                elif slot.inlined is False and slot.inlined_as_list is True:
-                    slot.inlined = True
-            else:
-                # Range has NO identifier: it MUST be inlined.
-                if slot.inlined is True:
-                    if slot.inlined_as_list is None:
-                        slot.inlined_as_list = True
-                elif slot.inlined is False:
-                    slot.inlined = True
-                else:
-                    slot.inlined = True
-                    if slot.inlined_as_list is None:
-                        slot.inlined_as_list = True
         for s in self.schemaview.all_schema():
             if self.schema.license is None and s.license:
                 self.schema.license = s.license
@@ -288,31 +260,24 @@ class JSONLDGenerator(Generator):
                 if owner_cls is not None and owner_cls.imported_from:
                     slot.imported_from = owner_cls.imported_from
 
-    def _class_has_identifier(self, class_name: str) -> bool:
-        """Return True if ``class_name`` or any of its ``is_a`` ancestors declares a
-        slot marked as ``identifier`` or ``key``.
+    def _infer_inlined(self, slot: SlotDefinition) -> None:
+        """Materialize ``inlined``/``inlined_as_list`` for a class-ranged slot.
 
-        This is a side-effect-free replacement for
-        :meth:`SchemaView.get_identifier_slot`, which mutates slot ``domain_of``
-        lists via ``induced_slot`` and therefore cannot be used inside the
-        serialisation pipeline without corrupting element ordering.
+        The inference itself lives in :meth:`SchemaView.is_inlined` (a class range with no
+        identifier slot must be inlined, since it cannot be referenced by URI). SchemaView
+        exposes it as a query but does not write it back onto the slot; this method applies
+        that result to the materialized slot so the serialized description is accurate.
+        Never clobbers an explicitly declared value.
         """
-        seen: set[str] = set()
-        current: str | None = class_name
-        while current and current not in seen:
-            seen.add(current)
-            cls = self.schema.classes.get(current)
-            if cls is None:
-                break
-            for slot_name in cls.slots:
-                slot = self.schema.slots.get(slot_name)
-                if slot is not None and (slot.identifier or slot.key):
-                    return True
-            for attr in cls.attributes.values():
-                if attr.identifier or attr.key:
-                    return True
-            current = cls.is_a
-        return False
+        range_name = str(slot.range) if slot.range else None
+        if range_name is None or range_name not in self.schema.classes:
+            return
+        if not self.schemaview.is_inlined(slot):
+            return
+        if slot.inlined is None:
+            slot.inlined = True
+        if slot.inlined and slot.inlined_as_list is None and slot.multivalued:
+            slot.inlined_as_list = True
 
     def _slot_uri_for(self, slot: SlotDefinition) -> str:
         """Compute the slot_uri for a slot with no declared slot_uri.
