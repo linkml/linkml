@@ -207,62 +207,8 @@ class JSONLDGenerator(Generator):
         for slot in self.schema.slots.values():
             if slot.alias and slot.alias == underscore(slot.name):
                 slot.__dict__.pop("alias", None)
-        for s in self.schemaview.all_schema():
-            if self.schema.license is None and s.license:
-                self.schema.license = s.license
-            for pfx in s.emit_prefixes:
-                if pfx not in self.schema.emit_prefixes:
-                    self.schema.emit_prefixes.append(pfx)
-        # SchemaLoader sets imported_from on elements that come from imported schemas,
-        # using the CURIE form of the source schema id (e.g. "linkml:types").
-        # Replicate that here: build a map from schema id URI → CURIE for all imports.
-        from linkml_runtime.linkml_model.meta import Prefix as MetaPrefix
-
-        id_to_curie: dict[str, str] = {}
-        # Also track which schema IDs are "linkml" imports (start with "linkml:" or biolink URI)
-        # — only these get imported_from set, matching mergeutils.merge_dicts (mergeutils.py:146-151).
-        linkml_schema_ids: set[str] = set()
-        for imp_name, imp_schema in self.schemaview.schema_map.items():
-            if imp_name.startswith("linkml:") or str(imp_schema.id).startswith("https://w3id.org/biolink/linkml"):
-                linkml_schema_ids.add(str(imp_schema.id))
-        for s in self.schemaview.all_schema():
-            for pfx, ns in self.schemaview.namespaces().items():
-                # ns may be a linkml Prefix object or a plain string/rdflib Namespace
-                ns_uri = ns.prefix_reference if isinstance(ns, MetaPrefix) else str(ns)
-                if str(s.id).startswith(ns_uri) and pfx not in ("@base", "@default"):
-                    id_to_curie[str(s.id)] = f"{pfx}:{str(s.id)[len(ns_uri) :]}"
-                    break
-            else:
-                id_to_curie[str(s.id)] = str(s.id)
-        for collection in [
-            self.schema.types,
-            self.schema.slots,
-            self.schema.classes,
-            self.schema.subsets,
-            self.schema.enums,
-        ]:
-            for element in collection.values():
-                # slot_usage-derived slots already received the correct ``imported_from``
-                # from their owning class (SchemaLoader attributes a usage slot to the
-                # schema that declares the class, not the base slot's schema). Do not
-                # overwrite it from ``from_schema`` (which is inherited from the base slot).
-                if getattr(element, "is_usage_slot", False):
-                    continue
-                if (
-                    element.from_schema
-                    and str(element.from_schema) != str(self.schema.id)
-                    and str(element.from_schema) in linkml_schema_ids
-                ):
-                    element.imported_from = id_to_curie.get(str(element.from_schema), str(element.from_schema))
-        # Now that every class has its resolved ``imported_from`` CURIE, propagate it to
-        # slot_usage-derived slots. SchemaLoader attributes a usage slot to the schema
-        # that declares its owning class (e.g. UnitOfMeasure_exact_mappings -> linkml:units),
-        # not to the schema of the base slot.
-        for slot in self.schema.slots.values():
-            if getattr(slot, "is_usage_slot", False) and slot.owner:
-                owner_cls = self.schema.classes.get(slot.owner)
-                if owner_cls is not None and owner_cls.imported_from:
-                    slot.imported_from = owner_cls.imported_from
+        self._merge_imported_schema_metadata()
+        self._assign_imported_from()
 
     def _infer_inlined(self, slot: SlotDefinition) -> None:
         """Materialize ``inlined``/``inlined_as_list`` for a class-ranged slot.
@@ -282,6 +228,51 @@ class JSONLDGenerator(Generator):
             slot.inlined = True
         if slot.inlined and slot.inlined_as_list is None and slot.multivalued:
             slot.inlined_as_list = True
+
+    def _merge_imported_schema_metadata(self) -> None:
+        """Merge schema-level metadata contributed by imported schemas.
+
+        Mirrors the historical merge semantics: the importing schema inherits ``license``
+        from an imported schema when it declares none, and accumulates ``emit_prefixes``.
+        SchemaView keeps imported schemas separate, so this must be replicated explicitly.
+        """
+        for s in self.schemaview.all_schema():
+            if self.schema.license is None and s.license:
+                self.schema.license = s.license
+            for pfx in s.emit_prefixes:
+                if pfx not in self.schema.emit_prefixes:
+                    self.schema.emit_prefixes.append(pfx)
+
+    def _assign_imported_from(self) -> None:
+        """Set ``imported_from`` on elements sourced from an imported schema.
+
+        SchemaView records provenance as ``from_schema`` (the source schema *id* URI).
+        Downstream RDF/JSON-LD consumers expect the ``imported_from`` CURIE (e.g.
+        ``linkml:types``). Map each element's ``from_schema`` id back to the import
+        key under which its schema was loaded and record it as ``imported_from``.
+        """
+        sv = self.schemaview
+        main_id = str(self.schema.id)
+        # Map source-schema id URI -> the import key it was loaded under (e.g.
+        # "https://w3id.org/linkml/types" -> "linkml:types").
+        id_to_import_key = {
+            str(imp_schema.id): imp_key
+            for imp_key, imp_schema in sv.schema_map.items()
+            if str(imp_schema.id) != main_id
+        }
+        for collection in (
+            self.schema.types,
+            self.schema.slots,
+            self.schema.classes,
+            self.schema.subsets,
+            self.schema.enums,
+        ):
+            for element in collection.values():
+                if element.imported_from is not None:
+                    continue
+                from_schema = str(element.from_schema) if element.from_schema else None
+                if from_schema and from_schema != main_id and from_schema in id_to_import_key:
+                    element.imported_from = id_to_import_key[from_schema]
 
     def _slot_uri_for(self, slot: SlotDefinition, use_name: bool = False) -> str:
         """Compute the slot_uri for a slot with no declared slot_uri.
