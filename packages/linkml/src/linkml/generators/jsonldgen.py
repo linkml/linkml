@@ -84,13 +84,6 @@ class JSONLDGenerator(Generator):
         self.schema.classes.update(self.schemaview.all_classes())
         self.schema.subsets.update(self.schemaview.all_subsets())
         self.schema.enums.update(self.schemaview.all_enums())
-        # SchemaView's inject_metadata sets from_schema on class attributes (embedded
-        # SlotDefinitions), but SchemaLoader does not. SchemaView's induced_slot may also
-        # set domain_of on attributes as a side effect. Clear both to match SchemaLoader.
-        for cls in self.schema.classes.values():
-            for attr in cls.attributes.values():
-                attr.from_schema = None
-                attr.domain_of = []
         # Materialise reverse inverses, mirroring SchemaLoader (schemaloader.py:304-317):
         # for every slot declaring ``inverse``, set the inverse relationship on the target
         # slot when it does not already declare one. SchemaView does not do this, so the
@@ -772,12 +765,6 @@ class JSONLDGenerator(Generator):
             context_kwargs = {**default_context_kwargs, **context_kwargs}
 
         self._add_type(self.schema)
-        # SchemaView's induced_slot may set domain_of on class attributes as a side effect
-        # during inlined inference. Clear it before serialization — SchemaLoader never sets
-        # domain_of on embedded class attributes.
-        for cls in self.schema.classes.values():
-            for attr in cls.attributes.values():
-                attr.domain_of = []
         base_prefix = self.default_prefix()
 
         # `context` can be a `str`, a `list[str]` or a `tuple[str]`
