@@ -133,11 +133,15 @@ class JSONLDGenerator(Generator):
                 if is_attribute:
                     # Attributes are class-local: induce in the class context and give each
                     # a unique mangled name so same-named attributes across classes do not
-                    # collide.
+                    # collide, and (when no explicit slot_uri is declared) disambiguate the
+                    # slot_uri via that mangled name. See
+                    # https://github.com/linkml/linkml/issues/388.
                     # deepcopy: induced_slot() shallow-copies the source slot, so mutable
                     # fields (e.g. ``mappings``) are shared with the class ``attributes``.
                     induced = deepcopy(sv.induced_slot(slot_name, class_name))
                     induced.name = mangled_attribute_name(class_name, slot_name)
+                    if induced.slot_uri is None:
+                        induced.slot_uri = self._slot_uri_for(induced, use_name=True)
                     materialized[induced.name] = induced
                     resolved_slot_names.append(induced.name)
                 elif is_usage:
@@ -279,14 +283,21 @@ class JSONLDGenerator(Generator):
         if slot.inlined and slot.inlined_as_list is None and slot.multivalued:
             slot.inlined_as_list = True
 
-    def _slot_uri_for(self, slot: SlotDefinition) -> str:
+    def _slot_uri_for(self, slot: SlotDefinition, use_name: bool = False) -> str:
         """Compute the slot_uri for a slot with no declared slot_uri.
 
-        Replicates SchemaLoader's ``slot_name_for`` (schemaloader.py:1082): uses
-        ``alias`` when present, otherwise ``name``, with :func:`underscore` casing.
+        Uses ``alias`` when present, otherwise ``name``, with :func:`underscore` casing.
         The namespace comes from the slot's source schema default prefix.
+
+        :param use_name: force use of ``slot.name`` (ignoring ``alias``). Attribute-derived
+            slots share a base ``alias`` across classes but carry a unique mangled ``name``;
+            the mangled name is required to disambiguate their slot_uri
+            (https://github.com/linkml/linkml/issues/388).
         """
-        alias_or_name = underscore(slot.alias if slot.alias else slot.name)
+        if use_name:
+            alias_or_name = underscore(slot.name)
+        else:
+            alias_or_name = underscore(slot.alias if slot.alias else slot.name)
         src_schema_id = slot.from_schema or self.schema.id
         src_schema = next(
             (s for s in self.schemaview.all_schema() if str(s.id) == str(src_schema_id)),
