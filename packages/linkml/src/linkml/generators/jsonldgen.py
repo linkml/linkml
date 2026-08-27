@@ -4,6 +4,7 @@ import os
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.mergeutils import slot_usage_name
+from linkml.utils.rawloader import DATETIME_FORMAT
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -219,6 +221,7 @@ class JSONLDGenerator(Generator):
                 slot.__dict__.pop("alias", None)
         self._merge_imported_schema_metadata()
         self._assign_imported_from()
+        self._stamp_load_metadata()
 
     def _infer_inlined(self, slot: SlotDefinition) -> None:
         """Materialize ``inlined``/``inlined_as_list`` for a class-ranged slot.
@@ -238,6 +241,24 @@ class JSONLDGenerator(Generator):
             slot.inlined = True
         if slot.inlined and slot.inlined_as_list is None and slot.multivalued:
             slot.inlined_as_list = True
+
+    def _stamp_load_metadata(self) -> None:
+        """Stamp load-time metadata (``generation_date``, ``source_file_date``,
+        ``source_file_size``) on the schema when ``metadata`` is enabled.
+
+        SchemaLoader derives these in ``rawloader.load_raw_schema``; the SchemaView path
+        loads via ``yaml_loader`` directly and skips that step, so they must be stamped
+        here to preserve provenance. Honors the generator's ``metadata`` flag, matching
+        the ``--metadata/--no-metadata`` contract.
+        """
+        if not self.metadata:
+            return
+        self.schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
+        source_file = self.original_schema if isinstance(self.original_schema, str) else None
+        if source_file and "://" not in source_file and os.path.exists(source_file):
+            stat = os.stat(source_file)
+            self.schema.source_file_size = stat.st_size
+            self.schema.source_file_date = datetime.fromtimestamp(stat.st_mtime).strftime(DATETIME_FORMAT)
 
     @staticmethod
     def _strip_empty_containers(element: YAMLRoot) -> None:
