@@ -231,7 +231,7 @@ class YarrrmlGenerator(Generator):
     def _iterator_for_class(self, c: ClassDefinition) -> str:
         return self.iterator_template.replace("{Class}", c.name)
 
-    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> Any:
+    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> str | None:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(c.name)
         prefix = self.schema.default_prefix or "ex"
