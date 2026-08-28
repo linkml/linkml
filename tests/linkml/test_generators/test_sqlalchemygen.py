@@ -114,12 +114,6 @@ def test_mixin():
     assert i2.ref_to_c1[0] == i1
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="One-To-Many relationship() foreign_keys references the raw (snake_case) class "
-    "name, which SQLAlchemy resolves to a Table rather than the mapped class. "
-    "See https://github.com/linkml/linkml/issues/XXXX.",
-)
 @pytest.mark.parametrize("template", [TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X])
 def test_one_to_many_fk_references_mapped_class(template):
     """A One-To-Many (inlined composition) relationship must reference the mapped class.
