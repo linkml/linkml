@@ -70,6 +70,135 @@ def get_local_imports(schema_path: Path, dir: Path):
     return all_imports
 
 
+def _parse_yaml(value: Any, source: str) -> Any:
+    """Parse YAML, naming what was being read if it does not parse.
+
+    :param value: YAML text, or an open file to read it from.
+    :param source: Where it came from, e.g. ``"--config-file"``.
+    :return: Whatever the YAML held.
+    :raises ValueError: if the YAML is malformed.
+    """
+    try:
+        return yaml.safe_load(value)
+    except yaml.YAMLError as e:
+        raise ValueError(f"{source} is not valid YAML: {e}") from e
+
+
+def _config_mapping(value: Any, where: str, source: str) -> dict[str, Any]:
+    """Check that one level of a configuration is a mapping, and hand it back.
+
+    An empty value (``generator_args:`` with nothing under it) reads as None saying
+    "nothing configured here", so it returns as empty mapping. Anything else that is
+    not a mapping is a mistake in the configuration, and says so where it was given
+    rather than failing later.
+
+    :param value: Whatever was found at this point in the configuration.
+    :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The mapping, empty if nothing was configured.
+    :raises ValueError: if the value is neither a mapping nor empty.
+    """
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"{source}: expected a YAML mapping at {where}, found {type(value).__name__}")
+    return value
+
+
+def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR_NAME, ARG_DICT]:
+    """Check a block of per-generator arguments: generator name to that generator's settings.
+
+    The block and each generator's settings within it both have to be mappings, since
+    the settings are unpacked into the generator's constructor.
+
+    :param value: The block as read from YAML.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :param prefix: Key path leading to the block, e.g. ``"generator_args."`` for a config
+        file, or empty when the block is the whole value (as with ``-A``).
+    :return: The validated block, empty if nothing was configured.
+    :raises ValueError: if the block, or any generator's settings, isn't a mapping.
+    """
+    where = f"'{prefix.rstrip('.')}'" if prefix else "the top level"
+    args = _config_mapping(value, where, source)
+    return {name: _config_mapping(section, f"'{prefix}{name}'", source) for name, section in args.items()}
+
+
+def _generator_names(value: Any, where: str, source: str) -> list[GENERATOR_NAME]:
+    """Check that a list of generator names really is a list of names, and hand it back.
+
+    A bare string is refused, not wrapped into a single-item list. That prevents a bare
+    string from being treated as a list by ``gen_name in excludes``, which on a string
+    searches the configured text for each generator name::
+
+        excludes: [jsonldcontext]  ->  "jsonld" in ["jsonldcontext"] -> False, generated
+        excludes: jsonldcontext    ->  "jsonld" in "jsonldcontext"   -> True, skipped
+
+    :param value: Whatever was found at this point in the configuration.
+    :param where: Where that was, for the error message, e.g. ``"'excludes'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The list of names, empty if nothing was configured.
+    :raises ValueError: if the value is not a list of names, nor empty.
+    """
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{source}: expected a YAML list of generator names at {where}, found {type(value).__name__}")
+    for name in value:
+        if not isinstance(name, str):
+            raise ValueError(f"{source}: expected a generator name in {where}, found {type(name).__name__}")
+    return value
+
+
+def _project_config(value: Any, source: str) -> dict[str, Any]:
+    """Check a whole gen-project configuration, and hand it back.
+
+    Every part is checked where it was written, so a mistake is reported against the key
+    holding it instead of failing somewhere later in generation.
+
+    :param value: The configuration as read from YAML.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The validated configuration, empty if nothing was configured.
+    :raises ValueError: if any part of it has the wrong shape.
+    """
+    config_data = _config_mapping(value, "the top level", source)
+    for key in config_data:
+        # These become attribute names via setattr in cli(), which requires strings.
+        if not isinstance(key, str):
+            raise ValueError(f"{source}: expected a configuration name at the top level, found {type(key).__name__}")
+    if "generator_args" in config_data:
+        config_data["generator_args"] = _generator_args(config_data["generator_args"], source, "generator_args.")
+    for key in ("includes", "excludes"):
+        if key in config_data:
+            config_data[key] = _generator_names(config_data[key], f"'{key}'", source)
+    directory = config_data.get("directory")
+    if directory is not None and not isinstance(directory, str):
+        raise ValueError(f"{source}: expected a directory path at 'directory', found {type(directory).__name__}")
+    return config_data
+
+
+def _merge_generator_args(
+    base: dict[GENERATOR_NAME, ARG_DICT], overrides: dict[GENERATOR_NAME, ARG_DICT]
+) -> dict[GENERATOR_NAME, ARG_DICT]:
+    """Layer one block of per-generator arguments over another, per setting.
+
+    Used to combine ``--config-file`` with ``--generator-arguments``, so naming one
+    setting on the command line does not discard the rest of a generator's settings
+    from the file. ``overrides`` wins setting by setting::
+
+        file:  {jsonschema: {top_class: Thing, not_closed: false}}
+        -A:    {jsonschema: {not_closed: true}}
+        result: {jsonschema: {top_class: Thing, not_closed: true}}
+
+    :param base: The arguments to start from, e.g. those read from a config file.
+    :param overrides: The arguments to layer on top, e.g. those given with ``-A``.
+    :return: A new block; neither argument is modified.
+    """
+    merged = {name: dict(args) for name, args in base.items()}
+    for name, args in overrides.items():
+        merged.setdefault(name, {}).update(args)
+    return merged
+
+
 @dataclass
 class ProjectConfiguration:
     """
@@ -92,8 +221,21 @@ class ProjectGenerator:
 
     @staticmethod
     def generate(schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
+        """Generate every configured artefact for ``schema_path`` under ``config.directory``.
+
+        :param schema_path: Path to the schema to generate from.
+        :param config: What to generate and how. Checked before use, so a configuration
+            built by hand reports its own mistakes rather than failing part-way through.
+        :raises ValueError: if any part of ``config`` has the wrong shape.
+        """
         if config.directory is None:
             raise Exception("Must pass directory")
+        # Checked here rather than only in cli(), so callers using this as a library get
+        # the same reporting as the command line does. Both name lists come back empty
+        # when unset, so the skip checks below no longer need their own None handling.
+        generator_args = _generator_args(config.generator_args, "configuration", "generator_args.")
+        includes = _generator_names(config.includes, "'includes'", "configuration")
+        excludes = _generator_names(config.excludes, "'excludes'", "configuration")
         output_dir = Path(config.directory)
         output_dir.mkdir(parents=True, exist_ok=True)
         if config.mergeimports:
@@ -102,10 +244,10 @@ class ProjectGenerator:
             all_schemas = get_local_imports(schema_path, Path(schema_path).parent)
         logger.debug(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
-            if config.includes is not None and config.includes != [] and gen_name not in config.includes:
-                logger.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
+            if includes and gen_name not in includes:
+                logger.info(f"Skipping {gen_name} as not in inclusion list: {includes}")
                 continue
-            if config.excludes is not None and gen_name in config.excludes:
+            if gen_name in excludes:
                 logger.info(f"Skipping {gen_name} as it is in exclusion list")
                 continue
             logger.info(f"Generating: {gen_name}")
@@ -119,7 +261,7 @@ class ProjectGenerator:
                 parent_dir.mkdir(parents=True, exist_ok=True)
                 all_gen_args = {
                     **default_gen_args,
-                    **config.generator_args.get(gen_name, {}),
+                    **generator_args.get(gen_name, {}),
                 }
                 gen: Generator
 
@@ -227,21 +369,30 @@ def cli(
           json_schema:
             top_class: Container
 
+    Both together: ``-A`` is layered over the file setting by setting, so naming one
+    setting on the command line keeps the rest of that generator's settings from the file.
+
     """
     project_config = ProjectConfiguration()
-    if config_file is not None:
-        for k, v in yaml.safe_load(config_file).items():
-            setattr(project_config, k, v)
+    # Both sources are read together so a mistake in either is reported the same way.
+    # The checks raise ValueError so generate() can reuse them when called as a library;
+    # UsageError, with its exit code and "Error:" prefix, belongs to the command line.
+    try:
+        if config_file is not None:
+            for k, v in _project_config(_parse_yaml(config_file, "--config-file"), "--config-file").items():
+                setattr(project_config, k, v)
+        if generator_arguments is not None:
+            source = "--generator-arguments"
+            project_config.generator_args = _merge_generator_args(
+                project_config.generator_args, _generator_args(_parse_yaml(generator_arguments, source), source)
+            )
+            logger.info(f"generator args: {project_config.generator_args}")
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
     if exclude:
         project_config.excludes = list(exclude)
     if include:
         project_config.includes = list(include)
-    if generator_arguments is not None:
-        try:
-            project_config.generator_args = yaml.safe_load(generator_arguments)
-        except Exception:
-            raise Exception("Argument must be a valid YAML blob")
-        logger.info(f"generator args: {project_config.generator_args}")
     if dir is not None:
         project_config.directory = dir
     project_config.mergeimports = mergeimports
