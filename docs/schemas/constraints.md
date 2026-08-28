@@ -195,7 +195,16 @@ You can then use this inside a structured pattern:
       partial_match: false
 ```
 
-You can use [gen-linkml](../generators/linkml) to expand these into structured patterns
+Generators that emit pattern constraints resolve structured patterns automatically. This
+resolution does not add a `pattern` to the actual schema definition.
+
+Python applications can obtain the effective regular expression without modifying the
+schema by using `SchemaView.resolve_pattern()` for a particular slot or type definition.
+`SchemaView.induced_slot()` and `SchemaView.induced_type()` also resolve structured
+patterns while applying inheritance and class-specific slot usage.
+
+The older `materialize_patterns` generator options are deprecated.
+`SchemaView.materialize_patterns()` is also deprecated because it mutates the schema.
 
 ## Minimum and Maximum values
 
