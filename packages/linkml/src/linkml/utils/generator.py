@@ -922,7 +922,18 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
+def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+    """Get command-line arguments common to all generators.
+
+    Use this decorator on the Click entry point for a generator to automatically
+    configure the entry point to accept all common options.
+
+    :param g: The generator for which to add options.
+    :param accepts_directory_input: If True, the generator's entry point will
+        accept both a file or a directory as its main input. The default is to
+        accept a file only.
+    """
+
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
             logging.basicConfig(level=logging.DEBUG, force=True)
@@ -934,7 +945,9 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
             sys.tracebacklimit = 0
 
     def decorator(f: Command) -> Command:
-        f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
+        f.params.append(
+            Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=accepts_directory_input, path_type=Path))
+        )
         f.params.append(
             Option(
                 ("--format", "-f"),
