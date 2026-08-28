@@ -80,6 +80,11 @@ class GeneratorTest(Generator):
         self.visited.append(f"subset: {subset.name}")
 
 
+@dataclass
+class SchemaViewGeneratorTest(GeneratorTest):
+    uses_schemaloader = False
+
+
 # visit_all_class_slots = True, visits_are_sorted = False, sort_class_slots = False
 expected1 = [
     "init",
@@ -390,6 +395,85 @@ prefixes:
 
     with pytest.raises(ValueError):
         GeneratorTest(model + "\n\ndefault_prefix: CCCC")
+
+
+def test_schema_view_prefix_namespaces(tmp_path):
+    """SchemaView prefix objects are unwrapped when namespaces are initialized."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """id: https://example.org/test
+name: test
+prefixes:
+  ex: https://example.org/test/
+default_prefix: ex
+classes:
+  Foo:
+"""
+    )
+
+    generator = SchemaViewGeneratorTest(schema_path)
+
+    assert str(generator.namespaces["ex"]) == "https://example.org/test/"
+
+
+def test_namespaces_constructor_kwarg():
+    """The ``namespaces=`` constructor kwarg is accepted for backward compat.
+
+    ``namespaces`` is exposed as a property backed by ``_namespaces``.  Renaming
+    the backing field must not drop the public ``namespaces=`` kwarg that worked
+    before the SchemaLoader/SchemaView split.
+
+    - On the SchemaLoader path the kwarg is accepted (no ``TypeError``) and the
+      map is (re)populated from the resolved schema, as on ``main``.
+    - On the SchemaView path an injected map is honored verbatim.
+    """
+    from linkml_runtime.utils.namespaces import Namespaces
+
+    model = """
+id: http://example.org/test/t1
+name: t1
+default_range: string
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: xsd
+"""
+
+    # SchemaLoader path: kwarg must be accepted (previously raised TypeError).
+    injected = Namespaces()
+    injected["ex"] = "http://example.org/injected/"
+    gen = GeneratorTest(model, namespaces=injected)
+    assert gen.namespaces is not None
+    assert "xsd" in gen.namespaces
+
+    # Omitting the kwarg still yields a populated map on the SchemaLoader path.
+    gen_default = GeneratorTest(model)
+    assert gen_default.namespaces is not None
+    assert "xsd" in gen_default.namespaces
+
+
+def test_namespaces_constructor_kwarg_injection_schemaview(tmp_path):
+    """On the SchemaView path an injected ``namespaces=`` map is honored."""
+    from linkml_runtime.utils.namespaces import Namespaces
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """id: https://example.org/test
+name: test
+prefixes:
+  ex: https://example.org/test/
+default_prefix: ex
+classes:
+  Foo:
+"""
+    )
+
+    injected = Namespaces()
+    injected["custom"] = "http://example.org/custom/"
+    generator = SchemaViewGeneratorTest(schema_path, namespaces=injected)
+
+    with pytest.warns(UserWarning, match="self.namespaces.*SchemaLoader-era"):
+        namespaces = generator.namespaces
+    assert namespaces["custom"] == "http://example.org/custom/"
 
 
 def test_duplicate_names():

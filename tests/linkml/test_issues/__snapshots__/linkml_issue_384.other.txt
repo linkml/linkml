@@ -696,11 +696,13 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .
 <https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
 <https://w3id.org/linkml/examples/personinfo/age> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/age> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/age> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person" .
 <https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/description> "age in years" .
 <https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
 <https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/integer> .
 <https://w3id.org/linkml/examples/personinfo/aliases> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/aliases> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/aliases> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person" .
 <https://w3id.org/linkml/examples/personinfo/aliases> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <https://w3id.org/linkml/examples/personinfo/boolean> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
@@ -969,6 +971,7 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/uri> .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/uriorcurie> .
 <https://w3id.org/linkml/examples/personinfo/phone> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/phone> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://purl.org/dc/terms/conformsTo> "https://www.w3.org/TR/sparql11-query/#propertypaths" .
 <https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
 <https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." .
@@ -1000,6 +1003,7 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/repr> "str" .
 <https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#time"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/unit> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/unit> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/uri> <http://purl.org/dc/terms/conformsTo> "https://www.ietf.org/rfc/rfc3987.txt" .
 <https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
 <https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/2004/02/skos/core#closeMatch> "schema:URL"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
@@ -1022,6 +1026,7 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/repr> "str" .
 <https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#anyURI"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/value> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/value> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/float> .
 _:c14n3 <http://www.w3.org/ns/shacl#namespace> "https://w3id.org/linkml/examples/personinfo/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 _:c14n3 <http://www.w3.org/ns/shacl#prefix> "ex" .

@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import sys
+import warnings
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -28,7 +29,6 @@ from typing import ClassVar, TextIO, Union, cast
 
 import click
 from click import Argument, Command, Option
-from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
@@ -155,8 +155,67 @@ class Generator(metaclass=abc.ABCMeta):
     """Path to output file. Note all generators may not implement this
     uniformly, see https://github.com/linkml/linkml/issues/923"""
 
-    namespaces: Namespaces | None = None
-    """All prefix expansions used"""
+    _namespaces: ClassVar[Namespaces | None] = None
+    """Class-level sentinel default for the private backing store of the
+    :attr:`namespaces` property. Declaring it as a ``ClassVar`` keeps it out of
+    the dataclass-generated ``__init__`` while still providing a safe default
+    read (``None``) before the instance attribute is assigned. The public,
+    constructor-visible name is the field ``namespaces``.  On ``main`` that was a
+    plain dataclass field, so ``namespaces=`` was an implicit constructor kwarg;
+    it is preserved here so external callers/subclasses relying on it are not
+    silently broken by the switch to a property-backed field.
+    """
+
+    @property
+    def namespaces(self) -> Namespaces | None:
+        """Return the namespace registry.
+
+        On the SchemaLoader path (``uses_schemaloader=True``) this returns the
+        pre-built :class:`~linkml_runtime.utils.namespaces.Namespaces` object
+        populated by SchemaLoader.
+
+        On the SchemaView path (``uses_schemaloader=False``) accessing this
+        property is a sign of a hybrid design anti-pattern. A deprecation
+        warning is emitted and the call is transparently forwarded to
+        ``self.schemaview.namespaces()`` so that existing callers continue to
+        work while being nudged towards the correct API.
+        """
+        # Emit a warning when a SchemaView-based generator reads self.namespaces.
+        if not self.uses_schemaloader and self.schemaview is not None:
+            warnings.warn(
+                f"{type(self).__name__} uses SchemaView (uses_schemaloader=False) but "
+                "self.namespaces was accessed.  Use self.schemaview.namespaces() for URI "
+                "resolution instead; self.namespaces is a SchemaLoader-era artifact that "
+                "is not populated on the SchemaView path.",
+                UserWarning,
+                stacklevel=3,
+            )
+
+        # Return the namespace map, preferring an explicitly injected one.
+        if self._namespaces is not None:
+            return self._namespaces
+        if not self.uses_schemaloader and self.schemaview is not None:
+            return self.schemaview.namespaces()
+        return None
+
+    @namespaces.setter
+    def namespaces(self, value: Namespaces | None) -> None:
+        """Save passed namespace registry in the private backing store of the
+        :attr:`namespaces` property."""
+        self._namespaces = value
+
+    namespaces: Namespaces | None = namespaces
+    """Constructor kwarg backing the ``namespaces`` property (see above).
+
+    This does NOT create a second attribute that shadows the property.
+    A dataclass "field" is just an *annotation* plus a *default value*;
+    the only real class attribute named ``namespaces`` remains the
+    ``namespaces`` property object.
+    ``@dataclass`` reads that property object as the field's default and bakes it
+    into the generated ``__init__`` as ``namespaces=<property object>``
+    -- it does not overwrite the property, so attribute access still goes through
+    the getter/setter.
+    """
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
@@ -184,6 +243,13 @@ class Generator(metaclass=abc.ABCMeta):
     """If set, include extra schema outside of the imports mechanism"""
 
     def __post_init__(self) -> None:
+        # The ``namespaces`` dataclass field defaults to the property object
+        # itself (see its declaration).  When no ``namespaces=`` kwarg is passed,
+        # the generated __init__ routes that default through the property setter
+        # into ``self._namespaces``; normalise that sentinel back to ``None`` so
+        # the SchemaLoader/SchemaView paths can populate it as usual.
+        if self._namespaces is Generator.__dict__["namespaces"]:
+            self._namespaces = None
         if not self.logger:
             self.logger = logger
         if self.log_level is not None:
@@ -219,8 +285,6 @@ class Generator(metaclass=abc.ABCMeta):
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
 
-        self._init_namespaces()
-
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
         # other generators.
@@ -231,7 +295,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = gen.schema
             self.synopsis = gen.synopsis
             self.loaded = gen.loaded
-            self.namespaces = gen.namespaces
+            self._namespaces = gen.namespaces
             self.base_dir = gen.base_dir
             self.importmap = gen.importmap
             self.source_file_data = gen.source_file_date
@@ -260,27 +324,13 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = loader.schema
             self.synopsis = loader.synopsis
             self.loaded = loader.loaded
-            self.namespaces = loader.namespaces
+            self._namespaces = loader.namespaces
             self.base_dir = loader.base_dir
             self.importmap = loader.importmap
             self.source_file_data = loader.source_file_date
             self.source_file_size = loader.source_file_size
             self.schema_location = loader.schema_location
             self.schema_defaults = loader.schema_defaults
-
-    def _init_namespaces(self):
-        if self.namespaces is None:
-            self.namespaces = Namespaces()
-            if isinstance(self.schema.prefixes, dict):
-                for key, value in self.schema.prefixes.items():
-                    self.namespaces[key] = value
-            elif isinstance(self.schema.prefixes, JsonObj):
-                prefixes = vars(self.schema.prefixes)
-                for key, value in prefixes.items():
-                    self.namespaces[key] = value
-            else:
-                for prefix in self.schema.prefixes.values():
-                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
