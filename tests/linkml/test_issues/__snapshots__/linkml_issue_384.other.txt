@@ -553,12 +553,24 @@ generation_date: '2000-01-01T00:00:00'
       "@id": "GeoAge"
     },
     "GeoObject": {
+      "@context": {
+        "age": {
+          "@id": "age",
+          "@type": "@id"
+        }
+      },
       "@id": "GeoObject"
     },
     "Organization": {
       "@id": "Organization"
     },
     "Person": {
+      "@context": {
+        "age": {
+          "@id": "age",
+          "@type": "xsd:integer"
+        }
+      },
       "@id": "sdo:Person"
     },
     "Thing": {

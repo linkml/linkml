@@ -37041,7 +37041,6 @@
         },
         "@id": "agent_type"
       },
-      "id": "@id",
       "aggregate_statistic": {
         "@id": "aggregate_statistic"
       },
@@ -37862,6 +37861,7 @@
         "@type": "@id",
         "@id": "homologous_to"
       },
+      "id": "@id",
       "in_cell_population_with": {
         "@type": "@id",
         "@id": "in_cell_population_with"
