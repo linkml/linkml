@@ -1,24 +1,12 @@
 """
 Tests the generic generator framework
-
-Note: I am skipping any test that overrides ClassVars
-
-As part of this refactor:
-https://github.com/linkml/linkml/pull/924
-
-We are separating class vars and object vars; it is not possible to override ClassVars; see
-
-https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
-
-If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
-
 """
 
 import logging
 import os
 from dataclasses import dataclass, field
 from io import StringIO
-from typing import TextIO, cast
+from typing import cast
 
 import pytest
 
@@ -29,7 +17,6 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     Element,
     ElementName,
-    SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
     SubsetDefinition,
@@ -49,28 +36,9 @@ class GeneratorTest(Generator):
 
     logstream: StringIO = field(default_factory=lambda: StringIO())
 
-    def __xxxinit__(
-        self,
-        schema: str | TextIO | SchemaDefinition,
-        fmt: str = "txt",
-        metadata: bool = False,
-    ) -> None:
+    def __post_init__(self) -> None:
         self.visited = []
         self.visit_class_return = True
-        # self.visit_all_class_slots: bool = True
-        # self.visits_are_sorted: bool = False
-        # self.sort_class_slots: bool = False
-
-        self.logstream = StringIO()
-        logging.basicConfig()
-        logger = logging.getLogger(self.__class__.__name__)
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-        logger.addHandler(logging.StreamHandler(self.logstream))
-        logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, metadata, logger=logger)
-
-    def __post_init__(self) -> None:
         self.logstream = StringIO()
         logging.basicConfig()
         logger = logging.getLogger(self.__class__.__name__)
@@ -375,7 +343,6 @@ expected5 = [
 ]
 
 
-@pytest.mark.skip("See above")
 def test_visitors(input_path):
     """Test the generator visitor functions"""
     gen = GeneratorTest(str(input_path("generator1.yaml")))
@@ -511,7 +478,6 @@ classes:
     assert gen.formatted_element_name(cast(Element, gen)) is None
 
 
-@pytest.mark.skip(reason="See above")
 def test_own_slots(input_path):
     """Test the generator own_slots and all_slots helper functions"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -562,7 +528,6 @@ def test_own_slots(input_path):
     ]
 
 
-@pytest.mark.skip(reason="See above")
 def test_slot_class_paths(input_path):
     """Test for aliased slot name, class identifier path and slot type path"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
