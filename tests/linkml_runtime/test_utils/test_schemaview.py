@@ -3362,6 +3362,34 @@ def sv_induced_inlined() -> SchemaView:
 
 
 @pytest.mark.parametrize(
+    ("slot_name", "expected"),
+    [
+        # Range referenceable by identifier -> not inlined -> not a list.
+        ("to_identifier", False),
+        ("to_identifier_multivalued", False),
+        # Inlined on a key-bearing range -> dict keyed on the key slot, never a list.
+        ("to_key", False),
+        ("to_key_multivalued", False),
+        # Inlined on a plain range -> list only when multivalued.
+        ("to_plain", False),
+        ("to_plain_multivalued", True),
+        # Scalar / unconstrained ranges -> inlining does not apply.
+        ("to_integer", False),
+        ("to_any", False),
+    ],
+)
+def test_is_inlined_as_list(sv_induced_inlined: SchemaView, slot_name: str, expected: bool) -> None:
+    """is_inlined_as_list() resolves the list-vs-dict form for a slot.
+
+    A slot is inlined as a list when it is inlined, multivalued, and its range has no key
+    slot to key a dict on. Regression coverage for
+    https://github.com/linkml/linkml/issues/3927.
+    """
+    induced = sv_induced_inlined.induced_slot(slot_name, "Container")
+    assert sv_induced_inlined.is_inlined_as_list(induced) is expected
+
+
+@pytest.mark.parametrize(
     ("slot_name", "expected_inlined", "expected_inlined_as_list"),
     [
         # Range class HAS an identifier -> may be referenced by URI -> not inlined; and since
