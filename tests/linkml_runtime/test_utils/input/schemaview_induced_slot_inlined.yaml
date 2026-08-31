@@ -1,0 +1,88 @@
+id: http://example.org/schemaview_induced_slot_inlined
+name: schemaview_induced_slot_inlined
+description: >-
+  Schema exercising induced_slot() materialization of inlined / inlined_as_list.
+  Regression coverage for https://github.com/linkml/linkml/issues/3927.
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  WithIdentifier:
+    slots:
+      - identifier_slot
+      - label
+
+  WithKey:
+    slots:
+      - key_slot
+      - label
+
+  WithoutReference:
+    slots:
+      - label
+
+  # Identifier cycle: a class whose slot ranges back onto itself. Exercised to ensure
+  # induced_slot()'s inlined inference does not recurse infinitely.
+  CycleClass:
+    slots:
+      - self_ref
+
+  Container:
+    slots:
+      - to_identifier
+      - to_identifier_multivalued
+      - to_key
+      - to_key_multivalued
+      - to_plain
+      - to_plain_multivalued
+      - to_plain_explicit_not_inlined
+      - to_integer
+      - to_any
+
+  # linkml:Any — the unconstrained class. A slot ranged on it must not be force-inlined
+  # by the "no identifier" rule; its real ranges come from any_of/exactly_one_of.
+  AnyType:
+    class_uri: linkml:Any
+
+slots:
+  identifier_slot:
+    identifier: true
+  key_slot:
+    key: true
+  label: {}
+  self_ref:
+    range: CycleClass
+
+  to_identifier:
+    range: WithIdentifier
+  to_identifier_multivalued:
+    range: WithIdentifier
+    multivalued: true
+
+  to_key:
+    range: WithKey
+  to_key_multivalued:
+    range: WithKey
+    multivalued: true
+
+  to_plain:
+    range: WithoutReference
+  to_plain_multivalued:
+    range: WithoutReference
+    multivalued: true
+  to_plain_explicit_not_inlined:
+    range: WithoutReference
+    multivalued: true
+    inlined: false
+
+  to_integer:
+    range: integer
+
+  to_any:
+    range: AnyType
+    any_of:
+      - range: WithoutReference
+      - range: integer
