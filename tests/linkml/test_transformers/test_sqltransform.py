@@ -264,18 +264,19 @@ def test_aliases() -> None:
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
     d = rsv.get_class("d")
-    c_has_d = rsv.get_class("c_has_d")
+    # ``d`` has no identifier/key, so ``has_d`` is inlined (a composition): rather than a
+    # ``c_has_d`` linking table, the child ``d`` carries a ``c_id`` back-reference.
+    c_aliases = rsv.get_class("c_aliases")
     assert sorted(c.attributes.keys()) == ["description", "id", "name"]
-    assert sorted(d.attributes.keys()) == ["id", "name"]
-    assert sorted(c_has_d.attributes.keys()) == ["c_id", "has_d_id"]
+    assert sorted(d.attributes.keys()) == ["c_id", "id", "name"]
+    assert sorted(c_aliases.attributes.keys()) == ["aliases", "c_id"]
 
     assert sorted(get_primary_key_attributes(c)) == ["id"]
     assert sorted(get_primary_key_attributes(d)) == ["id"]
-    assert sorted(get_primary_key_attributes(c_has_d)) == ["c_id", "has_d_id"]
 
     assert get_foreign_key_map(c) == {}
-    assert get_foreign_key_map(d) == {}
-    assert get_foreign_key_map(c_has_d) == {"c_id": "c.id", "has_d_id": "d.id"}
+    assert get_foreign_key_map(d) == {"c_id": "c.id"}
+    assert get_foreign_key_map(c_aliases) == {"c_id": "c.id"}
 
 
 def test_sqlt_on_metamodel() -> None:
@@ -340,9 +341,10 @@ def test_sqlt_complete_example(input_path: Path) -> None:
     assert news_event_pk is not None
     assert news_event_pk.name == "id"
 
+    # ``NewsEvent`` has no identifier, so ``has_news_event`` is inlined (a composition):
+    # instead of ``{cn}_has_news_event`` linking tables, the child ``NewsEvent`` carries a
+    # back-reference foreign key to each owning class.
+    news_event = sv.get_class("NewsEvent")
     for cn in ["Person", "Organization"]:
-        c = sv.get_class(f"{cn}_has_news_event")
-        a1 = c.attributes["has_news_event_id"]
-        assert a1.range == "NewsEvent"
-        a2 = c.attributes[f"{cn}_id"]
-        assert a2.range == cn
+        back_ref = news_event.attributes[f"{cn}_id"]
+        assert back_ref.range == cn
