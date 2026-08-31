@@ -3373,6 +3373,8 @@ def sv_induced_inlined() -> SchemaView:
         # Inlined on a plain range -> list only when multivalued.
         ("to_plain", False),
         ("to_plain_multivalued", True),
+        # Explicitly not inlined -> not a list.
+        ("to_plain_explicit_not_inlined", False),
         # Scalar / unconstrained ranges -> inlining does not apply.
         ("to_integer", False),
         ("to_any", False),
@@ -3387,6 +3389,8 @@ def test_is_inlined_as_list(sv_induced_inlined: SchemaView, slot_name: str, expe
     """
     induced = sv_induced_inlined.induced_slot(slot_name, "Container")
     assert sv_induced_inlined.is_inlined_as_list(induced) is expected
+    # The materialized induced slot must agree with the resolver.
+    assert bool(induced.inlined_as_list) == sv_induced_inlined.is_inlined_as_list(induced)
 
 
 @pytest.mark.parametrize(
