@@ -49,6 +49,28 @@ slots:
     range: decimal
 """
 
+PATTERN_SCHEMA = """
+id: https://example.org/pattern
+name: pattern_test
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+settings:
+  word: "[a-z]+"
+classes:
+  Container:
+    slots:
+      - value
+slots:
+  value:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+"""
+
 INHERITANCE_SCHEMA = """
 id: https://example.org/inheritance
 name: inheritance_test
@@ -215,6 +237,19 @@ def test_serialized_output():
     assert 'json:"name"' in code
     assert 'json:"age' in code
     assert "omitempty" in code
+
+
+def test_structured_patterns_are_resolved_without_modifying_schema() -> None:
+    """Populate Go field patterns without modifying asserted slot definitions."""
+    generator = GolangGenerator(schema=PATTERN_SCHEMA)
+    value_slot = generator.schemaview.get_slot("value")
+
+    assert value_slot.pattern is None
+
+    module = generator.render()
+
+    assert module.structs["Container"].fields["value"].pattern == r"^(?:[a-z]+)$"
+    assert value_slot.pattern is None
 
 
 def test_inheritance_embedding():
