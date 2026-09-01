@@ -48,14 +48,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
-        # Test on Windows with only the two newest stable Python versions
+        # Test on Windows with only the oldest and newest stable Python versions
         exclude:
-          - os: windows-latest
-            python-version: "3.10"
           - os: windows-latest
             python-version: "3.11"
           - os: windows-latest
             python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.13"
           - os: windows-latest
             python-version: "3.15"
     # See https://github.com/snok/install-poetry#running-on-windows
@@ -139,7 +139,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.13"]
+        python-version: ["3.10", "3.14"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -189,7 +189,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.13"]
+        python-version: ["3.10", "3.14"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -240,6 +240,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
         with:
+          # Should always use the same Python version as pypi-publish.yaml
           python-version: 3.13
 
       - name: Install uv

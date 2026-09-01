@@ -20,6 +20,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7.0.0
       with:
+        # Should always use the same Python version as the job "test_build_package" in main.yaml
         python-version: 3.13
 
     - name: Install uv
