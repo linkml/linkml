@@ -1,7 +1,9 @@
 import logging
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import click
 from jinja2 import Template
@@ -9,7 +11,7 @@ from jinja2 import Template
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
-from linkml.utils.generator import shared_arguments
+from linkml.utils.generator import read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
@@ -48,6 +50,7 @@ JAVA_KEYWORDS = [
     "else",
     "enum",
     "extends",
+    "false",
     "final",
     "finally",
     "float",
@@ -62,6 +65,7 @@ JAVA_KEYWORDS = [
     "long",
     "native",
     "new",
+    "null",
     "package",
     "private",
     "protected",
@@ -77,6 +81,7 @@ JAVA_KEYWORDS = [
     "throw",
     "throws",
     "transient",
+    "true",
     "try",
     "void",
     "volatile",
@@ -84,6 +89,23 @@ JAVA_KEYWORDS = [
 ]
 
 TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
+
+
+def _is_valid_java_package(package_name: str) -> bool:
+    """Return True if ``package_name`` is a dot-separated list of legal Java identifiers.
+
+    Each name segment must be a valid Java identifier (letter/underscore/dollar start,
+    followed by letters/digits/underscore/dollar) and not a reserved keyword.
+    """
+    segments = package_name.split(".")
+    for segment in segments:
+        if not segment or not (segment[0].isalpha() or segment[0] in "_$"):
+            return False
+        if any(not (ch.isalnum() or ch in "_$") for ch in segment):
+            return False
+        if segment in JAVA_KEYWORDS:
+            return False
+    return True
 
 
 @dataclass
@@ -222,6 +244,17 @@ class JavaGenerator(OOCodeGenerator):
         if self.template_file is not None:
             self.template_cache.force_template(Path(self.template_file))
         super().__post_init__()
+        if self.package in (None, ""):
+            self.package = "example"
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        if not _is_valid_java_package(str(self.package)):
+            raise ValueError(f"{self.package!r} is not a valid Java package name")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        package = args.get("package")
+        if package not in (None, "") and not _is_valid_java_package(str(package)):
+            raise click.UsageError(f"{package!r} is not a valid Java package name")
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
@@ -459,6 +492,14 @@ class JavaGenerator(OOCodeGenerator):
 )
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a gen-project-style YAML config file setting "
+    "'generator_args: {java: {package: ...}}'. An explicit --package always takes "
+    "precedence over the config file.",
+)
+@click.option(
     "--template-dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
     help="Directory containing the Jinja2 templates to use",
@@ -485,6 +526,7 @@ def cli(
     yamlfile,
     output_directory=None,
     package=None,
+    config_file=None,
     template_dir=None,
     template_variant=None,
     template_file=None,
@@ -501,6 +543,9 @@ def cli(
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
+    if package is None:
+        package = read_generator_config(config_file, "java").get("package")
+    JavaGenerator.validate_generator_args({"package": package})
     if generate_records:
         template_variant = "records"
     if template_file is not None:
@@ -517,7 +562,11 @@ def cli(
     if head is not None:
         deprecation_warning("metadata-flag")
         args["metadata"] = head
-    JavaGenerator(
+    # The package was already validated above; a ValueError raised while actually
+    # constructing the generator here is therefore a genuine failure (e.g. an
+    # unloadable schema), not a bad package name, and is left to propagate with
+    # its own traceback rather than being caught and mistaken for one.
+    generator = JavaGenerator(
         yamlfile,
         package=package,
         template_dir=template_dir,
@@ -528,7 +577,8 @@ def cli(
         true_enums=true_enums,
         use_aliases=use_aliases,
         **args,
-    ).serialize(
+    )
+    generator.serialize(
         output_directory, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
     )
 
