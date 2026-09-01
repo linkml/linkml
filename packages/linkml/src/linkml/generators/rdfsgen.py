@@ -63,9 +63,6 @@ class RdfsGenerator(ScalaBackedGenerator):
     valid_formats: ClassVar[list[str]] = ["ttl", "nt"]
     file_extension: ClassVar[str] = "rdfs.ttl"
 
-    # TODO: document supported vs unsupported features
-    # TODO: link to this generator from owlgen and shaclgen as an alternative
-
     exclude_imports: bool = False
     """Leave imported classes and enums out, spelled as in ``gen-shacl``.
 
