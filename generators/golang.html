@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="OpenAPI" href="openapi.html"><link rel="prev" title="ProtoBuf" href="protobuf.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Typescript" href="typescript.html"><link rel="prev" title="Java" href="java.html">
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>GraphQL - linkml documentation</title>
+        <title>Go - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -249,7 +249,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Generators</a><input aria-label="Toggle navigation of Generators" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="protobuf.html">ProtoBuf</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld.html">JSON-LD</a></li>
@@ -266,7 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
-<li class="toctree-l2"><a class="reference internal" href="golang.html">Go</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
@@ -392,7 +392,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/generators/graphql.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/generators/golang.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -410,63 +410,59 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="graphql">
-<h1>GraphQL<a class="headerlink" href="#graphql" title="Link to this heading">¶</a></h1>
-<p><a class="reference external" href="https://graphql.org/">GraphQL</a> is a language for describing the
-structure of data to be returned in an API.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This generator will only create GraphQL definitions, it will
-not create runtime bindings.</p>
-</div>
-<section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo/graphql/personinfo.graphql">personinfo.graphql</a></p>
-</section>
+          <section id="go">
+<h1>Go<a class="headerlink" href="#go" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>Graphql can be generated from a LinkML schema.</p>
-<p>To run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-graphql<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.graphql
-</pre></div>
-</div>
-<section id="inheritance">
-<h3>Inheritance<a class="headerlink" href="#inheritance" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>type Person implements HasAliases
-  {
-    id: String!
-    name: String
-    description: String
-    image: String
-    primaryEmail: String
-    birthDate: String
-    ageInYears: Integer
-    gender: GenderType
-    currentAddress: Address
-    hasEmploymentHistory: [EmploymentEvent]
-    hasFamilialRelationships: [FamilialRelationship]
-    hasMedicalHistory: [MedicalEvent]
-    aliases: [String]
-  }
-</pre></div>
-</div>
-</section>
+<p>The Go Generator produces idiomatic Go code from a LinkML model: structs for
+classes, const blocks for enums, JSON tags for serialization, and struct
+embedding for inheritance. Custom Jinja2 templates can be supplied via
+<code class="docutils literal notranslate"><span class="pre">--template-dir</span></code> to override any of the built-in templates.</p>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
-<section id="gen-graphql">
-<h4>gen-graphql<a class="headerlink" href="#gen-graphql" title="Link to this heading">¶</a></h4>
-<p>Generate graphql representation of a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-graphql<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<section id="gen-golang">
+<h4>gen-golang<a class="headerlink" href="#gen-golang" title="Link to this heading">¶</a></h4>
+<p>Generate Golang structs from a LinkML schema.</p>
+<p>This generator produces idiomatic Go code with:
+- Structs for classes
+- Const blocks for enums
+- JSON tags for serialization
+- Struct embedding for inheritance</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-golang<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-strict-naming">
-<span class="sig-name descname"><span class="pre">--strict-naming</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-strict-naming" title="Link to this definition">¶</a></dt>
-<dd><p>Treat warnings about invalid names or schema elements as errors.</p>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-V">
+<span id="cmdoption-gen-golang-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-V" title="Link to this definition">¶</a></dt>
+<dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-template-dir">
+<span class="sig-name descname"><span class="pre">--template-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-template-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Optional jinja2 template directory to use for Go code generation.</p>
+<p>Pass a directory containing templates with the same name as any of the default
+GolangTemplateModel templates to override them. The given directory will be
+searched for matching templates, and use the default templates as a fallback
+if an override is not found.</p>
+<p>Available templates to override:</p>
+<div class="line-block">
+<div class="line">- module.go.jinja</div>
+<div class="line">- struct.go.jinja</div>
+<div class="line">- field.go.jinja</div>
+<div class="line">- enum.go.jinja</div>
+<div class="line">- imports.go.jinja</div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-named-slot-types">
+<span id="cmdoption-gen-golang-no-named-slot-types"></span><span class="sig-name descname"><span class="pre">--named-slot-types</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-named-slot-types</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-named-slot-types" title="Link to this definition">¶</a></dt>
+<dd><p>Generate named Go types for parent slots with is_a children for type safety.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
@@ -475,28 +471,62 @@ not create runtime bindings.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-V">
-<span id="cmdoption-gen-graphql-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-V" title="Link to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-f">
-<span id="cmdoption-gen-graphql-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-graphql-f" title="Link to this definition">¶</a></dt>
-<dd><p>Output format</p>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-nullable-primitives">
+<span id="cmdoption-gen-golang-no-nullable-primitives"></span><span class="sig-name descname"><span class="pre">--nullable-primitives</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-nullable-primitives</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-nullable-primitives" title="Link to this definition">¶</a></dt>
+<dd><p>Use pointer types for optional primitives so omitempty only triggers on nil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'graphql'</span></code></p>
-</dd>
-<dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>graphql</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-metadata">
-<span id="cmdoption-gen-graphql-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-metadata" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-alphabetical-sort">
+<span id="cmdoption-gen-golang-no-alphabetical-sort"></span><span class="sig-name descname"><span class="pre">--alphabetical-sort</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-alphabetical-sort</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-alphabetical-sort" title="Link to this definition">¶</a></dt>
+<dd><p>Sort structs and enums alphabetically for deterministic output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-C">
+<span id="cmdoption-gen-golang-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-C" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a gen-project-style YAML config file setting ‘generator_args: {golang: {package: …}}’. An explicit –package always takes precedence over the config file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-package-name">
+<span class="sig-name descname"><span class="pre">--package-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package_name&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-package-name" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED alias for –package</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-package">
+<span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-package" title="Link to this definition">¶</a></dt>
+<dd><p>Override the Go package name (default: derived from schema name)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-f">
+<span id="cmdoption-gen-golang-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-f" title="Link to this definition">¶</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'go'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>go | golang</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-golang-metadata">
+<span id="cmdoption-gen-golang-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -506,8 +536,8 @@ not create runtime bindings.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-useuris">
-<span id="cmdoption-gen-graphql-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-useuris" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-useuris">
+<span id="cmdoption-gen-golang-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-useuris" title="Link to this definition">¶</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -517,14 +547,14 @@ not create runtime bindings.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-im">
-<span id="cmdoption-gen-graphql-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-graphql-im" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-im">
+<span id="cmdoption-gen-golang-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-im" title="Link to this definition">¶</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-graphql-log_level" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-golang-log_level" title="Link to this definition">¶</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -537,20 +567,20 @@ not create runtime bindings.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-v">
-<span id="cmdoption-gen-graphql-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-v" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-v">
+<span id="cmdoption-gen-golang-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-v" title="Link to this definition">¶</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-mergeimports">
-<span id="cmdoption-gen-graphql-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-mergeimports" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-mergeimports">
+<span id="cmdoption-gen-golang-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-mergeimports" title="Link to this definition">¶</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-stacktrace">
-<span id="cmdoption-gen-graphql-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-stacktrace" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-stacktrace">
+<span id="cmdoption-gen-golang-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-stacktrace" title="Link to this definition">¶</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -561,8 +591,8 @@ not create runtime bindings.</p>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-graphql-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-graphql-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-golang-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-golang-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -571,19 +601,27 @@ not create runtime bindings.</p>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.graphqlgen.GraphqlGenerator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.graphqlgen.</span></span><span class="sig-name descname"><span class="pre">GraphqlGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator'),</span> <span class="pre">pathlib.Path],</span> <span class="pre">schemaview:</span> <span class="pre">linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">collections.abc.Mapping[str,</span> <span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">pathlib.Path</span> <span class="pre">|</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">strict_naming:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/graphqlgen.html#GraphqlGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.graphqlgen.GraphqlGenerator" title="Link to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.graphqlgen.GraphqlGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#linkml.generators.graphqlgen.GraphqlGenerator.serialize" title="Link to this definition">¶</a></dt>
-<dd><p>Generate output in the required format</p>
+<dt class="sig sig-object py" id="linkml.generators.golanggen.GolangGenerator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.golanggen.</span></span><span class="sig-name descname"><span class="pre">GolangGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_file:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_enums:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_aliases:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_imports:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_json_tags:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_time_package:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphabetical_sort:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullable_primitives:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_slot_types:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_dir:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/golanggen/golanggen.html#GolangGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.golanggen.GolangGenerator" title="Link to this definition">¶</a></dt>
+<dd><p>Generates Golang code from a LinkML schema.</p>
+<p>This generator creates idiomatic Go structs with JSON tags from LinkML class definitions.
+It supports:
+- Struct generation from classes
+- Const blocks from enums
+- Inheritance via struct embedding
+- Proper type mappings
+- Multivalued fields as slices
+- Required vs optional fields</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.golanggen.GolangGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rendered_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GolangModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/golanggen/golanggen.html#GolangGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.golanggen.GolangGenerator.serialize" title="Link to this definition">¶</a></dt>
+<dd><p>Serialize the schema to a Go source code string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+<dd class="field-odd"><p><strong>rendered_module</strong> – Optional pre-rendered module</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output, or None if the generator writes its output
-directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p>
+<dd class="field-even"><p>Go source code as a string</p>
 </dd>
 </dl>
 </dd></dl>
@@ -592,6 +630,52 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
 
 </section>
 </section>
+<section id="package-configuration">
+<h2>Package Configuration<a class="headerlink" href="#package-configuration" title="Link to this heading">¶</a></h2>
+<p>The generated Go <code class="docutils literal notranslate"><span class="pre">package</span></code> clause is driven by the following precedence:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--package</span></code> command-line option, or <code class="docutils literal notranslate"><span class="pre">package=...</span></code> when using <code class="docutils literal notranslate"><span class="pre">GolangGenerator</span></code>
+programmatically (<code class="docutils literal notranslate"><span class="pre">--package-name</span></code>/<code class="docutils literal notranslate"><span class="pre">package_name=...</span></code> is a deprecated alias)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generator_args.golang.package</span></code> set via <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>/<code class="docutils literal notranslate"><span class="pre">-C</span></code> (see below)</p></li>
+<li><p>Fallback: derived from the schema name – lowercased, truncated at the first
+underscore, with any character outside <code class="docutils literal notranslate"><span class="pre">[a-z0-9_]</span></code> stripped (e.g. a schema
+named <code class="docutils literal notranslate"><span class="pre">kitchen_sink</span></code> yields <code class="docutils literal notranslate"><span class="pre">package</span> <span class="pre">kitchen</span></code>)</p></li>
+</ol>
+<p>The derived fallback is always a legal Go package name: a name that collides with a
+Go reserved word is suffixed with an underscore (similar to pythongen.py, <code class="docutils literal notranslate"><span class="pre">type_test</span></code>
+produces <code class="docutils literal notranslate"><span class="pre">package</span> <span class="pre">type_</span></code>), and one that strips down to nothing – for example, a
+schema named <code class="docutils literal notranslate"><span class="pre">_private</span></code>, – falls back to <code class="docutils literal notranslate"><span class="pre">example</span></code>. A <code class="docutils literal notranslate"><span class="pre">--package</span></code> or config-file
+value, by contrast, is never rewritten: an invalid one is reported as an error rather
+than silently corrected.</p>
+</section>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading">¶</a></h2>
+<p>As an alternative to <code class="docutils literal notranslate"><span class="pre">--package</span></code>, <code class="docutils literal notranslate"><span class="pre">gen-golang</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>/<code class="docutils literal notranslate"><span class="pre">-C</span></code>
+YAML file – the <strong>same format</strong> used by <code class="docutils literal notranslate"><span class="pre">gen-project</span></code>’s own <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>
+(see <a class="reference internal" href="project-generator.html"><span class="doc">Project Generator</span></a>) and by <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> (see <a class="reference internal" href="java.html"><span class="doc">Java</span></a>), so a single
+project-wide <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be shared between them. <code class="docutils literal notranslate"><span class="pre">package</span></code> lives under
+<code class="docutils literal notranslate"><span class="pre">generator_args.golang</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config.yaml</span>
+<span class="nt">generator_args</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">golang</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mypackage</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gen-golang</span></code> only ever reads <code class="docutils literal notranslate"><span class="pre">generator_args.golang.package</span></code> out of this file –
+every other key is ignored, so a full multi-generator project <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be
+passed as-is without modification.</p>
+</section>
+<section id="deprecation-note">
+<h2>Deprecation note<a class="headerlink" href="#deprecation-note" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">--package-name</span></code> option still works but is deprecated in favour of
+<code class="docutils literal notranslate"><span class="pre">--package</span></code>, which is the canonical option name across package-scoped generators
+(matching <code class="docutils literal notranslate"><span class="pre">gen-java</span></code>). Using <code class="docutils literal notranslate"><span class="pre">--package-name</span></code> emits a deprecation warning.</p>
+<p>The same rename applies to the generator’s constructor: <code class="docutils literal notranslate"><span class="pre">GolangGenerator</span></code> takes
+<code class="docutils literal notranslate"><span class="pre">package</span></code>, the same field <code class="docutils literal notranslate"><span class="pre">JavaGenerator</span></code> takes, so the two are configured
+identically in code. <code class="docutils literal notranslate"><span class="pre">package_name=...</span></code> remains accepted as a deprecated alias, and
+reading <code class="docutils literal notranslate"><span class="pre">.package_name</span></code> off an instance still returns the package; both emit the
+same deprecation warning.</p>
+</section>
 </section>
 
         </article>
@@ -599,23 +683,23 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="openapi.html">
+          <a class="next-page" href="typescript.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">OpenAPI</div>
+                <div class="title">Typescript</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="protobuf.html">
+          <a class="prev-page" href="java.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">ProtoBuf</div>
+                <div class="title">Java</div>
                 
               </div>
             </a>
@@ -649,26 +733,25 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">GraphQL</a><ul>
-<li><a class="reference internal" href="#example-output">Example Output</a></li>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
-<li><a class="reference internal" href="#inheritance">Inheritance</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Go</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-graphql">gen-graphql</a></li>
+<li><a class="reference internal" href="#gen-golang">gen-golang</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golanggen.GolangGenerator"><code class="docutils literal notranslate"><span class="pre">GolangGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.golanggen.GolangGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">GolangGenerator.serialize()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#package-configuration">Package Configuration</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+<li><a class="reference internal" href="#deprecation-note">Deprecation note</a></li>
 </ul>
 </li>
 </ul>

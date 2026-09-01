@@ -266,6 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
@@ -950,14 +951,15 @@ open file or a pre-parsed schema</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.serialize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.serialize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate output in the required format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
+<dd class="field-even"><p>Generated output, or None if the generator writes its output
+directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1045,6 +1047,29 @@ isn’t valid.</p>
 <dd><p>Allowed formats - first format is default</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.validate_generator_args">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_generator_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.validate_generator_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.validate_generator_args" title="Link to this definition">¶</a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">generator_args</span></code> before any generator is built from them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gen-project</span></code> calls this once per selected generator, all before any
+output is generated, and the generator CLIs (e.g. <code class="docutils literal notranslate"><span class="pre">gen-java</span></code>) call it
+on their resolved options before construction – so a bad configuration
+value is caught up front rather than surfacing later as a generic
+exception raised somewhere during schema loading, which it would then be
+indistinguishable from. The default implementation does nothing;
+override to check specific keys eagerly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The merged <code class="docutils literal notranslate"><span class="pre">generator_args</span></code> for this generator (defaults
+plus any user-supplied <code class="docutils literal notranslate"><span class="pre">generator_args</span></code> section), before path
+interpolation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>click.UsageError</strong> – if a value is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.verbose">
 <span class="sig-name descname"><span class="pre">verbose</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.verbose" title="Link to this definition">¶</a></dt>
@@ -1127,6 +1152,42 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.generator.read_generator_config">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">read_generator_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.IO" title="(in Python v3.14)"><span class="pre">IO</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#read_generator_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.read_generator_config" title="Link to this definition">¶</a></dt>
+<dd><p>Read one generator’s settings out of a gen-project-style config file.</p>
+<p>This is the configuration file that <code class="docutils literal notranslate"><span class="pre">gen-project</span> <span class="pre">--config-file</span></code> reads so a
+project can keep a single file and each generator can have its own section.</p>
+<p>Reading consumes <code class="docutils literal notranslate"><span class="pre">config_file</span></code>, so call this once and lookup each setting
+on the returned dict. Calling it a second time with the same open file finds
+nothing, because the file has already been read to the end.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;generator_args:</span><span class="se">\n</span><span class="s2">  java:</span><span class="se">\n</span><span class="s2">    package: org.example.model</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_generator_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;java&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;package&quot;</span><span class="p">)</span>
+<span class="go">&#39;org.example.model&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_generator_config</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;java&quot;</span><span class="p">)</span>
+<span class="go">{}</span>
+</pre></div>
+</div>
+<p>A malformed written section - a scalar where a mapping belongs - is a usage
+error, so report it. Absent/empty sections are fine (empty dict).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_file</strong> – The open file from <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>, or None if absent.</p></li>
+<li><p><strong>generator_name</strong> – Which section to read, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;java&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;golang&quot;</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>That generator’s settings, empty if the file has none for it.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>click.UsageError</strong> – if the file is not parseable as YAML, or if the file, or
+the part of it this generator reads, isn’t a YAML mapping.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1993,6 +2054,7 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">Generator.uses_schemaloader</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.useuris"><code class="docutils literal notranslate"><span class="pre">Generator.useuris</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.valid_formats"><code class="docutils literal notranslate"><span class="pre">Generator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.validate_generator_args"><code class="docutils literal notranslate"><span class="pre">Generator.validate_generator_args()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.verbose"><code class="docutils literal notranslate"><span class="pre">Generator.verbose</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">Generator.visit_all_class_slots</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_class"><code class="docutils literal notranslate"><span class="pre">Generator.visit_class()</span></code></a></li>
@@ -2005,6 +2067,7 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">Generator.visits_are_sorted</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#linkml.utils.generator.read_generator_config"><code class="docutils literal notranslate"><span class="pre">read_generator_config()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.shared_arguments"><code class="docutils literal notranslate"><span class="pre">shared_arguments()</span></code></a></li>
 </ul>
 </li>

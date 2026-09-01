@@ -265,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sqltable.html">SQL DDL</a></li>
@@ -731,6 +732,17 @@
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Remove the `materialize_patterns` option from generator calls and command lines.&quot;</span><span class="p">,</span>
         <span class="n">issue</span><span class="o">=</span><span class="mi">1557</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;golanggen-package-name-option&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.12.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The `package_name` parameter (`--package-name` on the command line) of &quot;</span>
+            <span class="s2">&quot;GolangGenerator has been renamed `package` (`--package`), for consistency &quot;</span>
+            <span class="s2">&quot;with other package-scoped generators (e.g. JavaGenerator&#39;s `package`).&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Use `package` (`--package` on the command line) instead.&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">3780</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
@@ -774,11 +786,14 @@
 
 <div class="viewcode-block" id="deprecated_fields">
 <a class="viewcode-back" href="../../../maintainers/deprecation.html#linkml.utils.deprecated_fields">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">deprecated_fields</span><span class="p">(</span><span class="n">deprecated_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deprecated_fields</span><span class="p">(</span><span class="n">deprecated_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">deprecation_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">METADATA_FLAG</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator to handle deprecated fields in dataclasses.</span>
 
 <span class="sd">    :param deprecated_map: Mapping from old field names to new field names</span>
+<span class="sd">    :param deprecation_name: Name of the :class:`.Deprecation` to report when an old</span>
+<span class="sd">        field name is used. Defaults to the metadata-flag rename, which is what most</span>
+<span class="sd">        callers are renaming.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
@@ -791,7 +806,7 @@
             <span class="c1"># Process kwargs to handle deprecated fields</span>
             <span class="k">for</span> <span class="n">old_field</span><span class="p">,</span> <span class="n">new_field</span> <span class="ow">in</span> <span class="n">deprecated_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">old_field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">deprecation_name</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">new_field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                         <span class="n">kwargs</span><span class="p">[</span><span class="n">new_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">old_field</span><span class="p">]</span>
                     <span class="c1"># Remove the old field to prevent the &quot;unexpected keyword argument&quot; error</span>
@@ -808,11 +823,11 @@
             <span class="c1"># Create a property for the deprecated field using a closure</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">make_property</span><span class="p">(</span><span class="n">new_name</span><span class="p">):</span>
                 <span class="k">def</span><span class="w"> </span><span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">deprecation_name</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
                     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
 
                 <span class="k">def</span><span class="w"> </span><span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">deprecation_name</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
                 <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>

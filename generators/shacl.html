@@ -266,6 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
@@ -708,7 +709,8 @@ See <a class="reference external" href="https://github.com/linkml/linkml/issues/
 <dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
+<dd class="field-even"><p>Generated output, or None if the generator writes its output
+directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p>
 </dd>
 </dl>
 </dd></dl>

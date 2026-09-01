@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Typescript" href="typescript.html"><link rel="prev" title="Pydantic" href="pydantic.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Go" href="golang.html"><link rel="prev" title="Pydantic" href="pydantic.html">
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
@@ -266,6 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
@@ -485,6 +486,12 @@ classes with alternate annotations or additional documentation.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-java-C">
+<span id="cmdoption-gen-java-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-C" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a gen-project-style YAML config file setting ‘generator_args: {java: {package: …}}’. An explicit –package always takes precedence over the config file.</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-package">
 <span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-package" title="Link to this definition">¶</a></dt>
 <dd><p>Package name where relevant for generated class files</p>
@@ -687,6 +694,50 @@ expected to be serialised in the JSON or YAML serialisations; the
 <code class="docutils literal notranslate"><span class="pre">--use-aliases</span></code> option only affects the symbol used to represent the
 slot in the Java code.</p>
 </section>
+</section>
+<section id="package-configuration">
+<h2>Package Configuration<a class="headerlink" href="#package-configuration" title="Link to this heading">¶</a></h2>
+<p>The generated Java <code class="docutils literal notranslate"><span class="pre">package</span></code> statement is driven by the following precedence:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--package</span></code> command-line option (or <code class="docutils literal notranslate"><span class="pre">package=...</span></code> when using <code class="docutils literal notranslate"><span class="pre">JavaGenerator</span></code> programmatically)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generator_args.java.package</span></code> set via <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>/<code class="docutils literal notranslate"><span class="pre">-C</span></code> (see <a class="reference internal" href="#java-configuration-file"><span class="std std-ref">Configuration File</span></a> below)</p></li>
+<li><p>Fallback default: <code class="docutils literal notranslate"><span class="pre">example</span></code></p></li>
+</ol>
+<p>The package name is validated wherever it comes from. An invalid name (<code class="docutils literal notranslate"><span class="pre">1bad.pkg</span></code>,
+<code class="docutils literal notranslate"><span class="pre">org.class.model</span></code>) is reported as an error.</p>
+<dl class="simple">
+<dt>NOTE:</dt><dd><p>The package name is <em>not</em> configurable via schema-level annotations: LinkML
+classes, slots, and enums live in a single global namespace regardless of
+which (sub-)schema declares them - the package is a global configuration for
+the generator, not a property of the model.</p>
+</dd>
+</dl>
+<p>The package applies to every generated class and enum: <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> emits one file per
+class into a single flat output directory, and cross-class references rely on all
+generated types sharing one package.</p>
+</section>
+<section id="configuration-file">
+<span id="java-configuration-file"></span><h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading">¶</a></h2>
+<p>As an alternative to the <code class="docutils literal notranslate"><span class="pre">--package</span></code> argument, <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> accepts a
+<code class="docutils literal notranslate"><span class="pre">--config-file</span></code>/<code class="docutils literal notranslate"><span class="pre">-C</span></code> YAML file – the <strong>same format</strong> used by
+<code class="docutils literal notranslate"><span class="pre">gen-project</span></code>’s own <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> (see <a class="reference internal" href="project-generator.html"><span class="doc">Project Generator</span></a>), so a single
+project-wide <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be shared between <code class="docutils literal notranslate"><span class="pre">gen-project</span></code> and a
+standalone <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> run. <code class="docutils literal notranslate"><span class="pre">package</span></code> lives under <code class="docutils literal notranslate"><span class="pre">generator_args.java</span></code>,
+since that file is structured to configure every generator at once:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config.yaml</span>
+<span class="nt">generator_args</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">java</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.example.model</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gen-java</span></code> only ever reads <code class="docutils literal notranslate"><span class="pre">generator_args.java.package</span></code> out of this file –
+every other key (<code class="docutils literal notranslate"><span class="pre">directory</span></code>, <code class="docutils literal notranslate"><span class="pre">excludes</span></code>, other generators’ <code class="docutils literal notranslate"><span class="pre">generator_args</span></code>
+entries, etc.) is ignored, so a full multi-generator project <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be
+passed as-is without modification.</p>
+<p>An explicit <code class="docutils literal notranslate"><span class="pre">--package</span></code> command-line option always overrides a value set via
+<code class="docutils literal notranslate"><span class="pre">--config-file</span></code>.</p>
+<p>The same configuration-file mechanism is supported by <code class="docutils literal notranslate"><span class="pre">gen-golang</span></code> (see
+<a class="reference internal" href="golang.html"><span class="doc">Go</span></a>), which reads <code class="docutils literal notranslate"><span class="pre">generator_args.golang.package</span></code> from the same file.</p>
 </section>
 <section id="generating-visitor-patterns">
 <h2>Generating Visitor Patterns<a class="headerlink" href="#generating-visitor-patterns" title="Link to this heading">¶</a></h2>
@@ -900,12 +951,12 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="typescript.html">
+          <a class="next-page" href="golang.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Typescript</div>
+                <div class="title">Go</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -971,6 +1022,8 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
 <li><a class="reference internal" href="#use-of-slot-aliases">Use of Slot Aliases</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#package-configuration">Package Configuration</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration File</a></li>
 <li><a class="reference internal" href="#generating-visitor-patterns">Generating Visitor Patterns</a></li>
 <li><a class="reference internal" href="#template-variants">Template Variants</a><ul>
 <li><a class="reference internal" href="#default-variant">Default Variant</a></li>

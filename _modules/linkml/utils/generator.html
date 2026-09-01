@@ -265,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sqltable.html">SQL DDL</a></li>
@@ -429,9 +430,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">IO</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">click</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Option</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span>
 
@@ -689,14 +691,36 @@
                 <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
 
+<div class="viewcode-block" id="Generator.validate_generator_args">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator.validate_generator_args">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_generator_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate ``generator_args`` before any generator is built from them.</span>
+
+<span class="sd">        ``gen-project`` calls this once per selected generator, all before any</span>
+<span class="sd">        output is generated, and the generator CLIs (e.g. ``gen-java``) call it</span>
+<span class="sd">        on their resolved options before construction -- so a bad configuration</span>
+<span class="sd">        value is caught up front rather than surfacing later as a generic</span>
+<span class="sd">        exception raised somewhere during schema loading, which it would then be</span>
+<span class="sd">        indistinguishable from. The default implementation does nothing;</span>
+<span class="sd">        override to check specific keys eagerly.</span>
+
+<span class="sd">        :param args: The merged ``generator_args`` for this generator (defaults</span>
+<span class="sd">            plus any user-supplied ``generator_args`` section), before path</span>
+<span class="sd">            interpolation.</span>
+<span class="sd">        :raises click.UsageError: if a value is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
 <div class="viewcode-block" id="Generator.serialize">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate output in the required format</span>
 
 <span class="sd">        :param kwargs: Generator specific parameters</span>
-<span class="sd">        :return: Generated output</span>
+<span class="sd">        :return: Generated output, or None if the generator writes its output</span>
+<span class="sd">            directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
@@ -1511,6 +1535,67 @@
         <span class="k">return</span> <span class="n">f</span>
 
     <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_config_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that one level of a config file is a mapping, and hand it back.</span>
+
+<span class="sd">    An empty value (``java:`` with nothing under it) reads as None saying &quot;nothing</span>
+<span class="sd">    configured here&quot;, so it returns as empty mapping. Anything else that is not a</span>
+<span class="sd">    mapping is a mistake in the file, and says so rather than being skipped.</span>
+
+<span class="sd">    :param value: Whatever was found at this point in the file.</span>
+<span class="sd">    :param where: Where that was, for the error message, e.g. ``&quot;&#39;generator_args&#39;&quot;``.</span>
+<span class="sd">    :return: The mapping, empty if nothing was configured.</span>
+<span class="sd">    :raises click.UsageError: if the value is neither a mapping nor empty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--config-file: expected a YAML mapping at </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<div class="viewcode-block" id="read_generator_config">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.read_generator_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_generator_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">generator_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read one generator&#39;s settings out of a gen-project-style config file.</span>
+
+<span class="sd">    This is the configuration file that ``gen-project --config-file`` reads so a</span>
+<span class="sd">    project can keep a single file and each generator can have its own section.</span>
+
+<span class="sd">    Reading consumes ``config_file``, so call this once and lookup each setting</span>
+<span class="sd">    on the returned dict. Calling it a second time with the same open file finds</span>
+<span class="sd">    nothing, because the file has already been read to the end.</span>
+
+<span class="sd">    &gt;&gt;&gt; from io import BytesIO</span>
+<span class="sd">    &gt;&gt;&gt; config_file = BytesIO(b&quot;generator_args:\\n  java:\\n    package: org.example.model\\n&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; read_generator_config(config_file, &quot;java&quot;).get(&quot;package&quot;)</span>
+<span class="sd">    &#39;org.example.model&#39;</span>
+<span class="sd">    &gt;&gt;&gt; read_generator_config(None, &quot;java&quot;)</span>
+<span class="sd">    {}</span>
+
+<span class="sd">    A malformed written section - a scalar where a mapping belongs - is a usage</span>
+<span class="sd">    error, so report it. Absent/empty sections are fine (empty dict).</span>
+
+<span class="sd">    :param config_file: The open file from ``--config-file``, or None if absent.</span>
+<span class="sd">    :param generator_name: Which section to read, e.g. ``&quot;java&quot;`` or ``&quot;golang&quot;``.</span>
+<span class="sd">    :return: That generator&#39;s settings, empty if the file has none for it.</span>
+<span class="sd">    :raises click.UsageError: if the file is not parseable as YAML, or if the file, or</span>
+<span class="sd">        the part of it this generator reads, isn&#39;t a YAML mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># unparsable YAML is a mistake in the file, so report it the same way a</span>
+        <span class="c1"># misshapen one is, rather than as a traceback</span>
+        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--config-file: could not parse as YAML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="s2">&quot;the top level&quot;</span><span class="p">)</span>
+    <span class="n">generator_args</span> <span class="o">=</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">config_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_args&quot;</span><span class="p">),</span> <span class="s2">&quot;&#39;generator_args&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">generator_name</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;&#39;generator_args.</span><span class="si">{</span><span class="n">generator_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

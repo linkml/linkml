@@ -266,6 +266,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
@@ -659,14 +660,15 @@ Python base type.</p>
 <p>See <a class="reference external" href="https://linkml.io/linkml/generators/python.html">Python Generator Docs</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.serialize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.serialize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate output in the required format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
+<dd class="field-even"><p>Generated output, or None if the generator writes its output
+directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p>
 </dd>
 </dl>
 </dd></dl>

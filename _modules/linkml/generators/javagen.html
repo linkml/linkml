@@ -265,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sqltable.html">SQL DDL</a></li>
@@ -405,8 +406,10 @@
           <h1>Source code for linkml.generators.javagen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
@@ -414,7 +417,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated_fields</span><span class="p">,</span> <span class="n">deprecation_warning</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_generator_config</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span>
 
@@ -453,6 +456,7 @@
     <span class="s2">&quot;else&quot;</span><span class="p">,</span>
     <span class="s2">&quot;enum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;extends&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;false&quot;</span><span class="p">,</span>
     <span class="s2">&quot;final&quot;</span><span class="p">,</span>
     <span class="s2">&quot;finally&quot;</span><span class="p">,</span>
     <span class="s2">&quot;float&quot;</span><span class="p">,</span>
@@ -467,6 +471,7 @@
     <span class="s2">&quot;long&quot;</span><span class="p">,</span>
     <span class="s2">&quot;native&quot;</span><span class="p">,</span>
     <span class="s2">&quot;new&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;null&quot;</span><span class="p">,</span>
     <span class="s2">&quot;package&quot;</span><span class="p">,</span>
     <span class="s2">&quot;private&quot;</span><span class="p">,</span>
     <span class="s2">&quot;protected&quot;</span><span class="p">,</span>
@@ -482,6 +487,7 @@
     <span class="s2">&quot;throw&quot;</span><span class="p">,</span>
     <span class="s2">&quot;throws&quot;</span><span class="p">,</span>
     <span class="s2">&quot;transient&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;true&quot;</span><span class="p">,</span>
     <span class="s2">&quot;try&quot;</span><span class="p">,</span>
     <span class="s2">&quot;void&quot;</span><span class="p">,</span>
     <span class="s2">&quot;volatile&quot;</span><span class="p">,</span>
@@ -489,6 +495,23 @@
 <span class="p">]</span>
 
 <span class="n">TYPE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;0f&quot;</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;0d&quot;</span><span class="p">,</span> <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_valid_java_package</span><span class="p">(</span><span class="n">package_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if ``package_name`` is a dot-separated list of legal Java identifiers.</span>
+
+<span class="sd">    Each name segment must be a valid Java identifier (letter/underscore/dollar start,</span>
+<span class="sd">    followed by letters/digits/underscore/dollar) and not a reserved keyword.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="n">package_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">segment</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s2">&quot;_$&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">ch</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="ow">or</span> <span class="n">ch</span> <span class="ow">in</span> <span class="s2">&quot;_$&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">JAVA_KEYWORDS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="nd">@dataclass</span>
@@ -629,6 +652,17 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">force_template</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="s2">&quot;example&quot;</span>
+        <span class="c1"># str() guards against a non-string value, e.g. an unquoted number in config.yaml</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_valid_java_package</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="si">!r}</span><span class="s2"> is not a valid Java package name&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_generator_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;package&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">package</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_valid_java_package</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">package</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">package</span><span class="si">!r}</span><span class="s2"> is not a valid Java package name&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">TYPE_DEFAULTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
@@ -870,6 +904,14 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--package&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Package name where relevant for generated class files&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--config-file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to a gen-project-style YAML config file setting &quot;</span>
+    <span class="s2">&quot;&#39;generator_args: {java: {package: ...}}&#39;. An explicit --package always takes &quot;</span>
+    <span class="s2">&quot;precedence over the config file.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--template-dir&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory containing the Jinja2 templates to use&quot;</span><span class="p">,</span>
@@ -896,6 +938,7 @@
     <span class="n">yamlfile</span><span class="p">,</span>
     <span class="n">output_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">template_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">template_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">template_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -912,6 +955,9 @@
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate java classes to represent a LinkML model&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">package</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="n">read_generator_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;java&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;package&quot;</span><span class="p">)</span>
+    <span class="n">JavaGenerator</span><span class="o">.</span><span class="n">validate_generator_args</span><span class="p">({</span><span class="s2">&quot;package&quot;</span><span class="p">:</span> <span class="n">package</span><span class="p">})</span>
     <span class="k">if</span> <span class="n">generate_records</span><span class="p">:</span>
         <span class="n">template_variant</span> <span class="o">=</span> <span class="s2">&quot;records&quot;</span>
     <span class="k">if</span> <span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -928,7 +974,11 @@
     <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;metadata-flag&quot;</span><span class="p">)</span>
         <span class="n">args</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">head</span>
-    <span class="n">JavaGenerator</span><span class="p">(</span>
+    <span class="c1"># The package was already validated above; a ValueError raised while actually</span>
+    <span class="c1"># constructing the generator here is therefore a genuine failure (e.g. an</span>
+    <span class="c1"># unloadable schema), not a bad package name, and is left to propagate with</span>
+    <span class="c1"># its own traceback rather than being caught and mistaken for one.</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">JavaGenerator</span><span class="p">(</span>
         <span class="n">yamlfile</span><span class="p">,</span>
         <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
         <span class="n">template_dir</span><span class="o">=</span><span class="n">template_dir</span><span class="p">,</span>
@@ -939,7 +989,8 @@
         <span class="n">true_enums</span><span class="o">=</span><span class="n">true_enums</span><span class="p">,</span>
         <span class="n">use_aliases</span><span class="o">=</span><span class="n">use_aliases</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+    <span class="p">)</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
         <span class="n">output_directory</span><span class="p">,</span> <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span> <span class="n">extra_templates</span><span class="o">=</span><span class="n">extra_template</span><span class="p">,</span> <span class="n">visitors</span><span class="o">=</span><span class="n">visitor</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span>
     <span class="p">)</span>
 

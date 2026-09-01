@@ -265,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/golang.html">Go</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/typescript.html">Typescript</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sqltable.html">SQL DDL</a></li>
@@ -408,7 +409,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">NamedTuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
@@ -417,6 +418,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.cli.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_level_option</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.excelgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExcelGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.graphqlgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphqlGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.javagen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JavaGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldcontextgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONLDGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonschemagen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
@@ -434,30 +436,69 @@
 <span class="n">PATH_FSTRING</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">GENERATOR_NAME</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">ARG_DICT</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-<span class="n">CONFIG_TUPLE</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Generator</span><span class="p">],</span> <span class="n">PATH_FSTRING</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]</span>
-<span class="n">GEN_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">CONFIG_TUPLE</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneratorConfig</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;How gen-project drives one generator.</span>
+
+<span class="sd">    A NamedTuple rather than a plain tuple so that ``serialize_only`` can be left</span>
+<span class="sd">    off the entries that don&#39;t need it, and so fields can be read by name; entries</span>
+<span class="sd">    still unpack positionally.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">generator</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Generator</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The generator class to instantiate.&quot;&quot;&quot;</span>
+
+    <span class="n">path_fstring</span><span class="p">:</span> <span class="n">PATH_FSTRING</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Output path template for the generated artefact, e.g. ``&quot;owl/{name}.owl.ttl&quot;``.&quot;&quot;&quot;</span>
+
+    <span class="n">default_args</span><span class="p">:</span> <span class="n">ARG_DICT</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arguments applied before any user-supplied ``generator_args``.&quot;&quot;&quot;</span>
+
+    <span class="n">serialize_only</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keys to pass to ``serialize()`` but NOT to the constructor.</span>
+
+<span class="sd">    Scoped per generator so that a name which is serialize-only here (JavaGenerator&#39;s</span>
+<span class="sd">    ``directory``) is not dropped from a different generator&#39;s constructor call, where</span>
+<span class="sd">    the same name is a genuine constructor argument (dotgen, docgen and plantumlgen all</span>
+<span class="sd">    take ``directory`` that way).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="c1"># Retained as the previous name for this entry type.</span>
+<span class="n">CONFIG_TUPLE</span> <span class="o">=</span> <span class="n">GeneratorConfig</span>
+
+<span class="n">GEN_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">GeneratorConfig</span><span class="p">]</span>
 <span class="n">GEN_MAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;graphql&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">GraphqlGenerator</span><span class="p">,</span> <span class="s2">&quot;graphql/</span><span class="si">{name}</span><span class="s2">.graphql&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;jsonldcontext&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ContextGenerator</span><span class="p">,</span> <span class="s2">&quot;jsonld/</span><span class="si">{name}</span><span class="s2">.context.jsonld&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span> <span class="p">(</span>
+    <span class="s2">&quot;graphql&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">GraphqlGenerator</span><span class="p">,</span> <span class="s2">&quot;graphql/</span><span class="si">{name}</span><span class="s2">.graphql&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;jsonldcontext&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">ContextGenerator</span><span class="p">,</span> <span class="s2">&quot;jsonld/</span><span class="si">{name}</span><span class="s2">.context.jsonld&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span>
         <span class="n">JSONLDGenerator</span><span class="p">,</span>
         <span class="s2">&quot;jsonld/</span><span class="si">{name}</span><span class="s2">.jsonld&quot;</span><span class="p">,</span>
         <span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">.context.jsonld&quot;</span><span class="p">},</span>
     <span class="p">),</span>
-    <span class="s2">&quot;jsonschema&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;jsonschema/</span><span class="si">{name}</span><span class="s2">.schema.json&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;owl&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OwlSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;owl/</span><span class="si">{name}</span><span class="s2">.owl.ttl&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;prefixmap&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">PrefixGenerator</span><span class="p">,</span> <span class="s2">&quot;prefixmap/</span><span class="si">{name}</span><span class="s2">.yaml&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;proto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">,</span> <span class="s2">&quot;protobuf/</span><span class="si">{name}</span><span class="s2">.proto&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">PythonGenerator</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">.py&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {}),</span>
-    <span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {&#39;context&#39;: &#39;{parent}/../jsonld/{name}.context.jsonld&#39;}),</span>
-    <span class="s2">&quot;shex&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ShExGenerator</span><span class="p">,</span> <span class="s2">&quot;shex/</span><span class="si">{name}</span><span class="s2">.shex&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;shacl&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ShaclGenerator</span><span class="p">,</span> <span class="s2">&quot;shacl/</span><span class="si">{name}</span><span class="s2">.shacl.ttl&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;sqltable&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">SQLTableGenerator</span><span class="p">,</span> <span class="s2">&quot;sqlschema/</span><span class="si">{name}</span><span class="s2">.sql&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="c1"># # linkml/generators/javagen.py uses different architecture from most of the other generators</span>
-    <span class="c1"># # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path</span>
-    <span class="c1"># &#39;java&#39;: (JavaGenerator, &#39;java/{name}.java&#39;, {&#39;directory&#39;: &#39;{parent}&#39;}),</span>
-    <span class="s2">&quot;excel&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">,</span> <span class="s2">&quot;excel/</span><span class="si">{name}</span><span class="s2">.xlsx&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">.xlsx&quot;</span><span class="p">}),</span>
+    <span class="s2">&quot;jsonschema&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;jsonschema/</span><span class="si">{name}</span><span class="s2">.schema.json&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;owl&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">OwlSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;owl/</span><span class="si">{name}</span><span class="s2">.owl.ttl&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;prefixmap&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">PrefixGenerator</span><span class="p">,</span> <span class="s2">&quot;prefixmap/</span><span class="si">{name}</span><span class="s2">.yaml&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;proto&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">,</span> <span class="s2">&quot;protobuf/</span><span class="si">{name}</span><span class="s2">.proto&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">.py&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="c1">#    &#39;rdf&#39;: GeneratorConfig(RDFGenerator, &#39;rdf/{name}.ttl&#39;, {}),</span>
+    <span class="c1">#    &#39;rdf&#39;: GeneratorConfig(</span>
+    <span class="c1">#        RDFGenerator, &#39;rdf/{name}.ttl&#39;, {&#39;context&#39;: &#39;{parent}/../jsonld/{name}.context.jsonld&#39;}</span>
+    <span class="c1">#    ),</span>
+    <span class="s2">&quot;shex&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">ShExGenerator</span><span class="p">,</span> <span class="s2">&quot;shex/</span><span class="si">{name}</span><span class="s2">.shex&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;shacl&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">ShaclGenerator</span><span class="p">,</span> <span class="s2">&quot;shacl/</span><span class="si">{name}</span><span class="s2">.shacl.ttl&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s2">&quot;sqltable&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">SQLTableGenerator</span><span class="p">,</span> <span class="s2">&quot;sqlschema/</span><span class="si">{name}</span><span class="s2">.sql&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="c1"># JavaGenerator writes one file per class directly into `directory`</span>
+    <span class="c1"># (a serialize()-time argument, not a constructor argument) and its</span>
+    <span class="c1"># serialize() always returns None.</span>
+    <span class="s2">&quot;java&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span>
+        <span class="n">JavaGenerator</span><span class="p">,</span>
+        <span class="s2">&quot;java/</span><span class="si">{name}</span><span class="s2">.java&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">&quot;</span><span class="p">},</span>
+        <span class="n">serialize_only</span><span class="o">=</span><span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;directory&quot;</span><span class="p">}),</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;excel&quot;</span><span class="p">:</span> <span class="n">GeneratorConfig</span><span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">,</span> <span class="s2">&quot;excel/</span><span class="si">{name}</span><span class="s2">.xlsx&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">.xlsx&quot;</span><span class="p">}),</span>
 <span class="p">}</span>
 
 
@@ -501,6 +542,33 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProjectConfiguration</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()):</span>
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass directory&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Resolve which generators run and with what merged arguments, rejecting</span>
+        <span class="c1"># any bad `generator_args` value before anything at all is generated or</span>
+        <span class="c1"># written -- a typo in the config for the last generator must not leave</span>
+        <span class="c1"># behind a half-built project. This is the only place a `generator_args`</span>
+        <span class="c1"># value gets checked; a ValueError raised later while actually</span>
+        <span class="c1"># constructing a generator is therefore a genuine failure (e.g. an</span>
+        <span class="c1"># unloadable schema) and is left to propagate with its own traceback,</span>
+        <span class="c1"># rather than being caught and mistaken for a bad config value.</span>
+        <span class="n">selected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">GeneratorConfig</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="n">gen_config</span> <span class="ow">in</span> <span class="n">GEN_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="o">!=</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as not in inclusion list: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as it is in exclusion list&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">all_gen_args</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="o">**</span><span class="n">gen_config</span><span class="o">.</span><span class="n">default_args</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">}</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">gen_config</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">validate_generator_args</span><span class="p">(</span><span class="n">all_gen_args</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">format_message</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="n">selected</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">gen_name</span><span class="p">,</span> <span class="n">gen_config</span><span class="p">,</span> <span class="n">all_gen_args</span><span class="p">))</span>
+
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
         <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">:</span>
@@ -508,37 +576,36 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">all_schemas</span> <span class="o">=</span> <span class="n">get_local_imports</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">schema_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALL_SCHEMAS = </span><span class="si">{</span><span class="n">all_schemas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="p">(</span><span class="n">gen_cls</span><span class="p">,</span> <span class="n">gen_path_fmt</span><span class="p">,</span> <span class="n">default_gen_args</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GEN_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="o">!=</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as not in inclusion list: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as it is in exclusion list&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="n">gen_config</span><span class="p">,</span> <span class="n">all_gen_args</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating: </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">local_path</span> <span class="ow">in</span> <span class="n">all_schemas</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; SCHEMA: </span><span class="si">{</span><span class="n">local_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
-                <span class="n">gen_path</span> <span class="o">=</span> <span class="n">gen_path_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">gen_path</span> <span class="o">=</span> <span class="n">gen_config</span><span class="o">.</span><span class="n">path_fstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">gen_path_full</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">gen_path</span>
                 <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">gen_path_full</span><span class="o">.</span><span class="n">parent</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; PARENT=</span><span class="si">{</span><span class="n">parent_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">parent_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">all_gen_args</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="o">**</span><span class="n">default_gen_args</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{}),</span>
-                <span class="p">}</span>
                 <span class="n">gen</span><span class="p">:</span> <span class="n">Generator</span>
+
+                <span class="c1"># Per-schema copy: the `output` value is interpolated per schema</span>
+                <span class="c1"># below and must not mutate `all_gen_args`, which is shared</span>
+                <span class="c1"># across schemas.</span>
+                <span class="n">schema_gen_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">all_gen_args</span><span class="p">)</span>
 
                 <span class="c1"># special check for output key because ExcelGenerator and</span>
                 <span class="c1"># SSSOMGenerator read in output file name during initialization</span>
-                <span class="k">if</span> <span class="s2">&quot;output&quot;</span> <span class="ow">in</span> <span class="n">all_gen_args</span><span class="p">:</span>
-                    <span class="n">all_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;output&quot;</span> <span class="ow">in</span> <span class="n">schema_gen_args</span><span class="p">:</span>
+                    <span class="n">schema_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">)</span>
 
-                <span class="n">gen</span> <span class="o">=</span> <span class="n">gen_cls</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="o">**</span><span class="n">all_gen_args</span><span class="p">)</span>
+                <span class="c1"># Some generators (e.g. JavaGenerator) accept an arg only in</span>
+                <span class="c1"># serialize(), not in their constructor; keep this generator&#39;s</span>
+                <span class="c1"># serialize-only keys out of the constructor call.</span>
+                <span class="n">constructor_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">schema_gen_args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gen_config</span><span class="o">.</span><span class="n">serialize_only</span><span class="p">}</span>
+                <span class="n">gen</span> <span class="o">=</span> <span class="n">gen_config</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="o">**</span><span class="n">constructor_args</span><span class="p">)</span>
 
                 <span class="n">serialize_args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mergeimports&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">}</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">all_gen_args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">schema_gen_args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="c1"># all ARG_DICT values are interpolatable</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                         <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">)</span>
@@ -546,16 +613,15 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> ARGS: </span><span class="si">{</span><span class="n">serialize_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">gen_dump</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">serialize_args</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">gen_name</span> <span class="o">!=</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">gen_path_full</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-                            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># special handling for excel generator</span>
-                    <span class="c1"># we do not need to route the output</span>
-                    <span class="c1"># into a file like the other generators</span>
-                    <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">serialize_args</span><span class="p">)</span></div>
+                <span class="c1"># Generators like ExcelGenerator and JavaGenerator write their</span>
+                <span class="c1"># own output file(s) internally and return None from</span>
+                <span class="c1"># serialize(); there is nothing left for us to write out.</span>
+                <span class="k">if</span> <span class="n">gen_dump</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">gen_path_full</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span></div>
 
 
 
@@ -654,6 +720,8 @@
         <span class="n">project_config</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="nb">dir</span>
     <span class="n">project_config</span><span class="o">.</span><span class="n">mergeimports</span> <span class="o">=</span> <span class="n">mergeimports</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">ProjectGenerator</span><span class="p">()</span>
+    <span class="c1"># A bad `generator_args` value surfaces from Generator.validate_generator_args()</span>
+    <span class="c1"># as a click.UsageError, which click reports on its own; nothing to catch here.</span>
     <span class="n">gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">project_config</span><span class="p">)</span>
 
 
