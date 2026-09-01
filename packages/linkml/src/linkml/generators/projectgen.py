@@ -155,7 +155,10 @@ class ProjectGenerator:
                 **gen_config.default_args,
                 **config.generator_args.get(gen_name, {}),
             }
-            gen_config.generator.validate_generator_args(all_gen_args)
+            try:
+                gen_config.generator.validate_generator_args(all_gen_args)
+            except click.UsageError as e:
+                raise click.UsageError(f"{gen_name}: {e.format_message()}") from e
             selected.append((gen_name, gen_config, all_gen_args))
 
         output_dir = Path(config.directory)
