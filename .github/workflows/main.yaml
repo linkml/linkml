@@ -47,8 +47,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
-        # Test on Windows with only the oldest and newest Python versions
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
+        # Test on Windows with only the two newest stable Python versions
         exclude:
           - os: windows-latest
             python-version: "3.10"
@@ -56,12 +56,19 @@ jobs:
             python-version: "3.11"
           - os: windows-latest
             python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.15"
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
       run:
         shell: bash
 
     runs-on: ${{ matrix.os }}
+
+    # 3.15 is tested against release candidates, so its failures are reported
+    # without blocking a PR. Removing this is a deliberate step taken when we
+    # consider 3.15 supported; the release of 3.15.0 does not lift it by itself.
+    continue-on-error: ${{ matrix.python-version == '3.15' }}
 
     steps:
       - name: Check out repository
@@ -86,9 +93,13 @@ jobs:
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
 
+      # Without --python, uv resolves the interpreter from requires-python
+      # (>=3.10) and skips pre-releases whenever another installation matches,
+      # so a 3.15 job would test the runner's stable Python instead.
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --all-groups --python "${{ steps.setup-python.outputs.python-path }}"
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
