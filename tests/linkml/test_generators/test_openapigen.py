@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator, validate
@@ -177,7 +179,7 @@ def test_template_text_preserved(input_path, kitchen_sink_path):
     # original quoting style is preserved (round-trip would normalise this)
     assert "version: '1.0.0'" in result
     # the untouched template prefix is emitted byte-for-byte
-    template_text = open(head_path).read()
+    template_text = Path(head_path).read_text()
     schemas_marker = "\ncomponents:\n"
     prefix = template_text[: template_text.index(schemas_marker) + len(schemas_marker)]
     assert result.startswith(prefix)
