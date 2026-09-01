@@ -73,7 +73,7 @@ def test_closed_does_not_reject_a_conforming_instance(validation_context):
 
 
 def test_generated_shapes_are_cached(validation_context):
-    """Generating shapes populates the cache, so they are not rebuilt from scratch.
+    """Generating shapes populates the cache, so they are not rebuilt per instance validated.
 
     Note this does not assert the cache is hit on a subsequent call. The key is
     ``hash(str(context._schema))`` and ``process`` mutates the schema as a side

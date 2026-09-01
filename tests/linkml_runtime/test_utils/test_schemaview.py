@@ -536,6 +536,7 @@ def test_imports_relative_load() -> None:
     sv.imports_closure(imports=True)
 
 
+@pytest.mark.network
 def test_imports_direct_remote_imports() -> None:
     """Tests that building a SchemaView directly from a remote URL works."""
     view = SchemaView("https://w3id.org/linkml/meta.yaml")
@@ -549,6 +550,7 @@ def test_imports_direct_remote_imports() -> None:
         assert c not in view.all_classes(imports=False)
 
 
+@pytest.mark.network
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
@@ -980,13 +982,10 @@ for value in CREATURE_EXPECTED.values():
     "schema",
     [
         "creature_view",
-        pytest.param(
-            "creature_view_remote",
-        ),
+        # network: these load the schema over https to exercise URL imports
+        pytest.param("creature_view_remote", marks=pytest.mark.network),
         "creature_view_local",
-        pytest.param(
-            "creature_view_direct_url",
-        ),
+        pytest.param("creature_view_direct_url", marks=pytest.mark.network),
     ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())

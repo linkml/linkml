@@ -246,8 +246,16 @@ def pytest_addoption(parser):
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
-    parser.addoption("--with-network", action="store_true", help="include tests marked network")
-    parser.addoption("--with-upstream-main", action="store_true", help="include tests marked upstream_main")
+    parser.addoption(
+        "--with-network",
+        action="store_true",
+        help="run tests marked network against the live network instead of local stubs",
+    )
+    parser.addoption(
+        "--with-upstream",
+        action="store_true",
+        help="include tests marked upstream, which check the real outside world (weekly workflow)",
+    )
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
@@ -279,17 +287,15 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("rustgen"):
                 item.add_marker(skip_rustgen)
 
-    if not config.getoption("--with-network"):
-        skip_network = pytest.mark.skip(reason="need --with-network option to run")
+    # Tests marked `network` are NOT skipped: they always run, served from local
+    # stubs by default and live under --with-network. Only `upstream` tests --
+    # whose assertions are about the real outside world -- are gated, because
+    # running them against stubs would be vacuous.
+    if not config.getoption("--with-upstream"):
+        skip_upstream = pytest.mark.skip(reason="need --with-upstream option to run")
         for item in items:
-            if item.get_closest_marker("network"):
-                item.add_marker(skip_network)
-
-    if not config.getoption("--with-upstream-main"):
-        skip_upstream_main = pytest.mark.skip(reason="need --with-upstream-main option to run")
-        for item in items:
-            if item.get_closest_marker("upstream_main"):
-                item.add_marker(skip_upstream_main)
+            if item.get_closest_marker("upstream"):
+                item.add_marker(skip_upstream)
 
     # Group compliance tests on a single xdist worker - they share
     # mutable module-level caches in helper.py that are not safe to split.
@@ -356,18 +362,25 @@ def pytest_assertrepr_compare(config, op, left, right):
 
 
 @pytest.fixture(autouse=True)
-def serve_network_from_disk(request):
-    """Serve mapped URLs from local files; block unmapped network access.
+def network_guard(request):
+    """Enforce the network rules; see :mod:`tests.offline_network` for the design.
 
-    See :mod:`tests.offline_network` for the mapping and the reasoning. Tests
-    marked ``network`` are the ones that genuinely need the network -- they get
-    the real thing.
+    - ``upstream``-marked tests run live; they only run at all under
+      ``--with-upstream`` (enforced at collection time).
+    - ``network``-marked tests are served from local stubs, or run live under
+      ``--with-network``.
+    - Everything else must not touch the network, at any layer.
     """
-    if request.node.get_closest_marker("network"):
+    if request.node.get_closest_marker("upstream"):
         yield
         return
-
-    uninstall = install_offline_network()
+    if request.node.get_closest_marker("network"):
+        if request.config.getoption("--with-network"):
+            yield
+            return
+        uninstall = install_offline_network("stub")
+    else:
+        uninstall = install_offline_network("block")
     try:
         yield
     finally:
