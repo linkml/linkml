@@ -7,7 +7,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
-from typing import TextIO, cast
+from typing import cast
 
 import click
 import pytest
