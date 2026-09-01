@@ -1,6 +1,9 @@
 [tool.uv]
 required-version = ">=0.9.17"
 exclude-newer = "7 days"
+# TODO: drop this line. neverblink-linkml 0.15.1 was published on 2026-09-01T10:16Z, so it only
+# sits outside the rolling 7-day window until 2026-09-08T10:16Z.
+exclude-newer-package = { neverblink-linkml = "2026-09-01T12:00:00Z" }
 constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
 
 [tool.uv.workspace]
@@ -111,6 +114,7 @@ markers = [
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "sqlddlbigquerygen: Tests for BigQuery DDL generator",
   "owlgen: Tests for OWL generator",
+  "rdfsgen: Tests for the RDFS generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator"
