@@ -43,6 +43,10 @@ update_model:
 
 	# Clean up some files that are not needed at the moment, https://github.com/linkml/linkml/issues/3129
 	rm src/linkml_runtime/linkml_model/model/schema/extended_types.yaml
+
+	# Record checksums so the offline per-PR test suite can detect vendored files
+	# edited without re-vendoring (tests/linkml_runtime/test_linkml_model/)
+	python3 generate_vendored_manifest.py
 	cd ../../ && pre-commit run --all-files || pre-commit run --all-files
 
 update_validation_model: src/linkml_runtime/processing/validation_datamodel.py
