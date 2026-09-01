@@ -23,7 +23,7 @@ rendering)
              maps between LinkML *data* and OWL
 
 .. seealso:: :doc:`rdfs` renders a schema as RDFS instead. RDFS is lighter
-             than OWL (no cardinality, disjointness or class expressions)
+             than OWL (no cardinality, disjointedness or class expressions)
              but enough if all you need is classes, properties, and the
              subclass and subproperty relations between them
 
