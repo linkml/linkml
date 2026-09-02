@@ -179,6 +179,31 @@ class OpenApiGenerator(Generator):
             for item in element:
                 self._find_references(item, referenced_data_schemas)
 
+    def _build_reference_map(self, elem_schemas: dict) -> dict[str, set[str]]:
+        """Map each schema name to the set of LinkML schema names it directly references (forward adjacency)."""
+        ref_map: dict[str, set[str]] = {}
+        for name, schema in elem_schemas.items():
+            refs: set[str] = set()
+            self._find_references(schema, refs)
+            ref_map[name] = refs
+        return ref_map
+
+    def _reachable_from_seeds(self, ref_map: dict[str, set[str]], seeds: set[str]) -> set[str]:
+        """Return the transitive closure of ``seeds`` over the ``$ref`` edges in ``ref_map``.
+
+        A schema is reachable when it can be traced back, through a chain of references, to a schema referenced by the
+        template endpoints. Computed in a single flood-fill pass (O(nodes + edges)); cycles are handled by the
+        ``seen`` guard.
+        """
+        seen = set(seeds)
+        stack = list(seeds)
+        while stack:
+            for ref in ref_map.get(stack.pop(), ()):
+                if ref not in seen:
+                    seen.add(ref)
+                    stack.append(ref)
+        return seen
+
     def _fix_openapi_spec(self, element: dict | list) -> dict | list:
         """
         Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:
@@ -244,30 +269,27 @@ class OpenApiGenerator(Generator):
         return renamed_element
 
     def _sanitize_schemas(
-        self, name_map: dict[str, str], openapi_schemas: dict, endpoint_ref_linkml_names: set[str]
+        self, name_map: dict[str, str], elem_schemas: dict, endpoint_ref_linkml_names: set[str]
     ) -> dict:
         """
         Prune unreachable schemas, remove redundant metadata, convert JSON Schema constructs
         to OpenAPI 3.0.3 compat, and apply any OpenAPI↔LinkML name renames.
         """
-        referenced_schemas = endpoint_ref_linkml_names.copy()
-        for openapi_schema in openapi_schemas.values():
-            self._find_references(openapi_schema, referenced_schemas)
-        while set(openapi_schemas.keys()).difference(referenced_schemas):
-            openapi_schema_names = list(openapi_schemas.keys())
-            for openapi_schema_name in openapi_schema_names:
-                if openapi_schema_name not in referenced_schemas:
-                    del openapi_schemas[openapi_schema_name]
-            referenced_schemas = endpoint_ref_linkml_names.copy()
-            for openapi_schema in openapi_schemas.values():
-                self._find_references(openapi_schema, referenced_schemas)
+        # Keep only schemas transitively reachable from the endpoint-referenced seeds.
+        # The reference graph is built once and traversed in a single pass; no fixpoint
+        # iteration is needed because the closure is grown outward from the seeds directly.
+        ref_map = self._build_reference_map(elem_schemas)
+        reachable = self._reachable_from_seeds(ref_map, endpoint_ref_linkml_names)
+        for elem_schema_name in list(elem_schemas.keys()):
+            if elem_schema_name not in reachable:
+                del elem_schemas[elem_schema_name]
         # title always duplicates the schema dict key, so it is redundant in components/schemas
-        for openapi_schema in openapi_schemas.values():
-            openapi_schema.pop("title", None)
-        openapi_schemas = cast(dict, self._fix_openapi_spec(openapi_schemas))
+        for elem_schema in elem_schemas.values():
+            elem_schema.pop("title", None)
+        elem_schemas = cast(dict, self._fix_openapi_spec(elem_schemas))
         if name_map:
-            openapi_schemas = cast(dict, self._rename(name_map, openapi_schemas))
-        return openapi_schemas
+            elem_schemas = cast(dict, self._rename(name_map, elem_schemas))
+        return elem_schemas
 
     def _find_schemas_line(self, template_text: str) -> int:
         """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
