@@ -36,4 +36,5 @@ def test_pydantic_generator_correctly_reference_default_enum_values():
     )
     gen = PydanticGenerator(schema=schema)
     code = gen.serialize()
-    compile_python(code)
+    mod = compile_python(code)
+    assert mod.MyClass.model_fields["length_unit"].default is mod.LengthUnit.millimeter
