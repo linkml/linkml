@@ -3,7 +3,7 @@
 
 name: Build and test linkml
 env:
-  UV_VERSION: "0.11.21"
+  UV_VERSION: "0.12.9"
 concurrency:
   # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
   # so each PR is its own group and never cancels another's runs.
@@ -27,6 +27,11 @@ jobs:
         uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
+          # `uv lock --check` populates nothing, so this job has nothing worth
+          # caching. Under the default (`auto`) it is also the fastest job in
+          # the workflow, so it wins the race for the shared cache key with an
+          # empty cache and locks every other job out of saving a real one.
+          enable-cache: false
 
       - uses: actions/setup-python@v7.0.0
         with:
@@ -87,20 +92,34 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
+          # setup-uv derives the cache key's Python component from `uv python
+          # find`, which runs here, before setup-python, and so reports the
+          # runner's system Python for every matrix entry. Without a suffix all
+          # six jobs share one key and only the first to finish saves; the 3.15
+          # job, which builds every dependency from source, never does.
+          cache-suffix: ${{ matrix.python-version }}
+          # setup-python installs from the actions/python-versions manifest,
+          # which gains pre-release builds days after CPython tags them. uv's
+          # python-build-standalone source carries them within a day, so uv
+          # supplies the interpreter for pre-releases via UV_PYTHON.
+          python-version: ${{ matrix.python-version == '3.15' && matrix.python-version || '' }}
 
       - name: Set up Python ${{ matrix.python-version }}
+        if: matrix.python-version != '3.15'
         uses: actions/setup-python@v7.0.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
-          check-latest: true
 
-      # Without --python, uv resolves the interpreter from requires-python
+      # Without an explicit interpreter, uv resolves from requires-python
       # (>=3.10) and skips pre-releases whenever another installation matches,
-      # so a 3.15 job would test the runner's stable Python instead.
+      # so a 3.15 job would test the runner's stable Python instead. Stable
+      # versions use the interpreter setup-python installed; 3.15 uses the
+      # UV_PYTHON that setup-uv exported.
       - name: Install dependencies
-        run: uv sync --all-groups --python "${{ steps.setup-python.outputs.python-path }}"
+        env:
+          SETUP_PYTHON_PATH: ${{ steps.setup-python.outputs.python-path }}
+        run: uv sync --all-groups ${SETUP_PYTHON_PATH:+--python "$SETUP_PYTHON_PATH"}
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
@@ -155,6 +174,8 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
+          # One cache entry per Python; see the note in the `test` job.
+          cache-suffix: ${{ matrix.python-version }}
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -205,6 +226,8 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
+          # One cache entry per Python; see the note in the `test` job.
+          cache-suffix: ${{ matrix.python-version }}
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
