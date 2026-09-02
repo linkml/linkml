@@ -210,6 +210,40 @@ def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_pa
     assert "MarriageEvent" in schemas
 
 
+def test_unreferenced_chain_pruned_by_default(input_path):
+    """Test that a chain of mutually-referencing unreferenced schemas is pruned in one pass.
+
+    ``Baz`` references ``Bar`` but neither is reachable from the endpoint-seeded ``Foo``.
+    A naive single prune pass that only drops schemas *directly* citing an unreferenced
+    name would keep ``Bar`` (it is only referenced by ``Baz``, and ``Baz`` is dropped for
+    not being referenced at all); the reference closure must remove the whole island.
+    """
+    schema_path = str(input_path("schema_chain_unreferenced.yaml"))
+    head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "Foo" in schemas
+    assert "Baz" not in schemas
+    assert "Bar" not in schemas
+
+
+def test_keep_unreferenced_pulls_transitive_chain(input_path):
+    """Test that keep_unreferenced retains a declared schema and its transitive dependencies.
+
+    The template declares ``Baz`` (unreferenced by any endpoint) alongside ``Foo``.
+    With ``keep_unreferenced`` the declared ``Baz`` is kept, and its dependency ``Bar`` —
+    which is not itself declared in the template — must be kept too, because pruning out
+    ``Bar`` would leave the kept ``Baz`` with a dangling reference.
+    """
+    schema_path = str(input_path("schema_chain_unreferenced.yaml"))
+    head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "Foo" in schemas
+    assert "Baz" in schemas
+    assert "Bar" in schemas
+
+
 def test_enums_as_separate_schemas_by_default(openapi_spec):
     """Test that enums are emitted as separate sub-schemas referenced via $ref by default."""
     schemas = openapi_spec["components"]["schemas"]
