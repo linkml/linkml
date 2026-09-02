@@ -274,6 +274,35 @@ def test_inline_enums_inlines_enum_schemas(input_path, kitchen_sink_path):
     assert "EmploymentEventType" not in str(spec)
 
 
+def test_inline_enums_does_not_inline_types(input_path):
+    """Test that inline_enums does not mistake fixed-value LinkML types for enums.
+
+    A type with ``equals_string`` becomes a single-element ``enum`` after the
+    ``const`` -> ``enum`` transform. A naive enum detection would then inline it away
+    (``_inline_enum_schemas`` matches any schema with ``enum`` and no ``properties``);
+    types must keep their named schema entry even when inlining is enabled.
+    """
+    schema_path = str(input_path("schema_types_and_enums.yaml"))
+    head_path = str(input_path("openapi/spec-types-enums.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # the fixed-value type keeps its own named schema entry (not inlined)
+    assert "FixedType" in schemas
+    assert schemas["FixedType"]["enum"] == ["fixed-value"]
+    assert schemas["FixedType"]["type"] == "string"
+
+
+def test_inline_enums_disabled_keeps_types_and_enums_separate(input_path):
+    """Test that with inline_enums disabled both types and enums keep separate schema entries."""
+    schema_path = str(input_path("schema_types_and_enums.yaml"))
+    head_path = str(input_path("openapi/spec-types-enums.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=False).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "FixedType" in schemas
+    assert schemas["FixedType"]["enum"] == ["fixed-value"]
+    assert schemas["FixedType"]["type"] == "string"
+
+
 def test_no_dangling_references_for_valid_schema(openapi_spec):
     """Test that a valid schema produces a spec whose every $ref resolves."""
     schema_names = set(openapi_spec["components"]["schemas"].keys())

@@ -298,7 +298,10 @@ class OpenApiGenerator(Generator):
         enum_schemas = {
             name: schema
             for name, schema in data_schemas.items()
-            if isinstance(schema, dict) and "enum" in schema and "properties" not in schema
+            if isinstance(schema, dict)
+            and "enum" in schema
+            and "properties" not in schema
+            and name not in self.schemaview.all_types()
         }
         if not enum_schemas:
             return data_schemas
