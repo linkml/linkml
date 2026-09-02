@@ -1,7 +1,7 @@
 name: Publish Python Package
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 env:
-  UV_VERSION: "0.11.21"
+  UV_VERSION: "0.12.9"
 on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
@@ -20,7 +20,8 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7.0.0
       with:
-        python-version: 3.13
+        # Should always use the same Python version as the job "test_build_package" in main.yaml
+        python-version: 3.14
 
     - name: Install uv
       uses: astral-sh/setup-uv@v10.0.1
