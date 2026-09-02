@@ -7,8 +7,10 @@ Based on the PydanticGenerator architecture.
 import logging
 import os
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
@@ -24,8 +26,9 @@ from linkml.generators.golanggen.template import (
     Import,
     Imports,
 )
-from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.generators.oocodegen import PACKAGE, OOCodeGenerator
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
+from linkml.utils.generator import read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -70,7 +73,81 @@ GO_PRIMITIVE_TYPES = frozenset(
     }
 )
 
+# Fallback package when a schema name yields no usable identifier,
+# mirroring JavaGenerator's "example" default.
+DEFAULT_GO_PACKAGE = "example"
 
+# The 25 reserved words that may not be used as identifiers.
+# https://go.dev/ref/spec#Keywords
+GO_KEYWORDS = frozenset(
+    {
+        "break",
+        "case",
+        "chan",
+        "const",
+        "continue",
+        "default",
+        "defer",
+        "else",
+        "fallthrough",
+        "for",
+        "func",
+        "go",
+        "goto",
+        "if",
+        "import",
+        "interface",
+        "map",
+        "package",
+        "range",
+        "return",
+        "select",
+        "struct",
+        "switch",
+        "type",
+        "var",
+    }
+)
+
+
+def _is_valid_go_package(package_name: str) -> bool:
+    """Return True if ``package_name`` is a legal Go package identifier.
+
+    Unlike Java, a Go package clause (``package foo``) names a single
+    identifier, not a dotted path. It must start with a letter or
+    underscore, contain only letters/digits/underscores, and must not be a
+    reserved keyword. See specs for grammar/identifier rules:
+    https://go.dev/ref/spec#Package_clause
+    https://go.dev/ref/spec#Identifiers
+    """
+    if not package_name or not (package_name[0].isalpha() or package_name[0] == "_"):
+        return False
+    if any(not (ch.isalnum() or ch == "_") for ch in package_name):
+        return False
+    if package_name in GO_KEYWORDS:
+        return False
+    return True
+
+
+def _derive_go_package(schema_name: str) -> str:
+    """Derive a legal Go package identifier from a schema name.
+
+    Mirrors ``JavaGenerator``'s guarantee that the fallback package is always
+    valid: a schema name that sanitises to nothing (e.g. ``_private``) falls
+    back to :data:`DEFAULT_GO_PACKAGE`, and one that collides with a reserved
+    word is suffixed with ``_``, the same escape ``map_name`` applies to
+    keyword-named fields.
+    """
+    # Take the leading segment (e.g. "kitchen_sink" -> "kitchen")
+    stem = schema_name.split("_", 1)[0]
+    # Keep only characters legal in a Go package name (lowercase, alphanumeric, underscore)
+    candidate = re.sub(r"[^a-z0-9_]", "", stem.lower())
+    if candidate in GO_KEYWORDS:
+        candidate += "_"
+    return candidate if _is_valid_go_package(candidate) else DEFAULT_GO_PACKAGE
+
+
+@deprecated_fields({"package_name": "package"}, "golanggen-package-name-option")
 @dataclass
 class GolangGenerator(OOCodeGenerator):
     """
@@ -93,8 +170,13 @@ class GolangGenerator(OOCodeGenerator):
     file_extension = "go"
 
     # ObjectVars
-    package_name: str | None = None
-    """Override the package name. If None, derived from schema name."""
+    package: PACKAGE | None = None
+    """Override the Go package name. If unset, derived from the schema name.
+
+    Overrides :class:`~linkml.generators.oocodegen.OOCodeGenerator`'s ``"example"``
+    default so that an unset package can be told apart from an explicit one and
+    derived from the schema name instead. ``package_name`` is a deprecated alias.
+    """
 
     gen_slots: bool = True
     """Generate struct fields"""
@@ -166,6 +248,19 @@ class GolangGenerator(OOCodeGenerator):
 
     def __post_init__(self):
         super().__post_init__()
+        if self.package in (None, ""):
+            self.package = _derive_go_package(self.schemaview.schema.name)
+        else:
+            # guards against a non-string value, e.g. an unquoted number in config.yaml
+            self.package = str(self.package)
+        if not _is_valid_go_package(self.package):
+            raise ValueError(f"{self.package!r} is not a valid Go package name")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        package = args.get("package")
+        if package not in (None, "") and not _is_valid_go_package(str(package)):
+            raise click.UsageError(f"{package!r} is not a valid Go package name")
 
     def default_value_for_type(self, typ: str) -> str:
         """
@@ -514,18 +609,6 @@ class GolangGenerator(OOCodeGenerator):
                 if sv.slot_children(slot_name):
                     self._parent_slot_names.add(slot_name)
 
-        # Determine package name
-        package_name = self.package_name
-        if package_name is None:
-            schema_name = sv.schema.name
-            # Extract package name from schema name (e.g., "kitchen_sink" -> "kitchen")
-            if "_" in schema_name:
-                package_name = schema_name[: schema_name.find("_")]
-            else:
-                package_name = schema_name
-            # Make it valid Go package name (lowercase, alphanumeric + underscore)
-            package_name = re.sub(r"[^a-z0-9_]", "", package_name.lower())
-
         # Generate enums
         enums = {}
         for enum_def in sv.all_enums().values():
@@ -565,7 +648,7 @@ class GolangGenerator(OOCodeGenerator):
             imports.sort()
 
         module = GolangModule(
-            package_name=package_name,
+            package_name=self.package,
             imports=imports,
             enums=enums,
             structs=structs,
@@ -614,9 +697,24 @@ _TEMPLATE_NAMES = [
 
 @shared_arguments(GolangGenerator)
 @click.option(
-    "--package-name",
+    "--package",
+    "package",
     type=str,
     help="Override the Go package name (default: derived from schema name)",
+)
+@click.option(
+    "--package-name",
+    "package_name",
+    type=str,
+    help="DEPRECATED alias for --package",
+)
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a gen-project-style YAML config file setting "
+    "'generator_args: {golang: {package: ...}}'. An explicit --package always "
+    "takes precedence over the config file.",
 )
 @click.option(
     "--alphabetical-sort/--no-alphabetical-sort",
@@ -657,7 +755,9 @@ Available templates to override:
 @click.command(name="golang")
 def cli(
     yamlfile,
+    package: str | None = None,
     package_name: str | None = None,
+    config_file=None,
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
     named_slot_types: bool = False,
@@ -673,13 +773,25 @@ def cli(
     - JSON tags for serialization
     - Struct embedding for inheritance
     """
+    if package_name is not None:
+        deprecation_warning("golanggen-package-name-option")
+        if package is None:
+            package = package_name
+    if package is None:
+        package = read_generator_config(config_file, "golang").get("package")
+    GolangGenerator.validate_generator_args({"package": package})
+
     if template_dir is not None:
         if not Path(template_dir).exists():
             raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
 
+    # The package was already validated above; a ValueError raised while actually
+    # constructing the generator here is therefore a genuine failure (e.g. an
+    # unloadable schema), not a bad package name, and is left to propagate with
+    # its own traceback rather than being caught and mistaken for one.
     gen = GolangGenerator(
         yamlfile,
-        package_name=package_name,
+        package=package,
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
         named_slot_types=named_slot_types,
