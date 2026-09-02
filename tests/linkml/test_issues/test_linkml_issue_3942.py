@@ -1,3 +1,5 @@
+import pytest
+
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -7,6 +9,8 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
+
+pytestmark = [pytest.mark.pydanticgen]
 
 
 def test_pydantic_generator_correctly_reference_default_enum_values():
