@@ -94,6 +94,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
+          check-latest: true
 
       # Without --python, uv resolves the interpreter from requires-python
       # (>=3.10) and skips pre-releases whenever another installation matches,
