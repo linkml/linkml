@@ -89,6 +89,7 @@ jobs:
 
       - name: Install uv and setup uv caching
         uses: astral-sh/setup-uv@v10.0.1
+        id: setup-uv
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -155,6 +156,16 @@ jobs:
           files: coverage-linkml_runtime.xml
           flags: runtime
           fail_ci_if_error: true
+
+      # setup-uv saves under `post-if: success()`, so a failing job persists
+      # nothing. 3.15 builds every dependency from source and fails on known
+      # incompatibilities, so without this it repeats that build on every run.
+      - name: Save uv cache from a failed job
+        if: ${{ failure() && steps.setup-uv.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: ${{ steps.setup-uv.outputs.cache-key }}
 
   test_slow:
     name: Slow Tests
