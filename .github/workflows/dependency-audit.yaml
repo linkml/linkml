@@ -47,7 +47,7 @@ jobs:
         uses: actions/setup-python@v7.0.0
         id: setup-python
         with:
-          python-version: 3.13
+          python-version: 3.14
 
       # The CVE audit reflects the state of the *upstream advisory database*,
       # not the change under test: a newly-published advisory against an

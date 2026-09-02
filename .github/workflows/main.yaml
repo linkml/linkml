@@ -35,7 +35,7 @@ jobs:
 
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: 3.13
+          python-version: 3.14
       - name: Check pyproject.toml and uv.lock
         run: uv lock --check
       - name: Install tox
@@ -59,8 +59,8 @@ jobs:
             python-version: "3.11"
           - os: windows-latest
             python-version: "3.12"
-          - os: windows-latest
-            python-version: "3.13"
+          #- os: windows-latest
+          #  python-version: "3.13"
           - os: windows-latest
             python-version: "3.15"
     # See https://github.com/snok/install-poetry#running-on-windows
@@ -173,7 +173,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.14"]
+        python-version: ["3.10", "3.13", "3.14"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -279,7 +279,7 @@ jobs:
         uses: actions/setup-python@v7.0.0
         with:
           # Should always use the same Python version as pypi-publish.yaml
-          python-version: 3.13
+          python-version: 3.14
 
       - name: Install uv
         uses: astral-sh/setup-uv@v10.0.1
