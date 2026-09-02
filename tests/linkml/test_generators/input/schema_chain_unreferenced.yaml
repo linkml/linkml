@@ -12,14 +12,14 @@ classes:
       name:
         range: string
 
-  Baz:
-    description: unrelated class, not reachable from Foo, but present in the schema
+  Foo Bar:
+    description: unrelated class with a space in its name, not reachable from Foo, but present in the schema
     attributes:
       bar_ref:
-        range: Bar
+        range: Baz Qux
 
-  Bar:
-    description: should be pruned - only referenced by the also-unreachable Baz
+  Baz Qux:
+    description: should be pruned - only referenced by the also-unreachable Foo Bar
     attributes:
       value:
         range: string

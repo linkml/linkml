@@ -213,35 +213,38 @@ def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_pa
 def test_unreferenced_chain_pruned_by_default(input_path):
     """Test that a chain of mutually-referencing unreferenced schemas is pruned in one pass.
 
-    ``Baz`` references ``Bar`` but neither is reachable from the endpoint-seeded ``Foo``.
-    A naive single prune pass that only drops schemas *directly* citing an unreferenced
-    name would keep ``Bar`` (it is only referenced by ``Baz``, and ``Baz`` is dropped for
-    not being referenced at all); the reference closure must remove the whole island.
+    ``Foo Bar`` (note the space in the name) references ``Baz Qux`` but neither is
+    reachable from the endpoint-seeded ``Foo``. A naive single prune pass that only drops
+    schemas *directly* citing an unreferenced name would keep ``Baz Qux`` (it is only
+    referenced by ``Foo Bar``, and ``Foo Bar`` is dropped for not being referenced at all);
+    the reference closure must remove the whole island. Space-named classes also exercise
+    the YAML quoting of schema keys and ``$ref`` targets.
     """
     schema_path = str(input_path("schema_chain_unreferenced.yaml"))
     head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Foo" in schemas
-    assert "Baz" not in schemas
-    assert "Bar" not in schemas
+    assert "Foo Bar" not in schemas
+    assert "Baz Qux" not in schemas
 
 
 def test_keep_unreferenced_pulls_transitive_chain(input_path):
     """Test that keep_unreferenced retains a declared schema and its transitive dependencies.
 
-    The template declares ``Baz`` (unreferenced by any endpoint) alongside ``Foo``.
-    With ``keep_unreferenced`` the declared ``Baz`` is kept, and its dependency ``Bar`` —
-    which is not itself declared in the template — must be kept too, because pruning out
-    ``Bar`` would leave the kept ``Baz`` with a dangling reference.
+    The template declares ``Foo Bar`` (with a space in its name, unreferenced by any
+    endpoint) alongside ``Foo``. With ``keep_unreferenced`` the declared ``Foo Bar`` is
+    kept, and its dependency ``Baz Qux`` — which is not itself declared in the template —
+    must be kept too, because pruning out ``Baz Qux`` would leave the kept ``Foo Bar``
+    with a dangling reference.
     """
     schema_path = str(input_path("schema_chain_unreferenced.yaml"))
     head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Foo" in schemas
-    assert "Baz" in schemas
-    assert "Bar" in schemas
+    assert "Foo Bar" in schemas
+    assert "Baz Qux" in schemas
 
 
 def test_enums_as_separate_schemas_by_default(openapi_spec):

@@ -24,7 +24,7 @@ components:
       type: object
       x-linkml-schema: https://w3id.org/linkml/tests/chain_unreferenced
       x-linkml-source: Foo
-    Baz:
+    Foo Bar:
       type: object
       x-linkml-schema: https://w3id.org/linkml/tests/chain_unreferenced
-      x-linkml-source: Baz
+      x-linkml-source: Foo Bar
