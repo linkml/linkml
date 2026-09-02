@@ -89,6 +89,7 @@ jobs:
 
       - name: Install uv and setup uv caching
         uses: astral-sh/setup-uv@v10.2.0
+        id: setup-uv
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -126,14 +127,14 @@ jobs:
         # Notebook tests run their own `!uv pip install` cells that mutate the
         # shared venv; they run in the isolated `test_notebooks` job instead (#3583).
         run: |
-          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
+          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
         shell: bash
       - name: Test linkml-runtime package
         # The two suites are independent, so a failure in the linkml suite should
         # not hide the state of the runtime one. The job still fails if either does.
         if: ${{ !cancelled() }}
         run: |
-          uv run coverage run -m pytest tests/linkml_runtime/ -m "not kroki"
+          uv run coverage run -m pytest tests/linkml_runtime/ --with-network -m "not kroki"
           uv run coverage xml -o coverage-linkml_runtime.xml
           uv run coverage report -m
         shell: bash
@@ -155,6 +156,16 @@ jobs:
           files: coverage-linkml_runtime.xml
           flags: runtime
           fail_ci_if_error: true
+
+      # setup-uv saves under `post-if: success()`, so a failing job persists
+      # nothing. 3.15 builds every dependency from source and fails on known
+      # incompatibilities, so without this it repeats that build on every run.
+      - name: Save uv cache from a failed job
+        if: ${{ failure() && steps.setup-uv.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: ${{ steps.setup-uv.outputs.cache-key }}
 
   test_slow:
     name: Slow Tests
@@ -242,7 +253,7 @@ jobs:
       - name: Run notebook tests
         # Run serially (no xdist): concurrent `!uv pip install` would race on the venv.
         run: |
-          uv run pytest tests/linkml/test_notebooks/ -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
+          uv run pytest tests/linkml/test_notebooks/ --with-network -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
       - name: Upload notebook coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v7.1.1
