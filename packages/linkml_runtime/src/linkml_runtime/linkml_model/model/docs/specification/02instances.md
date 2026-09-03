@@ -6,7 +6,7 @@ This specification provides a grammar for a **functional syntax** for expressing
 
 This syntax is not intended for data exchange, but instead for unambiguous describing data in LinkML in a way that is independent of any particular syntax.
 
-[Section 6](../06mapping) specifies how the instance model is serialized as JSON, YAML, and RDF, and guidelines for mapping to object-oriented programming representations.
+[Section 6](06mapping.md) specifies how the instance model is serialized as JSON, YAML, and RDF, and guidelines for mapping to object-oriented programming representations.
 
 This section uses BNF to define the structure of the LinkML instance abstract model.
 We also include UML-style diagrams for informative purposes.
@@ -33,7 +33,7 @@ classDiagram
 
 ### Definition Types and Names
 
-Definition names are used to unambiguously indicate *elements* specified in a **Schema** (described in [Part 3](../03schemas)):
+Definition names are used to unambiguously indicate *elements* specified in a **Schema** (described in [Part 3](03schemas.md)):
 
 > **ClassDefinitionName** := **ElementName**
 
@@ -223,7 +223,7 @@ Examples of collections:
 * `[Person(name=..., ...), Integer^5, None]` -- a heterogeneous collection
 * `[]` -- an empty collection
 
-Note that collections can be serialized in different ways depending on the target syntax, for examples, lists vs dictionaries. See section [6](../06mapping) for details of serializations.
+Note that collections can be serialized in different ways depending on the target syntax, for examples, lists vs dictionaries. See section [6](06mapping.md) for details of serializations.
 
 ### None (Null) instances
 
