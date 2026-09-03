@@ -3031,7 +3031,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -3210,7 +3217,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -5064,7 +5078,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -5243,7 +5264,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -5555,7 +5583,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -5701,7 +5736,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -5746,7 +5788,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -6299,7 +6348,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -6467,7 +6523,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -7234,7 +7297,14 @@
                     ]
                 },
                 "causal_mechanism_qualifier": {
-                    "$ref": "#/$defs/CausalMechanismQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CausalMechanismQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A statement qualifier representing a type of molecular control mechanism through which an effect of a chemical on a gene or gene product is mediated (e.g. 'agonism', 'inhibition', 'allosteric modulation', 'channel blocker')"
                 },
                 "deprecated": {
@@ -7327,7 +7397,14 @@
                     "description": "connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object."
                 },
                 "object_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the object of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -7384,11 +7461,25 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the object of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -7425,7 +7516,14 @@
                     ]
                 },
                 "object_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  object of an association (or statement)."
                 },
                 "original_object": {
@@ -7542,7 +7640,14 @@
                     "type": "string"
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -7593,18 +7698,39 @@
                     ]
                 },
                 "subject_derivative_qualifier": {
-                    "$ref": "#/$defs/ChemicalEntityDerivativeEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalEntityDerivativeEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object  concept to describe something that is derived from the core concept.  For example, the qualifier \u2018metabolite\u2019 combines with a \u2018Chemical X\u2019 core concept to express the composed concept \u2018a metabolite of Chemical X\u2019.  This qualifier is for the subject of an association  (or statement).",
                     "examples": [
                         "metabolite"
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -7640,7 +7766,14 @@
                     ]
                 },
                 "subject_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  subject of an association (or statement)."
                 },
                 "timepoint": {
@@ -8386,7 +8519,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -8951,7 +9091,14 @@
                     ]
                 },
                 "object_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the object of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -8988,7 +9135,14 @@
                     ]
                 },
                 "object_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  object of an association (or statement)."
                 },
                 "original_object": {
@@ -9119,14 +9273,28 @@
                     ]
                 },
                 "subject_derivative_qualifier": {
-                    "$ref": "#/$defs/ChemicalEntityDerivativeEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalEntityDerivativeEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object  concept to describe something that is derived from the core concept.  For example, the qualifier \u2018metabolite\u2019 combines with a \u2018Chemical X\u2019 core concept to express the composed concept \u2018a metabolite of Chemical X\u2019.  This qualifier is for the subject of an association  (or statement).",
                     "examples": [
                         "metabolite"
                     ]
                 },
                 "subject_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -9162,7 +9330,14 @@
                     ]
                 },
                 "subject_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  subject of an association (or statement)."
                 },
                 "timepoint": {
@@ -9234,7 +9409,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -9265,7 +9447,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -9382,7 +9571,14 @@
             "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disesae or phenotypic feature is a secondary, typically (but not always) undesirable effect.",
             "properties": {
                 "FDA_adverse_event_level": {
-                    "$ref": "#/$defs/FDAIDAAdverseEventEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FDAIDAAdverseEventEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": ""
                 },
                 "adjusted_p_value": {
@@ -9591,7 +9787,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -9759,7 +9962,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -9822,7 +10032,14 @@
             "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disease or phenotypic feature is a secondary undesirable effect.",
             "properties": {
                 "FDA_adverse_event_level": {
-                    "$ref": "#/$defs/FDAIDAAdverseEventEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FDAIDAAdverseEventEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": ""
                 },
                 "adjusted_p_value": {
@@ -10031,7 +10248,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -10199,7 +10423,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -13631,7 +13862,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -13662,7 +13900,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -14664,7 +14909,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -14810,7 +15062,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -14855,7 +15114,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -17567,7 +17833,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -17756,7 +18029,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -17860,7 +18140,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -17891,7 +18178,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -19151,7 +19445,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -19288,7 +19589,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -19333,7 +19641,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -19518,7 +19833,14 @@
                     ]
                 },
                 "clinical_approval_status": {
-                    "$ref": "#/$defs/ClinicalApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClinicalApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": ""
                 },
                 "deprecated": {
@@ -19593,7 +19915,14 @@
                     ]
                 },
                 "max_research_phase": {
-                    "$ref": "#/$defs/ResearchPhaseEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ResearchPhaseEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "A human-readable name for an attribute or entity.",
@@ -19893,7 +20222,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "predicate": {
@@ -19925,7 +20261,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 }
             },
@@ -20031,7 +20374,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "predicate": {
@@ -20063,7 +20413,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 }
             },
@@ -20145,7 +20502,14 @@
                     ]
                 },
                 "clinical_approval_status": {
-                    "$ref": "#/$defs/ClinicalApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClinicalApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": ""
                 },
                 "deprecated": {
@@ -20220,7 +20584,14 @@
                     ]
                 },
                 "max_research_phase": {
-                    "$ref": "#/$defs/ResearchPhaseEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ResearchPhaseEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "description": "A human-readable name for an attribute or entity.",
@@ -20560,7 +20931,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_specialization_qualifier": {
@@ -20606,7 +20984,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_specialization_qualifier": {
@@ -22557,7 +22942,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -22736,7 +23128,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -22841,7 +23240,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "predicate": {
@@ -22873,7 +23279,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 }
             },
@@ -22924,7 +23337,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -22955,7 +23375,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -23983,7 +24410,14 @@
                     ]
                 },
                 "causal_mechanism_qualifier": {
-                    "$ref": "#/$defs/CausalMechanismQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CausalMechanismQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A statement qualifier representing a type of molecular control mechanism through which an effect of a chemical on a gene or gene product is mediated (e.g. 'agonism', 'inhibition', 'allosteric modulation', 'channel blocker')"
                 },
                 "deprecated": {
@@ -24076,7 +24510,14 @@
                     "type": "string"
                 },
                 "object_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the object of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -24133,18 +24574,39 @@
                     ]
                 },
                 "object_derivative_qualifier": {
-                    "$ref": "#/$defs/ChemicalEntityDerivativeEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalEntityDerivativeEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object  concept to describe something that is derived from the core concept.  For example, the qualifier \u2018metabolite\u2019 combines with a \u2018Chemical X\u2019 core concept to express the composed concept \u2018a metabolite of Chemical X\u2019.  This qualifier is for the object of an association  (or statement).",
                     "examples": [
                         "metabolite"
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the object of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -24181,7 +24643,14 @@
                     ]
                 },
                 "object_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  object of an association (or statement)."
                 },
                 "original_object": {
@@ -24298,7 +24767,14 @@
                     "description": "connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object."
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -24359,11 +24835,25 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_form_or_variant_qualifier": {
-                    "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ChemicalOrGeneOrGeneProductFormOrVariantEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A qualifier that composes with a core subject/object concept to define a specific type, variant, alternative version of this concept. The composed concept remains a subtype or instance of the core concept. For example, the qualifier \u2018mutation\u2019 combines with the core concept \u2018Gene X\u2019 to express the compose concept \u2018a mutation of Gene X\u2019.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "mutation",
@@ -24399,7 +24889,14 @@
                     ]
                 },
                 "subject_part_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalPartQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "defines a specific part/component of the core concept (used in cases there this specific part has no IRI we can use to directly represent it, e.g. 'ESR1 transcript' q: polyA tail).  This qualifier is for the  subject of an association (or statement)."
                 },
                 "timepoint": {
@@ -24679,7 +25176,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -24816,7 +25320,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -24861,7 +25372,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -25370,7 +25888,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -25508,7 +26033,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -25553,7 +26085,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_form_or_variant_qualifier": {
@@ -26447,7 +26986,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -26593,7 +27139,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -26638,7 +27191,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -26952,7 +27512,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -27098,7 +27665,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -27143,7 +27717,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -30520,7 +31101,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -30666,7 +31254,14 @@
                     ]
                 },
                 "subject_aspect_qualifier": {
-                    "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/GeneOrGeneProductOrChemicalEntityAspectEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept to describe new concepts of a different ontological type. e.g. a process in which the core concept participates, a function/activity/role held by the core concept, or a characteristic/quality that inheres in the core concept.  The purpose of the aspect slot is to indicate what aspect is being affected in an 'affects' association.  This qualifier specifies a change in the subject of an association (aka: statement).",
                     "examples": [
                         "stability",
@@ -30711,7 +31306,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -31292,7 +31894,14 @@
                     ]
                 },
                 "genome_build": {
-                    "$ref": "#/$defs/StrandEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/StrandEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "The version of the genome on which a feature is located. For example, GRCh38 for Homo sapiens."
                 },
                 "has_attribute": {
@@ -31466,7 +32075,14 @@
                     ]
                 },
                 "phase": {
-                    "$ref": "#/$defs/PhaseEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PhaseEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "The phase for a coding sequence entity. For example, phase of a CDS as represented in a GFF3 with a value of 0, 1 or 2."
                 },
                 "predicate": {
@@ -31528,7 +32144,14 @@
                     ]
                 },
                 "strand": {
-                    "$ref": "#/$defs/StrandEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/StrandEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "The strand on which a feature is located. Has a value of '+' (sense strand or forward strand) or '-' (anti-sense strand or reverse strand)."
                 },
                 "subject": {
@@ -31974,7 +32597,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -32142,7 +32772,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -32409,7 +33046,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -32577,7 +33221,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -33652,7 +34303,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -33834,7 +34492,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -40565,7 +41230,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -40596,7 +41268,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -44599,7 +45278,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -44767,7 +45453,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -47030,7 +47723,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -47231,7 +47931,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -47345,7 +48052,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "predicate": {
@@ -47389,7 +48103,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 }
             },
@@ -47650,7 +48371,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -47834,7 +48562,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -49459,7 +50194,14 @@
                     ]
                 },
                 "causal_mechanism_qualifier": {
-                    "$ref": "#/$defs/CausalMechanismQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CausalMechanismQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "A statement qualifier representing a type of molecular control mechanism through which an effect of a chemical on a gene or gene product is mediated (e.g. 'agonism', 'inhibition', 'allosteric modulation', 'channel blocker')"
                 },
                 "exact_match": {
@@ -49519,7 +50261,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_form_or_variant_qualifier": {
@@ -49595,7 +50344,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_form_or_variant_qualifier": {
@@ -50339,7 +51095,14 @@
                     ]
                 },
                 "drug_regulatory_status_world_wide": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "An agglomeration of drug regulatory status worldwide. Not specific to FDA."
                 },
                 "full_name": {
@@ -50370,7 +51133,14 @@
                     ]
                 },
                 "highest_FDA_approval_status": {
-                    "$ref": "#/$defs/ApprovalStatusEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ApprovalStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Should be the highest level of FDA approval this chemical entity or device has, regardless of which disease, condition or phenotype it is currently being reviewed to treat.  For specific levels of FDA approval for a specific condition, disease, phenotype, etc., see the association slot, 'clinical approval status.'"
                 },
                 "id": {
@@ -51758,11 +52528,25 @@
                     ]
                 },
                 "reaction_direction": {
-                    "$ref": "#/$defs/ReactionDirectionEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ReactionDirectionEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the direction of a reaction as constrained by the direction enum (ie: left_to_right, neutral, etc.)"
                 },
                 "reaction_side": {
-                    "$ref": "#/$defs/ReactionSideEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ReactionSideEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the side of a reaction being modeled (ie: left or right)"
                 },
                 "retrieval_source_ids": {
@@ -52143,11 +52927,25 @@
                     ]
                 },
                 "reaction_direction": {
-                    "$ref": "#/$defs/ReactionDirectionEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ReactionDirectionEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the direction of a reaction as constrained by the direction enum (ie: left_to_right, neutral, etc.)"
                 },
                 "reaction_side": {
-                    "$ref": "#/$defs/ReactionSideEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ReactionSideEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the side of a reaction being modeled (ie: left or right)"
                 },
                 "retrieval_source_ids": {
@@ -57256,7 +58054,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -57427,7 +58232,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -57694,7 +58506,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -57865,7 +58684,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {
@@ -59000,7 +59826,14 @@
                     ]
                 },
                 "object_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the object of an association (aka: statement)."
                 },
                 "object_label_closure": {
@@ -59183,7 +60016,14 @@
                     ]
                 },
                 "subject_direction_qualifier": {
-                    "$ref": "#/$defs/DirectionQualifierEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DirectionQualifierEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Composes with the core concept (+ aspect if provided) to describe a change in its direction or degree. This qualifier qualifies the subject of an association (aka: statement)."
                 },
                 "subject_label_closure": {

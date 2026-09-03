@@ -1,6 +1,7 @@
 import json
 import logging
 
+import pytest
 from rdflib import Graph, term
 from yaml import safe_load
 
@@ -10,6 +11,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 logger = logging.getLogger(__name__)
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_class_uri(input_path):
     """`class_uri` should result in an `skos:exactMatch` relationship
     in the generated JSON-LD and RDF."""

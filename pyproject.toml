@@ -1,5 +1,7 @@
 [tool.uv]
+required-version = ">=0.9.17"
 exclude-newer = "7 days"
+constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
 
 [tool.uv.workspace]
 members = [
@@ -79,7 +81,8 @@ filterwarnings = [
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
 ]
 markers = [
-  "network: mark tests that make external network requests",
+  "network: test code paths that perform outbound requests; served from local stubs by default, live under --with-network",
+  "upstream: tests whose assertions are about the real outside world; live-only, run weekly under --with-upstream",
   "slow: mark test as slow to run",
   "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
   "strcmp: tests that compare stringified values rather than the values themselves",

@@ -11,6 +11,7 @@ import csv
 import random
 import re
 import sys
+import time
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -139,24 +140,19 @@ def needs_check(url: str, cache: dict[str, dict], ttl_days: int, jitter_days: in
         return True
 
 
-def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
-    """
-    Check a URL and return (status, error_message).
+TRANSIENT_STATUSES = {"timeout", "connection_error"}
+"""Failures that say the network misbehaved, not that the link is dead.
 
-    Don't follow redirects - accept 3xx as valid (the redirect itself is the response).
-    This avoids false failures when redirect targets have bot protection.
+A dead link answers with 404. A dropped connection or a timeout is weather, and
+retrying clears it -- so these are retried before being reported.
+"""
 
-    Returns:
-        Tuple of (status_code_or_error, error_message_or_empty)
-    """
-    # Self-referencing repo URLs: verify the file exists locally
-    repo_match = REPO_FILE_PATTERN.match(url)
-    if repo_match:
-        path = Path(repo_match.group(1))
-        if path.exists():
-            return "200", ""
-        return "404", f"Local path not found: {path}"
+RETRY_ATTEMPTS = 3
+RETRY_BACKOFF_SECONDS = 2
 
+
+def _attempt_url(url: str, timeout: int) -> tuple[str, str]:
+    """Make a single request and classify the outcome. See ``check_url``."""
     try:
         response = requests.head(
             url,
@@ -182,6 +178,37 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
         return "connection_error", str(e)
     except requests.exceptions.RequestException as e:
         return "error", str(e)
+
+
+def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
+    """
+    Check a URL and return (status, error_message).
+
+    Don't follow redirects - accept 3xx as valid (the redirect itself is the response).
+    This avoids false failures when redirect targets have bot protection.
+
+    Transient network failures are retried up to ``RETRY_ATTEMPTS`` times with a
+    linear backoff, so a single dropped connection is not reported as a broken link.
+
+    Returns:
+        Tuple of (status_code_or_error, error_message_or_empty)
+    """
+    # Self-referencing repo URLs: verify the file exists locally
+    repo_match = REPO_FILE_PATTERN.match(url)
+    if repo_match:
+        path = Path(repo_match.group(1))
+        if path.exists():
+            return "200", ""
+        return "404", f"Local path not found: {path}"
+
+    for attempt in range(1, RETRY_ATTEMPTS + 1):
+        status, message = _attempt_url(url, timeout)
+        if status not in TRANSIENT_STATUSES or attempt == RETRY_ATTEMPTS:
+            return status, message
+        time.sleep(RETRY_BACKOFF_SECONDS * attempt)
+
+    # Unreachable: the loop always returns on its final attempt.
+    raise AssertionError("retry loop exited without returning")
 
 
 def main():
