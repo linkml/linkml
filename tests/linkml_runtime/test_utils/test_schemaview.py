@@ -3806,3 +3806,30 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+def test_annotation_dict_for_induced_slot() -> None:
+    """annotation_dict() can return annotation for induced slots."""
+
+    schema = """
+id: https://example.org/induced-slot-annotations
+name: induced-slot-annotations
+slots:
+  foo:
+    annotations:
+      bar: some value
+classes:
+  TestClass:
+    slots:
+      - foo
+    slot_usage:
+      foo:
+        annotations:
+          bar: some other value
+"""
+
+    sv = SchemaView(schema)
+    original_annots = sv.annotation_dict("foo")
+    assert original_annots["bar"] == "some value"
+    induced_annots = sv.annotation_dict("foo", class_name="TestClass")
+    assert induced_annots["bar"] == "some other value"
