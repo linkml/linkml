@@ -94,7 +94,7 @@ dev = [
   "nbconvert",
   "nbformat",
   "coverage>=7.15.4",
-  "tox>=4.60.0",
+  "tox>=4.60.1",
   "tox-uv",
   "myst-nb>=1.4.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
@@ -108,7 +108,7 @@ pandera = [
   "pandas"
 ]
 tests-rustgen = [
-  "maturin>=1.14.1"
+  "maturin>=1.15.0"
 ]
 typedb = [
   "typedb-driver>=3.12.3,<4.0",

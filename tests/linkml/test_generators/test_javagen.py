@@ -1,8 +1,10 @@
 import logging
 
+import click
 import pytest
+from click.testing import CliRunner
 
-from linkml.generators.javagen import JavaBundle, JavaGenerator
+from linkml.generators.javagen import JavaBundle, JavaGenerator, cli
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -314,3 +316,215 @@ def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as
     gen.serialize(directory=directory)
 
     assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
+
+
+def _write_minimal_schema(path):
+    path.write_text(
+        "id: https://example.org/pkg\n"
+        "name: pkg\n"
+        "imports:\n"
+        "  - linkml:types\n"
+        "classes:\n"
+        "  Thing:\n"
+        "    attributes:\n"
+        "      id:\n"
+        "        range: string\n"
+    )
+    return path
+
+
+def _java_config_yaml(package: str) -> str:
+    """The same `generator_args.java.package` shape used by gen-project's config.yaml."""
+    return f"generator_args:\n  java:\n    package: {package}\n"
+
+
+def test_cli_config_file_sets_package(tmp_path):
+    """--config-file's `generator_args.java.package` sets the Java package when --package is not given."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("org.example.fromconfig"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.fromconfig")
+
+
+def test_cli_explicit_package_overrides_config_file(tmp_path):
+    """An explicit --package always takes precedence over --config-file."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("org.example.fromconfig"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "--config-file",
+            str(config_path),
+            "--package",
+            "org.example.explicit",
+            "--output-directory",
+            str(out_dir),
+            str(schema_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.explicit")
+
+
+def test_cli_config_file_without_java_package_falls_back_to_default(tmp_path):
+    """A config file with no `generator_args.java.package` falls through to the `example` default."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  owl:\n    mergeimports: true\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
+
+
+def test_cli_invalid_config_package_errors(tmp_path):
+    """An invalid Java package name from the config file is rejected rather than emitted verbatim."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("1bad.pkg"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
+
+
+def test_cli_invalid_explicit_package_errors(tmp_path):
+    """An invalid Java package name passed via --package is rejected, matching the config-file behavior."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--package", "1bad.pkg", "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
+
+
+def test_cli_does_not_mistake_a_schema_error_for_a_bad_package(tmp_path):
+    """A broken schema (not a bad package) must surface as its own error, not get caught by
+    the package check and misreported as a package problem. The invocation was fine; the
+    schema is broken -- `--help` sends the user in the wrong direction."""
+    schema_path = tmp_path / "bad.yaml"
+    schema_path.write_text("justastring\n", encoding="UTF-8")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert not isinstance(result.exception, click.UsageError)
+    assert "not a valid Java package name" not in str(result.exception)
+    assert "Unexpected type" in str(result.exception)
+
+
+@pytest.mark.parametrize("package", ["1bad.pkg", "org.class.model", "org..model", "org.my-model"])
+def test_constructor_invalid_package_errors(kitchen_sink_path, package):
+    """An invalid package passed directly to the generator (as gen-project does) is rejected."""
+    with pytest.raises(ValueError, match="is not a valid Java package name"):
+        JavaGenerator(kitchen_sink_path, package=package)
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param("- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param("generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(
+            "generator_args:\n  java: package=org.example.model\n",
+            "'generator_args.java'",
+            id="scalar-section",
+        ),
+    ],
+)
+def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
+    """A malformed --config-file fails loudly. A malformed `generator_args.java` in
+    particular must not be skipped over, leaving the user with the `example` default
+    and no clue why their configured package was ignored."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(config_yaml)
+
+    result = CliRunner().invoke(cli, ["--config-file", str(config_path), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert f"expected a YAML mapping at {where}" in result.output
+
+
+def test_cli_config_file_real_project_config_shape(tmp_path):
+    """gen-java's --config-file accepts a full, real-world gen-project config.yaml
+    (other generators' sections, excludes/includes, etc.) and only reads
+    generator_args.java.package out of it, ignoring the rest."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "excludes:\n"
+        "  - markdown\n"
+        "generator_args:\n"
+        "  excel:\n"
+        "    mergeimports: true\n"
+        "  owl:\n"
+        "    mergeimports: true\n"
+        "    metaclasses: false\n"
+        "  java:\n"
+        "    mergeimports: true\n"
+        "    package: org.example.fromrealproject\n"
+        "  python:\n"
+        "    mergeimports: true\n"
+    )
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.fromrealproject")
+
+
+def test_cli_ignores_config_yaml_in_cwd(tmp_path, monkeypatch):
+    """A `config.yaml` in the cwd is never read implicitly: --config-file must be explicit."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    (tmp_path / "config.yaml").write_text(_java_config_yaml("org.example.cwd"))
+    out_dir = tmp_path / "out"
+    monkeypatch.chdir(tmp_path)
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
+
+
+def test_cli_no_config_file_falls_back_to_default(tmp_path, monkeypatch):
+    """No --config-file: falls through to the `example` default."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    out_dir = tmp_path / "out"
+    monkeypatch.chdir(tmp_path)
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
