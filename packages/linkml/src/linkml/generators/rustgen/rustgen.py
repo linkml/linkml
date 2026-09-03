@@ -212,6 +212,26 @@ def has_real_subtypes(sv: SchemaView, class_name: str) -> bool:
     return len(class_real_descendants(sv, class_name)) > 0
 
 
+def class_subtype_enum_members(sv: SchemaView, class_name: str) -> list[str]:
+    """Members of a class's ``*OrSubtype`` enum.
+
+    Returns the class's real descendants and, when the class itself is concrete
+    (i.e. instantiable — not ``abstract`` and not a ``mixin``), the class itself.
+    The base class is placed *last* so that ``untagged`` deserialization prefers
+    the more specific subtype variants; for type-designator (tagged) enums the
+    order is irrelevant.
+
+    Both the enum definition (:meth:`gen_struct_or_subtype_enum`) and the trait
+    dispatch match arms (:meth:`gen_poly_trait`) must enumerate the same set, or
+    the generated ``match`` becomes non-exhaustive and fails to compile.
+    """
+    members = list(class_real_descendants(sv, class_name))
+    cls = sv.get_class(class_name)
+    if cls is not None and not getattr(cls, "abstract", False) and not getattr(cls, "mixin", False):
+        members.append(class_name)
+    return members
+
+
 def determine_slot_mode(s: SlotDefinition, sv: SchemaView) -> tuple[SlotContainerMode, SlotInlineMode]:
     """Return container and inline modes for a slot."""
 
@@ -559,10 +579,11 @@ class RustGenerator(Generator, LifecycleMixin):
 
     def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> RustStructOrSubtypeEnum | None:
         descendants = class_real_descendants(self.schemaview, cls.name)
+        members = class_subtype_enum_members(self.schemaview, cls.name)
         td = self.schemaview.get_type_designator_slot(cls.name)
         td_mapping = {}
         if td is not None:
-            for d in descendants:
+            for d in members:
                 d_class = self.schemaview.get_class(d)
                 values = get_accepted_type_designator_values(self.schemaview, td, d_class)
                 td_mapping[d] = values
@@ -573,8 +594,10 @@ class RustGenerator(Generator, LifecycleMixin):
                 key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
-                struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
-                type_designator_name=get_name(td) if td else None,
+                struct_names=[get_name(self.schemaview.get_class(d)) for d in members],
+                # The tag must match the designator field's serialized (wire) name,
+                # which is the un-escaped slot name (see serde_rename in generate_attribute).
+                type_designator_field=underscore(td.name) if td else None,
                 as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
                 type_designators=td_mapping,
                 key_property_type=key_type,
@@ -687,12 +710,20 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             range_info = get_rust_range_info(cls, attr, self.schemaview)
 
+        # When the Rust field name had to be escaped (a slot named after a Rust
+        # keyword, e.g. ``type`` -> ``type_``), the serialized data still uses the
+        # original LinkML slot name. Emit a serde rename so the wire format matches.
+        rust_name = get_name(attr)
+        wire_name = underscore(attr.name)
+        serde_rename = wire_name if rust_name != wire_name else None
+
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
-                name=get_name(attr),
+                name=rust_name,
                 inline_mode=inline_mode.value,
                 alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
+                serde_rename=serde_rename,
                 generate_merge=MERGE_ANNOTATION in cls.annotations,
                 container_mode=container_mode.value,
                 type_=range_info,
@@ -1014,7 +1045,9 @@ class RustGenerator(Generator, LifecycleMixin):
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
             has_subtypes = has_real_subtypes(self.schemaview, sc)
             if has_subtypes:
-                cases = [get_name(self.schemaview.get_class(x)) for x in class_real_descendants(self.schemaview, sc)]
+                cases = [
+                    get_name(self.schemaview.get_class(x)) for x in class_subtype_enum_members(self.schemaview, sc)
+                ]
                 matches = [
                     PolyTraitPropertyMatch(
                         name=get_name(a),
