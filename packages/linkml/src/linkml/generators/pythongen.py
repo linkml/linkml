@@ -20,6 +20,7 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.meta import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
     DefinitionName,
@@ -57,6 +58,7 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
+
     genmeta: bool = False
     dataclass_repr: bool = False
     """
@@ -347,23 +349,37 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         def add_enum_ref(e: EnumDefinition) -> None:
             rval.add_element(e)
 
+        def add_one_range(range_name: str, inlined: bool) -> None:
+            if not range_name:
+                return
+            if range_name in self.schema.types:
+                add_type_ref(self.schema.types[range_name])
+            elif range_name in self.schema.enums:
+                add_enum_ref(self.schema.enums[range_name])
+            else:
+                cls = self.schema.classes[range_name]
+                if cls.imported_from:
+                    if self.class_identifier(cls):
+                        identifier_range = self.class_identifier_path(cls, False)[-1]
+                        if identifier_range in self.schema.types:
+                            add_type_ref(TypeDefinition(identifier_range))
+                        else:
+                            rval.add_entry(cls.imported_from, identifier_range)
+                    if inlined:
+                        rval.add_element(cls)
+
         def add_slot_range(slot: SlotDefinition) -> None:
-            if slot.range:
-                if slot.range in self.schema.types:
-                    add_type_ref(self.schema.types[slot.range])
-                elif slot.range in self.schema.enums:
-                    add_enum_ref(self.schema.enums[slot.range])
-                else:
-                    cls = self.schema.classes[slot.range]
-                    if cls.imported_from:
-                        if self.class_identifier(cls):
-                            identifier_range = self.class_identifier_path(cls, False)[-1]
-                            if identifier_range in self.schema.types:
-                                add_type_ref(TypeDefinition(identifier_range))
-                            else:
-                                rval.add_entry(cls.imported_from, identifier_range)
-                        if slot.inlined:
-                            rval.add_element(cls)
+            add_one_range(slot.range, bool(slot.inlined))
+            # any_of/exactly_one_of branches can each declare their own range (e.g. a
+            # boolean branch needing `Bool` from linkml_runtime.utils.metamodelcore),
+            # which the bare `slot.range` check above never sees. Each branch's own
+            # inlined status is resolved via the same priority rules as the
+            # postinit/annotation codegen (_resolve_branch_inlined), so the two
+            # can't end up importing a class that the generated code never
+            # actually references (or vice versa).
+            for branch in list(slot.any_of) + list(slot.exactly_one_of):
+                branch_range = branch.range if branch.range else slot.range
+                add_one_range(branch_range, self._resolve_branch_inlined(branch, branch_range))
 
         rval = ImportList(self.schema_location)
         for typ in self.schema.types.values():
@@ -757,6 +773,78 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         else:
             return f"Optional[{range_type}]", "None"
 
+    def _boolean_combinator_branch_slots(
+        self, slot: SlotDefinition, branches: list[AnonymousSlotExpression]
+    ) -> list[SlotDefinition] | None:
+        """
+        Expand `any_of`/`exactly_one_of` branches into synthetic single-range slots.
+
+        For a single-valued slot with a non-empty `branches` list (`slot.any_of` or
+        `slot.exactly_one_of`), return one synthetic SlotDefinition per branch: a
+        shallow copy of `slot` with `.range` replaced by the branch's own range (or
+        the parent's range if a branch omits one) and `.any_of`/`.exactly_one_of`
+        cleared, so it can be fed back into `class_reference_type`/`gen_postinit`
+        without infinite recursion.
+
+        Returns None (falling back to today's single-range behavior) if the slot is
+        multivalued (multivalued any_of/exactly_one_of is a separate, larger
+        undertaking), `branches` is empty, or a branch's range can't be resolved.
+        """
+        if slot.multivalued or not branches:
+            return None
+        branch_slots = []
+        for branch in branches:
+            branch_range = branch.range if branch.range else slot.range
+            if not branch_range:
+                return None
+            bslot = copy(slot)
+            bslot.range = branch_range
+            bslot.any_of = []
+            bslot.exactly_one_of = []
+            bslot.inlined = self._resolve_branch_inlined(branch, branch_range)
+            branch_slots.append(bslot)
+        return branch_slots
+
+    def _resolve_branch_inlined(self, branch: AnonymousSlotExpression, branch_range: str) -> bool:
+        """
+        Whether an any_of/exactly_one_of branch's class range should be treated as
+        inlined (embedded) rather than referenced by identifier.
+
+        Deliberately does NOT just inherit the container slot's own `.inlined`.
+        SchemaLoader.resolve() auto-forces a slot's `.inlined` to True whenever its
+        OWN declared range (e.g. an abstract `Any`/`Anything` placeholder class used
+        to hold the any_of/exactly_one_of union) has no identifier slot --
+        regardless of whether the schema author ever asked for embedding. That
+        forced value says nothing about whether THIS branch's concrete class should
+        be embedded or referenced by identifier, so blindly copying it would wrongly
+        force every identifier-bearing branch (e.g. a class meant to be referenced
+        by ID, matching a bare string value) into dict-embedding coercion instead.
+
+        Priority, mirroring the analogous jsonschemagen fix in PR #3688:
+        1. the branch's own explicit `inlined` (e.g. `any_of: [{range: X,
+           inlined: true}, ...]`), if the schema author set one directly;
+        2. otherwise, a class range with no identifier slot at all MUST be
+           inlined, since there is no identifier to reference it by;
+        3. otherwise, default to not-inlined (reference by identifier).
+
+        This is the single source of truth for the decision, shared by
+        `_boolean_combinator_branch_slots` (annotation/coercion codegen) and
+        `gen_import_list` (import collection), so the two can't disagree about
+        whether a given branch's class needs to be imported for embedding.
+        """
+        if branch.inlined is not None:
+            return branch.inlined
+        return branch_range in self.schema.classes and not self.class_identifier(branch_range)
+
+    @staticmethod
+    def _flatten_boolean_combinator_range(range_str: str) -> list[str]:
+        """Flatten a `Union[A, B]`-shaped string (as produced by class_identifier_path
+        for a non-inlined-by-default range) into its component type names, so that
+        joining multiple branches doesn't nest as `Union[Union[dict, D], int]`."""
+        if range_str.startswith("Union[") and range_str.endswith("]"):
+            return [p.strip() for p in range_str[len("Union[") : -1].split(",")]
+        return [range_str]
+
     def class_reference_type(self, slot: SlotDefinition, cls: ClassDefinition | None) -> tuple[str, str, str]:
         """
         Return the type of slot referencing a class
@@ -765,6 +853,24 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         :param cls: owning class.  Used for generating key references
         :return: Python class reference type, most proximal type, most proximal type name
         """
+        if not slot.multivalued:
+            branch_slots = self._boolean_combinator_branch_slots(
+                slot, list(slot.any_of) if slot.any_of else list(slot.exactly_one_of)
+            )
+            if branch_slots is not None:
+                branch_results = [self.class_reference_type(bslot, cls) for bslot in branch_slots]
+                flat: list[str] = []
+                for range_str, _, _ in branch_results:
+                    for part in self._flatten_boolean_combinator_range(range_str):
+                        if part not in flat:
+                            flat.append(part)
+                combined = flat[0] if len(flat) == 1 else f"Union[{', '.join(flat)}]"
+                # prox_type/prox_type_name aren't well-defined for a multi-branch
+                # union; gen_postinit resolves per-branch names itself (it never
+                # consumes these for any_of/exactly_one_of slots), so return the
+                # first branch's values defensively for any other caller.
+                return combined, branch_results[0][1], branch_results[0][2]
+
         rangelist = (
             self.class_identifier_path(cls, False) if slot.key or slot.identifier else self.slot_range_path(slot)
         )
@@ -937,6 +1043,125 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append("")
         return ("\n\t" if len(rlines) > 0 else "") + "\n\t".join(rlines)
 
+    def _boolean_combinator_coercion_expr(self, bslot: SlotDefinition, bname: str) -> str:
+        """
+        Mirrors the per-range classification in gen_postinit's single-range coercion
+        (empty-class / identifier-or-type-or-enum / embedded-dict) for ONE any_of or
+        exactly_one_of branch, producing a constructor expression that coerces a
+        local variable named `value` into `bname`.
+        """
+        branch_range = bslot.range
+        if branch_range in self.schema.classes and not self.schema.classes[branch_range].slots:
+            return f"{bname}()"
+        elif (
+            (self.class_identifier(branch_range) and not bslot.inlined)
+            or branch_range in self.schema.types
+            or branch_range in self.schema.enums
+        ):
+            return f"{bname}(value)"
+        else:
+            return f"{bname}(**as_dict(value))"
+
+    def _gen_boolean_combinator_postinit(
+        self,
+        cls: ClassDefinition,
+        slot: SlotDefinition,
+        branch_slots: list[SlotDefinition],
+        require_exactly_one: bool,
+    ) -> str:
+        """
+        Generate the __post_init__ coercion block for a single-valued slot ranged
+        over `any_of` (require_exactly_one=False) or `exactly_one_of`
+        (require_exactly_one=True).
+
+        any_of: candidates are tried in declared order; the first one that can be
+        constructed from the raw value wins. This is a deliberate, documented
+        tie-break for genuinely ambiguous data (e.g. a dict that structurally
+        satisfies more than one candidate's required fields) -- not an attempt to
+        guess the "best" match.
+
+        exactly_one_of: every candidate must be tried (no early exit), since
+        detecting a violation (0 or 2+ matches) requires knowing how many candidates
+        actually succeed, not just whether one did.
+        """
+        aliased_slot_name = self.slot_name(slot.name)
+        rlines: list[str] = []
+
+        if slot.required:
+            rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
+            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+
+        # Resolve each branch's runtime (unquoted) type name via the same single-range
+        # call class_reference_type already makes for a plain slot, then de-dup by that
+        # name, preserving declared order -- this *is* the tie-break. Branches without
+        # their own `range` (e.g. constraint-only exactly_one_of options) can resolve to
+        # the same runtime type; deduping the lambdas themselves (not just the isinstance
+        # guard/label) keeps exactly_one_of from treating two identical candidates as two
+        # independent matches.
+        branch_names = [self.class_reference_type(bslot, cls)[2] for bslot in branch_slots]
+        seen_names: set[str] = set()
+        dedup_branch_slots: list[SlotDefinition] = []
+        dedup_names: list[str] = []
+        for bslot, bname in zip(branch_slots, branch_names):
+            if bname not in seen_names:
+                seen_names.add(bname)
+                dedup_branch_slots.append(bslot)
+                dedup_names.append(bname)
+        tuple_str = ", ".join(dedup_names) + ("," if len(dedup_names) == 1 else "")
+        union_label = f"Union[{', '.join(dedup_names)}]" if len(dedup_names) > 1 else dedup_names[0]
+
+        guard = (
+            f"if not isinstance(self.{aliased_slot_name}, ({tuple_str})):"
+            if slot.required
+            else f"if self.{aliased_slot_name} is not None and not isinstance(self.{aliased_slot_name}, ({tuple_str})):"
+        )
+        lambdas = ", ".join(
+            f"lambda: {self._boolean_combinator_coercion_expr(bslot, bname)}"
+            for bslot, bname in zip(dedup_branch_slots, dedup_names)
+        )
+        if len(dedup_branch_slots) == 1:
+            # A single-element parenthesized expression is not a tuple in Python --
+            # `(lambda: ...)` is just the lambda itself, not a 1-tuple containing it --
+            # so `for _coerce in (...)` would try to iterate the function object.
+            lambdas += ","
+
+        rlines.append(guard)
+        rlines.append(f"\tvalue = self.{aliased_slot_name}")
+        if not require_exactly_one:
+            rlines.append(f"\tfor _coerce in ({lambdas}):")
+            rlines.append("\t\ttry:")
+            rlines.append(f"\t\t\tself.{aliased_slot_name} = _coerce()")
+            rlines.append("\t\t\tbreak")
+            rlines.append("\t\texcept (ValueError, TypeError):")
+            rlines.append("\t\t\tcontinue")
+            rlines.append("\telse:")
+            rlines.append(
+                f'\t\traise ValueError(f"None of the candidate types {union_label} could be constructed '
+                f'from {{value!r}} for slot {aliased_slot_name}")'
+            )
+        else:
+            rlines.append("\t_matches = []")
+            rlines.append(f"\tfor _coerce in ({lambdas}):")
+            rlines.append("\t\ttry:")
+            rlines.append("\t\t\t_matches.append(_coerce())")
+            rlines.append("\t\texcept (ValueError, TypeError):")
+            rlines.append("\t\t\tcontinue")
+            rlines.append("\tif len(_matches) == 1:")
+            rlines.append(f"\t\tself.{aliased_slot_name} = _matches[0]")
+            rlines.append("\telif len(_matches) == 0:")
+            rlines.append(
+                f'\t\traise ValueError(f"None of the candidate types {union_label} could be constructed '
+                f'from {{value!r}} for slot {aliased_slot_name}")'
+            )
+            rlines.append("\telse:")
+            rlines.append(
+                f'\t\traise ValueError(f"Value {{value!r}} for slot {aliased_slot_name} ambiguously matches '
+                f"{{len(_matches)}} candidate types in exactly_one_of (expected exactly 1): "
+                f'{{[type(_m).__name__ for _m in _matches]}}")'
+            )
+        rlines.append("")
+        return "\n\t\t".join(rlines)
+
     def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> str | None:
         """Generate python post init rules for slot in class"""
         rlines: list[str] = []
@@ -949,6 +1174,21 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append(f"\tself.{aliased_slot_name} = sfx(str(self.id))")
             rlines.append("")
             return "\n\t\t".join(rlines)
+
+        # any_of/exactly_one_of range unions: this must be checked before the
+        # is_class_unconstrained short-circuit below, since a slot like
+        # `range: Any, any_of: [ClassA, ClassB]` (range Any's class_uri is
+        # linkml:Any) would otherwise be treated as unconstrained and get zero
+        # coercion at all -- exactly the pattern that needs this fix the most.
+        if not slot.multivalued and not slot.designates_type:
+            if slot.any_of:
+                branch_slots = self._boolean_combinator_branch_slots(slot, list(slot.any_of))
+                if branch_slots is not None:
+                    return self._gen_boolean_combinator_postinit(cls, slot, branch_slots, require_exactly_one=False)
+            elif slot.exactly_one_of:
+                branch_slots = self._boolean_combinator_branch_slots(slot, list(slot.exactly_one_of))
+                if branch_slots is not None:
+                    return self._gen_boolean_combinator_postinit(cls, slot, branch_slots, require_exactly_one=True)
 
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
@@ -983,14 +1223,16 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if slot.designates_type:
                 slot_range = self._roll_up_type(slot.range)
                 if slot_range == "string":
-                    td_value_classvar = "class_name"
+                    td_value_expression = "self.class_name"
                 elif slot_range == "uri":
-                    td_value_classvar = "class_model_uri"
+                    td_value_expression = "self.class_model_uri"
                 elif slot_range == "uriorcurie":
-                    td_value_classvar = "class_class_curie"
+                    td_value_expression = (
+                        "self.class_class_curie if self.class_class_curie is not None else self.class_class_uri"
+                    )
                 else:
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
-                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+                rlines.append(f"self.{aliased_slot_name} = str({td_value_expression})")
             elif (
                 # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
@@ -1173,7 +1415,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             mappings = ", mappings = [" + ", ".join(map_texts) + "]"
         else:
             mappings = ""
-        pattern = f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
+        # Global slot definitions are emitted directly rather than through
+        # induced_slot(), so resolve structured patterns explicitly here
+        # without changing the source SlotDefinition.
+        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 

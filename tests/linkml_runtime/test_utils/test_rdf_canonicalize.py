@@ -1,5 +1,6 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
+import os
 import re
 import subprocess
 import sys
@@ -259,7 +260,9 @@ def test_sort_is_load_bearing():
     )
 
     def run(seed: str) -> str:
-        env = {"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"}
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
+        env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
             [sys.executable, "-c", program],
             check=True,
@@ -487,7 +490,9 @@ def test_fallback_is_deterministic_across_processes(output_format):
     )
 
     def run(seed: str) -> str:
-        env = {"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"}
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
+        env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
             [sys.executable, "-c", program],
             check=True,
