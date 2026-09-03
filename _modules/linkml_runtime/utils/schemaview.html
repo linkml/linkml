@@ -2225,17 +2225,25 @@
 <div class="viewcode-block" id="SchemaView.annotation_dict">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.annotation_dict">[docs]</a>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">annotation_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">URIorCURIE</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">annotation_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassDefinitionName</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">URIorCURIE</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dictionary where keys are annotation tags and values are annotation values for any given element.</span>
 
 <span class="sd">        Note this will not include higher-order annotations</span>
 
 <span class="sd">        See also: https://github.com/linkml/linkml/issues/296</span>
 
-<span class="sd">        :param element_name:</span>
-<span class="sd">        :param imports:</span>
+<span class="sd">        :param element_name: The name of the schema element for which to retrieve annotations.</span>
+<span class="sd">        :param imports: Whether to include the imports closure when looking up for the element.</span>
+<span class="sd">        :param class_name: If set, `element_name` is assumed to be a slot name, and this method</span>
+<span class="sd">            will return the annotations carried by the induced slot in the context of the</span>
+<span class="sd">            indicated class.</span>
 <span class="sd">        :return: annotation dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">induced_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">_items</span><span class="p">()}</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
