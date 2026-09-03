@@ -26,6 +26,8 @@ def test_roundtrip(input_path, tmp_path):
     g.parse(outpath, format=RDF_FORMAT)
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_namespace(input_path):
     """
     Presumably fixed by https://github.com/linkml/linkml/issues/1993.
