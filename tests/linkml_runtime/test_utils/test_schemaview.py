@@ -57,7 +57,7 @@ SCHEMA_RULES_IMPORT = INPUT_DIR_PATH / "rules_import" / "base.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
 CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
-CREATURE_SCHEMA_RAW_URL = "https://github.com/linkml/linkml/raw/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
+CREATURE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
 
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
@@ -536,6 +536,7 @@ def test_imports_relative_load() -> None:
     sv.imports_closure(imports=True)
 
 
+@pytest.mark.network
 def test_imports_direct_remote_imports() -> None:
     """Tests that building a SchemaView directly from a remote URL works."""
     view = SchemaView("https://w3id.org/linkml/meta.yaml")
@@ -549,6 +550,7 @@ def test_imports_direct_remote_imports() -> None:
         assert c not in view.all_classes(imports=False)
 
 
+@pytest.mark.network
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
@@ -614,6 +616,52 @@ def test_import_map(importmap: dict[str, Any]) -> None:
     # ensure that ACTIVITY only appears in all_classes if imports are enabled
     assert ACTIVITY in view.all_classes()
     assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict() -> None:
+    """An importmap value may be an in-memory schema dict, loaded without filesystem access."""
+    core_dict = YAMLLoader().load_as_dict(str(SCHEMA_CORE))
+    view = SchemaView(SCHEMA_WITH_IMPORTS, importmap={"core": core_dict})
+    view.all_classes()
+    # ensure that all imports have loaded from the in-memory dict
+    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
+    # ACTIVITY is only defined in the imported core schema, so its presence proves the
+    # dict-valued import was resolved and merged
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict_transitive(tmp_path: Path) -> None:
+    """A dict-valued import whose own imports are also dict-valued resolves transitively."""
+    leaf = {
+        "id": "https://example.org/leaf",
+        "name": "leaf",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "classes": {"LeafClass": {"attributes": {"leaf_attr": {"range": "string"}}}},
+    }
+    middle = {
+        "id": "https://example.org/middle",
+        "name": "middle",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types", "https://example.org/leaf"],
+        "classes": {"MiddleClass": {"is_a": "LeafClass"}},
+    }
+    root = SchemaDefinition(
+        id="https://example.org/root",
+        name="root",
+        imports=["linkml:types", "https://example.org/middle"],
+        classes=[ClassDefinition(name="RootClass", is_a="MiddleClass")],
+    )
+    importmap = {
+        "https://example.org/middle": middle,
+        "https://example.org/leaf": leaf,
+    }
+    view = SchemaView(root, importmap=importmap)
+    all_classes = view.all_classes()
+    assert {"RootClass", "MiddleClass", "LeafClass"} <= set(all_classes)
+    # the transitively-imported leaf attribute is inducible on RootClass
+    assert view.induced_slot("leaf_attr", "RootClass").range == "string"
 
 
 def test_merge_imports_kwargs(schema_view_with_imports: SchemaView, sv_merged_imports_keyword: SchemaView) -> None:
@@ -980,13 +1028,10 @@ for value in CREATURE_EXPECTED.values():
     "schema",
     [
         "creature_view",
-        pytest.param(
-            "creature_view_remote",
-        ),
+        # network: these load the schema over https to exercise URL imports
+        pytest.param("creature_view_remote", marks=pytest.mark.network),
         "creature_view_local",
-        pytest.param(
-            "creature_view_direct_url",
-        ),
+        pytest.param("creature_view_direct_url", marks=pytest.mark.network),
     ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
@@ -1655,6 +1700,20 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     assert view.get_uri("name", use_element_type=True) == "core:slot/name"
 
     assert view.get_uri("string") == "xsd:string"
+
+    # SubsetDefinition: multi-word names are camelcased when building the native URI.
+    # "subset A" -> "SubsetA"; the transformation is directly observable.
+    assert view.get_uri("subset A") == "ks:SubsetA"
+    assert view.get_uri("subset A", expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/SubsetA"
+    assert view.get_uri("subset B") == "ks:SubsetB"
+
+    # TypeDefinition and EnumDefinition: add multi-word names to the kitchen_sink schema
+    # so the camelcase transformation is directly observable (the fixture is function-scoped).
+    view.add_type(TypeDefinition(name="my custom type"))
+    assert view.get_uri("my custom type") == "ks:MyCustomType"
+
+    view.add_enum(EnumDefinition(name="relationship type"))
+    assert view.get_uri("relationship type") == "ks:RelationshipType"
 
 
 def test_uris_without_default_prefix() -> None:
@@ -2941,15 +3000,310 @@ def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
     assert sorted(actual_result) == sorted(expected_result)
 
 
+@pytest.mark.parametrize(
+    ("interpolated", "partial_match", "expected_pattern"),
+    [
+        (True, True, r"[a-z]+"),
+        (True, False, r"^(?:[a-z]+)$"),
+        (False, True, r"\{word\}"),
+        (False, False, r"^(?:\{word\})$"),
+    ],
+)
+def test_resolve_pattern_does_not_modify_definition(
+    interpolated: bool, partial_match: bool, expected_pattern: str
+) -> None:
+    """Verify that all structured_pattern options are taken into account when resolving
+    to a pattern and that the original slot definition is not modified."""
+    view = SchemaView(
+        f"""
+id: https://example.org/pattern-options
+name: pattern_options
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: {str(interpolated).lower()}
+      partial_match: {str(partial_match).lower()}
+"""
+    )
+    value_slot = view.get_slot("value")
+
+    assert value_slot is not None
+    assert view.resolve_pattern(value_slot) == expected_pattern
+    assert value_slot.pattern is None
+    assert view.modifications == 0
+
+
+def test_resolve_pattern_returns_asserted_pattern() -> None:
+    """Verify that resolve_pattern returns the slot's pattern unmodified when no
+    structured_pattern is asserted."""
+    view = SchemaView(
+        """
+id: https://example.org/plain-pattern
+name: plain_pattern
+slots:
+  value:
+    pattern: "[a-z]+"
+"""
+    )
+    value_slot = view.get_slot("value")
+
+    assert value_slot is not None
+    assert view.resolve_pattern(value_slot) == "[a-z]+"
+
+
+def test_induced_slot_resolves_inherited_imported_slot_usage(tmp_path: Path) -> None:
+    """Verify that the defining schema's settings are used for inherited imported slot
+    usage when resolving patterns."""
+    imported_schema = tmp_path / "imported.yaml"
+    imported_schema.write_text(
+        """
+id: https://example.org/imported
+name: imported
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    range: string
+classes:
+  ImportedParent:
+    slots:
+      - value
+    slot_usage:
+      value:
+        structured_pattern:
+          syntax: "{word}{word}"
+          interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+classes:
+  RootChild:
+    is_a: ImportedParent
+"""
+    )
+    view = SchemaView(root_schema)
+
+    induced_slot = view.induced_slot("value", "RootChild")
+
+    assert induced_slot.pattern == r"^(?:[a-z]+[a-z]+)$"
+    imported_slot_usage = view.get_class("ImportedParent").slot_usage["value"]
+    assert imported_slot_usage.pattern is None
+    assert view.modifications == 0
+
+
+def test_induced_attribute_resolves_pattern_without_schema_slot() -> None:
+    """Verify that pattern resolution works on an attribute when no schema-level slot
+    definition exists."""
+    view = SchemaView(
+        """
+id: https://example.org/attribute-pattern
+name: attribute_pattern
+settings:
+  word: "[a-z]+"
+classes:
+  Container:
+    attributes:
+      value:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+"""
+    )
+
+    induced_attribute = view.induced_slot("value")
+
+    assert induced_attribute.pattern == r"^(?:[a-z]+)$"
+    assert view.get_class("Container").attributes["value"].pattern is None
+
+
+def test_induced_type_propagates_all_inherited_metaslots() -> None:
+    """Verify that all inheritable TypeDefinition metalots are propagated to the induced
+    slot and that structured_patterns are resolved."""
+    view = SchemaView(
+        """
+id: https://example.org/type-patterns
+name: type_patterns
+settings:
+  word: "[a-z]+"
+types:
+  ParentType:
+    base: str
+    uri: xsd:string
+    repr: str
+    minimum_value: 1
+    maximum_value: 10
+    equals_string_in:
+      - alpha
+      - beta
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+  ChildType:
+    typeof: ParentType
+    maximum_value: 5
+"""
+    )
+
+    induced_type = view.induced_type("ChildType")
+
+    assert induced_type.base == "str"
+    assert induced_type.uri == "xsd:string"
+    assert induced_type.repr == "str"
+    assert induced_type.minimum_value == 1
+    assert induced_type.maximum_value == 5
+    assert induced_type.equals_string_in == ["alpha", "beta"]
+    assert induced_type.pattern == r"^(?:[a-z]+)$"
+    assert view.get_type("ParentType").pattern is None
+    assert view.modifications == 0
+
+
 def test_materialize_patterns(sv_structured_patterns: SchemaView) -> None:
-    """Test pattern materialization."""
-    sv_structured_patterns.materialize_patterns()
+    """Retain pattern materialization while warning callers that it mutates the schema."""
+    with pytest.warns(DeprecationWarning, match="resolve_pattern"):
+        sv_structured_patterns.materialize_patterns()
 
     height_slot = sv_structured_patterns.get_slot("height")
     weight_slot = sv_structured_patterns.get_slot("weight")
+    email_string_type = sv_structured_patterns.get_type("EmailString")
 
-    assert height_slot.pattern == r"\d+[\.\d+] (centimeter|meter|inch)"
-    assert weight_slot.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert height_slot.pattern == r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"
+    assert weight_slot.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
+    assert email_string_type.pattern == r"^(?:\S+@\S+{\.\w}+)$"
+
+
+@pytest.mark.parametrize(
+    ("interpolated", "partial_match", "expected_pattern"),
+    [
+        (True, True, r"[a-z]+"),
+        (True, False, r"^(?:[a-z]+)$"),
+        (False, True, r"\{word\}"),
+        (False, False, r"^(?:\{word\})$"),
+    ],
+)
+def test_materialize_patterns_expression_options(
+    interpolated: bool, partial_match: bool, expected_pattern: str
+) -> None:
+    """Honor interpolation and whole-string matching options."""
+    view = SchemaView(
+        f"""
+id: https://example.org/pattern-options
+name: pattern_options
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: {str(interpolated).lower()}
+      partial_match: {str(partial_match).lower()}
+"""
+    )
+
+    view.materialize_patterns()
+
+    assert view.get_slot("value").pattern == expected_pattern
+
+
+def test_materialize_patterns_invalidates_cached_induced_slots() -> None:
+    """Refresh derived values once when pattern materialization changes the schema."""
+    view = SchemaView(
+        """
+id: https://example.org/pattern-cache
+name: pattern_cache
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  Container:
+    slots:
+      - value
+"""
+    )
+    assert view.induced_slot("value", "Container").pattern == r"^(?:[a-z]+)$"
+    assert view.get_slot("value").pattern is None
+    assert view.modifications == 0
+
+    view.materialize_patterns()
+
+    assert view.induced_slot("value", "Container").pattern == r"^(?:[a-z]+)$"
+    assert view.modifications == 1
+
+    view.materialize_patterns()
+
+    assert view.modifications == 1
+
+
+def test_materialize_patterns_uses_defining_schema_settings(tmp_path: Path) -> None:
+    """Resolve imported structured patterns with settings from their defining schema."""
+    imported_schema = tmp_path / "imported.yaml"
+    imported_schema.write_text(
+        """
+id: https://example.org/imported
+name: imported
+settings:
+  word: "[a-z]+"
+slots:
+  imported_slot:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  ImportedClass:
+    slots:
+      - imported_slot
+    slot_usage:
+      imported_slot:
+        structured_pattern:
+          syntax: "{word}{word}"
+          interpolated: true
+    attributes:
+      imported_attribute:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+types:
+  ImportedType:
+    base: str
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+"""
+    )
+    view = SchemaView(str(root_schema))
+
+    view.materialize_patterns()
+
+    assert view.get_slot("imported_slot").pattern == r"^(?:[a-z]+)$"
+    imported_class = view.get_class("ImportedClass")
+    assert imported_class.slot_usage["imported_slot"].pattern == r"^(?:[a-z]+[a-z]+)$"
+    assert imported_class.attributes["imported_attribute"].pattern == r"^(?:[a-z]+)$"
+    assert view.get_type("ImportedType").pattern == r"^(?:[a-z]+)$"
 
 
 def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
@@ -2957,7 +3311,7 @@ def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> 
     sv_structured_patterns.materialize_patterns()
 
     name_slot_usage = sv_structured_patterns.get_class("FancyPersonInfo").slot_usage["name"]
-    assert name_slot_usage.pattern == r"\S+ \S+-\S+"
+    assert name_slot_usage.pattern == r"^(?:\S+ \S+-\S+)$"
 
 
 def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> None:
@@ -2965,7 +3319,7 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
     sv_structured_patterns.materialize_patterns()
 
     weight_attribute = sv_structured_patterns.get_class("ClassWithAttributes").attributes["weight"]
-    assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert weight_attribute.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
 
 
 @pytest.mark.parametrize(
@@ -2980,6 +3334,15 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
+        # Slots that inherit inlined/inlined_as_list via is_a without redeclaring it.
+        # Regression test for https://github.com/linkml/linkml/issues/3695:
+        # is_inlined() must traverse the slot's is_a chain, not only check the slot itself.
+        ("child_of_inlined_thing_with_id", True),
+        ("child_of_inlined_as_list_thing_with_id", True),
+        # Slots that inherit inlined/inlined_as_list via mixins without redeclaring it.
+        # is_inlined() must also traverse mixin ancestry, not only is_a chains.
+        ("child_via_inlined_mixin", True),
+        ("child_via_inlined_as_list_mixin", True),
     ],
 )
 def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
@@ -3488,3 +3851,30 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+def test_annotation_dict_for_induced_slot() -> None:
+    """annotation_dict() can return annotation for induced slots."""
+
+    schema = """
+id: https://example.org/induced-slot-annotations
+name: induced-slot-annotations
+slots:
+  foo:
+    annotations:
+      bar: some value
+classes:
+  TestClass:
+    slots:
+      - foo
+    slot_usage:
+      foo:
+        annotations:
+          bar: some other value
+"""
+
+    sv = SchemaView(schema)
+    original_annots = sv.annotation_dict("foo")
+    assert original_annots["bar"] == "some value"
+    induced_annots = sv.annotation_dict("foo", class_name="TestClass")
+    assert induced_annots["bar"] == "some other value"

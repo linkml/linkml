@@ -26,6 +26,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    multifile-json-schema
    protobuf
    graphql
+   openapi
 
 
 Linked Data Standards
@@ -79,6 +80,7 @@ languages such as Python, Javascript, or Java.
    python
    pydantic
    java
+   golang
    typescript
    rust
 

@@ -29,7 +29,9 @@ repos:
   rev: v2.4.1
   hooks:
   - id: codespell
-    exclude: .*\.toml$
+    # offline_stubs are vendored third-party files served byte-for-byte in
+    # tests; upstream's own typos must be preserved, not corrected
+    exclude: (.*\.toml$)|(^tests/offline_stubs/)
     args: ["--toml", "pyproject.toml"]
     additional_dependencies:
       - tomli
