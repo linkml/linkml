@@ -1,0 +1,54 @@
+id: https://w3id.org/linkml/tests/linkml_issue_3845
+name: linkml_issue_3845
+title: Inherited metaslots whose values are falsy
+description: >-
+  Minimal schema for https://github.com/linkml/linkml/issues/3845.
+
+  Two pairs of slots, each a parent and a child related by is_a. The first pair
+  covers a metaslot value that is falsy but set, the second covers a boolean
+  metaslot that the child tries to turn off.
+
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/tests/linkml_issue_3845/
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+slots:
+  bounded_at_zero:
+    description: Parent slot with a minimum of zero, which is falsy but set.
+    range: integer
+    minimum_value: 0
+
+  inherits_bound:
+    description: >-
+      Child that sets nothing of its own. The induced slot must still carry
+      minimum_value 0, otherwise a negative value validates against a slot
+      whose parent says the minimum is zero.
+    is_a: bounded_at_zero
+
+  required_parent:
+    description: Parent slot that is required.
+    required: true
+
+  opts_out_of_required:
+    description: >-
+      Child that sets required false. The Combine Slots algorithm, the
+      specification's rules for merging a slot with its parent, combines
+      boolean metaslots with v1 OR v2, so the induced slot is still required.
+      See
+      https://linkml.io/linkml-model/latest/docs/specification/04derived-schemas/#algorithm-combine-slots
+    is_a: required_parent
+    required: false
+
+classes:
+  TestClass:
+    description: Holds the two child slots under test.
+    slots:
+      - inherits_bound
+      - opts_out_of_required

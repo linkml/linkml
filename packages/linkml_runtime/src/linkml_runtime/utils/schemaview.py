@@ -66,6 +66,43 @@ SCHEMA_ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
 
 WINDOWS = sys.platform == "win32"
 
+#: Inherited metaslots whose range is ``boolean``.
+#:
+#: The specification combines these with ``v1 OR v2`` rather than letting the more
+#: specific slot win, so a ``False`` on a child must not clear a ``True`` inherited
+#: from an ancestor. See the Combine Slots algorithm, the specification's rules for
+#: merging a slot with its parent:
+#: https://linkml.io/linkml-model/latest/docs/specification/04derived-schemas/#algorithm-combine-slots
+#:
+#: ``test_boolean_inherited_metaslots_matches_metamodel`` asserts that this stays in
+#: sync with the metamodel.
+#:
+#: This list is written out rather than computed, and that is a known weak point rather
+#: than a preference. Computing it from the metamodel at import time is circular,
+#: because ``linkml_runtime.utils.introspection`` imports ``SchemaView`` from this
+#: module. Computing it from the ``SlotDefinition`` type annotations does work, but
+#: ``typing.get_type_hints`` has no precedent anywhere in this package. The tidiest
+#: fix is probably for the Python generator to emit the list next to
+#: ``_inherited_slots``, the same way that list is already produced. Until then
+#: ``test_boolean_inherited_metaslots_matches_metamodel`` is what catches it if this
+#: list and the metamodel stop agreeing.
+_BOOLEAN_INHERITED_METASLOTS = frozenset(
+    {
+        "designates_type",
+        "identifier",
+        "inherited",
+        "inlined",
+        "inlined_as_list",
+        "key",
+        "list_elements_ordered",
+        "list_elements_unique",
+        "multivalued",
+        "recommended",
+        "required",
+        "shared",
+    }
+)
+
 CLASS_NAME = ClassDefinitionName | str
 SLOT_NAME = SlotDefinitionName | str
 SUBSET_NAME = SubsetDefinitionName | str
@@ -1751,8 +1788,20 @@ class SchemaView:
                 anc_slot = copy(anc_slot)
                 anc_slot.pattern = self.resolve_pattern(anc_slot)
                 for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
-                    if getattr(anc_slot, metaslot_name, None):
-                        setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
+                    anc_value = getattr(anc_slot, metaslot_name, None)
+                    if anc_value is None:
+                        continue
+                    if isinstance(anc_value, list | dict) and not anc_value:
+                        # Multivalued metaslots default to an empty collection rather
+                        # than to None, so an empty one carries no information and must
+                        # not clear a value inherited from a more distant ancestor.
+                        continue
+                    if metaslot_name in _BOOLEAN_INHERITED_METASLOTS:
+                        # Boolean metaslots combine with OR, so only a True propagates.
+                        if anc_value:
+                            setattr(induced_slot, metaslot_name, True)
+                    else:
+                        setattr(induced_slot, metaslot_name, copy(anc_value))
         mix_max_value_dict = {
             "maximum_value": lambda x, y: min(x, y),
             "minimum_value": lambda x, y: max(x, y),
