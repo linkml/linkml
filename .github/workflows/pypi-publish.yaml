@@ -23,7 +23,7 @@ jobs:
         python-version: 3.13
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v9.0.0
+      uses: astral-sh/setup-uv@v10.0.1
       with:
         version: ${{ env.UV_VERSION }}
 
@@ -56,6 +56,6 @@ jobs:
 
       - name: Publish package 📦 to PyPI
         if: github.event_name == 'release'
-        uses: pypa/gh-action-pypi-publish@v1.14.1
+        uses: pypa/gh-action-pypi-publish@v1.14.2
         with:
           verbose: true

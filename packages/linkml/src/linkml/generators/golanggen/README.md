@@ -29,7 +29,7 @@ Top-level template rendered once per schema.
 
 | Variable | Type | Description |
 |---|---|---|
-| `package_name` | `str` | Go package name (derived from schema name or `--package-name`) |
+| `package_name` | `str` | Go package name (from `--package`, else derived from schema name) |
 | `imports` | `str` | Rendered import block (from `imports.go.jinja`) |
 | `enums` | `dict[str, str]` | Rendered enum blocks keyed by enum name |
 | `structs` | `dict[str, str]` | Rendered struct blocks keyed by struct name |
