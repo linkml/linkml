@@ -227,8 +227,12 @@ jobs:
       # runner. Their stub-mode run in per-PR CI is the coverage that matters.
       # (Cost: URLs only notebooks fetch -- the biocontext monarch context --
       # are not live-checked anywhere; their stubs could drift silently.)
+      # --with-slow/--with-biolink: several network-marked tests (the metamodel
+      # RDF ones especially -- the original flake source) are also marked slow,
+      # and would otherwise be collected but skipped, silently exempting their
+      # stubs from this live check.
       - name: Run network-marked tests against the live network
         if: always()
         run: |
           uv run pytest tests/ --ignore=tests/linkml/test_notebooks \
-            -m "network and not kroki" --with-network -v
+            -m "network and not kroki" --with-network --with-slow --with-biolink -v
