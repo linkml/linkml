@@ -4,6 +4,12 @@
 name: Build and test linkml
 env:
   UV_VERSION: "0.11.21"
+concurrency:
+  # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
+  # so each PR is its own group and never cancels another's runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches:
@@ -16,13 +22,13 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
 
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: 3.13
       - name: Check pyproject.toml and uv.lock
@@ -59,7 +65,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -70,13 +76,13 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -89,11 +95,11 @@ jobs:
         # Notebook tests run their own `!uv pip install` cells that mutate the
         # shared venv; they run in the isolated `test_notebooks` job instead (#3583).
         run: |
-          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
+          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
         shell: bash
       - name: Test linkml-runtime package
         run: |
-          uv run coverage run -m pytest tests/linkml_runtime/ --with-network -m "not kroki"
+          uv run coverage run -m pytest tests/linkml_runtime/ -m "not kroki"
           uv run coverage xml -o coverage-linkml_runtime.xml
           uv run coverage report -m
         shell: bash
@@ -121,8 +127,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.10", "3.13" ]
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.13"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -131,15 +137,15 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -171,8 +177,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.13" ]
+        os: [ubuntu-latest]
+        python-version: ["3.10", "3.13"]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -181,15 +187,15 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -198,7 +204,7 @@ jobs:
       - name: Run notebook tests
         # Run serially (no xdist): concurrent `!uv pip install` would race on the venv.
         run: |
-          uv run pytest tests/linkml/test_notebooks/ --with-network -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
+          uv run pytest tests/linkml/test_notebooks/ -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
       - name: Upload notebook coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v7.0.0
@@ -216,17 +222,17 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
