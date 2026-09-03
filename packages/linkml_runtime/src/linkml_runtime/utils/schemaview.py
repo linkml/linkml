@@ -1629,19 +1629,57 @@ class SchemaView:
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports: bool = True) -> dict[URIorCURIE, Any]:
+    def annotation_dict(
+        self, element_name: ElementName, imports: bool = True, class_name: ClassDefinitionName | None = None
+    ) -> dict[URIorCURIE, Any]:
         """Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
 
         See also: https://github.com/linkml/linkml/issues/296
 
-        :param element_name:
-        :param imports:
+        :param element_name: The name of the schema element for which to retrieve annotations.
+        :param imports: Whether to include the imports closure when looking up for the element.
+        :param class_name: If set, `element_name` is assumed to be a slot name, and this method
+            will return the annotations carried by the induced slot in the context of the
+            indicated class.
         :return: annotation dictionary
         """
+        if class_name is not None:
+            induced_slot = self.induced_slot(element_name, class_name, imports=imports)
+            return {k: v.value for k, v in induced_slot.annotations._items()}
         e = self.get_element(element_name, imports=imports)
         return {k: v.value for k, v in e.annotations.items()}
+
+    @lru_cache(None)
+    def _pattern_resolver(self, schema_id: str) -> PatternResolver:
+        """Return a pattern resolver configured with one schema's settings."""
+        schemas_by_id = {str(schema.id): schema for schema in self.all_schema()}
+        schema = schemas_by_id.get(schema_id, self.schema)
+        return PatternResolver(SchemaView(schema))
+
+    def resolve_pattern(self, definition: SlotDefinition | TypeDefinition) -> str | None:
+        """Return the effective regular-expression pattern for a slot or type definition.
+
+        Structured patterns are resolved using settings from the schema that defined the
+        supplied definition. The definition and underlying schemas are not modified.
+
+        :param definition: slot or type definition whose pattern should be resolved
+        :return: asserted or materialized regular-expression pattern, if present
+        """
+        structured_pattern = definition.structured_pattern
+        if structured_pattern is None:
+            return definition.pattern
+
+        resolver = self._pattern_resolver(str(definition.from_schema or self.schema.id))
+        pattern = structured_pattern.syntax
+        if structured_pattern.interpolated:
+            pattern = resolver.resolve(pattern)
+        else:
+            pattern = resolver.escape_uninterpolated(pattern)
+        if not structured_pattern.partial_match:
+            pattern = f"^(?:{pattern})$"
+        return pattern
 
     @lru_cache(None)
     def induced_slot(
@@ -1673,8 +1711,8 @@ class SchemaView:
             slot = self.get_slot(slot_name, imports, attributes=False)
             # traverse ancestors (reflexive), starting with
             # the main class
-            for an in self.class_ancestors(class_name):
-                a = self.get_class(an, imports)
+            for class_ancestor in self.class_ancestors(class_name):
+                a = self.get_class(class_ancestor, imports)
                 if slot_name in a.attributes:
                     slot = a.attributes[slot_name]
                     slot_comes_from_attribute = True
@@ -1704,11 +1742,22 @@ class SchemaView:
 
         # copy the slot, as it will be modified
         induced_slot = copy(slot)
+
+        # Resolve patterns on each copied definition *before* inheritance. `pattern`
+        # and `structured_pattern` are inherited as separate metaslots, so resolving
+        # only the final induced slot could combine them from different layers. For
+        # example, a child slot_usage's explicit `pattern` could otherwise be
+        # overwritten by a parent's inherited `structured_pattern`.
+        induced_slot.pattern = self.resolve_pattern(induced_slot)
         if not slot_comes_from_attribute:
             slot_anc_names = self.slot_ancestors(slot_name, reflexive=True)
             # inheritable slot: first propagate from ancestors
             for anc_sn in reversed(slot_anc_names):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
+                if anc_slot is None:
+                    continue
+                anc_slot = copy(anc_slot)
+                anc_slot.pattern = self.resolve_pattern(anc_slot)
                 for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
                     if getattr(anc_slot, metaslot_name, None):
                         setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
@@ -1716,17 +1765,36 @@ class SchemaView:
             "maximum_value": lambda x, y: min(x, y),
             "minimum_value": lambda x, y: max(x, y),
         }
+        class_ancestors = [] if cls is None else self.class_ancestors(class_name, reflexive=True, mixins=True)
+
+        # Prepare materialized copies of slot_usage definitions before the generic
+        # metaslot loop below. This keeps a structured pattern and the regular pattern
+        # derived from it at the same inheritance priority. It also preserves enough
+        # provenance to select the correct settings: slot_usage definitions do not
+        # reliably carry `from_schema`, and that information cannot be recovered
+        # after all usages have been merged into `induced_slot`.
+        resolved_slot_usages: list[tuple[ClassDefinitionName, SlotDefinition | None]] = []
+        for class_ancestor in reversed(class_ancestors):
+            owning_class = self.get_class(class_ancestor, imports)
+            asserted_slot_usage = owning_class.slot_usage.get(slot_name)
+            if asserted_slot_usage is None:
+                resolved_slot_usages.append((class_ancestor, None))
+                continue
+            slot_usage = copy(asserted_slot_usage)
+            # A slot_usage is defined as part of its owning class, so interpolate its
+            # structured pattern using that class's schema rather than the base slot's.
+            slot_usage.from_schema = owning_class.from_schema
+            slot_usage.pattern = self.resolve_pattern(slot_usage)
+            resolved_slot_usages.append((class_ancestor, slot_usage))
+
         # iterate through all metaslots, and potentially populate metaslot value for induced slot
         for metaslot_name in self._metaslots_for_slot():
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(induced_slot, metaslot_name, None)
-            propagated_from = [] if cls is None else self.class_ancestors(class_name, reflexive=True, mixins=True)
-            for an in reversed(propagated_from):
-                induced_slot.owner = an
-                a = self.get_class(an, imports)
-                anc_slot_usage = a.slot_usage.get(slot_name, {})
-                v2 = getattr(anc_slot_usage, metaslot_name, None)
+            for class_ancestor, anc_slot_usage in resolved_slot_usages:
+                induced_slot.owner = class_ancestor
+                v2 = getattr(anc_slot_usage, metaslot_name, None) if anc_slot_usage is not None else None
                 if v is None:
                     v = v2
                 elif metaslot_name in mix_max_value_dict:
@@ -1845,18 +1913,20 @@ class SchemaView:
         """Generate an induced type.
 
         :param type_name:
-        :return:
+        :return: induced type
         """
-        t = deepcopy(self.get_type(type_name))
-        if t.typeof:
-            parent = self.induced_type(t.typeof)
-            if t.uri is None:
-                t.uri = parent.uri
-            if t.base is None:
-                t.base = parent.base
-            if t.repr is None:
-                t.repr = parent.repr
-        return t
+        induced_type = deepcopy(self.get_type(type_name))
+        # Resolve each copied ancestor before propagating inheritable metaslots. This
+        # lets an ancestor's materialized pattern be inherited while a child's explicit
+        # pattern or structured pattern still overrides it through the normal order.
+        for ancestor_name in reversed(self.type_ancestors(type_name, reflexive=True)):
+            type_ancestor = deepcopy(self.get_type(ancestor_name))
+            type_ancestor.pattern = self.resolve_pattern(type_ancestor)
+            for metaslot_name in TypeDefinition._inherited_slots:  # noqa: SLF001
+                value = getattr(type_ancestor, metaslot_name, None)
+                if not is_empty(value):
+                    setattr(induced_type, metaslot_name, deepcopy(value))
+        return induced_type
 
     @lru_cache(None)
     def induced_enum(self, enum_name: ENUM_NAME | None = None) -> EnumDefinition:
@@ -2316,27 +2386,73 @@ class SchemaView:
             s2.name = new_name
         return s2
 
-    def materialize_patterns(self) -> None:
-        """Materialize schema by expanding structured patterns into regular expressions based on composite patterns provided in the settings dictionary."""
-        resolver = PatternResolver(self)
+    @deprecated(
+        reason=(
+            "This method mutates asserted schema definitions. Use resolve_pattern() for a single definition, "
+            "or induced_slot() and induced_type() for induced definitions."
+        )
+    )
+    def materialize_patterns(self, imports: bool = True) -> None:
+        """Materialize structured patterns into regular expressions in place.
 
-        def materialize_pattern_into_slot_definition(slot_definition: SlotDefinition) -> None:
-            if not slot_definition.structured_pattern:
+        :param imports: include definitions from imported schemas, defaults to True
+        """
+        self._materialize_patterns(imports)
+
+    def _materialize_patterns(self, imports: bool = True) -> None:
+        """Implement in-place pattern materialization for compatibility callers."""
+        schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
+        resolvers: dict[str, PatternResolver] = {}
+        modified = False
+
+        def resolver_for_definition(
+            element_def: SlotDefinition | TypeDefinition,
+            owning_class: ClassDefinition | None = None,
+        ) -> PatternResolver:
+            source = owning_class if owning_class is not None else element_def
+            schema_id = str(source.from_schema) if source.from_schema is not None else str(self.schema.id)
+            if schema_id not in resolvers:
+                schema = schemas_by_id.get(schema_id, self.schema)
+                resolvers[schema_id] = PatternResolver(SchemaView(schema))
+            return resolvers[schema_id]
+
+        def materialize_pattern_into_definition(
+            element_def: SlotDefinition | TypeDefinition,
+            owning_class: ClassDefinition | None = None,
+        ) -> None:
+            nonlocal modified
+            if not element_def.structured_pattern:
                 return
-            pattern = slot_definition.structured_pattern.syntax
-            slot_definition.pattern = resolver.resolve(pattern)
+            structured_pattern = element_def.structured_pattern
+            pattern = structured_pattern.syntax
+            resolver = resolver_for_definition(element_def, owning_class)
+            if structured_pattern.interpolated:
+                pattern = resolver.resolve(pattern)
+            else:
+                pattern = resolver.escape_uninterpolated(pattern)
+            if not structured_pattern.partial_match:
+                pattern = f"^(?:{pattern})$"
+            if element_def.pattern != pattern:
+                element_def.pattern = pattern
+                modified = True
 
-        for slot_definition in self.all_slots().values():
-            materialize_pattern_into_slot_definition(slot_definition)
+        for slot_definition in self.all_slots(imports=imports, attributes=False).values():
+            materialize_pattern_into_definition(slot_definition)
 
-        for class_definition in self.all_classes().values():
+        for type_definition in self.all_types(imports=imports).values():
+            materialize_pattern_into_definition(type_definition)
+
+        for class_definition in self.all_classes(imports=imports).values():
             if class_definition.slot_usage:
                 for slot_definition in class_definition.slot_usage.values():
-                    materialize_pattern_into_slot_definition(slot_definition)
+                    materialize_pattern_into_definition(slot_definition, class_definition)
 
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
-                    materialize_pattern_into_slot_definition(slot_definition)
+                    materialize_pattern_into_definition(slot_definition, class_definition)
+
+        if modified:
+            self.set_modified()
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """Materialize a schema view into a schema definition."""
