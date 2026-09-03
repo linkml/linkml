@@ -13,7 +13,10 @@ from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
-from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.generators.common.type_designators import (
+    get_type_designator_value,
+    get_uriorcurie_type_designator_values,
+)
 from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
@@ -967,8 +970,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
 
         if slot.designates_type:
-            type_value = get_type_designator_value(self.schemaview, slot, cls)
-            prop["enum"] = [type_value]
+            if "uriorcurie" in self.schemaview.type_ancestors(slot.range):
+                prop["enum"] = get_uriorcurie_type_designator_values(self.schemaview, cls)
+            else:
+                prop["enum"] = [get_type_designator_value(self.schemaview, slot, cls)]
 
     def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
         """
