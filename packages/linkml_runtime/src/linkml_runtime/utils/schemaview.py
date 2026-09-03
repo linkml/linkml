@@ -1629,17 +1629,25 @@ class SchemaView:
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports: bool = True) -> dict[URIorCURIE, Any]:
+    def annotation_dict(
+        self, element_name: ElementName, imports: bool = True, class_name: ClassDefinitionName | None = None
+    ) -> dict[URIorCURIE, Any]:
         """Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
 
         See also: https://github.com/linkml/linkml/issues/296
 
-        :param element_name:
-        :param imports:
+        :param element_name: The name of the schema element for which to retrieve annotations.
+        :param imports: Whether to include the imports closure when looking up for the element.
+        :param class_name: If set, `element_name` is assumed to be a slot name, and this method
+            will return the annotations carried by the induced slot in the context of the
+            indicated class.
         :return: annotation dictionary
         """
+        if class_name is not None:
+            induced_slot = self.induced_slot(element_name, class_name, imports=imports)
+            return {k: v.value for k, v in induced_slot.annotations._items()}
         e = self.get_element(element_name, imports=imports)
         return {k: v.value for k, v in e.annotations.items()}
 
