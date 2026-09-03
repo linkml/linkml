@@ -26,6 +26,8 @@ from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIf
 from linkml.generators.pydanticgen.template import (
     Import,
     Imports,
+    InlinedListCoercion,
+    KeyedCollectionCoercion,
     ObjectImport,
     PydanticAttribute,
     PydanticBaseModel,
@@ -239,6 +241,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     the default templates will be used.
     """
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    coerce_input: bool = False
+    """
+    Generate ``mode="before"`` validators reproducing YAMLRoot's permissive
+    input normalization: dict-key injection for inlined-as-dict slots, dict
+    and scalar forms for inlined lists, simple-dict scalar values, and
+    number-to-string coercion. Off by default because it loosens input
+    validation; generated models otherwise accept only the fully-expanded
+    form of each slot.
+    """
     gen_mixin_inheritance: bool = True
     injected_classes: list[type | str] | None = None
     """
@@ -638,18 +649,43 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
                 result.attribute.range = f"list[{result.attribute.range}]"
+                if self.coerce_input:
+                    result.attribute.coerce_to_list = True
+                    if slot.range in self.schemaview.all_classes() and self.schemaview.is_inlined(slot):
+                        inlined_key = self.generate_inlined_list_key_name(slot)
+                        if inlined_key is not None:
+                            result.attribute.inlined_list_key = inlined_key
+                            helper = InlinedListCoercion().render(self._template_environment())
+                            if result.injected_classes is None:
+                                result.injected_classes = [helper]
+                            else:
+                                result.injected_classes.append(helper)
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
+                coerce_keyed = False
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
                     if simple_dict_value != result.attribute.range:
                         simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
+                        coerce_keyed = True
                     result.attribute.range = f"dict[str, {simple_dict_value}]"
                 else:
                     result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
+                    coerce_keyed = True
+                if coerce_keyed and self.coerce_input:
+                    key_name = self.generate_collection_key_name(slot_ranges)
+                    if key_name is not None:
+                        result.attribute.keyed_dict_key = key_name
+                        if len(slot_ranges) == 1:
+                            result.attribute.keyed_dict_value = self.generate_collection_value_name(slot)
+                        helper = KeyedCollectionCoercion().render(self._template_environment())
+                        if result.injected_classes is None:
+                            result.injected_classes = [helper]
+                        else:
+                            result.injected_classes.append(helper)
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
@@ -878,6 +914,72 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
         return None
+
+    def generate_collection_key_name(self, slot_ranges: list[str]) -> str | None:
+        """
+        Find the generated field name of the identifier/key slot shared by the
+        class ranges of an inlined-as-dict slot, used to inject dict keys into
+        values at validation time. Returns None when the ranges do not agree on
+        a single key field.
+
+        :param slot_ranges: list of python range values
+        """
+        key_names: set[str] = set()
+
+        for slot_range in slot_ranges or []:
+            if slot_range is None or slot_range not in self.schemaview.all_classes():
+                continue
+            identifier_slot = self.schemaview.get_identifier_slot(slot_range, use_key=True)
+            if identifier_slot is not None:
+                alias = identifier_slot.alias if identifier_slot.alias else identifier_slot.name
+                key_names.add(make_valid_python_identifier(underscore(alias)))
+        if len(key_names) == 1:
+            return key_names.pop()
+        return None
+
+    def generate_collection_value_name(self, slot_def: SlotDefinition) -> str | None:
+        """
+        Find the generated field name a scalar entry value maps to for an
+        inlined-as-dict slot, reproducing the positional second-argument
+        semantics of the dataclass metamodel (e.g. ``Annotation(tag, value)``):
+        the slot following the key slot on the class that defines the key
+        (so mixin-inherited slots of subclasses do not shadow it).
+
+        :param slot_def: the inlined-as-dict slot
+        """
+        if slot_def.range not in self.schemaview.all_classes():
+            return None
+        identifier_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
+        if identifier_slot is None:
+            return None
+        ordering_class = slot_def.range
+        for ancestor in reversed(self.schemaview.class_ancestors(slot_def.range, mixins=False)):
+            ancestor_cls = self.schemaview.get_class(ancestor)
+            if identifier_slot.name in ancestor_cls.slots or identifier_slot.name in ancestor_cls.attributes:
+                ordering_class = ancestor
+                break
+        for range_slot in self.schemaview.class_induced_slots(ordering_class):
+            if range_slot.name != identifier_slot.name:
+                alias = range_slot.alias if range_slot.alias else range_slot.name
+                return make_valid_python_identifier(underscore(alias))
+        return None
+
+    def generate_inlined_list_key_name(self, slot_def: SlotDefinition) -> str | None:
+        """
+        Find the generated field name dict keys inject into for a multivalued
+        slot inlined as a list: the identifier/key slot of the (single) class
+        range, or its first required slot (the pseudo-key the dataclass
+        metamodel uses, e.g. ``structured_aliases`` keyed by ``literal_form``).
+
+        :param slot_def: the inlined-as-list slot
+        """
+        identifier_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
+        if identifier_slot is None:
+            identifier_slot = next((s for s in self.schemaview.class_induced_slots(slot_def.range) if s.required), None)
+        if identifier_slot is None:
+            return None
+        alias = identifier_slot.alias if identifier_slot.alias else identifier_slot.name
+        return make_valid_python_identifier(underscore(alias))
 
     def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:
         """
@@ -1137,6 +1239,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         base_model = PydanticBaseModel(
             extra_fields=self.extra_fields,
+            coerce_numbers_to_str=self.coerce_input,
             fields=self.injected_fields,
             empty_list_for_multivalued_slots=self.empty_list_for_multivalued_slots,
         )
@@ -1391,6 +1494,14 @@ Available templates to override:
     default=False,
     help="Use empty list for optional multivalued defaults instead of None (default behavior).",
 )
+@click.option(
+    "--coerce-input",
+    is_flag=True,
+    default=False,
+    help="Generate validators accepting the permissive YAML input forms the dataclass generator's "
+    "YAMLRoot models accept (dict-key injection for inlined collections, scalar and list shorthands). "
+    "This loosens input validation; by default only the fully-expanded form of each slot is accepted.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="pydantic")
 def cli(
@@ -1406,6 +1517,7 @@ def cli(
     black: bool = False,
     meta: MetadataMode = "auto",
     emptylist_for_multivalued_slots: bool = False,
+    coerce_input: bool = False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -1431,6 +1543,7 @@ def cli(
         black=black,
         metadata_mode=meta,
         empty_list_for_multivalued_slots=emptylist_for_multivalued_slots,
+        coerce_input=coerce_input,
         **args,
     )
     print(gen.serialize(), end="")
