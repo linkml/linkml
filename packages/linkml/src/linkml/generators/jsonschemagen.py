@@ -13,7 +13,11 @@ from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
-from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.generators.common.type_designators import (
+    get_type_designator_value,
+    get_uriorcurie_type_designator_values,
+)
+from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
@@ -397,7 +401,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     valid_formats = ["json"]
     uses_schemaloader = False
     file_extension = "schema.json"
-    materialize_patterns: bool = False
+    materialize_patterns: bool | None = None
+    """Deprecated compatibility option; structured patterns are resolved automatically."""
 
     # @deprecated("Use top_class")
     topClass: str | None = None
@@ -423,7 +428,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     top_level_schema: JsonSchema = None
 
     include_null: bool = True
-    """Whether to include a "null" type in optional slots"""
+    """Whether optional (non-required) slots also accept an explicit JSON ``null``.
+
+    When ``True`` (default) an optional slot is rendered with ``null`` added to its
+    type (e.g. ``["string", "null"]``), so an explicit ``null`` value validates. When
+    ``False`` the slot keeps its bare type and optionality is expressed solely by
+    absence from ``required``.
+
+    JSON Schema treats presence (``required``, Validation 6.5.3) as separate from the
+    value type (``type``, Validation 6.1.1, where ``null`` is one of the value types),
+    and JSON ``null`` is a distinct value, not an absent member (RFC 8259 sec. 3). Set
+    this ``False`` for strict parity with reference schemas that declare a bare type
+    and forbid ``null``."""
 
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
@@ -438,6 +454,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     def __post_init__(self):
+        if self.materialize_patterns is not None:
+            deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
@@ -951,8 +970,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
 
         if slot.designates_type:
-            type_value = get_type_designator_value(self.schemaview, slot, cls)
-            prop["enum"] = [type_value]
+            if "uriorcurie" in self.schemaview.type_ancestors(slot.range):
+                prop["enum"] = get_uriorcurie_type_designator_values(self.schemaview, cls)
+            else:
+                prop["enum"] = [get_type_designator_value(self.schemaview, slot, cls)]
 
     def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
         """
@@ -990,9 +1011,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        if self.materialize_patterns:
-            logger.info("Materializing patterns in the schema before serialization")
-            self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
 
@@ -1058,9 +1076,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 )
 @click.option(
     "--materialize-patterns/--no-materialize-patterns",
-    default=True,  # Default set to True
-    show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema.",
+    default=None,
+    help="Deprecated compatibility option; structured patterns are resolved automatically.",
 )
 @click.option(
     "--preserve-names/--normalize-names",
@@ -1073,6 +1090,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=True,
     show_default=True,
     help="If set, expand subproperty_of constraints to enum constraints.",
+)
+@click.option(
+    "--include-null/--no-include-null",
+    default=True,
+    show_default=True,
+    help="If set (default), optional slots also accept an explicit JSON null. "
+    "Use --no-include-null to forbid explicit null on optional slots.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

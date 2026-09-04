@@ -1,5 +1,6 @@
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.uri_validator import validate_uri
 
 
 def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> str:
@@ -16,6 +17,22 @@ def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefiniti
         return class_def.name
     else:
         return sv.get_uri(class_def, expand=False, native=False)
+
+
+def get_uriorcurie_type_designator_values(sv: SchemaView, class_def: ClassDefinition) -> list[str]:
+    """Return the URI and CURIE forms of a class's effective ``class_uri``.
+
+    The native ``definition_uri`` is intentionally not included.  Consumers
+    that support native aliases have a separate, more permissive policy.
+    """
+    compact_value = sv.get_uri(class_def, expand=False, native=False)
+    uri_value = sv.get_uri(class_def, expand=True, native=False)
+
+    if compact_value == uri_value and validate_uri(uri_value):
+        compact_value = sv.namespaces().curie_for(uri_value)
+
+    values = [value for value in (compact_value, uri_value) if value is not None]
+    return list(dict.fromkeys(values))
 
 
 def get_accepted_type_designator_values(
