@@ -266,8 +266,8 @@ class SchemaView:
 
     schema: SchemaDefinition | None = None
     schema_map: dict[SchemaDefinitionName, SchemaDefinition] | None = None
-    importmap: Mapping[str, str] | None = None
-    """Optional mapping between schema names and local paths/URLs"""
+    importmap: Mapping[str, str | dict[str, Any]] | None = None
+    """Optional mapping between schema names and local paths/URLs, or in-memory schema dicts"""
     modifications: int = 0
     uuid: str | None = None
 
@@ -278,7 +278,7 @@ class SchemaView:
     def __init__(
         self,
         schema: str | Path | SchemaDefinition,
-        importmap: dict[str, str] | None = None,
+        importmap: dict[str, str | dict[str, Any]] | None = None,
         merge_imports: bool = False,
         base_dir: str | None = None,
     ) -> None:
@@ -286,8 +286,10 @@ class SchemaView:
 
         :param schema: schema or path to schema to be viewed
         :type schema: str | Path | SchemaDefinition
-        :param importmap: import mapping, defaults to None
-        :type importmap: dict[str, str] | None, optional
+        :param importmap: import mapping. Values may be file-path/URL strings or
+            in-memory schema dicts (loaded directly, without filesystem or network
+            access). Defaults to None.
+        :type importmap: dict[str, str | dict[str, Any]] | None, optional
         :param merge_imports: whether or not to merge imports, defaults to False
         :type merge_imports: bool, optional
         :param base_dir: base directory for import map, defaults to None
@@ -336,6 +338,7 @@ class SchemaView:
 
         - a URL (specified as either a full URL or a CURIE)
         - a local file path
+        - an in-memory schema dict supplied via the importmap
 
         The import should leave off the .yaml suffix.
 
@@ -360,6 +363,13 @@ class SchemaView:
 
         default_import_map = {"linkml:": str(SCHEMA_DIRECTORY)}
         importmap = {**default_import_map, **self.importmap}
+        # An importmap entry may be an in-memory schema dict, which is loaded
+        # directly without touching the filesystem or network.
+        mapped = importmap.get(str(imp))
+        if isinstance(mapped, dict):
+            from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
+            return YAMLLoader().load(mapped, target_class=SchemaDefinition)
         sname = map_import(importmap, self.namespaces, imp)
         if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
@@ -1629,17 +1639,25 @@ class SchemaView:
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports: bool = True) -> dict[URIorCURIE, Any]:
+    def annotation_dict(
+        self, element_name: ElementName, imports: bool = True, class_name: ClassDefinitionName | None = None
+    ) -> dict[URIorCURIE, Any]:
         """Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
 
         See also: https://github.com/linkml/linkml/issues/296
 
-        :param element_name:
-        :param imports:
+        :param element_name: The name of the schema element for which to retrieve annotations.
+        :param imports: Whether to include the imports closure when looking up for the element.
+        :param class_name: If set, `element_name` is assumed to be a slot name, and this method
+            will return the annotations carried by the induced slot in the context of the
+            indicated class.
         :return: annotation dictionary
         """
+        if class_name is not None:
+            induced_slot = self.induced_slot(element_name, class_name, imports=imports)
+            return {k: v.value for k, v in induced_slot.annotations._items()}
         e = self.get_element(element_name, imports=imports)
         return {k: v.value for k, v in e.annotations.items()}
 

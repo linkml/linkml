@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -141,9 +142,13 @@ class SparqlGenerator(Generator):
     sparql: str | None = None
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
-        materialize_schema(self.schemaview)
         super().__post_init__()
+        # Materialization rewrites the schema (attributes -> slots, extra prefixes), so work on a
+        # copy: mutating the shared SchemaView corrupts the input for any generator that runs after
+        # us under gen-project (#3770). Copying the whole view preserves import-resolution context.
+        self.schemaview = deepcopy(self.schemaview)
+        materialize_schema(self.schemaview)
+        self.schema = self.schemaview.schema
         self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
