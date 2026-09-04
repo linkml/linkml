@@ -888,6 +888,36 @@ indicated class.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.compress_uri">
+<span class="sig-name descname"><span class="pre">compress_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.compress_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.compress_uri" title="Link to this definition">¶</a></dt>
+<dd><p>Compress a URI or CURIE to a CURIE string using the schema’s registered prefixes.</p>
+<p>This is the inverse of <a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.expand_curie" title="linkml_runtime.utils.schemaview.SchemaView.expand_curie"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand_curie()</span></code></a>.</p>
+<p>Resolution order:</p>
+<ol class="arabic simple">
+<li><p>Try to compress <em>uri</em> with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">curie_for()</span></code>.</p></li>
+<li><p>If compression fails but <em>uri</em> is already a valid CURIE, return it as-is
+(emitting a warning when it looks like a plain <code class="docutils literal notranslate"><span class="pre">http(s)://</span></code> URL to alert
+callers that disambiguation is impossible).</p></li>
+<li><p>If <em>uri</em> is a fully-qualified URI with no matching prefix, raise
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>.</p></li>
+<li><p>If <em>uri</em> is neither a valid URI nor a valid CURIE, raise <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uri</strong> – A URI or CURIE string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A CURIE string such as <code class="docutils literal notranslate"><span class="pre">&quot;schema:Event&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ex:something_else&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – When <em>uri</em> is a fully-qualified URI whose namespace is not
+registered, or when it is not a syntactically valid URI or CURIE.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.copy_schema">
 <span class="sig-name descname"><span class="pre">copy_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.copy_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.copy_schema" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a copy of the schema.</p>
@@ -1088,6 +1118,36 @@ indicated class.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of ClassDefinitions modifying the slot of interest</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_curie">
+<span class="sig-name descname"><span class="pre">get_curie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ElementName</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_curie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_curie" title="Link to this definition">¶</a></dt>
+<dd><p>Return the CURIE for a schema element, compressing full URIs where possible.</p>
+<p>This is the CURIE-returning companion to <a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri" title="linkml_runtime.utils.schemaview.SchemaView.get_uri"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_uri()</span></code></a>.  It first resolves
+the element’s declared URI via <a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri" title="linkml_runtime.utils.schemaview.SchemaView.get_uri"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_uri()</span></code></a>, then compresses it to a CURIE
+using the schema’s registered prefixes via <a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.compress_uri" title="linkml_runtime.utils.schemaview.SchemaView.compress_uri"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compress_uri()</span></code></a>.</p>
+<p>When the declared URI is already a CURIE (the common case) it is returned
+unchanged.  When no URI is declared, <a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri" title="linkml_runtime.utils.schemaview.SchemaView.get_uri"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_uri()</span></code></a> constructs the fallback
+<code class="docutils literal notranslate"><span class="pre">&quot;&lt;default_prefix&gt;:&lt;element_name&gt;&quot;</span></code> CURIE, which is then returned as-is.
+When the URI is a full URI that cannot be compressed, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> is
+raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> – Name of schema element or element object.</p></li>
+<li><p><strong>imports</strong> – Include imports closure when resolving the element.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A CURIE string such as <code class="docutils literal notranslate"><span class="pre">&quot;schema:Event&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ex:something_else&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – When the element’s URI is a fully-qualified URI with no
+matching prefix registered in the schema, or when it is not a valid URI or
+CURIE.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2086,6 +2146,7 @@ LinkML 1.2 allows the use of range expressions, where ranges can be defined as u
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_parents()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_roots"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_roots()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_slots"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.compress_uri"><code class="docutils literal notranslate"><span class="pre">SchemaView.compress_uri()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.copy_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.copy_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_enum()</span></code></a></li>
@@ -2099,6 +2160,7 @@ LinkML 1.2 allows the use of range expressions, where ranges can be defined as u
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_by_slot()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_modifying_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_curie"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_curie()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_element()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_identifier"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_identifier()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_prefix"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_prefix()</span></code></a></li>

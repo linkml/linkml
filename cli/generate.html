@@ -2216,6 +2216,17 @@ Note that declaring a slot as inlined: true will always inline the class</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-json-schema-use-curies">
+<span id="cmdoption-linkml-generate-full-json-schema-not-use-curies"></span><span class="sig-name descname"><span class="pre">--use-curies</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--not-use-curies</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-json-schema-use-curies" title="Link to this definition">¶</a></dt>
+<dd><p>Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-json-schema-include-range-class-descendants">
 <span id="cmdoption-linkml-generate-full-json-schema-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-json-schema-include-range-class-descendants" title="Link to this definition">¶</a></dt>
 <dd><p>When handling range constraints, include all descendants of the range class instead of just the range class</p>
@@ -2608,6 +2619,17 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-context-xsd-anyuri-as-iri">
 <span id="cmdoption-linkml-generate-full-jsonld-context-no-xsd-anyuri-as-iri"></span><span class="sig-name descname"><span class="pre">--xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-context-xsd-anyuri-as-iri" title="Link to this definition">¶</a></dt>
 <dd><p>Map xsd:anyURI-typed ranges (uri, uriorcurie) to &#64;type: &#64;id instead of &#64;type: xsd:anyURI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-context-use-curies">
+<span id="cmdoption-linkml-generate-full-jsonld-context-not-use-curies"></span><span class="sig-name descname"><span class="pre">--use-curies</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--not-use-curies</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-context-use-curies" title="Link to this definition">¶</a></dt>
+<dd><p>Use class_uri/slot_uri CURIEs as context keys instead of element names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>

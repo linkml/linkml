@@ -431,6 +431,7 @@
     <span class="n">AnonymousSlotExpression</span><span class="p">,</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">ClassDefinitionName</span><span class="p">,</span>
+    <span class="n">Element</span><span class="p">,</span>
     <span class="n">EnumDefinition</span><span class="p">,</span>
     <span class="n">Example</span><span class="p">,</span>
     <span class="n">PermissibleValue</span><span class="p">,</span>
@@ -623,8 +624,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lax_forward_refs</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="s2">&quot;JsonSchema&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">canonical_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PRESERVE_NAMES</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="s2">&quot;JsonSchema&quot;</span><span class="p">,</span> <span class="n">is_curie</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">canonical_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PRESERVE_NAMES</span> <span class="ow">or</span> <span class="n">is_curie</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;$defs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;$defs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -861,6 +862,9 @@
 <span class="sd">    slot&#39;s range type (CURIE for uriorcurie, full URI for uri, snake_case for string).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">use_curies</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, use class_uri/slot_uri CURIEs instead of calculated URIs.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -870,6 +874,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Schema text must be supplied to JSON schema generator.  Preparsed schema will not work&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set the class variable for JsonSchema to use</span>
         <span class="n">JsonSchema</span><span class="o">.</span><span class="n">PRESERVE_NAMES</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span>
@@ -898,6 +904,9 @@
                 <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="n">top_additional_properties</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_curie</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_curie</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
@@ -1004,7 +1013,10 @@
             <span class="k">if</span> <span class="n">class_examples</span><span class="p">:</span>
                 <span class="n">class_subschema</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="n">class_examples</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_subschema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span> <span class="n">class_subschema</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_subschema</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -1028,6 +1040,10 @@
 
         <span class="n">subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
+                <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
             <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">omit_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="c1"># Anonymous slot expressions don&#39;t carry the underlying slot&#39;s `multivalued` flag,</span>
             <span class="c1"># so look it up on the schema&#39;s slot definition and wrap so item-level constraints apply.</span>
@@ -1045,9 +1061,7 @@
                 <span class="n">value_required</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">value_required</span> <span class="o">=</span> <span class="n">properties_required</span>
-            <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span>
-            <span class="p">)</span>
+            <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">prop_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;anyOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">properties_required</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span>
@@ -1368,14 +1382,15 @@
         <span class="p">)</span>
         <span class="n">value_disallowed</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">)</span>
 
-        <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
+            <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_null</span><span class="p">)</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_class_slot</span><span class="p">(</span>
             <span class="n">SlotResult</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="n">schema_</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">slot</span><span class="p">),</span> <span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="p">)</span><span class="o">.</span><span class="n">schema_</span>
-        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span>
-            <span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span>
-        <span class="p">)</span>
+        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">prop_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;uriorcurie&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">type_ancestors</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">):</span>
@@ -1451,6 +1466,14 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Set additionalProperties=False if closed otherwise true if not closed at the global level</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--use-curies/--not-use-curies&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>

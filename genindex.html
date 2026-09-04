@@ -2998,8 +2998,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-golang-nullable-primitives">linkml-generate-(full)-golang command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-prefixes
 
@@ -3009,6 +3007,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-prefixes">linkml-generate-(full)-jsonld-context command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-pydantic
 
@@ -3379,6 +3379,19 @@
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-not-closed">gen-json-schema command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-not-closed">linkml-generate-(full)-json-schema command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --not-use-curies
+
+        <ul>
+          <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-use-curies">gen-json-schema command line option</a>
+</li>
+          <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-use-curies">gen-jsonld-context command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-use-curies">linkml-generate-(full)-json-schema command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-use-curies">linkml-generate-(full)-jsonld-context command line option</a>
 </li>
         </ul></li>
         <li>
@@ -4045,6 +4058,19 @@
           <li><a href="generators/docgen.html#cmdoption-gen-doc-use-class-uris">gen-doc command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-doc-use-class-uris">linkml-generate-(full)-doc command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --use-curies
+
+        <ul>
+          <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-use-curies">gen-json-schema command line option</a>
+</li>
+          <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-use-curies">gen-jsonld-context command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-use-curies">linkml-generate-(full)-json-schema command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-use-curies">linkml-generate-(full)-jsonld-context command line option</a>
 </li>
         </ul></li>
         <li>
@@ -5847,6 +5873,8 @@
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile_native">compile_native() (linkml.utils.sqlutils.SQLStore method)</a>
 </li>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.compress_uri">compress_uri() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.concepts">concepts (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport">ConditionalImport (class in linkml.generators.pydanticgen.template)</a>
@@ -6777,6 +6805,8 @@
 </li>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-not-closed">--not-closed</a>
 </li>
+          <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-use-curies">--not-use-curies</a>
+</li>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-preserve-names">--preserve-names</a>
 </li>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-stacktrace">--stacktrace</a>
@@ -6784,6 +6814,8 @@
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-title-from">--title-from</a>
 </li>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-t">--top-class</a>
+</li>
+          <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-use-curies">--use-curies</a>
 </li>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-useuris">--useuris</a>
 </li>
@@ -6911,11 +6943,15 @@
 </li>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-xsd-anyuri-as-iri">--no-xsd-anyuri-as-iri</a>
 </li>
+          <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-use-curies">--not-use-curies</a>
+</li>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-o">--output</a>
 </li>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-prefixes">--prefixes</a>
 </li>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-use-curies">--use-curies</a>
 </li>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-useuris">--useuris</a>
 </li>
@@ -8176,6 +8212,8 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">get_classes_modifying_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_curie">get_curie() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.datautils.get_dumper">get_dumper() (in module linkml.utils.datautils)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_element">get_element() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -9256,6 +9294,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-not-closed">--not-closed</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-use-curies">--not-use-curies</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-preserve-names">--preserve-names</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-stacktrace">--stacktrace</a>
@@ -9263,6 +9303,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-title-from">--title-from</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-t">--top-class</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-use-curies">--use-curies</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-useuris">--useuris</a>
 </li>
@@ -9390,11 +9432,15 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-xsd-anyuri-as-iri">--no-xsd-anyuri-as-iri</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-use-curies">--not-use-curies</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-o">--output</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-prefixes">--prefixes</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-use-curies">--use-curies</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-useuris">--useuris</a>
 </li>
