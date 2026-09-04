@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: Chain Pruning Test
+  version: '1.0.0'
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/foo:
+    get:
+      security:
+        - PayloadSignature: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Foo'
+components:
+  schemas:
+    Foo:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/chain_unreferenced
+      x-linkml-source: Foo
+    Foo Bar:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/chain_unreferenced
+      x-linkml-source: Foo Bar
