@@ -222,7 +222,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
         return kwargs
 
-    def get_sql_range(self, slot, schema=None, sv=None):
+    def get_sql_range(self, slot, schema=None, sv=None, _stack=None):
         """Returns the BigQuery SQLAlchemy column type for the given slot."""
         _require_bq()
         from linkml_runtime.utils.schemaview import SchemaView
@@ -243,7 +243,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
         # 3. Inlined class-range → STRUCT<field type, ...>.
         if slot.range in sv.all_classes() and (slot.inlined or slot.inlined_as_list):
-            return self._build_struct(slot.range, sv)
+            return self._build_struct(slot.range, sv, _stack)
 
         # 4. Scalar (default path).
         return self._get_scalar_type(slot.range, sv)
@@ -268,13 +268,27 @@ class BigQueryGenerator(SQLTableGenerator):
             return String()
         return BQ_TYPEMAP.get(base, String())
 
-    def _build_struct(self, class_name, sv):
-        """Build a STRUCT<...> type from the induced slots of class_name."""
+    def _build_struct(self, class_name, sv, _stack=None):
+        """Build a STRUCT<...> type from the induced slots of class_name.
+
+        BigQuery RECORD types cannot nest directly on themselves (an infinite
+        STRUCT is not representable), so a slot whose class range is currently
+        being resolved — a self-referential inlined nest — collapses to a
+        STRING (the inlined object is stored as JSON).
+        """
         _require_bq()
-        fields = {}
-        for slot in sv.class_induced_slots(class_name):
-            fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv)
-        return STRUCT(**fields)
+        if _stack is None:
+            _stack = set()
+        if class_name in _stack:
+            return String()
+        _stack.add(class_name)
+        try:
+            fields = {}
+            for slot in sv.class_induced_slots(class_name):
+                fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv, _stack=_stack)
+            return STRUCT(**fields)
+        finally:
+            _stack.discard(class_name)
 
     def _resolve_type_override(self, type_str):
         """Return the BQ SQLAlchemy type for a bigquery_type annotation value."""
