@@ -109,6 +109,25 @@ def test_nested_struct_recursion():
     assert "STRUCT<" in ddl
 
 
+def test_self_referential_inlined_slot_does_not_recurse():
+    """a slot whose inlined range points back at its own class must not recurse forever.
+
+    BigQuery RECORD types cannot nest on themselves, so the recursive edge
+    collapses to STRING (the inlined object is stored as JSON) instead of
+    raising RecursionError.
+    """
+    from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
+    b = SchemaBuilder()
+    b.add_slot(SD("followed_by", range="PathExpression", inlined=True))
+    b.add_class("PathExpression", slots=["followed_by"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert "followed_by STRING" in ddl
+    assert "CREATE TABLE" in ddl
+
+
 def _make_partitioned_schema(partition_type="DAY", field_range="datetime"):
     """Helper: schema with a class annotated for time partitioning."""
     from linkml_runtime.linkml_model.meta import Annotation
