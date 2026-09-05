@@ -22,6 +22,11 @@ rendering)
 .. seealso:: The `linkml-owl <https://github.com/linkml/linkml-owl>`_
              maps between LinkML *data* and OWL
 
+.. seealso:: :doc:`rdfs` renders a schema as RDFS instead. RDFS is lighter
+             than OWL (no cardinality, disjointedness or class expressions)
+             but enough if all you need is classes, properties, and the
+             subclass and subproperty relations between them
+
 .. note:: The OWL is rendered as RDF/turtle. We recommend the suffix
           ``.owl.ttl`` to distinguish from the direct RDF mapping
 

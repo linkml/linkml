@@ -504,6 +504,19 @@ Generates an RDF representation of the schema itself.
 | Corey Cox | @amc-corey-cox | 1 |
 | Sierra Taylor Moxon | @sierra-moxon | 1 |
 
+### RDFS Generator (`gen-rdfs`)
+
+Generates an RDFS vocabulary from the schema.
+
+This generator is a wrapper around [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala).
+
+**Issues and PRs**: [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala)
+
+| Contributor | GitHub | Lines |
+|-------------| --- | --- |
+| Piotr Sowiński | @Ostrzyciel | — |
+| Kacper Grzymkowski | @niegrzybkowski | — |
+
 ### Rust Generator (`gen-rust`)
 
 Generates Rust struct and enum types from a LinkML schema.
