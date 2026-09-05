@@ -1,6 +1,7 @@
 import json
 import os
 from collections import OrderedDict
+from collections.abc import Mapping
 from functools import lru_cache
 
 import jsonschema
@@ -33,6 +34,10 @@ from linkml_runtime.utils.formatutils import camelcase
 #
 # The root's additionalProperties is overridden at retrieval time, so cached
 # $defs are reusable regardless of closed.
+#
+# The key does not include the importmap, so contexts with an importmap bypass this
+# shared cache to avoid colliding when one schema object is reused with different
+# importmaps (see json_schema_validator).
 _JSON_SCHEMA_CACHE_MAXSIZE = 32
 _json_schema_cache: OrderedDict[tuple, JsonSchema] = OrderedDict()
 _schema_pins: dict[tuple, SchemaDefinition] = {}
@@ -55,11 +60,18 @@ _ROOT_METADATA_KEYS: tuple = ("$schema", "$id", "metamodel_version", "version", 
 class ValidationContext:
     """Provides state that may be shared between validation plugins"""
 
-    def __init__(self, schema: SchemaDefinition, target_class: str | None = None) -> None:
+    def __init__(
+        self,
+        schema: SchemaDefinition,
+        target_class: str | None = None,
+        importmap: Mapping[str, str | dict] | None = None,
+    ) -> None:
         # Since SchemaDefinition is not hashable, to make caching simpler we store the schema
         # in a "private" property and assume it never changes.
         self._schema = schema
-        self._schema_view = SchemaView(self._schema)
+        # json_schema_validator() and _pydantic_module() resolve imports through the importmap
+        self._importmap = importmap
+        self._schema_view = SchemaView(self._schema, importmap=importmap)
         self._target_class = self._get_target_class(target_class)
 
     @property
@@ -69,6 +81,16 @@ class ValidationContext:
     @property
     def target_class(self):
         return self._target_class
+
+    def _generate_json_schema(self, *, closed: bool, include_range_class_descendants: bool) -> JsonSchema:
+        return JsonSchemaGenerator(
+            schema=self._schema,
+            mergeimports=True,
+            top_class=self._target_class,
+            not_closed=not closed,
+            include_range_class_descendants=include_range_class_descendants,
+            importmap=self._importmap,
+        ).generate()
 
     @lru_cache
     def json_schema_validator(
@@ -81,20 +103,24 @@ class ValidationContext:
         if path_override:
             with open(path_override) as json_schema_file:
                 json_schema = json.load(json_schema_file)
+        elif self._importmap is not None:
+            # The shared _json_schema_cache is keyed on id(schema) and omits the
+            # importmap, so a schema object reused with different importmaps would
+            # collide. Generate without the shared cache when an importmap is set;
+            # the per-context lru_cache on this method still serves repeated calls
+            # within one Validator.
+            json_schema = self._generate_json_schema(
+                closed=closed, include_range_class_descendants=include_range_class_descendants
+            )
         else:
             not_closed = not closed
             cache_key = _make_cache_key(self._schema, include_range_class_descendants)
 
             if cache_key not in _json_schema_cache:
                 # First call: generate and cache entire schema (full generation cost)
-                jsonschema_gen = JsonSchemaGenerator(
-                    schema=self._schema,
-                    mergeimports=True,
-                    top_class=self._target_class,
-                    not_closed=not_closed,
-                    include_range_class_descendants=include_range_class_descendants,
+                json_schema = self._generate_json_schema(
+                    closed=closed, include_range_class_descendants=include_range_class_descendants
                 )
-                json_schema = jsonschema_gen.generate()
                 _json_schema_cache[cache_key] = json_schema
                 # Pin the schema so id() cannot be recycled while this entry exists.
                 _schema_pins[cache_key] = self._schema
@@ -145,6 +171,7 @@ class ValidationContext:
         return PydanticGenerator(
             self._schema,
             extra_fields="forbid" if closed else "ignore" if closed is None else "allow",
+            importmap=self._importmap,
         ).compile_module()
 
     def _get_target_class(self, target_class: str | None = None) -> str:
