@@ -257,13 +257,15 @@ class PythonGenerator(Generator):
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
+        # The generation_date line is omitted when the timestamp is suppressed, but the rest
+        # of the metadata banner is still emitted.
+        generation_date = f"# Generation date: {self.schema.generation_date}\n" if self.schema.generation_date else ""
         head = (
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
-# Generation date: {self.schema.generation_date}
-# Schema: {self.schema.name}
+{generation_date}# Schema: {self.schema.name}
 #
 """
-            if self.metadata and self.schema.generation_date
+            if self.metadata
             else ""
         )
 
