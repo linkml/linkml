@@ -331,6 +331,7 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="cli/index.html">CLI</a><input aria-label="Toggle navigation of CLI" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli/config.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">config</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
@@ -357,6 +358,7 @@
 <li class="toctree-l2"><a class="reference internal" href="code/deprecation.html">Deprecation Log</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="config/index.html">Configuration</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Maintainers Guide:</span></p>
 <ul>
@@ -5811,10 +5813,10 @@
         </ul></li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.class_names">class_names (linkml.generators.pydanticgen.template.PydanticModule property)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.class_or_type_for">class_or_type_for() (linkml.utils.generator.Generator method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.class_or_type_name">class_or_type_name() (linkml.utils.generator.Generator method)</a>
@@ -5880,6 +5882,8 @@
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport">ConditionalImport (class in linkml.generators.pydanticgen.template)</a>
 </li>
         <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.Config">Config (class in linkml_runtime.utils.inference_utils)</a>
+</li>
+        <li><a href="config/index.html#linkml.utils.config.GlobalConfig.config_file_is_absolute">config_file_is_absolute() (linkml.utils.config.GlobalConfig method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block.content">content (linkml.utils.execute_tutorial.Block attribute)</a>
 </li>
@@ -8212,6 +8216,8 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">get_classes_modifying_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+        <li><a href="config/index.html#linkml.utils.config.get_config">get_config() (in module linkml.utils.config)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_curie">get_curie() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.datautils.get_dumper">get_dumper() (in module linkml.utils.datautils)</a>
@@ -8257,6 +8263,8 @@
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_uri">get_uri() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="generators/common/type_designators.html#linkml.generators.common.type_designators.get_uriorcurie_type_designator_values">get_uriorcurie_type_designator_values() (in module linkml.generators.common.type_designators)</a>
+</li>
+        <li><a href="config/index.html#linkml.utils.config.GlobalConfig">GlobalConfig (class in linkml.utils.config)</a>
 </li>
         <li><a href="generators/golang.html#linkml.generators.golanggen.GolangGenerator">GolangGenerator (class in linkml.generators.golanggen)</a>
 </li>
@@ -8388,6 +8396,8 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="config/index.html#linkml.utils.config.LogConfig.inherit_base_level">inherit_base_level() (linkml.utils.config.LogConfig method)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.inherited">inherited (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.inherits">inherits (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
@@ -8499,14 +8509,23 @@
   <h2>K</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    KEY
+
+        <ul>
+          <li><a href="cli/config.html#cmdoption-linkml-config-get-arg-KEY">linkml-config-get command line option</a>
+</li>
+          <li><a href="cli/config.html#cmdoption-linkml-config-set-arg-KEY">linkml-config-set command line option</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.key">key (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 
         <ul>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.key">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.keywords">keywords (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
         <ul>
@@ -8540,6 +8559,22 @@
           <li><a href="cli/linkml.html#cmdoption-linkml-V">--version</a>
 </li>
           <li><a href="cli/linkml.html#cmdoption-linkml-V">-V</a>
+</li>
+        </ul></li>
+        <li>
+    linkml-config-get command line option
+
+        <ul>
+          <li><a href="cli/config.html#cmdoption-linkml-config-get-arg-KEY">KEY</a>
+</li>
+        </ul></li>
+        <li>
+    linkml-config-set command line option
+
+        <ul>
+          <li><a href="cli/config.html#cmdoption-linkml-config-set-arg-KEY">KEY</a>
+</li>
+          <li><a href="cli/config.html#cmdoption-linkml-config-set-arg-VALUE">VALUE</a>
 </li>
         </ul></li>
         <li>
@@ -10890,6 +10925,13 @@
 </li>
         </ul></li>
         <li>
+    linkml.utils.config
+
+        <ul>
+          <li><a href="config/index.html#module-linkml.utils.config">module</a>
+</li>
+        </ul></li>
+        <li>
     linkml.utils.datautils
 
         <ul>
@@ -11049,6 +11091,8 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.log_level">log_level (linkml.utils.generator.Generator attribute)</a>
 </li>
+        <li><a href="config/index.html#linkml.utils.config.LogConfig">LogConfig (class in linkml.utils.config)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.logger">logger (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.logger_warning">logger_warning() (linkml.utils.schemaloader.SchemaLoader method)</a>
@@ -11203,8 +11247,6 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.minimum_number_dimensions">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.minimum_value">minimum_value (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 
         <ul>
@@ -11213,6 +11255,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.minimum_value">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="maintainers/deprecation.html#linkml.utils.deprecation.SemVer.minor">minor (linkml.utils.deprecation.SemVer attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.minus">minus (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
@@ -11268,6 +11312,10 @@
 </li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticValidator.model_config">(linkml.generators.pydanticgen.template.PydanticValidator attribute)</a>
 </li>
+          <li><a href="config/index.html#linkml.utils.config.GlobalConfig.model_config">(linkml.utils.config.GlobalConfig attribute)</a>
+</li>
+          <li><a href="config/index.html#linkml.utils.config.LogConfig.model_config">(linkml.utils.config.LogConfig attribute)</a>
+</li>
         </ul></li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.modified_by">modified_by (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
@@ -11298,6 +11346,8 @@
           <li><a href="generators/rdf.html#module-linkml.generators.rdfgen">linkml.generators.rdfgen</a>
 </li>
           <li><a href="code/utils.html#module-linkml.utils">linkml.utils</a>
+</li>
+          <li><a href="config/index.html#module-linkml.utils.config">linkml.utils.config</a>
 </li>
           <li><a href="code/utils.html#module-linkml.utils.datautils">linkml.utils.datautils</a>
 </li>
@@ -11775,6 +11825,8 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition.settings">settings (linkml_runtime.linkml_model.meta.SchemaDefinition attribute)</a>
 </li>
+        <li><a href="config/index.html#linkml.utils.config.GlobalConfig.settings_customise_sources">settings_customise_sources() (linkml.utils.config.GlobalConfig class method)</a>
+</li>
         <li><a href="generators/shacl.html#linkml.generators.shaclgen.ShaclGenerator">ShaclGenerator (class in linkml.generators.shaclgen)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.shared">shared (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
@@ -12079,6 +12131,8 @@
         </ul></li>
         <li><a href="code/utils.html#linkml.utils.typereferences.References.update">update() (linkml.utils.typereferences.References method)</a>
 </li>
+        <li><a href="config/index.html#linkml.utils.config.LogConfig.uppercase_levels">uppercase_levels() (linkml.utils.config.LogConfig class method)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.uri">uri (linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.usage_index">usage_index() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -12088,6 +12142,8 @@
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.usage_slot_name">usage_slot_name (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.use_memory">use_memory (linkml.utils.sqlutils.SQLStore attribute)</a>
+</li>
+        <li><a href="config/index.html#linkml.utils.config.GlobalConfig.user_dir_exists">user_dir_exists() (linkml.utils.config.GlobalConfig class method)</a>
 </li>
         <li><a href="generators/csv.html#linkml.generators.csvgen.CsvGenerator.uses_schemaloader">uses_schemaloader (linkml.generators.csvgen.CsvGenerator attribute)</a>
 
@@ -12157,10 +12213,17 @@
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticClass.validators">validators (linkml.generators.pydanticgen.template.PydanticClass property)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.EnumValue.value">value (linkml.generators.pydanticgen.template.EnumValue attribute)</a>
+        <li>
+    VALUE
+
+        <ul>
+          <li><a href="cli/config.html#cmdoption-linkml-config-set-arg-VALUE">linkml-config-set command line option</a>
 </li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.EnumValue.value">value (linkml.generators.pydanticgen.template.EnumValue attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.value_presence">value_presence (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticEnum.values">values (linkml.generators.pydanticgen.template.PydanticEnum attribute)</a>
