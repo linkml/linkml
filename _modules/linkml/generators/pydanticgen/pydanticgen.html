@@ -1255,6 +1255,8 @@
             <span class="n">pyrange</span> <span class="o">=</span> <span class="n">_get_pyrange</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sv</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pyrange</span> <span class="o">=</span> <span class="s2">&quot;str&quot;</span>
+        <span class="k">elif</span> <span class="n">slot_range</span> <span class="o">==</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">slot_range</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># TODO: default ranges in schemagen</span>
             <span class="c1"># pyrange = &#39;str&#39;</span>
