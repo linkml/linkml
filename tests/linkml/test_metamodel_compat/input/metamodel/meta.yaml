@@ -3086,6 +3086,10 @@ classes:
       - class_expression
     slots:
       - is_a
+    slot_usage:
+      is_a:
+        range: class_definition
+        description: A class that any instance satisfying this expression must also be an instance of
 
   class_definition:
     rank: 2
