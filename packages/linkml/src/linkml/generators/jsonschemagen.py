@@ -962,8 +962,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             )
 
         if isinstance(slot, SlotDefinition) and slot.array:
-            # TODO: this is currently too lax, in that it will validate ANY array.
-            # see https://github.com/linkml/linkml/issues/2188
             prop = self.get_array_subschema(slot, prop, cls=cls)
 
         return prop
