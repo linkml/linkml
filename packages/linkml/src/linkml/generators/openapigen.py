@@ -4,6 +4,7 @@ import json
 import os
 import re
 import textwrap
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import cast
 
@@ -329,7 +330,7 @@ class OpenApiGenerator(Generator):
                 if "$ref" in obj:
                     ref_name = obj["$ref"].split("/")[-1]
                     if ref_name in enum_schemas:
-                        return enum_schemas[ref_name]
+                        return deepcopy(enum_schemas[ref_name])
                 return {k: _replace_refs(v) for k, v in obj.items()}
             elif isinstance(obj, list):
                 return [_replace_refs(item) for item in obj]
