@@ -1,5 +1,6 @@
 """Generate OpenAPI YAML files."""
 
+import copy
 import json
 import os
 import re
@@ -71,6 +72,23 @@ components:
       x-linkml-schema: {linkml_schema_id}
       x-linkml-source: {data_schema}
 """
+
+# OpenAPI Schema Object keys a template placeholder is allowed to override.
+#
+# Annotations only. These describe a schema without constraining it, so an override can
+# change what a reader sees but never alter structural aspects of the schema, and never
+# whether a payload is accepted.
+#
+# Structural keys (`type`, `properties`, `enum`, `required`, ...) are deliberately left
+# out. Every placeholder is written `type: object` by convention, but LinkML enums and
+# types generate as `type: string` -- allowing `type` through would corrupt the output
+# document, still valid OpenAPI, but clients would fail on it.
+OVERRIDABLE_SCHEMA_KEYS = frozenset({"description", "title", "example", "externalDocs", "deprecated"})
+
+# Prefix of the keys that map a template placeholder onto its LinkML element
+# (`x-linkml-schema`, `x-linkml-source`, and any future `x-linkml-*` key). They are
+# meaningless to an API consumer, so they are stripped rather than published.
+LINKML_BOOKKEEPING_PREFIX = "x-linkml-"
 
 
 @dataclass
@@ -449,6 +467,31 @@ class OpenApiGenerator(Generator):
 
         return {k: _replace_refs(v) for k, v in data_schemas.items() if k not in enum_schemas}
 
+    def _apply_template_overrides(self, elem_schemas: dict, openapi_schemas: dict) -> None:
+        """Overlay template-declared annotations onto the generated schemas, in place.
+
+        The LinkML-derived value is the default; where a template placeholder explicitly
+        declares an annotation key, that value takes precedence. Only the keys in
+        :data:`OVERRIDABLE_SCHEMA_KEYS` and ``x-`` vendor extensions are overlaid, so a
+        placeholder can annotate a resource but never alter its generated structure.
+
+        Both mappings are keyed by OpenAPI name, so this must run after
+        :meth:`_sanitize_schemas` has applied any OpenAPI<->LinkML renames. Template
+        entries whose schema was pruned are simply absent from ``elem_schemas`` and are
+        skipped.
+        """
+        for name, elem_schema in elem_schemas.items():
+            template_schema = openapi_schemas.get(name)
+            if not isinstance(template_schema, dict):
+                continue
+            for key, value in template_schema.items():
+                if key.startswith(LINKML_BOOKKEEPING_PREFIX):
+                    continue
+                if key in OVERRIDABLE_SCHEMA_KEYS or key.startswith("x-"):
+                    # copy: a template may share one value between placeholders via a
+                    # YAML anchor, and yaml.dump would re-emit a shared object as an anchor
+                    elem_schema[key] = copy.deepcopy(value)
+
     def _find_schemas_line(self, template_text: str) -> int:
         """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
         doc = yaml.compose(template_text)
@@ -602,6 +645,9 @@ class OpenApiGenerator(Generator):
 
         # sanitize schemas not transitively reachable from any endpoint-referenced schema
         sanitized_data_schemas = self._sanitize_schemas(name_map, all_req_schemas, req_linkml_names)
+
+        # template-declared annotations override the LinkML-derived ones, where given
+        self._apply_template_overrides(sanitized_data_schemas, openapi_schemas)
 
         # instantiate the real OpenAPI YAML replacing the schema placeholders
         lines = template_text.splitlines(keepends=True)
