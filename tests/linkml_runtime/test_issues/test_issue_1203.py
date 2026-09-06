@@ -3,14 +3,13 @@
 Verifies that generated dataclass enumerations support intuitive equality,
 hashing, stringification, and membership checks against strings, other
 ``EnumDefinitionImpl`` instances, and ``PermissibleValue`` objects.
-
-Also verifies the Phase-1 structural fix (#723): bare ``PermissibleValue``
-class attributes emitted by ``pythongen`` are promoted to real
-``EnumDefinitionImpl`` instances at class-creation time.
 """
 
 import pytest
 
+# Ensure the patches on ``PermissibleValue`` from
+# ``linkml_runtime/__init__.py`` are applied before the test module loads
+# the metamodel directly.
 import linkml_runtime  # noqa: F401
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl, EnumDefinitionMeta
@@ -68,7 +67,6 @@ def test_base_class_setattr_with_no_defn() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 (#723): PermissibleValue -> EnumDefinitionImpl promotion
 
 
 def test_member_is_enum_instance_not_permissible_value() -> None:
