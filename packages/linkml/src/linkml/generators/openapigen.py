@@ -296,10 +296,12 @@ class OpenApiGenerator(Generator):
         for elem_schema in elem_schemas.values():
             elem_schema.pop("title", None)
         elem_schemas = cast(dict, self._fix_openapi_spec(elem_schemas))
+        if self.inline_enums:
+            # inline before renaming so the enum/type guard matches LinkML names,
+            # not the (possibly renamed) OpenAPI schema names
+            elem_schemas = self._inline_enum_schemas(elem_schemas, req_linkml_names)
         if name_map:
             elem_schemas = cast(dict, self._rename(name_map, elem_schemas))
-        if self.inline_enums:
-            elem_schemas = self._inline_enum_schemas(elem_schemas, req_linkml_names)
         return elem_schemas
 
     def _inline_enum_schemas(self, data_schemas: dict, endpoint_schemas: set[str] | None = None) -> dict:
