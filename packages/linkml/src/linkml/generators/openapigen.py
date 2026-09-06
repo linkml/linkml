@@ -64,9 +64,10 @@ components:
 
 # OpenAPI Schema Object keys a template placeholder is allowed to override.
 #
-# Annotations only. These describe a schema without constraining it, so an override can
+# Various annotations can describe a schema without constraining it, so an override can
 # change what a reader sees but never alter structural aspects of the schema, and never
-# whether a payload is accepted.
+# whether a payload is accepted. So any JSON body the generated schema accepted before
+# an override is still accepted after it, and a body it rejected is still rejected.
 #
 # Structural keys (`type`, `properties`, `enum`, `required`, ...) are deliberately left
 # out. Every placeholder is written `type: object` by convention, but LinkML enums and
@@ -468,9 +469,10 @@ class OpenApiGenerator(Generator):
         endpoint_ref_openapi_names = self._find_referenced_schemas()  # OpenAPI names referenced by endpoints
         openapi_schemas = self._template["components"]["schemas"]  # schemas provided by the OpenAPI template
         # collect the LinkML names referenced by endpoints (seed for sanitizing below)
-        endpoint_ref_linkml_names: set[str] = {
-            openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names
-        }
+        if self.keep_unreferenced:
+            req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in openapi_schemas.keys()}
+        else:
+            req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names}
         # when OpenAPI and LinkML names differ, record the synonym for later renaming.
         # Every declared placeholder counts, not only endpoint-referenced ones: a schema
         # reached transitively must still be published under the name the template gave it
