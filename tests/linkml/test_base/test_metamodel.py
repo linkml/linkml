@@ -30,7 +30,13 @@ from linkml_runtime.utils.compile_python import compile_python
                 pytest.mark.owlgen,
             ],
         ),
-        pytest.param(RDFGenerator, ".ttl", {"context": LOCAL_METAMODEL_LDCONTEXT_FILE}, marks=pytest.mark.rdfgen),
+        pytest.param(
+            RDFGenerator,
+            ".ttl",
+            {"context": LOCAL_METAMODEL_LDCONTEXT_FILE},
+            # network: rdflib fetches the @context URLs in the generated JSON-LD
+            marks=[pytest.mark.rdfgen, pytest.mark.network],
+        ),
         pytest.param(
             ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldcontextgen
         ),
