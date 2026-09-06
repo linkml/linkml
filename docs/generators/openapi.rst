@@ -141,8 +141,9 @@ By default enumerations are declared as separate schemas in the
 
 Using the *inline_enums* option (object constructor boolean argument
 ``inline_enums``, CLI flag ``--inline-enums``) it's possible to change
-that behavior so that inlined into the using ``components/schemas``
-in the resulting OAD (OpenAPI Description) document.
+that behavior so that enumerations are inlined, instead of being
+referenced, into the schemas that use them in the resulting OAD (OpenAPI
+Description) document.
 
 Docs
 ----
