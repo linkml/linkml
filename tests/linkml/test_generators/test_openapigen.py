@@ -40,7 +40,7 @@ def test_openapi_fixed_template(input_path, kitchen_sink_path):
     """Test that serialize raises ValueError when no template file is provided."""
     head_path = str(input_path("openapi/spec-fixed.openapi.yaml"))
     oa_spec = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
-    assert open(head_path).read() == oa_spec
+    assert Path(head_path).read_text() == oa_spec
 
 
 def test_openapi_spec_no_defs_references(openapi_spec):
