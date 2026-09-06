@@ -345,6 +345,21 @@ class OpenApiGenerator(Generator):
                 return key.start_mark.line
         raise ValueError("OpenAPI template is missing 'schemas' section under 'components'")
 
+    @staticmethod
+    def _collect_refs(obj: dict | list) -> list[str]:
+        """Recursively collect every internal ``$ref`` target string found in ``obj``."""
+        refs: list[str] = []
+        if isinstance(obj, dict):
+            ref = obj.get("$ref")
+            if isinstance(ref, str) and ref.startswith("#/"):
+                refs.append(ref)
+            for value in obj.values():
+                refs.extend(OpenApiGenerator._collect_refs(value))
+        elif isinstance(obj, list):
+            for item in obj:
+                refs.extend(OpenApiGenerator._collect_refs(item))
+        return refs
+
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
         # load the template
@@ -415,29 +430,23 @@ class OpenApiGenerator(Generator):
 
         # detect and report dangling references
         result_obj = yaml.safe_load(result)
-        schema_names = set(result_obj.get("components", {}).get("schemas", {}).keys())
-
-        def _collect_refs(obj: dict | list, refs: list[str]) -> None:
-            if isinstance(obj, dict):
-                ref = obj.get("$ref")
-                if isinstance(ref, str) and ref.startswith("#/"):
-                    refs.append(ref)
-                for value in obj.values():
-                    _collect_refs(value, refs)
-            elif isinstance(obj, list):
-                for item in obj:
-                    _collect_refs(item, refs)
-
+        # resolve every internal $ref against its own section: a ref of the form
+        # #/components/<section>/<name> must point at an existing <name> in that section
         all_refs: list[str] = []
-        _collect_refs(result_obj, all_refs)
-        dangling = [
-            ref
-            for ref in all_refs
-            if not ref.startswith("#/components/schemas/")
-            or ref.removeprefix("#/components/schemas/") not in schema_names
-        ]
-        if dangling:
-            raise ValueError(f"Dangling $ref in generated OpenAPI spec: {','.join(dangling)}")
+        components = result_obj.get("components", {})
+        for ref in self._collect_refs(result_obj):
+            if not ref.startswith("#/components/"):
+                continue
+            try:
+                _, __, section_name, target = ref.split("/", 3)
+            except ValueError:
+                all_refs.append(ref)
+                continue
+            section = components.get(section_name, {})
+            if not isinstance(section, dict) or target not in section:
+                all_refs.append(ref)
+        if all_refs:
+            raise ValueError(f"Dangling $ref in generated OpenAPI spec: {','.join(sorted(set(all_refs)))}")
 
         # validate the generated output against the OpenAPI specification before returning
         openapi_validate(result_obj, cls=oad_validator_class)
