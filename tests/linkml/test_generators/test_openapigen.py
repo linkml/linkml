@@ -264,6 +264,26 @@ def test_keep_unreferenced_pulls_transitive_chain(input_path):
     assert "Baz Qux" in schemas
 
 
+def test_keep_unreferenced_does_not_add_unrelated_schemas(input_path):
+    """Test that keep_unreferenced stays scoped to the template, not "dump everything".
+
+    The chain schema also contains classes not reachable from ``Foo`` or the template
+    declarations. ``keep_unreferenced`` only keeps the template-declared schemas and their
+    transitive dependencies — it must not pull in the whole schema. Here the only other
+    hidden class in the fixture is ``Baz Qux`` (already pulled by ``Foo Bar``), so a
+    dedicated fixture with an unrelated class proves the flag does not regress to dumping
+    every class.
+    """
+    schema_path = str(input_path("schema_unreferenced_with_unrelated.yaml"))
+    head_path = str(input_path("openapi/spec-keep-scoped.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "Foo" in schemas
+    output = "".join(str(spec))
+    # the unrelated class is not pulled in
+    assert "Unrelated" not in output
+
+
 def test_enums_as_separate_schemas_by_default(openapi_spec):
     """Test that enums are emitted as separate sub-schemas referenced via $ref by default."""
     schemas = openapi_spec["components"]["schemas"]
