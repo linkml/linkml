@@ -152,6 +152,22 @@ class ActivityId(extended_str):
 class AgentId(extended_str):
     pass
 
+def _coerce_enum_slot(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+
 
 @dataclass(repr=False)
 class AnyOfSimpleType(YAMLRoot):
@@ -390,9 +406,6 @@ class Person(YAMLRoot):
         if self.stomach_count is not None and not isinstance(self.stomach_count, int):
             self.stomach_count = int(self.stomach_count)
 
-        if self.is_living is not None and not isinstance(self.is_living, LifeStatusEnum):
-            self.is_living = LifeStatusEnum(self.is_living)
-
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
@@ -402,17 +415,7 @@ class Person(YAMLRoot):
     _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"is_living": ("LifeStatusEnum", False)}
 
     def __setattr__(self, name: str, value: Any) -> None:
-        spec = type(self)._enum_slots.get(name)
-        if spec is not None and value is not None:
-            enum_name, multivalued = spec
-            enum_cls = globals()[enum_name]
-            if multivalued:
-                if not isinstance(value, list):
-                    value = [value]
-                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
-            elif not isinstance(value, enum_cls):
-                value = enum_cls(value)
-        super().__setattr__(name, value)
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -634,25 +637,12 @@ class Relationship(YAMLRoot):
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
 
-        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
-            self.cordialness = CordialnessEnum(self.cordialness)
-
         super().__post_init__(**kwargs)
 
     _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"cordialness": ("CordialnessEnum", False)}
 
     def __setattr__(self, name: str, value: Any) -> None:
-        spec = type(self)._enum_slots.get(name)
-        if spec is not None and value is not None:
-            enum_name, multivalued = spec
-            enum_cls = globals()[enum_name]
-            if multivalued:
-                if not isinstance(value, list):
-                    value = [value]
-                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
-            elif not isinstance(value, enum_cls):
-                value = enum_cls(value)
-        super().__setattr__(name, value)
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -671,33 +661,18 @@ class FamilialRelationship(Relationship):
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
-        if not isinstance(self.type, FamilialRelationshipType):
-            self.type = FamilialRelationshipType(self.type)
 
         if self._is_empty(self.related_to):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
 
-        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
-            self.cordialness = CordialnessEnum(self.cordialness)
-
         super().__post_init__(**kwargs)
 
     _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"cordialness": ("CordialnessEnum", False), "type": ("FamilialRelationshipType", False)}
 
     def __setattr__(self, name: str, value: Any) -> None:
-        spec = type(self)._enum_slots.get(name)
-        if spec is not None and value is not None:
-            enum_name, multivalued = spec
-            enum_cls = globals()[enum_name]
-            if multivalued:
-                if not isinstance(value, list):
-                    value = [value]
-                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
-            elif not isinstance(value, enum_cls):
-                value = enum_cls(value)
-        super().__setattr__(name, value)
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -860,25 +835,12 @@ class CodeSystem(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.long_id is not None and not isinstance(self.long_id, LongEnum):
-            self.long_id = LongEnum(self.long_id)
-
         super().__post_init__(**kwargs)
 
     _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"long_id": ("LongEnum", False)}
 
     def __setattr__(self, name: str, value: Any) -> None:
-        spec = type(self)._enum_slots.get(name)
-        if spec is not None and value is not None:
-            enum_name, multivalued = spec
-            enum_cls = globals()[enum_name]
-            if multivalued:
-                if not isinstance(value, list):
-                    value = [value]
-                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
-            elif not isinstance(value, enum_cls):
-                value = enum_cls(value)
-        super().__setattr__(name, value)
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)

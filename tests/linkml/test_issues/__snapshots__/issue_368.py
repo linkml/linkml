@@ -71,6 +71,22 @@ DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
 # Class references
 
 
+def _coerce_enum_slot(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+
 
 @dataclass(repr=False)
 class SampleClass(ParentClass):
@@ -82,27 +98,10 @@ class SampleClass(ParentClass):
     class_model_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/SampleClass")
 
     slot_1: Optional[Union[str, "SampleEnum"]] = None
-
-    def __post_init__(self, *_: str, **kwargs: Any):
-        if self.slot_1 is not None and not isinstance(self.slot_1, SampleEnum):
-            self.slot_1 = SampleEnum(self.slot_1)
-
-        super().__post_init__(**kwargs)
-
     _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"slot_1": ("SampleEnum", False)}
 
     def __setattr__(self, name: str, value: Any) -> None:
-        spec = type(self)._enum_slots.get(name)
-        if spec is not None and value is not None:
-            enum_name, multivalued = spec
-            enum_cls = globals()[enum_name]
-            if multivalued:
-                if not isinstance(value, list):
-                    value = [value]
-                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
-            elif not isinstance(value, enum_cls):
-                value = enum_cls(value)
-        super().__setattr__(name, value)
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 # Enumerations

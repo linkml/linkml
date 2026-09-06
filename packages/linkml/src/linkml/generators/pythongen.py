@@ -285,7 +285,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 {self.gen_typedefs()}
 # Class references
 {self.gen_references()}
-
+{self.gen_enum_coercion_helper()}
 {self.gen_classdefs()}
 
 # Enumerations
@@ -943,41 +943,98 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             else ""
         )
 
-    def gen_enum_slot_coercion(self, cls: ClassDefinition) -> str:
-        """Emit ``_enum_slots`` mapping plus ``__setattr__`` so that
-        post-init assignment to an enum-ranged slot coerces strings (and
-        bare ``PermissibleValue`` objects) into the proper enum instance.
+    #: Name of the coercion helper emitted once per generated module and shared by
+    #: every class in it that has enum-ranged slots.  Emitted rather than imported
+    #: so generated modules keep working against any ``linkml-runtime`` version.
+    enum_coercion_helper = "_coerce_enum_slot"
 
-        The dataclass-generated ``__init__`` and the emitted ``__post_init__``
-        already wrap raw values into enum instances at construction time, but
-        a later ``p.status = "ALIVE"`` would leave ``p.status`` as a plain
-        ``str`` without this hook.  See linkml/linkml#723 phase 2.
+    def enum_slots_for(self, cls: ClassDefinition) -> list[tuple[str, str, bool]]:
+        """The enum-ranged slots of ``cls`` as ``(python name, enum class name, multivalued)``.
 
-        The mapping stores the enum class name as a string and resolves it
-        lazily via ``globals()`` because pythongen emits class definitions
-        before enum definitions, so the enum class is not yet bound when the
-        class body executes.  Lookup at assignment time is safe because the
-        module is fully loaded by then; a missing name is a generator bug and
-        raises ``KeyError`` rather than silently skipping coercion.
+        Empty when the class needs no coercion: enums without permissible values
+        (dynamic ``reachable_from`` / ``matches`` enums) have no members to coerce
+        into -- ``__post_init__`` leaves those alone too.  Mixin and abstract classes
+        are included; they can be instantiated, and this hook is now the only place
+        their enum slots are coerced.
 
-        The final store goes through ``super().__setattr__`` so that
-        ``JsonObj.__setattr__`` (which wraps ``dict`` values) keeps applying
-        to every other slot on the class.
+        @param cls: the class being generated
+        @return: one entry per enum-ranged slot, in ``all_slots`` order
         """
-        if cls.mixin or cls.abstract:
-            return ""
         enum_slots: list[tuple[str, str, bool]] = []
-        for slot in self.schemaview.class_induced_slots(cls.name):
+        # Iterate the generator's own slot objects (inherited and mixin slots included,
+        # since a subclass's mapping shadows its parent's) rather than SchemaView's
+        # induced slots: ``slot_name`` resolves the emitted field name -- alias and
+        # keyword mangling (``class`` -> ``class_``) included -- from these, and a key
+        # that differs from the field name means coercion silently never fires.
+        for slot in self.all_slots(cls):
             if not slot.range or slot.range not in self.schema.enums:
                 continue
             enum = self.schema.enums[slot.range]
             if not enum.permissible_values:
-                # Enum with no permissible values (e.g. dynamic ``reachable_from`` /
-                # ``matches`` enums): ``__post_init__`` does not coerce these either,
-                # so assignments are left untouched for consistency.
                 continue
-            aliased = underscore(slot.alias if slot.alias else slot.name)
-            enum_slots.append((aliased, camelcase(enum.name), bool(slot.multivalued)))
+            enum_slots.append((self.slot_name(slot.name), camelcase(enum.name), bool(slot.multivalued)))
+        return enum_slots
+
+    def gen_enum_coercion_helper(self) -> str:
+        """Emit the enum coercion helper once per module, or "" if no class needs it.
+
+        Emitted into the module rather than imported from ``linkml_runtime`` on
+        purpose: a generated module must not stop importing because the runtime it
+        runs against predates this helper.  It only uses the stdlib and the module's
+        own ``globals()``.
+
+        @return: the helper definition, or "" if no generated class has enum slots
+
+        NOTE: Python style wants 2 blank lines before a top-level ``def``. The code
+        below only gets that right sometimes. If no class in this module has an
+        identifier/key slot, ``gen_references()`` prints nothing and we get 2 blank
+        lines, which is correct. If some class does have one, ``gen_references()``
+        prints a small class just above, and we only get 1 blank line.
+
+        This is a pre-existing issue - it does not break anything, and generated files
+        are not run through the ``ruff`` auto-formatter. The very next join in this
+        same method, from ``gen_references()`` into ``@dataclass``, has the same kind
+        of mismatch. Fixing it here would mean this method has to know what
+        ``gen_references()`` printed, just to get a blank line right. Just flagging it.
+        """
+        if not any(self.enum_slots_for(cls) for cls in self.schema.classes.values() if not cls.imported_from):
+            return ""
+        return f"""
+def {self.enum_coercion_helper}(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+"""
+
+    def gen_enum_slot_coercion(self, cls: ClassDefinition) -> str:
+        """Emit the ``_enum_slots`` mapping plus the ``__setattr__`` hook for one class.
+
+        The dataclass-generated ``__init__`` assigns every field through this hook, so
+        it is what coerces enum slots at construction time (``__post_init__`` no longer
+        repeats that work), and a later ``p.status = "ALIVE"`` takes the same path.
+        See linkml/linkml#723 phase 2.
+
+        The coercion itself lives in the module-level helper emitted once by
+        :meth:`gen_enum_coercion_helper`, so each class carries only the mapping and a
+        one-line delegation.  The store goes through ``super().__setattr__`` so that
+        ``JsonObj.__setattr__`` (which wraps ``dict`` values) keeps applying to every
+        other slot on the class.
+
+        @param cls: the class being generated
+        @return: the class body fragment, or "" if the class has no enum slots
+        """
+        enum_slots = self.enum_slots_for(cls)
         if not enum_slots:
             return ""
         mapping = ", ".join(f'"{name}": ("{cls_name}", {mv})' for name, cls_name, mv in enum_slots)
@@ -985,17 +1042,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             f"    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {{{mapping}}}\n"
             "\n"
             "    def __setattr__(self, name: str, value: Any) -> None:\n"
-            "        spec = type(self)._enum_slots.get(name)\n"
-            "        if spec is not None and value is not None:\n"
-            "            enum_name, multivalued = spec\n"
-            "            enum_cls = globals()[enum_name]\n"
-            "            if multivalued:\n"
-            "                if not isinstance(value, list):\n"
-            "                    value = [value]\n"
-            "                value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]\n"
-            "            elif not isinstance(value, enum_cls):\n"
-            "                value = enum_cls(value)\n"
-            "        super().__setattr__(name, value)\n"
+            f"        super().__setattr__(name, {self.enum_coercion_helper}(type(self), name, value))\n"
         )
 
     # sort classes such that if C is a child of P then C appears after P in the list
@@ -1251,10 +1298,15 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
                 return ""
 
+        # Enum-ranged slots with permissible values are coerced by the emitted
+        # ``__setattr__`` (see gen_enum_slot_coercion) as ``__init__`` assigns them, so
+        # ``__post_init__`` must not repeat it.  Enums without permissible values
+        # (dynamic enums) have no members to coerce into and are skipped entirely.
+        enum_hooked = False
         if slot.range in self.schema.enums:
-            # Open enum
             if not self.schema.enums[slot.range].permissible_values:
                 return ""
+            enum_hooked = True
 
         aliased_slot_name = self.slot_name(slot.name)  # Mangled name by which the slot is known in python
         _, _, base_type_name = self.class_reference_type(slot, cls)
@@ -1268,7 +1320,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
-            if slot.designates_type:
+            if slot.designates_type or enum_hooked:
                 pass
             elif slot.required:
                 rlines.append(f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):")
@@ -1290,6 +1342,8 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 else:
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
                 rlines.append(f"self.{aliased_slot_name} = str({td_value_expression})")
+            elif enum_hooked:
+                pass
             elif (
                 # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
@@ -1346,7 +1400,8 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             sn = f"self.{aliased_slot_name}"
             rlines.append(f"if not isinstance({sn}, list):")
             rlines.append(f"\t{sn} = [{sn}] if {sn} is not None else []")
-            rlines.append(f"{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(v) for v in {sn}]")
+            if not enum_hooked:
+                rlines.append(f"{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(v) for v in {sn}]")
         while rlines and copy(rlines[-1]).strip() == "":
             rlines.pop()
         rlines.append("")

@@ -246,3 +246,33 @@ def test_enum_class_attribute_names_are_not_codes(name: str) -> None:
         EnumValues[name]
     with pytest.raises(ValueError, match="Unknown EnumValues enumeration code"):
         EnumValues(name)
+
+
+# ---------------------------------------------------------------------------
+# _lookup hook (code_set enums): __setitem__ must be able to add a value
+# ---------------------------------------------------------------------------
+
+
+class LookupEnum(EnumDefinitionImpl):
+    """Resolves unknown codes through the documented ``_lookup`` hook."""
+
+    _defn = EnumDefinition(name="LookupEnum", code_set="http://example.org/codes")
+
+    A = PermissibleValue(text="A")
+
+    def _lookup(self, key: str) -> PermissibleValue | None:
+        return PermissibleValue(text=key, meaning=f"ex:{key}") if key.startswith("X") else None
+
+
+def test_lookup_hook_adds_value_to_class() -> None:
+    inst = LookupEnum("X1")
+    assert inst == "X1"
+    assert inst.meaning == "ex:X1"
+    assert "X1" in LookupEnum
+    assert LookupEnum["X1"].text == "X1"
+    assert LookupEnum("X1") == inst
+
+
+def test_lookup_hook_miss_still_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown LookupEnum enumeration code"):
+        LookupEnum("B")
