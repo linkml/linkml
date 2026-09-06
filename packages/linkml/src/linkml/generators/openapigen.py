@@ -299,11 +299,17 @@ class OpenApiGenerator(Generator):
         if name_map:
             elem_schemas = cast(dict, self._rename(name_map, elem_schemas))
         if self.inline_enums:
-            elem_schemas = self._inline_enum_schemas(elem_schemas)
+            elem_schemas = self._inline_enum_schemas(elem_schemas, req_linkml_names)
         return elem_schemas
 
-    def _inline_enum_schemas(self, data_schemas: dict) -> dict:
-        """Inline enum subschemas into their parents instead of separate entries."""
+    def _inline_enum_schemas(self, data_schemas: dict, endpoint_schemas: set[str] | None = None) -> dict:
+        """Inline enum subschemas into their parents instead of separate entries.
+
+        ``endpoint_schemas`` holds the LinkML names referenced by the template's endpoints;
+        those enums keep their standalone entry because removing it would leave a dangling
+        endpoint ``$ref``.
+        """
+        endpoint_schemas = endpoint_schemas or set()
         enum_schemas = {
             name: schema
             for name, schema in data_schemas.items()
@@ -311,6 +317,7 @@ class OpenApiGenerator(Generator):
             and "enum" in schema
             and "properties" not in schema
             and name not in self.schemaview.all_types()
+            and name not in endpoint_schemas
         }
         if not enum_schemas:
             return data_schemas
