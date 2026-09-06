@@ -75,9 +75,10 @@ components:
 
 # OpenAPI Schema Object keys a template placeholder is allowed to override.
 #
-# Annotations only. These describe a schema without constraining it, so an override can
+# Various annotations can describe a schema without constraining it, so an override can
 # change what a reader sees but never alter structural aspects of the schema, and never
-# whether a payload is accepted.
+# whether a payload is accepted. So any JSON body the generated schema accepted before
+# an override is still accepted after it, and a body it rejected is still rejected.
 #
 # Structural keys (`type`, `properties`, `enum`, `required`, ...) are deliberately left
 # out. Every placeholder is written `type: object` by convention, but LinkML enums and
