@@ -403,6 +403,22 @@ def test_inline_enums_shared_enum_no_yaml_anchors(input_path):
     assert color_foo is not color_bar
 
 
+def test_inline_enums_preserves_slot_description(input_path):
+    """Test that inlining an enum keeps the slot-level description of the referencing property.
+
+    A property that references an enum carries its own ``description`` next to the
+    ``$ref``. Inlining must merge the enum definition into that property without
+    discarding the slot-level ``description`` (the enum's own, here empty, description
+    must not eclipse it).
+    """
+    schema_path = str(input_path("schema_enum_slot_description.yaml"))
+    head_path = str(input_path("openapi/spec-enum-slot-description.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
+    color = spec["components"]["schemas"]["Foo"]["properties"]["color"]
+    assert color["enum"] == ["FOO", "BAR"]
+    assert color["description"] == "the color of foo"
+
+
 def test_no_dangling_references_for_valid_schema(openapi_spec):
     """Test that a valid schema produces a spec whose every $ref resolves."""
     schema_names = set(openapi_spec["components"]["schemas"].keys())
