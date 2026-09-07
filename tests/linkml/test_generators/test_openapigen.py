@@ -359,6 +359,30 @@ def test_inline_enums_does_not_inline_renamed_enums(input_path):
     }
 
 
+def test_inline_enums_shared_enum_no_yaml_anchors(input_path):
+    """Test that inlining a shared enum does not emit YAML anchors.
+
+    When the same enum is referenced from two classes, the inlined copy must not be the
+    very same Python object: reusing the object makes ``yaml.dump`` emit an ``&idNNN``
+    anchor with an ``*idNNN`` alias for the second reference. The generated YAML must
+    contain no anchors or aliases.
+    """
+    schema_path = str(input_path("schema_shared_enum.yaml"))
+    head_path = str(input_path("openapi/spec-shared-enum.openapi.yaml"))
+    result = OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path)
+    spec = yaml.safe_load(result)
+    color_foo = spec["components"]["schemas"]["Foo"]["properties"]["color"]
+    color_bar = spec["components"]["schemas"]["Bar"]["properties"]["color"]
+    # both classes carry the inlined enum definition
+    assert color_foo["enum"] == ["FOO", "BAR"]
+    assert color_bar["enum"] == ["FOO", "BAR"]
+    # no YAML anchor/alias markers leak into the emitted document
+    assert "&id" not in result
+    assert "*id" not in result
+    # the duplicated values must not alias the same object instance
+    assert color_foo is not color_bar
+
+
 def test_no_dangling_references_for_valid_schema(openapi_spec):
     """Test that a valid schema produces a spec whose every $ref resolves."""
     schema_names = set(openapi_spec["components"]["schemas"].keys())

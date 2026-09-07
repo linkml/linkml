@@ -1,0 +1,20 @@
+# LinkML schema with an enum referenced from two classes
+id: https://w3id.org/linkml/tests/shared_enum
+name: shared_enum
+default_prefix: shared_enum
+imports:
+  - linkml:types
+enums:
+  FixedEnum:
+    permissible_values:
+      FOO: {}
+      BAR: {}
+classes:
+  Foo:
+    attributes:
+      color:
+        range: FixedEnum
+  Bar:
+    attributes:
+      color:
+        range: FixedEnum
