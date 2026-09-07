@@ -237,7 +237,7 @@ def test_unreferenced_chain_pruned_by_default(input_path):
     the reference closure must remove the whole island. Space-named classes also exercise
     the YAML quoting of schema keys and ``$ref`` targets.
     """
-    schema_path = str(input_path("schema_chain_unreferenced.yaml"))
+    schema_path = str(input_path("openapi/schema_chain_unreferenced.yaml"))
     head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -255,7 +255,7 @@ def test_keep_unreferenced_pulls_transitive_chain(input_path):
     must be kept too, because pruning out ``Baz Qux`` would leave the kept ``Foo Bar``
     with a dangling reference.
     """
-    schema_path = str(input_path("schema_chain_unreferenced.yaml"))
+    schema_path = str(input_path("openapi/schema_chain_unreferenced.yaml"))
     head_path = str(input_path("openapi/spec-chain-unreferenced.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -274,7 +274,7 @@ def test_keep_unreferenced_does_not_add_unrelated_schemas(input_path):
     dedicated fixture with an unrelated class proves the flag does not regress to dumping
     every class.
     """
-    schema_path = str(input_path("schema_unreferenced_with_unrelated.yaml"))
+    schema_path = str(input_path("openapi/schema_unreferenced_with_unrelated.yaml"))
     head_path = str(input_path("openapi/spec-keep-scoped.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -322,7 +322,7 @@ def test_inline_enums_does_not_inline_types(input_path):
     (``_inline_enum_schemas`` matches any schema with ``enum`` and no ``properties``);
     types must keep their named schema entry even when inlining is enabled.
     """
-    schema_path = str(input_path("schema_types_and_enums.yaml"))
+    schema_path = str(input_path("openapi/schema_types_and_enums.yaml"))
     head_path = str(input_path("openapi/spec-types-enums.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -334,7 +334,7 @@ def test_inline_enums_does_not_inline_types(input_path):
 
 def test_inline_enums_disabled_keeps_types_and_enums_separate(input_path):
     """Test that with inline_enums disabled both types and enums keep separate schema entries."""
-    schema_path = str(input_path("schema_types_and_enums.yaml"))
+    schema_path = str(input_path("openapi/schema_types_and_enums.yaml"))
     head_path = str(input_path("openapi/spec-types-enums.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=False).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -350,7 +350,7 @@ def test_inline_enums_keeps_endpoint_referenced_enum(input_path):
     leave the endpoint's ``$ref`` dangling. An enum that is itself the seeded schema of an
     endpoint must therefore keep its entry even when inlining is enabled.
     """
-    schema_path = str(input_path("schema_endpoint_enum.yaml"))
+    schema_path = str(input_path("openapi/schema_endpoint_enum.yaml"))
     head_path = str(input_path("openapi/spec-endpoint-enum.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -368,7 +368,7 @@ def test_inline_enums_does_not_inline_renamed_enums(input_path):
     rename must not hide the fact that the source element is an enum. Otherwise the schema
     would be inlined away, leaving the endpoint's ``$ref`` dangling.
     """
-    schema_path = str(input_path("schema_types_and_enums.yaml"))
+    schema_path = str(input_path("openapi/schema_types_and_enums.yaml"))
     head_path = str(input_path("openapi/spec-renamed-type.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
@@ -387,7 +387,7 @@ def test_inline_enums_shared_enum_no_yaml_anchors(input_path):
     anchor with an ``*idNNN`` alias for the second reference. The generated YAML must
     contain no anchors or aliases.
     """
-    schema_path = str(input_path("schema_shared_enum.yaml"))
+    schema_path = str(input_path("openapi/schema_shared_enum.yaml"))
     head_path = str(input_path("openapi/spec-shared-enum.openapi.yaml"))
     result = OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path)
     spec = yaml.safe_load(result)
@@ -411,7 +411,7 @@ def test_inline_enums_preserves_slot_description(input_path):
     discarding the slot-level ``description`` (the enum's own, here empty, description
     must not eclipse it).
     """
-    schema_path = str(input_path("schema_enum_slot_description.yaml"))
+    schema_path = str(input_path("openapi/schema_enum_slot_description.yaml"))
     head_path = str(input_path("openapi/spec-enum-slot-description.openapi.yaml"))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     color = spec["components"]["schemas"]["Foo"]["properties"]["color"]
