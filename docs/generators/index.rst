@@ -23,6 +23,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    :caption: Contents:
 
    json-schema
+   multifile-json-schema
    protobuf
    graphql
    openapi
