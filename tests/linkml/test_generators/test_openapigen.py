@@ -127,6 +127,23 @@ def test_missing_x_linkml_source_raises(input_path):
         OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path)
 
 
+def test_referenced_parameter_does_not_crash(input_path):
+    """Test that a template parameter given as a $ref does not raise KeyError.
+
+    A parameter entry of the form ``{$ref: '#/components/parameters/Limit'}`` has no
+    ``schema`` key of its own (the schema lives inside ``components/parameters``), so
+    reading ``param_spec["schema"]`` unconditionally crashed before generation.
+    """
+    schema_path = str(input_path("openapi/schema_referenced_parameter.yaml"))
+    head_path = str(input_path("openapi/spec-referenced-parameter.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    # the reusable parameter survives untouched
+    assert spec["paths"]["/foo"]["get"]["parameters"] == [{"$ref": "#/components/parameters/Limit"}]
+    # and the endpoint schema is generated as usual
+    assert "Foo" in spec["components"]["schemas"]
+    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+
+
 def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
     """Test that referencing a non-existent schema in the template raises an error."""
     template = tmp_path / "bad.yaml"
