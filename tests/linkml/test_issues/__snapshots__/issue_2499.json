@@ -5,7 +5,7 @@
             "description": "",
             "properties": {
                 "identifier": {
-                    "pattern": "^(https?://|(mailto|tel):)\\w+$",
+                    "pattern": "^(?:^(https?://|(mailto|tel):)\\w+$)$",
                     "type": "string"
                 }
             },
@@ -23,7 +23,7 @@
     "metamodel_version": "1.11.0",
     "properties": {
         "identifier": {
-            "pattern": "^(https?://|(mailto|tel):)\\w+$",
+            "pattern": "^(?:^(https?://|(mailto|tel):)\\w+$)$",
             "type": "string"
         }
     },

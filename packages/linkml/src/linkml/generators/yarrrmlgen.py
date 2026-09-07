@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import os
-from typing import Any, TextIO
+from dataclasses import dataclass
+from typing import Any
 
 import click
 import yaml
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition
-from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.linkml_model.meta import ClassDefinition
 
 
 class FlowList(list):
@@ -33,24 +33,23 @@ DEFAULT_SOURCE_JSON = "data.json~jsonpath"
 DEFAULT_ITERATOR = "$[*]"
 
 
+@dataclass
 class YarrrmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.3.0"
     valid_formats = ["yml", "yaml"]
     visit_all_class_slots = False
+    uses_schemaloader = False
 
-    def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
-        raw_src = kwargs.pop("source", None)
-        it = kwargs.pop("iterator_template", None)
-        super().__init__(schema, **kwargs)
+    source: str | None = None
+    """YARRRML source shorthand, e.g. data.json~jsonpath or data.csv~csv."""
+    iterator_template: str | None = None
+    """JSONPath iterator template; supports {Class}."""
 
-        self.schemaview = SchemaView(schema)
-        self.schema: SchemaDefinition = self.schemaview.schema
-        self.format = format
-        self.source: str = self._infer_source_suffix(raw_src) if raw_src else DEFAULT_SOURCE_JSON
-        if it:
-            self.iterator_template = it
-        else:
+    def __post_init__(self):
+        super().__post_init__()
+        self.source = self._infer_source_suffix(self.source) if self.source else DEFAULT_SOURCE_JSON
+        if not self.iterator_template:
             has_tree_root = any(c.tree_root for c in self.schemaview.all_classes().values())
             self.iterator_template = "$" if has_tree_root else DEFAULT_ITERATOR
 

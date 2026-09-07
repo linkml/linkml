@@ -135,6 +135,7 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
+
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
 
@@ -325,7 +326,9 @@ class OwlSchemaGenerator(Generator):
         for slot in sv.all_slots(imports=mergeimports, attributes=False).values():
             self.add_slot(slot, attribute=False)
         for typ in sv.all_types(imports=mergeimports).values():
-            self.add_type(typ)
+            # Type constraints are inherited, so emit the effective type rather
+            # than the asserted definition from the schema.
+            self.add_type(sv.induced_type(typ.name))
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
         for cls in sv.all_classes(imports=mergeimports).values():
@@ -938,7 +941,7 @@ class OwlSchemaGenerator(Generator):
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: element.pattern,  # TODO: map between ECMAScript and XSD regular expressions
+            XSD.pattern: self._structured_pattern_as_xsd(element),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -994,6 +997,29 @@ class OwlSchemaGenerator(Generator):
                 graph.add((x, constraint_prop, Literal(constraint_val)))
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
+
+    def _structured_pattern_as_xsd(
+        self,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+    ) -> str | None:
+        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
+        pattern = element.pattern
+        structured_pattern = element.structured_pattern
+        # OWL also processes anonymous expressions, which cannot be induced.
+        # Named definitions that reach this point without a pattern are raw
+        # schema elements, so resolve them locally without mutating the schema.
+        if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
+            pattern = self.schemaview.resolve_pattern(element)
+        if pattern is None or structured_pattern is None:
+            return pattern
+        inner = pattern
+        if inner.startswith("^(?:") and inner.endswith(")$"):
+            inner = inner[4:-2]
+        if inner.startswith("^") and inner.endswith("$"):
+            inner = inner[1:-1]
+        if structured_pattern.partial_match:
+            return f".*({inner}).*"
+        return inner
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so

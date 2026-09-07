@@ -695,7 +695,8 @@ class ShaclGenerator(Generator):
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        rt = sv.get_type(r)
+        # Types can inherit URI and pattern constraints.
+        rt = sv.induced_type(r)
         type_uri = rt.uri
         expanded = sv.get_uri(rt, expand=True) if type_uri else None
         if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):

@@ -45,19 +45,19 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
-| Pydantic | 30 | 34 | 1 | 0 | 65 | 46% |
-| Python DC | 18 | 37 | 10 | 0 | 65 | 28% |
-| JSON Schema | 40 | 23 | 2 | 0 | 65 | 62% |
-| Java | 0 | 24 | 41 | 0 | 65 | 0% |
-| SHACL | 20 | 25 | 20 | 0 | 65 | 31% |
-| ShEx | 0 | 24 | 41 | 0 | 65 | 0% |
-| OWL | 0 | 26 | 39 | 0 | 65 | 0% |
-| JSON-LD Ctx | 35 | 24 | 6 | 0 | 65 | 54% |
-| SQLite DDL | 13 | 40 | 12 | 0 | 65 | 20% |
-| Postgres DDL | 0 | 23 | 42 | 0 | 65 | 0% |
-| Pandera | 15 | 28 | 22 | 0 | 65 | 23% |
-| Polars Schema | 29 | 23 | 13 | 0 | 65 | 45% |
-| sql_ddl_bigquery | 0 | 24 | 41 | 0 | 65 | 0% |
+| Pydantic | 31 | 34 | 1 | 0 | 66 | 47% |
+| Python DC | 18 | 38 | 10 | 0 | 66 | 27% |
+| JSON Schema | 41 | 23 | 2 | 0 | 66 | 62% |
+| Java | 0 | 24 | 42 | 0 | 66 | 0% |
+| SHACL | 21 | 25 | 20 | 0 | 66 | 32% |
+| ShEx | 0 | 24 | 42 | 0 | 66 | 0% |
+| OWL | 0 | 26 | 40 | 0 | 66 | 0% |
+| JSON-LD Ctx | 36 | 24 | 6 | 0 | 66 | 55% |
+| SQLite DDL | 13 | 41 | 12 | 0 | 66 | 20% |
+| Postgres DDL | 0 | 23 | 43 | 0 | 66 | 0% |
+| Pandera | 16 | 28 | 22 | 0 | 66 | 24% |
+| Polars Schema | 30 | 23 | 13 | 0 | 66 | 45% |
+| sql_ddl_bigquery | 0 | 24 | 42 | 0 | 66 | 0% |
 
 ## Details by Category
 
@@ -198,6 +198,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | ID prefix | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Min/max value | ✅ | ⚠️ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ | ❓ |
 | Regex pattern | ⚠️ | ⚠️ | ⚠️ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
+| Structured pattern | ✅ | ⚠️ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ | ❓ |
 
 ### Uncategorized
 

@@ -58,6 +58,7 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
+
     genmeta: bool = False
     dataclass_repr: bool = False
     """
@@ -1222,14 +1223,16 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if slot.designates_type:
                 slot_range = self._roll_up_type(slot.range)
                 if slot_range == "string":
-                    td_value_classvar = "class_name"
+                    td_value_expression = "self.class_name"
                 elif slot_range == "uri":
-                    td_value_classvar = "class_model_uri"
+                    td_value_expression = "self.class_model_uri"
                 elif slot_range == "uriorcurie":
-                    td_value_classvar = "class_class_curie"
+                    td_value_expression = (
+                        "self.class_class_curie if self.class_class_curie is not None else self.class_class_uri"
+                    )
                 else:
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
-                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+                rlines.append(f"self.{aliased_slot_name} = str({td_value_expression})")
             elif (
                 # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
@@ -1412,7 +1415,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             mappings = ", mappings = [" + ", ".join(map_texts) + "]"
         else:
             mappings = ""
-        pattern = f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
+        # Global slot definitions are emitted directly rather than through
+        # induced_slot(), so resolve structured patterns explicitly here
+        # without changing the source SlotDefinition.
+        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 

@@ -147,3 +147,20 @@ def test_renaming(input_path, kitchen_sink_path):
     assert "Person" not in schemas
     # all $ref values in the spec must use the renamed
     assert "Person" not in str(spec).replace("PersonResource", "")
+
+
+def test_openapi_examples_converted_to_singular_example(input_path):
+    """Test that a slot's ``examples`` list is converted to OpenAPI's singular ``example``.
+
+    OpenAPI 3.0 has no plural ``examples`` keyword on the Schema Object, only ``example``.
+    Without this conversion, generation fails validation entirely for any schema with a
+    slot declaring ``examples`` -- this is a blocker, not a cosmetic gap.
+    """
+    schema_path = str(input_path("openapi/schema_examples.yaml"))
+    head_path = str(input_path("openapi/spec-examples.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    name_schema = spec["components"]["schemas"]["WithExamples"]["properties"]["name"]
+    # first example is kept; the plural form is gone entirely
+    assert name_schema["example"] == "sample"
+    assert "examples" not in name_schema
+    assert validate(spec, cls=OpenAPIV30SpecValidator) is None

@@ -185,6 +185,8 @@ class OpenApiGenerator(Generator):
 
         - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn't support ``const``)
         - ``type`` as a list (e.g. nullable ``["string", "null"]``) becomes ``anyOf``
+        - ``examples`` (a list) becomes ``example`` (its first element); OpenAPI 3.0 has
+          no plural ``examples`` keyword on the Schema Object, only singular ``example``
         - ``$ref`` paths are rewritten from ``#/$defs/`` to ``#/components/schemas/``
         """
         fixed_element = None
@@ -195,6 +197,13 @@ class OpenApiGenerator(Generator):
                     fixed_element["enum"] = [value]
                 elif key == "type" and isinstance(value, list):
                     fixed_element["anyOf"] = [{"type": item} for item in value if item != "null"]
+                elif key == "examples" and isinstance(value, list):
+                    if value:
+                        # lossy by necessity: OpenAPI 3.0 allows only one example.
+                        # assigned rather than recursed into, since an example is data,
+                        # not schema -- recursing could rewrite a `const`/`type` key
+                        # that happens to appear inside the example value itself
+                        fixed_element["example"] = value[0]
                 else:
                     if isinstance(value, dict | list):
                         value = self._fix_openapi_spec(value)

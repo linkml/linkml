@@ -1,35 +1,24 @@
 """
 Tests the generic generator framework
-
-Note: I am skipping any test that overrides ClassVars
-
-As part of this refactor:
-https://github.com/linkml/linkml/pull/924
-
-We are separating class vars and object vars; it is not possible to override ClassVars; see
-
-https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
-
-If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
-
 """
 
 import logging
 import os
+import re
 from dataclasses import dataclass, field
-from io import StringIO
-from typing import TextIO, cast
+from io import BytesIO, StringIO
+from typing import cast
 
+import click
 import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.generator import Generator
+from linkml.utils.generator import Generator, read_generator_config
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     Element,
     ElementName,
-    SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
     SubsetDefinition,
@@ -49,28 +38,9 @@ class GeneratorTest(Generator):
 
     logstream: StringIO = field(default_factory=lambda: StringIO())
 
-    def __xxxinit__(
-        self,
-        schema: str | TextIO | SchemaDefinition,
-        fmt: str = "txt",
-        metadata: bool = False,
-    ) -> None:
+    def __post_init__(self) -> None:
         self.visited = []
         self.visit_class_return = True
-        # self.visit_all_class_slots: bool = True
-        # self.visits_are_sorted: bool = False
-        # self.sort_class_slots: bool = False
-
-        self.logstream = StringIO()
-        logging.basicConfig()
-        logger = logging.getLogger(self.__class__.__name__)
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-        logger.addHandler(logging.StreamHandler(self.logstream))
-        logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, metadata, logger=logger)
-
-    def __post_init__(self) -> None:
         self.logstream = StringIO()
         logging.basicConfig()
         logger = logging.getLogger(self.__class__.__name__)
@@ -375,7 +345,6 @@ expected5 = [
 ]
 
 
-@pytest.mark.skip("See above")
 def test_visitors(input_path):
     """Test the generator visitor functions"""
     gen = GeneratorTest(str(input_path("generator1.yaml")))
@@ -511,7 +480,6 @@ classes:
     assert gen.formatted_element_name(cast(Element, gen)) is None
 
 
-@pytest.mark.skip(reason="See above")
 def test_own_slots(input_path):
     """Test the generator own_slots and all_slots helper functions"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -562,7 +530,6 @@ def test_own_slots(input_path):
     ]
 
 
-@pytest.mark.skip(reason="See above")
 def test_slot_class_paths(input_path):
     """Test for aliased slot name, class identifier path and slot type path"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -726,3 +693,81 @@ def test_meta_neighborhood():
     #                            slotrefs={'is_a', 'apply_to', 'mixins', 'owner'},
     #                            typerefs={'boolean', 'datetime', 'uri', 'string', 'uriorcurie', 'ncname'},
     #                            subsetrefs=set()), neighbor_refs)
+
+
+CONFIG_YAML = b"""
+generator_args:
+  java:
+    package: org.example.model
+    mergeimports: true
+  golang:
+    package: mypackage
+"""
+
+
+@pytest.mark.parametrize(
+    ("generator_name", "expected"),
+    [
+        ("java", {"package": "org.example.model", "mergeimports": True}),
+        ("golang", {"package": "mypackage"}),
+    ],
+)
+def test_read_generator_config_returns_whole_section(generator_name, expected):
+    """Each generator gets its own section out of one shared config file, and gets all of
+    it in a single read - the file is a stream, so a second read would find nothing."""
+    assert read_generator_config(BytesIO(CONFIG_YAML), generator_name) == expected
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "generator_name"),
+    [
+        pytest.param(None, "java", id="no-config-file"),
+        pytest.param(b"", "java", id="empty-file"),
+        pytest.param(CONFIG_YAML, "rust", id="generator-absent"),
+        pytest.param(b"generator_args:\n  java:\n", "java", id="empty-section"),
+        pytest.param(b"generator_args:\n", "java", id="empty-generator-args"),
+        pytest.param(b"excludes:\n  - markdown\n", "java", id="no-generator-args"),
+    ],
+)
+def test_read_generator_config_absent_section_is_empty(config_yaml, generator_name):
+    """A section that is absent, or written but left empty, gives an empty dict."""
+    config_file = None if config_yaml is None else BytesIO(config_yaml)
+
+    assert read_generator_config(config_file, generator_name) == {}
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param(b"- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param(b"justastring\n", "the top level", id="top-level-scalar"),
+        pytest.param(b"generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(b"generator_args:\n  java: notamapping\n", "'generator_args.java'", id="scalar-section"),
+    ],
+)
+def test_read_generator_config_rejects_malformed_section(config_yaml, where):
+    """A scalar where a mapping belongs is a usage error naming the offending key -
+    never silently ignored, which would leave the generator on its default."""
+    with pytest.raises(click.UsageError, match=f"expected a YAML mapping at {re.escape(where)}"):
+        read_generator_config(BytesIO(config_yaml), "java")
+
+
+@pytest.mark.parametrize(
+    "config_yaml",
+    [
+        pytest.param(b"generator_args:\n  java:\n   package: [unclosed\n", id="unclosed-bracket"),
+        pytest.param(b"generator_args:\n\tjava:\n\t\tpackage: x\n", id="tab-indent"),
+    ],
+)
+def test_read_generator_config_rejects_unparsable_yaml(config_yaml):
+    """A file that isn't valid YAML at all is reported as a usage error, like a misshapen
+    one, rather than escaping as a raw parser traceback."""
+    with pytest.raises(click.UsageError, match="could not parse as YAML"):
+        read_generator_config(BytesIO(config_yaml), "java")
+
+
+def test_validate_generator_args_default_is_a_noop():
+    """The base implementation accepts anything -- generators that have no config value
+    worth checking up front (which is most of them) need not override it."""
+    Generator.validate_generator_args({})
+    Generator.validate_generator_args({"anything": "goes", "even": None})
