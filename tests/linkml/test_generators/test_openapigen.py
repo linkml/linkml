@@ -115,6 +115,18 @@ def test_schema_id_mismatch_raises(input_path, kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
 
 
+def test_missing_x_linkml_source_raises(input_path):
+    """Test that a template schema missing x-linkml-source raises a descriptive KeyError.
+
+    x-linkml-schema presence/value are validated nicely, but x-linkml-source was
+    skipped, surfacing as a bare ``KeyError: 'x-linkml-source'`` during instantiation.
+    """
+    schema_path = str(input_path("openapi/schema_missing_xlinkml_source.yaml"))
+    head_path = str(input_path("openapi/spec-missing-x-linkml-source.openapi.yaml"))
+    with pytest.raises(KeyError, match="Bar.*missing required 'x-linkml-source'"):
+        OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path)
+
+
 def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
     """Test that referencing a non-existent schema in the template raises an error."""
     template = tmp_path / "bad.yaml"
