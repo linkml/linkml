@@ -138,7 +138,12 @@ class OpenApiGenerator(Generator):
                             result.add(resource_name)
                 if "parameters" in req_spec:
                     for param_spec in req_spec["parameters"]:
-                        if "$ref" in param_spec["schema"]:
+                        # a $ref parameter directly references a reusable parameter object
+                        # (whose schema lives inside components/parameters), so it cannot
+                        # reference a component schema on its own
+                        if "$ref" in param_spec:
+                            continue
+                        if param_spec.get("schema", {}).get("$ref"):
                             resource_name = param_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
                             result.add(resource_name)
                 if "responses" in req_spec:
