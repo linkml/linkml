@@ -29,7 +29,7 @@ from typing import IO, Any, ClassVar, TextIO, Union, cast
 
 import click
 import yaml
-from click import Argument, Command, Option
+from click import Argument, Command, Option, ParameterSource
 from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
@@ -98,6 +98,9 @@ class Generator(metaclass=abc.ABCMeta):
 
     generatorversion: ClassVar[str] = None  # Generator version identifier
     """Version of the generator. Consider deprecating and instead use overall linkml version"""
+
+    config_section_name: ClassVar[str] = None
+    """Section this generator reads from a ``--config-file`` (``generator_args.<name>``)."""
 
     uses_schemaloader: ClassVar[bool] = True
     """Old-style generator that uses the SchemaLoader and visitor pattern"""
@@ -1131,3 +1134,47 @@ def read_generator_config(config_file: IO[bytes] | None, generator_name: str) ->
         return config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'", source)
     except ValueError as e:
         raise click.UsageError(str(e)) from e
+
+
+# Options whose click callbacks fire at parse time (e.g. configuring logging); a
+# config-file value would be recorded but never trigger the callback, so these are
+# honored only from the command line, never overlaid from a config file.
+_CONFIG_OVERLAY_SKIP = frozenset({"yamlfile", "schema", "verbose", "log_level", "stacktrace", "config_file"})
+
+
+def apply_config_defaults(ctx: click.Context, config: Mapping[str, Any], args: dict[str, Any]) -> dict[str, Any]:
+    """Overlay ``--config-file`` values onto CLI args the user did not set.
+
+    Precedence is command line/env over config over option defaults: a value is
+    taken from ``config`` only when its option was left at the default. Values are
+    converted by their option's click type, so a config file and a command line
+    reach the generator identically. Keys that are not options of this command are
+    reported per-key (a typo in the config file) rather than silently dropped.
+
+    :param ctx: The active click context, used to tell which options the user set.
+    :param config: One generator's settings, e.g. from :func:`read_generator_config`.
+    :param args: The keyword args forwarded to the generator; updated in place.
+    :return: ``args``, updated in place.
+    :raises click.BadParameter: If a value is not valid for its option's type.
+    """
+    if not config:
+        return args
+    # expose_value=False params (--version, --help) never reach the callback, so a
+    # config key naming one is a typo, not something to overlay
+    params = {param.name: param for param in ctx.command.params if param.expose_value}
+    for key, value in config.items():
+        param = params.get(key)
+        if param is None:
+            logger.warning(f"--config-file: ignoring unknown key {key!r}")
+            continue
+        if key in _CONFIG_OVERLAY_SKIP:
+            continue
+        # overlay only when the option was left at its default; CLI/env values already win
+        if ctx.get_parameter_source(key) in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP):
+            # a YAML scalar stands in for a one-element list on a repeatable option;
+            # click would otherwise iterate a string per character
+            if param.multiple and not isinstance(value, list | tuple):
+                value = [value]
+            # convert as click would, so e.g. `template_dir: /tmp` arrives as a Path
+            args[key] = param.type_cast_value(ctx, value)
+    return args
