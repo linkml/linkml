@@ -330,7 +330,19 @@ class OpenApiGenerator(Generator):
                 if "$ref" in obj:
                     ref_name = obj["$ref"].split("/")[-1]
                     if ref_name in enum_schemas:
-                        return deepcopy(enum_schemas[ref_name])
+                        # inline the enum definition, but preserve any sibling keywords
+                        # placed next to the ``$ref`` (e.g. a slot-level ``description``).
+                        # A sibling value overrides the enum's own only when it carries
+                        # information: an empty/blank value must not eclipse a meaningful
+                        # one from either side.
+                        inlined = deepcopy(enum_schemas[ref_name])
+                        for key, value in obj.items():
+                            if key == "$ref":
+                                continue
+                            value = _replace_refs(value)
+                            if value or key not in inlined or not inlined[key]:
+                                inlined[key] = value
+                        return inlined
                 return {k: _replace_refs(v) for k, v in obj.items()}
             elif isinstance(obj, list):
                 return [_replace_refs(item) for item in obj]
