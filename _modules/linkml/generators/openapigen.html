@@ -595,6 +595,8 @@
 
 <span class="sd">        - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn&#39;t support ``const``)</span>
 <span class="sd">        - ``type`` as a list (e.g. nullable ``[&quot;string&quot;, &quot;null&quot;]``) becomes ``anyOf``</span>
+<span class="sd">        - ``examples`` (a list) becomes ``example`` (its first element); OpenAPI 3.0 has</span>
+<span class="sd">          no plural ``examples`` keyword on the Schema Object, only singular ``example``</span>
 <span class="sd">        - ``$ref`` paths are rewritten from ``#/$defs/`` to ``#/components/schemas/``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fixed_element</span> <span class="o">=</span> <span class="kc">None</span>
@@ -605,6 +607,13 @@
                     <span class="n">fixed_element</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;type&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="n">fixed_element</span><span class="p">[</span><span class="s2">&quot;anyOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="s2">&quot;null&quot;</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;examples&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="c1"># lossy by necessity: OpenAPI 3.0 allows only one example.</span>
+                        <span class="c1"># assigned rather than recursed into, since an example is data,</span>
+                        <span class="c1"># not schema -- recursing could rewrite a `const`/`type` key</span>
+                        <span class="c1"># that happens to appear inside the example value itself</span>
+                        <span class="n">fixed_element</span><span class="p">[</span><span class="s2">&quot;example&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">):</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
