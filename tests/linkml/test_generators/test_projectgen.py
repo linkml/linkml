@@ -415,12 +415,6 @@ def test_cli_generator_arguments_layer_over_config_file(tmp_path, schema_path, a
         # a bare string is coerced (see test_generate_coerces_a_bare_string_for_excludes_and_includes),
         # but a mapping is still the wrong shape entirely and is rejected, not coerced
         pytest.param("excludes", {"a": 1}, "expected a YAML list of generator names at 'excludes'", id="excludes-dict"),
-        pytest.param(
-            "excludes", "python", "expected a YAML list of generator names at 'excludes'", id="excludes-string"
-        ),
-        pytest.param(
-            "includes", "python", "expected a YAML list of generator names at 'includes'", id="includes-string"
-        ),
     ],
 )
 def test_generate_checks_a_configuration_built_in_code(tmp_path, schema_path, attribute, value, message):
