@@ -323,6 +323,24 @@ def test_inline_enums_disabled_keeps_types_and_enums_separate(input_path):
     assert schemas["FixedType"]["type"] == "string"
 
 
+def test_inline_enums_keeps_endpoint_referenced_enum(input_path):
+    """Test that inline_enums does not inline an enum referenced directly by an endpoint.
+
+    Inlining removes the enum's standalone ``components/schemas`` entry, which would
+    leave the endpoint's ``$ref`` dangling. An enum that is itself the seeded schema of an
+    endpoint must therefore keep its entry even when inlining is enabled.
+    """
+    schema_path = str(input_path("schema_endpoint_enum.yaml"))
+    head_path = str(input_path("openapi/spec-endpoint-enum.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert "FixedEnum" in schemas
+    assert schemas["FixedEnum"]["enum"] == ["FOO", "BAR"]
+    assert spec["paths"]["/fixed-enum"]["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/FixedEnum"
+    }
+
+
 def test_no_dangling_references_for_valid_schema(openapi_spec):
     """Test that a valid schema produces a spec whose every $ref resolves."""
     schema_names = set(openapi_spec["components"]["schemas"].keys())
