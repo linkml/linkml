@@ -387,3 +387,19 @@ def test_dangling_reference_reports_all(input_path, kitchen_sink_path):
     message = str(exc_info.value)
     assert "#/components/schemas/Foo" in message
     assert "#/components/schemas/Bar" in message
+
+
+def test_refs_to_non_schema_components_allowed(input_path, kitchen_sink_path):
+    """Test that $refs to reusable components other than schemas (e.g. responses) are allowed.
+
+    The dangling-reference check must resolve every internal ``$ref`` against its own
+    ``components`` section rather than assuming all targets live under ``schemas``.
+    """
+    head_path = str(input_path("openapi/spec-shared-responses.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
+    # the reusable response survives and is still referenced by the endpoint
+    assert "NotFound" in spec["components"]["responses"]
+    assert spec["paths"]["/foo"]["get"]["responses"]["404"] == {"$ref": "#/components/responses/NotFound"}
+    # the schema is generated as usual
+    assert "Person" in spec["components"]["schemas"]
+    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
