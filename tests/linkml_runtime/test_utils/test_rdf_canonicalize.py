@@ -507,3 +507,138 @@ def test_fallback_is_deterministic_across_processes(output_format):
     assert out_a == out_b, (
         "Fallback output differs across PYTHONHASHSEED values; blank-node canonicalization may be missing"
     )
+
+
+def _shapes_graph(count: int, extra: bool = False) -> Graph:
+    """A graph shaped like generator output: one blank node per named subject."""
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    names = [f"{i:02d}" for i in range(count)] + (["AAAinserted"] if extra else [])
+    for name in names:
+        subject = URIRef(f"http://example.com/Shape{name}")
+        prop = BNode()
+        g.add((subject, URIRef("http://example.com/property"), prop))
+        g.add((prop, URIRef("http://example.com/path"), URIRef(f"http://example.com/p{name}")))
+    return g
+
+
+def _changed_line_count(before: str, after: str) -> int:
+    import difflib
+
+    diff = difflib.unified_diff(before.splitlines(), after.splitlines(), n=0, lineterm="")
+    return sum(1 for line in diff if line[:1] in "+-" and not line.startswith(("+++", "---")))
+
+
+def test_diff_stable_is_opt_in():
+    """The default must keep producing exactly the output it produced before."""
+    graph = _make_graph_with_bnodes()
+    assert canonicalize_rdf_graph(graph) == canonicalize_rdf_graph(graph, diff_stable=False)
+
+
+def test_diff_stable_preserves_semantics():
+    """Relabelling blank nodes must not change what the graph means."""
+    graph = _make_graph_with_bnodes()
+
+    plain = rdflib.Graph()
+    plain.parse(data=canonicalize_rdf_graph(graph), format="turtle")
+    stable = rdflib.Graph()
+    stable.parse(data=canonicalize_rdf_graph(graph, diff_stable=True), format="turtle")
+
+    assert rdflib.compare.isomorphic(plain, stable)
+
+
+def test_diff_stable_is_deterministic():
+    """Diff stability must not cost determinism, which is the stronger property."""
+    graph = _make_graph_with_bnodes()
+    outputs = {canonicalize_rdf_graph(graph, diff_stable=True) for _ in range(5)}
+    assert len(outputs) == 1
+
+
+def test_diff_stable_confines_an_insertion_to_the_lines_it_touches():
+    """Inserting one subject must not relabel the blank nodes of the others.
+
+    RDFC-1.0 numbers blank nodes ``c14nN`` in a global order, so a subject
+    sorting before the others shifts every subsequent label and rewrites
+    most of the file. This is the entire reason the option exists, so the
+    assertion is on the *ratio*, not on an absolute line count that would
+    be brittle across rdflib versions.
+    """
+    before, after = _shapes_graph(20), _shapes_graph(20, extra=True)
+
+    baseline = _changed_line_count(canonicalize_rdf_graph(before), canonicalize_rdf_graph(after))
+    stable = _changed_line_count(
+        canonicalize_rdf_graph(before, diff_stable=True),
+        canonicalize_rdf_graph(after, diff_stable=True),
+    )
+
+    assert stable < baseline / 4, f"expected diff-stable output to churn far less; got {stable} vs baseline {baseline}"
+
+
+_DIFF_STABLE_SCHEMA = """\
+id: https://example.org/diffstable
+name: diffstable
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/diffstable/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Person:
+    slots: [name, knows]
+  Organization:
+    slots: [name]
+slots:
+  name:
+    range: string
+  knows:
+    range: Person
+    multivalued: true
+"""
+
+
+def _generator_cases():
+    """The four generators that serialize RDF, with the args that make them do so."""
+    from linkml.generators.owlgen import OwlSchemaGenerator
+    from linkml.generators.rdfgen import RDFGenerator
+    from linkml.generators.shaclgen import ShaclGenerator
+    from linkml.generators.shexgen import ShExGenerator
+
+    return [
+        pytest.param(OwlSchemaGenerator, {}, id="owlgen"),
+        # rdfgen and shexgen resolve JSON-LD contexts (linkml types, shex.jsonld);
+        # the `network` marker serves those from local stubs. See tests/conftest.py.
+        pytest.param(RDFGenerator, {}, id="rdfgen", marks=pytest.mark.network),
+        pytest.param(ShaclGenerator, {}, id="shaclgen"),
+        # ShExGenerator only emits RDF in this format; its default is ShExC text,
+        # where blank-node labelling does not apply.
+        pytest.param(ShExGenerator, {"format": "rdf"}, id="shexgen", marks=pytest.mark.network),
+    ]
+
+
+@pytest.mark.parametrize(("generator", "kwargs"), _generator_cases())
+def test_diff_stable_reaches_every_rdf_generator(tmp_path, generator, kwargs):
+    """Every RDF generator must actually apply the option, not merely accept it.
+
+    Asserting only that the attribute exists would pass even if a generator
+    forgot to pass it down to :func:`canonicalize_rdf_graph`. Instead this
+    checks the observable consequence: RDFC-1.0 names blank nodes ``c14nN``,
+    while diff-stable labels are neighbourhood hashes, so a generator that
+    honours the flag emits no ``c14nN`` label at all.
+    """
+    assert generator.diff_stable is False, f"{generator.__name__} must default to off"
+
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(_DIFF_STABLE_SCHEMA, encoding="utf-8", newline="\n")
+
+    plain = generator(str(schema), **kwargs).serialize()
+    stable = generator(str(schema), diff_stable=True, **kwargs).serialize()
+
+    # Guards the test itself: if the fixture stopped producing blank nodes the
+    # assertion below would hold vacuously.
+    assert re.search(r"c14n\d+", plain), f"{generator.__name__} output has no blank nodes to relabel"
+    assert not re.search(r"c14n\d+", stable), (
+        f"{generator.__name__} still emits RDFC-1.0 blank-node labels with diff_stable=True; "
+        "the flag is probably not threaded into canonicalize_rdf_graph()"
+    )
