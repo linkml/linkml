@@ -1,0 +1,35 @@
+{% raw %}
+def _coerce_inlined_list(value: Any, key_name: str) -> Any:
+    """
+    Normalize the input forms of a multivalued slot inlined as a list of
+    objects: a dict keyed by ``key_name`` (the identifier/key slot of the
+    range class, or its first required slot) becomes a list with the keys
+    injected, and a single object is wrapped into a singleton list. Mirrors
+    the normalization YAMLRoot performs for the equivalent dataclass models.
+
+    >>> _coerce_inlined_list({"dad": {"pred": "EXACT"}, "mom": None}, "literal")
+    [{'literal': 'dad', 'pred': 'EXACT'}, {'literal': 'mom'}]
+    >>> _coerce_inlined_list({"literal": "dad", "pred": "EXACT"}, "literal")  # flat single object
+    [{'literal': 'dad', 'pred': 'EXACT'}]
+    >>> _coerce_inlined_list([{"literal": "dad"}], "literal")
+    [{'literal': 'dad'}]
+    >>> _coerce_inlined_list(None, "literal") is None
+    True
+    """
+    if value is None or isinstance(value, list):
+        return value
+    if isinstance(value, dict):
+        if key_name in value and isinstance(value[key_name], (str, int, float)) and not isinstance(value[key_name], bool):
+            # flat single-object form, e.g. structured_aliases: {literal_form: x, ...}
+            return [value]
+        out = []
+        for key, item in value.items():
+            if item is None:
+                out.append({key_name: key})
+            elif isinstance(item, dict) and key_name not in item:
+                out.append({key_name: key, **item})
+            else:
+                out.append(item)
+        return out
+    return [value]
+{% endraw %}
