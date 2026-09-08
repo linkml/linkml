@@ -431,7 +431,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shaclgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shexgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShExGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqltablegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLTableGenerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">config_mapping</span><span class="p">,</span> <span class="n">parse_config_yaml</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -518,6 +518,107 @@
     <span class="k">return</span> <span class="n">all_imports</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_generator_args</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check a block of per-generator arguments: generator name to that generator&#39;s settings.</span>
+
+<span class="sd">    The block and each generator&#39;s settings within it both have to be mappings, since</span>
+<span class="sd">    the settings are unpacked into the generator&#39;s constructor.</span>
+
+<span class="sd">    :param value: The block as read from YAML.</span>
+<span class="sd">    :param source: The option it came from, e.g. ``&quot;--config-file&quot;``.</span>
+<span class="sd">    :param prefix: Key path leading to the block, e.g. ``&quot;generator_args.&quot;`` for a config</span>
+<span class="sd">        file, or empty when the block is the whole value (as with ``-A``).</span>
+<span class="sd">    :return: The validated block, empty if nothing was configured.</span>
+<span class="sd">    :raises ValueError: if the block, or any generator&#39;s settings, isn&#39;t a mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">&quot;the top level&quot;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generator_names</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that a list of generator names really is a list of names, and hand it back.</span>
+
+<span class="sd">    A bare string is accepted as a one-item list, matching how :func:`apply_config_defaults`</span>
+<span class="sd">    treats a scalar given for a repeatable option -- both are the same YAML footgun: a</span>
+<span class="sd">    scalar left uncoerced would be iterated character by character, or worse, treated as a</span>
+<span class="sd">    substring pattern rather than a name::</span>
+
+<span class="sd">        excludes: [jsonldcontext]  -&gt;  &quot;jsonld&quot; in [&quot;jsonldcontext&quot;] -&gt; False, generated</span>
+<span class="sd">        excludes: jsonldcontext    -&gt;  &quot;jsonld&quot; in &quot;jsonldcontext&quot;   -&gt; True, wrongly skipped</span>
+
+<span class="sd">    Coercing the scalar to ``[&quot;jsonldcontext&quot;]`` up front means callers never do that</span>
+<span class="sd">    substring-style check at all, so the bug above cannot arise regardless of how the</span>
+<span class="sd">    name is written.</span>
+
+<span class="sd">    :param value: Whatever was found at this point in the configuration.</span>
+<span class="sd">    :param where: Where that was, for the error message, e.g. ``&quot;&#39;excludes&#39;&quot;``.</span>
+<span class="sd">    :param source: The option it came from, e.g. ``&quot;--config-file&quot;``.</span>
+<span class="sd">    :return: The list of names, empty if nothing was configured.</span>
+<span class="sd">    :raises ValueError: if the value is not a list of names (nor a bare name, nor empty).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: expected a YAML list of generator names at </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: expected a generator name in </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_project_config</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check a whole gen-project configuration, and hand it back.</span>
+
+<span class="sd">    Every part is checked where it was written, so a mistake is reported against the key</span>
+<span class="sd">    holding it instead of failing somewhere later in generation.</span>
+
+<span class="sd">    :param value: The configuration as read from YAML.</span>
+<span class="sd">    :param source: The option it came from, e.g. ``&quot;--config-file&quot;``.</span>
+<span class="sd">    :return: The validated configuration, empty if nothing was configured.</span>
+<span class="sd">    :raises ValueError: if any part of it has the wrong shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;the top level&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config_data</span><span class="p">:</span>
+        <span class="c1"># These become attribute names via setattr in cli(), which requires strings.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: expected a configuration name at the top level, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;generator_args&quot;</span> <span class="ow">in</span> <span class="n">config_data</span><span class="p">:</span>
+        <span class="n">config_data</span><span class="p">[</span><span class="s2">&quot;generator_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_generator_args</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="s2">&quot;generator_args&quot;</span><span class="p">],</span> <span class="n">source</span><span class="p">,</span> <span class="s2">&quot;generator_args.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;includes&quot;</span><span class="p">,</span> <span class="s2">&quot;excludes&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config_data</span><span class="p">:</span>
+            <span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_generator_names</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">config_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;directory&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: expected a directory path at &#39;directory&#39;, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_generator_args</span><span class="p">(</span>
+    <span class="n">base</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">],</span> <span class="n">overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Layer one block of per-generator arguments over another, per setting.</span>
+
+<span class="sd">    Used to combine ``--config-file`` with ``--generator-arguments``, so naming one</span>
+<span class="sd">    setting on the command line does not discard the rest of a generator&#39;s settings</span>
+<span class="sd">    from the file. ``overrides`` wins setting by setting::</span>
+
+<span class="sd">        file:  {jsonschema: {top_class: Thing, not_closed: false}}</span>
+<span class="sd">        -A:    {jsonschema: {not_closed: true}}</span>
+<span class="sd">        result: {jsonschema: {top_class: Thing, not_closed: true}}</span>
+
+<span class="sd">    :param base: The arguments to start from, e.g. those read from a config file.</span>
+<span class="sd">    :param overrides: The arguments to layer on top, e.g. those given with ``-A``.</span>
+<span class="sd">    :return: A new block; neither argument is modified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">overrides</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merged</span>
+
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectConfiguration</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -540,10 +641,25 @@
 <span class="sd">    Note this doesn&#39;t conform to overall generator framework, as it is a meta-generator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="ProjectGenerator.generate">
+<a class="viewcode-back" href="../../../generators/project-generator.html#linkml.generators.projectgen.ProjectGenerator.generate">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProjectConfiguration</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate every configured artefact for ``schema_path`` under ``config.directory``.</span>
+
+<span class="sd">        :param schema_path: Path to the schema to generate from.</span>
+<span class="sd">        :param config: What to generate and how. Checked before use, so a configuration</span>
+<span class="sd">            built by hand reports its own mistakes rather than failing part-way through.</span>
+<span class="sd">        :raises ValueError: if any part of ``config`` has the wrong shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass directory&quot;</span><span class="p">)</span>
+        <span class="c1"># Checked here rather than only in cli(), so callers using this as a library get</span>
+        <span class="c1"># the same reporting as the command line does. Both name lists come back empty</span>
+        <span class="c1"># when unset, so the skip checks below no longer need their own None handling.</span>
+        <span class="n">generator_args</span> <span class="o">=</span> <span class="n">_generator_args</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="p">,</span> <span class="s2">&quot;configuration&quot;</span><span class="p">,</span> <span class="s2">&quot;generator_args.&quot;</span><span class="p">)</span>
+        <span class="n">includes</span> <span class="o">=</span> <span class="n">_generator_names</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="p">,</span> <span class="s2">&quot;&#39;includes&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;configuration&quot;</span><span class="p">)</span>
+        <span class="n">excludes</span> <span class="o">=</span> <span class="n">_generator_names</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">excludes</span><span class="p">,</span> <span class="s2">&quot;&#39;excludes&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;configuration&quot;</span><span class="p">)</span>
 
         <span class="c1"># Resolve which generators run and with what merged arguments, rejecting</span>
         <span class="c1"># any bad `generator_args` value before anything at all is generated or</span>
@@ -555,15 +671,15 @@
         <span class="c1"># rather than being caught and mistaken for a bad config value.</span>
         <span class="n">selected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">GENERATOR_NAME</span><span class="p">,</span> <span class="n">GeneratorConfig</span><span class="p">,</span> <span class="n">ARG_DICT</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="n">gen_config</span> <span class="ow">in</span> <span class="n">GEN_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="o">!=</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as not in inclusion list: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">includes</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">includes</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as not in inclusion list: </span><span class="si">{</span><span class="n">includes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">excludes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gen_name</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as it is in exclusion list&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="n">all_gen_args</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="o">**</span><span class="n">gen_config</span><span class="o">.</span><span class="n">default_args</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="o">**</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="p">}</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">gen_config</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">validate_generator_args</span><span class="p">(</span><span class="n">all_gen_args</span><span class="p">)</span>
@@ -624,6 +740,7 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
                         <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -703,21 +820,30 @@
 <span class="sd">          json_schema:</span>
 <span class="sd">            top_class: Container</span>
 
+<span class="sd">    Both together: ``-A`` is layered over the file setting by setting, so naming one</span>
+<span class="sd">    setting on the command line keeps the rest of that generator&#39;s settings from the file.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">project_config</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">project_config</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Both sources are read together so a mistake in either is reported the same way.</span>
+    <span class="c1"># The checks raise ValueError so generate() can reuse them when called as a library;</span>
+    <span class="c1"># UsageError, with its exit code and &quot;Error:&quot; prefix, belongs to the command line.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_project_config</span><span class="p">(</span><span class="n">parse_config_yaml</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;--config-file&quot;</span><span class="p">),</span> <span class="s2">&quot;--config-file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">project_config</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">generator_arguments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;--generator-arguments&quot;</span>
+            <span class="n">project_config</span><span class="o">.</span><span class="n">generator_args</span> <span class="o">=</span> <span class="n">_merge_generator_args</span><span class="p">(</span>
+                <span class="n">project_config</span><span class="o">.</span><span class="n">generator_args</span><span class="p">,</span> <span class="n">_generator_args</span><span class="p">(</span><span class="n">parse_config_yaml</span><span class="p">(</span><span class="n">generator_arguments</span><span class="p">,</span> <span class="n">source</span><span class="p">),</span> <span class="n">source</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;generator args: </span><span class="si">{</span><span class="n">project_config</span><span class="o">.</span><span class="n">generator_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
         <span class="n">project_config</span><span class="o">.</span><span class="n">excludes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
         <span class="n">project_config</span><span class="o">.</span><span class="n">includes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">generator_arguments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">project_config</span><span class="o">.</span><span class="n">generator_args</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">generator_arguments</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Argument must be a valid YAML blob&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;generator args: </span><span class="si">{</span><span class="n">project_config</span><span class="o">.</span><span class="n">generator_args</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">project_config</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="nb">dir</span>
     <span class="n">project_config</span><span class="o">.</span><span class="n">mergeimports</span> <span class="o">=</span> <span class="n">mergeimports</span>

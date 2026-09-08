@@ -1157,6 +1157,60 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.generator.config_mapping">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">config_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#config_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.config_mapping" title="Link to this definition">¶</a></dt>
+<dd><p>Check that one level of a configuration is a mapping, and hand it back.</p>
+<p>An empty value (<code class="docutils literal notranslate"><span class="pre">java:</span></code> with nothing under it) reads as None saying “nothing
+configured here”, so it returns as empty mapping. Anything else that is not a
+mapping is a mistake in the configuration, and says so where it was given rather
+than failing later.</p>
+<p>Shared by every entry point that reads this configuration format, so a given
+mistake is reported the same way whether it reaches <code class="docutils literal notranslate"><span class="pre">gen-project</span></code> or one of the
+individual generator CLIs. <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> rather than <code class="xref py py-class docutils literal notranslate"><span class="pre">click.UsageError</span></code>,
+so a caller using this as a library gets the same checks without click semantics;
+command-line callers translate it at their own boundary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – Whatever was found at this point in the configuration.</p></li>
+<li><p><strong>where</strong> – Where that was, for the error message, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;'generator_args'&quot;</span></code>.</p></li>
+<li><p><strong>source</strong> – The option it came from, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;--config-file&quot;</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The mapping, empty if nothing was configured.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if the value is neither a mapping nor empty.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.generator.parse_config_yaml">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">parse_config_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#parse_config_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.parse_config_yaml" title="Link to this definition">¶</a></dt>
+<dd><p>Parse YAML, naming what was being read if it does not parse.</p>
+<p>Unparsable YAML is a mistake in what was supplied, so it is reported against the
+option it came from rather than escaping as a traceback. PyYAML reports a scalar it
+cannot construct (an impossible date such as <code class="docutils literal notranslate"><span class="pre">2024-02-30</span></code>) as a bare <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+rather than a <code class="docutils literal notranslate"><span class="pre">YAMLError</span></code>; that is a parse failure too, and is named the same way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – YAML text, or an open file to read it from.</p></li>
+<li><p><strong>source</strong> – The option it came from, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;--config-file&quot;</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever the YAML held.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if the YAML is malformed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="linkml.utils.generator.read_generator_config">
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">read_generator_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.IO" title="(in Python v3.14)"><span class="pre">IO</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#read_generator_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.read_generator_config" title="Link to this definition">¶</a></dt>
 <dd><p>Read one generator’s settings out of a gen-project-style config file.</p>
@@ -2069,6 +2123,8 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">Generator.visits_are_sorted</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#linkml.utils.generator.config_mapping"><code class="docutils literal notranslate"><span class="pre">config_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.parse_config_yaml"><code class="docutils literal notranslate"><span class="pre">parse_config_yaml()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.read_generator_config"><code class="docutils literal notranslate"><span class="pre">read_generator_config()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.shared_arguments"><code class="docutils literal notranslate"><span class="pre">shared_arguments()</span></code></a></li>
 </ul>

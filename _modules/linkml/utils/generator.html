@@ -1546,23 +1546,56 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_config_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that one level of a config file is a mapping, and hand it back.</span>
+<div class="viewcode-block" id="parse_config_yaml">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.parse_config_yaml">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_config_yaml</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse YAML, naming what was being read if it does not parse.</span>
+
+<span class="sd">    Unparsable YAML is a mistake in what was supplied, so it is reported against the</span>
+<span class="sd">    option it came from rather than escaping as a traceback. PyYAML reports a scalar it</span>
+<span class="sd">    cannot construct (an impossible date such as ``2024-02-30``) as a bare ``ValueError``</span>
+<span class="sd">    rather than a ``YAMLError``; that is a parse failure too, and is named the same way.</span>
+
+<span class="sd">    :param value: YAML text, or an open file to read it from.</span>
+<span class="sd">    :param source: The option it came from, e.g. ``&quot;--config-file&quot;``.</span>
+<span class="sd">    :return: Whatever the YAML held.</span>
+<span class="sd">    :raises ValueError: if the YAML is malformed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: could not parse as YAML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+
+
+<div class="viewcode-block" id="config_mapping">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.config_mapping">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that one level of a configuration is a mapping, and hand it back.</span>
 
 <span class="sd">    An empty value (``java:`` with nothing under it) reads as None saying &quot;nothing</span>
 <span class="sd">    configured here&quot;, so it returns as empty mapping. Anything else that is not a</span>
-<span class="sd">    mapping is a mistake in the file, and says so rather than being skipped.</span>
+<span class="sd">    mapping is a mistake in the configuration, and says so where it was given rather</span>
+<span class="sd">    than failing later.</span>
 
-<span class="sd">    :param value: Whatever was found at this point in the file.</span>
+<span class="sd">    Shared by every entry point that reads this configuration format, so a given</span>
+<span class="sd">    mistake is reported the same way whether it reaches ``gen-project`` or one of the</span>
+<span class="sd">    individual generator CLIs. ``ValueError`` rather than :class:`click.UsageError`,</span>
+<span class="sd">    so a caller using this as a library gets the same checks without click semantics;</span>
+<span class="sd">    command-line callers translate it at their own boundary.</span>
+
+<span class="sd">    :param value: Whatever was found at this point in the configuration.</span>
 <span class="sd">    :param where: Where that was, for the error message, e.g. ``&quot;&#39;generator_args&#39;&quot;``.</span>
+<span class="sd">    :param source: The option it came from, e.g. ``&quot;--config-file&quot;``.</span>
 <span class="sd">    :return: The mapping, empty if nothing was configured.</span>
-<span class="sd">    :raises click.UsageError: if the value is neither a mapping nor empty.</span>
+<span class="sd">    :raises ValueError: if the value is neither a mapping nor empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--config-file: expected a YAML mapping at </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">value</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">: expected a YAML mapping at </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
 
 
 <div class="viewcode-block" id="read_generator_config">
@@ -1595,15 +1628,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;--config-file&quot;</span>
+    <span class="c1"># the shared checks raise ValueError so they can be reused off the command line;</span>
+    <span class="c1"># this is a CLI entry point, so a bad file is reported as a usage error here</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">parsed</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="c1"># unparsable YAML is a mistake in the file, so report it the same way a</span>
-        <span class="c1"># misshapen one is, rather than as a traceback</span>
-        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--config-file: could not parse as YAML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-    <span class="n">config_data</span> <span class="o">=</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="s2">&quot;the top level&quot;</span><span class="p">)</span>
-    <span class="n">generator_args</span> <span class="o">=</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">config_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_args&quot;</span><span class="p">),</span> <span class="s2">&quot;&#39;generator_args&#39;&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_config_mapping</span><span class="p">(</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">generator_name</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;&#39;generator_args.</span><span class="si">{</span><span class="n">generator_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+        <span class="n">config_data</span> <span class="o">=</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">parse_config_yaml</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">source</span><span class="p">),</span> <span class="s2">&quot;the top level&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">generator_args</span> <span class="o">=</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">config_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generator_args&quot;</span><span class="p">),</span> <span class="s2">&quot;&#39;generator_args&#39;&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">config_mapping</span><span class="p">(</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">generator_name</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;&#39;generator_args.</span><span class="si">{</span><span class="n">generator_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
 </pre></div>
         </article>

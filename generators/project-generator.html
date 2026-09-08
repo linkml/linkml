@@ -437,6 +437,8 @@ python, etc</p>
 <p>Configuration, on command line:</p>
 <p>Configuration, via yaml file:</p>
 <p>config.yaml:</p>
+<p>Both together: <code class="docutils literal notranslate"><span class="pre">-A</span></code> is layered over the file setting by setting, so naming one
+setting on the command line keeps the rest of that generator’s settings from the file.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-project<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -518,6 +520,24 @@ python, etc</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.projectgen.</span></span><span class="sig-name descname"><span class="pre">ProjectGenerator</span></span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator" title="Link to this definition">¶</a></dt>
 <dd><p>Generates complete project folders</p>
 <p>Note this doesn’t conform to overall generator framework, as it is a meta-generator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.projectgen.ProjectGenerator.generate">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config:</span> <span class="pre">~linkml.generators.projectgen.ProjectConfiguration</span> <span class="pre">=</span> <span class="pre">ProjectConfiguration(directory='tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_args=defaultdict(&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">{})</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator.generate" title="Link to this definition">¶</a></dt>
+<dd><p>Generate every configured artefact for <code class="docutils literal notranslate"><span class="pre">schema_path</span></code> under <code class="docutils literal notranslate"><span class="pre">config.directory</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema_path</strong> – Path to the schema to generate from.</p></li>
+<li><p><strong>config</strong> – What to generate and how. Checked before use, so a configuration
+built by hand reports its own mistakes rather than failing part-way through.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if any part of <code class="docutils literal notranslate"><span class="pre">config</span></code> has the wrong shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -587,7 +607,10 @@ python, etc</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator.generate"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator.generate()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
