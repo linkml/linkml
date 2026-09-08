@@ -23,7 +23,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.utils.generator import Generator
+from linkml.utils.generator import Generator, config_mapping, parse_config_yaml
 
 logger = logging.getLogger(__name__)
 
@@ -110,41 +110,6 @@ def get_local_imports(schema_path: Path, dir: Path):
     return all_imports
 
 
-def _parse_yaml(value: Any, source: str) -> Any:
-    """Parse YAML, naming what was being read if it does not parse.
-
-    :param value: YAML text, or an open file to read it from.
-    :param source: Where it came from, e.g. ``"--config-file"``.
-    :return: Whatever the YAML held.
-    :raises ValueError: if the YAML is malformed.
-    """
-    try:
-        return yaml.safe_load(value)
-    except yaml.YAMLError as e:
-        raise ValueError(f"{source} is not valid YAML: {e}") from e
-
-
-def _config_mapping(value: Any, where: str, source: str) -> dict[str, Any]:
-    """Check that one level of a configuration is a mapping, and hand it back.
-
-    An empty value (``generator_args:`` with nothing under it) reads as None saying
-    "nothing configured here", so it returns as empty mapping. Anything else that is
-    not a mapping is a mistake in the configuration, and says so where it was given
-    rather than failing later.
-
-    :param value: Whatever was found at this point in the configuration.
-    :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
-    :param source: The option it came from, e.g. ``"--config-file"``.
-    :return: The mapping, empty if nothing was configured.
-    :raises ValueError: if the value is neither a mapping nor empty.
-    """
-    if value is None:
-        return {}
-    if not isinstance(value, dict):
-        raise ValueError(f"{source}: expected a YAML mapping at {where}, found {type(value).__name__}")
-    return value
-
-
 def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR_NAME, ARG_DICT]:
     """Check a block of per-generator arguments: generator name to that generator's settings.
 
@@ -159,8 +124,8 @@ def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR
     :raises ValueError: if the block, or any generator's settings, isn't a mapping.
     """
     where = f"'{prefix.rstrip('.')}'" if prefix else "the top level"
-    args = _config_mapping(value, where, source)
-    return {name: _config_mapping(section, f"'{prefix}{name}'", source) for name, section in args.items()}
+    args = config_mapping(value, where, source)
+    return {name: config_mapping(section, f"'{prefix}{name}'", source) for name, section in args.items()}
 
 
 def _generator_names(value: Any, where: str, source: str) -> list[GENERATOR_NAME]:
@@ -200,7 +165,7 @@ def _project_config(value: Any, source: str) -> dict[str, Any]:
     :return: The validated configuration, empty if nothing was configured.
     :raises ValueError: if any part of it has the wrong shape.
     """
-    config_data = _config_mapping(value, "the top level", source)
+    config_data = config_mapping(value, "the top level", source)
     for key in config_data:
         # These become attribute names via setattr in cli(), which requires strings.
         if not isinstance(key, str):
@@ -444,12 +409,12 @@ def cli(
     # UsageError, with its exit code and "Error:" prefix, belongs to the command line.
     try:
         if config_file is not None:
-            for k, v in _project_config(_parse_yaml(config_file, "--config-file"), "--config-file").items():
+            for k, v in _project_config(parse_config_yaml(config_file, "--config-file"), "--config-file").items():
                 setattr(project_config, k, v)
         if generator_arguments is not None:
             source = "--generator-arguments"
             project_config.generator_args = _merge_generator_args(
-                project_config.generator_args, _generator_args(_parse_yaml(generator_arguments, source), source)
+                project_config.generator_args, _generator_args(parse_config_yaml(generator_arguments, source), source)
             )
             logger.info(f"generator args: {project_config.generator_args}")
     except ValueError as e:

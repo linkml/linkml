@@ -305,7 +305,7 @@ def test_cli_unparseable_generator_arguments_errors(tmp_path, schema_path):
     result = CliRunner().invoke(projectgen_cli, ["-A", "{unclosed", "-d", str(tmp_path / "out"), str(schema_path)])
 
     assert result.exit_code != 0
-    assert "--generator-arguments is not valid YAML" in result.output
+    assert "--generator-arguments: could not parse as YAML" in result.output
 
 
 def test_cli_unparseable_config_file_errors(tmp_path, schema_path):
@@ -318,7 +318,7 @@ def test_cli_unparseable_config_file_errors(tmp_path, schema_path):
     )
 
     assert result.exit_code != 0
-    assert "--config-file is not valid YAML" in result.output
+    assert "--config-file: could not parse as YAML" in result.output
 
 
 @pytest.mark.parametrize(
