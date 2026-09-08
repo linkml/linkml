@@ -533,6 +533,8 @@
                         <span class="sa">f</span><span class="s2">&quot;x-linkml-schema &#39;</span><span class="si">{</span><span class="n">schema</span><span class="p">[</span><span class="s1">&#39;x-linkml-schema&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;but the loaded schema has id &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                     <span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;x-linkml-source&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Template data schema &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is missing required &#39;x-linkml-source&#39;&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_referenced_schemas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the set of resource names referenced by the template&#39;s endpoints.&quot;&quot;&quot;</span>
@@ -546,7 +548,12 @@
                             <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">resource_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="s2">&quot;parameters&quot;</span> <span class="ow">in</span> <span class="n">req_spec</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">param_spec</span> <span class="ow">in</span> <span class="n">req_spec</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="s2">&quot;$ref&quot;</span> <span class="ow">in</span> <span class="n">param_spec</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]:</span>
+                        <span class="c1"># a $ref parameter directly references a reusable parameter object</span>
+                        <span class="c1"># (whose schema lives inside components/parameters), so it cannot</span>
+                        <span class="c1"># reference a component schema on its own</span>
+                        <span class="k">if</span> <span class="s2">&quot;$ref&quot;</span> <span class="ow">in</span> <span class="n">param_spec</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">param_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;$ref&quot;</span><span class="p">):</span>
                             <span class="n">resource_name</span> <span class="o">=</span> <span class="n">param_spec</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">][</span><span class="s2">&quot;$ref&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;#/components/schemas/&quot;</span><span class="p">)</span>
                             <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">resource_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="s2">&quot;responses&quot;</span> <span class="ow">in</span> <span class="n">req_spec</span><span class="p">:</span>
