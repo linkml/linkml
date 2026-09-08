@@ -131,21 +131,28 @@ def _generator_args(value: Any, source: str, prefix: str = "") -> dict[GENERATOR
 def _generator_names(value: Any, where: str, source: str) -> list[GENERATOR_NAME]:
     """Check that a list of generator names really is a list of names, and hand it back.
 
-    A bare string is refused, not wrapped into a single-item list. That prevents a bare
-    string from being treated as a list by ``gen_name in excludes``, which on a string
-    searches the configured text for each generator name::
+    A bare string is accepted as a one-item list, matching how :func:`apply_config_defaults`
+    treats a scalar given for a repeatable option -- both are the same YAML footgun: a
+    scalar left uncoerced would be iterated character by character, or worse, treated as a
+    substring pattern rather than a name::
 
         excludes: [jsonldcontext]  ->  "jsonld" in ["jsonldcontext"] -> False, generated
-        excludes: jsonldcontext    ->  "jsonld" in "jsonldcontext"   -> True, skipped
+        excludes: jsonldcontext    ->  "jsonld" in "jsonldcontext"   -> True, wrongly skipped
+
+    Coercing the scalar to ``["jsonldcontext"]`` up front means callers never do that
+    substring-style check at all, so the bug above cannot arise regardless of how the
+    name is written.
 
     :param value: Whatever was found at this point in the configuration.
     :param where: Where that was, for the error message, e.g. ``"'excludes'"``.
     :param source: The option it came from, e.g. ``"--config-file"``.
     :return: The list of names, empty if nothing was configured.
-    :raises ValueError: if the value is not a list of names, nor empty.
+    :raises ValueError: if the value is not a list of names (nor a bare name, nor empty).
     """
     if value is None:
         return []
+    if isinstance(value, str):
+        return [value]
     if not isinstance(value, list):
         raise ValueError(f"{source}: expected a YAML list of generator names at {where}, found {type(value).__name__}")
     for name in value:

@@ -225,17 +225,12 @@ def test_cli_malformed_config_file_errors(tmp_path, schema_path, config_yaml, wh
 @pytest.mark.parametrize(
     ("config_yaml", "message"),
     [
-        pytest.param(
-            "excludes: jsonldcontext\n",
-            "expected a YAML list of generator names at 'excludes'",
-            id="excludes-string",
-        ),
-        pytest.param(
-            "includes: python\n",
-            "expected a YAML list of generator names at 'includes'",
-            id="includes-string",
-        ),
         pytest.param("excludes:\n  - 1\n", "expected a generator name in 'excludes'", id="excludes-non-name"),
+        # a bare string is coerced (see test_cli_excludes_matches_whole_names_only), but a
+        # mapping is still the wrong shape entirely and is rejected, not coerced
+        pytest.param(
+            "excludes:\n  a: 1\n", "expected a YAML list of generator names at 'excludes'", id="excludes-dict"
+        ),
         pytest.param("directory: [a, b]\n", "expected a directory path at 'directory'", id="directory-list"),
         pytest.param("1: x\n", "expected a configuration name at the top level", id="non-string-key"),
     ],
@@ -255,11 +250,21 @@ def test_cli_malformed_config_file_values_error(tmp_path, schema_path, config_ya
     assert not isinstance(result.exception, AttributeError | TypeError)
 
 
-def test_cli_excludes_matches_whole_names_only(tmp_path, schema_path):
-    """`jsonld` is a substring of `jsonldcontext`, and names are matched with ``in``.
-    Excluding one generator must not quietly take out the other as well."""
+@pytest.mark.parametrize(
+    "config_yaml",
+    [
+        pytest.param("excludes:\n  - jsonldcontext\n", id="list-form"),
+        # a bare string is coerced to a one-item list, not left for `gen_name in excludes`
+        # to search as a substring pattern -- that path is what let `jsonld` slip through
+        # (or get wrongly caught) before, and no caller does that check anymore
+        pytest.param("excludes: jsonldcontext\n", id="bare-string-form"),
+    ],
+)
+def test_cli_excludes_matches_whole_names_only(tmp_path, schema_path, config_yaml):
+    """`jsonld` is a substring of `jsonldcontext`. Excluding one generator, however the
+    name was written in the config, must not quietly take out the other as well."""
     config_path = tmp_path / "config.yaml"
-    config_path.write_text("excludes:\n  - jsonldcontext\n")
+    config_path.write_text(config_yaml)
     out_dir = tmp_path / "out"
 
     result = CliRunner().invoke(
@@ -407,12 +412,9 @@ def test_cli_generator_arguments_layer_over_config_file(tmp_path, schema_path, a
             "expected a YAML mapping at 'generator_args.python'",
             id="generator-section-scalar",
         ),
-        pytest.param(
-            "excludes", "python", "expected a YAML list of generator names at 'excludes'", id="excludes-string"
-        ),
-        pytest.param(
-            "includes", "python", "expected a YAML list of generator names at 'includes'", id="includes-string"
-        ),
+        # a bare string is coerced (see test_generate_coerces_a_bare_string_for_excludes_and_includes),
+        # but a mapping is still the wrong shape entirely and is rejected, not coerced
+        pytest.param("excludes", {"a": 1}, "expected a YAML list of generator names at 'excludes'", id="excludes-dict"),
     ],
 )
 def test_generate_checks_a_configuration_built_in_code(tmp_path, schema_path, attribute, value, message):
@@ -424,3 +426,18 @@ def test_generate_checks_a_configuration_built_in_code(tmp_path, schema_path, at
 
     with pytest.raises(ValueError, match=re.escape(message)):
         ProjectGenerator().generate(str(schema_path), config)
+
+
+def test_generate_coerces_a_bare_string_for_excludes_and_includes(tmp_path, schema_path):
+    """A ProjectConfiguration assembled in code may set `excludes`/`includes` to a bare
+    string, exactly as a config file's `excludes: python` would parse to. generate()
+    coerces it to a one-item list rather than rejecting it -- matching the CLI path, and
+    matching how apply_config_defaults treats a scalar given for a repeatable option."""
+    config = ProjectConfiguration()
+    config.directory = str(tmp_path / "out")
+    config.includes = "graphql"  # bare string, not ["graphql"]
+
+    ProjectGenerator().generate(str(schema_path), config)
+
+    assert (tmp_path / "out" / "graphql" / "schema.graphql").is_file()
+    assert not (tmp_path / "out" / "schema.py").exists()
