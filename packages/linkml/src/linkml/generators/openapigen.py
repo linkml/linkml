@@ -123,6 +123,8 @@ class OpenApiGenerator(Generator):
                         f"x-linkml-schema '{schema['x-linkml-schema']}' "
                         f"but the loaded schema has id '{self.schemaview.schema.id}'"
                     )
+                if "x-linkml-source" not in schema:
+                    raise KeyError(f"Template data schema '{name}' is missing required 'x-linkml-source'")
 
     def _find_referenced_schemas(self) -> set[str]:
         """Return the set of resource names referenced by the template's endpoints."""
@@ -136,7 +138,12 @@ class OpenApiGenerator(Generator):
                             result.add(resource_name)
                 if "parameters" in req_spec:
                     for param_spec in req_spec["parameters"]:
-                        if "$ref" in param_spec["schema"]:
+                        # a $ref parameter directly references a reusable parameter object
+                        # (whose schema lives inside components/parameters), so it cannot
+                        # reference a component schema on its own
+                        if "$ref" in param_spec:
+                            continue
+                        if param_spec.get("schema", {}).get("$ref"):
                             resource_name = param_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
                             result.add(resource_name)
                 if "responses" in req_spec:
