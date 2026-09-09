@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: Types and Enums Test
+  version: '1.0.0'
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/fixed:
+    get:
+      security:
+        - PayloadSignature: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FixedType'
+components:
+  schemas:
+    FixedType:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/types_and_enums
+      x-linkml-source: FixedType

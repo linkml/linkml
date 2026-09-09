@@ -1,4 +1,10 @@
-from linkml.generators.javagen import JavaGenerator
+import logging
+
+import click
+import pytest
+from click.testing import CliRunner
+
+from linkml.generators.javagen import JavaBundle, JavaGenerator, cli
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -228,3 +234,297 @@ def test_refined_ranges(input_path):
     # - ThirdDerivedFoo refines the slot compared to its parent SecondDerivedFoo;
     #   this is the second refinement in the hierarchy since the defining class
     assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]
+
+
+def test_inherited_extra_slots(input_path, tmp_path):
+    """Test that we don't generate redundant extension holders."""
+    gen = JavaGenerator(input_path("redundant_extra_slots.yaml"))
+    assert gen.needs_extra_slots(gen.schemaview.get_class("Foo"))
+    assert not gen.needs_extra_slots(gen.schemaview.get_class("Bar"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "Foo.java", "private Map<String, Object> extraSlots;")
+    assert_file_contains(tmp_path / "Bar.java", "private Map<String, Object> extraSlots;", invert=True)
+
+
+def test_render_returns_bundle(kitchen_sink_path, tmp_path):
+    """`render()` returns a `JavaBundle` with rendered files but touches no disk."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+
+    assert isinstance(bundle, JavaBundle)
+    assert bundle.package == PACKAGE
+    assert "Address.java" in bundle.files
+    address_code = bundle.files["Address.java"]
+    assert "public class Address" in address_code
+    assert f"package {PACKAGE}" in address_code
+
+    # render() must not write anything to disk.
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_render_template_variant(kitchen_sink_path):
+    """`render(template_variant=...)` is honoured (records variant here)."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render(template_variant="records")
+
+    assert "Address.java" in bundle.files
+    assert "public record Address(String street, String city, BigDecimal altitude)" in bundle.files["Address.java"]
+
+
+def test_render_visitors(kitchen_sink_path, caplog):
+    """`render(visitors=[...])` emits the visitor interface and adds `accept()` to visited classes."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    with caplog.at_level(logging.INFO, logger="linkml.generators.javagen"):
+        bundle = gen.render(visitors=["Concept", "InexistingClass"])
+
+    assert "IConceptVisitor.java" in bundle.files
+    assert "public void visit(DiagnosisConcept visited);" in bundle.files["IConceptVisitor.java"]
+    # A class in the visited hierarchy carries the accept() method.
+    assert "ProcedureConcept.java" in bundle.files
+    assert "public void accept(IConceptVisitor visitor)" in bundle.files["ProcedureConcept.java"]
+
+    # A warning should be emitted if a class to visit can't be found in the schema
+    assert any("InexistingClass does not appear to be a valid name" for msg in caplog.messages)
+
+
+def test_render_true_enums(kitchen_sink_path):
+    """With `true_enums=True`, enum-typed files appear in the bundle."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, true_enums=True)
+    bundle = gen.render()
+
+    assert "CordialnessEnum.java" in bundle.files
+    assert "public enum CordialnessEnum" in bundle.files["CordialnessEnum.java"]
+
+
+def test_serialize_accepts_rendered_module(kitchen_sink_path, tmp_path):
+    """Passing `rendered_module=` writes the given bundle as-is."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+    bundle.files["Address.java"] = "// sentinel: pre-rendered bundle content"
+
+    gen.serialize(directory=str(tmp_path), rendered_module=bundle)
+
+    assert_file_contains(tmp_path / "Address.java", "// sentinel: pre-rendered bundle content")
+
+
+@pytest.mark.parametrize("as_path", [False, True], ids=["str", "Path"])
+def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as_path):
+    """`directory` accepts both a ``str`` and a :class:`pathlib.Path`."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    directory = tmp_path if as_path else str(tmp_path)
+
+    gen.serialize(directory=directory)
+
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
+
+
+def _write_minimal_schema(path):
+    path.write_text(
+        "id: https://example.org/pkg\n"
+        "name: pkg\n"
+        "imports:\n"
+        "  - linkml:types\n"
+        "classes:\n"
+        "  Thing:\n"
+        "    attributes:\n"
+        "      id:\n"
+        "        range: string\n"
+    )
+    return path
+
+
+def _java_config_yaml(package: str) -> str:
+    """The same `generator_args.java.package` shape used by gen-project's config.yaml."""
+    return f"generator_args:\n  java:\n    package: {package}\n"
+
+
+def test_cli_config_file_sets_package(tmp_path):
+    """--config-file's `generator_args.java.package` sets the Java package when --package is not given."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("org.example.fromconfig"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.fromconfig")
+
+
+def test_cli_explicit_package_overrides_config_file(tmp_path):
+    """An explicit --package always takes precedence over --config-file."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("org.example.fromconfig"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "--config-file",
+            str(config_path),
+            "--package",
+            "org.example.explicit",
+            "--output-directory",
+            str(out_dir),
+            str(schema_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.explicit")
+
+
+def test_cli_config_file_without_java_package_falls_back_to_default(tmp_path):
+    """A config file with no `generator_args.java.package` falls through to the `example` default."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  owl:\n    mergeimports: true\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
+
+
+def test_cli_invalid_config_package_errors(tmp_path):
+    """An invalid Java package name from the config file is rejected rather than emitted verbatim."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(_java_config_yaml("1bad.pkg"))
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
+
+
+def test_cli_invalid_explicit_package_errors(tmp_path):
+    """An invalid Java package name passed via --package is rejected, matching the config-file behavior."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--package", "1bad.pkg", "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code != 0
+    assert "not a valid Java package name" in result.output
+
+
+def test_cli_does_not_mistake_a_schema_error_for_a_bad_package(tmp_path):
+    """A broken schema (not a bad package) must surface as its own error, not get caught by
+    the package check and misreported as a package problem. The invocation was fine; the
+    schema is broken -- `--help` sends the user in the wrong direction."""
+    schema_path = tmp_path / "bad.yaml"
+    schema_path.write_text("justastring\n", encoding="UTF-8")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert not isinstance(result.exception, click.UsageError)
+    assert "not a valid Java package name" not in str(result.exception)
+    assert "Unexpected type" in str(result.exception)
+
+
+@pytest.mark.parametrize("package", ["1bad.pkg", "org.class.model", "org..model", "org.my-model"])
+def test_constructor_invalid_package_errors(kitchen_sink_path, package):
+    """An invalid package passed directly to the generator (as gen-project does) is rejected."""
+    with pytest.raises(ValueError, match="is not a valid Java package name"):
+        JavaGenerator(kitchen_sink_path, package=package)
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param("- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param("generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(
+            "generator_args:\n  java: package=org.example.model\n",
+            "'generator_args.java'",
+            id="scalar-section",
+        ),
+    ],
+)
+def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
+    """A malformed --config-file fails loudly. A malformed `generator_args.java` in
+    particular must not be skipped over, leaving the user with the `example` default
+    and no clue why their configured package was ignored."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(config_yaml)
+
+    result = CliRunner().invoke(cli, ["--config-file", str(config_path), str(schema_path)])
+
+    assert result.exit_code != 0
+    assert f"expected a YAML mapping at {where}" in result.output
+
+
+def test_cli_config_file_real_project_config_shape(tmp_path):
+    """gen-java's --config-file accepts a full, real-world gen-project config.yaml
+    (other generators' sections, excludes/includes, etc.) and only reads
+    generator_args.java.package out of it, ignoring the rest."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "excludes:\n"
+        "  - markdown\n"
+        "generator_args:\n"
+        "  excel:\n"
+        "    mergeimports: true\n"
+        "  owl:\n"
+        "    mergeimports: true\n"
+        "    metaclasses: false\n"
+        "  java:\n"
+        "    mergeimports: true\n"
+        "    package: org.example.fromrealproject\n"
+        "  python:\n"
+        "    mergeimports: true\n"
+    )
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example.fromrealproject")
+
+
+def test_cli_ignores_config_yaml_in_cwd(tmp_path, monkeypatch):
+    """A `config.yaml` in the cwd is never read implicitly: --config-file must be explicit."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    (tmp_path / "config.yaml").write_text(_java_config_yaml("org.example.cwd"))
+    out_dir = tmp_path / "out"
+    monkeypatch.chdir(tmp_path)
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
+
+
+def test_cli_no_config_file_falls_back_to_default(tmp_path, monkeypatch):
+    """No --config-file: falls through to the `example` default."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    out_dir = tmp_path / "out"
+    monkeypatch.chdir(tmp_path)
+
+    result = CliRunner().invoke(cli, ["--output-directory", str(out_dir), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")

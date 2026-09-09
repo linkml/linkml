@@ -1,5 +1,14 @@
+import json
+import os
+import re
+import subprocess
+import sys
+import textwrap
+from pathlib import Path
+
 import pytest
 import rdflib
+import rdflib.compare
 from rdflib import Graph, URIRef
 
 from linkml import METAMODEL_CONTEXT_URI
@@ -53,6 +62,8 @@ JSONLD = """
 }"""
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_annotation_extensions():
     """Test that annotation extensions are properly serialized"""
     s = RDFGenerator(schema, mergeimports=False).serialize()
@@ -78,6 +89,80 @@ def test_annotation_extensions():
     for example, tag in results:
         assert isinstance(example, rdflib.Literal)
         assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
+
+
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
+def test_generation_date_suppressed_by_default():
+    """The generation_date timestamp triple is off by default and opt-in via the flag.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516 (bullet 2): the
+    load-time ``generation_date`` stamp is serialized as a data triple in RDF output,
+    which defeats byte-stable/reproducible generation. It is suppressed by default;
+    ``include_generation_date=True`` restores the old behaviour for callers that want it.
+    """
+    generation_date = URIRef("https://w3id.org/linkml/generation_date")
+
+    default_output = RDFGenerator(schema, mergeimports=False).serialize()
+    default_graph = Graph()
+    default_graph.parse(data=default_output, format="turtle")
+    assert not list(default_graph.triples((None, generation_date, None))), (
+        "generation_date should be suppressed by default"
+    )
+
+    # With the timestamp gone, output is byte-stable across runs.
+    rerun = RDFGenerator(schema, mergeimports=False).serialize()
+    assert default_output == rerun
+
+    opted_in = Graph()
+    opted_in.parse(data=RDFGenerator(schema, mergeimports=False, include_generation_date=True).serialize())
+    assert list(opted_in.triples((None, generation_date, None))), (
+        "generation_date should be present when explicitly requested"
+    )
+
+
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
+def test_output_is_byte_identical_across_processes():
+    """RDF output is byte-identical across fresh processes with different hash seeds.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516. Two things can
+    make repeated generation differ: the ``generation_date`` timestamp (now suppressed
+    by default) and ``PYTHONHASHSEED``-dependent iteration order upstream of
+    canonicalization. Running in-process would catch neither, so each run gets its own
+    interpreter with a deliberately different seed.
+    """
+    program = textwrap.dedent(
+        f"""
+        from linkml.generators.rdfgen import RDFGenerator
+        print(RDFGenerator({schema!r}, mergeimports=False).serialize(), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
+        # A fresh interpreter never imports tests/conftest.py, so the offline
+        # network guard is installed via sitecustomize on PYTHONPATH instead
+        # (same mechanism as the notebook kernels).
+        kernel_startup_dir = Path(__file__).resolve().parents[2] / "_kernel_startup"
+        existing = os.environ.get("PYTHONPATH", "")
+        pythonpath = os.pathsep.join([str(kernel_startup_dir), *([existing] if existing else [])])
+        env = {**os.environ, "PYTHONHASHSEED": seed, "PYTHONPATH": pythonpath}
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        return result.stdout
+
+    outputs = [run(seed) for seed in ("0", "1", "42")]
+
+    # Empty output would be trivially "identical" and hide a broken generator.
+    assert outputs[0].strip(), "generator produced no output"
+    assert len(set(outputs)) == 1, "RDF output differs across PYTHONHASHSEED values"
 
 
 @pytest.mark.network
@@ -106,6 +191,8 @@ def test_rdf_type_in_jsonld(self):
     graph.parse(data=ttl_str, format="turtle")
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_stable_blank_node_labels(input_path):
     """--stable-blank-node-labels relabels blank nodes by content hash, isomorphic to the default.
 
@@ -113,13 +200,133 @@ def test_stable_blank_node_labels(input_path):
     ordinal ``c14n`` labels legitimately remains -- #3704 keeps those for cyclic closures
     (correctness over locality). The assertion is therefore that content-hash labels are
     introduced and the ordinal count strictly drops, not that every ``c14n`` is gone.
+
+    Hash labels are bare 24-hex-char strings, matching the label contract of
+    oxigraph's ``UnstableHashedIds`` variant (oxigraph#1824).
     """
     schema = input_path("personinfo.yaml")
     default = RDFGenerator(schema).serialize()
     hashed = RDFGenerator(schema, stable_blank_node_labels=True).serialize()
-    assert "_:c14n" in default and "_:b" not in default, "default should use only ordinal c14n labels"
-    assert "_:b" in hashed, "opt-in output should introduce content-hash blank-node labels"
+    hash_label = re.compile(r"_:[0-9a-f]{24}\b")
+    assert "_:c14n" in default, "default should use ordinal c14n labels"
+    assert not hash_label.search(default), "default should not contain content-hash labels"
+    assert hash_label.search(hashed), "opt-in output should introduce content-hash blank-node labels"
     assert hashed.count("_:c14n") < default.count("_:c14n"), "opt-in should relabel blank nodes by hash"
     g_default = Graph().parse(data=default, format="turtle")
     g_hashed = Graph().parse(data=hashed, format="turtle")
     assert rdflib.compare.isomorphic(g_default, g_hashed), "opt-in relabeling changed the graph"
+
+
+# ----------------------------------------------------------------------------
+# Regression: gen-rdf must not 404 on per-module @context refs
+# ----------------------------------------------------------------------------
+
+_RDFGEN_RELATIVE_IMPORT_BASE = """\
+id: https://example.org/rdfbase
+name: rdfbase
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Base:
+    attributes:
+      id:
+        identifier: true
+"""
+
+_RDFGEN_RELATIVE_IMPORT_MAIN = """\
+id: https://example.org/rdfmain
+name: rdfmain
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+  - ./base
+classes:
+  Thing:
+    is_a: Base
+    attributes:
+      label:
+"""
+
+
+# network: rdflib fetches the absolute @context URLs that survive the filter
+@pytest.mark.network
+def test_rdfgen_strips_unresolvable_per_module_context_refs(tmp_path):
+    """``gen-rdf`` must not 404 on per-module ``@context`` refs.
+
+    ``JSONLDGenerator.end_schema`` appends one ``<import>.context.jsonld``
+    string per loaded import. For a sibling import such as ``./base`` the
+    resulting entry is ``./base.context.jsonld`` - a relative path that
+    rdflib resolves against ``@base`` (the schema's ``https://`` URI) and
+    then fetches via HTTP. That file is never published anywhere, so if it
+    reached rdflib unchanged the fetch would 404 and ``RDFGenerator.serialize``
+    would raise ``urllib.error.HTTPError``.
+
+    ``rdfgen._strip_relative_context_refs`` prevents this by dropping string
+    entries from the ``@context`` array that have no resolvable URI scheme
+    before handing the JSON-LD to rdflib. The merged inline ``@context`` (and
+    the fully merged schema body) cover everything the per-module refs would
+    have contributed, so the filtering is non-destructive.
+    """
+    schemas_dir = tmp_path / "schemas"
+    schemas_dir.mkdir()
+    (schemas_dir / "base.yaml").write_text(_RDFGEN_RELATIVE_IMPORT_BASE)
+    (schemas_dir / "main.yaml").write_text(_RDFGEN_RELATIVE_IMPORT_MAIN)
+
+    turtle = RDFGenerator(str(schemas_dir / "main.yaml")).serialize()
+
+    # Parse back through rdflib to confirm the output is well-formed and
+    # contains classes from both the main and the sibling-imported schema.
+    g = Graph()
+    g.parse(data=turtle, format="turtle")
+    subjects = {str(s) for s in g.subjects()}
+    assert "https://example.org/Thing" in subjects
+    assert "https://example.org/Base" in subjects
+
+
+def test_strip_relative_context_refs_preserves_absolute_uris_and_dicts():
+    """Unit-test the ``@context`` filter directly.
+
+    The helper must keep:
+      * inline ``@context`` dicts (carry prefix bindings and the ``@base``
+        directive),
+      * absolute ``http(s)://`` URIs (published context documents like
+        ``https://w3id.org/linkml/types.context.jsonld``),
+      * ``file://`` URIs (the vendored metamodel context, absolutized by
+        ``JSONLDGenerator.end_schema``),
+
+    and drop only scheme-less string entries that rdflib would dereference
+    against ``@base``.
+    """
+    from linkml.generators.rdfgen import _strip_relative_context_refs
+
+    payload = {
+        "@context": [
+            "file:///vendored/meta.context.jsonld",
+            "https://w3id.org/linkml/types.context.jsonld",
+            "./base.context.jsonld",
+            "base.context.jsonld",
+            "../other.context.jsonld",
+            {"ex": "https://example.org/"},
+            {"@base": "https://example.org/"},
+        ],
+        "@id": "https://example.org/x",
+    }
+    filtered = json.loads(_strip_relative_context_refs(json.dumps(payload)))
+
+    assert filtered["@context"] == [
+        "file:///vendored/meta.context.jsonld",
+        "https://w3id.org/linkml/types.context.jsonld",
+        {"ex": "https://example.org/"},
+        {"@base": "https://example.org/"},
+    ]
+    # Untouched siblings round-trip.
+    assert filtered["@id"] == "https://example.org/x"

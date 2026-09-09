@@ -1,0 +1,18 @@
+# LinkML schema whose slot carries a description while the enum's is empty
+id: https://w3id.org/linkml/tests/enum_slot_description
+name: enum_slot_description
+default_prefix: enum_slot_description
+imports:
+  - linkml:types
+enums:
+  FixedEnum:
+    permissible_values:
+      FOO: {}
+      BAR: {}
+classes:
+  Foo:
+    description: Foo class, I am
+    attributes:
+      color:
+        description: the color of foo
+        range: FixedEnum

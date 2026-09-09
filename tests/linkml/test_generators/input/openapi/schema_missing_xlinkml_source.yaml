@@ -1,0 +1,18 @@
+# LinkML schema used in tests for the bug
+# reporter's reproduction
+id: https://example.org/foo
+name: foo
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Foo:
+    attributes:
+      name:
+        range: string
+
+  Bar:
+    attributes:
+      name:
+        range: string

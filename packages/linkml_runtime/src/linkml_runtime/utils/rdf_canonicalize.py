@@ -302,7 +302,8 @@ def _relabel_blank_nodes_by_hash(triples: list["ox.Triple"]) -> list["ox.Triple"
     shapes, RDF lists).  Blank nodes whose reachable closure contains a cycle
     are left with their ``c14n`` label (correctness over locality).  Genuinely
     automorphic siblings (identical subtree content) share a hash and are kept
-    distinct with a deterministic index suffix.
+    distinct with a bare counter suffix, mirroring the label contract of
+    oxigraph's ``UnstableHashedIds`` variant (oxigraph#1824).
 
     :param triples: RDFC-1.0 canonicalized triples (blank nodes labeled ``c14nN``).
     :return: Triples with content-derived blank-node labels where computable.
@@ -345,13 +346,15 @@ def _relabel_blank_nodes_by_hash(triples: list["ox.Triple"]) -> list["ox.Triple"
         if digest is not None:
             by_hash.setdefault(digest, []).append(bid)
 
+    # Label contract matches oxigraph's UnstableHashedIds variant (oxigraph#1824,
+    # merged upstream but unreleased): the label is the bare hash, and colliding
+    # (automorphic) siblings get a bare counter suffix -- ``hash``, ``hash1``, ...
+    # Keeping the same shape means swapping to the real oxigraph hashes later
+    # changes only the hash values, not the labeling contract.
     label_map: dict[str, str] = {}
     for digest, bids in by_hash.items():
-        if len(bids) == 1:
-            label_map[bids[0]] = "b" + digest[:24]
-        else:
-            for k, bid in enumerate(sorted(bids)):
-                label_map[bid] = f"b{digest[:24]}_{k}"
+        for k, bid in enumerate(sorted(bids)):
+            label_map[bid] = digest[:24] if k == 0 else f"{digest[:24]}{k}"
 
     def remap(term: "ox.Term") -> "ox.Term":
         if isinstance(term, ox.BlankNode) and term.value in label_map:

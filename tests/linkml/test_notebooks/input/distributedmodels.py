@@ -51,7 +51,7 @@ emit_prefixes:
 # imported files can now be specified in an accompanying mapping file.  The imports below
 # reference:
 #   https://w3id.org/biolink/biolink-model    -- the biolink model
-#   https://w3id.org/linkml/types  -- the biolink modeling language types definitions
+#   https://w3id.org/linkml/types  -- linked open data modeling language, types definitions
 imports:
   - https://w3id.org/biolink/biolink-model
   - linkml:types

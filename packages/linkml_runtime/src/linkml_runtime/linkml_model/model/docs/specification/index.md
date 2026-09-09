@@ -2,10 +2,11 @@
 
 ## Table of Contents
 
-- [Preamble](00preamble)
-- [Introduction](01introduction)
-- [Instances](02instances)
-- [Schemas](03schemas)
-- [Derived Schemas](D04derived-schemas)
-- [Validation](05validation)
-- [Mapping](06mapping)
+- [Preamble](00preamble.md)
+- [Introduction](01introduction.md)
+- [Instances](02instances.md)
+- [Schemas](03schemas.md)
+- [Derived Schemas](04derived-schemas.md)
+- [Validation](05validation.md)
+- [Mapping](06mapping.md)
+- [Code Generation](07codegen.md)
