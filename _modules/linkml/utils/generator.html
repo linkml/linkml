@@ -429,6 +429,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -541,6 +542,11 @@
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means include date, generator, etc. information in source header if appropriate&quot;&quot;&quot;</span>
 
+    <span class="n">include_generation_date</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True stamps the output with a generation_date timestamp. Off by default so output is</span>
+<span class="sd">    reproducible (byte-stable) across runs; the date of generation is normally recoverable</span>
+<span class="sd">    from version control.&quot;&quot;&quot;</span>
+
     <span class="n">useuris</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means declared class slot uri&#39;s are used.  False means use model uris&quot;&quot;&quot;</span>
 
@@ -619,6 +625,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_using_schemaloader</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using SchemaView with im=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="si">}</span><span class="s2"> // base_dir=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_generation_date</span>
+                <span class="ow">and</span> <span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
+                <span class="c1"># SchemaView keeps a reference to a SchemaDefinition it is handed,</span>
+                <span class="c1"># so clearing generation_date below would reach back into the</span>
+                <span class="c1"># caller&#39;s object. Copy first so the generator owns what it mutates.</span>
+                <span class="n">schema</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
@@ -629,6 +644,12 @@
             <span class="c1"># This ensures consistency with SchemaLoader-based generators.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span> <span class="o">=</span> <span class="n">metamodel_version</span>
+
+        <span class="c1"># Drop the load-time generation_date stamp unless it was explicitly asked for.</span>
+        <span class="c1"># This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD</span>
+        <span class="c1"># generators, so clearing it here covers every generator uniformly.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_generation_date</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_namespaces</span><span class="p">()</span>
 
@@ -1503,6 +1524,15 @@
                 <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include metadata in output&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--generation-date/--no-generation-date&quot;</span><span class="p">,</span> <span class="s2">&quot;include_generation_date&quot;</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Stamp output with the generation_date timestamp. Off by default so output is &quot;</span>
+                <span class="s2">&quot;reproducible across runs.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
