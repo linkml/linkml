@@ -454,11 +454,16 @@ def _label_of(ttl: str, literal_text: str) -> str:
 
 
 def test_stable_labels_are_content_hashed():
-    """Opt-in labels are content hashes (``_:b...``), not ordinal (``_:c14n...``)."""
+    """Opt-in labels are bare content hashes, not ordinal (``_:c14n...``).
+
+    The bare-hash shape (no prefix) matches the label contract of oxigraph's
+    ``UnstableHashedIds`` canonicalization variant (oxigraph#1824), so a later
+    swap to the upstream implementation changes only the hash values.
+    """
     g = _make_graph_with_bnodes()
     ttl = canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True)
     assert "_:c14n" not in ttl
-    assert _label_of(ttl, "blank_val").startswith("_:b")
+    assert re.fullmatch(r"_:[0-9a-f]{24}", _label_of(ttl, "blank_val"))
 
 
 def test_stable_labels_isomorphic_to_default():
