@@ -14,6 +14,17 @@ from linkml_runtime.loaders import YAMLLoader
 # Reusable YAML fragments
 # ---------------------------------------------------------------------------
 
+# OpenAPI versions the test-suite is driven with, mapped to the output format name
+# accepted by OpenApiGenerator (see OpenApiGenerator.valid_formats/_openapi_versions).
+# The two must stay in lockstep: extend this dict and the generator together when a
+# new OpenAPI version becomes supported.
+OAS_VERSIONS: dict[str, str] = {
+    "3.0.3": "openapi303",
+}
+
+# Default OpenAPI version used by templates/tests that are not version-parametrized.
+DEFAULT_OAS_VERSION = "3.0.3"
+
 # LinkML schema document preamble shared by the inline enum/chain test schemas.
 LINKML_HEADER = """\
 id: https://w3id.org/linkml/tests/{name}
@@ -25,7 +36,7 @@ imports:
 
 # OpenAPI template header (title + quoted version) shared by most small templates.
 OPENAPI_HEADER = """\
-openapi: 3.0.3
+openapi: {oas_version}
 info:
   title: {title}
   version: '1.0.0'
@@ -202,6 +213,7 @@ def openapi_template(
     header: str = "",
     comment: str = "",
     components: str = "",
+    oas_version: str = DEFAULT_OAS_VERSION,
 ) -> str:
     """Compose an OpenAPI template from the shared header, endpoints and schemas.
 
@@ -211,8 +223,9 @@ def openapi_template(
     :param header: optional extra header block (e.g. servers/security)
     :param comment: optional leading comment line(s)
     :param components: extra ``components`` sections before ``schemas`` (e.g. responses)
+    :param oas_version: the OpenAPI version the template advertises
     """
-    doc = dedent(OPENAPI_HEADER).format(title=title)
+    doc = dedent(OPENAPI_HEADER).format(title=title, oas_version=oas_version)
     if header:
         doc += dedent(header) + "\n"
     doc += "paths:\n"
@@ -238,6 +251,7 @@ def single_endpoint_template(
     header: str = "",
     comment: str = "",
     secure: bool = False,
+    oas_version: str = DEFAULT_OAS_VERSION,
 ) -> str:
     """Compose a template with one GET endpoint referencing one generated schema.
 
@@ -250,10 +264,13 @@ def single_endpoint_template(
     :param header: optional extra header block (e.g. servers/security)
     :param comment: optional leading comment line(s)
     :param secure: add per-endpoint ``security``
+    :param oas_version: the OpenAPI version the template advertises
     """
     endpoint = get_endpoint(path_name, schema_name, description=description, secure=secure)
     schemas = schema_stub(schema_name, schema_id, source)
-    return openapi_template(title, endpoints=endpoint, schemas=schemas, header=header, comment=comment)
+    return openapi_template(
+        title, endpoints=endpoint, schemas=schemas, header=header, comment=comment, oas_version=oas_version
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -562,20 +579,30 @@ TEMPLATE_DANGLING_REFS_MULTIPLE = openapi_template(
     header=TEMPLATE_SERVERS_SECURITY,
 )
 
-TEMPLATE_HEAD = openapi_template(
-    "LinkML tests",
-    endpoints=POST_MEDICAL_EVENT
-    + get_endpoint("/api/person", "Person", secure=True)
-    + get_endpoint("/api/endpoint2", "MarriageEvent", secure=True),
-    schemas=schema_stubs(
-        [
-            ("MedicalEvent", KITCHEN_SINK_ID, "MedicalEvent"),
-            ("Person", KITCHEN_SINK_ID, "Person"),
-            ("MarriageEvent", KITCHEN_SINK_ID, "MarriageEvent"),
-        ]
-    ),
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+
+def template_head(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose the kitchen_sink template with one post and two get endpoints.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "LinkML tests",
+        endpoints=POST_MEDICAL_EVENT
+        + get_endpoint("/api/person", "Person", secure=True)
+        + get_endpoint("/api/endpoint2", "MarriageEvent", secure=True),
+        schemas=schema_stubs(
+            [
+                ("MedicalEvent", KITCHEN_SINK_ID, "MedicalEvent"),
+                ("Person", KITCHEN_SINK_ID, "Person"),
+                ("MarriageEvent", KITCHEN_SINK_ID, "MarriageEvent"),
+            ]
+        ),
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+TEMPLATE_HEAD = template_head()
 
 
 # ---------------------------------------------------------------------------
@@ -595,16 +622,17 @@ def write_template(tmp_path: Path, text: str) -> str:
     return str(path)
 
 
-def gen_openapi_spec(head_path, kitchen_sink_path):
-    openapigen = OpenApiGenerator(kitchen_sink_path)
+def gen_openapi_spec(head_path, kitchen_sink_path, format_name=None):
+    openapigen = OpenApiGenerator(kitchen_sink_path, format=format_name)
     return openapigen.serialize(head_path)
 
 
-@pytest.fixture
-def openapi_spec(tmp_path, kitchen_sink_path):
-    head_path = write_template(tmp_path, TEMPLATE_HEAD)
-    openapigen = OpenApiGenerator(kitchen_sink_path)
-    return yaml.safe_load(openapigen.serialize(head_path))
+@pytest.fixture(params=list(OAS_VERSIONS))
+def openapi_spec(request, tmp_path, kitchen_sink_path):
+    oas_version, format_name = request.param, OAS_VERSIONS[request.param]
+    head_path = write_template(tmp_path, template_head(oas_version=oas_version))
+    spec = yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path, format_name))
+    return spec
 
 
 def test_openapi(tmp_path, kitchen_sink_path):
