@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info:
+  title: t
+  version: '1.0.0'
+paths:
+  /foo:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Foo'
+components:
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+  schemas:
+    Foo:
+      type: object
+      x-linkml-schema: https://example.org/g1
+      x-linkml-source: Foo

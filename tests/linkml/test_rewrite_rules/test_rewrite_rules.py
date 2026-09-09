@@ -118,7 +118,7 @@ def record_results(results, from_url: str, accept_header, to_url: str) -> None:
 fixture_lists = generate_fixture_lists()
 
 
-@pytest.mark.network
+@pytest.mark.upstream
 @pytest.mark.skipif(SKIP_REWRITE_RULES, reason=SKIP_REWRITE_RULES_REASON)
 @pytest.mark.parametrize(
     "entries",

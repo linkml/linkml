@@ -311,6 +311,17 @@ DEPRECATIONS = (
         recommendation="Remove the `materialize_patterns` option from generator calls and command lines.",
         issue=1557,
     ),
+    Deprecation(
+        name="golanggen-package-name-option",
+        deprecated_in=SemVer.from_str("1.12.0"),
+        message=(
+            "The `package_name` parameter (`--package-name` on the command line) of "
+            "GolangGenerator has been renamed `package` (`--package`), for consistency "
+            "with other package-scoped generators (e.g. JavaGenerator's `package`)."
+        ),
+        recommendation="Use `package` (`--package` on the command line) instead.",
+        issue=3780,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
@@ -349,11 +360,14 @@ MATERIALIZE_PATTERNS_GENERATOR_OPTION = "materialize-patterns-generator-option"
 T = TypeVar("T")
 
 
-def deprecated_fields(deprecated_map: dict[str, str]):
+def deprecated_fields(deprecated_map: dict[str, str], deprecation_name: str = METADATA_FLAG):
     """
     Decorator to handle deprecated fields in dataclasses.
 
     :param deprecated_map: Mapping from old field names to new field names
+    :param deprecation_name: Name of the :class:`.Deprecation` to report when an old
+        field name is used. Defaults to the metadata-flag rename, which is what most
+        callers are renaming.
     """
 
     def decorator(cls: type[T]) -> type[T]:
@@ -366,7 +380,7 @@ def deprecated_fields(deprecated_map: dict[str, str]):
             # Process kwargs to handle deprecated fields
             for old_field, new_field in deprecated_map.items():
                 if old_field in kwargs:
-                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    deprecation_warning(deprecation_name, stack_level=4)
                     if new_field not in kwargs:
                         kwargs[new_field] = kwargs[old_field]
                     # Remove the old field to prevent the "unexpected keyword argument" error
@@ -383,11 +397,11 @@ def deprecated_fields(deprecated_map: dict[str, str]):
             # Create a property for the deprecated field using a closure
             def make_property(new_name):
                 def getter(self):
-                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    deprecation_warning(deprecation_name, stack_level=4)
                     return getattr(self, new_name)
 
                 def setter(self, value):
-                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    deprecation_warning(deprecation_name, stack_level=4)
                     setattr(self, new_name, value)
 
                 return property(getter, setter)
