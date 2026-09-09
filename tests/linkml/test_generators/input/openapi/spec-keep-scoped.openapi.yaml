@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: Keep Unreferenced Scoped Test
+  version: '1.0.0'
+paths:
+  /api/foo:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Foo'
+components:
+  schemas:
+    Foo:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/unreferenced_with_unrelated
+      x-linkml-source: Foo
