@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -138,7 +138,7 @@ jobs:
           set +e
           uv run pytest tests/linkml_runtime/test_linkml_model/test_linkml_files.py \
             -k test_vendored_files_match_upstream_main \
-            --with-network --with-upstream-main -v 2>&1 | tee temp/drift_output.txt
+            --with-upstream -v 2>&1 | tee temp/drift_output.txt
           PYTEST_RC=${PIPESTATUS[0]}
           set -e
           case "$PYTEST_RC" in
@@ -203,3 +203,36 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Per-PR CI runs fully offline; this weekly job is where the outside world
+      # gets checked instead. Two kinds of reality check, in addition to the
+      # drift comparison above:
+      #
+      # - `upstream` tests assert facts about the outside world (published PURLs
+      #   resolve, w3id rewrite rules behave, vendored files match the pinned
+      #   upstream commit). A PR cannot break these, so failing them here rather
+      #   than in per-PR CI turns an upstream outage from a blocked PR into a
+      #   red weekly run.
+      # - `network` tests normally run against local stubs. Running them live
+      #   here catches *stub drift*: if the real servers change behaviour, the
+      #   stubs keep asserting yesterday's reality and only this run notices.
+      - name: Run upstream reality checks
+        if: always()
+        run: |
+          uv run pytest tests/ -m upstream --with-upstream \
+            -k "not test_vendored_files_match_upstream_main" -v
+
+      # Notebook tests are excluded: their `!uv pip install` cells mutate the
+      # venv off the lock (#3581), which is why per-PR CI gives them a dedicated
+      # runner. Their stub-mode run in per-PR CI is the coverage that matters.
+      # (Cost: URLs only notebooks fetch -- the biocontext monarch context --
+      # are not live-checked anywhere; their stubs could drift silently.)
+      # --with-slow/--with-biolink: several network-marked tests (the metamodel
+      # RDF ones especially -- the original flake source) are also marked slow,
+      # and would otherwise be collected but skipped, silently exempting their
+      # stubs from this live check.
+      - name: Run network-marked tests against the live network
+        if: always()
+        run: |
+          uv run pytest tests/ --ignore=tests/linkml/test_notebooks \
+            -m "network and not kroki" --with-network --with-slow --with-biolink -v

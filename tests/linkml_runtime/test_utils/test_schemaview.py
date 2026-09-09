@@ -536,6 +536,7 @@ def test_imports_relative_load() -> None:
     sv.imports_closure(imports=True)
 
 
+@pytest.mark.network
 def test_imports_direct_remote_imports() -> None:
     """Tests that building a SchemaView directly from a remote URL works."""
     view = SchemaView("https://w3id.org/linkml/meta.yaml")
@@ -549,6 +550,7 @@ def test_imports_direct_remote_imports() -> None:
         assert c not in view.all_classes(imports=False)
 
 
+@pytest.mark.network
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
@@ -614,6 +616,52 @@ def test_import_map(importmap: dict[str, Any]) -> None:
     # ensure that ACTIVITY only appears in all_classes if imports are enabled
     assert ACTIVITY in view.all_classes()
     assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict() -> None:
+    """An importmap value may be an in-memory schema dict, loaded without filesystem access."""
+    core_dict = YAMLLoader().load_as_dict(str(SCHEMA_CORE))
+    view = SchemaView(SCHEMA_WITH_IMPORTS, importmap={"core": core_dict})
+    view.all_classes()
+    # ensure that all imports have loaded from the in-memory dict
+    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
+    # ACTIVITY is only defined in the imported core schema, so its presence proves the
+    # dict-valued import was resolved and merged
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict_transitive(tmp_path: Path) -> None:
+    """A dict-valued import whose own imports are also dict-valued resolves transitively."""
+    leaf = {
+        "id": "https://example.org/leaf",
+        "name": "leaf",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "classes": {"LeafClass": {"attributes": {"leaf_attr": {"range": "string"}}}},
+    }
+    middle = {
+        "id": "https://example.org/middle",
+        "name": "middle",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types", "https://example.org/leaf"],
+        "classes": {"MiddleClass": {"is_a": "LeafClass"}},
+    }
+    root = SchemaDefinition(
+        id="https://example.org/root",
+        name="root",
+        imports=["linkml:types", "https://example.org/middle"],
+        classes=[ClassDefinition(name="RootClass", is_a="MiddleClass")],
+    )
+    importmap = {
+        "https://example.org/middle": middle,
+        "https://example.org/leaf": leaf,
+    }
+    view = SchemaView(root, importmap=importmap)
+    all_classes = view.all_classes()
+    assert {"RootClass", "MiddleClass", "LeafClass"} <= set(all_classes)
+    # the transitively-imported leaf attribute is inducible on RootClass
+    assert view.induced_slot("leaf_attr", "RootClass").range == "string"
 
 
 def test_merge_imports_kwargs(schema_view_with_imports: SchemaView, sv_merged_imports_keyword: SchemaView) -> None:
@@ -980,13 +1028,10 @@ for value in CREATURE_EXPECTED.values():
     "schema",
     [
         "creature_view",
-        pytest.param(
-            "creature_view_remote",
-        ),
+        # network: these load the schema over https to exercise URL imports
+        pytest.param("creature_view_remote", marks=pytest.mark.network),
         "creature_view_local",
-        pytest.param(
-            "creature_view_direct_url",
-        ),
+        pytest.param("creature_view_direct_url", marks=pytest.mark.network),
     ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
@@ -3806,3 +3851,30 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+def test_annotation_dict_for_induced_slot() -> None:
+    """annotation_dict() can return annotation for induced slots."""
+
+    schema = """
+id: https://example.org/induced-slot-annotations
+name: induced-slot-annotations
+slots:
+  foo:
+    annotations:
+      bar: some value
+classes:
+  TestClass:
+    slots:
+      - foo
+    slot_usage:
+      foo:
+        annotations:
+          bar: some other value
+"""
+
+    sv = SchemaView(schema)
+    original_annots = sv.annotation_dict("foo")
+    assert original_annots["bar"] == "some value"
+    induced_annots = sv.annotation_dict("foo", class_name="TestClass")
+    assert induced_annots["bar"] == "some other value"

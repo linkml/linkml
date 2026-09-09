@@ -24,9 +24,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import ClassVar, TextIO, Union, cast
+from typing import IO, Any, ClassVar, TextIO, Union, cast
 
 import click
+import yaml
 from click import Argument, Command, Option
 from jsonasobj2 import JsonObj
 
@@ -284,21 +285,46 @@ class Generator(metaclass=abc.ABCMeta):
             self.namespaces = Namespaces()
             if isinstance(self.schema.prefixes, dict):
                 for key, value in self.schema.prefixes.items():
-                    self.namespaces[key] = value
+                    if hasattr(value, "prefix_reference"):
+                        self.namespaces[key] = value.prefix_reference
+                    else:
+                        self.namespaces[key] = value
             elif isinstance(self.schema.prefixes, JsonObj):
                 prefixes = vars(self.schema.prefixes)
                 for key, value in prefixes.items():
-                    self.namespaces[key] = value
+                    if hasattr(value, "prefix_reference"):
+                        self.namespaces[key] = value.prefix_reference
+                    else:
+                        self.namespaces[key] = value
             else:
                 for prefix in self.schema.prefixes.values():
                     self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
-    def serialize(self, **kwargs) -> str:
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Validate ``generator_args`` before any generator is built from them.
+
+        ``gen-project`` calls this once per selected generator, all before any
+        output is generated, and the generator CLIs (e.g. ``gen-java``) call it
+        on their resolved options before construction -- so a bad configuration
+        value is caught up front rather than surfacing later as a generic
+        exception raised somewhere during schema loading, which it would then be
+        indistinguishable from. The default implementation does nothing;
+        override to check specific keys eagerly.
+
+        :param args: The merged ``generator_args`` for this generator (defaults
+            plus any user-supplied ``generator_args`` section), before path
+            interpolation.
+        :raises click.UsageError: if a value is invalid.
+        """
+
+    def serialize(self, **kwargs) -> str | None:
         """
         Generate output in the required format
 
         :param kwargs: Generator specific parameters
-        :return: Generated output
+        :return: Generated output, or None if the generator writes its output
+            directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)
         """
         out = ""
 
@@ -1010,3 +1036,88 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
         return f
 
     return decorator
+
+
+def parse_config_yaml(value: Any, source: str) -> Any:
+    """Parse YAML, naming what was being read if it does not parse.
+
+    Unparsable YAML is a mistake in what was supplied, so it is reported against the
+    option it came from rather than escaping as a traceback. PyYAML reports a scalar it
+    cannot construct (an impossible date such as ``2024-02-30``) as a bare ``ValueError``
+    rather than a ``YAMLError``; that is a parse failure too, and is named the same way.
+
+    :param value: YAML text, or an open file to read it from.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: Whatever the YAML held.
+    :raises ValueError: if the YAML is malformed.
+    """
+    try:
+        return yaml.safe_load(value)
+    except (yaml.YAMLError, ValueError) as e:
+        raise ValueError(f"{source}: could not parse as YAML: {e}") from e
+
+
+def config_mapping(value: Any, where: str, source: str) -> dict[str, Any]:
+    """Check that one level of a configuration is a mapping, and hand it back.
+
+    An empty value (``java:`` with nothing under it) reads as None saying "nothing
+    configured here", so it returns as empty mapping. Anything else that is not a
+    mapping is a mistake in the configuration, and says so where it was given rather
+    than failing later.
+
+    Shared by every entry point that reads this configuration format, so a given
+    mistake is reported the same way whether it reaches ``gen-project`` or one of the
+    individual generator CLIs. ``ValueError`` rather than :class:`click.UsageError`,
+    so a caller using this as a library gets the same checks without click semantics;
+    command-line callers translate it at their own boundary.
+
+    :param value: Whatever was found at this point in the configuration.
+    :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: The mapping, empty if nothing was configured.
+    :raises ValueError: if the value is neither a mapping nor empty.
+    """
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"{source}: expected a YAML mapping at {where}, found {type(value).__name__}")
+    return value
+
+
+def read_generator_config(config_file: IO[bytes] | None, generator_name: str) -> dict[str, Any]:
+    """Read one generator's settings out of a gen-project-style config file.
+
+    This is the configuration file that ``gen-project --config-file`` reads so a
+    project can keep a single file and each generator can have its own section.
+
+    Reading consumes ``config_file``, so call this once and lookup each setting
+    on the returned dict. Calling it a second time with the same open file finds
+    nothing, because the file has already been read to the end.
+
+    >>> from io import BytesIO
+    >>> config_file = BytesIO(b"generator_args:\\n  java:\\n    package: org.example.model\\n")
+    >>> read_generator_config(config_file, "java").get("package")
+    'org.example.model'
+    >>> read_generator_config(None, "java")
+    {}
+
+    A malformed written section - a scalar where a mapping belongs - is a usage
+    error, so report it. Absent/empty sections are fine (empty dict).
+
+    :param config_file: The open file from ``--config-file``, or None if absent.
+    :param generator_name: Which section to read, e.g. ``"java"`` or ``"golang"``.
+    :return: That generator's settings, empty if the file has none for it.
+    :raises click.UsageError: if the file is not parseable as YAML, or if the file, or
+        the part of it this generator reads, isn't a YAML mapping.
+    """
+    if config_file is None:
+        return {}
+    source = "--config-file"
+    # the shared checks raise ValueError so they can be reused off the command line;
+    # this is a CLI entry point, so a bad file is reported as a usage error here
+    try:
+        config_data = config_mapping(parse_config_yaml(config_file, source), "the top level", source)
+        generator_args = config_mapping(config_data.get("generator_args"), "'generator_args'", source)
+        return config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'", source)
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
