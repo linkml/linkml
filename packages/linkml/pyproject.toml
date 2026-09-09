@@ -106,7 +106,7 @@ dev = [
 ]
 
 pandera = [
-  "pandera>=0.32.1",
+  "pandera>=0.33.1",
   "polars-lts-cpu >= 1.0.0",
   "pandas"
 ]
