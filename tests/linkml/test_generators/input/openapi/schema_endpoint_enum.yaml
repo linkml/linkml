@@ -1,0 +1,16 @@
+# LinkML schema with an enum referenced directly as an endpoint schema
+id: https://w3id.org/linkml/tests/endpoint_enum
+name: endpoint_enum
+default_prefix: endpoint_enum
+imports:
+  - linkml:types
+enums:
+  FixedEnum:
+    permissible_values:
+      FOO: {}
+      BAR: {}
+classes:
+  Foo:
+    attributes:
+      color:
+        range: FixedEnum

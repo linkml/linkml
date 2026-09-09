@@ -1,0 +1,25 @@
+# LinkML schema with a chain of unreferenced classes
+id: https://w3id.org/linkml/tests/chain_unreferenced
+name: chain_unreferenced
+default_prefix: chain_unreferenced
+imports:
+  - linkml:types
+
+classes:
+  Foo:
+    description: the only class reachable from the endpoint
+    attributes:
+      name:
+        range: string
+
+  Foo Bar:
+    description: unrelated class with a space in its name, not reachable from Foo, but present in the schema
+    attributes:
+      bar_ref:
+        range: Baz Qux
+
+  Baz Qux:
+    description: should be pruned - only referenced by the also-unreachable Foo Bar
+    attributes:
+      value:
+        range: string

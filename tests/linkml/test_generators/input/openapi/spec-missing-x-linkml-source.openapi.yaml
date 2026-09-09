@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info: {title: Foo API, version: "1.0"}
+paths:
+  /foo:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Foo'}
+components:
+  schemas:
+    Foo:
+      type: object
+      x-linkml-schema: https://example.org/foo
+      x-linkml-source: Foo
+    Bar:
+      type: object
+      x-linkml-schema: https://example.org/foo
