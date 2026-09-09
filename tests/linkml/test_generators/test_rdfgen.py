@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 import pytest
 import rdflib
@@ -87,6 +88,8 @@ def test_annotation_extensions():
         assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_generation_date_suppressed_by_default():
     """The generation_date timestamp triple is off by default and opt-in via the flag.
 
@@ -115,6 +118,8 @@ def test_generation_date_suppressed_by_default():
     )
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_output_is_byte_identical_across_processes():
     """RDF output is byte-identical across fresh processes with different hash seeds.
 
@@ -134,7 +139,13 @@ def test_output_is_byte_identical_across_processes():
     def run(seed: str) -> str:
         # Inherit the real environment and vary only the hash seed. Replacing it
         # wholesale drops SystemRoot on Windows, which breaks winsock init.
-        env = {**os.environ, "PYTHONHASHSEED": seed}
+        # A fresh interpreter never imports tests/conftest.py, so the offline
+        # network guard is installed via sitecustomize on PYTHONPATH instead
+        # (same mechanism as the notebook kernels).
+        kernel_startup_dir = Path(__file__).resolve().parents[2] / "_kernel_startup"
+        existing = os.environ.get("PYTHONPATH", "")
+        pythonpath = os.pathsep.join([str(kernel_startup_dir), *([existing] if existing else [])])
+        env = {**os.environ, "PYTHONHASHSEED": seed, "PYTHONPATH": pythonpath}
         result = subprocess.run(
             [sys.executable, "-c", program],
             check=True,
