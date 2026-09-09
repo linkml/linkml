@@ -8,6 +8,7 @@ This extends the existing test_shaclgen.py module with:
 3. Correct (non-merged) behavior when using native LinkML class names
 """
 
+import pytest
 import rdflib
 from rdflib import RDF, SH
 
@@ -189,4 +190,64 @@ slots:
     # Also verify the wrong value (the old bug) is absent
     assert EXTERNAL_TARGET_URI not in node_objects_native, (
         "Native mode: sh:node must not use the class_uri (ExternalTarget)"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 3. sh:node must reference a shape that was actually emitted, including --suffix
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("suffix", [None, "Shape"])
+def test_shacl_native_node_reference_resolves(tmp_path, suffix):
+    """
+    In native names mode, sh:node points at a shape identifier rather than an RDF
+    class, so it must match the emitted shape name exactly — including any string
+    appended via the ``suffix`` option.  A reference to a shape that does not exist
+    is not an error in SHACL: the constraint simply passes everything, silently
+    dropping the validation the user asked for.
+    """
+    test_schema = """
+id: http://example.org/test
+name: suffix_range_test
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+
+imports:
+  - linkml:types
+
+classes:
+  Target:
+    class_uri: ex:ExternalTarget
+    slots:
+      - label
+
+  Container:
+    slots:
+      - has_target
+
+slots:
+  label:
+    range: string
+
+  has_target:
+    range: Target
+"""
+    schema_path = tmp_path / "suffix_range_test.yaml"
+    schema_path.write_text(test_schema)
+
+    expected = rdflib.term.URIRef("http://example.org/Target" + (suffix or ""))
+
+    g = rdflib.Graph()
+    g.parse(
+        data=ShaclGenerator(str(schema_path), mergeimports=True, use_class_uri_names=False, suffix=suffix).serialize(),
+        format="turtle",
+    )
+
+    node_objects = set(g.objects(None, SH["node"]))
+    assert node_objects == {expected}, f"Expected sh:node {expected}, got {node_objects}"
+
+    emitted_shapes = set(g.subjects(RDF.type, SH.NodeShape))
+    assert node_objects <= emitted_shapes, (
+        f"sh:node references a shape that was never emitted: {node_objects - emitted_shapes}"
     )

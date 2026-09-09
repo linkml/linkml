@@ -407,21 +407,24 @@ class ShaclGenerator(Generator):
         ``dcatapplus:Resource``) is incorrect because data nodes are never typed as
         that URI — it is a shape identifier, not an RDF class.  ``sh:node`` correctly
         validates the referenced node against the named shape.
+
+        Because ``sh:node`` references a shape by its identifier, the ``suffix``
+        option has to be applied here too — otherwise the reference points at a
+        shape that was never emitted and the constraint silently passes.
         """
         sv = self.schemaview
         cls = sv.get_class(r)
         if cls and getattr(cls, "class_uri", None) == "linkml:Any":
             return
+        range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
+        if range_ref == self.LINKML_ANY_URI:
+            return
         if self.use_class_uri_names:
-            range_ref = sv.get_uri(r, expand=True)
-            if range_ref == self.LINKML_ANY_URI:
-                return
             func(SH["class"], URIRef(range_ref))
-        else:
-            range_ref = sv.get_uri(r, expand=True, native=True)
-            if range_ref == self.LINKML_ANY_URI:
-                return
-            func(SH["node"], URIRef(range_ref))
+            return
+        if self.suffix:
+            range_ref += self.suffix
+        func(SH["node"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
