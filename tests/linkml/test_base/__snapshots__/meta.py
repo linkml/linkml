@@ -178,6 +178,22 @@ class UniqueKeyUniqueKeyName(extended_str):
 class TypeMappingFramework(extended_str):
     pass
 
+def _coerce_enum_slot(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+
 
 Anything = Any
 
@@ -928,9 +944,6 @@ class AnonymousEnumExpression(YAMLRoot):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
-            self.pv_formula = PvFormulaOptions(self.pv_formula)
-
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
 
         if not isinstance(self.include, list):
@@ -956,6 +969,11 @@ class AnonymousEnumExpression(YAMLRoot):
         self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"pv_formula": ("PvFormulaOptions", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -1002,9 +1020,6 @@ class EnumDefinition(Definition):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
-            self.pv_formula = PvFormulaOptions(self.pv_formula)
-
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
 
         if not isinstance(self.include, list):
@@ -1030,6 +1045,11 @@ class EnumDefinition(Definition):
         self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"pv_formula": ("PvFormulaOptions", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -1088,14 +1108,8 @@ class EnumBinding(YAMLRoot):
         if self.range is not None and not isinstance(self.range, EnumDefinitionName):
             self.range = EnumDefinitionName(self.range)
 
-        if self.obligation_level is not None and not isinstance(self.obligation_level, ObligationLevelEnum):
-            self.obligation_level = ObligationLevelEnum(self.obligation_level)
-
         if self.binds_value_of is not None and not isinstance(self.binds_value_of, str):
             self.binds_value_of = str(self.binds_value_of)
-
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
-            self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
@@ -1215,6 +1229,11 @@ class EnumBinding(YAMLRoot):
         self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"obligation_level": ("ObligationLevelEnum", False), "pv_formula": ("PvFormulaOptions", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -1345,9 +1364,6 @@ class StructuredAlias(YAMLRoot):
         if not isinstance(self.literal_form, str):
             self.literal_form = str(self.literal_form)
 
-        if self.predicate is not None and not isinstance(self.predicate, AliasPredicateEnum):
-            self.predicate = AliasPredicateEnum(self.predicate)
-
         if not isinstance(self.categories, list):
             self.categories = [self.categories] if self.categories is not None else []
         self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
@@ -1471,6 +1487,11 @@ class StructuredAlias(YAMLRoot):
 
         super().__post_init__(**kwargs)
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"predicate": ("AliasPredicateEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 class Expression(YAMLRoot):
     """
@@ -1586,9 +1607,6 @@ class EnumExpression(Expression):
         if self.code_set_version is not None and not isinstance(self.code_set_version, str):
             self.code_set_version = str(self.code_set_version)
 
-        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
-            self.pv_formula = PvFormulaOptions(self.pv_formula)
-
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
 
         if not isinstance(self.include, list):
@@ -1614,6 +1632,11 @@ class EnumExpression(Expression):
         self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"pv_formula": ("PvFormulaOptions", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -2074,9 +2097,6 @@ class SlotExpression(Expression):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
-            self.value_presence = PresenceEnum(self.value_presence)
-
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
 
@@ -2125,6 +2145,11 @@ class SlotExpression(Expression):
             self.array = ArrayExpression(**as_dict(self.array))
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"value_presence": ("PresenceEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -2208,9 +2233,6 @@ class AnonymousSlotExpression(AnonymousExpression):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
-            self.value_presence = PresenceEnum(self.value_presence)
-
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
 
@@ -2259,6 +2281,11 @@ class AnonymousSlotExpression(AnonymousExpression):
             self.array = ArrayExpression(**as_dict(self.array))
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"value_presence": ("PresenceEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -2439,9 +2466,6 @@ class SlotDefinition(Definition):
         if self.usage_slot_name is not None and not isinstance(self.usage_slot_name, str):
             self.usage_slot_name = str(self.usage_slot_name)
 
-        if self.relational_role is not None and not isinstance(self.relational_role, RelationalRoleEnum):
-            self.relational_role = RelationalRoleEnum(self.relational_role)
-
         if self.slot_group is not None and not isinstance(self.slot_group, SlotDefinitionName):
             self.slot_group = SlotDefinitionName(self.slot_group)
 
@@ -2517,9 +2541,6 @@ class SlotDefinition(Definition):
         if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
             self.implicit_prefix = str(self.implicit_prefix)
 
-        if self.value_presence is not None and not isinstance(self.value_presence, PresenceEnum):
-            self.value_presence = PresenceEnum(self.value_presence)
-
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
 
@@ -2568,6 +2589,11 @@ class SlotDefinition(Definition):
             self.array = ArrayExpression(**as_dict(self.array))
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"relational_role": ("RelationalRoleEnum", False), "value_presence": ("PresenceEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
