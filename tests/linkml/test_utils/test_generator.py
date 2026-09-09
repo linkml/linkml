@@ -13,7 +13,7 @@ import click
 import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.generator import Generator, read_generator_config
+from linkml.utils.generator import Generator, config_mapping, parse_config_yaml, read_generator_config
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -757,13 +757,92 @@ def test_read_generator_config_rejects_malformed_section(config_yaml, where):
     [
         pytest.param(b"generator_args:\n  java:\n   package: [unclosed\n", id="unclosed-bracket"),
         pytest.param(b"generator_args:\n\tjava:\n\t\tpackage: x\n", id="tab-indent"),
+        # PyYAML raises a bare ValueError for this, not a YAMLError
+        pytest.param(b"generator_args:\n  java:\n    package: 2024-02-30\n", id="impossible-date"),
     ],
 )
 def test_read_generator_config_rejects_unparsable_yaml(config_yaml):
     """A file that isn't valid YAML at all is reported as a usage error, like a misshapen
     one, rather than escaping as a raw parser traceback."""
-    with pytest.raises(click.UsageError, match="could not parse as YAML"):
+    with pytest.raises(click.UsageError, match="--config-file: could not parse as YAML"):
         read_generator_config(BytesIO(config_yaml), "java")
+
+
+@pytest.mark.parametrize(
+    ("call", "expected"),
+    [
+        pytest.param(
+            lambda: parse_config_yaml("{unclosed", "--generator-arguments"),
+            "--generator-arguments: could not parse as YAML",
+            id="unparsable-yaml",
+        ),
+        pytest.param(
+            lambda: config_mapping("notamapping", "'generator_args'", "--config-file"),
+            "--config-file: expected a YAML mapping at 'generator_args', found str",
+            id="misshapen-mapping",
+        ),
+    ],
+)
+def test_shared_config_checks_raise_value_error_naming_their_source(call, expected):
+    """The shared checks raise ValueError, not click.UsageError, so a caller using them as
+    a library (ProjectGenerator.generate) gets the same checking without click semantics;
+    command-line callers translate at their own boundary. The source is carried through, so
+    the same check can report against --config-file or -A."""
+    with pytest.raises(ValueError) as exc_info:
+        call()
+
+    assert str(exc_info.value).startswith(expected)
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "expected"),
+    [
+        pytest.param(
+            b"generator_args:\n  java: notamapping\n",
+            "--config-file: expected a YAML mapping at 'generator_args.java', found str",
+            id="misshapen-section",
+        ),
+        pytest.param(
+            b"generator_args:\n  java:\n   package: [unclosed\n",
+            "--config-file: could not parse as YAML",
+            id="unparsable-yaml",
+        ),
+        pytest.param(
+            # the exact wording of the underlying ValueError (from datetime, via PyYAML's
+            # timestamp resolver) differs across Python versions -- only the prefix this
+            # codebase controls is checked
+            b"generator_args:\n  java:\n    package: 2024-02-30\n",
+            "--config-file: could not parse as YAML",
+            id="impossible-date",
+        ),
+    ],
+)
+def test_same_config_mistake_reports_the_same_way_through_every_entry_point(tmp_path, config_yaml, expected):
+    """gen-project and the individual generator CLIs read the same config file format, so
+    one mistake in it must produce one message -- they share the checks rather than each
+    carrying its own copy that can drift."""
+    from click.testing import CliRunner
+
+    from linkml.generators.javagen import cli as javagen_cli
+    from linkml.generators.projectgen import cli as projectgen_cli
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        "id: https://example.org/test\nname: test\nprefixes:\n  linkml: https://w3id.org/linkml/\n"
+        "imports:\n  - linkml:types\ndefault_range: string\nclasses:\n  Thing:\n    slots:\n      - name\n"
+        "slots:\n  name:\n"
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_bytes(config_yaml)
+    common = ["--config-file", str(config_path)]
+
+    project = CliRunner().invoke(projectgen_cli, [*common, "-I", "java", "-d", str(tmp_path / "p"), str(schema_path)])
+    java = CliRunner().invoke(javagen_cli, [*common, "--output-directory", str(tmp_path / "j"), str(schema_path)])
+
+    assert project.exit_code != 0, project.output
+    assert java.exit_code != 0, java.output
+    assert expected in project.output
+    assert expected in java.output
 
 
 def test_validate_generator_args_default_is_a_noop():
