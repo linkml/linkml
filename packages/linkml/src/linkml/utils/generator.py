@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -214,6 +215,15 @@ class Generator(metaclass=abc.ABCMeta):
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            if (
+                isinstance(schema, SchemaDefinition)
+                and not self.include_generation_date
+                and schema.generation_date is not None
+            ):
+                # SchemaView keeps a reference to a SchemaDefinition it is handed,
+                # so clearing generation_date below would reach back into the
+                # caller's object. Copy first so the generator owns what it mutates.
+                schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, str | Path):

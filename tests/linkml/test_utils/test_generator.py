@@ -13,7 +13,9 @@ import click
 import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.generators.shaclgen import ShaclGenerator
 from linkml.utils.generator import Generator, config_mapping, parse_config_yaml, read_generator_config
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -850,3 +852,36 @@ def test_validate_generator_args_default_is_a_noop():
     worth checking up front (which is most of them) need not override it."""
     Generator.validate_generator_args({})
     Generator.validate_generator_args({"anything": "goes", "even": None})
+
+
+_GENERATION_DATE_SCHEMA = """
+id: https://example.org/mut
+name: mut
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    attributes:
+      id:
+        identifier: true
+"""
+
+
+def test_generation_date_suppression_does_not_mutate_callers_schema():
+    """Constructing a generator must not clear generation_date on the caller's schema.
+
+    ``SchemaView`` keeps a reference to a ``SchemaDefinition`` it is handed, so on the
+    ``uses_schemaloader = False`` path the default generation_date suppression must
+    operate on a generator-owned copy, not reach back into the caller's object.
+    """
+    schema = SchemaView(_GENERATION_DATE_SCHEMA).schema
+    schema.generation_date = "2020-01-01T00:00:00"
+
+    gen = ShaclGenerator(schema)
+
+    assert schema.generation_date == "2020-01-01T00:00:00"
+    assert gen.schema is not schema
+    assert gen.schema.generation_date is None
