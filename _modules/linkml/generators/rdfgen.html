@@ -413,6 +413,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">urlparse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
@@ -429,6 +430,48 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
+
+<span class="c1">#: ``@context`` string entries whose URI scheme is in this set are kept when</span>
+<span class="c1">#: ``RDFGenerator`` strips relative per-module refs before handing the JSON-LD</span>
+<span class="c1">#: to rdflib. ``http``/``https`` cover published context documents (e.g.</span>
+<span class="c1">#: ``https://w3id.org/linkml/types.context.jsonld``); ``file`` covers the</span>
+<span class="c1">#: vendored metamodel context absolutized by ``JSONLDGenerator.end_schema``.</span>
+<span class="n">_RESOLVABLE_CONTEXT_URI_SCHEMES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">})</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_strip_relative_context_refs</span><span class="p">(</span><span class="n">jsonld_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop relative-path string entries from the JSON-LD ``@context`` array.</span>
+
+<span class="sd">    ``JSONLDGenerator.end_schema`` appends one ``&lt;import&gt;.context.jsonld``</span>
+<span class="sd">    string per loaded import. For sibling-relative imports these refs have no</span>
+<span class="sd">    URI scheme (e.g. ``./base.context.jsonld``) and rdflib resolves them</span>
+<span class="sd">    against ``@base`` — typically an ``https://`` schema URI — producing</span>
+<span class="sd">    HTTP 404s because no such context file is published.</span>
+
+<span class="sd">    ``gen-rdf`` always merges imports into the working schema before</span>
+<span class="sd">    serialization, so the prefix bindings and class definitions those</span>
+<span class="sd">    per-module refs would otherwise contribute are already inlined. Filtering</span>
+<span class="sd">    the unresolvable refs is safe and converts the failure into a no-op.</span>
+
+<span class="sd">    Absolute URIs (``http``/``https``/``file``) and inline ``@context``</span>
+<span class="sd">    dicts (including the ``@base`` directive emitted by ``JSONLDGenerator``)</span>
+<span class="sd">    are preserved unchanged.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jsonld_str</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@context&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonld_str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_resolvable</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="n">_RESOLVABLE_CONTEXT_URI_SCHEMES</span>
+
+    <span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">context</span> <span class="k">if</span> <span class="n">_is_resolvable</span><span class="p">(</span><span class="n">entry</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonld_str</span>
+    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filtered</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="RDFGenerator">
@@ -473,6 +516,11 @@
             <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">pv</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">jsonld_str</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Drop unresolvable per-module ``@context`` refs that</span>
+        <span class="c1"># ``JSONLDGenerator`` adds for each loaded import (e.g.</span>
+        <span class="c1"># ``./base.context.jsonld``); see ``_strip_relative_context_refs``.</span>
+        <span class="n">jsonld_str</span> <span class="o">=</span> <span class="n">_strip_relative_context_refs</span><span class="p">(</span><span class="n">jsonld_str</span><span class="p">)</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
