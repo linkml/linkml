@@ -1,0 +1,9 @@
+# LinkML schema used in tests for bug report about
+# referenced (not inlined) parameters in the template
+id: https://example.org/g1
+name: g1
+imports:
+  - linkml:types
+
+classes:
+  Foo: {}
