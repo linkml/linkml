@@ -67,6 +67,7 @@ work with data, or integrate LinkML into your applications, this section is for 
    cli/index
    developers/index
    code/index
+   config/index
 
 Maintainers
 -----------

@@ -2859,7 +2859,7 @@
                             }
                         ]
                     },
-                    "description": "A collection of named unique keys for this class. Unique keys may be singular or compound.",
+                    "description": "A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why they are also called \"compound keys\". A unique key uniquely identifies instances of the class within a given container, meaning there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key.",
                     "type": [
                         "object",
                         "null"
@@ -3565,7 +3565,7 @@
                             }
                         ]
                     },
-                    "description": "A collection of named unique keys for this class. Unique keys may be singular or compound.",
+                    "description": "A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why they are also called \"compound keys\". A unique key uniquely identifies instances of the class within a given container, meaning there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key.",
                     "type": [
                         "object",
                         "null"
@@ -10693,7 +10693,7 @@
                     ]
                 },
                 "identifier": {
-                    "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
+                    "description": "True means that the slot is the identifier slot of its class. Such a slot uniquely identifies instances of the class throughout an entire document, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the identifier slot anywhere in the document.",
                     "type": [
                         "boolean",
                         "null"
@@ -10821,7 +10821,7 @@
                     ]
                 },
                 "key": {
-                    "description": "True means that the key slot(s) uniquely identify the elements within a single container",
+                    "description": "True means that the slot is the \"singular unique key\" (also known more simply as the \"key slot\") of its class. Such a slot uniquely identifies instances of the class within a single container, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the key slot within the container.",
                     "type": [
                         "boolean",
                         "null"
@@ -11714,7 +11714,7 @@
                     ]
                 },
                 "identifier": {
-                    "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
+                    "description": "True means that the slot is the identifier slot of its class. Such a slot uniquely identifies instances of the class throughout an entire document, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the identifier slot anywhere in the document.",
                     "type": [
                         "boolean",
                         "null"
@@ -11842,7 +11842,7 @@
                     ]
                 },
                 "key": {
-                    "description": "True means that the key slot(s) uniquely identify the elements within a single container",
+                    "description": "True means that the slot is the \"singular unique key\" (also known more simply as the \"key slot\") of its class. Such a slot uniquely identifies instances of the class within a single container, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the key slot within the container.",
                     "type": [
                         "boolean",
                         "null"
@@ -16503,10 +16503,44 @@
         },
         "UnitOfMeasure": {
             "additionalProperties": false,
-            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).",
+            "anyOf": [
+                {
+                    "properties": {
+                        "ucum_code": {}
+                    },
+                    "required": [
+                        "ucum_code"
+                    ]
+                },
+                {
+                    "properties": {
+                        "iec61360code": {}
+                    },
+                    "required": [
+                        "iec61360code"
+                    ]
+                },
+                {
+                    "properties": {
+                        "symbol": {}
+                    },
+                    "required": [
+                        "symbol"
+                    ]
+                },
+                {
+                    "properties": {
+                        "exact_mappings": {}
+                    },
+                    "required": [
+                        "exact_mappings"
+                    ]
+                }
+            ],
+            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
             "properties": {
                 "abbreviation": {
-                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)",
+                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)",
                     "type": [
                         "string",
                         "null"

@@ -45,19 +45,19 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
-| Pydantic | 29 | 34 | 1 | 0 | 64 | 45% |
-| Python DC | 16 | 38 | 10 | 0 | 64 | 25% |
-| JSON Schema | 39 | 23 | 2 | 0 | 64 | 61% |
-| Java | 0 | 24 | 40 | 0 | 64 | 0% |
-| SHACL | 19 | 25 | 20 | 0 | 64 | 30% |
-| ShEx | 0 | 24 | 40 | 0 | 64 | 0% |
-| OWL | 0 | 26 | 38 | 0 | 64 | 0% |
-| JSON-LD Ctx | 34 | 24 | 6 | 0 | 64 | 53% |
-| SQLite DDL | 12 | 40 | 12 | 0 | 64 | 19% |
-| Postgres DDL | 0 | 23 | 41 | 0 | 64 | 0% |
-| Pandera | 14 | 28 | 22 | 0 | 64 | 22% |
-| Polars Schema | 28 | 23 | 13 | 0 | 64 | 44% |
-| sql_ddl_bigquery | 0 | 24 | 40 | 0 | 64 | 0% |
+| Pydantic | 31 | 34 | 1 | 0 | 66 | 47% |
+| Python DC | 18 | 38 | 10 | 0 | 66 | 27% |
+| JSON Schema | 41 | 23 | 2 | 0 | 66 | 62% |
+| Java | 0 | 24 | 42 | 0 | 66 | 0% |
+| SHACL | 21 | 25 | 20 | 0 | 66 | 32% |
+| ShEx | 0 | 24 | 42 | 0 | 66 | 0% |
+| OWL | 0 | 26 | 40 | 0 | 66 | 0% |
+| JSON-LD Ctx | 36 | 24 | 6 | 0 | 66 | 55% |
+| SQLite DDL | 13 | 41 | 12 | 0 | 66 | 20% |
+| Postgres DDL | 0 | 23 | 43 | 0 | 66 | 0% |
+| Pandera | 16 | 28 | 22 | 0 | 66 | 24% |
+| Polars Schema | 30 | 23 | 13 | 0 | 66 | 45% |
+| sql_ddl_bigquery | 0 | 24 | 42 | 0 | 66 | 0% |
 
 ## Details by Category
 
@@ -76,7 +76,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | Class boolean constraints with required | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Class boolean with expressions | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | Slot all_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Slot any_of | ✅ | ⚠️ | ⚠️ | ❓ | ❓ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ |
+| Slot any_of | ✅ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ❓ |
 | Slot boolean with expressions | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | Slot exactly_one_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Slot none_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
@@ -115,6 +115,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | Enum aliases | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ✅ | ✅ | ❓ |
 | Enum hierarchy | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
 | Non-standard enum names | ⚠️ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ❓ | ❓ |
+| Optional enum nullability | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ✅ | ✅ | ❓ |
 | Static enums | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Typed permissible values | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
 
@@ -197,6 +198,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | ID prefix | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Min/max value | ✅ | ⚠️ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ | ❓ |
 | Regex pattern | ⚠️ | ⚠️ | ⚠️ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ | ❓ |
+| Structured pattern | ✅ | ⚠️ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ | ❓ |
 
 ### Uncategorized
 

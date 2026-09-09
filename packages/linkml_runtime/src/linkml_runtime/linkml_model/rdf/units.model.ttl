@@ -10,10 +10,12 @@
 
 linkml:units a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    sh:declare [ sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ;
+    sh:declare [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+            sh:prefix "linkml" ],
+        [ sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ;
             sh:prefix "qudt" ],
-        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
-            sh:prefix "linkml" ] ;
+        [ sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI ;
+            sh:prefix "rdfs" ] ;
     linkml:classes linkml:Annotatable,
         linkml:Annotation,
         linkml:AnyValue,
@@ -30,13 +32,13 @@ linkml:units a linkml:SchemaDefinition ;
         "rdfs",
         "skos",
         "xsd" ;
-    linkml:generation_date "2026-05-05T18:49:46"^^xsd:dateTime ;
+    linkml:generation_date "2026-08-12T09:42:55"^^xsd:dateTime ;
     linkml:id "https://w3id.org/linkml/units"^^xsd:anyURI ;
     linkml:imports "linkml:annotations"^^xsd:anyURI,
         "linkml:extensions"^^xsd:anyURI,
         "linkml:mappings"^^xsd:anyURI,
         "linkml:types"^^xsd:anyURI ;
-    linkml:metamodel_version "1.7.0" ;
+    linkml:metamodel_version "1.11.0" ;
     linkml:slots linkml:UnitOfMeasure_exact_mappings,
         linkml:abbreviation,
         linkml:annotations,
@@ -59,8 +61,8 @@ linkml:units a linkml:SchemaDefinition ;
         linkml:ucum_code,
         linkml:unit ;
     linkml:source_file "units.yaml" ;
-    linkml:source_file_date "2026-05-05T18:16:00"^^xsd:dateTime ;
-    linkml:source_file_size 2801 ;
+    linkml:source_file_date "2026-08-12T09:36:51"^^xsd:dateTime ;
+    linkml:source_file_size 2847 ;
     linkml:types linkml:boolean,
         linkml:curie,
         linkml:date,
@@ -451,6 +453,9 @@ linkml:extension_tag a linkml:SlotDefinition ;
 linkml:extension_value a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
     skos:prefLabel "value" ;
+    linkml:annotations [ a linkml:Annotation ;
+            skos:example true ;
+            linkml:tag linkml:simple_dict_value ] ;
     linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
     linkml:description "the actual annotation" ;
     linkml:domain linkml:Extension ;
@@ -507,6 +512,16 @@ linkml:Annotatable a linkml:ClassDefinition ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:annotations .
 
+linkml:Extensible a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support extension" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extensions .
+
 linkml:Annotation a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
     linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
@@ -520,16 +535,6 @@ linkml:Annotation a linkml:ClassDefinition ;
         linkml:extension_tag,
         linkml:extension_value,
         linkml:extensions .
-
-linkml:Extensible a linkml:ClassDefinition ;
-    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
-    linkml:description "mixin for classes that support extension" ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:extensions .
 
 linkml:extensions a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
@@ -594,13 +599,13 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:symbol ],
-        [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:iec61360code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:exact_mappings ],
+            linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:ucum_code ] ;
+            linkml:slot_conditions linkml:symbol ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:exact_mappings ] ;
     linkml:class_uri "http://qudt.org/schema/qudt/Unit"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure"^^xsd:anyURI ;
     linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;

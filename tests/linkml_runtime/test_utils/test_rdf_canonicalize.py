@@ -260,6 +260,8 @@ def test_sort_is_load_bearing():
     )
 
     def run(seed: str) -> str:
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
         env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
             [sys.executable, "-c", program],
@@ -583,6 +585,8 @@ def test_fallback_is_deterministic_across_processes(output_format):
     )
 
     def run(seed: str) -> str:
+        # Inherit the real environment and vary only the hash seed. Replacing it
+        # wholesale drops SystemRoot on Windows, which breaks winsock init.
         env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
             [sys.executable, "-c", program],

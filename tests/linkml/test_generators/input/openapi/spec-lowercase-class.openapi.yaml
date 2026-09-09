@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: LinkML tests
+  version: 1.0.0
+paths:
+  /api/dataset:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+components:
+  schemas:
+    Dataset:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: Dataset

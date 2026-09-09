@@ -408,8 +408,8 @@
 --     * Slot: list_elements_unique Description: If True, then there must be no duplicates in the elements of a multivalued slot
 --     * Slot: list_elements_ordered Description: If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed
 --     * Slot: shared Description: If True, then the relationship between the slot domain and range is many to one or many to many
---     * Slot: key Description: True means that the key slot(s) uniquely identify the elements within a single container
---     * Slot: identifier Description: True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
+--     * Slot: key Description: True means that the slot is the "singular unique key" (also known more simply as the "key slot") of its class. Such a slot uniquely identifies instances of the class within a single container, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the key slot within the container.
+--     * Slot: identifier Description: True means that the slot is the identifier slot of its class. Such a slot uniquely identifies instances of the class throughout an entire document, meaning there cannot be two (or more) instances of the class (or instances of any of its descendants) with the same value for the identifier slot anywhere in the document.
 --     * Slot: designates_type Description: True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
 --     * Slot: alias Description: the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
 --     * Slot: owner Description: the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
@@ -843,10 +843,10 @@
 --     * Slot: annotatable_id Description: Autocreated FK slot
 --     * Slot: annotation_tag Description: Autocreated FK slot
 --     * Slot: value_id Description: the actual annotation
--- # Class: UnitOfMeasure Description: A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
+-- # Class: UnitOfMeasure Description: A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).
 --     * Slot: id
 --     * Slot: symbol Description: name of the unit encoded as a symbol
---     * Slot: abbreviation Description: An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)
+--     * Slot: abbreviation Description: An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)
 --     * Slot: descriptive_name Description: the spelled out name of the unit, for example, meter
 --     * Slot: ucum_code Description: associates a QUDT unit with its UCUM code (case-sensitive).
 --     * Slot: derivation Description: Expression for deriving this unit from other units
@@ -3019,12 +3019,12 @@ CREATE TABLE setting (
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
+CREATE INDEX ix_setting_schema_definition_name ON setting (schema_definition_name);
 CREATE INDEX setting_schema_definition_name_setting_key_idx ON setting (schema_definition_name, setting_key);
-CREATE INDEX ix_setting_setting_value ON setting (setting_value);
 CREATE INDEX ix_setting_setting_key ON setting (setting_key);
+CREATE INDEX ix_setting_setting_value ON setting (setting_value);
 CREATE INDEX setting_import_expression_id_setting_key_idx ON setting (import_expression_id, setting_key);
 CREATE INDEX ix_setting_import_expression_id ON setting (import_expression_id);
-CREATE INDEX ix_setting_schema_definition_name ON setting (schema_definition_name);
 
 CREATE TABLE prefix (
 	prefix_prefix TEXT NOT NULL,
@@ -3034,10 +3034,10 @@ CREATE TABLE prefix (
 	UNIQUE (schema_definition_name, prefix_prefix),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_prefix_prefix_prefix ON prefix (prefix_prefix);
 CREATE INDEX ix_prefix_prefix_reference ON prefix (prefix_reference);
-CREATE INDEX ix_prefix_schema_definition_name ON prefix (schema_definition_name);
 CREATE INDEX prefix_schema_definition_name_prefix_prefix_idx ON prefix (schema_definition_name, prefix_prefix);
+CREATE INDEX ix_prefix_schema_definition_name ON prefix (schema_definition_name);
+CREATE INDEX ix_prefix_prefix_prefix ON prefix (prefix_prefix);
 
 CREATE TABLE unique_key (
 	unique_key_name TEXT NOT NULL,
@@ -3062,25 +3062,25 @@ CREATE TABLE unique_key (
 	UNIQUE (class_definition_name, unique_key_name),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_unique_key_unique_key_name ON unique_key (unique_key_name);
-CREATE INDEX unique_key_class_definition_name_unique_key_name_idx ON unique_key (class_definition_name, unique_key_name);
-CREATE INDEX ix_unique_key_class_definition_name ON unique_key (class_definition_name);
-CREATE INDEX ix_unique_key_status ON unique_key (status);
-CREATE INDEX ix_unique_key_deprecated_element_has_exact_replacement ON unique_key (deprecated_element_has_exact_replacement);
-CREATE INDEX ix_unique_key_created_by ON unique_key (created_by);
-CREATE INDEX ix_unique_key_last_updated_on ON unique_key (last_updated_on);
-CREATE INDEX ix_unique_key_from_schema ON unique_key (from_schema);
-CREATE INDEX ix_unique_key_source ON unique_key (source);
-CREATE INDEX ix_unique_key_title ON unique_key (title);
-CREATE INDEX ix_unique_key_deprecated ON unique_key (deprecated);
-CREATE INDEX ix_unique_key_consider_nulls_inequal ON unique_key (consider_nulls_inequal);
 CREATE INDEX ix_unique_key_in_language ON unique_key (in_language);
+CREATE INDEX ix_unique_key_deprecated_element_has_possible_replacement ON unique_key (deprecated_element_has_possible_replacement);
+CREATE INDEX ix_unique_key_deprecated ON unique_key (deprecated);
+CREATE INDEX ix_unique_key_imported_from ON unique_key (imported_from);
+CREATE INDEX ix_unique_key_created_on ON unique_key (created_on);
 CREATE INDEX ix_unique_key_modified_by ON unique_key (modified_by);
 CREATE INDEX ix_unique_key_rank ON unique_key (rank);
-CREATE INDEX ix_unique_key_deprecated_element_has_possible_replacement ON unique_key (deprecated_element_has_possible_replacement);
-CREATE INDEX ix_unique_key_created_on ON unique_key (created_on);
-CREATE INDEX ix_unique_key_imported_from ON unique_key (imported_from);
 CREATE INDEX ix_unique_key_description ON unique_key (description);
+CREATE INDEX ix_unique_key_unique_key_name ON unique_key (unique_key_name);
+CREATE INDEX unique_key_class_definition_name_unique_key_name_idx ON unique_key (class_definition_name, unique_key_name);
+CREATE INDEX ix_unique_key_deprecated_element_has_exact_replacement ON unique_key (deprecated_element_has_exact_replacement);
+CREATE INDEX ix_unique_key_class_definition_name ON unique_key (class_definition_name);
+CREATE INDEX ix_unique_key_title ON unique_key (title);
+CREATE INDEX ix_unique_key_from_schema ON unique_key (from_schema);
+CREATE INDEX ix_unique_key_source ON unique_key (source);
+CREATE INDEX ix_unique_key_created_by ON unique_key (created_by);
+CREATE INDEX ix_unique_key_last_updated_on ON unique_key (last_updated_on);
+CREATE INDEX ix_unique_key_status ON unique_key (status);
+CREATE INDEX ix_unique_key_consider_nulls_inequal ON unique_key (consider_nulls_inequal);
 
 CREATE TABLE type_mapping (
 	framework TEXT NOT NULL,
@@ -3104,22 +3104,22 @@ CREATE TABLE type_mapping (
 	PRIMARY KEY (framework, type, string_serialization, description, title, deprecated, from_schema, imported_from, source, in_language, deprecated_element_has_exact_replacement, deprecated_element_has_possible_replacement, created_by, created_on, last_updated_on, modified_by, status, rank),
 	FOREIGN KEY(type) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_mapping_description ON type_mapping (description);
 CREATE INDEX ix_type_mapping_title ON type_mapping (title);
+CREATE INDEX ix_type_mapping_description ON type_mapping (description);
 CREATE INDEX ix_type_mapping_string_serialization ON type_mapping (string_serialization);
-CREATE INDEX ix_type_mapping_source ON type_mapping (source);
-CREATE INDEX ix_type_mapping_in_language ON type_mapping (in_language);
-CREATE INDEX ix_type_mapping_deprecated_element_has_exact_replacement ON type_mapping (deprecated_element_has_exact_replacement);
-CREATE INDEX ix_type_mapping_deprecated_element_has_possible_replacement ON type_mapping (deprecated_element_has_possible_replacement);
-CREATE INDEX ix_type_mapping_framework ON type_mapping (framework);
 CREATE INDEX ix_type_mapping_created_by ON type_mapping (created_by);
 CREATE INDEX ix_type_mapping_created_on ON type_mapping (created_on);
 CREATE INDEX ix_type_mapping_last_updated_on ON type_mapping (last_updated_on);
 CREATE INDEX ix_type_mapping_modified_by ON type_mapping (modified_by);
 CREATE INDEX ix_type_mapping_from_schema ON type_mapping (from_schema);
-CREATE INDEX ix_type_mapping_imported_from ON type_mapping (imported_from);
 CREATE INDEX ix_type_mapping_status ON type_mapping (status);
+CREATE INDEX ix_type_mapping_framework ON type_mapping (framework);
+CREATE INDEX ix_type_mapping_imported_from ON type_mapping (imported_from);
+CREATE INDEX ix_type_mapping_source ON type_mapping (source);
 CREATE INDEX ix_type_mapping_rank ON type_mapping (rank);
+CREATE INDEX ix_type_mapping_in_language ON type_mapping (in_language);
+CREATE INDEX ix_type_mapping_deprecated_element_has_exact_replacement ON type_mapping (deprecated_element_has_exact_replacement);
+CREATE INDEX ix_type_mapping_deprecated_element_has_possible_replacement ON type_mapping (deprecated_element_has_possible_replacement);
 CREATE INDEX ix_type_mapping_type ON type_mapping (type);
 CREATE INDEX ix_type_mapping_deprecated ON type_mapping (deprecated);
 
@@ -3129,8 +3129,8 @@ CREATE TABLE common_metadata_todos (
 	PRIMARY KEY (common_metadata_id, todos),
 	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id)
 );
-CREATE INDEX ix_common_metadata_todos_common_metadata_id ON common_metadata_todos (common_metadata_id);
 CREATE INDEX ix_common_metadata_todos_todos ON common_metadata_todos (todos);
+CREATE INDEX ix_common_metadata_todos_common_metadata_id ON common_metadata_todos (common_metadata_id);
 
 CREATE TABLE common_metadata_notes (
 	common_metadata_id INTEGER,
@@ -3147,8 +3147,8 @@ CREATE TABLE common_metadata_comments (
 	PRIMARY KEY (common_metadata_id, comments),
 	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id)
 );
-CREATE INDEX ix_common_metadata_comments_comments ON common_metadata_comments (comments);
 CREATE INDEX ix_common_metadata_comments_common_metadata_id ON common_metadata_comments (common_metadata_id);
+CREATE INDEX ix_common_metadata_comments_comments ON common_metadata_comments (comments);
 
 CREATE TABLE common_metadata_see_also (
 	common_metadata_id INTEGER,
@@ -3156,8 +3156,8 @@ CREATE TABLE common_metadata_see_also (
 	PRIMARY KEY (common_metadata_id, see_also),
 	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id)
 );
-CREATE INDEX ix_common_metadata_see_also_common_metadata_id ON common_metadata_see_also (common_metadata_id);
 CREATE INDEX ix_common_metadata_see_also_see_also ON common_metadata_see_also (see_also);
+CREATE INDEX ix_common_metadata_see_also_common_metadata_id ON common_metadata_see_also (common_metadata_id);
 
 CREATE TABLE common_metadata_aliases (
 	common_metadata_id INTEGER,
@@ -3174,8 +3174,8 @@ CREATE TABLE common_metadata_mappings (
 	PRIMARY KEY (common_metadata_id, mappings),
 	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id)
 );
-CREATE INDEX ix_common_metadata_mappings_mappings ON common_metadata_mappings (mappings);
 CREATE INDEX ix_common_metadata_mappings_common_metadata_id ON common_metadata_mappings (common_metadata_id);
+CREATE INDEX ix_common_metadata_mappings_mappings ON common_metadata_mappings (mappings);
 
 CREATE TABLE common_metadata_exact_mappings (
 	common_metadata_id INTEGER,
@@ -3255,8 +3255,8 @@ CREATE TABLE element_id_prefixes (
 	PRIMARY KEY (element_name, id_prefixes),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_id_prefixes_id_prefixes ON element_id_prefixes (id_prefixes);
 CREATE INDEX ix_element_id_prefixes_element_name ON element_id_prefixes (element_name);
+CREATE INDEX ix_element_id_prefixes_id_prefixes ON element_id_prefixes (id_prefixes);
 
 CREATE TABLE element_implements (
 	element_name TEXT,
@@ -3264,8 +3264,8 @@ CREATE TABLE element_implements (
 	PRIMARY KEY (element_name, implements),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_implements_implements ON element_implements (implements);
 CREATE INDEX ix_element_implements_element_name ON element_implements (element_name);
+CREATE INDEX ix_element_implements_implements ON element_implements (implements);
 
 CREATE TABLE element_instantiates (
 	element_name TEXT,
@@ -3273,8 +3273,8 @@ CREATE TABLE element_instantiates (
 	PRIMARY KEY (element_name, instantiates),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_instantiates_instantiates ON element_instantiates (instantiates);
 CREATE INDEX ix_element_instantiates_element_name ON element_instantiates (element_name);
+CREATE INDEX ix_element_instantiates_instantiates ON element_instantiates (instantiates);
 
 CREATE TABLE element_todos (
 	element_name TEXT,
@@ -3282,8 +3282,8 @@ CREATE TABLE element_todos (
 	PRIMARY KEY (element_name, todos),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_todos_todos ON element_todos (todos);
 CREATE INDEX ix_element_todos_element_name ON element_todos (element_name);
+CREATE INDEX ix_element_todos_todos ON element_todos (todos);
 
 CREATE TABLE element_notes (
 	element_name TEXT,
@@ -3291,8 +3291,8 @@ CREATE TABLE element_notes (
 	PRIMARY KEY (element_name, notes),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_notes_element_name ON element_notes (element_name);
 CREATE INDEX ix_element_notes_notes ON element_notes (notes);
+CREATE INDEX ix_element_notes_element_name ON element_notes (element_name);
 
 CREATE TABLE element_comments (
 	element_name TEXT,
@@ -3318,8 +3318,8 @@ CREATE TABLE element_aliases (
 	PRIMARY KEY (element_name, aliases),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_aliases_aliases ON element_aliases (aliases);
 CREATE INDEX ix_element_aliases_element_name ON element_aliases (element_name);
+CREATE INDEX ix_element_aliases_aliases ON element_aliases (aliases);
 
 CREATE TABLE element_mappings (
 	element_name TEXT,
@@ -3327,8 +3327,8 @@ CREATE TABLE element_mappings (
 	PRIMARY KEY (element_name, mappings),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_mappings_mappings ON element_mappings (mappings);
 CREATE INDEX ix_element_mappings_element_name ON element_mappings (element_name);
+CREATE INDEX ix_element_mappings_mappings ON element_mappings (mappings);
 
 CREATE TABLE element_exact_mappings (
 	element_name TEXT,
@@ -3345,8 +3345,8 @@ CREATE TABLE element_close_mappings (
 	PRIMARY KEY (element_name, close_mappings),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_close_mappings_element_name ON element_close_mappings (element_name);
 CREATE INDEX ix_element_close_mappings_close_mappings ON element_close_mappings (close_mappings);
+CREATE INDEX ix_element_close_mappings_element_name ON element_close_mappings (element_name);
 
 CREATE TABLE element_related_mappings (
 	element_name TEXT,
@@ -3354,8 +3354,8 @@ CREATE TABLE element_related_mappings (
 	PRIMARY KEY (element_name, related_mappings),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_related_mappings_element_name ON element_related_mappings (element_name);
 CREATE INDEX ix_element_related_mappings_related_mappings ON element_related_mappings (related_mappings);
+CREATE INDEX ix_element_related_mappings_element_name ON element_related_mappings (element_name);
 
 CREATE TABLE element_narrow_mappings (
 	element_name TEXT,
@@ -3372,8 +3372,8 @@ CREATE TABLE element_broad_mappings (
 	PRIMARY KEY (element_name, broad_mappings),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_broad_mappings_broad_mappings ON element_broad_mappings (broad_mappings);
 CREATE INDEX ix_element_broad_mappings_element_name ON element_broad_mappings (element_name);
+CREATE INDEX ix_element_broad_mappings_broad_mappings ON element_broad_mappings (broad_mappings);
 
 CREATE TABLE element_contributors (
 	element_name TEXT,
@@ -3381,8 +3381,8 @@ CREATE TABLE element_contributors (
 	PRIMARY KEY (element_name, contributors),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_contributors_contributors ON element_contributors (contributors);
 CREATE INDEX ix_element_contributors_element_name ON element_contributors (element_name);
+CREATE INDEX ix_element_contributors_contributors ON element_contributors (contributors);
 
 CREATE TABLE element_category (
 	element_name TEXT,
@@ -3390,8 +3390,8 @@ CREATE TABLE element_category (
 	PRIMARY KEY (element_name, category),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_category_category ON element_category (category);
 CREATE INDEX ix_element_category_element_name ON element_category (element_name);
+CREATE INDEX ix_element_category_category ON element_category (category);
 
 CREATE TABLE element_keyword (
 	element_name TEXT,
@@ -3399,8 +3399,8 @@ CREATE TABLE element_keyword (
 	PRIMARY KEY (element_name, keyword),
 	FOREIGN KEY(element_name) REFERENCES element (name)
 );
-CREATE INDEX ix_element_keyword_element_name ON element_keyword (element_name);
 CREATE INDEX ix_element_keyword_keyword ON element_keyword (keyword);
+CREATE INDEX ix_element_keyword_element_name ON element_keyword (element_name);
 
 CREATE TABLE schema_definition_imports (
 	schema_definition_name TEXT,
@@ -3408,8 +3408,8 @@ CREATE TABLE schema_definition_imports (
 	PRIMARY KEY (schema_definition_name, imports),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_imports_imports ON schema_definition_imports (imports);
 CREATE INDEX ix_schema_definition_imports_schema_definition_name ON schema_definition_imports (schema_definition_name);
+CREATE INDEX ix_schema_definition_imports_imports ON schema_definition_imports (imports);
 
 CREATE TABLE schema_definition_emit_prefixes (
 	schema_definition_name TEXT,
@@ -3426,8 +3426,8 @@ CREATE TABLE schema_definition_default_curi_maps (
 	PRIMARY KEY (schema_definition_name, default_curi_maps),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_default_curi_maps_default_curi_maps ON schema_definition_default_curi_maps (default_curi_maps);
 CREATE INDEX ix_schema_definition_default_curi_maps_schema_definition_name ON schema_definition_default_curi_maps (schema_definition_name);
+CREATE INDEX ix_schema_definition_default_curi_maps_default_curi_maps ON schema_definition_default_curi_maps (default_curi_maps);
 
 CREATE TABLE schema_definition_id_prefixes (
 	schema_definition_name TEXT,
@@ -3453,8 +3453,8 @@ CREATE TABLE schema_definition_instantiates (
 	PRIMARY KEY (schema_definition_name, instantiates),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_instantiates_instantiates ON schema_definition_instantiates (instantiates);
 CREATE INDEX ix_schema_definition_instantiates_schema_definition_name ON schema_definition_instantiates (schema_definition_name);
+CREATE INDEX ix_schema_definition_instantiates_instantiates ON schema_definition_instantiates (instantiates);
 
 CREATE TABLE schema_definition_todos (
 	schema_definition_name TEXT,
@@ -3462,8 +3462,8 @@ CREATE TABLE schema_definition_todos (
 	PRIMARY KEY (schema_definition_name, todos),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_todos_schema_definition_name ON schema_definition_todos (schema_definition_name);
 CREATE INDEX ix_schema_definition_todos_todos ON schema_definition_todos (todos);
+CREATE INDEX ix_schema_definition_todos_schema_definition_name ON schema_definition_todos (schema_definition_name);
 
 CREATE TABLE schema_definition_notes (
 	schema_definition_name TEXT,
@@ -3471,8 +3471,8 @@ CREATE TABLE schema_definition_notes (
 	PRIMARY KEY (schema_definition_name, notes),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_notes_notes ON schema_definition_notes (notes);
 CREATE INDEX ix_schema_definition_notes_schema_definition_name ON schema_definition_notes (schema_definition_name);
+CREATE INDEX ix_schema_definition_notes_notes ON schema_definition_notes (notes);
 
 CREATE TABLE schema_definition_comments (
 	schema_definition_name TEXT,
@@ -3489,8 +3489,8 @@ CREATE TABLE schema_definition_see_also (
 	PRIMARY KEY (schema_definition_name, see_also),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_see_also_schema_definition_name ON schema_definition_see_also (schema_definition_name);
 CREATE INDEX ix_schema_definition_see_also_see_also ON schema_definition_see_also (see_also);
+CREATE INDEX ix_schema_definition_see_also_schema_definition_name ON schema_definition_see_also (schema_definition_name);
 
 CREATE TABLE schema_definition_aliases (
 	schema_definition_name TEXT,
@@ -3525,8 +3525,8 @@ CREATE TABLE schema_definition_close_mappings (
 	PRIMARY KEY (schema_definition_name, close_mappings),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_close_mappings_close_mappings ON schema_definition_close_mappings (close_mappings);
 CREATE INDEX ix_schema_definition_close_mappings_schema_definition_name ON schema_definition_close_mappings (schema_definition_name);
+CREATE INDEX ix_schema_definition_close_mappings_close_mappings ON schema_definition_close_mappings (close_mappings);
 
 CREATE TABLE schema_definition_related_mappings (
 	schema_definition_name TEXT,
@@ -3534,8 +3534,8 @@ CREATE TABLE schema_definition_related_mappings (
 	PRIMARY KEY (schema_definition_name, related_mappings),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_related_mappings_schema_definition_name ON schema_definition_related_mappings (schema_definition_name);
 CREATE INDEX ix_schema_definition_related_mappings_related_mappings ON schema_definition_related_mappings (related_mappings);
+CREATE INDEX ix_schema_definition_related_mappings_schema_definition_name ON schema_definition_related_mappings (schema_definition_name);
 
 CREATE TABLE schema_definition_narrow_mappings (
 	schema_definition_name TEXT,
@@ -3552,8 +3552,8 @@ CREATE TABLE schema_definition_broad_mappings (
 	PRIMARY KEY (schema_definition_name, broad_mappings),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_broad_mappings_broad_mappings ON schema_definition_broad_mappings (broad_mappings);
 CREATE INDEX ix_schema_definition_broad_mappings_schema_definition_name ON schema_definition_broad_mappings (schema_definition_name);
+CREATE INDEX ix_schema_definition_broad_mappings_broad_mappings ON schema_definition_broad_mappings (broad_mappings);
 
 CREATE TABLE schema_definition_contributors (
 	schema_definition_name TEXT,
@@ -3579,8 +3579,8 @@ CREATE TABLE schema_definition_keyword (
 	PRIMARY KEY (schema_definition_name, keyword),
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name)
 );
-CREATE INDEX ix_schema_definition_keyword_schema_definition_name ON schema_definition_keyword (schema_definition_name);
 CREATE INDEX ix_schema_definition_keyword_keyword ON schema_definition_keyword (keyword);
+CREATE INDEX ix_schema_definition_keyword_schema_definition_name ON schema_definition_keyword (schema_definition_name);
 
 CREATE TABLE type_definition_union_of (
 	type_definition_name TEXT,
@@ -3598,8 +3598,8 @@ CREATE TABLE type_definition_equals_string_in (
 	PRIMARY KEY (type_definition_name, equals_string_in),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_equals_string_in_type_definition_name ON type_definition_equals_string_in (type_definition_name);
 CREATE INDEX ix_type_definition_equals_string_in_equals_string_in ON type_definition_equals_string_in (equals_string_in);
+CREATE INDEX ix_type_definition_equals_string_in_type_definition_name ON type_definition_equals_string_in (type_definition_name);
 
 CREATE TABLE type_definition_id_prefixes (
 	type_definition_name TEXT,
@@ -3616,8 +3616,8 @@ CREATE TABLE type_definition_implements (
 	PRIMARY KEY (type_definition_name, implements),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_implements_type_definition_name ON type_definition_implements (type_definition_name);
 CREATE INDEX ix_type_definition_implements_implements ON type_definition_implements (implements);
+CREATE INDEX ix_type_definition_implements_type_definition_name ON type_definition_implements (type_definition_name);
 
 CREATE TABLE type_definition_instantiates (
 	type_definition_name TEXT,
@@ -3679,8 +3679,8 @@ CREATE TABLE type_definition_mappings (
 	PRIMARY KEY (type_definition_name, mappings),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_mappings_type_definition_name ON type_definition_mappings (type_definition_name);
 CREATE INDEX ix_type_definition_mappings_mappings ON type_definition_mappings (mappings);
+CREATE INDEX ix_type_definition_mappings_type_definition_name ON type_definition_mappings (type_definition_name);
 
 CREATE TABLE type_definition_exact_mappings (
 	type_definition_name TEXT,
@@ -3697,8 +3697,8 @@ CREATE TABLE type_definition_close_mappings (
 	PRIMARY KEY (type_definition_name, close_mappings),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_close_mappings_close_mappings ON type_definition_close_mappings (close_mappings);
 CREATE INDEX ix_type_definition_close_mappings_type_definition_name ON type_definition_close_mappings (type_definition_name);
+CREATE INDEX ix_type_definition_close_mappings_close_mappings ON type_definition_close_mappings (close_mappings);
 
 CREATE TABLE type_definition_related_mappings (
 	type_definition_name TEXT,
@@ -3706,8 +3706,8 @@ CREATE TABLE type_definition_related_mappings (
 	PRIMARY KEY (type_definition_name, related_mappings),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_related_mappings_type_definition_name ON type_definition_related_mappings (type_definition_name);
 CREATE INDEX ix_type_definition_related_mappings_related_mappings ON type_definition_related_mappings (related_mappings);
+CREATE INDEX ix_type_definition_related_mappings_type_definition_name ON type_definition_related_mappings (type_definition_name);
 
 CREATE TABLE type_definition_narrow_mappings (
 	type_definition_name TEXT,
@@ -3724,8 +3724,8 @@ CREATE TABLE type_definition_broad_mappings (
 	PRIMARY KEY (type_definition_name, broad_mappings),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_broad_mappings_broad_mappings ON type_definition_broad_mappings (broad_mappings);
 CREATE INDEX ix_type_definition_broad_mappings_type_definition_name ON type_definition_broad_mappings (type_definition_name);
+CREATE INDEX ix_type_definition_broad_mappings_broad_mappings ON type_definition_broad_mappings (broad_mappings);
 
 CREATE TABLE type_definition_contributors (
 	type_definition_name TEXT,
@@ -3733,8 +3733,8 @@ CREATE TABLE type_definition_contributors (
 	PRIMARY KEY (type_definition_name, contributors),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_contributors_type_definition_name ON type_definition_contributors (type_definition_name);
 CREATE INDEX ix_type_definition_contributors_contributors ON type_definition_contributors (contributors);
+CREATE INDEX ix_type_definition_contributors_type_definition_name ON type_definition_contributors (type_definition_name);
 
 CREATE TABLE type_definition_category (
 	type_definition_name TEXT,
@@ -3751,8 +3751,8 @@ CREATE TABLE type_definition_keyword (
 	PRIMARY KEY (type_definition_name, keyword),
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
 );
-CREATE INDEX ix_type_definition_keyword_keyword ON type_definition_keyword (keyword);
 CREATE INDEX ix_type_definition_keyword_type_definition_name ON type_definition_keyword (type_definition_name);
+CREATE INDEX ix_type_definition_keyword_keyword ON type_definition_keyword (keyword);
 
 CREATE TABLE definition_mixins (
 	definition_name TEXT,
@@ -3771,8 +3771,8 @@ CREATE TABLE definition_apply_to (
 	FOREIGN KEY(definition_name) REFERENCES definition (name),
 	FOREIGN KEY(apply_to_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_apply_to_apply_to_name ON definition_apply_to (apply_to_name);
 CREATE INDEX ix_definition_apply_to_definition_name ON definition_apply_to (definition_name);
+CREATE INDEX ix_definition_apply_to_apply_to_name ON definition_apply_to (apply_to_name);
 
 CREATE TABLE definition_values_from (
 	definition_name TEXT,
@@ -3789,8 +3789,8 @@ CREATE TABLE definition_id_prefixes (
 	PRIMARY KEY (definition_name, id_prefixes),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_id_prefixes_definition_name ON definition_id_prefixes (definition_name);
 CREATE INDEX ix_definition_id_prefixes_id_prefixes ON definition_id_prefixes (id_prefixes);
+CREATE INDEX ix_definition_id_prefixes_definition_name ON definition_id_prefixes (definition_name);
 
 CREATE TABLE definition_implements (
 	definition_name TEXT,
@@ -3807,8 +3807,8 @@ CREATE TABLE definition_instantiates (
 	PRIMARY KEY (definition_name, instantiates),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_instantiates_definition_name ON definition_instantiates (definition_name);
 CREATE INDEX ix_definition_instantiates_instantiates ON definition_instantiates (instantiates);
+CREATE INDEX ix_definition_instantiates_definition_name ON definition_instantiates (definition_name);
 
 CREATE TABLE definition_todos (
 	definition_name TEXT,
@@ -3825,8 +3825,8 @@ CREATE TABLE definition_notes (
 	PRIMARY KEY (definition_name, notes),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_notes_notes ON definition_notes (notes);
 CREATE INDEX ix_definition_notes_definition_name ON definition_notes (definition_name);
+CREATE INDEX ix_definition_notes_notes ON definition_notes (notes);
 
 CREATE TABLE definition_comments (
 	definition_name TEXT,
@@ -3852,8 +3852,8 @@ CREATE TABLE definition_aliases (
 	PRIMARY KEY (definition_name, aliases),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_aliases_definition_name ON definition_aliases (definition_name);
 CREATE INDEX ix_definition_aliases_aliases ON definition_aliases (aliases);
+CREATE INDEX ix_definition_aliases_definition_name ON definition_aliases (definition_name);
 
 CREATE TABLE definition_mappings (
 	definition_name TEXT,
@@ -3879,8 +3879,8 @@ CREATE TABLE definition_close_mappings (
 	PRIMARY KEY (definition_name, close_mappings),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_close_mappings_close_mappings ON definition_close_mappings (close_mappings);
 CREATE INDEX ix_definition_close_mappings_definition_name ON definition_close_mappings (definition_name);
+CREATE INDEX ix_definition_close_mappings_close_mappings ON definition_close_mappings (close_mappings);
 
 CREATE TABLE definition_related_mappings (
 	definition_name TEXT,
@@ -3888,8 +3888,8 @@ CREATE TABLE definition_related_mappings (
 	PRIMARY KEY (definition_name, related_mappings),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_related_mappings_related_mappings ON definition_related_mappings (related_mappings);
 CREATE INDEX ix_definition_related_mappings_definition_name ON definition_related_mappings (definition_name);
+CREATE INDEX ix_definition_related_mappings_related_mappings ON definition_related_mappings (related_mappings);
 
 CREATE TABLE definition_narrow_mappings (
 	definition_name TEXT,
@@ -3906,8 +3906,8 @@ CREATE TABLE definition_broad_mappings (
 	PRIMARY KEY (definition_name, broad_mappings),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_broad_mappings_definition_name ON definition_broad_mappings (definition_name);
 CREATE INDEX ix_definition_broad_mappings_broad_mappings ON definition_broad_mappings (broad_mappings);
+CREATE INDEX ix_definition_broad_mappings_definition_name ON definition_broad_mappings (definition_name);
 
 CREATE TABLE definition_contributors (
 	definition_name TEXT,
@@ -3915,8 +3915,8 @@ CREATE TABLE definition_contributors (
 	PRIMARY KEY (definition_name, contributors),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_contributors_definition_name ON definition_contributors (definition_name);
 CREATE INDEX ix_definition_contributors_contributors ON definition_contributors (contributors);
+CREATE INDEX ix_definition_contributors_definition_name ON definition_contributors (definition_name);
 
 CREATE TABLE definition_category (
 	definition_name TEXT,
@@ -3924,8 +3924,8 @@ CREATE TABLE definition_category (
 	PRIMARY KEY (definition_name, category),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_category_category ON definition_category (category);
 CREATE INDEX ix_definition_category_definition_name ON definition_category (definition_name);
+CREATE INDEX ix_definition_category_category ON definition_category (category);
 
 CREATE TABLE definition_keyword (
 	definition_name TEXT,
@@ -3933,8 +3933,8 @@ CREATE TABLE definition_keyword (
 	PRIMARY KEY (definition_name, keyword),
 	FOREIGN KEY(definition_name) REFERENCES definition (name)
 );
-CREATE INDEX ix_definition_keyword_keyword ON definition_keyword (keyword);
 CREATE INDEX ix_definition_keyword_definition_name ON definition_keyword (definition_name);
+CREATE INDEX ix_definition_keyword_keyword ON definition_keyword (keyword);
 
 CREATE TABLE reachability_query_source_nodes (
 	reachability_query_id INTEGER,
@@ -3951,8 +3951,8 @@ CREATE TABLE reachability_query_relationship_types (
 	PRIMARY KEY (reachability_query_id, relationship_types),
 	FOREIGN KEY(reachability_query_id) REFERENCES reachability_query (id)
 );
-CREATE INDEX ix_reachability_query_relationship_types_relationship_types ON reachability_query_relationship_types (relationship_types);
 CREATE INDEX ix_reachability_query_relationship_types_reachability_query_id ON reachability_query_relationship_types (reachability_query_id);
+CREATE INDEX ix_reachability_query_relationship_types_relationship_types ON reachability_query_relationship_types (relationship_types);
 
 CREATE TABLE anonymous_expression_todos (
 	anonymous_expression_id INTEGER,
@@ -3969,8 +3969,8 @@ CREATE TABLE anonymous_expression_notes (
 	PRIMARY KEY (anonymous_expression_id, notes),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_notes_notes ON anonymous_expression_notes (notes);
 CREATE INDEX ix_anonymous_expression_notes_anonymous_expression_id ON anonymous_expression_notes (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_notes_notes ON anonymous_expression_notes (notes);
 
 CREATE TABLE anonymous_expression_comments (
 	anonymous_expression_id INTEGER,
@@ -3987,8 +3987,8 @@ CREATE TABLE anonymous_expression_see_also (
 	PRIMARY KEY (anonymous_expression_id, see_also),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_see_also_see_also ON anonymous_expression_see_also (see_also);
 CREATE INDEX ix_anonymous_expression_see_also_anonymous_expression_id ON anonymous_expression_see_also (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_see_also_see_also ON anonymous_expression_see_also (see_also);
 
 CREATE TABLE anonymous_expression_aliases (
 	anonymous_expression_id INTEGER,
@@ -4014,8 +4014,8 @@ CREATE TABLE anonymous_expression_exact_mappings (
 	PRIMARY KEY (anonymous_expression_id, exact_mappings),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_exact_mappings_exact_mappings ON anonymous_expression_exact_mappings (exact_mappings);
 CREATE INDEX ix_anonymous_expression_exact_mappings_anonymous_expression_id ON anonymous_expression_exact_mappings (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_exact_mappings_exact_mappings ON anonymous_expression_exact_mappings (exact_mappings);
 
 CREATE TABLE anonymous_expression_close_mappings (
 	anonymous_expression_id INTEGER,
@@ -4032,8 +4032,8 @@ CREATE TABLE anonymous_expression_related_mappings (
 	PRIMARY KEY (anonymous_expression_id, related_mappings),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_related_mappings_anonymous_expression_id ON anonymous_expression_related_mappings (anonymous_expression_id);
 CREATE INDEX ix_anonymous_expression_related_mappings_related_mappings ON anonymous_expression_related_mappings (related_mappings);
+CREATE INDEX ix_anonymous_expression_related_mappings_anonymous_expression_id ON anonymous_expression_related_mappings (anonymous_expression_id);
 
 CREATE TABLE anonymous_expression_narrow_mappings (
 	anonymous_expression_id INTEGER,
@@ -4041,8 +4041,8 @@ CREATE TABLE anonymous_expression_narrow_mappings (
 	PRIMARY KEY (anonymous_expression_id, narrow_mappings),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_narrow_mappings_narrow_mappings ON anonymous_expression_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_anonymous_expression_narrow_mappings_anonymous_expression_id ON anonymous_expression_narrow_mappings (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_narrow_mappings_narrow_mappings ON anonymous_expression_narrow_mappings (narrow_mappings);
 
 CREATE TABLE anonymous_expression_broad_mappings (
 	anonymous_expression_id INTEGER,
@@ -4050,8 +4050,8 @@ CREATE TABLE anonymous_expression_broad_mappings (
 	PRIMARY KEY (anonymous_expression_id, broad_mappings),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_broad_mappings_broad_mappings ON anonymous_expression_broad_mappings (broad_mappings);
 CREATE INDEX ix_anonymous_expression_broad_mappings_anonymous_expression_id ON anonymous_expression_broad_mappings (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_broad_mappings_broad_mappings ON anonymous_expression_broad_mappings (broad_mappings);
 
 CREATE TABLE anonymous_expression_contributors (
 	anonymous_expression_id INTEGER,
@@ -4068,8 +4068,8 @@ CREATE TABLE anonymous_expression_category (
 	PRIMARY KEY (anonymous_expression_id, category),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_category_anonymous_expression_id ON anonymous_expression_category (anonymous_expression_id);
 CREATE INDEX ix_anonymous_expression_category_category ON anonymous_expression_category (category);
+CREATE INDEX ix_anonymous_expression_category_anonymous_expression_id ON anonymous_expression_category (anonymous_expression_id);
 
 CREATE TABLE anonymous_expression_keyword (
 	anonymous_expression_id INTEGER,
@@ -4077,8 +4077,8 @@ CREATE TABLE anonymous_expression_keyword (
 	PRIMARY KEY (anonymous_expression_id, keyword),
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
-CREATE INDEX ix_anonymous_expression_keyword_keyword ON anonymous_expression_keyword (keyword);
 CREATE INDEX ix_anonymous_expression_keyword_anonymous_expression_id ON anonymous_expression_keyword (anonymous_expression_id);
+CREATE INDEX ix_anonymous_expression_keyword_keyword ON anonymous_expression_keyword (keyword);
 
 CREATE TABLE path_expression_none_of (
 	path_expression_id INTEGER,
@@ -4097,8 +4097,8 @@ CREATE TABLE path_expression_any_of (
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id),
 	FOREIGN KEY(any_of_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_any_of_any_of_id ON path_expression_any_of (any_of_id);
 CREATE INDEX ix_path_expression_any_of_path_expression_id ON path_expression_any_of (path_expression_id);
+CREATE INDEX ix_path_expression_any_of_any_of_id ON path_expression_any_of (any_of_id);
 
 CREATE TABLE path_expression_all_of (
 	path_expression_id INTEGER,
@@ -4126,8 +4126,8 @@ CREATE TABLE path_expression_todos (
 	PRIMARY KEY (path_expression_id, todos),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_todos_todos ON path_expression_todos (todos);
 CREATE INDEX ix_path_expression_todos_path_expression_id ON path_expression_todos (path_expression_id);
+CREATE INDEX ix_path_expression_todos_todos ON path_expression_todos (todos);
 
 CREATE TABLE path_expression_notes (
 	path_expression_id INTEGER,
@@ -4135,8 +4135,8 @@ CREATE TABLE path_expression_notes (
 	PRIMARY KEY (path_expression_id, notes),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_notes_path_expression_id ON path_expression_notes (path_expression_id);
 CREATE INDEX ix_path_expression_notes_notes ON path_expression_notes (notes);
+CREATE INDEX ix_path_expression_notes_path_expression_id ON path_expression_notes (path_expression_id);
 
 CREATE TABLE path_expression_comments (
 	path_expression_id INTEGER,
@@ -4153,8 +4153,8 @@ CREATE TABLE path_expression_see_also (
 	PRIMARY KEY (path_expression_id, see_also),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_see_also_path_expression_id ON path_expression_see_also (path_expression_id);
 CREATE INDEX ix_path_expression_see_also_see_also ON path_expression_see_also (see_also);
+CREATE INDEX ix_path_expression_see_also_path_expression_id ON path_expression_see_also (path_expression_id);
 
 CREATE TABLE path_expression_aliases (
 	path_expression_id INTEGER,
@@ -4171,8 +4171,8 @@ CREATE TABLE path_expression_mappings (
 	PRIMARY KEY (path_expression_id, mappings),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_mappings_mappings ON path_expression_mappings (mappings);
 CREATE INDEX ix_path_expression_mappings_path_expression_id ON path_expression_mappings (path_expression_id);
+CREATE INDEX ix_path_expression_mappings_mappings ON path_expression_mappings (mappings);
 
 CREATE TABLE path_expression_exact_mappings (
 	path_expression_id INTEGER,
@@ -4180,8 +4180,8 @@ CREATE TABLE path_expression_exact_mappings (
 	PRIMARY KEY (path_expression_id, exact_mappings),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_exact_mappings_path_expression_id ON path_expression_exact_mappings (path_expression_id);
 CREATE INDEX ix_path_expression_exact_mappings_exact_mappings ON path_expression_exact_mappings (exact_mappings);
+CREATE INDEX ix_path_expression_exact_mappings_path_expression_id ON path_expression_exact_mappings (path_expression_id);
 
 CREATE TABLE path_expression_close_mappings (
 	path_expression_id INTEGER,
@@ -4189,8 +4189,8 @@ CREATE TABLE path_expression_close_mappings (
 	PRIMARY KEY (path_expression_id, close_mappings),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_close_mappings_close_mappings ON path_expression_close_mappings (close_mappings);
 CREATE INDEX ix_path_expression_close_mappings_path_expression_id ON path_expression_close_mappings (path_expression_id);
+CREATE INDEX ix_path_expression_close_mappings_close_mappings ON path_expression_close_mappings (close_mappings);
 
 CREATE TABLE path_expression_related_mappings (
 	path_expression_id INTEGER,
@@ -4207,8 +4207,8 @@ CREATE TABLE path_expression_narrow_mappings (
 	PRIMARY KEY (path_expression_id, narrow_mappings),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_narrow_mappings_path_expression_id ON path_expression_narrow_mappings (path_expression_id);
 CREATE INDEX ix_path_expression_narrow_mappings_narrow_mappings ON path_expression_narrow_mappings (narrow_mappings);
+CREATE INDEX ix_path_expression_narrow_mappings_path_expression_id ON path_expression_narrow_mappings (path_expression_id);
 
 CREATE TABLE path_expression_broad_mappings (
 	path_expression_id INTEGER,
@@ -4216,8 +4216,8 @@ CREATE TABLE path_expression_broad_mappings (
 	PRIMARY KEY (path_expression_id, broad_mappings),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_broad_mappings_broad_mappings ON path_expression_broad_mappings (broad_mappings);
 CREATE INDEX ix_path_expression_broad_mappings_path_expression_id ON path_expression_broad_mappings (path_expression_id);
+CREATE INDEX ix_path_expression_broad_mappings_broad_mappings ON path_expression_broad_mappings (broad_mappings);
 
 CREATE TABLE path_expression_contributors (
 	path_expression_id INTEGER,
@@ -4225,8 +4225,8 @@ CREATE TABLE path_expression_contributors (
 	PRIMARY KEY (path_expression_id, contributors),
 	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
 );
-CREATE INDEX ix_path_expression_contributors_contributors ON path_expression_contributors (contributors);
 CREATE INDEX ix_path_expression_contributors_path_expression_id ON path_expression_contributors (path_expression_id);
+CREATE INDEX ix_path_expression_contributors_contributors ON path_expression_contributors (contributors);
 
 CREATE TABLE path_expression_category (
 	path_expression_id INTEGER,
@@ -4262,8 +4262,8 @@ CREATE TABLE anonymous_slot_expression_none_of (
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_none_of_anonymous_slot_expression_id ON anonymous_slot_expression_none_of (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_none_of_none_of_id ON anonymous_slot_expression_none_of (none_of_id);
+CREATE INDEX ix_anonymous_slot_expression_none_of_anonymous_slot_expression_id ON anonymous_slot_expression_none_of (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_exactly_one_of (
 	anonymous_slot_expression_id INTEGER,
@@ -4272,8 +4272,8 @@ CREATE TABLE anonymous_slot_expression_exactly_one_of (
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id),
 	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_exactly_one_of_exactly_one_of_id ON anonymous_slot_expression_exactly_one_of (exactly_one_of_id);
 CREATE INDEX ix_anonymous_slot_expression_exactly_one_of_anonymous_slot_expression_id ON anonymous_slot_expression_exactly_one_of (anonymous_slot_expression_id);
+CREATE INDEX ix_anonymous_slot_expression_exactly_one_of_exactly_one_of_id ON anonymous_slot_expression_exactly_one_of (exactly_one_of_id);
 
 CREATE TABLE anonymous_slot_expression_any_of (
 	anonymous_slot_expression_id INTEGER,
@@ -4282,8 +4282,8 @@ CREATE TABLE anonymous_slot_expression_any_of (
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id),
 	FOREIGN KEY(any_of_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_any_of_anonymous_slot_expression_id ON anonymous_slot_expression_any_of (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_any_of_any_of_id ON anonymous_slot_expression_any_of (any_of_id);
+CREATE INDEX ix_anonymous_slot_expression_any_of_anonymous_slot_expression_id ON anonymous_slot_expression_any_of (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_all_of (
 	anonymous_slot_expression_id INTEGER,
@@ -4301,8 +4301,8 @@ CREATE TABLE anonymous_slot_expression_todos (
 	PRIMARY KEY (anonymous_slot_expression_id, todos),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_todos_anonymous_slot_expression_id ON anonymous_slot_expression_todos (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_todos_todos ON anonymous_slot_expression_todos (todos);
+CREATE INDEX ix_anonymous_slot_expression_todos_anonymous_slot_expression_id ON anonymous_slot_expression_todos (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_notes (
 	anonymous_slot_expression_id INTEGER,
@@ -4337,8 +4337,8 @@ CREATE TABLE anonymous_slot_expression_aliases (
 	PRIMARY KEY (anonymous_slot_expression_id, aliases),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_aliases_anonymous_slot_expression_id ON anonymous_slot_expression_aliases (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_aliases_aliases ON anonymous_slot_expression_aliases (aliases);
+CREATE INDEX ix_anonymous_slot_expression_aliases_anonymous_slot_expression_id ON anonymous_slot_expression_aliases (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4346,8 +4346,8 @@ CREATE TABLE anonymous_slot_expression_mappings (
 	PRIMARY KEY (anonymous_slot_expression_id, mappings),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_mappings (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_mappings_mappings ON anonymous_slot_expression_mappings (mappings);
+CREATE INDEX ix_anonymous_slot_expression_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_mappings (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_exact_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4355,8 +4355,8 @@ CREATE TABLE anonymous_slot_expression_exact_mappings (
 	PRIMARY KEY (anonymous_slot_expression_id, exact_mappings),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_exact_mappings_exact_mappings ON anonymous_slot_expression_exact_mappings (exact_mappings);
 CREATE INDEX ix_anonymous_slot_expression_exact_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_exact_mappings (anonymous_slot_expression_id);
+CREATE INDEX ix_anonymous_slot_expression_exact_mappings_exact_mappings ON anonymous_slot_expression_exact_mappings (exact_mappings);
 
 CREATE TABLE anonymous_slot_expression_close_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4364,8 +4364,8 @@ CREATE TABLE anonymous_slot_expression_close_mappings (
 	PRIMARY KEY (anonymous_slot_expression_id, close_mappings),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_close_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_close_mappings (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_close_mappings_close_mappings ON anonymous_slot_expression_close_mappings (close_mappings);
+CREATE INDEX ix_anonymous_slot_expression_close_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_close_mappings (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_related_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4373,8 +4373,8 @@ CREATE TABLE anonymous_slot_expression_related_mappings (
 	PRIMARY KEY (anonymous_slot_expression_id, related_mappings),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_related_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_related_mappings (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_related_mappings_related_mappings ON anonymous_slot_expression_related_mappings (related_mappings);
+CREATE INDEX ix_anonymous_slot_expression_related_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_related_mappings (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_narrow_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4382,8 +4382,8 @@ CREATE TABLE anonymous_slot_expression_narrow_mappings (
 	PRIMARY KEY (anonymous_slot_expression_id, narrow_mappings),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_narrow_mappings_narrow_mappings ON anonymous_slot_expression_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_anonymous_slot_expression_narrow_mappings_anonymous_slot_expression_id ON anonymous_slot_expression_narrow_mappings (anonymous_slot_expression_id);
+CREATE INDEX ix_anonymous_slot_expression_narrow_mappings_narrow_mappings ON anonymous_slot_expression_narrow_mappings (narrow_mappings);
 
 CREATE TABLE anonymous_slot_expression_broad_mappings (
 	anonymous_slot_expression_id INTEGER,
@@ -4400,8 +4400,8 @@ CREATE TABLE anonymous_slot_expression_contributors (
 	PRIMARY KEY (anonymous_slot_expression_id, contributors),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_contributors_anonymous_slot_expression_id ON anonymous_slot_expression_contributors (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_contributors_contributors ON anonymous_slot_expression_contributors (contributors);
+CREATE INDEX ix_anonymous_slot_expression_contributors_anonymous_slot_expression_id ON anonymous_slot_expression_contributors (anonymous_slot_expression_id);
 
 CREATE TABLE anonymous_slot_expression_category (
 	anonymous_slot_expression_id INTEGER,
@@ -4409,8 +4409,8 @@ CREATE TABLE anonymous_slot_expression_category (
 	PRIMARY KEY (anonymous_slot_expression_id, category),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_category_category ON anonymous_slot_expression_category (category);
 CREATE INDEX ix_anonymous_slot_expression_category_anonymous_slot_expression_id ON anonymous_slot_expression_category (anonymous_slot_expression_id);
+CREATE INDEX ix_anonymous_slot_expression_category_category ON anonymous_slot_expression_category (category);
 
 CREATE TABLE anonymous_slot_expression_keyword (
 	anonymous_slot_expression_id INTEGER,
@@ -4418,8 +4418,8 @@ CREATE TABLE anonymous_slot_expression_keyword (
 	PRIMARY KEY (anonymous_slot_expression_id, keyword),
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_anonymous_slot_expression_keyword_keyword ON anonymous_slot_expression_keyword (keyword);
 CREATE INDEX ix_anonymous_slot_expression_keyword_anonymous_slot_expression_id ON anonymous_slot_expression_keyword (anonymous_slot_expression_id);
+CREATE INDEX ix_anonymous_slot_expression_keyword_keyword ON anonymous_slot_expression_keyword (keyword);
 
 CREATE TABLE slot_definition_domain_of (
 	slot_definition_name TEXT,
@@ -4457,8 +4457,8 @@ CREATE TABLE slot_definition_equals_string_in (
 	PRIMARY KEY (slot_definition_name, equals_string_in),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_equals_string_in_equals_string_in ON slot_definition_equals_string_in (equals_string_in);
 CREATE INDEX ix_slot_definition_equals_string_in_slot_definition_name ON slot_definition_equals_string_in (slot_definition_name);
+CREATE INDEX ix_slot_definition_equals_string_in_equals_string_in ON slot_definition_equals_string_in (equals_string_in);
 
 CREATE TABLE slot_definition_none_of (
 	slot_definition_name TEXT,
@@ -4467,8 +4467,8 @@ CREATE TABLE slot_definition_none_of (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_slot_definition_none_of_none_of_id ON slot_definition_none_of (none_of_id);
 CREATE INDEX ix_slot_definition_none_of_slot_definition_name ON slot_definition_none_of (slot_definition_name);
+CREATE INDEX ix_slot_definition_none_of_none_of_id ON slot_definition_none_of (none_of_id);
 
 CREATE TABLE slot_definition_exactly_one_of (
 	slot_definition_name TEXT,
@@ -4477,8 +4477,8 @@ CREATE TABLE slot_definition_exactly_one_of (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_slot_expression (id)
 );
-CREATE INDEX ix_slot_definition_exactly_one_of_exactly_one_of_id ON slot_definition_exactly_one_of (exactly_one_of_id);
 CREATE INDEX ix_slot_definition_exactly_one_of_slot_definition_name ON slot_definition_exactly_one_of (slot_definition_name);
+CREATE INDEX ix_slot_definition_exactly_one_of_exactly_one_of_id ON slot_definition_exactly_one_of (exactly_one_of_id);
 
 CREATE TABLE slot_definition_any_of (
 	slot_definition_name TEXT,
@@ -4507,8 +4507,8 @@ CREATE TABLE slot_definition_mixins (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(mixins_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_mixins_slot_definition_name ON slot_definition_mixins (slot_definition_name);
 CREATE INDEX ix_slot_definition_mixins_mixins_name ON slot_definition_mixins (mixins_name);
+CREATE INDEX ix_slot_definition_mixins_slot_definition_name ON slot_definition_mixins (slot_definition_name);
 
 CREATE TABLE slot_definition_apply_to (
 	slot_definition_name TEXT,
@@ -4517,8 +4517,8 @@ CREATE TABLE slot_definition_apply_to (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(apply_to_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_apply_to_slot_definition_name ON slot_definition_apply_to (slot_definition_name);
 CREATE INDEX ix_slot_definition_apply_to_apply_to_name ON slot_definition_apply_to (apply_to_name);
+CREATE INDEX ix_slot_definition_apply_to_slot_definition_name ON slot_definition_apply_to (slot_definition_name);
 
 CREATE TABLE slot_definition_values_from (
 	slot_definition_name TEXT,
@@ -4526,8 +4526,8 @@ CREATE TABLE slot_definition_values_from (
 	PRIMARY KEY (slot_definition_name, values_from),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_values_from_values_from ON slot_definition_values_from (values_from);
 CREATE INDEX ix_slot_definition_values_from_slot_definition_name ON slot_definition_values_from (slot_definition_name);
+CREATE INDEX ix_slot_definition_values_from_values_from ON slot_definition_values_from (values_from);
 
 CREATE TABLE slot_definition_id_prefixes (
 	slot_definition_name TEXT,
@@ -4562,8 +4562,8 @@ CREATE TABLE slot_definition_todos (
 	PRIMARY KEY (slot_definition_name, todos),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_todos_slot_definition_name ON slot_definition_todos (slot_definition_name);
 CREATE INDEX ix_slot_definition_todos_todos ON slot_definition_todos (todos);
+CREATE INDEX ix_slot_definition_todos_slot_definition_name ON slot_definition_todos (slot_definition_name);
 
 CREATE TABLE slot_definition_notes (
 	slot_definition_name TEXT,
@@ -4580,8 +4580,8 @@ CREATE TABLE slot_definition_comments (
 	PRIMARY KEY (slot_definition_name, comments),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_comments_comments ON slot_definition_comments (comments);
 CREATE INDEX ix_slot_definition_comments_slot_definition_name ON slot_definition_comments (slot_definition_name);
+CREATE INDEX ix_slot_definition_comments_comments ON slot_definition_comments (comments);
 
 CREATE TABLE slot_definition_see_also (
 	slot_definition_name TEXT,
@@ -4589,8 +4589,8 @@ CREATE TABLE slot_definition_see_also (
 	PRIMARY KEY (slot_definition_name, see_also),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_see_also_see_also ON slot_definition_see_also (see_also);
 CREATE INDEX ix_slot_definition_see_also_slot_definition_name ON slot_definition_see_also (slot_definition_name);
+CREATE INDEX ix_slot_definition_see_also_see_also ON slot_definition_see_also (see_also);
 
 CREATE TABLE slot_definition_aliases (
 	slot_definition_name TEXT,
@@ -4598,8 +4598,8 @@ CREATE TABLE slot_definition_aliases (
 	PRIMARY KEY (slot_definition_name, aliases),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_aliases_slot_definition_name ON slot_definition_aliases (slot_definition_name);
 CREATE INDEX ix_slot_definition_aliases_aliases ON slot_definition_aliases (aliases);
+CREATE INDEX ix_slot_definition_aliases_slot_definition_name ON slot_definition_aliases (slot_definition_name);
 
 CREATE TABLE slot_definition_mappings (
 	slot_definition_name TEXT,
@@ -4616,8 +4616,8 @@ CREATE TABLE slot_definition_exact_mappings (
 	PRIMARY KEY (slot_definition_name, exact_mappings),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_exact_mappings_exact_mappings ON slot_definition_exact_mappings (exact_mappings);
 CREATE INDEX ix_slot_definition_exact_mappings_slot_definition_name ON slot_definition_exact_mappings (slot_definition_name);
+CREATE INDEX ix_slot_definition_exact_mappings_exact_mappings ON slot_definition_exact_mappings (exact_mappings);
 
 CREATE TABLE slot_definition_close_mappings (
 	slot_definition_name TEXT,
@@ -4625,8 +4625,8 @@ CREATE TABLE slot_definition_close_mappings (
 	PRIMARY KEY (slot_definition_name, close_mappings),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_close_mappings_close_mappings ON slot_definition_close_mappings (close_mappings);
 CREATE INDEX ix_slot_definition_close_mappings_slot_definition_name ON slot_definition_close_mappings (slot_definition_name);
+CREATE INDEX ix_slot_definition_close_mappings_close_mappings ON slot_definition_close_mappings (close_mappings);
 
 CREATE TABLE slot_definition_related_mappings (
 	slot_definition_name TEXT,
@@ -4634,8 +4634,8 @@ CREATE TABLE slot_definition_related_mappings (
 	PRIMARY KEY (slot_definition_name, related_mappings),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_related_mappings_slot_definition_name ON slot_definition_related_mappings (slot_definition_name);
 CREATE INDEX ix_slot_definition_related_mappings_related_mappings ON slot_definition_related_mappings (related_mappings);
+CREATE INDEX ix_slot_definition_related_mappings_slot_definition_name ON slot_definition_related_mappings (slot_definition_name);
 
 CREATE TABLE slot_definition_narrow_mappings (
 	slot_definition_name TEXT,
@@ -4643,8 +4643,8 @@ CREATE TABLE slot_definition_narrow_mappings (
 	PRIMARY KEY (slot_definition_name, narrow_mappings),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_narrow_mappings_narrow_mappings ON slot_definition_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_slot_definition_narrow_mappings_slot_definition_name ON slot_definition_narrow_mappings (slot_definition_name);
+CREATE INDEX ix_slot_definition_narrow_mappings_narrow_mappings ON slot_definition_narrow_mappings (narrow_mappings);
 
 CREATE TABLE slot_definition_broad_mappings (
 	slot_definition_name TEXT,
@@ -4652,8 +4652,8 @@ CREATE TABLE slot_definition_broad_mappings (
 	PRIMARY KEY (slot_definition_name, broad_mappings),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_broad_mappings_broad_mappings ON slot_definition_broad_mappings (broad_mappings);
 CREATE INDEX ix_slot_definition_broad_mappings_slot_definition_name ON slot_definition_broad_mappings (slot_definition_name);
+CREATE INDEX ix_slot_definition_broad_mappings_broad_mappings ON slot_definition_broad_mappings (broad_mappings);
 
 CREATE TABLE slot_definition_contributors (
 	slot_definition_name TEXT,
@@ -4661,8 +4661,8 @@ CREATE TABLE slot_definition_contributors (
 	PRIMARY KEY (slot_definition_name, contributors),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_contributors_slot_definition_name ON slot_definition_contributors (slot_definition_name);
 CREATE INDEX ix_slot_definition_contributors_contributors ON slot_definition_contributors (contributors);
+CREATE INDEX ix_slot_definition_contributors_slot_definition_name ON slot_definition_contributors (slot_definition_name);
 
 CREATE TABLE slot_definition_category (
 	slot_definition_name TEXT,
@@ -4679,8 +4679,8 @@ CREATE TABLE slot_definition_keyword (
 	PRIMARY KEY (slot_definition_name, keyword),
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_slot_definition_keyword_keyword ON slot_definition_keyword (keyword);
 CREATE INDEX ix_slot_definition_keyword_slot_definition_name ON slot_definition_keyword (slot_definition_name);
+CREATE INDEX ix_slot_definition_keyword_keyword ON slot_definition_keyword (keyword);
 
 CREATE TABLE class_expression_any_of (
 	class_expression_id INTEGER,
@@ -4739,8 +4739,8 @@ CREATE TABLE anonymous_class_expression_exactly_one_of (
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id),
 	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_exactly_one_of_anonymous_class_expression_id ON anonymous_class_expression_exactly_one_of (anonymous_class_expression_id);
 CREATE INDEX ix_anonymous_class_expression_exactly_one_of_exactly_one_of_id ON anonymous_class_expression_exactly_one_of (exactly_one_of_id);
+CREATE INDEX ix_anonymous_class_expression_exactly_one_of_anonymous_class_expression_id ON anonymous_class_expression_exactly_one_of (anonymous_class_expression_id);
 
 CREATE TABLE anonymous_class_expression_none_of (
 	anonymous_class_expression_id INTEGER,
@@ -4759,8 +4759,8 @@ CREATE TABLE anonymous_class_expression_all_of (
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id),
 	FOREIGN KEY(all_of_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_all_of_all_of_id ON anonymous_class_expression_all_of (all_of_id);
 CREATE INDEX ix_anonymous_class_expression_all_of_anonymous_class_expression_id ON anonymous_class_expression_all_of (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_all_of_all_of_id ON anonymous_class_expression_all_of (all_of_id);
 
 CREATE TABLE anonymous_class_expression_todos (
 	anonymous_class_expression_id INTEGER,
@@ -4777,8 +4777,8 @@ CREATE TABLE anonymous_class_expression_notes (
 	PRIMARY KEY (anonymous_class_expression_id, notes),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_notes_anonymous_class_expression_id ON anonymous_class_expression_notes (anonymous_class_expression_id);
 CREATE INDEX ix_anonymous_class_expression_notes_notes ON anonymous_class_expression_notes (notes);
+CREATE INDEX ix_anonymous_class_expression_notes_anonymous_class_expression_id ON anonymous_class_expression_notes (anonymous_class_expression_id);
 
 CREATE TABLE anonymous_class_expression_comments (
 	anonymous_class_expression_id INTEGER,
@@ -4804,8 +4804,8 @@ CREATE TABLE anonymous_class_expression_aliases (
 	PRIMARY KEY (anonymous_class_expression_id, aliases),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_aliases_aliases ON anonymous_class_expression_aliases (aliases);
 CREATE INDEX ix_anonymous_class_expression_aliases_anonymous_class_expression_id ON anonymous_class_expression_aliases (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_aliases_aliases ON anonymous_class_expression_aliases (aliases);
 
 CREATE TABLE anonymous_class_expression_mappings (
 	anonymous_class_expression_id INTEGER,
@@ -4822,8 +4822,8 @@ CREATE TABLE anonymous_class_expression_exact_mappings (
 	PRIMARY KEY (anonymous_class_expression_id, exact_mappings),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_exact_mappings_anonymous_class_expression_id ON anonymous_class_expression_exact_mappings (anonymous_class_expression_id);
 CREATE INDEX ix_anonymous_class_expression_exact_mappings_exact_mappings ON anonymous_class_expression_exact_mappings (exact_mappings);
+CREATE INDEX ix_anonymous_class_expression_exact_mappings_anonymous_class_expression_id ON anonymous_class_expression_exact_mappings (anonymous_class_expression_id);
 
 CREATE TABLE anonymous_class_expression_close_mappings (
 	anonymous_class_expression_id INTEGER,
@@ -4831,8 +4831,8 @@ CREATE TABLE anonymous_class_expression_close_mappings (
 	PRIMARY KEY (anonymous_class_expression_id, close_mappings),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_close_mappings_close_mappings ON anonymous_class_expression_close_mappings (close_mappings);
 CREATE INDEX ix_anonymous_class_expression_close_mappings_anonymous_class_expression_id ON anonymous_class_expression_close_mappings (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_close_mappings_close_mappings ON anonymous_class_expression_close_mappings (close_mappings);
 
 CREATE TABLE anonymous_class_expression_related_mappings (
 	anonymous_class_expression_id INTEGER,
@@ -4849,8 +4849,8 @@ CREATE TABLE anonymous_class_expression_narrow_mappings (
 	PRIMARY KEY (anonymous_class_expression_id, narrow_mappings),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_narrow_mappings_anonymous_class_expression_id ON anonymous_class_expression_narrow_mappings (anonymous_class_expression_id);
 CREATE INDEX ix_anonymous_class_expression_narrow_mappings_narrow_mappings ON anonymous_class_expression_narrow_mappings (narrow_mappings);
+CREATE INDEX ix_anonymous_class_expression_narrow_mappings_anonymous_class_expression_id ON anonymous_class_expression_narrow_mappings (anonymous_class_expression_id);
 
 CREATE TABLE anonymous_class_expression_broad_mappings (
 	anonymous_class_expression_id INTEGER,
@@ -4858,8 +4858,8 @@ CREATE TABLE anonymous_class_expression_broad_mappings (
 	PRIMARY KEY (anonymous_class_expression_id, broad_mappings),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_broad_mappings_broad_mappings ON anonymous_class_expression_broad_mappings (broad_mappings);
 CREATE INDEX ix_anonymous_class_expression_broad_mappings_anonymous_class_expression_id ON anonymous_class_expression_broad_mappings (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_broad_mappings_broad_mappings ON anonymous_class_expression_broad_mappings (broad_mappings);
 
 CREATE TABLE anonymous_class_expression_contributors (
 	anonymous_class_expression_id INTEGER,
@@ -4867,8 +4867,8 @@ CREATE TABLE anonymous_class_expression_contributors (
 	PRIMARY KEY (anonymous_class_expression_id, contributors),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_contributors_contributors ON anonymous_class_expression_contributors (contributors);
 CREATE INDEX ix_anonymous_class_expression_contributors_anonymous_class_expression_id ON anonymous_class_expression_contributors (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_contributors_contributors ON anonymous_class_expression_contributors (contributors);
 
 CREATE TABLE anonymous_class_expression_category (
 	anonymous_class_expression_id INTEGER,
@@ -4876,8 +4876,8 @@ CREATE TABLE anonymous_class_expression_category (
 	PRIMARY KEY (anonymous_class_expression_id, category),
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_anonymous_class_expression_category_anonymous_class_expression_id ON anonymous_class_expression_category (anonymous_class_expression_id);
 CREATE INDEX ix_anonymous_class_expression_category_category ON anonymous_class_expression_category (category);
+CREATE INDEX ix_anonymous_class_expression_category_anonymous_class_expression_id ON anonymous_class_expression_category (anonymous_class_expression_id);
 
 CREATE TABLE anonymous_class_expression_keyword (
 	anonymous_class_expression_id INTEGER,
@@ -4905,8 +4905,8 @@ CREATE TABLE class_definition_union_of (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(union_of_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_union_of_union_of_name ON class_definition_union_of (union_of_name);
 CREATE INDEX ix_class_definition_union_of_class_definition_name ON class_definition_union_of (class_definition_name);
+CREATE INDEX ix_class_definition_union_of_union_of_name ON class_definition_union_of (union_of_name);
 
 CREATE TABLE class_definition_defining_slots (
 	class_definition_name TEXT,
@@ -4915,8 +4915,8 @@ CREATE TABLE class_definition_defining_slots (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(defining_slots_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_class_definition_defining_slots_class_definition_name ON class_definition_defining_slots (class_definition_name);
 CREATE INDEX ix_class_definition_defining_slots_defining_slots_name ON class_definition_defining_slots (defining_slots_name);
+CREATE INDEX ix_class_definition_defining_slots_class_definition_name ON class_definition_defining_slots (class_definition_name);
 
 CREATE TABLE class_definition_disjoint_with (
 	class_definition_name TEXT,
@@ -4935,8 +4935,8 @@ CREATE TABLE class_definition_any_of (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(any_of_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_class_definition_any_of_class_definition_name ON class_definition_any_of (class_definition_name);
 CREATE INDEX ix_class_definition_any_of_any_of_id ON class_definition_any_of (any_of_id);
+CREATE INDEX ix_class_definition_any_of_class_definition_name ON class_definition_any_of (class_definition_name);
 
 CREATE TABLE class_definition_exactly_one_of (
 	class_definition_name TEXT,
@@ -4955,8 +4955,8 @@ CREATE TABLE class_definition_none_of (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_class_definition_none_of_class_definition_name ON class_definition_none_of (class_definition_name);
 CREATE INDEX ix_class_definition_none_of_none_of_id ON class_definition_none_of (none_of_id);
+CREATE INDEX ix_class_definition_none_of_class_definition_name ON class_definition_none_of (class_definition_name);
 
 CREATE TABLE class_definition_all_of (
 	class_definition_name TEXT,
@@ -4965,8 +4965,8 @@ CREATE TABLE class_definition_all_of (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(all_of_id) REFERENCES anonymous_class_expression (id)
 );
-CREATE INDEX ix_class_definition_all_of_all_of_id ON class_definition_all_of (all_of_id);
 CREATE INDEX ix_class_definition_all_of_class_definition_name ON class_definition_all_of (class_definition_name);
+CREATE INDEX ix_class_definition_all_of_all_of_id ON class_definition_all_of (all_of_id);
 
 CREATE TABLE class_definition_mixins (
 	class_definition_name TEXT,
@@ -4975,8 +4975,8 @@ CREATE TABLE class_definition_mixins (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(mixins_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_mixins_mixins_name ON class_definition_mixins (mixins_name);
 CREATE INDEX ix_class_definition_mixins_class_definition_name ON class_definition_mixins (class_definition_name);
+CREATE INDEX ix_class_definition_mixins_mixins_name ON class_definition_mixins (mixins_name);
 
 CREATE TABLE class_definition_apply_to (
 	class_definition_name TEXT,
@@ -4985,8 +4985,8 @@ CREATE TABLE class_definition_apply_to (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(apply_to_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_apply_to_class_definition_name ON class_definition_apply_to (class_definition_name);
 CREATE INDEX ix_class_definition_apply_to_apply_to_name ON class_definition_apply_to (apply_to_name);
+CREATE INDEX ix_class_definition_apply_to_class_definition_name ON class_definition_apply_to (class_definition_name);
 
 CREATE TABLE class_definition_values_from (
 	class_definition_name TEXT,
@@ -5003,8 +5003,8 @@ CREATE TABLE class_definition_id_prefixes (
 	PRIMARY KEY (class_definition_name, id_prefixes),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_id_prefixes_class_definition_name ON class_definition_id_prefixes (class_definition_name);
 CREATE INDEX ix_class_definition_id_prefixes_id_prefixes ON class_definition_id_prefixes (id_prefixes);
+CREATE INDEX ix_class_definition_id_prefixes_class_definition_name ON class_definition_id_prefixes (class_definition_name);
 
 CREATE TABLE class_definition_implements (
 	class_definition_name TEXT,
@@ -5012,8 +5012,8 @@ CREATE TABLE class_definition_implements (
 	PRIMARY KEY (class_definition_name, implements),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_implements_implements ON class_definition_implements (implements);
 CREATE INDEX ix_class_definition_implements_class_definition_name ON class_definition_implements (class_definition_name);
+CREATE INDEX ix_class_definition_implements_implements ON class_definition_implements (implements);
 
 CREATE TABLE class_definition_instantiates (
 	class_definition_name TEXT,
@@ -5030,8 +5030,8 @@ CREATE TABLE class_definition_todos (
 	PRIMARY KEY (class_definition_name, todos),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_todos_class_definition_name ON class_definition_todos (class_definition_name);
 CREATE INDEX ix_class_definition_todos_todos ON class_definition_todos (todos);
+CREATE INDEX ix_class_definition_todos_class_definition_name ON class_definition_todos (class_definition_name);
 
 CREATE TABLE class_definition_notes (
 	class_definition_name TEXT,
@@ -5039,8 +5039,8 @@ CREATE TABLE class_definition_notes (
 	PRIMARY KEY (class_definition_name, notes),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_notes_class_definition_name ON class_definition_notes (class_definition_name);
 CREATE INDEX ix_class_definition_notes_notes ON class_definition_notes (notes);
+CREATE INDEX ix_class_definition_notes_class_definition_name ON class_definition_notes (class_definition_name);
 
 CREATE TABLE class_definition_comments (
 	class_definition_name TEXT,
@@ -5057,8 +5057,8 @@ CREATE TABLE class_definition_see_also (
 	PRIMARY KEY (class_definition_name, see_also),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_see_also_see_also ON class_definition_see_also (see_also);
 CREATE INDEX ix_class_definition_see_also_class_definition_name ON class_definition_see_also (class_definition_name);
+CREATE INDEX ix_class_definition_see_also_see_also ON class_definition_see_also (see_also);
 
 CREATE TABLE class_definition_aliases (
 	class_definition_name TEXT,
@@ -5075,8 +5075,8 @@ CREATE TABLE class_definition_mappings (
 	PRIMARY KEY (class_definition_name, mappings),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_mappings_class_definition_name ON class_definition_mappings (class_definition_name);
 CREATE INDEX ix_class_definition_mappings_mappings ON class_definition_mappings (mappings);
+CREATE INDEX ix_class_definition_mappings_class_definition_name ON class_definition_mappings (class_definition_name);
 
 CREATE TABLE class_definition_exact_mappings (
 	class_definition_name TEXT,
@@ -5084,8 +5084,8 @@ CREATE TABLE class_definition_exact_mappings (
 	PRIMARY KEY (class_definition_name, exact_mappings),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_exact_mappings_exact_mappings ON class_definition_exact_mappings (exact_mappings);
 CREATE INDEX ix_class_definition_exact_mappings_class_definition_name ON class_definition_exact_mappings (class_definition_name);
+CREATE INDEX ix_class_definition_exact_mappings_exact_mappings ON class_definition_exact_mappings (exact_mappings);
 
 CREATE TABLE class_definition_close_mappings (
 	class_definition_name TEXT,
@@ -5102,8 +5102,8 @@ CREATE TABLE class_definition_related_mappings (
 	PRIMARY KEY (class_definition_name, related_mappings),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_related_mappings_class_definition_name ON class_definition_related_mappings (class_definition_name);
 CREATE INDEX ix_class_definition_related_mappings_related_mappings ON class_definition_related_mappings (related_mappings);
+CREATE INDEX ix_class_definition_related_mappings_class_definition_name ON class_definition_related_mappings (class_definition_name);
 
 CREATE TABLE class_definition_narrow_mappings (
 	class_definition_name TEXT,
@@ -5111,8 +5111,8 @@ CREATE TABLE class_definition_narrow_mappings (
 	PRIMARY KEY (class_definition_name, narrow_mappings),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_narrow_mappings_class_definition_name ON class_definition_narrow_mappings (class_definition_name);
 CREATE INDEX ix_class_definition_narrow_mappings_narrow_mappings ON class_definition_narrow_mappings (narrow_mappings);
+CREATE INDEX ix_class_definition_narrow_mappings_class_definition_name ON class_definition_narrow_mappings (class_definition_name);
 
 CREATE TABLE class_definition_broad_mappings (
 	class_definition_name TEXT,
@@ -5129,8 +5129,8 @@ CREATE TABLE class_definition_contributors (
 	PRIMARY KEY (class_definition_name, contributors),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_contributors_contributors ON class_definition_contributors (contributors);
 CREATE INDEX ix_class_definition_contributors_class_definition_name ON class_definition_contributors (class_definition_name);
+CREATE INDEX ix_class_definition_contributors_contributors ON class_definition_contributors (contributors);
 
 CREATE TABLE class_definition_category (
 	class_definition_name TEXT,
@@ -5138,8 +5138,8 @@ CREATE TABLE class_definition_category (
 	PRIMARY KEY (class_definition_name, category),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_class_definition_category_class_definition_name ON class_definition_category (class_definition_name);
 CREATE INDEX ix_class_definition_category_category ON class_definition_category (category);
+CREATE INDEX ix_class_definition_category_class_definition_name ON class_definition_category (class_definition_name);
 
 CREATE TABLE class_definition_keyword (
 	class_definition_name TEXT,
@@ -5165,8 +5165,8 @@ CREATE TABLE dimension_expression_notes (
 	PRIMARY KEY (dimension_expression_id, notes),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_notes_notes ON dimension_expression_notes (notes);
 CREATE INDEX ix_dimension_expression_notes_dimension_expression_id ON dimension_expression_notes (dimension_expression_id);
+CREATE INDEX ix_dimension_expression_notes_notes ON dimension_expression_notes (notes);
 
 CREATE TABLE dimension_expression_comments (
 	dimension_expression_id INTEGER,
@@ -5174,8 +5174,8 @@ CREATE TABLE dimension_expression_comments (
 	PRIMARY KEY (dimension_expression_id, comments),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_comments_dimension_expression_id ON dimension_expression_comments (dimension_expression_id);
 CREATE INDEX ix_dimension_expression_comments_comments ON dimension_expression_comments (comments);
+CREATE INDEX ix_dimension_expression_comments_dimension_expression_id ON dimension_expression_comments (dimension_expression_id);
 
 CREATE TABLE dimension_expression_see_also (
 	dimension_expression_id INTEGER,
@@ -5183,8 +5183,8 @@ CREATE TABLE dimension_expression_see_also (
 	PRIMARY KEY (dimension_expression_id, see_also),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_see_also_see_also ON dimension_expression_see_also (see_also);
 CREATE INDEX ix_dimension_expression_see_also_dimension_expression_id ON dimension_expression_see_also (dimension_expression_id);
+CREATE INDEX ix_dimension_expression_see_also_see_also ON dimension_expression_see_also (see_also);
 
 CREATE TABLE dimension_expression_aliases (
 	dimension_expression_id INTEGER,
@@ -5210,8 +5210,8 @@ CREATE TABLE dimension_expression_exact_mappings (
 	PRIMARY KEY (dimension_expression_id, exact_mappings),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_exact_mappings_exact_mappings ON dimension_expression_exact_mappings (exact_mappings);
 CREATE INDEX ix_dimension_expression_exact_mappings_dimension_expression_id ON dimension_expression_exact_mappings (dimension_expression_id);
+CREATE INDEX ix_dimension_expression_exact_mappings_exact_mappings ON dimension_expression_exact_mappings (exact_mappings);
 
 CREATE TABLE dimension_expression_close_mappings (
 	dimension_expression_id INTEGER,
@@ -5237,8 +5237,8 @@ CREATE TABLE dimension_expression_narrow_mappings (
 	PRIMARY KEY (dimension_expression_id, narrow_mappings),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_narrow_mappings_narrow_mappings ON dimension_expression_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_dimension_expression_narrow_mappings_dimension_expression_id ON dimension_expression_narrow_mappings (dimension_expression_id);
+CREATE INDEX ix_dimension_expression_narrow_mappings_narrow_mappings ON dimension_expression_narrow_mappings (narrow_mappings);
 
 CREATE TABLE dimension_expression_broad_mappings (
 	dimension_expression_id INTEGER,
@@ -5264,8 +5264,8 @@ CREATE TABLE dimension_expression_category (
 	PRIMARY KEY (dimension_expression_id, category),
 	FOREIGN KEY(dimension_expression_id) REFERENCES dimension_expression (id)
 );
-CREATE INDEX ix_dimension_expression_category_dimension_expression_id ON dimension_expression_category (dimension_expression_id);
 CREATE INDEX ix_dimension_expression_category_category ON dimension_expression_category (category);
+CREATE INDEX ix_dimension_expression_category_dimension_expression_id ON dimension_expression_category (dimension_expression_id);
 
 CREATE TABLE dimension_expression_keyword (
 	dimension_expression_id INTEGER,
@@ -5291,8 +5291,8 @@ CREATE TABLE pattern_expression_notes (
 	PRIMARY KEY (pattern_expression_id, notes),
 	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
 );
-CREATE INDEX ix_pattern_expression_notes_pattern_expression_id ON pattern_expression_notes (pattern_expression_id);
 CREATE INDEX ix_pattern_expression_notes_notes ON pattern_expression_notes (notes);
+CREATE INDEX ix_pattern_expression_notes_pattern_expression_id ON pattern_expression_notes (pattern_expression_id);
 
 CREATE TABLE pattern_expression_comments (
 	pattern_expression_id INTEGER,
@@ -5309,8 +5309,8 @@ CREATE TABLE pattern_expression_see_also (
 	PRIMARY KEY (pattern_expression_id, see_also),
 	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
 );
-CREATE INDEX ix_pattern_expression_see_also_pattern_expression_id ON pattern_expression_see_also (pattern_expression_id);
 CREATE INDEX ix_pattern_expression_see_also_see_also ON pattern_expression_see_also (see_also);
+CREATE INDEX ix_pattern_expression_see_also_pattern_expression_id ON pattern_expression_see_also (pattern_expression_id);
 
 CREATE TABLE pattern_expression_aliases (
 	pattern_expression_id INTEGER,
@@ -5336,8 +5336,8 @@ CREATE TABLE pattern_expression_exact_mappings (
 	PRIMARY KEY (pattern_expression_id, exact_mappings),
 	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
 );
-CREATE INDEX ix_pattern_expression_exact_mappings_pattern_expression_id ON pattern_expression_exact_mappings (pattern_expression_id);
 CREATE INDEX ix_pattern_expression_exact_mappings_exact_mappings ON pattern_expression_exact_mappings (exact_mappings);
+CREATE INDEX ix_pattern_expression_exact_mappings_pattern_expression_id ON pattern_expression_exact_mappings (pattern_expression_id);
 
 CREATE TABLE pattern_expression_close_mappings (
 	pattern_expression_id INTEGER,
@@ -5363,8 +5363,8 @@ CREATE TABLE pattern_expression_narrow_mappings (
 	PRIMARY KEY (pattern_expression_id, narrow_mappings),
 	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
 );
-CREATE INDEX ix_pattern_expression_narrow_mappings_narrow_mappings ON pattern_expression_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_pattern_expression_narrow_mappings_pattern_expression_id ON pattern_expression_narrow_mappings (pattern_expression_id);
+CREATE INDEX ix_pattern_expression_narrow_mappings_narrow_mappings ON pattern_expression_narrow_mappings (narrow_mappings);
 
 CREATE TABLE pattern_expression_broad_mappings (
 	pattern_expression_id INTEGER,
@@ -5390,8 +5390,8 @@ CREATE TABLE pattern_expression_category (
 	PRIMARY KEY (pattern_expression_id, category),
 	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
 );
-CREATE INDEX ix_pattern_expression_category_category ON pattern_expression_category (category);
 CREATE INDEX ix_pattern_expression_category_pattern_expression_id ON pattern_expression_category (pattern_expression_id);
+CREATE INDEX ix_pattern_expression_category_category ON pattern_expression_category (category);
 
 CREATE TABLE pattern_expression_keyword (
 	pattern_expression_id INTEGER,
@@ -5408,8 +5408,8 @@ CREATE TABLE import_expression_todos (
 	PRIMARY KEY (import_expression_id, todos),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_todos_import_expression_id ON import_expression_todos (import_expression_id);
 CREATE INDEX ix_import_expression_todos_todos ON import_expression_todos (todos);
+CREATE INDEX ix_import_expression_todos_import_expression_id ON import_expression_todos (import_expression_id);
 
 CREATE TABLE import_expression_notes (
 	import_expression_id INTEGER,
@@ -5426,8 +5426,8 @@ CREATE TABLE import_expression_comments (
 	PRIMARY KEY (import_expression_id, comments),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_comments_import_expression_id ON import_expression_comments (import_expression_id);
 CREATE INDEX ix_import_expression_comments_comments ON import_expression_comments (comments);
+CREATE INDEX ix_import_expression_comments_import_expression_id ON import_expression_comments (import_expression_id);
 
 CREATE TABLE import_expression_see_also (
 	import_expression_id INTEGER,
@@ -5435,8 +5435,8 @@ CREATE TABLE import_expression_see_also (
 	PRIMARY KEY (import_expression_id, see_also),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_see_also_import_expression_id ON import_expression_see_also (import_expression_id);
 CREATE INDEX ix_import_expression_see_also_see_also ON import_expression_see_also (see_also);
+CREATE INDEX ix_import_expression_see_also_import_expression_id ON import_expression_see_also (import_expression_id);
 
 CREATE TABLE import_expression_aliases (
 	import_expression_id INTEGER,
@@ -5462,8 +5462,8 @@ CREATE TABLE import_expression_exact_mappings (
 	PRIMARY KEY (import_expression_id, exact_mappings),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_exact_mappings_import_expression_id ON import_expression_exact_mappings (import_expression_id);
 CREATE INDEX ix_import_expression_exact_mappings_exact_mappings ON import_expression_exact_mappings (exact_mappings);
+CREATE INDEX ix_import_expression_exact_mappings_import_expression_id ON import_expression_exact_mappings (import_expression_id);
 
 CREATE TABLE import_expression_close_mappings (
 	import_expression_id INTEGER,
@@ -5489,8 +5489,8 @@ CREATE TABLE import_expression_narrow_mappings (
 	PRIMARY KEY (import_expression_id, narrow_mappings),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_narrow_mappings_narrow_mappings ON import_expression_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_import_expression_narrow_mappings_import_expression_id ON import_expression_narrow_mappings (import_expression_id);
+CREATE INDEX ix_import_expression_narrow_mappings_narrow_mappings ON import_expression_narrow_mappings (narrow_mappings);
 
 CREATE TABLE import_expression_broad_mappings (
 	import_expression_id INTEGER,
@@ -5516,8 +5516,8 @@ CREATE TABLE import_expression_category (
 	PRIMARY KEY (import_expression_id, category),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_category_category ON import_expression_category (category);
 CREATE INDEX ix_import_expression_category_import_expression_id ON import_expression_category (import_expression_id);
+CREATE INDEX ix_import_expression_category_category ON import_expression_category (category);
 
 CREATE TABLE import_expression_keyword (
 	import_expression_id INTEGER,
@@ -5525,8 +5525,8 @@ CREATE TABLE import_expression_keyword (
 	PRIMARY KEY (import_expression_id, keyword),
 	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
-CREATE INDEX ix_import_expression_keyword_import_expression_id ON import_expression_keyword (import_expression_id);
 CREATE INDEX ix_import_expression_keyword_keyword ON import_expression_keyword (keyword);
+CREATE INDEX ix_import_expression_keyword_import_expression_id ON import_expression_keyword (import_expression_id);
 
 CREATE TABLE "UnitOfMeasure_exact_mappings" (
 	"UnitOfMeasure_id" INTEGER,
@@ -5534,8 +5534,8 @@ CREATE TABLE "UnitOfMeasure_exact_mappings" (
 	PRIMARY KEY ("UnitOfMeasure_id", exact_mappings),
 	FOREIGN KEY("UnitOfMeasure_id") REFERENCES "UnitOfMeasure" (id)
 );
-CREATE INDEX "ix_UnitOfMeasure_exact_mappings_exact_mappings" ON "UnitOfMeasure_exact_mappings" (exact_mappings);
 CREATE INDEX "ix_UnitOfMeasure_exact_mappings_UnitOfMeasure_id" ON "UnitOfMeasure_exact_mappings" ("UnitOfMeasure_id");
+CREATE INDEX "ix_UnitOfMeasure_exact_mappings_exact_mappings" ON "UnitOfMeasure_exact_mappings" (exact_mappings);
 
 CREATE TABLE slot_expression (
 	id INTEGER NOT NULL,
@@ -5606,24 +5606,24 @@ CREATE TABLE local_name (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
-CREATE INDEX ix_local_name_enum_definition_name ON local_name (enum_definition_name);
-CREATE INDEX local_name_slot_definition_name_local_name_source_idx ON local_name (slot_definition_name, local_name_source);
-CREATE INDEX local_name_element_name_local_name_source_idx ON local_name (element_name, local_name_source);
-CREATE INDEX ix_local_name_schema_definition_name ON local_name (schema_definition_name);
-CREATE INDEX local_name_schema_definition_name_local_name_source_idx ON local_name (schema_definition_name, local_name_source);
 CREATE INDEX ix_local_name_local_name_source ON local_name (local_name_source);
-CREATE INDEX ix_local_name_subset_definition_name ON local_name (subset_definition_name);
-CREATE INDEX local_name_class_definition_name_local_name_source_idx ON local_name (class_definition_name, local_name_source);
 CREATE INDEX ix_local_name_definition_name ON local_name (definition_name);
-CREATE INDEX ix_local_name_local_name_value ON local_name (local_name_value);
-CREATE INDEX local_name_enum_definition_name_local_name_source_idx ON local_name (enum_definition_name, local_name_source);
 CREATE INDEX ix_local_name_slot_definition_name ON local_name (slot_definition_name);
-CREATE INDEX ix_local_name_class_definition_name ON local_name (class_definition_name);
 CREATE INDEX local_name_type_definition_name_local_name_source_idx ON local_name (type_definition_name, local_name_source);
 CREATE INDEX local_name_subset_definition_name_local_name_source_idx ON local_name (subset_definition_name, local_name_source);
 CREATE INDEX ix_local_name_type_definition_name ON local_name (type_definition_name);
 CREATE INDEX local_name_definition_name_local_name_source_idx ON local_name (definition_name, local_name_source);
+CREATE INDEX local_name_enum_definition_name_local_name_source_idx ON local_name (enum_definition_name, local_name_source);
+CREATE INDEX ix_local_name_local_name_value ON local_name (local_name_value);
 CREATE INDEX ix_local_name_element_name ON local_name (element_name);
+CREATE INDEX ix_local_name_class_definition_name ON local_name (class_definition_name);
+CREATE INDEX local_name_element_name_local_name_source_idx ON local_name (element_name, local_name_source);
+CREATE INDEX local_name_slot_definition_name_local_name_source_idx ON local_name (slot_definition_name, local_name_source);
+CREATE INDEX local_name_class_definition_name_local_name_source_idx ON local_name (class_definition_name, local_name_source);
+CREATE INDEX local_name_schema_definition_name_local_name_source_idx ON local_name (schema_definition_name, local_name_source);
+CREATE INDEX ix_local_name_enum_definition_name ON local_name (enum_definition_name);
+CREATE INDEX ix_local_name_schema_definition_name ON local_name (schema_definition_name);
+CREATE INDEX ix_local_name_subset_definition_name ON local_name (subset_definition_name);
 
 CREATE TABLE permissible_value (
 	text TEXT NOT NULL,
@@ -5684,8 +5684,8 @@ CREATE TABLE schema_definition_in_subset (
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (name),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_schema_definition_in_subset_in_subset_name ON schema_definition_in_subset (in_subset_name);
 CREATE INDEX ix_schema_definition_in_subset_schema_definition_name ON schema_definition_in_subset (schema_definition_name);
+CREATE INDEX ix_schema_definition_in_subset_in_subset_name ON schema_definition_in_subset (in_subset_name);
 
 CREATE TABLE type_expression_equals_string_in (
 	type_expression_id INTEGER,
@@ -5703,8 +5703,8 @@ CREATE TABLE type_expression_none_of (
 	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_expression_none_of_none_of_id ON type_expression_none_of (none_of_id);
 CREATE INDEX ix_type_expression_none_of_type_expression_id ON type_expression_none_of (type_expression_id);
+CREATE INDEX ix_type_expression_none_of_none_of_id ON type_expression_none_of (none_of_id);
 
 CREATE TABLE type_expression_exactly_one_of (
 	type_expression_id INTEGER,
@@ -5723,8 +5723,8 @@ CREATE TABLE type_expression_any_of (
 	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id),
 	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_expression_any_of_type_expression_id ON type_expression_any_of (type_expression_id);
 CREATE INDEX ix_type_expression_any_of_any_of_id ON type_expression_any_of (any_of_id);
+CREATE INDEX ix_type_expression_any_of_type_expression_id ON type_expression_any_of (type_expression_id);
 
 CREATE TABLE type_expression_all_of (
 	type_expression_id INTEGER,
@@ -5733,8 +5733,8 @@ CREATE TABLE type_expression_all_of (
 	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id),
 	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_expression_all_of_type_expression_id ON type_expression_all_of (type_expression_id);
 CREATE INDEX ix_type_expression_all_of_all_of_id ON type_expression_all_of (all_of_id);
+CREATE INDEX ix_type_expression_all_of_type_expression_id ON type_expression_all_of (type_expression_id);
 
 CREATE TABLE anonymous_type_expression_equals_string_in (
 	anonymous_type_expression_id INTEGER,
@@ -5742,8 +5742,8 @@ CREATE TABLE anonymous_type_expression_equals_string_in (
 	PRIMARY KEY (anonymous_type_expression_id, equals_string_in),
 	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_anonymous_type_expression_equals_string_in_equals_string_in ON anonymous_type_expression_equals_string_in (equals_string_in);
 CREATE INDEX ix_anonymous_type_expression_equals_string_in_anonymous_type_expression_id ON anonymous_type_expression_equals_string_in (anonymous_type_expression_id);
+CREATE INDEX ix_anonymous_type_expression_equals_string_in_equals_string_in ON anonymous_type_expression_equals_string_in (equals_string_in);
 
 CREATE TABLE anonymous_type_expression_none_of (
 	anonymous_type_expression_id INTEGER,
@@ -5752,8 +5752,8 @@ CREATE TABLE anonymous_type_expression_none_of (
 	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_anonymous_type_expression_none_of_anonymous_type_expression_id ON anonymous_type_expression_none_of (anonymous_type_expression_id);
 CREATE INDEX ix_anonymous_type_expression_none_of_none_of_id ON anonymous_type_expression_none_of (none_of_id);
+CREATE INDEX ix_anonymous_type_expression_none_of_anonymous_type_expression_id ON anonymous_type_expression_none_of (anonymous_type_expression_id);
 
 CREATE TABLE anonymous_type_expression_exactly_one_of (
 	anonymous_type_expression_id INTEGER,
@@ -5782,8 +5782,8 @@ CREATE TABLE anonymous_type_expression_all_of (
 	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id),
 	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_anonymous_type_expression_all_of_anonymous_type_expression_id ON anonymous_type_expression_all_of (anonymous_type_expression_id);
 CREATE INDEX ix_anonymous_type_expression_all_of_all_of_id ON anonymous_type_expression_all_of (all_of_id);
+CREATE INDEX ix_anonymous_type_expression_all_of_anonymous_type_expression_id ON anonymous_type_expression_all_of (anonymous_type_expression_id);
 
 CREATE TABLE type_definition_none_of (
 	type_definition_name TEXT,
@@ -5792,8 +5792,8 @@ CREATE TABLE type_definition_none_of (
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name),
 	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_definition_none_of_none_of_id ON type_definition_none_of (none_of_id);
 CREATE INDEX ix_type_definition_none_of_type_definition_name ON type_definition_none_of (type_definition_name);
+CREATE INDEX ix_type_definition_none_of_none_of_id ON type_definition_none_of (none_of_id);
 
 CREATE TABLE type_definition_exactly_one_of (
 	type_definition_name TEXT,
@@ -5802,8 +5802,8 @@ CREATE TABLE type_definition_exactly_one_of (
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name),
 	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_definition_exactly_one_of_type_definition_name ON type_definition_exactly_one_of (type_definition_name);
 CREATE INDEX ix_type_definition_exactly_one_of_exactly_one_of_id ON type_definition_exactly_one_of (exactly_one_of_id);
+CREATE INDEX ix_type_definition_exactly_one_of_type_definition_name ON type_definition_exactly_one_of (type_definition_name);
 
 CREATE TABLE type_definition_any_of (
 	type_definition_name TEXT,
@@ -5812,8 +5812,8 @@ CREATE TABLE type_definition_any_of (
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name),
 	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
 );
-CREATE INDEX ix_type_definition_any_of_type_definition_name ON type_definition_any_of (type_definition_name);
 CREATE INDEX ix_type_definition_any_of_any_of_id ON type_definition_any_of (any_of_id);
+CREATE INDEX ix_type_definition_any_of_type_definition_name ON type_definition_any_of (type_definition_name);
 
 CREATE TABLE type_definition_all_of (
 	type_definition_name TEXT,
@@ -5841,8 +5841,8 @@ CREATE TABLE subset_definition_id_prefixes (
 	PRIMARY KEY (subset_definition_name, id_prefixes),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_id_prefixes_subset_definition_name ON subset_definition_id_prefixes (subset_definition_name);
 CREATE INDEX ix_subset_definition_id_prefixes_id_prefixes ON subset_definition_id_prefixes (id_prefixes);
+CREATE INDEX ix_subset_definition_id_prefixes_subset_definition_name ON subset_definition_id_prefixes (subset_definition_name);
 
 CREATE TABLE subset_definition_implements (
 	subset_definition_name TEXT,
@@ -5850,8 +5850,8 @@ CREATE TABLE subset_definition_implements (
 	PRIMARY KEY (subset_definition_name, implements),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_implements_implements ON subset_definition_implements (implements);
 CREATE INDEX ix_subset_definition_implements_subset_definition_name ON subset_definition_implements (subset_definition_name);
+CREATE INDEX ix_subset_definition_implements_implements ON subset_definition_implements (implements);
 
 CREATE TABLE subset_definition_instantiates (
 	subset_definition_name TEXT,
@@ -5886,8 +5886,8 @@ CREATE TABLE subset_definition_comments (
 	PRIMARY KEY (subset_definition_name, comments),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_comments_comments ON subset_definition_comments (comments);
 CREATE INDEX ix_subset_definition_comments_subset_definition_name ON subset_definition_comments (subset_definition_name);
+CREATE INDEX ix_subset_definition_comments_comments ON subset_definition_comments (comments);
 
 CREATE TABLE subset_definition_in_subset (
 	subset_definition_name TEXT,
@@ -5896,8 +5896,8 @@ CREATE TABLE subset_definition_in_subset (
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_in_subset_in_subset_name ON subset_definition_in_subset (in_subset_name);
 CREATE INDEX ix_subset_definition_in_subset_subset_definition_name ON subset_definition_in_subset (subset_definition_name);
+CREATE INDEX ix_subset_definition_in_subset_in_subset_name ON subset_definition_in_subset (in_subset_name);
 
 CREATE TABLE subset_definition_see_also (
 	subset_definition_name TEXT,
@@ -5914,8 +5914,8 @@ CREATE TABLE subset_definition_aliases (
 	PRIMARY KEY (subset_definition_name, aliases),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_aliases_aliases ON subset_definition_aliases (aliases);
 CREATE INDEX ix_subset_definition_aliases_subset_definition_name ON subset_definition_aliases (subset_definition_name);
+CREATE INDEX ix_subset_definition_aliases_aliases ON subset_definition_aliases (aliases);
 
 CREATE TABLE subset_definition_mappings (
 	subset_definition_name TEXT,
@@ -5923,8 +5923,8 @@ CREATE TABLE subset_definition_mappings (
 	PRIMARY KEY (subset_definition_name, mappings),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_mappings_subset_definition_name ON subset_definition_mappings (subset_definition_name);
 CREATE INDEX ix_subset_definition_mappings_mappings ON subset_definition_mappings (mappings);
+CREATE INDEX ix_subset_definition_mappings_subset_definition_name ON subset_definition_mappings (subset_definition_name);
 
 CREATE TABLE subset_definition_exact_mappings (
 	subset_definition_name TEXT,
@@ -5941,8 +5941,8 @@ CREATE TABLE subset_definition_close_mappings (
 	PRIMARY KEY (subset_definition_name, close_mappings),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_close_mappings_subset_definition_name ON subset_definition_close_mappings (subset_definition_name);
 CREATE INDEX ix_subset_definition_close_mappings_close_mappings ON subset_definition_close_mappings (close_mappings);
+CREATE INDEX ix_subset_definition_close_mappings_subset_definition_name ON subset_definition_close_mappings (subset_definition_name);
 
 CREATE TABLE subset_definition_related_mappings (
 	subset_definition_name TEXT,
@@ -5950,8 +5950,8 @@ CREATE TABLE subset_definition_related_mappings (
 	PRIMARY KEY (subset_definition_name, related_mappings),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_related_mappings_subset_definition_name ON subset_definition_related_mappings (subset_definition_name);
 CREATE INDEX ix_subset_definition_related_mappings_related_mappings ON subset_definition_related_mappings (related_mappings);
+CREATE INDEX ix_subset_definition_related_mappings_subset_definition_name ON subset_definition_related_mappings (subset_definition_name);
 
 CREATE TABLE subset_definition_narrow_mappings (
 	subset_definition_name TEXT,
@@ -5959,8 +5959,8 @@ CREATE TABLE subset_definition_narrow_mappings (
 	PRIMARY KEY (subset_definition_name, narrow_mappings),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_narrow_mappings_narrow_mappings ON subset_definition_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_subset_definition_narrow_mappings_subset_definition_name ON subset_definition_narrow_mappings (subset_definition_name);
+CREATE INDEX ix_subset_definition_narrow_mappings_narrow_mappings ON subset_definition_narrow_mappings (narrow_mappings);
 
 CREATE TABLE subset_definition_broad_mappings (
 	subset_definition_name TEXT,
@@ -5986,8 +5986,8 @@ CREATE TABLE subset_definition_category (
 	PRIMARY KEY (subset_definition_name, category),
 	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_subset_definition_category_category ON subset_definition_category (category);
 CREATE INDEX ix_subset_definition_category_subset_definition_name ON subset_definition_category (subset_definition_name);
+CREATE INDEX ix_subset_definition_category_category ON subset_definition_category (category);
 
 CREATE TABLE subset_definition_keyword (
 	subset_definition_name TEXT,
@@ -6005,8 +6005,8 @@ CREATE TABLE definition_in_subset (
 	FOREIGN KEY(definition_name) REFERENCES definition (name),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_definition_in_subset_definition_name ON definition_in_subset (definition_name);
 CREATE INDEX ix_definition_in_subset_in_subset_name ON definition_in_subset (in_subset_name);
+CREATE INDEX ix_definition_in_subset_definition_name ON definition_in_subset (definition_name);
 
 CREATE TABLE enum_expression_include (
 	enum_expression_id INTEGER,
@@ -6015,8 +6015,8 @@ CREATE TABLE enum_expression_include (
 	FOREIGN KEY(enum_expression_id) REFERENCES enum_expression (id),
 	FOREIGN KEY(include_id) REFERENCES anonymous_enum_expression (id)
 );
-CREATE INDEX ix_enum_expression_include_include_id ON enum_expression_include (include_id);
 CREATE INDEX ix_enum_expression_include_enum_expression_id ON enum_expression_include (enum_expression_id);
+CREATE INDEX ix_enum_expression_include_include_id ON enum_expression_include (include_id);
 
 CREATE TABLE enum_expression_minus (
 	enum_expression_id INTEGER,
@@ -6044,8 +6044,8 @@ CREATE TABLE enum_expression_concepts (
 	PRIMARY KEY (enum_expression_id, concepts),
 	FOREIGN KEY(enum_expression_id) REFERENCES enum_expression (id)
 );
-CREATE INDEX ix_enum_expression_concepts_concepts ON enum_expression_concepts (concepts);
 CREATE INDEX ix_enum_expression_concepts_enum_expression_id ON enum_expression_concepts (enum_expression_id);
+CREATE INDEX ix_enum_expression_concepts_concepts ON enum_expression_concepts (concepts);
 
 CREATE TABLE anonymous_enum_expression_include (
 	anonymous_enum_expression_id INTEGER,
@@ -6074,8 +6074,8 @@ CREATE TABLE anonymous_enum_expression_inherits (
 	FOREIGN KEY(anonymous_enum_expression_id) REFERENCES anonymous_enum_expression (id),
 	FOREIGN KEY(inherits_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_anonymous_enum_expression_inherits_anonymous_enum_expression_id ON anonymous_enum_expression_inherits (anonymous_enum_expression_id);
 CREATE INDEX ix_anonymous_enum_expression_inherits_inherits_name ON anonymous_enum_expression_inherits (inherits_name);
+CREATE INDEX ix_anonymous_enum_expression_inherits_anonymous_enum_expression_id ON anonymous_enum_expression_inherits (anonymous_enum_expression_id);
 
 CREATE TABLE anonymous_enum_expression_concepts (
 	anonymous_enum_expression_id INTEGER,
@@ -6093,8 +6093,8 @@ CREATE TABLE enum_definition_include (
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name),
 	FOREIGN KEY(include_id) REFERENCES anonymous_enum_expression (id)
 );
-CREATE INDEX ix_enum_definition_include_enum_definition_name ON enum_definition_include (enum_definition_name);
 CREATE INDEX ix_enum_definition_include_include_id ON enum_definition_include (include_id);
+CREATE INDEX ix_enum_definition_include_enum_definition_name ON enum_definition_include (enum_definition_name);
 
 CREATE TABLE enum_definition_minus (
 	enum_definition_name TEXT,
@@ -6113,8 +6113,8 @@ CREATE TABLE enum_definition_inherits (
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name),
 	FOREIGN KEY(inherits_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_inherits_enum_definition_name ON enum_definition_inherits (enum_definition_name);
 CREATE INDEX ix_enum_definition_inherits_inherits_name ON enum_definition_inherits (inherits_name);
+CREATE INDEX ix_enum_definition_inherits_enum_definition_name ON enum_definition_inherits (enum_definition_name);
 
 CREATE TABLE enum_definition_concepts (
 	enum_definition_name TEXT,
@@ -6122,8 +6122,8 @@ CREATE TABLE enum_definition_concepts (
 	PRIMARY KEY (enum_definition_name, concepts),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_concepts_concepts ON enum_definition_concepts (concepts);
 CREATE INDEX ix_enum_definition_concepts_enum_definition_name ON enum_definition_concepts (enum_definition_name);
+CREATE INDEX ix_enum_definition_concepts_concepts ON enum_definition_concepts (concepts);
 
 CREATE TABLE enum_definition_mixins (
 	enum_definition_name TEXT,
@@ -6160,8 +6160,8 @@ CREATE TABLE enum_definition_id_prefixes (
 	PRIMARY KEY (enum_definition_name, id_prefixes),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_id_prefixes_id_prefixes ON enum_definition_id_prefixes (id_prefixes);
 CREATE INDEX ix_enum_definition_id_prefixes_enum_definition_name ON enum_definition_id_prefixes (enum_definition_name);
+CREATE INDEX ix_enum_definition_id_prefixes_id_prefixes ON enum_definition_id_prefixes (id_prefixes);
 
 CREATE TABLE enum_definition_implements (
 	enum_definition_name TEXT,
@@ -6169,8 +6169,8 @@ CREATE TABLE enum_definition_implements (
 	PRIMARY KEY (enum_definition_name, implements),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_implements_implements ON enum_definition_implements (implements);
 CREATE INDEX ix_enum_definition_implements_enum_definition_name ON enum_definition_implements (enum_definition_name);
+CREATE INDEX ix_enum_definition_implements_implements ON enum_definition_implements (implements);
 
 CREATE TABLE enum_definition_instantiates (
 	enum_definition_name TEXT,
@@ -6178,8 +6178,8 @@ CREATE TABLE enum_definition_instantiates (
 	PRIMARY KEY (enum_definition_name, instantiates),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_instantiates_enum_definition_name ON enum_definition_instantiates (enum_definition_name);
 CREATE INDEX ix_enum_definition_instantiates_instantiates ON enum_definition_instantiates (instantiates);
+CREATE INDEX ix_enum_definition_instantiates_enum_definition_name ON enum_definition_instantiates (enum_definition_name);
 
 CREATE TABLE enum_definition_todos (
 	enum_definition_name TEXT,
@@ -6187,8 +6187,8 @@ CREATE TABLE enum_definition_todos (
 	PRIMARY KEY (enum_definition_name, todos),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_todos_enum_definition_name ON enum_definition_todos (enum_definition_name);
 CREATE INDEX ix_enum_definition_todos_todos ON enum_definition_todos (todos);
+CREATE INDEX ix_enum_definition_todos_enum_definition_name ON enum_definition_todos (enum_definition_name);
 
 CREATE TABLE enum_definition_notes (
 	enum_definition_name TEXT,
@@ -6205,8 +6205,8 @@ CREATE TABLE enum_definition_comments (
 	PRIMARY KEY (enum_definition_name, comments),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_comments_enum_definition_name ON enum_definition_comments (enum_definition_name);
 CREATE INDEX ix_enum_definition_comments_comments ON enum_definition_comments (comments);
+CREATE INDEX ix_enum_definition_comments_enum_definition_name ON enum_definition_comments (enum_definition_name);
 
 CREATE TABLE enum_definition_in_subset (
 	enum_definition_name TEXT,
@@ -6251,8 +6251,8 @@ CREATE TABLE enum_definition_exact_mappings (
 	PRIMARY KEY (enum_definition_name, exact_mappings),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_exact_mappings_exact_mappings ON enum_definition_exact_mappings (exact_mappings);
 CREATE INDEX ix_enum_definition_exact_mappings_enum_definition_name ON enum_definition_exact_mappings (enum_definition_name);
+CREATE INDEX ix_enum_definition_exact_mappings_exact_mappings ON enum_definition_exact_mappings (exact_mappings);
 
 CREATE TABLE enum_definition_close_mappings (
 	enum_definition_name TEXT,
@@ -6305,8 +6305,8 @@ CREATE TABLE enum_definition_category (
 	PRIMARY KEY (enum_definition_name, category),
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
-CREATE INDEX ix_enum_definition_category_enum_definition_name ON enum_definition_category (enum_definition_name);
 CREATE INDEX ix_enum_definition_category_category ON enum_definition_category (category);
+CREATE INDEX ix_enum_definition_category_enum_definition_name ON enum_definition_category (enum_definition_name);
 
 CREATE TABLE enum_definition_keyword (
 	enum_definition_name TEXT,
@@ -6324,8 +6324,8 @@ CREATE TABLE anonymous_expression_in_subset (
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_anonymous_expression_in_subset_anonymous_expression_id ON anonymous_expression_in_subset (anonymous_expression_id);
 CREATE INDEX ix_anonymous_expression_in_subset_in_subset_name ON anonymous_expression_in_subset (in_subset_name);
+CREATE INDEX ix_anonymous_expression_in_subset_anonymous_expression_id ON anonymous_expression_in_subset (anonymous_expression_id);
 
 CREATE TABLE path_expression_in_subset (
 	path_expression_id INTEGER,
@@ -6344,8 +6344,8 @@ CREATE TABLE anonymous_slot_expression_in_subset (
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_anonymous_slot_expression_in_subset_anonymous_slot_expression_id ON anonymous_slot_expression_in_subset (anonymous_slot_expression_id);
 CREATE INDEX ix_anonymous_slot_expression_in_subset_in_subset_name ON anonymous_slot_expression_in_subset (in_subset_name);
+CREATE INDEX ix_anonymous_slot_expression_in_subset_anonymous_slot_expression_id ON anonymous_slot_expression_in_subset (anonymous_slot_expression_id);
 
 CREATE TABLE slot_definition_type_mappings (
 	slot_definition_name TEXT,
@@ -6364,8 +6364,8 @@ CREATE TABLE slot_definition_in_subset (
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_slot_definition_in_subset_slot_definition_name ON slot_definition_in_subset (slot_definition_name);
 CREATE INDEX ix_slot_definition_in_subset_in_subset_name ON slot_definition_in_subset (in_subset_name);
+CREATE INDEX ix_slot_definition_in_subset_slot_definition_name ON slot_definition_in_subset (slot_definition_name);
 
 CREATE TABLE anonymous_class_expression_in_subset (
 	anonymous_class_expression_id INTEGER,
@@ -6374,8 +6374,8 @@ CREATE TABLE anonymous_class_expression_in_subset (
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_anonymous_class_expression_in_subset_in_subset_name ON anonymous_class_expression_in_subset (in_subset_name);
 CREATE INDEX ix_anonymous_class_expression_in_subset_anonymous_class_expression_id ON anonymous_class_expression_in_subset (anonymous_class_expression_id);
+CREATE INDEX ix_anonymous_class_expression_in_subset_in_subset_name ON anonymous_class_expression_in_subset (in_subset_name);
 
 CREATE TABLE class_definition_in_subset (
 	class_definition_name TEXT,
@@ -6384,8 +6384,8 @@ CREATE TABLE class_definition_in_subset (
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_class_definition_in_subset_in_subset_name ON class_definition_in_subset (in_subset_name);
 CREATE INDEX ix_class_definition_in_subset_class_definition_name ON class_definition_in_subset (class_definition_name);
+CREATE INDEX ix_class_definition_in_subset_in_subset_name ON class_definition_in_subset (in_subset_name);
 
 CREATE TABLE class_rule_todos (
 	class_rule_id INTEGER,
@@ -6411,8 +6411,8 @@ CREATE TABLE class_rule_comments (
 	PRIMARY KEY (class_rule_id, comments),
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE INDEX ix_class_rule_comments_class_rule_id ON class_rule_comments (class_rule_id);
 CREATE INDEX ix_class_rule_comments_comments ON class_rule_comments (comments);
+CREATE INDEX ix_class_rule_comments_class_rule_id ON class_rule_comments (class_rule_id);
 
 CREATE TABLE class_rule_in_subset (
 	class_rule_id INTEGER,
@@ -6439,8 +6439,8 @@ CREATE TABLE class_rule_aliases (
 	PRIMARY KEY (class_rule_id, aliases),
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE INDEX ix_class_rule_aliases_class_rule_id ON class_rule_aliases (class_rule_id);
 CREATE INDEX ix_class_rule_aliases_aliases ON class_rule_aliases (aliases);
+CREATE INDEX ix_class_rule_aliases_class_rule_id ON class_rule_aliases (class_rule_id);
 
 CREATE TABLE class_rule_mappings (
 	class_rule_id INTEGER,
@@ -6466,8 +6466,8 @@ CREATE TABLE class_rule_close_mappings (
 	PRIMARY KEY (class_rule_id, close_mappings),
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE INDEX ix_class_rule_close_mappings_close_mappings ON class_rule_close_mappings (close_mappings);
 CREATE INDEX ix_class_rule_close_mappings_class_rule_id ON class_rule_close_mappings (class_rule_id);
+CREATE INDEX ix_class_rule_close_mappings_close_mappings ON class_rule_close_mappings (close_mappings);
 
 CREATE TABLE class_rule_related_mappings (
 	class_rule_id INTEGER,
@@ -6493,8 +6493,8 @@ CREATE TABLE class_rule_broad_mappings (
 	PRIMARY KEY (class_rule_id, broad_mappings),
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE INDEX ix_class_rule_broad_mappings_class_rule_id ON class_rule_broad_mappings (class_rule_id);
 CREATE INDEX ix_class_rule_broad_mappings_broad_mappings ON class_rule_broad_mappings (broad_mappings);
+CREATE INDEX ix_class_rule_broad_mappings_class_rule_id ON class_rule_broad_mappings (class_rule_id);
 
 CREATE TABLE class_rule_contributors (
 	class_rule_id INTEGER,
@@ -6520,8 +6520,8 @@ CREATE TABLE class_rule_keyword (
 	PRIMARY KEY (class_rule_id, keyword),
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE INDEX ix_class_rule_keyword_keyword ON class_rule_keyword (keyword);
 CREATE INDEX ix_class_rule_keyword_class_rule_id ON class_rule_keyword (class_rule_id);
+CREATE INDEX ix_class_rule_keyword_keyword ON class_rule_keyword (keyword);
 
 CREATE TABLE array_expression_dimensions (
 	array_expression_id INTEGER,
@@ -6539,8 +6539,8 @@ CREATE TABLE array_expression_todos (
 	PRIMARY KEY (array_expression_id, todos),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_todos_todos ON array_expression_todos (todos);
 CREATE INDEX ix_array_expression_todos_array_expression_id ON array_expression_todos (array_expression_id);
+CREATE INDEX ix_array_expression_todos_todos ON array_expression_todos (todos);
 
 CREATE TABLE array_expression_notes (
 	array_expression_id INTEGER,
@@ -6548,8 +6548,8 @@ CREATE TABLE array_expression_notes (
 	PRIMARY KEY (array_expression_id, notes),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_notes_notes ON array_expression_notes (notes);
 CREATE INDEX ix_array_expression_notes_array_expression_id ON array_expression_notes (array_expression_id);
+CREATE INDEX ix_array_expression_notes_notes ON array_expression_notes (notes);
 
 CREATE TABLE array_expression_comments (
 	array_expression_id INTEGER,
@@ -6576,8 +6576,8 @@ CREATE TABLE array_expression_see_also (
 	PRIMARY KEY (array_expression_id, see_also),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_see_also_array_expression_id ON array_expression_see_also (array_expression_id);
 CREATE INDEX ix_array_expression_see_also_see_also ON array_expression_see_also (see_also);
+CREATE INDEX ix_array_expression_see_also_array_expression_id ON array_expression_see_also (array_expression_id);
 
 CREATE TABLE array_expression_aliases (
 	array_expression_id INTEGER,
@@ -6603,8 +6603,8 @@ CREATE TABLE array_expression_exact_mappings (
 	PRIMARY KEY (array_expression_id, exact_mappings),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_exact_mappings_exact_mappings ON array_expression_exact_mappings (exact_mappings);
 CREATE INDEX ix_array_expression_exact_mappings_array_expression_id ON array_expression_exact_mappings (array_expression_id);
+CREATE INDEX ix_array_expression_exact_mappings_exact_mappings ON array_expression_exact_mappings (exact_mappings);
 
 CREATE TABLE array_expression_close_mappings (
 	array_expression_id INTEGER,
@@ -6630,8 +6630,8 @@ CREATE TABLE array_expression_narrow_mappings (
 	PRIMARY KEY (array_expression_id, narrow_mappings),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_narrow_mappings_array_expression_id ON array_expression_narrow_mappings (array_expression_id);
 CREATE INDEX ix_array_expression_narrow_mappings_narrow_mappings ON array_expression_narrow_mappings (narrow_mappings);
+CREATE INDEX ix_array_expression_narrow_mappings_array_expression_id ON array_expression_narrow_mappings (array_expression_id);
 
 CREATE TABLE array_expression_broad_mappings (
 	array_expression_id INTEGER,
@@ -6657,8 +6657,8 @@ CREATE TABLE array_expression_category (
 	PRIMARY KEY (array_expression_id, category),
 	FOREIGN KEY(array_expression_id) REFERENCES array_expression (id)
 );
-CREATE INDEX ix_array_expression_category_array_expression_id ON array_expression_category (array_expression_id);
 CREATE INDEX ix_array_expression_category_category ON array_expression_category (category);
+CREATE INDEX ix_array_expression_category_array_expression_id ON array_expression_category (array_expression_id);
 
 CREATE TABLE array_expression_keyword (
 	array_expression_id INTEGER,
@@ -6706,8 +6706,8 @@ CREATE TABLE unique_key_unique_key_slots (
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name),
 	FOREIGN KEY(unique_key_slots_name) REFERENCES slot_definition (name)
 );
-CREATE INDEX ix_unique_key_unique_key_slots_unique_key_slots_name ON unique_key_unique_key_slots (unique_key_slots_name);
 CREATE INDEX ix_unique_key_unique_key_slots_unique_key_unique_key_name ON unique_key_unique_key_slots (unique_key_unique_key_name);
+CREATE INDEX ix_unique_key_unique_key_slots_unique_key_slots_name ON unique_key_unique_key_slots (unique_key_slots_name);
 
 CREATE TABLE unique_key_todos (
 	unique_key_unique_key_name TEXT,
@@ -6724,8 +6724,8 @@ CREATE TABLE unique_key_notes (
 	PRIMARY KEY (unique_key_unique_key_name, notes),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_notes_unique_key_unique_key_name ON unique_key_notes (unique_key_unique_key_name);
 CREATE INDEX ix_unique_key_notes_notes ON unique_key_notes (notes);
+CREATE INDEX ix_unique_key_notes_unique_key_unique_key_name ON unique_key_notes (unique_key_unique_key_name);
 
 CREATE TABLE unique_key_comments (
 	unique_key_unique_key_name TEXT,
@@ -6770,8 +6770,8 @@ CREATE TABLE unique_key_mappings (
 	PRIMARY KEY (unique_key_unique_key_name, mappings),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_mappings_unique_key_unique_key_name ON unique_key_mappings (unique_key_unique_key_name);
 CREATE INDEX ix_unique_key_mappings_mappings ON unique_key_mappings (mappings);
+CREATE INDEX ix_unique_key_mappings_unique_key_unique_key_name ON unique_key_mappings (unique_key_unique_key_name);
 
 CREATE TABLE unique_key_exact_mappings (
 	unique_key_unique_key_name TEXT,
@@ -6788,8 +6788,8 @@ CREATE TABLE unique_key_close_mappings (
 	PRIMARY KEY (unique_key_unique_key_name, close_mappings),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_close_mappings_unique_key_unique_key_name ON unique_key_close_mappings (unique_key_unique_key_name);
 CREATE INDEX ix_unique_key_close_mappings_close_mappings ON unique_key_close_mappings (close_mappings);
+CREATE INDEX ix_unique_key_close_mappings_unique_key_unique_key_name ON unique_key_close_mappings (unique_key_unique_key_name);
 
 CREATE TABLE unique_key_related_mappings (
 	unique_key_unique_key_name TEXT,
@@ -6797,8 +6797,8 @@ CREATE TABLE unique_key_related_mappings (
 	PRIMARY KEY (unique_key_unique_key_name, related_mappings),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_related_mappings_unique_key_unique_key_name ON unique_key_related_mappings (unique_key_unique_key_name);
 CREATE INDEX ix_unique_key_related_mappings_related_mappings ON unique_key_related_mappings (related_mappings);
+CREATE INDEX ix_unique_key_related_mappings_unique_key_unique_key_name ON unique_key_related_mappings (unique_key_unique_key_name);
 
 CREATE TABLE unique_key_narrow_mappings (
 	unique_key_unique_key_name TEXT,
@@ -6824,8 +6824,8 @@ CREATE TABLE unique_key_contributors (
 	PRIMARY KEY (unique_key_unique_key_name, contributors),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_contributors_unique_key_unique_key_name ON unique_key_contributors (unique_key_unique_key_name);
 CREATE INDEX ix_unique_key_contributors_contributors ON unique_key_contributors (contributors);
+CREATE INDEX ix_unique_key_contributors_unique_key_unique_key_name ON unique_key_contributors (unique_key_unique_key_name);
 
 CREATE TABLE unique_key_category (
 	unique_key_unique_key_name TEXT,
@@ -6833,8 +6833,8 @@ CREATE TABLE unique_key_category (
 	PRIMARY KEY (unique_key_unique_key_name, category),
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
-CREATE INDEX ix_unique_key_category_category ON unique_key_category (category);
 CREATE INDEX ix_unique_key_category_unique_key_unique_key_name ON unique_key_category (unique_key_unique_key_name);
+CREATE INDEX ix_unique_key_category_category ON unique_key_category (category);
 
 CREATE TABLE unique_key_keyword (
 	unique_key_unique_key_name TEXT,
@@ -6851,8 +6851,8 @@ CREATE TABLE type_mapping_todos (
 	PRIMARY KEY (type_mapping_framework, todos),
 	FOREIGN KEY(type_mapping_framework) REFERENCES type_mapping (framework)
 );
-CREATE INDEX ix_type_mapping_todos_type_mapping_framework ON type_mapping_todos (type_mapping_framework);
 CREATE INDEX ix_type_mapping_todos_todos ON type_mapping_todos (todos);
+CREATE INDEX ix_type_mapping_todos_type_mapping_framework ON type_mapping_todos (type_mapping_framework);
 
 CREATE TABLE type_mapping_notes (
 	type_mapping_framework TEXT,
@@ -6879,8 +6879,8 @@ CREATE TABLE type_mapping_in_subset (
 	FOREIGN KEY(type_mapping_framework) REFERENCES type_mapping (framework),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_type_mapping_in_subset_in_subset_name ON type_mapping_in_subset (in_subset_name);
 CREATE INDEX ix_type_mapping_in_subset_type_mapping_framework ON type_mapping_in_subset (type_mapping_framework);
+CREATE INDEX ix_type_mapping_in_subset_in_subset_name ON type_mapping_in_subset (in_subset_name);
 
 CREATE TABLE type_mapping_see_also (
 	type_mapping_framework TEXT,
@@ -6942,8 +6942,8 @@ CREATE TABLE type_mapping_narrow_mappings (
 	PRIMARY KEY (type_mapping_framework, narrow_mappings),
 	FOREIGN KEY(type_mapping_framework) REFERENCES type_mapping (framework)
 );
-CREATE INDEX ix_type_mapping_narrow_mappings_narrow_mappings ON type_mapping_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_type_mapping_narrow_mappings_type_mapping_framework ON type_mapping_narrow_mappings (type_mapping_framework);
+CREATE INDEX ix_type_mapping_narrow_mappings_narrow_mappings ON type_mapping_narrow_mappings (narrow_mappings);
 
 CREATE TABLE type_mapping_broad_mappings (
 	type_mapping_framework TEXT,
@@ -6951,8 +6951,8 @@ CREATE TABLE type_mapping_broad_mappings (
 	PRIMARY KEY (type_mapping_framework, broad_mappings),
 	FOREIGN KEY(type_mapping_framework) REFERENCES type_mapping (framework)
 );
-CREATE INDEX ix_type_mapping_broad_mappings_type_mapping_framework ON type_mapping_broad_mappings (type_mapping_framework);
 CREATE INDEX ix_type_mapping_broad_mappings_broad_mappings ON type_mapping_broad_mappings (broad_mappings);
+CREATE INDEX ix_type_mapping_broad_mappings_type_mapping_framework ON type_mapping_broad_mappings (type_mapping_framework);
 
 CREATE TABLE type_mapping_contributors (
 	type_mapping_framework TEXT,
@@ -7079,8 +7079,8 @@ CREATE TABLE permissible_value_implements (
 	PRIMARY KEY (permissible_value_text, implements),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_implements_implements ON permissible_value_implements (implements);
 CREATE INDEX ix_permissible_value_implements_permissible_value_text ON permissible_value_implements (permissible_value_text);
+CREATE INDEX ix_permissible_value_implements_implements ON permissible_value_implements (implements);
 
 CREATE TABLE permissible_value_mixins (
 	permissible_value_text TEXT,
@@ -7089,8 +7089,8 @@ CREATE TABLE permissible_value_mixins (
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text),
 	FOREIGN KEY(mixins_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_mixins_mixins_text ON permissible_value_mixins (mixins_text);
 CREATE INDEX ix_permissible_value_mixins_permissible_value_text ON permissible_value_mixins (permissible_value_text);
+CREATE INDEX ix_permissible_value_mixins_mixins_text ON permissible_value_mixins (mixins_text);
 
 CREATE TABLE permissible_value_todos (
 	permissible_value_text TEXT,
@@ -7107,8 +7107,8 @@ CREATE TABLE permissible_value_notes (
 	PRIMARY KEY (permissible_value_text, notes),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_notes_permissible_value_text ON permissible_value_notes (permissible_value_text);
 CREATE INDEX ix_permissible_value_notes_notes ON permissible_value_notes (notes);
+CREATE INDEX ix_permissible_value_notes_permissible_value_text ON permissible_value_notes (permissible_value_text);
 
 CREATE TABLE permissible_value_comments (
 	permissible_value_text TEXT,
@@ -7135,8 +7135,8 @@ CREATE TABLE permissible_value_see_also (
 	PRIMARY KEY (permissible_value_text, see_also),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_see_also_permissible_value_text ON permissible_value_see_also (permissible_value_text);
 CREATE INDEX ix_permissible_value_see_also_see_also ON permissible_value_see_also (see_also);
+CREATE INDEX ix_permissible_value_see_also_permissible_value_text ON permissible_value_see_also (permissible_value_text);
 
 CREATE TABLE permissible_value_aliases (
 	permissible_value_text TEXT,
@@ -7162,8 +7162,8 @@ CREATE TABLE permissible_value_exact_mappings (
 	PRIMARY KEY (permissible_value_text, exact_mappings),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_exact_mappings_permissible_value_text ON permissible_value_exact_mappings (permissible_value_text);
 CREATE INDEX ix_permissible_value_exact_mappings_exact_mappings ON permissible_value_exact_mappings (exact_mappings);
+CREATE INDEX ix_permissible_value_exact_mappings_permissible_value_text ON permissible_value_exact_mappings (permissible_value_text);
 
 CREATE TABLE permissible_value_close_mappings (
 	permissible_value_text TEXT,
@@ -7171,8 +7171,8 @@ CREATE TABLE permissible_value_close_mappings (
 	PRIMARY KEY (permissible_value_text, close_mappings),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_close_mappings_permissible_value_text ON permissible_value_close_mappings (permissible_value_text);
 CREATE INDEX ix_permissible_value_close_mappings_close_mappings ON permissible_value_close_mappings (close_mappings);
+CREATE INDEX ix_permissible_value_close_mappings_permissible_value_text ON permissible_value_close_mappings (permissible_value_text);
 
 CREATE TABLE permissible_value_related_mappings (
 	permissible_value_text TEXT,
@@ -7180,8 +7180,8 @@ CREATE TABLE permissible_value_related_mappings (
 	PRIMARY KEY (permissible_value_text, related_mappings),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_related_mappings_permissible_value_text ON permissible_value_related_mappings (permissible_value_text);
 CREATE INDEX ix_permissible_value_related_mappings_related_mappings ON permissible_value_related_mappings (related_mappings);
+CREATE INDEX ix_permissible_value_related_mappings_permissible_value_text ON permissible_value_related_mappings (permissible_value_text);
 
 CREATE TABLE permissible_value_narrow_mappings (
 	permissible_value_text TEXT,
@@ -7198,8 +7198,8 @@ CREATE TABLE permissible_value_broad_mappings (
 	PRIMARY KEY (permissible_value_text, broad_mappings),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_broad_mappings_broad_mappings ON permissible_value_broad_mappings (broad_mappings);
 CREATE INDEX ix_permissible_value_broad_mappings_permissible_value_text ON permissible_value_broad_mappings (permissible_value_text);
+CREATE INDEX ix_permissible_value_broad_mappings_broad_mappings ON permissible_value_broad_mappings (broad_mappings);
 
 CREATE TABLE permissible_value_contributors (
 	permissible_value_text TEXT,
@@ -7207,8 +7207,8 @@ CREATE TABLE permissible_value_contributors (
 	PRIMARY KEY (permissible_value_text, contributors),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_contributors_contributors ON permissible_value_contributors (contributors);
 CREATE INDEX ix_permissible_value_contributors_permissible_value_text ON permissible_value_contributors (permissible_value_text);
+CREATE INDEX ix_permissible_value_contributors_contributors ON permissible_value_contributors (contributors);
 
 CREATE TABLE permissible_value_category (
 	permissible_value_text TEXT,
@@ -7225,8 +7225,8 @@ CREATE TABLE permissible_value_keyword (
 	PRIMARY KEY (permissible_value_text, keyword),
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
-CREATE INDEX ix_permissible_value_keyword_permissible_value_text ON permissible_value_keyword (permissible_value_text);
 CREATE INDEX ix_permissible_value_keyword_keyword ON permissible_value_keyword (keyword);
+CREATE INDEX ix_permissible_value_keyword_permissible_value_text ON permissible_value_keyword (permissible_value_text);
 
 CREATE TABLE structured_alias (
 	id INTEGER NOT NULL,
@@ -7312,8 +7312,8 @@ CREATE TABLE enum_binding_notes (
 	PRIMARY KEY (enum_binding_id, notes),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_notes_notes ON enum_binding_notes (notes);
 CREATE INDEX ix_enum_binding_notes_enum_binding_id ON enum_binding_notes (enum_binding_id);
+CREATE INDEX ix_enum_binding_notes_notes ON enum_binding_notes (notes);
 
 CREATE TABLE enum_binding_comments (
 	enum_binding_id INTEGER,
@@ -7349,8 +7349,8 @@ CREATE TABLE enum_binding_aliases (
 	PRIMARY KEY (enum_binding_id, aliases),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_aliases_enum_binding_id ON enum_binding_aliases (enum_binding_id);
 CREATE INDEX ix_enum_binding_aliases_aliases ON enum_binding_aliases (aliases);
+CREATE INDEX ix_enum_binding_aliases_enum_binding_id ON enum_binding_aliases (enum_binding_id);
 
 CREATE TABLE enum_binding_mappings (
 	enum_binding_id INTEGER,
@@ -7358,8 +7358,8 @@ CREATE TABLE enum_binding_mappings (
 	PRIMARY KEY (enum_binding_id, mappings),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_mappings_enum_binding_id ON enum_binding_mappings (enum_binding_id);
 CREATE INDEX ix_enum_binding_mappings_mappings ON enum_binding_mappings (mappings);
+CREATE INDEX ix_enum_binding_mappings_enum_binding_id ON enum_binding_mappings (enum_binding_id);
 
 CREATE TABLE enum_binding_exact_mappings (
 	enum_binding_id INTEGER,
@@ -7376,8 +7376,8 @@ CREATE TABLE enum_binding_close_mappings (
 	PRIMARY KEY (enum_binding_id, close_mappings),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_close_mappings_close_mappings ON enum_binding_close_mappings (close_mappings);
 CREATE INDEX ix_enum_binding_close_mappings_enum_binding_id ON enum_binding_close_mappings (enum_binding_id);
+CREATE INDEX ix_enum_binding_close_mappings_close_mappings ON enum_binding_close_mappings (close_mappings);
 
 CREATE TABLE enum_binding_related_mappings (
 	enum_binding_id INTEGER,
@@ -7385,8 +7385,8 @@ CREATE TABLE enum_binding_related_mappings (
 	PRIMARY KEY (enum_binding_id, related_mappings),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_related_mappings_related_mappings ON enum_binding_related_mappings (related_mappings);
 CREATE INDEX ix_enum_binding_related_mappings_enum_binding_id ON enum_binding_related_mappings (enum_binding_id);
+CREATE INDEX ix_enum_binding_related_mappings_related_mappings ON enum_binding_related_mappings (related_mappings);
 
 CREATE TABLE enum_binding_narrow_mappings (
 	enum_binding_id INTEGER,
@@ -7403,8 +7403,8 @@ CREATE TABLE enum_binding_broad_mappings (
 	PRIMARY KEY (enum_binding_id, broad_mappings),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_broad_mappings_enum_binding_id ON enum_binding_broad_mappings (enum_binding_id);
 CREATE INDEX ix_enum_binding_broad_mappings_broad_mappings ON enum_binding_broad_mappings (broad_mappings);
+CREATE INDEX ix_enum_binding_broad_mappings_enum_binding_id ON enum_binding_broad_mappings (enum_binding_id);
 
 CREATE TABLE enum_binding_contributors (
 	enum_binding_id INTEGER,
@@ -7412,8 +7412,8 @@ CREATE TABLE enum_binding_contributors (
 	PRIMARY KEY (enum_binding_id, contributors),
 	FOREIGN KEY(enum_binding_id) REFERENCES enum_binding (id)
 );
-CREATE INDEX ix_enum_binding_contributors_enum_binding_id ON enum_binding_contributors (enum_binding_id);
 CREATE INDEX ix_enum_binding_contributors_contributors ON enum_binding_contributors (contributors);
+CREATE INDEX ix_enum_binding_contributors_enum_binding_id ON enum_binding_contributors (enum_binding_id);
 
 CREATE TABLE enum_binding_category (
 	enum_binding_id INTEGER,
@@ -7563,54 +7563,54 @@ CREATE TABLE alt_description (
 	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name),
 	FOREIGN KEY(type_mapping_framework) REFERENCES type_mapping (framework)
 );
+CREATE INDEX ix_alt_description_slot_definition_name ON alt_description (slot_definition_name);
+CREATE INDEX alt_description_schema_definition_name_source_idx ON alt_description (schema_definition_name, source);
+CREATE INDEX alt_description_type_definition_name_source_idx ON alt_description (type_definition_name, source);
+CREATE INDEX alt_description_pattern_expression_id_source_idx ON alt_description (pattern_expression_id, source);
+CREATE INDEX alt_description_subset_definition_name_source_idx ON alt_description (subset_definition_name, source);
 CREATE INDEX alt_description_structured_alias_id_source_idx ON alt_description (structured_alias_id, source);
 CREATE INDEX ix_alt_description_subset_definition_name ON alt_description (subset_definition_name);
+CREATE INDEX ix_alt_description_pattern_expression_id ON alt_description (pattern_expression_id);
 CREATE INDEX ix_alt_description_anonymous_slot_expression_id ON alt_description (anonymous_slot_expression_id);
 CREATE INDEX ix_alt_description_description ON alt_description (description);
-CREATE INDEX ix_alt_description_dimension_expression_id ON alt_description (dimension_expression_id);
 CREATE INDEX alt_description_class_rule_id_source_idx ON alt_description (class_rule_id, source);
-CREATE INDEX ix_alt_description_path_expression_id ON alt_description (path_expression_id);
 CREATE INDEX ix_alt_description_type_definition_name ON alt_description (type_definition_name);
+CREATE INDEX ix_alt_description_path_expression_id ON alt_description (path_expression_id);
 CREATE INDEX alt_description_definition_name_source_idx ON alt_description (definition_name, source);
+CREATE INDEX alt_description_anonymous_slot_expression_id_source_idx ON alt_description (anonymous_slot_expression_id, source);
+CREATE INDEX ix_alt_description_dimension_expression_id ON alt_description (dimension_expression_id);
 CREATE INDEX alt_description_slot_definition_name_source_idx ON alt_description (slot_definition_name, source);
 CREATE INDEX alt_description_type_mapping_framework_source_idx ON alt_description (type_mapping_framework, source);
-CREATE INDEX ix_alt_description_array_expression_id ON alt_description (array_expression_id);
-CREATE INDEX alt_description_pattern_expression_id_source_idx ON alt_description (pattern_expression_id, source);
+CREATE INDEX alt_description_unique_key_unique_key_name_source_idx ON alt_description (unique_key_unique_key_name, source);
 CREATE INDEX ix_alt_description_enum_definition_name ON alt_description (enum_definition_name);
-CREATE INDEX ix_alt_description_anonymous_expression_id ON alt_description (anonymous_expression_id);
 CREATE INDEX alt_description_anonymous_expression_id_source_idx ON alt_description (anonymous_expression_id, source);
 CREATE INDEX alt_description_import_expression_id_source_idx ON alt_description (import_expression_id, source);
 CREATE INDEX ix_alt_description_schema_definition_name ON alt_description (schema_definition_name);
-CREATE INDEX ix_alt_description_type_mapping_framework ON alt_description (type_mapping_framework);
+CREATE INDEX ix_alt_description_anonymous_expression_id ON alt_description (anonymous_expression_id);
+CREATE INDEX ix_alt_description_array_expression_id ON alt_description (array_expression_id);
 CREATE INDEX ix_alt_description_element_name ON alt_description (element_name);
-CREATE INDEX ix_alt_description_class_rule_id ON alt_description (class_rule_id);
 CREATE INDEX alt_description_array_expression_id_source_idx ON alt_description (array_expression_id, source);
-CREATE INDEX ix_alt_description_structured_alias_id ON alt_description (structured_alias_id);
-CREATE INDEX ix_alt_description_source ON alt_description (source);
-CREATE INDEX ix_alt_description_unique_key_unique_key_name ON alt_description (unique_key_unique_key_name);
-CREATE INDEX alt_description_common_metadata_id_source_idx ON alt_description (common_metadata_id, source);
+CREATE INDEX ix_alt_description_type_mapping_framework ON alt_description (type_mapping_framework);
+CREATE INDEX ix_alt_description_class_rule_id ON alt_description (class_rule_id);
 CREATE INDEX alt_description_enum_definition_name_source_idx ON alt_description (enum_definition_name, source);
+CREATE INDEX ix_alt_description_source ON alt_description (source);
+CREATE INDEX ix_alt_description_structured_alias_id ON alt_description (structured_alias_id);
+CREATE INDEX alt_description_common_metadata_id_source_idx ON alt_description (common_metadata_id, source);
 CREATE INDEX alt_description_anonymous_class_expression_id_source_idx ON alt_description (anonymous_class_expression_id, source);
+CREATE INDEX ix_alt_description_unique_key_unique_key_name ON alt_description (unique_key_unique_key_name);
+CREATE INDEX alt_description_permissible_value_text_source_idx ON alt_description (permissible_value_text, source);
 CREATE INDEX ix_alt_description_common_metadata_id ON alt_description (common_metadata_id);
 CREATE INDEX ix_alt_description_enum_binding_id ON alt_description (enum_binding_id);
-CREATE INDEX ix_alt_description_class_definition_name ON alt_description (class_definition_name);
-CREATE INDEX alt_description_permissible_value_text_source_idx ON alt_description (permissible_value_text, source);
 CREATE INDEX alt_description_path_expression_id_source_idx ON alt_description (path_expression_id, source);
-CREATE INDEX ix_alt_description_permissible_value_text ON alt_description (permissible_value_text);
+CREATE INDEX ix_alt_description_class_definition_name ON alt_description (class_definition_name);
 CREATE INDEX alt_description_dimension_expression_id_source_idx ON alt_description (dimension_expression_id, source);
-CREATE INDEX ix_alt_description_anonymous_class_expression_id ON alt_description (anonymous_class_expression_id);
+CREATE INDEX ix_alt_description_permissible_value_text ON alt_description (permissible_value_text);
 CREATE INDEX alt_description_enum_binding_id_source_idx ON alt_description (enum_binding_id, source);
-CREATE INDEX ix_alt_description_import_expression_id ON alt_description (import_expression_id);
+CREATE INDEX ix_alt_description_anonymous_class_expression_id ON alt_description (anonymous_class_expression_id);
 CREATE INDEX alt_description_element_name_source_idx ON alt_description (element_name, source);
 CREATE INDEX alt_description_class_definition_name_source_idx ON alt_description (class_definition_name, source);
-CREATE INDEX alt_description_schema_definition_name_source_idx ON alt_description (schema_definition_name, source);
+CREATE INDEX ix_alt_description_import_expression_id ON alt_description (import_expression_id);
 CREATE INDEX ix_alt_description_definition_name ON alt_description (definition_name);
-CREATE INDEX ix_alt_description_slot_definition_name ON alt_description (slot_definition_name);
-CREATE INDEX alt_description_anonymous_slot_expression_id_source_idx ON alt_description (anonymous_slot_expression_id, source);
-CREATE INDEX alt_description_unique_key_unique_key_name_source_idx ON alt_description (unique_key_unique_key_name, source);
-CREATE INDEX alt_description_type_definition_name_source_idx ON alt_description (type_definition_name, source);
-CREATE INDEX ix_alt_description_pattern_expression_id ON alt_description (pattern_expression_id);
-CREATE INDEX alt_description_subset_definition_name_source_idx ON alt_description (subset_definition_name, source);
 
 CREATE TABLE annotation (
 	tag TEXT NOT NULL,
@@ -7690,56 +7690,56 @@ CREATE TABLE annotation (
 	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag),
 	FOREIGN KEY(value_id) REFERENCES "AnyValue" (id)
 );
-CREATE INDEX ix_annotation_element_name ON annotation (element_name);
-CREATE INDEX ix_annotation_type_mapping_framework ON annotation (type_mapping_framework);
-CREATE INDEX annotation_enum_definition_name_tag_idx ON annotation (enum_definition_name, tag);
-CREATE INDEX annotation_anonymous_class_expression_id_tag_idx ON annotation (anonymous_class_expression_id, tag);
-CREATE INDEX ix_annotation_enum_binding_id ON annotation (enum_binding_id);
-CREATE INDEX annotation_permissible_value_text_tag_idx ON annotation (permissible_value_text, tag);
-CREATE INDEX ix_annotation_class_definition_name ON annotation (class_definition_name);
-CREATE INDEX annotation_definition_name_tag_idx ON annotation (definition_name, tag);
-CREATE INDEX ix_annotation_unique_key_unique_key_name ON annotation (unique_key_unique_key_name);
-CREATE INDEX annotation_annotation_tag_tag_idx ON annotation (annotation_tag, tag);
-CREATE INDEX ix_annotation_enum_definition_name ON annotation (enum_definition_name);
-CREATE INDEX annotation_path_expression_id_tag_idx ON annotation (path_expression_id, tag);
-CREATE INDEX annotation_dimension_expression_id_tag_idx ON annotation (dimension_expression_id, tag);
-CREATE INDEX ix_annotation_anonymous_class_expression_id ON annotation (anonymous_class_expression_id);
-CREATE INDEX ix_annotation_permissible_value_text ON annotation (permissible_value_text);
-CREATE INDEX annotation_unique_key_unique_key_name_tag_idx ON annotation (unique_key_unique_key_name, tag);
-CREATE INDEX ix_annotation_definition_name ON annotation (definition_name);
-CREATE INDEX annotation_enum_binding_id_tag_idx ON annotation (enum_binding_id, tag);
-CREATE INDEX annotation_class_definition_name_tag_idx ON annotation (class_definition_name, tag);
-CREATE INDEX ix_annotation_tag ON annotation (tag);
-CREATE INDEX ix_annotation_slot_definition_name ON annotation (slot_definition_name);
-CREATE INDEX ix_annotation_import_expression_id ON annotation (import_expression_id);
-CREATE INDEX annotation_element_name_tag_idx ON annotation (element_name, tag);
-CREATE INDEX ix_annotation_structured_alias_id ON annotation (structured_alias_id);
-CREATE INDEX annotation_anonymous_slot_expression_id_tag_idx ON annotation (anonymous_slot_expression_id, tag);
-CREATE INDEX annotation_pattern_expression_id_tag_idx ON annotation (pattern_expression_id, tag);
-CREATE INDEX ix_annotation_subset_definition_name ON annotation (subset_definition_name);
-CREATE INDEX ix_annotation_anonymous_slot_expression_id ON annotation (anonymous_slot_expression_id);
-CREATE INDEX ix_annotation_pattern_expression_id ON annotation (pattern_expression_id);
-CREATE INDEX ix_annotation_type_definition_name ON annotation (type_definition_name);
-CREATE INDEX annotation_type_mapping_framework_tag_idx ON annotation (type_mapping_framework, tag);
-CREATE INDEX annotation_structured_alias_id_tag_idx ON annotation (structured_alias_id, tag);
-CREATE INDEX annotation_class_rule_id_tag_idx ON annotation (class_rule_id, tag);
-CREATE INDEX ix_annotation_path_expression_id ON annotation (path_expression_id);
-CREATE INDEX ix_annotation_dimension_expression_id ON annotation (dimension_expression_id);
-CREATE INDEX ix_annotation_schema_definition_name ON annotation (schema_definition_name);
-CREATE INDEX annotation_anonymous_expression_id_tag_idx ON annotation (anonymous_expression_id, tag);
 CREATE INDEX ix_annotation_value_id ON annotation (value_id);
-CREATE INDEX annotation_schema_definition_name_tag_idx ON annotation (schema_definition_name, tag);
-CREATE INDEX annotation_slot_definition_name_tag_idx ON annotation (slot_definition_name, tag);
-CREATE INDEX annotation_import_expression_id_tag_idx ON annotation (import_expression_id, tag);
-CREATE INDEX ix_annotation_anonymous_expression_id ON annotation (anonymous_expression_id);
-CREATE INDEX annotation_array_expression_id_tag_idx ON annotation (array_expression_id, tag);
 CREATE INDEX annotation_type_definition_name_tag_idx ON annotation (type_definition_name, tag);
+CREATE INDEX ix_annotation_anonymous_expression_id ON annotation (anonymous_expression_id);
+CREATE INDEX annotation_annotatable_id_tag_idx ON annotation (annotatable_id, tag);
+CREATE INDEX annotation_subset_definition_name_tag_idx ON annotation (subset_definition_name, tag);
+CREATE INDEX annotation_anonymous_expression_id_tag_idx ON annotation (anonymous_expression_id, tag);
+CREATE INDEX annotation_array_expression_id_tag_idx ON annotation (array_expression_id, tag);
 CREATE INDEX ix_annotation_array_expression_id ON annotation (array_expression_id);
 CREATE INDEX ix_annotation_annotation_tag ON annotation (annotation_tag);
-CREATE INDEX annotation_subset_definition_name_tag_idx ON annotation (subset_definition_name, tag);
-CREATE INDEX annotation_annotatable_id_tag_idx ON annotation (annotatable_id, tag);
-CREATE INDEX ix_annotation_annotatable_id ON annotation (annotatable_id);
+CREATE INDEX annotation_definition_name_tag_idx ON annotation (definition_name, tag);
 CREATE INDEX ix_annotation_class_rule_id ON annotation (class_rule_id);
+CREATE INDEX ix_annotation_annotatable_id ON annotation (annotatable_id);
+CREATE INDEX annotation_enum_definition_name_tag_idx ON annotation (enum_definition_name, tag);
+CREATE INDEX annotation_anonymous_class_expression_id_tag_idx ON annotation (anonymous_class_expression_id, tag);
+CREATE INDEX annotation_permissible_value_text_tag_idx ON annotation (permissible_value_text, tag);
+CREATE INDEX ix_annotation_element_name ON annotation (element_name);
+CREATE INDEX ix_annotation_enum_binding_id ON annotation (enum_binding_id);
+CREATE INDEX ix_annotation_type_mapping_framework ON annotation (type_mapping_framework);
+CREATE INDEX annotation_schema_definition_name_tag_idx ON annotation (schema_definition_name, tag);
+CREATE INDEX annotation_annotation_tag_tag_idx ON annotation (annotation_tag, tag);
+CREATE INDEX ix_annotation_class_definition_name ON annotation (class_definition_name);
+CREATE INDEX annotation_path_expression_id_tag_idx ON annotation (path_expression_id, tag);
+CREATE INDEX annotation_dimension_expression_id_tag_idx ON annotation (dimension_expression_id, tag);
+CREATE INDEX ix_annotation_unique_key_unique_key_name ON annotation (unique_key_unique_key_name);
+CREATE INDEX ix_annotation_enum_definition_name ON annotation (enum_definition_name);
+CREATE INDEX annotation_unique_key_unique_key_name_tag_idx ON annotation (unique_key_unique_key_name, tag);
+CREATE INDEX ix_annotation_anonymous_class_expression_id ON annotation (anonymous_class_expression_id);
+CREATE INDEX annotation_enum_binding_id_tag_idx ON annotation (enum_binding_id, tag);
+CREATE INDEX annotation_class_definition_name_tag_idx ON annotation (class_definition_name, tag);
+CREATE INDEX ix_annotation_definition_name ON annotation (definition_name);
+CREATE INDEX ix_annotation_permissible_value_text ON annotation (permissible_value_text);
+CREATE INDEX ix_annotation_tag ON annotation (tag);
+CREATE INDEX ix_annotation_slot_definition_name ON annotation (slot_definition_name);
+CREATE INDEX annotation_element_name_tag_idx ON annotation (element_name, tag);
+CREATE INDEX annotation_anonymous_slot_expression_id_tag_idx ON annotation (anonymous_slot_expression_id, tag);
+CREATE INDEX annotation_pattern_expression_id_tag_idx ON annotation (pattern_expression_id, tag);
+CREATE INDEX ix_annotation_structured_alias_id ON annotation (structured_alias_id);
+CREATE INDEX ix_annotation_dimension_expression_id ON annotation (dimension_expression_id);
+CREATE INDEX ix_annotation_subset_definition_name ON annotation (subset_definition_name);
+CREATE INDEX ix_annotation_import_expression_id ON annotation (import_expression_id);
+CREATE INDEX annotation_type_mapping_framework_tag_idx ON annotation (type_mapping_framework, tag);
+CREATE INDEX ix_annotation_type_definition_name ON annotation (type_definition_name);
+CREATE INDEX ix_annotation_anonymous_slot_expression_id ON annotation (anonymous_slot_expression_id);
+CREATE INDEX annotation_structured_alias_id_tag_idx ON annotation (structured_alias_id, tag);
+CREATE INDEX annotation_class_rule_id_tag_idx ON annotation (class_rule_id, tag);
+CREATE INDEX ix_annotation_pattern_expression_id ON annotation (pattern_expression_id);
+CREATE INDEX ix_annotation_path_expression_id ON annotation (path_expression_id);
+CREATE INDEX annotation_slot_definition_name_tag_idx ON annotation (slot_definition_name, tag);
+CREATE INDEX annotation_import_expression_id_tag_idx ON annotation (import_expression_id, tag);
+CREATE INDEX ix_annotation_schema_definition_name ON annotation (schema_definition_name);
 
 CREATE TABLE structured_alias_category (
 	structured_alias_id INTEGER,
@@ -7756,8 +7756,8 @@ CREATE TABLE structured_alias_contexts (
 	PRIMARY KEY (structured_alias_id, contexts),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_contexts_contexts ON structured_alias_contexts (contexts);
 CREATE INDEX ix_structured_alias_contexts_structured_alias_id ON structured_alias_contexts (structured_alias_id);
+CREATE INDEX ix_structured_alias_contexts_contexts ON structured_alias_contexts (contexts);
 
 CREATE TABLE structured_alias_todos (
 	structured_alias_id INTEGER,
@@ -7765,8 +7765,8 @@ CREATE TABLE structured_alias_todos (
 	PRIMARY KEY (structured_alias_id, todos),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_todos_todos ON structured_alias_todos (todos);
 CREATE INDEX ix_structured_alias_todos_structured_alias_id ON structured_alias_todos (structured_alias_id);
+CREATE INDEX ix_structured_alias_todos_todos ON structured_alias_todos (todos);
 
 CREATE TABLE structured_alias_notes (
 	structured_alias_id INTEGER,
@@ -7793,8 +7793,8 @@ CREATE TABLE structured_alias_in_subset (
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id),
 	FOREIGN KEY(in_subset_name) REFERENCES subset_definition (name)
 );
-CREATE INDEX ix_structured_alias_in_subset_in_subset_name ON structured_alias_in_subset (in_subset_name);
 CREATE INDEX ix_structured_alias_in_subset_structured_alias_id ON structured_alias_in_subset (structured_alias_id);
+CREATE INDEX ix_structured_alias_in_subset_in_subset_name ON structured_alias_in_subset (in_subset_name);
 
 CREATE TABLE structured_alias_see_also (
 	structured_alias_id INTEGER,
@@ -7811,8 +7811,8 @@ CREATE TABLE structured_alias_aliases (
 	PRIMARY KEY (structured_alias_id, aliases),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_aliases_aliases ON structured_alias_aliases (aliases);
 CREATE INDEX ix_structured_alias_aliases_structured_alias_id ON structured_alias_aliases (structured_alias_id);
+CREATE INDEX ix_structured_alias_aliases_aliases ON structured_alias_aliases (aliases);
 
 CREATE TABLE structured_alias_mappings (
 	structured_alias_id INTEGER,
@@ -7829,8 +7829,8 @@ CREATE TABLE structured_alias_exact_mappings (
 	PRIMARY KEY (structured_alias_id, exact_mappings),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_exact_mappings_structured_alias_id ON structured_alias_exact_mappings (structured_alias_id);
 CREATE INDEX ix_structured_alias_exact_mappings_exact_mappings ON structured_alias_exact_mappings (exact_mappings);
+CREATE INDEX ix_structured_alias_exact_mappings_structured_alias_id ON structured_alias_exact_mappings (structured_alias_id);
 
 CREATE TABLE structured_alias_close_mappings (
 	structured_alias_id INTEGER,
@@ -7838,8 +7838,8 @@ CREATE TABLE structured_alias_close_mappings (
 	PRIMARY KEY (structured_alias_id, close_mappings),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_close_mappings_structured_alias_id ON structured_alias_close_mappings (structured_alias_id);
 CREATE INDEX ix_structured_alias_close_mappings_close_mappings ON structured_alias_close_mappings (close_mappings);
+CREATE INDEX ix_structured_alias_close_mappings_structured_alias_id ON structured_alias_close_mappings (structured_alias_id);
 
 CREATE TABLE structured_alias_related_mappings (
 	structured_alias_id INTEGER,
@@ -7856,8 +7856,8 @@ CREATE TABLE structured_alias_narrow_mappings (
 	PRIMARY KEY (structured_alias_id, narrow_mappings),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_narrow_mappings_narrow_mappings ON structured_alias_narrow_mappings (narrow_mappings);
 CREATE INDEX ix_structured_alias_narrow_mappings_structured_alias_id ON structured_alias_narrow_mappings (structured_alias_id);
+CREATE INDEX ix_structured_alias_narrow_mappings_narrow_mappings ON structured_alias_narrow_mappings (narrow_mappings);
 
 CREATE TABLE structured_alias_broad_mappings (
 	structured_alias_id INTEGER,
@@ -7865,8 +7865,8 @@ CREATE TABLE structured_alias_broad_mappings (
 	PRIMARY KEY (structured_alias_id, broad_mappings),
 	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
-CREATE INDEX ix_structured_alias_broad_mappings_broad_mappings ON structured_alias_broad_mappings (broad_mappings);
 CREATE INDEX ix_structured_alias_broad_mappings_structured_alias_id ON structured_alias_broad_mappings (structured_alias_id);
+CREATE INDEX ix_structured_alias_broad_mappings_broad_mappings ON structured_alias_broad_mappings (broad_mappings);
 
 CREATE TABLE structured_alias_contributors (
 	structured_alias_id INTEGER,
@@ -7967,55 +7967,55 @@ CREATE TABLE extension (
 	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag),
 	FOREIGN KEY(value_id) REFERENCES "AnyValue" (id)
 );
+CREATE INDEX ix_extension_definition_name ON extension (definition_name);
+CREATE INDEX extension_import_expression_id_tag_idx ON extension (import_expression_id, tag);
+CREATE INDEX extension_slot_definition_name_tag_idx ON extension (slot_definition_name, tag);
+CREATE INDEX extension_definition_name_tag_idx ON extension (definition_name, tag);
+CREATE INDEX ix_extension_structured_alias_id ON extension (structured_alias_id);
+CREATE INDEX ix_extension_anonymous_slot_expression_id ON extension (anonymous_slot_expression_id);
+CREATE INDEX ix_extension_pattern_expression_id ON extension (pattern_expression_id);
+CREATE INDEX ix_extension_subset_definition_name ON extension (subset_definition_name);
+CREATE INDEX extension_extension_tag_tag_idx ON extension (extension_tag, tag);
+CREATE INDEX ix_extension_type_definition_name ON extension (type_definition_name);
 CREATE INDEX extension_element_name_tag_idx ON extension (element_name, tag);
 CREATE INDEX extension_anonymous_expression_id_tag_idx ON extension (anonymous_expression_id, tag);
+CREATE INDEX extension_array_expression_id_tag_idx ON extension (array_expression_id, tag);
 CREATE INDEX ix_extension_path_expression_id ON extension (path_expression_id);
 CREATE INDEX ix_extension_dimension_expression_id ON extension (dimension_expression_id);
 CREATE INDEX ix_extension_value_id ON extension (value_id);
+CREATE INDEX extension_permissible_value_text_tag_idx ON extension (permissible_value_text, tag);
 CREATE INDEX ix_extension_schema_definition_name ON extension (schema_definition_name);
 CREATE INDEX ix_extension_annotation_tag ON extension (annotation_tag);
-CREATE INDEX extension_anonymous_class_expression_id_tag_idx ON extension (anonymous_class_expression_id, tag);
-CREATE INDEX extension_permissible_value_text_tag_idx ON extension (permissible_value_text, tag);
-CREATE INDEX ix_extension_extensible_id ON extension (extensible_id);
 CREATE INDEX extension_enum_definition_name_tag_idx ON extension (enum_definition_name, tag);
-CREATE INDEX extension_extension_tag_tag_idx ON extension (extension_tag, tag);
+CREATE INDEX extension_anonymous_class_expression_id_tag_idx ON extension (anonymous_class_expression_id, tag);
 CREATE INDEX ix_extension_anonymous_expression_id ON extension (anonymous_expression_id);
+CREATE INDEX ix_extension_extensible_id ON extension (extensible_id);
 CREATE INDEX ix_extension_array_expression_id ON extension (array_expression_id);
-CREATE INDEX ix_extension_extension_tag ON extension (extension_tag);
-CREATE INDEX extension_dimension_expression_id_tag_idx ON extension (dimension_expression_id, tag);
 CREATE INDEX extension_extensible_id_tag_idx ON extension (extensible_id, tag);
+CREATE INDEX ix_extension_extension_tag ON extension (extension_tag);
 CREATE INDEX extension_path_expression_id_tag_idx ON extension (path_expression_id, tag);
+CREATE INDEX extension_dimension_expression_id_tag_idx ON extension (dimension_expression_id, tag);
 CREATE INDEX ix_extension_element_name ON extension (element_name);
 CREATE INDEX ix_extension_class_rule_id ON extension (class_rule_id);
 CREATE INDEX ix_extension_type_mapping_framework ON extension (type_mapping_framework);
 CREATE INDEX extension_schema_definition_name_tag_idx ON extension (schema_definition_name, tag);
-CREATE INDEX extension_class_definition_name_tag_idx ON extension (class_definition_name, tag);
 CREATE INDEX extension_unique_key_unique_key_name_tag_idx ON extension (unique_key_unique_key_name, tag);
+CREATE INDEX ix_extension_import_expression_id ON extension (import_expression_id);
 CREATE INDEX extension_enum_binding_id_tag_idx ON extension (enum_binding_id, tag);
-CREATE INDEX ix_extension_class_definition_name ON extension (class_definition_name);
+CREATE INDEX extension_class_definition_name_tag_idx ON extension (class_definition_name, tag);
 CREATE INDEX ix_extension_unique_key_unique_key_name ON extension (unique_key_unique_key_name);
-CREATE INDEX ix_extension_enum_binding_id ON extension (enum_binding_id);
-CREATE INDEX extension_pattern_expression_id_tag_idx ON extension (pattern_expression_id, tag);
+CREATE INDEX ix_extension_class_definition_name ON extension (class_definition_name);
 CREATE INDEX extension_annotation_tag_tag_idx ON extension (annotation_tag, tag);
+CREATE INDEX ix_extension_enum_binding_id ON extension (enum_binding_id);
 CREATE INDEX extension_anonymous_slot_expression_id_tag_idx ON extension (anonymous_slot_expression_id, tag);
+CREATE INDEX extension_pattern_expression_id_tag_idx ON extension (pattern_expression_id, tag);
 CREATE INDEX ix_extension_permissible_value_text ON extension (permissible_value_text);
-CREATE INDEX ix_extension_enum_definition_name ON extension (enum_definition_name);
 CREATE INDEX ix_extension_anonymous_class_expression_id ON extension (anonymous_class_expression_id);
 CREATE INDEX extension_type_definition_name_tag_idx ON extension (type_definition_name, tag);
-CREATE INDEX extension_class_rule_id_tag_idx ON extension (class_rule_id, tag);
+CREATE INDEX ix_extension_enum_definition_name ON extension (enum_definition_name);
 CREATE INDEX extension_type_mapping_framework_tag_idx ON extension (type_mapping_framework, tag);
-CREATE INDEX ix_extension_import_expression_id ON extension (import_expression_id);
 CREATE INDEX extension_subset_definition_name_tag_idx ON extension (subset_definition_name, tag);
 CREATE INDEX extension_structured_alias_id_tag_idx ON extension (structured_alias_id, tag);
+CREATE INDEX extension_class_rule_id_tag_idx ON extension (class_rule_id, tag);
 CREATE INDEX ix_extension_tag ON extension (tag);
 CREATE INDEX ix_extension_slot_definition_name ON extension (slot_definition_name);
-CREATE INDEX ix_extension_definition_name ON extension (definition_name);
-CREATE INDEX extension_import_expression_id_tag_idx ON extension (import_expression_id, tag);
-CREATE INDEX extension_slot_definition_name_tag_idx ON extension (slot_definition_name, tag);
-CREATE INDEX extension_array_expression_id_tag_idx ON extension (array_expression_id, tag);
-CREATE INDEX ix_extension_structured_alias_id ON extension (structured_alias_id);
-CREATE INDEX ix_extension_pattern_expression_id ON extension (pattern_expression_id);
-CREATE INDEX ix_extension_subset_definition_name ON extension (subset_definition_name);
-CREATE INDEX ix_extension_anonymous_slot_expression_id ON extension (anonymous_slot_expression_id);
-CREATE INDEX extension_definition_name_tag_idx ON extension (definition_name, tag);
-CREATE INDEX ix_extension_type_definition_name ON extension (type_definition_name);

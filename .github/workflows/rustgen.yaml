@@ -3,6 +3,12 @@ name: Build and test linkml (rustgen)
 env:
   UV_VERSION: "0.11.21"
 
+concurrency:
+  # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
+  # so each PR is its own group and never cancels another's runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   pull_request:
     branches:
@@ -17,7 +23,7 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -28,13 +34,13 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
 

@@ -64,6 +64,7 @@ class RDFLibLoader(Loader):
         :param ignore_unmapped_predicates: if True then a predicate that has no mapping to a slot does not raise an error
         :return: all instances of target class type
         """
+        schemaview.imports_closure()  # ensure all imported sub-schemas are in schema_map before namespaces() caches
         namespaces = schemaview.namespaces()
         uri_to_class_map = {}
         for cn, c in schemaview.all_classes().items():
@@ -81,8 +82,11 @@ class RDFLibLoader(Loader):
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
         if prefix_map:
             for k, v in prefix_map.items():
-                namespaces[k] = v
-                graph.namespace_manager.bind(k, URIRef(v))
+                if k == "@base":
+                    namespaces._base = v
+                else:
+                    namespaces[k] = v
+                    graph.namespace_manager.bind(k, URIRef(v))
         # Step 1: Create stub root dict-objects
         target_class_uriref: URIRef = target_class.class_class_uri
         root_dicts: list[ANYDICT] = []

@@ -123,8 +123,14 @@ def _build_path(source: Source, fmt: Format) -> str:
     return filename
 
 
+# Published schema/artifact files live under the ``linkml_model`` package directory
+# on GitHub (raw + GitHub Pages), so GitHub URLs need this prefix even though
+# ``LOCAL_PATH_FOR`` does not (its base already points inside the package).
+PACKAGE_DIR = "linkml_model"
+
+
 def _build_loc(base: str, source: Source, fmt: Format) -> str:
-    return f"{base}{_build_path(source, fmt)}".replace("blob/", "")
+    return f"{base}{PACKAGE_DIR}/{_build_path(source, fmt)}".replace("blob/", "")
 
 
 def URL_FOR(source: Source, fmt: Format) -> str:
@@ -137,8 +143,13 @@ def LOCAL_PATH_FOR(source: Source, fmt: Format) -> str:
     return os.path.join(LOCAL_BASE, _build_path(source, fmt))
 
 
-def GITHUB_IO_PATH_FOR(source: Source, fmt: Format) -> str:
-    return _build_loc(GITHUB_IO_BASE, source, fmt)
+def GITHUB_IO_PATH_FOR(source: Source, fmt: Format, version: str = "latest") -> str:
+    """Return the GitHub Pages URL for source in format.
+
+    The docs site is versioned, so files live under ``<version>/linkml_model/``;
+    ``version`` defaults to the ``latest`` alias.
+    """
+    return f"{GITHUB_IO_BASE}{version}/{PACKAGE_DIR}/{_build_path(source, fmt)}"
 
 
 def GITHUB_PATH_FOR(
@@ -165,7 +176,7 @@ def GITHUB_PATH_FOR(
 
     # Return the absolute latest entry for branch
     if release is ReleaseTag.LATEST or (release is ReleaseTag.CURRENT and branch != "main"):
-        return f"{GITHUB_BASE}{branch}/{_build_path(source, fmt)}"
+        return f"{GITHUB_BASE}{branch}/{PACKAGE_DIR}/{_build_path(source, fmt)}"
 
     # Return the latest published version
     elif release is ReleaseTag.CURRENT:
