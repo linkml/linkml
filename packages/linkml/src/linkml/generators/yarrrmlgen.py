@@ -32,6 +32,28 @@ YarrrmlDumper.add_representer(FlowList, flow_list_representer)
 DEFAULT_SOURCE_JSON = "data.json~jsonpath"
 DEFAULT_ITERATOR = "$[*]"
 
+# Prefixes that are always available but never stand in as a schema's own namespace.
+RESERVED_PREFIXES = ("rdf", "linkml")
+
+
+def _bind_prefix(px: dict[str, str], namespace: str, preferred: str = "ex") -> str:
+    """Return the CURIE prefix in ``px`` bound to ``namespace``, declaring one if needed.
+
+    An existing declaration of the namespace is reused; otherwise ``preferred`` is
+    added, suffixed (``ex1``, ``ex2``, ...) if that name is already taken by a
+    different namespace.
+    """
+    for prefix, reference in px.items():
+        if reference == namespace:
+            return prefix
+
+    prefix, n = preferred, 1
+    while prefix in px:
+        prefix, n = f"{preferred}{n}", n + 1
+
+    px[prefix] = namespace
+    return prefix
+
 
 @dataclass
 class YarrrmlGenerator(Generator):
@@ -69,6 +91,11 @@ class YarrrmlGenerator(Generator):
 
     def as_dict(self) -> dict[str, Any]:
         sv = self.schemaview
+        # Resolve prefixes (and the default CURIE prefix) before building mappings.
+        # LinkML synthesises default_prefix from the full schema IRI when it is
+        # omitted; left unresolved that IRI would be emitted in subject position
+        # (e.g. "https://ex.org/:$(id)").
+        prefixes, default_prefix = self._prefixes_with_defaults()
         mappings: dict[str, Any] = {}
 
         inline_owners: dict[str, list[tuple[str, str]]] = {}
@@ -171,21 +198,29 @@ class YarrrmlGenerator(Generator):
             else:
                 mapping_dict["sources"] = [[self.source]]
 
-            subject = self._subject_template_for_class(cls, inline_owners)
+            subject = self._subject_template_for_class(cls, inline_owners, default_prefix)
             if subject is not None:
                 mapping_dict["s"] = subject
 
-            mapping_dict["po"] = self._po_list_for_class(cls, inline_owners)
+            mapping_dict["po"] = self._po_list_for_class(cls, inline_owners, default_prefix)
 
             mappings[str(cls.name)] = mapping_dict
 
-        prefixes = self._prefixes_with_defaults()
         return {"prefixes": prefixes, "mappings": mappings}
 
     def _is_json_source(self) -> bool:
         return "~jsonpath" in (self.source or "")
 
-    def _prefixes_with_defaults(self) -> dict[str, str]:
+    def _prefixes_with_defaults(self) -> tuple[dict[str, str], str]:
+        """Build the output prefix map and resolve the default CURIE prefix.
+
+        Returns ``(prefixes, default_prefix)``, where ``prefixes`` always includes
+        ``rdf`` and ``default_prefix`` is always one of its keys. LinkML synthesises
+        ``schema.default_prefix`` from the schema IRI when it is omitted; that IRI is
+        not a usable CURIE prefix, so it is declared under a prefix name here — which
+        keeps the schema's own namespace rather than substituting a placeholder. The
+        schema is not modified.
+        """
         px: dict[str, str] = {}
 
         if self.schema.prefixes:
@@ -195,35 +230,36 @@ class YarrrmlGenerator(Generator):
 
         px.setdefault("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 
-        has_user_prefix = any(k not in ("rdf", "linkml") for k in px)
-        if not has_user_prefix:
-            px.setdefault("ex", "https://example.org/default#")
+        default_prefix = str(self.schema.default_prefix) if self.schema.default_prefix else ""
 
-        if not self.schema.default_prefix:
-            if "ex" in px:
-                self.schema.default_prefix = "ex"
-            else:
-                for k in px:
-                    if k not in ("rdf", "linkml"):
-                        self.schema.default_prefix = k
-                        break
+        if default_prefix in px:
+            return px, default_prefix
 
-        return px
+        if default_prefix:
+            # A namespace IRI rather than a declared prefix: bind it to a name so
+            # CURIEs are well formed and the schema's namespace is preserved.
+            return px, _bind_prefix(px, default_prefix)
+
+        # No default_prefix at all: use a declared prefix, else an example namespace.
+        for prefix in px:
+            if prefix not in RESERVED_PREFIXES:
+                return px, prefix
+
+        return px, _bind_prefix(px, "https://example.org/default#")
 
     def _iterator_for_class(self, c: ClassDefinition) -> str:
         return self.iterator_template.replace("{Class}", c.name)
 
-    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> Any:
+    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict, default_prefix: str) -> str | None:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(c.name)
-        prefix = self.schema.default_prefix or "ex"
 
         if id_slot:
-            return f"{prefix}:$({id_slot.name})"
+            return f"{default_prefix}:$({id_slot.name})"
 
         key_slot = sv.get_key_slot(c.name)
         if key_slot:
-            return f"{prefix}:$({key_slot.name})"
+            return f"{default_prefix}:$({key_slot.name})"
 
         # YARRRML parsers fail to execute RML Joins (`condition: equal`) on generated Blank Nodes.
         # For inlined objects lacking an ID, we synthesize a deterministic IRI using the parent's ID
@@ -232,24 +268,28 @@ class YarrrmlGenerator(Generator):
             owner_name, _ = inline_owners[c.name][0]
             parent_id = sv.get_identifier_slot(owner_name) or sv.get_key_slot(owner_name)
             if parent_id:
-                return f"{prefix}:{c.name}_$({parent_id.name})"
+                return f"{default_prefix}:{c.name}_$({parent_id.name})"
 
-        return f"{prefix}:{c.name}/$(id)"
+        # No identifier, key, or owning parent id to template on: a class with no
+        # identity is a blank node, which YARRRML expresses by omitting the subject.
+        # Returning None lets the caller drop the `s` key rather than emit an IRI
+        # referencing a non-existent `id` field.
+        return None
 
-    def _po_list_for_class(self, c: ClassDefinition, inline_owners: dict) -> list[dict[str, Any]]:
+    def _po_list_for_class(self, c: ClassDefinition, inline_owners: dict, default_prefix: str) -> list[dict[str, Any]]:
         sv = self.schemaview
         po: list[dict[str, Any]] = []
 
         types = []
         class_uri = sv.get_uri(c, expand=False)
-        class_term = str(class_uri) if class_uri else f"{sv.schema.default_prefix or 'ex'}:{c.name}"
+        class_term = str(class_uri) if class_uri else f"{default_prefix}:{c.name}"
         types.append(class_term)
 
         for mixin_name in c.mixins:
             m_cls = sv.get_class(mixin_name)
             if m_cls:
                 m_uri = sv.get_uri(m_cls, expand=False)
-                m_term = str(m_uri) if m_uri else f"{sv.schema.default_prefix or 'ex'}:{m_cls.name}"
+                m_term = str(m_uri) if m_uri else f"{default_prefix}:{m_cls.name}"
                 if m_term not in types:
                     types.append(m_term)
 
@@ -257,8 +297,6 @@ class YarrrmlGenerator(Generator):
             po.append({"p": "a", "o": types[0]})
         else:
             po.append({"p": "a", "o": FlowList(types)})
-
-        default_prefix = sv.schema.default_prefix or "ex"
 
         for s in sv.class_induced_slots(c.name):
             decl = sv.get_slot(s.name)
