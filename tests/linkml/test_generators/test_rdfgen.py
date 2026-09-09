@@ -150,6 +150,8 @@ classes:
 """
 
 
+# network: rdflib fetches the absolute @context URLs that survive the filter
+@pytest.mark.network
 def test_rdfgen_strips_unresolvable_per_module_context_refs(tmp_path):
     """``gen-rdf`` must not 404 on per-module ``@context`` refs.
 
