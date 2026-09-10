@@ -47,7 +47,7 @@ dependencies = [
     "requests",
     "prefixmaps >=0.1.4",
     "curies>=0.14.6",
-    "pyoxigraph>=0.5.9",
+    "pyoxigraph>=0.5.11",
     "pydantic>=2.13.5,<3.0.0",
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
