@@ -68,6 +68,12 @@ def cli(
     output: Path | None = None,
     **kwargs,
 ):
+    """
+    Generate Rust types from a LinkML schema.
+
+    Emits either a complete crate or a single .rs file; see --mode. Optional PyO3
+    bindings and serde derives are available through their own flags.
+    """
     gen = RustGenerator(
         yamlfile,
         mode=mode,
