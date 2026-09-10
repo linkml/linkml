@@ -1,0 +1,18 @@
+id: https://example.org/redundant-extra-slots
+name: redundant-extra-slots
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+
+  Foo:
+    extra_slots:
+      allowed: true
+
+  Bar:
+    is_a: Foo
+    extra_slots:
+      allowed: true

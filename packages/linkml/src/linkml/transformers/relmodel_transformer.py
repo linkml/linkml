@@ -178,6 +178,7 @@ class RelationalModelTransformer:
             # imports=['linkml:types'],
             from_schema=source.from_schema,
             source_file=source.source_file,
+            settings=source.settings,
             types=source.types,
             subsets=source.subsets,
             enums=source.enums,

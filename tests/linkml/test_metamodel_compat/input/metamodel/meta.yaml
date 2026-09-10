@@ -50,6 +50,9 @@ prefixes:
   qudt: http://qudt.org/schema/qudt/
   cdisc: http://rdf.cdisc.org/mms#
   SIO: http://semanticscience.org/resource/SIO_
+  dcterms: http://purl.org/dc/terms/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 
 default_prefix: linkml
 default_range: string
@@ -1309,7 +1312,7 @@ slots:
     multivalued: true
     inlined: true
     description: >-
-      A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why there
+      A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why they
       are also called "compound keys". A unique key uniquely identifies instances of the class within a given container, meaning
       there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key.
     comments:

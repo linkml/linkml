@@ -37,7 +37,7 @@ This part of the specification specifies schemas in terms of the abstract functi
 
 For practical purposes, the canonical serialization of a schema is in YAML. The rules for serializing and deserializing LinkML schemas are the same as for instances, because every schema is an object that instantiates a SchemaDefinition class in the metamodel.
 
-See  [section 6](06mapping) for rules for mapping to YAML.
+See  [section 6](06mapping.md) for rules for mapping to YAML.
 
 ### Analogies to other modeling frameworks
 

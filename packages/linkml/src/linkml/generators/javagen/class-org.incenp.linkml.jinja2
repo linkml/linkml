@@ -77,7 +77,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- If the class is configured to allow extra slots, we need an extra
     field to store them. #}
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     @ExtensionHolder
     private Map<String, Object> extraSlots;
 {% endif -%}
@@ -250,7 +250,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   endif %}
 {%- endfor %}
 
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     public void setExtraSlots(Map<String,Object> extraSlots) {
         this.extraSlots = extraSlots;
     }
@@ -273,22 +273,23 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
     public void accept(I{{ gen.get_class_name(visitor) }}Visitor v) {
         v.visit(this);
     }
+{# #}
 {%-   endif %}
-{% endfor %}
+{%- endfor %}
 
 {#- The overridden methods from Object. #}
     @Override
     public String toString() {
 {%- set identifier_slot = gen.schemaview.get_identifier_slot(cls.source_class.name, use_key=True) %}
 {%- if identifier_slot %}
-        return "{{ cls.name }}({{ gen.get_slot_actual_name(identifier_slot) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
+        return "{{ cls.name }}({{ identifier_slot.alias|default(identifier_slot.name, true) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
 {%- else %}
         StringBuilder sb = new StringBuilder();
         Object o;
         sb.append("{{ cls.name }}(");
 {%- for slot in gen.schemaview.class_induced_slots(cls.source_class.name) %}
         if ( (o = this.{{ gen.get_read_accessor_name(slot) }}()) != null ) {
-            sb.append("{{ gen.get_slot_actual_name(slot) }}=");
+            sb.append("{{ slot.alias|default(slot.name, true) }}=");
             sb.append(o);
             sb.append(",");
         }
@@ -315,9 +316,12 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   if f.range in ["int", "float", "double", "boolean"] %}
         if ( this${{ f.name }} != other${{ f.name }} ) return false;
 {%-   else %}
-        if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }})) return false;
+        if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }}) ) return false;
  {%-  endif %}
 {%- endfor %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
+        if ( this.extraSlots == null ? other.extraSlots != null : !this.extraSlots.equals(other.extraSlots) ) return false;
+{%- endif %}
         return true;
     }
 
@@ -344,6 +348,9 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
         result = result * PRIME + (${{ f.name }} == null ? 43 : ${{ f.name }}.hashCode());
 {%-   endif %}
 {%- endfor %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
+        result = result * PRIME + (this.extraSlots == null ? 43 : this.extraSlots.hashCode());
+{%- endif %}
         return result;
     }
 }

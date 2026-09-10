@@ -114,6 +114,43 @@ def test_mixin():
     assert i2.ref_to_c1[0] == i1
 
 
+@pytest.mark.parametrize("template", [TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X])
+def test_one_to_many_fk_references_mapped_class(template):
+    """A One-To-Many (inlined composition) relationship must reference the mapped class.
+
+    The relationship() ``foreign_keys`` clause is a string evaluated by SQLAlchemy in the
+    class registry. Using the raw (snake_case) class name resolves to the Table object,
+    whose columns are not directly accessible, raising
+    ``AttributeError: 'Table' object has no attribute '<fk>'`` when mappers are configured.
+    It must use the mapped class name instead.
+
+    Uses snake_case class names and an explicit ``inlined`` slot so the composition
+    (One-To-Many) branch is exercised regardless of identifier-based inlining inference.
+
+    Regression test for https://github.com/linkml/linkml/issues/3929.
+    """
+    from sqlalchemy.orm import clear_mappers, configure_mappers
+
+    # Mappers live in a process-global registry; isolate this test from any model compiled
+    # by earlier tests so configure_mappers() only sees the model built here.
+    clear_mappers()
+
+    b = SchemaBuilder()
+    b.add_class("child_class", slots=[SlotDefinition("value")])
+    b.add_slot(SlotDefinition("children", range="child_class", multivalued=True, inlined=True))
+    b.add_class("parent_class", slots=["children"])
+
+    mod = SQLAlchemyGenerator(b.schema).compile_sqla(template=template)
+    # Forces SQLAlchemy to resolve the relationship() foreign_keys strings; this is where
+    # the raw-table-name reference previously failed.
+    configure_mappers()
+
+    parent = mod.ParentClass()
+    child = mod.ChildClass(value="v")
+    parent.children.append(child)
+    assert parent.children[0] is child
+
+
 def test_sqla_compile_imperative(schema):
     """
     tests compilation of generated imperative mappings
