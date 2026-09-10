@@ -3351,6 +3351,123 @@ def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: boo
     assert sv_inlined.is_inlined(slot) == expected_result
 
 
+@pytest.fixture
+def sv_induced_inlined() -> SchemaView:
+    """SchemaView over the schema exercising induced_slot() inlined/inlined_as_list rules.
+
+    See ``input/schemaview_induced_slot_inlined.yaml``. Regression coverage for
+    https://github.com/linkml/linkml/issues/3927.
+    """
+    return SchemaView(INPUT_DIR_PATH / "schemaview_induced_slot_inlined.yaml")
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "expected"),
+    [
+        # Range referenceable by identifier -> not inlined -> not a list.
+        ("to_identifier", False),
+        ("to_identifier_multivalued", False),
+        # Inlined on a key-bearing range -> dict keyed on the key slot, never a list.
+        ("to_key", False),
+        ("to_key_multivalued", False),
+        # Inlined on a plain range -> list only when multivalued.
+        ("to_plain", False),
+        ("to_plain_multivalued", True),
+        # Explicitly not inlined -> not a list.
+        ("to_plain_explicit_not_inlined", False),
+        # Scalar / unconstrained ranges -> inlining does not apply.
+        ("to_integer", False),
+        ("to_any", False),
+    ],
+)
+def test_is_inlined_as_list(sv_induced_inlined: SchemaView, slot_name: str, expected: bool) -> None:
+    """is_inlined_as_list() resolves the list-vs-dict form for a slot.
+
+    A slot is inlined as a list when it is inlined, multivalued, and its range has no key
+    slot to key a dict on. Regression coverage for
+    https://github.com/linkml/linkml/issues/3927.
+    """
+    induced = sv_induced_inlined.induced_slot(slot_name, "Container")
+    assert sv_induced_inlined.is_inlined_as_list(induced) is expected
+    # The materialized induced slot must agree with the resolver.
+    assert bool(induced.inlined_as_list) == sv_induced_inlined.is_inlined_as_list(induced)
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "expected_inlined", "expected_inlined_as_list"),
+    [
+        # Range class HAS an identifier -> may be referenced by URI -> not inlined; and since
+        # not inlined, inlined_as_list is meaningless -> left unset.
+        ("to_identifier", False, None),
+        ("to_identifier_multivalued", False, None),
+        # Range class has a KEY (but no identifier) -> must be inlined; list-vs-dict is not
+        # spec-mandated for a keyed range, so inlined_as_list is left unset (None).
+        ("to_key", True, None),
+        ("to_key_multivalued", True, None),
+        # Range class has NO identifier and NO key -> must be inlined; multivalued -> forced list.
+        ("to_plain", True, None),
+        ("to_plain_multivalued", True, True),
+        # Explicitly declared inlined=false must never be clobbered by inference; and as the
+        # slot is not inlined, inlined_as_list is meaningless -> left unset.
+        ("to_plain_explicit_not_inlined", False, None),
+        # Non-class (scalar) range -> inlining rule does not apply; metaslots stay unset.
+        ("to_integer", None, None),
+        # linkml:Any (unconstrained) range -> must NOT be force-inlined even though the
+        # class has no identifier; its real ranges come from any_of/exactly_one_of.
+        ("to_any", None, None),
+    ],
+)
+def test_induced_slot_materializes_inlined(
+    sv_induced_inlined: SchemaView,
+    slot_name: str,
+    expected_inlined: bool | None,
+    expected_inlined_as_list: bool | None,
+) -> None:
+    """induced_slot() must materialize inlined/inlined_as_list.
+
+    A class range with no identifier slot cannot be referenced and is therefore inlined;
+    a range without a key is inlined as a list when multivalued. Declared values are never
+    overwritten. Regression test for https://github.com/linkml/linkml/issues/3927.
+    """
+    induced = sv_induced_inlined.induced_slot(slot_name, "Container")
+    assert induced.inlined is expected_inlined
+    assert induced.inlined_as_list is expected_inlined_as_list
+
+
+@pytest.mark.parametrize(
+    "slot_name",
+    [
+        "to_identifier",
+        "to_identifier_multivalued",
+        "to_key",
+        "to_key_multivalued",
+        "to_plain",
+        "to_plain_multivalued",
+        "to_integer",
+    ],
+)
+def test_induced_slot_inlined_agrees_with_is_inlined(sv_induced_inlined: SchemaView, slot_name: str) -> None:
+    """The materialized induced slot must agree with is_inlined().
+
+    Before https://github.com/linkml/linkml/issues/3927, induced_slot() left ``inlined``
+    unset for identifier-less class ranges even though is_inlined() reported them inlined.
+    """
+    induced = sv_induced_inlined.induced_slot(slot_name, "Container")
+    assert bool(induced.inlined) == sv_induced_inlined.is_inlined(induced)
+
+
+def test_induced_slot_inlined_inference_handles_identifier_cycles(sv_induced_inlined: SchemaView) -> None:
+    """inlined inference must not recurse infinitely on identifier cycles.
+
+    ``self_ref`` on ``CycleClass`` ranges back onto ``CycleClass``. A re-entrancy guard
+    around the identifier lookup breaks the cycle so this resolves without a RecursionError.
+    Regression test for https://github.com/linkml/linkml/issues/3927.
+    """
+    induced = sv_induced_inlined.induced_slot("self_ref", "CycleClass")
+    # CycleClass has no identifier/key slot, so the self-referential slot is inlined.
+    assert induced.inlined is True
+
+
 def test_materialize_nonscalar_slot_usage() -> None:
     sv = SchemaView(str(INPUT_DIR_PATH / "DJ_controller_schema.yaml"))
     cls = sv.induced_class("DJController")
