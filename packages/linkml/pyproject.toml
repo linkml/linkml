@@ -96,7 +96,7 @@ dev = [
   "jupyter",
   "nbconvert",
   "nbformat",
-  "coverage>=7.15.4",
+  "coverage>=7.16.0",
   "tox>=4.61.2",
   "tox-uv",
   "myst-nb>=1.4.0; python_version >= '3.10'",
