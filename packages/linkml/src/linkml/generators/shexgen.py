@@ -40,6 +40,22 @@ class ShExGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Label blank nodes so that unrelated edits leave them untouched.
+
+    Output is already deterministic: RDFC-1.0 guarantees that isomorphic
+    graphs serialize identically. It does not guarantee that *similar*
+    graphs serialize *similarly* — blank nodes are numbered ``c14nN`` in a
+    global order, so adding one class can renumber every blank node after
+    it and rewrite most of the file.
+
+    When ``True``, blank-node labels are instead derived from each node's
+    own neighbourhood via Weisfeiler-Lehman refinement, so an edit relabels
+    only the blank nodes it actually touches. The output stays
+    deterministic and isomorphic either way; only the choice of label
+    changes. Off by default because enabling it relabels existing output.
+    """
+
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
     shape: Shape | None = None  # Current shape being defined
@@ -177,7 +193,7 @@ class ShExGenerator(Generator):
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
-            shex = canonicalize_rdf_graph(g, output_format="turtle")
+            shex = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=self.diff_stable)
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)
@@ -257,6 +273,16 @@ class ShExGenerator(Generator):
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint "
     "values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Derive blank-node labels from each node's own neighbourhood so that "
+        "unrelated edits leave them unchanged. Output is deterministic either "
+        "way; this makes successive versions of a file diff cleanly."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
