@@ -4,6 +4,7 @@ The generator code is in LinkML-Scala, so the tests here check mostly that all t
 options work correctly.
 """
 
+import dataclasses
 from pathlib import Path
 
 import pytest
@@ -107,6 +108,13 @@ def test_cli():
     result = CliRunner().invoke(cli, [str(SCHEMA)])
     assert result.exit_code == 0
     assert Graph().parse(data=result.output, format="turtle")
+
+
+def test_every_cli_option_is_accepted_by_the_generator():
+    """``cli`` hands its options straight to the constructor, so each one needs a field."""
+    fields = {field.name for field in dataclasses.fields(RdfsGenerator)}
+    options = {param.name for param in cli.params if param.expose_value}
+    assert options - fields == {"yamlfile"}, "yamlfile is the schema itself, the rest are options"
 
 
 def test_cli_version_reports_both_versions():

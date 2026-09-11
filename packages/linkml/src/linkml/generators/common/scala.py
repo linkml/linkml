@@ -8,7 +8,6 @@ is a wrapper: report bugs in the output to LinkML-Scala.
 
 import functools
 import logging
-import platform
 from abc import ABCMeta
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -32,32 +31,24 @@ does not support these options.
 Upstream issue: https://github.com/NeverBlink-OSS/linkml-scala/issues/210
 """
 
-SUPPORTED_PLATFORMS = "Linux and macOS on x86-64 and ARM64, and Windows on x86-64"
-"""Help text for platforms for which LinkML-Scala has binary builds.
-
-This reflects the wheels available at https://pypi.org/project/neverblink-linkml/#files
-Keep this in sync with the rules in ``packages/linkml/pyproject.toml``.
-"""
-
 
 def bindings():
     """Import the LinkML-Scala Python bindings.
 
-    Imported lazily so that ``linkml`` stays importable on platforms LinkML-Scala is not built for.
+    Imported lazily so that ``linkml`` stays importable when the bindings are missing
+    (e.g., when linkml was installed from conda-forge).
 
     :return: the ``linkml_scala`` module.
-    :raises ImportError: if the bindings are not installed, which normally means this platform
-        is not supported.
+    :raises ImportError: if the bindings are not installed.
     """
     try:
         import linkml_scala
-    except ImportError as exc:  # pragma: no cover - depends on the platform
+    except ImportError as exc:  # pragma: no cover - depends on how linkml was installed
         raise ImportError(
-            f"This generator is not available on {platform.system()} {platform.machine()}. "
-            "It is implemented by LinkML-Scala, which ships as a natively-compiled library, and "
-            f"there is no build of it for this platform. Supported: {SUPPORTED_PLATFORMS}. "
-            "Request support for your platform here: "
-            "https://github.com/NeverBlink-OSS/linkml-scala/issues/new"
+            "This generator is implemented by LinkML-Scala, whose Python bindings are not "
+            "installed. This usually only happens if you did not install linkml from PyPI, "
+            "but from a different source, such as conda-forge. "
+            "Install the bindings with: pip install neverblink-linkml"
         ) from exc
     return linkml_scala
 
@@ -132,6 +123,10 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
 
     useuris: bool | None = None
     """Kept for parity with the shared CLI options. Currently not used."""
+
+    include_generation_date: bool = False
+    """Kept for parity with the shared CLI options. LinkML-Scala output never carries a
+    timestamp, so it is reproducible either way."""
 
     log_level: int | None = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum."""
@@ -208,7 +203,7 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
 
         :return: a ``linkml_scala.Schema``, owned by this generator. Do not close it; call
             :meth:`close` instead.
-        :raises ImportError: if this platform has no LinkML-Scala build.
+        :raises ImportError: if the LinkML-Scala bindings are not installed.
         :raises linkml_scala.SchemaLoadError: if LinkML-Scala cannot load the schema.
         """
         if self._scala_schema is None:

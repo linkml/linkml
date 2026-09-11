@@ -47,9 +47,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format]>=4.26.0",
     "linkml-runtime >= 1.10.0, < 2.0.0",
-    # LinkML-Scala is a natively-compiled library, so it can
-    # only be installed where a build exists.
-    "neverblink-linkml >= 0.15.1, < 0.16.0 ; (sys_platform == 'linux' and (platform_machine == 'x86_64' or platform_machine == 'aarch64')) or (sys_platform == 'darwin' and (platform_machine == 'x86_64' or platform_machine == 'arm64')) or (sys_platform == 'win32' and platform_machine == 'AMD64')",
+    "neverblink-linkml >= 0.16.0, < 0.17.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",

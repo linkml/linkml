@@ -52,6 +52,11 @@ class GeneratorBase(metaclass=abc.ABCMeta):
     metadata: bool
     """True means include date, generator, etc. information in the output if appropriate."""
 
+    include_generation_date: bool
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible across runs; the date of generation is normally recoverable from version
+    control."""
+
     useuris: bool | None
     """True means declared class slot uri's are used. False means use model uris."""
 
