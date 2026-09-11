@@ -42,6 +42,7 @@ import warnings
 
 import pyoxigraph as ox
 import rdflib
+from diffable_rdf import wl_relabel_quads
 from rdflib.compare import to_canonical_graph
 
 
@@ -287,6 +288,7 @@ def _is_safe_prefix_iri(iri: str) -> bool:
 def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
+    diff_stable: bool = False,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -300,6 +302,13 @@ def canonicalize_rdf_graph(
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :param diff_stable: Derive blank-node labels from each node's own
+        neighbourhood instead of RDFC-1.0's global ``c14nN`` numbering, so that
+        editing one part of a schema does not renumber unrelated blank nodes.
+        Output is deterministic and isomorphic either way; only the choice of
+        label changes. Off by default because enabling it relabels existing
+        output. Has no effect on the rdflib fallback path (non-standard RDF),
+        which warns rather than silently ignoring the request.
     :return: Deterministic string serialization of the graph.
     """
     ox_format = _FORMAT_MAP.get(output_format.lower())
@@ -330,6 +339,23 @@ def canonicalize_rdf_graph(
             RDFCanonicalizationWarning,
             stacklevel=2,
         )
+        if diff_stable:
+            # Weisfeiler-Lehman refinement consumes canonical pyoxigraph quads,
+            # and this path exists precisely because pyoxigraph refused the
+            # graph, so there are none to refine. The fallback is deterministic
+            # but not diff-stable: say so rather than returning output that
+            # silently ignores the argument. ``shaclgen --include-annotations``
+            # reaches this path, because an annotation tag without a ``:``
+            # becomes a literal predicate.
+            warnings.warn(
+                "diff_stable=True was requested but this graph took the rdflib fallback, "
+                "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
+                "deterministic but NOT diff-stable: an unrelated edit may still renumber "
+                "blank nodes. Make the offending terms standard RDF (absolute IRIs, IRI "
+                "predicates) to get diff-stable labels.",
+                RDFCanonicalizationWarning,
+                stacklevel=2,
+            )
         return _deterministic_fallback_serialize(graph, output_format)
 
     dataset = ox.Dataset()
@@ -339,13 +365,26 @@ def canonicalize_rdf_graph(
     # 3. Canonicalize blank node labels with RDFC-1.0.
     dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
 
+    quads = list(dataset)
+
+    # 3b. Optionally re-label blank nodes with locality-sensitive hashes.
+    # RDFC-1.0 guarantees that identical graphs get identical labels, but it
+    # does not guarantee that *similar* graphs get similar labels: the labels
+    # are assigned by a global ordering, so inserting one blank node can
+    # renumber every label after it and turn a one-line semantic change into a
+    # whole-file diff. Weisfeiler-Lehman labels are derived only from each
+    # node's local neighbourhood, so unrelated regions keep their labels.
+    # Output stays deterministic and isomorphic either way; this only changes
+    # which label each blank node receives.
+    if diff_stable:
+        quads = wl_relabel_quads(quads)
+
     # 4. Sort triples for deterministic ordering.
     # RDFC-1.0 stabilizes blank-node labels but pyoxigraph's Dataset
     # iteration order is not sorted and varies across processes (verified
     # empirically against pyoxigraph 0.5.8). The explicit string-key sort
     # is load-bearing for byte-identical output across runs; see
     # tests/linkml_runtime/test_utils/test_rdf_canonicalize.py::test_sort_is_load_bearing.
-    quads = list(dataset)
     sorted_triples = sorted(
         (ox.Triple(q.subject, q.predicate, q.object) for q in quads),
         key=lambda t: (str(t.subject), str(t.predicate), str(t.object)),
