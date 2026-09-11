@@ -1,10 +1,14 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
+import json
+import logging
 import os
 import re
 import subprocess
 import sys
 import textwrap
+import warnings
+from pathlib import Path
 
 import pyoxigraph as ox
 import pytest
@@ -12,7 +16,6 @@ import rdflib
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
-from linkml_runtime.utils import rdf_canonicalize as rdf_canon_mod
 from linkml_runtime.utils.rdf_canonicalize import (
     RDFCanonicalizationWarning,
     canonicalize_rdf_graph,
@@ -304,13 +307,13 @@ def test_invalid_prefix_iri_is_swallowed_and_falls_back(monkeypatch):
             raise ValueError("Invalid prefix bad IRI 'http://example.com/ has space/', Invalid IRI code point ' '")
         return real_serialize(*args, **kwargs)
 
-    monkeypatch.setattr(rdf_canon_mod.ox, "serialize", fake_serialize)
+    monkeypatch.setattr(ox, "serialize", fake_serialize)
 
     g = Graph()
     g.bind("ex", "http://example.com/")
     g.add((URIRef("http://example.com/a"), RDF.type, URIRef("http://example.com/Thing")))
 
-    with pytest.warns(RDFCanonicalizationWarning, match="rejected one or more prefix IRIs"):
+    with pytest.warns(RDFCanonicalizationWarning, match="rejected the prefix or base IRIs"):
         ttl = canonicalize_rdf_graph(g, output_format="turtle")
     # Fallback retry should succeed and the output still round-trips.
     g2 = Graph()
@@ -319,22 +322,74 @@ def test_invalid_prefix_iri_is_swallowed_and_falls_back(monkeypatch):
 
 
 def test_unsupported_format_warns_and_falls_back():
-    """A format pyoxigraph doesn't know about falls back to rdflib with a warning."""
+    """A format the canonicalizer doesn't know about falls back to rdflib with a warning.
+
+    ``longturtle`` is an rdflib serializer plugin with no pyoxigraph
+    equivalent, so it can only be produced by delegating to rdflib, and
+    rdflib orders that output by graph traversal. The warning is what tells
+    the caller the determinism guarantee does not extend to this format.
+    """
     g = Graph()
     g.bind("ex", "http://example.com/")
     g.add((URIRef("http://example.com/a"), RDF.type, URIRef("http://example.com/Thing")))
-    with pytest.warns(RDFCanonicalizationWarning, match="does not support format"):
-        result = canonicalize_rdf_graph(g, output_format="json-ld")
+    with pytest.warns(RDFCanonicalizationWarning, match="not one of the formats"):
+        result = canonicalize_rdf_graph(g, output_format="longturtle")
     # The fallback should still produce valid output in the requested format.
     assert result
 
 
-def test_unrelated_value_error_propagates(monkeypatch):
-    """Any ``ValueError`` whose message doesn't begin with ``Invalid prefix`` is re-raised.
+def test_json_ld_is_canonicalized_rather_than_handed_to_rdflib():
+    """``json-ld`` gets the determinism guarantee, not a fallback warning.
 
-    Guards against future regressions where a pyoxigraph serializer bug
-    raises a different ``ValueError`` and gets silently swallowed by the
-    invalid-prefix fallback path.
+    rdflib's JSON-LD serializer emits objects in traversal order, so this used
+    to be an unsupported format that warned and returned whatever rdflib felt
+    like. It is now produced deterministically, which is why no warning is due.
+    """
+    g = _make_graph_with_bnodes()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RDFCanonicalizationWarning)
+        result = canonicalize_rdf_graph(g, output_format="json-ld")
+    assert json.loads(result)
+
+
+def test_a_rejected_base_iri_is_recovered_rather_than_fatal(monkeypatch):
+    """A base pyoxigraph refuses costs the base directive, not the document.
+
+    rdflib accepts a relative or otherwise unusable ``base``, and pyoxigraph
+    then refuses it at serialization time. Dropping the base and retrying
+    yields a correct document; failing the whole call over a directive that is
+    optional in every output format does not.
+    """
+    real_serialize = ox.serialize
+    calls = {"n": 0}
+
+    def fake_serialize(*args, **kwargs):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise ValueError("Invalid base IRI 'broken', Invalid IRI code point ' '")
+        return real_serialize(*args, **kwargs)
+
+    monkeypatch.setattr(ox, "serialize", fake_serialize)
+
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    g.add((URIRef("http://example.com/a"), RDF.type, URIRef("http://example.com/Thing")))
+
+    with pytest.warns(RDFCanonicalizationWarning, match="rejected the prefix or base IRIs"):
+        ttl = canonicalize_rdf_graph(g, output_format="turtle")
+
+    g2 = Graph()
+    g2.parse(data=ttl, format="turtle")
+    assert rdflib.compare.isomorphic(g, g2)
+
+
+def test_unrelated_value_error_propagates(monkeypatch):
+    """A ``ValueError`` that is not about prefixes or the base must be re-raised.
+
+    The retry-without-prefixes path exists for two specific pyoxigraph
+    complaints. Widening it to every ``ValueError`` would let a serializer bug
+    be papered over by a retry that happens to succeed, and the caller would
+    get a plausible-looking document with no indication anything went wrong.
     """
     real_serialize = ox.serialize
     calls = {"count": 0}
@@ -343,16 +398,16 @@ def test_unrelated_value_error_propagates(monkeypatch):
         calls["count"] += 1
         # First call is the prefixed serialize — raise an unrelated ValueError.
         if calls["count"] == 1:
-            raise ValueError("Invalid base IRI 'broken', Invalid IRI code point ' '")
+            raise ValueError("BUG: serializer state corrupted")
         return real_serialize(*args, **kwargs)
 
-    monkeypatch.setattr(rdf_canon_mod.ox, "serialize", fake_serialize)
+    monkeypatch.setattr(ox, "serialize", fake_serialize)
 
     g = Graph()
     g.bind("ex", "http://example.com/")
     g.add((URIRef("http://example.com/a"), RDF.type, URIRef("http://example.com/Thing")))
 
-    with pytest.raises(ValueError, match="Invalid base IRI"):
+    with pytest.raises(ValueError, match="BUG: serializer state corrupted"):
         canonicalize_rdf_graph(g, output_format="turtle")
 
 
@@ -455,7 +510,7 @@ def test_fallback_preserves_relative_iri():
     assert "<testing>" in result
 
 
-@pytest.mark.parametrize("output_format", ["turtle", "nt"])
+@pytest.mark.parametrize("output_format", ["turtle", "xml"])
 def test_fallback_is_deterministic_across_processes(output_format):
     """The rdflib fallback produces byte-identical output across processes.
 
@@ -463,9 +518,15 @@ def test_fallback_is_deterministic_across_processes(output_format):
     parse to fail, exercising the fallback path.  The graph also contains
     several blank nodes: a plain ``graph.serialize()`` would label them
     non-deterministically, so this test would fail without the blank-node
-    canonicalization in ``_deterministic_fallback_serialize``.  Two
-    subprocesses with different ``PYTHONHASHSEED`` values must agree byte for
-    byte.
+    canonicalization in the fallback.  Two subprocesses with different
+    ``PYTHONHASHSEED`` values must agree byte for byte.
+
+    ``nt`` is not covered here because a fallback graph is by definition one
+    pyoxigraph refused, and for this graph the reason is a relative IRI, which
+    N-Triples forbids outright (N-Triples 1.1 §2.2). There is no deterministic
+    N-Triples document to produce, so the correct answer is a refusal --
+    asserted by ``test_nt_fallback_refuses_rather_than_writing_an_unparseable_file``
+    below.
     """
     program = textwrap.dedent(
         f"""
@@ -507,6 +568,24 @@ def test_fallback_is_deterministic_across_processes(output_format):
     assert out_a == out_b, (
         "Fallback output differs across PYTHONHASHSEED values; blank-node canonicalization may be missing"
     )
+
+
+def test_nt_fallback_refuses_rather_than_writing_an_unparseable_file():
+    """N-Triples output for a graph with a relative IRI must raise, not lie.
+
+    rdflib's N-Triples serializer reuses Turtle's term rendering and does not
+    enforce the absolute-IRI rule, so asking it for ``nt`` here yields a file
+    containing ``<testing>`` that its own parser then rejects. N-Triples 1.1
+    §2.2 permits only absolute IRIs, so no valid document exists for this
+    graph and a refusal is the only honest answer. Writing the file instead
+    defers the failure to whoever tries to read it.
+    """
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    g.add((URIRef("http://example.com/s"), URIRef("http://purl.org/ontology/bibo/status"), URIRef("testing")))
+
+    with pytest.raises(ValueError, match="not an absolute IRI"):
+        canonicalize_rdf_graph(g, output_format="nt")
 
 
 def _shapes_graph(count: int, extra: bool = False) -> Graph:
@@ -658,7 +737,7 @@ def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback():
     # ``shaclgen --include-annotations`` takes via its literal predicates.
     graph.add((URIRef("testing"), URIRef("http://example.com/p"), Literal("v")))
 
-    with pytest.warns(RDFCanonicalizationWarning, match="NOT diff-stable"):
+    with pytest.warns(RDFCanonicalizationWarning, match="not diff-stable"):
         stable = canonicalize_rdf_graph(graph, diff_stable=True)
 
     with pytest.warns(RDFCanonicalizationWarning):
@@ -667,3 +746,78 @@ def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback():
     # The warning is the contract: the bytes really are identical, which is
     # exactly why staying silent would be misleading.
     assert stable == plain
+
+
+# --------------------------------------------------------------------------
+# The bridge from the library's logging to linkml's warnings
+# --------------------------------------------------------------------------
+
+
+def _fallback_graph() -> Graph:
+    """A graph pyoxigraph refuses, so every call takes a degraded path."""
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    g.add((URIRef("http://example.com/s"), URIRef("http://purl.org/ontology/bibo/status"), URIRef("testing")))
+    return g
+
+
+def test_degraded_path_warning_points_at_the_caller():
+    """The warning must name the line that asked for the serialization.
+
+    ``diffable-rdf`` reports degradation through ``logging``; linkml re-emits
+    it through ``warnings`` so it is visible without logging configuration.
+    A re-emitted warning is only actionable if it is attributed to the caller
+    rather than to the adapter, and the number of frames in between is not
+    something a reader can eyeball -- hence this test.
+    """
+    graph = _fallback_graph()
+
+    with pytest.warns(RDFCanonicalizationWarning) as caught:
+        canonicalize_rdf_graph(graph, output_format="turtle")  # attribution target
+
+    assert caught[0].filename == __file__
+    source = Path(caught[0].filename).read_text(encoding="utf-8").splitlines()
+    assert "# attribution target" in source[caught[0].lineno - 1]
+
+
+def test_bridging_does_not_leave_the_library_logger_modified():
+    """Raising the library's log level to capture records must not be permanent.
+
+    The adapter has to enable ``WARNING`` on the ``diffable_rdf`` logger to see
+    anything, which is a global mutation. Leaving it raised would silently
+    change logging behaviour for the rest of the process.
+    """
+    logger = logging.getLogger("diffable_rdf")
+    level_before = logger.level
+    handlers_before = list(logger.handlers)
+
+    with pytest.warns(RDFCanonicalizationWarning):
+        canonicalize_rdf_graph(_fallback_graph(), output_format="turtle")
+
+    assert logger.level == level_before
+    assert logger.handlers == handlers_before
+
+
+def test_a_caller_who_configured_logging_still_receives_the_record(caplog):
+    """Re-emitting as a warning must not steal the record from a log handler.
+
+    An application that deliberately configured the ``diffable_rdf`` logger is
+    asking for these records. The adapter adds a mechanism; it does not get to
+    remove one.
+    """
+    with caplog.at_level(logging.WARNING, logger="diffable_rdf"), pytest.warns(RDFCanonicalizationWarning):
+        canonicalize_rdf_graph(_fallback_graph(), output_format="turtle")
+
+    assert any("non-standard RDF" in record.getMessage() for record in caplog.records)
+
+
+def test_warnings_survive_an_exception_from_the_library():
+    """Degradation reported before a failure must still reach the caller.
+
+    ``nt`` output for this graph degrades to rdflib and *then* refuses, because
+    N-Triples has no way to write the relative IRI. Dropping the warning
+    because the call ended in an exception would hide the first half of the
+    story, which is the half that explains the second.
+    """
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"), pytest.raises(ValueError):
+        canonicalize_rdf_graph(_fallback_graph(), output_format="nt")

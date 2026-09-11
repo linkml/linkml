@@ -1,27 +1,24 @@
-"""Correctness differences between linkml's RDF canonicalizer and the extracted library.
+"""Correctness properties shared by linkml's RDF canonicalizer and the library behind it.
 
 ``linkml_runtime.utils.rdf_canonicalize`` and
 ``diffable_rdf.canonicalize_rdf_graph`` are the same code: the module was
 extracted into a standalone library at the maintainers' request
-(linkml/linkml#3295). The two copies have since diverged, so each test here
-asserts one correctness property against *both* implementations and marks the
-one that does not hold it as a strict xfail.
+(linkml/linkml#3295). The two copies then diverged for a while, and this file
+is what made the divergence visible -- each test asserts one correctness
+property against *both* implementations, so a fix that landed on one side and
+not the other showed up as a failure rather than as nothing at all.
 
-Every remaining gap runs one way -- the extracted copy received fixes the local
-one did not -- and two of them are silent data corruption, where the output
-parses cleanly and says something the input never said. That is worse than a
-crash, because a generated artifact gets committed and reviewed on the
-assumption that it means what the schema meant.
+Nine properties held only in the library, two of them cases of silent data
+corruption where the output parsed cleanly and said something the input never
+said. One held only in linkml: the library dropped ``@base`` on the degraded
+path. Asserting both directions is what got each of them fixed where it
+belonged -- the ``@base`` gap in diffable-rdf 0.4.0, the other nine in linkml
+by deleting the in-tree copy and calling the library.
 
-One gap used to run the other way: the library dropped ``@base`` on the
-degraded path. That was the last property blocking delegation, and
-diffable-rdf 0.4.0 fixed it, so the case now passes on both sides and is kept
-unmarked. Asserting both directions is what made the fix land where it
-belongs.
-
-The xfails are strict, so this file is a ratchet in both directions: when a fix
-lands on either side, its case starts passing and the suite fails until the
-mark is removed.
+Every case is now unmarked, which is the point: the file is the evidence that
+the delegation changed no behaviour it should not have, and it keeps running
+against both entry points so that a future divergence fails the suite instead
+of going unnoticed.
 """
 
 import os
@@ -46,18 +43,15 @@ _IMPLEMENTATIONS = (
 )
 
 
-def _impls(**known_failures: str):
-    """Parametrize over both implementations, xfailing the ones named.
+def _impls():
+    """Parametrize a test over both entry points.
 
-    :param known_failures: implementation id (``linkml`` / ``diffable_rdf``)
-        mapped to why that implementation does not hold the property.
+    linkml's is a thin adapter over the library's, so the two agree by
+    construction today. Running both anyway is what turns a future re-fork, or
+    an adapter that quietly changes behaviour on the way through, into a test
+    failure.
     """
-    params = []
-    for fn, ident in _IMPLEMENTATIONS:
-        reason = known_failures.get(ident.replace("-", "_"))
-        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
-        params.append(pytest.param(fn, id=ident, marks=marks))
-    return params
+    return [pytest.param(fn, id=ident) for fn, ident in _IMPLEMENTATIONS]
 
 
 def _apply(fn, graph, output_format="turtle"):
@@ -72,10 +66,7 @@ def _apply(fn, graph, output_format="turtle"):
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="passes graph.base to the serializer without checking it is safe to relativize against"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_base_with_a_fragment_does_not_rewrite_every_iri(canonicalize):
     """A base IRI ending in ``#`` must not change the graph's terms.
 
@@ -94,10 +85,7 @@ def test_base_with_a_fragment_does_not_rewrite_every_iri(canonicalize):
     assert {str(s) for s in round_tripped.subjects()} == {"http://ex.org/d#a"}
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="rdflib's collection syntax materializes a shared list tail once per referencing list"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_a_shared_rdf_list_tail_is_not_duplicated(canonicalize):
     """Two lists sharing a tail must not gain triples on the way out.
 
@@ -130,10 +118,7 @@ def test_a_shared_rdf_list_tail_is_not_duplicated(canonicalize):
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="the rdflib fallback writes N-Triples for a graph pyoxigraph already refused"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_nt_output_either_parses_or_refuses(canonicalize):
     """N-Triples admits only absolute IRIs, so a relative one must not be written.
 
@@ -153,10 +138,7 @@ def test_nt_output_either_parses_or_refuses(canonicalize):
     rdflib.Graph().parse(data=serialized, format="nt")
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="sorts fallback output with str.splitlines(), which breaks on U+2028 and five other characters"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_a_unicode_line_separator_in_a_literal_survives(canonicalize):
     """Sorting N-Triples lines must split on newlines only.
 
@@ -240,37 +222,24 @@ _JSONLD_UNMAPPED = "json-ld is absent from the format map, so it falls through t
 @pytest.mark.parametrize(
     ("module", "output_format", "force_fallback"),
     [
-        pytest.param(
-            "linkml", "xml", True, id="linkml-xml-fallback", marks=pytest.mark.xfail(strict=True, reason=_XML_TRAVERSAL)
-        ),
+        pytest.param("linkml", "xml", True, id="linkml-xml-fallback"),
         pytest.param("diffable_rdf", "xml", True, id="diffable-rdf-xml-fallback"),
-        pytest.param(
-            "linkml",
-            "turtle",
-            True,
-            id="linkml-turtle-fallback",
-            marks=pytest.mark.xfail(strict=True, reason=_NS_NAMES),
-        ),
+        pytest.param("linkml", "turtle", True, id="linkml-turtle-fallback"),
         pytest.param("diffable_rdf", "turtle", True, id="diffable-rdf-turtle-fallback"),
-        pytest.param(
-            "linkml",
-            "json-ld",
-            False,
-            id="linkml-jsonld",
-            marks=pytest.mark.xfail(strict=True, reason=_JSONLD_UNMAPPED),
-        ),
+        pytest.param("linkml", "json-ld", False, id="linkml-jsonld"),
         pytest.param("diffable_rdf", "json-ld", False, id="diffable-rdf-jsonld"),
     ],
 )
 def test_output_is_byte_identical_across_processes(module, output_format, force_fallback):
     """The same graph must serialize to the same bytes in any process.
 
-    Three separate causes break this in the local copy. Degraded RDF/XML is
-    ordered by rdflib's own graph traversal, which follows set iteration order.
-    Auto-generated ``ns1``/``ns2`` prefix names are allocated in traversal order
-    too, so the *names* move even when the triples do not. And ``json-ld`` is
-    not in the format map at all, so it falls through to rdflib's serializer,
-    which carries no determinism guarantee.
+    Three separate causes used to break this in the in-tree copy, and all three
+    are fixed by delegating. Degraded RDF/XML was ordered by rdflib's own graph
+    traversal, which follows set iteration order. Auto-generated ``ns1``/``ns2``
+    prefix names were allocated in traversal order too, so the *names* moved
+    even when the triples did not. And ``json-ld`` was not in the format map at
+    all, so it fell through to rdflib's serializer, which carries no
+    determinism guarantee.
     """
     assert len(_outputs_across_processes(module, output_format, force_fallback)) == 1
 
@@ -280,10 +249,7 @@ def test_output_is_byte_identical_across_processes(module, output_format, force_
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="returns the serializer's own trailing whitespace, which differs by format"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_every_format_ends_with_exactly_one_newline(canonicalize):
     """A committed artifact should not depend on which format wrote it.
 
@@ -302,10 +268,7 @@ def test_every_format_ends_with_exactly_one_newline(canonicalize):
     assert counts == dict.fromkeys(counts, 1)
 
 
-@pytest.mark.parametrize(
-    "canonicalize",
-    _impls(linkml="Dataset is a Graph subclass, so the type check accepts it and the named graphs are flattened"),
-)
+@pytest.mark.parametrize("canonicalize", _impls())
 def test_a_dataset_is_refused_rather_than_partly_serialized(canonicalize):
     """A Dataset is a Graph subclass, so it is accepted and quietly flattened.
 
@@ -337,13 +300,11 @@ def test_base_survives_the_degraded_path(canonicalize):
     which pyoxigraph rejects). Losing the directive on exactly that path means
     the feature works only for graphs that never needed the fallback.
 
-    This ran the other way until diffable-rdf 0.4.0, which was the last
-    property blocking delegation. The case is kept because it is the one the
-    two implementations reach differently: linkml passes ``graph.base`` to the
-    serializer unconditionally, which is why it also fails
-    :func:`test_base_with_a_fragment_does_not_rewrite_every_iri` above, while
-    the library keeps the base only after confirming that re-reading the
-    result still yields every absolute IRI of the source.
+    This ran the other way until diffable-rdf 0.4.0. It was the last property
+    blocking delegation, because linkml held it and the library did not, so
+    adopting the library would have been a regression. Fixing it there rather
+    than keeping the in-tree copy alive is what let the other nine gaps close
+    at once.
     """
     graph = Graph(base="http://example.org/default/")
     graph.bind("ex", EX)
