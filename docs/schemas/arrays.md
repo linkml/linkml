@@ -544,6 +544,7 @@ At release, only pydanticgen supports arrays, but arrays will be implemented gra
 |---------------------------|----------------|----------|---------|---------------|---------|
 | [pydantic](pydanticgen)   | List of Lists  | Y        | Y       | Y             | Y       |
 | [pydantic](pydanticgen)   | Numpydantic    | Y        | Y       | Y             | Y       |
+| [jsonschema](jsonschemagen) | Arrays of Arrays | Y    | Y       | Y             | Y       |
 | ... (the rest of em)      |                |          |         |               |         |
 
 (array-representations)=

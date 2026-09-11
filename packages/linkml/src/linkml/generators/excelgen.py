@@ -171,7 +171,7 @@ class ExcelGenerator(Generator):
 
         dv.add(f"{column_letter}2:{column_letter}1048576")
 
-    def serialize(self, **kwargs) -> str:
+    def serialize(self, **kwargs) -> None:
         sv = self.schemaview
         all_classes = sv.all_classes(imports=self.mergeimports)
 

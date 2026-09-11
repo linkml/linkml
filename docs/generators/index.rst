@@ -80,6 +80,7 @@ languages such as Python, Javascript, or Java.
    python
    pydantic
    java
+   golang
    typescript
    rust
 

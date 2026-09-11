@@ -34,6 +34,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
+from linkml_runtime.utils.namespaces import _prefix_to_python_var as _safe_python_identifier
 
 logger = logging.getLogger(__name__)
 
@@ -257,13 +258,15 @@ class PythonGenerator(Generator):
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
+        # The generation_date line is omitted when the timestamp is suppressed, but the rest
+        # of the metadata banner is still emitted.
+        generation_date = f"# Generation date: {self.schema.generation_date}\n" if self.schema.generation_date else ""
         head = (
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
-# Generation date: {self.schema.generation_date}
-# Schema: {self.schema.name}
+{generation_date}# Schema: {self.schema.name}
 #
 """
-            if self.metadata and self.schema.generation_date
+            if self.metadata
             else ""
         )
 
@@ -418,7 +421,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         dflt = f"CurieNamespace('', '{sfx(dflt_prefix)}')" if ":/" in dflt_prefix else dflt_prefix.upper()
         curienamespace_defs = [
             {
-                "variable": f"{pfx.upper().replace('.', '_').replace('-', '_')}",
+                "variable": _safe_python_identifier(pfx),
                 "value": f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')",
             }
             for pfx in sorted(self.emit_prefixes)
@@ -613,7 +616,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             class_model_uri = f'URIRef("{class_model_uri}")'
         else:
             ns, ln = class_model_uri.split(":", 1)
-            class_model_uri = f"{ns.upper()}.{ln}"
+            class_model_uri = f"{_safe_python_identifier(ns)}.{ln}"
 
         vars = [
             f"class_class_uri: ClassVar[URIRef] = {class_class_uri}",
@@ -640,7 +643,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         else:
             ns, ln = type_model_uri.split(":", 1)
             ln_suffix = f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f'["{ln}"]'
-            type_model_uri = f"{ns.upper()}{ln_suffix}"
+            type_model_uri = f"{_safe_python_identifier(ns)}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
             f"type_class_curie = {type_class_curie}",
@@ -1223,14 +1226,16 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if slot.designates_type:
                 slot_range = self._roll_up_type(slot.range)
                 if slot_range == "string":
-                    td_value_classvar = "class_name"
+                    td_value_expression = "self.class_name"
                 elif slot_range == "uri":
-                    td_value_classvar = "class_model_uri"
+                    td_value_expression = "self.class_model_uri"
                 elif slot_range == "uriorcurie":
-                    td_value_classvar = "class_class_curie"
+                    td_value_expression = (
+                        "self.class_class_curie if self.class_class_curie is not None else self.class_class_uri"
+                    )
                 else:
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
-                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+                rlines.append(f"self.{aliased_slot_name} = str({td_value_expression})")
             elif (
                 # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
@@ -1372,9 +1377,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             ns = "DEFAULT_"
         if ns is None:
             return '"str(uriorcurie)"', None
+        safe_ns = _safe_python_identifier(ns)
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
-            ns.upper() + f".curie('{ln}')",
+            safe_ns + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
+            safe_ns + f".curie('{ln}')",
         )
 
     def gen_slotdefs(self) -> str:

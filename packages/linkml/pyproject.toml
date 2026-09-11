@@ -54,7 +54,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "parse",
     "prefixcommons >= 0.1.7",
     "prefixmaps >= 0.2.2",
-    "pydantic>=2.13.4,<3.0.0",
+    "pydantic>=2.13.5,<3.0.0",
     "pyjsg >= 0.12.3",
     "pyshex >= 0.9.0",
     "pyshexc >= 0.10.3",
@@ -67,6 +67,8 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "typing-extensions >= 4.6.0; python_version < '3.12'",
     "sphinx-click (>=6.0.0)",
     "openapi-spec-validator >= 0.8.4",
+    "pydantic-settings>=2.15.0",
+    "platformdirs>=4.5.0",
 ]
 
 [dependency-groups]
@@ -85,6 +87,7 @@ tests = [
   { include-group = "shacl" },
   "duckdb>=1.5.5",
   "sqlalchemy-bigquery>=1.17.2",
+  "tomli-w>=1.2.0",
 ]
 dev = [
   {include-group = "tests" },
@@ -96,8 +99,8 @@ dev = [
   "jupyter",
   "nbconvert",
   "nbformat",
-  "coverage>=7.15.4",
-  "tox>=4.60.0",
+  "coverage>=7.16.0",
+  "tox>=4.61.2",
   "tox-uv",
   "myst-nb>=1.4.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
@@ -106,12 +109,12 @@ dev = [
 ]
 
 pandera = [
-  "pandera>=0.32.1",
+  "pandera>=0.33.1",
   "polars-lts-cpu >= 1.0.0",
   "pandas"
 ]
 tests-rustgen = [
-  "maturin>=1.14.1"
+  "maturin>=1.15.0"
 ]
 typedb = [
   "typedb-driver>=3.12.3,<4.0",
@@ -143,6 +146,7 @@ docs = [
   "matplotlib >= 3.7",
   "sphinx-jinja >= 2.0.2",
   "sphinxcontrib-programoutput>=0.20",
+  "sphinx-design>=0.6.1",
 ]
 
 [tool.uv.sources]
