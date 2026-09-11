@@ -307,7 +307,8 @@ def canonicalize_rdf_graph(
         editing one part of a schema does not renumber unrelated blank nodes.
         Output is deterministic and isomorphic either way; only the choice of
         label changes. Off by default because enabling it relabels existing
-        output.
+        output. Has no effect on the rdflib fallback path (non-standard RDF),
+        which warns rather than silently ignoring the request.
     :return: Deterministic string serialization of the graph.
     """
     ox_format = _FORMAT_MAP.get(output_format.lower())
@@ -338,6 +339,23 @@ def canonicalize_rdf_graph(
             RDFCanonicalizationWarning,
             stacklevel=2,
         )
+        if diff_stable:
+            # Weisfeiler-Lehman refinement consumes canonical pyoxigraph quads,
+            # and this path exists precisely because pyoxigraph refused the
+            # graph, so there are none to refine. The fallback is deterministic
+            # but not diff-stable: say so rather than returning output that
+            # silently ignores the argument. ``shaclgen --include-annotations``
+            # reaches this path, because an annotation tag without a ``:``
+            # becomes a literal predicate.
+            warnings.warn(
+                "diff_stable=True was requested but this graph took the rdflib fallback, "
+                "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
+                "deterministic but NOT diff-stable: an unrelated edit may still renumber "
+                "blank nodes. Make the offending terms standard RDF (absolute IRIs, IRI "
+                "predicates) to get diff-stable labels.",
+                RDFCanonicalizationWarning,
+                stacklevel=2,
+            )
         return _deterministic_fallback_serialize(graph, output_format)
 
     dataset = ox.Dataset()
