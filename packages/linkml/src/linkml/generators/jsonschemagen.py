@@ -802,6 +802,40 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         return constraints
 
+    def get_key_constraints_for_slot(self, slot: SlotDefinition | None) -> JsonSchema:
+        """Constraints applicable to the *keys* of an inlined-as-dict slot.
+
+        In the inlined-dict form the mapping key *is* the value of the range class's
+        identifier/key slot (https://linkml.io/linkml/schemas/inlining.html) and is not
+        repeated inside the value object, so constraints declared on that slot -- or
+        inherited from its type -- are constraints on the object keys. The result is
+        intended for JSON Schema ``propertyNames``, which composes conjunctively with
+        ``additionalProperties``.
+
+        JSON object keys are always strings (JSON Schema Core 2019-09, 9.3.2.5), so only
+        the string-applicable subset of :meth:`get_value_constraints_for_slot` is
+        returned: ``pattern`` (including a resolved ``structured_pattern`` and a pattern
+        inherited from the slot's type), a string ``const`` (``equals_string``) and a
+        string ``enum`` (``equals_string_in``). Numeric constraints -- ``minimum`` and
+        ``maximum``, and the numeric ``const`` produced by ``equals_number`` -- and the
+        ``allOf`` produced by ``range_expression`` are excluded: they cannot be satisfied
+        by a string key, and a numeric ``const`` would reject *every* key.
+
+        :param slot: the identifier or key slot of the range class
+        :return: a schema for ``propertyNames``; empty when the key is unconstrained
+        """
+        constraints = self.get_value_constraints_for_slot(slot)
+
+        key_constraints = JsonSchema()
+        for keyword in ("pattern", "const"):
+            value = constraints.get(keyword)
+            if isinstance(value, str):
+                key_constraints[keyword] = value
+        enum_values = constraints.get("enum")
+        if isinstance(enum_values, list) and all(isinstance(value, str) for value in enum_values):
+            key_constraints["enum"] = enum_values
+        return key_constraints
+
     def get_subschema_for_slot(
         self,
         slot: SlotDefinition | AnonymousSlotExpression,
@@ -858,6 +892,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         else:
                             typ = ["object", "null"]
                         prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
+                        # The dict keys are the range's identifier/key values, so that
+                        # slot's string-applicable constraints constrain the keys.
+                        key_constraints = self.get_key_constraints_for_slot(range_id_slot)
+                        if key_constraints:
+                            prop["propertyNames"] = key_constraints
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
                         prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=slot.required)
