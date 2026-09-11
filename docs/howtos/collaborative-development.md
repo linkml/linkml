@@ -49,18 +49,20 @@ but an insertion can renumber existing nodes and obscure the actual schema edit.
 
 The optional `--diff-stable` flag uses
 [diffable-rdf](https://github.com/ASCS-eV/diffable-rdf) to reduce this label churn.
-In a uv project containing your schema, install LinkML with the extra and generate
-SHACL as follows (using a release that includes this option):
+The library is installed with LinkML. In a uv project containing your schema,
+install LinkML and generate SHACL as follows (using a release that includes this option):
 
 ```bash
-uv add 'linkml[diff-stable]'
+uv add linkml
 uv run gen-shacl --diff-stable schema.yaml > schema.shacl.ttl
 ```
 
 The flag also works with `gen-owl`, `gen-rdf`, and `gen-shex --format rdf`.
 Python callers of `canonicalize_rdf_graph(..., diff_stable=True)` can install
-`linkml-runtime[diff-stable]`. The feature is disabled by default; enabling it
-changes existing labels once, so keep that regeneration separate from schema edits.
+`linkml-runtime`. The `linkml[diff-stable]` and `linkml-runtime[diff-stable]` extras
+remain available for compatibility with earlier installation instructions.
+The feature is disabled by default; enabling it changes existing labels once,
+so keep that regeneration separate from schema edits.
 
 Labels depend on blank-node neighborhoods. Edits within connected structures or
 among symmetric nodes can still affect other labels; minimum diffs are not
