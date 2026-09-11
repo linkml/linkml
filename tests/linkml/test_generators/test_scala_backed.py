@@ -4,7 +4,6 @@ These cover schema loading, reuse and release.
 """
 
 import builtins
-import platform
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
@@ -12,7 +11,6 @@ from typing import ClassVar
 import pytest
 
 from linkml.generators.common.scala import (
-    SUPPORTED_PLATFORMS,
     UNSUPPORTED_OPTIONS,
     ScalaBackedGenerator,
     bindings,
@@ -21,7 +19,7 @@ from linkml.generators.common.scala import (
 from linkml.utils.generator_base import GeneratorBase
 from linkml_runtime import SchemaView
 
-linkml_scala = pytest.importorskip("linkml_scala", reason="LinkML-Scala has no build for this platform")
+linkml_scala = pytest.importorskip("linkml_scala", reason="the LinkML-Scala bindings are not installed")
 
 pytestmark = pytest.mark.rdfsgen
 
@@ -182,7 +180,8 @@ def test_bindings_returns_the_module():
     assert bindings() is linkml_scala
 
 
-def test_absent_bindings_blame_the_platform(monkeypatch):
+def test_absent_bindings_say_how_to_install_them(monkeypatch):
+    """The bindings are a dependency, so a missing one is something the user can fix."""
     real_import = builtins.__import__
 
     def without_linkml_scala(name, *args, **kwargs):
@@ -194,7 +193,5 @@ def test_absent_bindings_blame_the_platform(monkeypatch):
     with pytest.raises(ImportError) as raised:
         _CountingGenerator(str(SCHEMA)).serialize()
     message = str(raised.value)
-    assert "not available on" in message
-    assert platform.machine() in message
-    assert SUPPORTED_PLATFORMS in message
-    assert "pip install" not in message, "there is nothing for the user to install"
+    assert "not installed" in message
+    assert "pip install neverblink-linkml" in message
