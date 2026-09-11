@@ -164,7 +164,6 @@ classes:
 
   # TODO: annotate that this is a container/root class
   Container:
-    tree_root: true
     slots:
       - persons
       - organizations
