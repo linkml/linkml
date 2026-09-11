@@ -1,4 +1,5 @@
 import logging
+import math
 import os
 import string
 from collections.abc import Callable
@@ -446,8 +447,11 @@ class ShaclGenerator(Generator):
           multivalued slot, the total number of values must not exceed the
           given cardinality (typically 1 for mutual exclusion).
 
-        Operator combinations outside these named patterns are not translated;
-        the rule is skipped rather than partially represented.
+        Operator combinations outside these named patterns are handled by a
+        small compositional fallback (:meth:`_compose_rule_sparql`) covering
+        conditional-required / conditional-absent postconditions, numeric
+        threshold and nested-object preconditions, and ``has_member`` list
+        membership.
 
         See `W3C SHACL §5 <https://www.w3.org/TR/shacl/#sparql-constraints>`_.
         """
@@ -687,7 +691,216 @@ class ShaclGenerator(Generator):
                 )
 
         # Fallback: a small compositional builder for operator combinations not
+        # covered by the three named patterns above (conditional-required,
+        # threshold preconditions, list membership, ...).  Tried only after the
+        # named patterns, so their output is unchanged.
+        composed = self._compose_rule_sparql(sv, cls, rule)
+        if composed is not None:
+            return composed
+
         return None
+
+    def _compose_rule_sparql(self, sv, cls: ClassDefinition, rule) -> str | None:
+        """Compose a SHACL-SPARQL violation query for rule shapes not covered
+        by the three named patterns.
+
+        Translates a conjunction of *precondition* slot conditions and a single
+        *postcondition* slot condition into one ``SELECT $this`` query that
+        selects focus nodes which satisfy every precondition but violate the
+        postcondition.  Supported operators grow incrementally in
+        :meth:`_precondition_patterns` and :meth:`_postcondition_violation`;
+        the method returns ``None`` (rule skipped, never mis-translated) as soon
+        as any operator is unsupported.
+
+        A rule's ``postconditions`` are a conjunction, so violating a single
+        slot condition is sufficient; the single-postcondition case covers the
+        modeled cross-parameter rules.
+
+        Conforms to `SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_: ``$this``
+        is pre-bound to each focus node.
+        """
+        pre = getattr(rule, "preconditions", None)
+        post = getattr(rule, "postconditions", None)
+        if not pre or not post:
+            return None
+
+        pre_slots = getattr(pre, "slot_conditions", None) or {}
+        post_slots = getattr(post, "slot_conditions", None) or {}
+        if not pre_slots or len(post_slots) != 1:
+            return None
+
+        pre_lines = self._precondition_patterns(sv, cls, pre_slots)
+        if pre_lines is None:
+            return None
+
+        post_slot_name, post_cond = next(iter(post_slots.items()))
+        violation = self._postcondition_violation(sv, cls, post_slot_name, post_cond)
+        if violation is None:
+            return None
+
+        body = "\n".join(f"    {line}" for line in (pre_lines + violation))
+        return f"SELECT $this WHERE {{\n{body}\n}}"
+
+    def _scalar_filters(self, var: str, cond, resolve: Callable[[str], str]) -> list[str] | None:
+        """Return the SPARQL ``FILTER`` lines for the scalar operators on *cond*.
+
+        Unlike a first-match dispatch, **every** recognised operator contributes
+        a line, so a condition combining operators — e.g. a bounded range
+        ``{minimum_value: X, maximum_value: Y}`` — emits *both* bounds instead of
+        silently keeping only the first and under-constraining the query.
+        ``value_presence: PRESENT`` contributes no filter (the caller's triple
+        binding already enforces presence).
+
+        *resolve* maps an ``equals_string`` value to a SPARQL term (an enum
+        ``meaning`` IRI or an escaped string literal).
+
+        Returns ``None`` when *cond* sets no recognised scalar operator, sets
+        any operator *outside* the recognised set (per
+        :meth:`_set_operator_fields` — partial translation would drop a
+        conjunct), sets ``value_presence`` to anything but ``PRESENT``, or
+        carries a non-numeric threshold bound.  In every such case the caller
+        skips the rule it cannot faithfully translate rather than emitting an
+        under-constrained (or vacuous) query.
+        """
+        op_fields = self._set_operator_fields(cond)
+        if not op_fields or not op_fields <= {"value_presence", "equals_string", "minimum_value", "maximum_value"}:
+            return None  # unsupported operator present (or none at all): skip
+        if "value_presence" in op_fields and cond.value_presence != PresenceEnum(PresenceEnum.PRESENT):
+            # ABSENT (or a future presence value) cannot be expressed as a
+            # triple binding + filter; translating the other operators anyway
+            # would invert the declared trigger.
+            return None
+
+        filters: list[str] = []
+        if "equals_string" in op_fields:
+            filters.append(f"FILTER ( {var} = {resolve(cond.equals_string)} )")
+        if "minimum_value" in op_fields:
+            minimum = self._sparql_number(cond.minimum_value)
+            if minimum is None:
+                return None
+            filters.append(f"FILTER ( {var} >= {minimum} )")
+        if "maximum_value" in op_fields:
+            maximum = self._sparql_number(cond.maximum_value)
+            if maximum is None:
+                return None
+            filters.append(f"FILTER ( {var} <= {maximum} )")
+        return filters
+
+    def _precondition_patterns(self, sv, cls: ClassDefinition, pre_slots) -> list[str] | None:
+        """Translate a conjunction of precondition slot conditions into SPARQL
+        graph patterns (plus ``FILTER`` lines) that bind focus nodes satisfying
+        every condition.
+
+        Returns ``None`` if any condition sets no recognised operator.
+
+        Supported operators, which **combine** on a single condition (so a
+        bounded range ``{minimum_value: X, maximum_value: Y}`` emits both
+        bounds): ``value_presence: PRESENT``, ``equals_string``, and the numeric
+        thresholds ``minimum_value`` / ``maximum_value`` (inclusive, per the
+        LinkML metamodel).  A ``range_expression`` with inner ``slot_conditions``
+        reaches one hop into an inlined child object.
+        """
+        lines: list[str] = []
+        for i, (slot_name, cond) in enumerate(pre_slots.items()):
+            path = self._slot_uri(sv, slot_name, cls)
+            if path is None:
+                return None
+            var = f"?pre{i}"
+            if self._set_operator_fields(cond) == {"range_expression"}:
+                # One-hop into an inlined child object: bind the child node and
+                # apply the inner slot conditions to it.  The nested expression
+                # must itself be a plain conjunction of slot conditions; a
+                # condition mixing range_expression with scalar operators (or a
+                # nested any_of/...) is skipped rather than partially
+                # translated.
+                range_expr = cond.range_expression
+                if self._set_operator_fields(range_expr) != {"slot_conditions"}:
+                    return None
+                node = f"{var}_node"
+                lines.append(f"$this <{path}> {node} .")
+                inner = self._member_conditions(sv, cls, slot_name, node, range_expr.slot_conditions)
+                if inner is None:
+                    return None
+                lines.extend(inner)
+                continue
+            filters = self._scalar_filters(
+                var, cond, lambda v, sn=slot_name: self._resolve_enum_value_ref(sv, sn, v, cls)
+            )
+            if filters is None:
+                return None
+            lines.append(f"$this <{path}> {var} .")
+            lines.extend(filters)
+        return lines
+
+    def _member_conditions(
+        self, sv, cls: ClassDefinition, container_slot_name: str, node_var: str, slot_conditions
+    ) -> list[str] | None:
+        """Constrain the object bound to *node_var* — an instance of the range
+        class of *container_slot_name* — by a set of inner slot conditions.
+
+        Shared by the nested ``range_expression`` precondition (single inlined
+        child) and the ``has_member`` postcondition (a list member).  Inner
+        slots live on the container slot's **range class**, so both their
+        property IRIs and their enum values are resolved in that class's
+        induced context (the container slot itself is induced against *cls*,
+        honouring a ``slot_usage`` range narrowing).  Resolving against the
+        outer class instead would emit predicates the member nodes never carry
+        — the ``sh:path`` on the member shape and the SPARQL body would
+        diverge, making ``FILTER NOT EXISTS`` member checks vacuously true
+        (false positives) or preconditions never bind (false negatives).
+
+        Like preconditions, combining operators on one condition emits all of
+        them.  Returns ``None`` for unsupported inner operators or when the
+        container's range is not a class (inner conditions on a non-class
+        range cannot be resolved faithfully).
+        """
+        container = self._rule_slot(sv, container_slot_name, cls)
+        range_name = getattr(container, "range", None)
+        if not range_name or range_name not in sv.all_classes():
+            return None
+        range_cls = sv.get_class(range_name)
+
+        lines: list[str] = []
+        for j, (inner_name, icond) in enumerate(slot_conditions.items()):
+            ipath = self._slot_uri(sv, inner_name, range_cls)
+            if ipath is None:
+                return None
+            ivar = f"{node_var}_{j}"
+            filters = self._scalar_filters(
+                ivar,
+                icond,
+                lambda v, inm=inner_name: self._resolve_enum_value_ref(sv, inm, v, range_cls),
+            )
+            if filters is None:
+                return None
+            lines.append(f"{node_var} <{ipath}> {ivar} .")
+            lines.extend(filters)
+        return lines
+
+    @staticmethod
+    def _sparql_number(value) -> str | None:
+        """Render a numeric threshold bound as a SPARQL numeric literal, or
+        ``None`` when the value is not a finite number (callers then skip the
+        rule).
+
+        The metamodel range of ``minimum_value`` / ``maximum_value`` is
+        ``Anything``, so YAML strings, dates, booleans, ``.nan`` / ``.inf``
+        all pass through SchemaView unchanged.  Interpolating them raw is
+        unsound: ``"abc"`` yields unparsable SPARQL that poisons the whole
+        shapes graph at validation time, and a date like ``2020-01-01`` parses
+        as the arithmetic expression ``2020-01-01 = 2018`` and silently never
+        fires.  Only ``int`` / finite ``float`` (including the
+        ``extended_int`` / ``extended_float`` runtime subclasses) are
+        rendered; their ``str`` yields a plain numeric token (e.g. ``4000`` or
+        ``0.0``) that SPARQL compares with numeric promotion against
+        ``xsd:float`` / ``xsd:decimal`` data values.
+        """
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            return None
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        return str(value)
 
     @staticmethod
     def _sparql_string_literal(value: str) -> str:
@@ -709,6 +922,50 @@ class ShaclGenerator(Generator):
             .replace("\t", "\\t")
         )
         return f'"{escaped}"'
+
+    def _postcondition_violation(self, sv, cls: ClassDefinition, slot_name: str, cond) -> list[str] | None:
+        """Translate a single postcondition slot condition into SPARQL that
+        matches a *violation* of it.
+
+        Returns ``None`` for operators not handled here, or when the condition
+        sets anything beyond the single operator a branch translates (dropping
+        a co-set operator would weaken the postcondition — the rule is skipped
+        instead).
+
+        Supported operators:
+
+        * ``required: true`` — violation = the target slot is absent on a focus
+          node that satisfies the preconditions.
+        * ``value_presence: ABSENT`` — violation = the target slot *is* present
+          (inapplicable-slot / conditional-absent).
+        * ``has_member`` with a nested ``range_expression`` — violation = *no*
+          member of the (multivalued) target slot matches the inner conditions
+          (list-membership; e.g. the light-group list must contain a
+          ``{group: Vehicle, type: front_fog_light}`` entry).
+        """
+        path = self._slot_uri(sv, slot_name, cls)
+        if path is None:
+            return None
+        op_fields = self._set_operator_fields(cond)
+        if op_fields == {"required"} and cond.required is True:
+            return [f"FILTER NOT EXISTS {{ $this <{path}> ?post . }}"]
+        if op_fields == {"value_presence"} and cond.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+            return [f"$this <{path}> ?post ."]
+        if op_fields == {"has_member"}:
+            has_member = cond.has_member
+            if self._set_operator_fields(has_member) != {"range_expression"}:
+                return None
+            range_expr = has_member.range_expression
+            if self._set_operator_fields(range_expr) != {"slot_conditions"}:
+                return None
+            member_lines = [f"$this <{path}> ?mem ."]
+            inner = self._member_conditions(sv, cls, slot_name, "?mem", range_expr.slot_conditions)
+            if inner is None:
+                return None
+            member_lines.extend(inner)
+            block = " ".join(member_lines)
+            return [f"FILTER NOT EXISTS {{ {block} }}"]
+        return None
 
     def _build_boolean_guard_sparql(
         self, sv, cls: ClassDefinition, flag_slot_name: str, value_slot_name: str
