@@ -642,3 +642,28 @@ def test_diff_stable_reaches_every_rdf_generator(tmp_path, generator, kwargs):
         f"{generator.__name__} still emits RDFC-1.0 blank-node labels with diff_stable=True; "
         "the flag is probably not threaded into canonicalize_rdf_graph()"
     )
+
+
+def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback():
+    """A request the fallback cannot honour must be reported, not ignored.
+
+    ``wl_relabel_quads`` consumes canonical pyoxigraph quads, and the rdflib
+    fallback exists precisely because pyoxigraph refused the graph. Returning
+    the same bytes for ``diff_stable=True`` and ``diff_stable=False`` without
+    saying so lets a caller believe the output is diff-stable when it is not.
+    """
+    graph = _make_graph_with_bnodes()
+    # A relative IRI is non-standard RDF, so pyoxigraph rejects the graph and
+    # canonicalize_rdf_graph degrades to rdflib -- the same path that
+    # ``shaclgen --include-annotations`` takes via its literal predicates.
+    graph.add((URIRef("testing"), URIRef("http://example.com/p"), Literal("v")))
+
+    with pytest.warns(RDFCanonicalizationWarning, match="NOT diff-stable"):
+        stable = canonicalize_rdf_graph(graph, diff_stable=True)
+
+    with pytest.warns(RDFCanonicalizationWarning):
+        plain = canonicalize_rdf_graph(graph, diff_stable=False)
+
+    # The warning is the contract: the bytes really are identical, which is
+    # exactly why staying silent would be misleading.
+    assert stable == plain
