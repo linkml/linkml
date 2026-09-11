@@ -78,6 +78,22 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Label blank nodes so that unrelated edits leave them untouched.
+
+    Output is already deterministic: RDFC-1.0 guarantees that isomorphic
+    graphs serialize identically. It does not guarantee that *similar*
+    graphs serialize *similarly* — blank nodes are numbered ``c14nN`` in a
+    global order, so adding one class can renumber every blank node after
+    it and rewrite most of the file.
+
+    When ``True``, blank-node labels are instead derived from each node's
+    own neighbourhood via Weisfeiler-Lehman refinement, so an edit relabels
+    only the blank nodes it actually touches. The output stays
+    deterministic and isomorphic either way; only the choice of label
+    changes. Off by default because enabling it relabels existing output.
+    """
+
     emit_metadata: bool = False
     context: list[str] = None
     original_schema: SchemaDefinition = None
@@ -89,7 +105,7 @@ class RDFGenerator(Generator):
 
     def _data(self, g: Graph) -> str:
         fmt = "turtle" if self.format == "ttl" else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
@@ -136,6 +152,16 @@ class RDFGenerator(Generator):
     show_default=True,
     multiple=True,
     help="JSONLD context file (default: vendored meta.context.jsonld)",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Derive blank-node labels from each node's own neighbourhood so that "
+        "unrelated edits leave them unchanged. Output is deterministic either "
+        "way; this makes successive versions of a file diff cleanly."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
