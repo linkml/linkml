@@ -24,6 +24,7 @@ GENERATOR_FIELDS = [
     "schemaview",
     "format",
     "metadata",
+    "include_generation_date",
     "useuris",
     "log_level",
     "mergeimports",
