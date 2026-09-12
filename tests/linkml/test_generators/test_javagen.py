@@ -1,10 +1,11 @@
 import logging
+from pathlib import Path
 
 import click
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.javagen import JavaBundle, JavaGenerator, cli
+from linkml.generators.javagen import JavaBundle, JavaGenerator, _find_root_schemas, cli
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -528,3 +529,37 @@ def test_cli_no_config_file_falls_back_to_default(tmp_path, monkeypatch):
 
     assert result.exit_code == 0, result.output
     assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package example")
+
+
+def test_finding_root_schemas(input_path):
+    """Test that we can find all the "root" schemas in a directory."""
+    expected_root_schemas = [
+        input_path("packagetree/org/example/foo.yaml"),
+        input_path("packagetree/org/example/baz.yaml"),
+    ]
+    root_schemas = [str(p) for p in _find_root_schemas(Path(input_path("packagetree")))]
+    assert len(root_schemas) == len(expected_root_schemas)
+    for expected in expected_root_schemas:
+        assert expected in root_schemas
+
+
+def test_calling_on_directory(input_path, tmp_path):
+    """Calling the generator on a directory triggers a mode in which
+    (1) all schemas found under that directory are processed, and
+    (2) the package name is inferred from the directory tree."""
+    result = CliRunner().invoke(cli, [str(input_path("packagetree")), "--output-directory", str(tmp_path)])
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(tmp_path / "org" / "example" / "Foo.java", "package org.example")
+    assert_file_contains(tmp_path / "org" / "example" / "Bar.java", "package org.example")
+    assert_file_contains(tmp_path / "org" / "example" / "Baz.java", "package org.example")
+
+
+def test_calling_on_directory_abort_on_invalid_package(input_path, tmp_path):
+    """Directory mode should fail if it would yield an invalid package name."""
+    output_directory = tmp_path / "out"
+    result = CliRunner().invoke(
+        cli, [str(input_path("packagetree/org/example")), "--output-directory", str(output_directory)]
+    )
+    assert result.exit_code != 0, result.output
+    assert not output_directory.exists()
