@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -131,6 +132,11 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
+    include_generation_date: bool = False
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible (byte-stable) across runs; the date of generation is normally recoverable
+    from version control."""
+
     useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
@@ -209,6 +215,15 @@ class Generator(metaclass=abc.ABCMeta):
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            if (
+                isinstance(schema, SchemaDefinition)
+                and not self.include_generation_date
+                and schema.generation_date is not None
+            ):
+                # SchemaView keeps a reference to a SchemaDefinition it is handed,
+                # so clearing generation_date below would reach back into the
+                # caller's object. Copy first so the generator owns what it mutates.
+                schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, str | Path):
@@ -219,6 +234,12 @@ class Generator(metaclass=abc.ABCMeta):
             # This ensures consistency with SchemaLoader-based generators.
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
+
+        # Drop the load-time generation_date stamp unless it was explicitly asked for.
+        # This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD
+        # generators, so clearing it here covers every generator uniformly.
+        if not self.include_generation_date and self.schema is not None:
+            self.schema.generation_date = None
 
         self._init_namespaces()
 
@@ -989,6 +1010,15 @@ def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) 
                 default=True,
                 show_default=True,
                 help="Include metadata in output",
+            )
+        )
+        f.params.append(
+            Option(
+                ("--generation-date/--no-generation-date", "include_generation_date"),
+                default=False,
+                show_default=True,
+                help="Stamp output with the generation_date timestamp. Off by default so output is "
+                "reproducible across runs.",
             )
         )
         f.params.append(
