@@ -553,3 +553,13 @@ def test_calling_on_directory(input_path, tmp_path):
     assert_file_contains(tmp_path / "org" / "example" / "Foo.java", "package org.example")
     assert_file_contains(tmp_path / "org" / "example" / "Bar.java", "package org.example")
     assert_file_contains(tmp_path / "org" / "example" / "Baz.java", "package org.example")
+
+
+def test_calling_on_directory_abort_on_invalid_package(input_path, tmp_path):
+    """Directory mode should fail if it would yield an invalid package name."""
+    output_directory = tmp_path / "out"
+    result = CliRunner().invoke(
+        cli, [str(input_path("packagetree/org/example")), "--output-directory", str(output_directory)]
+    )
+    assert result.exit_code != 0, result.output
+    assert not output_directory.exists()

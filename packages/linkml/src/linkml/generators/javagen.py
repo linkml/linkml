@@ -587,10 +587,17 @@ def cli(
     if yamlfile.is_dir():
         # Generate code for all root schemas under the specified directory,
         # inferring the package name from the directory hierarchy
+        schemas: list[tuple[Path, Path, str]] = []
         for schema_path in _find_root_schemas(yamlfile, importmap):
             package_dir = schema_path.relative_to(yamlfile).parent
-            output_dir = Path(output_directory) / package_dir
             package_name = package_dir.as_posix().replace("/", ".")
+            if not _is_valid_java_package(package_name):
+                raise ValueError(
+                    f"Inferred package name {package_name} is not a valid Java package name, aborting directory mode"
+                )
+            output_dir = Path(output_directory) / package_dir
+            schemas.append((schema_path, output_dir, package_name))
+        for schema_path, output_dir, package_name in schemas:
             JavaGenerator(
                 schema_path,
                 importmap=importmap,
