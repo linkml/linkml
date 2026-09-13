@@ -1,0 +1,16 @@
+# LinkML schema with a slot declaring multiple examples
+id: https://w3id.org/linkml/tests/examples
+name: examples
+default_prefix: examples
+imports:
+  - linkml:types
+
+classes:
+  WithExamples:
+    description: A thing with example values
+    attributes:
+      name:
+        range: string
+        examples:
+          - value: sample
+          - value: second

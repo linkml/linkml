@@ -1,0 +1,28 @@
+# LinkML schema mixing a fixed-value type and a real enum
+id: https://w3id.org/linkml/tests/types_and_enums
+name: types_and_enums
+default_prefix: types_and_enums
+imports:
+  - linkml:types
+
+types:
+  FixedType:
+    description: a LinkML type (not an enum) constrained to a single value
+    base: str
+    uri: xsd:string
+    equals_string: "fixed-value"
+
+enums:
+  Status:
+    description: a real LinkML enum
+    permissible_values:
+      ACTIVE:
+      INACTIVE:
+
+classes:
+  Foo:
+    attributes:
+      fixed:
+        range: FixedType
+      status:
+        range: Status

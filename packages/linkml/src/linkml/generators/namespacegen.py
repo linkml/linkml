@@ -29,13 +29,13 @@ class NamespaceGenerator(PythonGenerator):
 
     def gen_schema(self) -> str:
         split_descripton = "\n#              ".join(split_line(be(self.schema.description), split_len=100))
+        # The generation_date line is omitted when the timestamp is suppressed, but the rest
+        # of the metadata banner is still emitted.
+        generation_date = f"# Generation date: {self.schema.generation_date}\n" if self.schema.generation_date else ""
         head = (
-            f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
-# Generation date: {self.schema.generation_date}
-# Schema: {self.schema.name}
-#"""
-            if self.schema.generation_date
-            else ""
+            f"# Auto generated from {self.schema.source_file} by "
+            f"{self.generatorname} version: {self.generatorversion}\n"
+            f"{generation_date}# Schema: {self.schema.name}\n#"
         )
 
         return f'''{head}
