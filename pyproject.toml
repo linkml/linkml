@@ -115,6 +115,7 @@ markers = [
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator",
   "arrays: Array specifications!",
+  "diffable_rdf: tests that exercise the diffable-rdf integration (--diff-stable); run as a canary against linkml in diffable-rdf's own CI",
 ]
 
 # https://docs.astral.sh/ruff/settings/

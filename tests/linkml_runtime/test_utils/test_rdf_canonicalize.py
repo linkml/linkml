@@ -529,12 +529,14 @@ def _changed_line_count(before: str, after: str) -> int:
     return sum(1 for line in diff if line[:1] in "+-" and not line.startswith(("+++", "---")))
 
 
+@pytest.mark.diffable_rdf
 def test_diff_stable_is_opt_in():
     """The default must keep producing exactly the output it produced before."""
     graph = _make_graph_with_bnodes()
     assert canonicalize_rdf_graph(graph) == canonicalize_rdf_graph(graph, diff_stable=False)
 
 
+@pytest.mark.diffable_rdf
 def test_diff_stable_preserves_semantics():
     """Relabelling blank nodes must not change what the graph means."""
     graph = _make_graph_with_bnodes()
@@ -547,6 +549,7 @@ def test_diff_stable_preserves_semantics():
     assert rdflib.compare.isomorphic(plain, stable)
 
 
+@pytest.mark.diffable_rdf
 def test_diff_stable_is_deterministic():
     """Diff stability must not cost determinism, which is the stronger property."""
     graph = _make_graph_with_bnodes()
@@ -554,6 +557,7 @@ def test_diff_stable_is_deterministic():
     assert len(outputs) == 1
 
 
+@pytest.mark.diffable_rdf
 def test_diff_stable_confines_an_insertion_to_the_lines_it_touches():
     """Inserting one subject must not relabel the blank nodes of the others.
 
@@ -617,6 +621,7 @@ def _generator_cases():
     ]
 
 
+@pytest.mark.diffable_rdf
 @pytest.mark.parametrize(("generator", "kwargs"), _generator_cases())
 def test_diff_stable_reaches_every_rdf_generator(tmp_path, generator, kwargs):
     """Every RDF generator must actually apply the option, not merely accept it.
@@ -644,6 +649,7 @@ def test_diff_stable_reaches_every_rdf_generator(tmp_path, generator, kwargs):
     )
 
 
+@pytest.mark.diffable_rdf
 def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback():
     """A request the fallback cannot honour must be reported, not ignored.
 
