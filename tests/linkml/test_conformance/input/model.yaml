@@ -1,0 +1,191 @@
+id: https://w3id.org/linkml/conformance/
+name: conformance
+title: Schema for LinkML conformance tests
+description: |
+  Schema describing the generic conformance tests for LinkML runtimes, tools, and generators.
+  Implementations of this conformance tests are expected to load instances of classes described here and implement 
+  handling for the described actions and assertions generically, which allows the test suite to be decoupled from any
+  specific LinkML implementation.
+
+status: testing
+comments:
+  - Initial version of the model that serves more as a demonstration of the possibility
+
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  conformance: https://w3id.org/linkml/conformance/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+in_language: en
+
+slots:
+  type:
+    title: Type of element
+    range: string
+    designates_type: true
+  title:
+    description: Human readable name of an element
+    range: string
+  description:
+    description: Description of an element, including the implementation guide
+    range: string
+  name:
+    key: true
+    title: Internal name of an element
+    range: string
+    required: true
+  instance:
+    title: Path to a serialized instance
+    description: |
+      Should be a file path to a file containing the serialized form of the instance, present somewhere in the directory structure.
+    range: string
+    required: true
+
+
+classes:
+  Any:
+    class_uri: linkml:Any
+
+  # Base
+
+  Manifest:
+    description: A test manifest representing a grouping of related tests
+    tree_root: true
+    attributes:
+      entries:
+        range: Test
+        multivalued: true
+        inlined: true
+    slots:
+      - name
+      - title
+      - description
+
+  Test:
+    description: A single test consisting of a schema, action, and assertion
+    attributes:
+      action:
+        title:
+        range: Action
+        required: true
+        inlined: true
+      assertion:
+        range: Assertion
+        required: true
+        inlined: true
+      schema:
+        title: Path to the schema that is being tested
+        range: string
+        required: true
+    slots:
+      - name
+      - title
+      - description
+
+  Action:
+    abstract: true
+    title: Superclass for all LinkML actions
+    slots:
+      - type
+      - title
+      - description
+
+  Assertion:
+    abstract: true
+    title: Superclass for all LinkML assertions
+    slots:
+      - type
+      - title
+      - description
+
+  # ACTIONS
+
+  LoadAction:
+    is_a: Action
+    description: |
+      The implementation should load the schema into a string and pass it as the Action result.
+
+  DeriveAction:
+    is_a: Action
+    description: |
+      The implementation should run the schema derivation procedure as defined in the specification, 
+      serialize the derived schema, and pass the serialized schema as the Action result.
+
+  LintAction:
+    is_a: Action
+    description: |
+      The implementation should run a schema quality analyzer on the specified schema and report any issues found.
+      The human-readable output of such a analyzer should be passed as the Action result.
+
+  GenerateAction:
+    abstract: true
+    is_a: Action
+    title: Base action for generating artefacts
+
+  JsonSchemaGenerate:
+    is_a: GenerateAction
+    description: |
+      The implementation should use a JSON Schema generator if it has one, skipping the test if it does not.
+      The generated JSON Schema should be passed as the Action result.
+      
+
+  # ASSERTIONS
+
+  LoadsAssertion:
+    is_a: Assertion
+    title: Schema can be loaded
+    description: |
+      An implementation of this assertion must load the result of an Action into an appropriate internal data structure.
+      Should the process fail, the assertion fails.
+
+  StringAssertion:
+    is_a: Assertion
+    title: Assertion on the string output
+    description: |
+      An implementation of this assertion must load the result of an Action as a string, then, for each value in 'includes',
+      it must check that the value is a substring of the result of an Action, failing if any of the strings are not present.
+      Should 'includes' be empty, the assertion should pass.
+    attributes:
+      includes:
+        title: Includes substrings
+        range: string
+        multivalued: true
+
+  JsonPointerAssertion:
+    is_a: Assertion
+    description: |
+      An implementation of this assertion must load the result of an Action as a YAML document, and then dereference a 
+      JSON pointer provided in the 'path' attribute and compare it against the 'value'.
+    attributes:
+      path:
+        description: The JSON pointer that will be dereferenced.
+        range: string
+        required: true
+      value:
+        description: The expected value to be found after dereferencing the JSON pointer.
+        range: Any
+        required: true
+
+  JsonSchemaAccepts:
+    is_a: Assertion
+    title: The generated JSON Schema accepts the specified instance
+    description: |
+      An implementation of this assertion must load the result of an Action as a JSON Schema into a JSON Schema validator,
+      fetch the instance from the specified file, and validate the instance using the validator. The validator should 
+      accept the instance and not report any issues with it.
+    slots:
+      - instance
+
+  JsonSchemaRejects:
+    is_a: Assertion
+    title: The generated JSON Schema rejects the specified instance
+    description: |
+      An implementation of this assertion must load the result of an Action as a JSON Schema into a JSON Schema validator,
+      fetch the instance from the specified file, and validate the instance using the validator. The validator should 
+      report a problem with the instance.
+    slots:
+      - instance
