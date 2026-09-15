@@ -234,23 +234,26 @@ Note that in order for mermaid to render properly, you will need to tell `gen-do
 gen-doc --dialect myst ...
 ```
 
-## Can I customize the Markdown generation for my schema site?
+## Can I change the default doc style/content for my LinkML schema project?
 
-You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.
+Yes. `gen-doc` uses [Jinja2](https://jinja.palletsprojects.com/) templates to render Markdown, so you can customize both the style and the wording of your generated documentation. For example, if your user community prefers "Field" or "Variable" instead of "Slot":
 
-The protocol is:
+This requires a basic understanding of Jinja2 templates.
 
-1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen) to your own repo in a folder `templates`
-2. customize these templates
-3. run `gen-doc --template-directory templates -d docs my_schema.yaml`
-4. run `mkdocs serve` to test locally
-5. iterate until they look how you want, then deploy (e.g. `mkdocs gh-deploy`)
+1. Copy the templates you want to customize from the [default docgen templates](https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen) into a folder in your project. To change slot wording, copy [`slot.md.jinja2`](https://github.com/linkml/linkml/blob/main/packages/linkml/src/linkml/generators/docgen/slot.md.jinja2).
+2. Edit the copied template, replacing the default wording (for example, "Slot" with "Field" or "Variable").
+3. Point `gen-doc` at the directory containing your customized templates:
 
-An example repo that uses highly customized templates: [GSC MIxS](https://genomicsstandardsconsortium.github.io/mixs)
+   ```bash
+   gen-doc --template-directory templates -d docs my_schema.yaml
+   ```
 
-Note that one disadvantage of using custom templates is that you will not automatically get improvements
-made back in the core templates - you will need to manually sync. We are working on ways to make the
-Jinja2 templates more compositional so that this is less of an issue.
+4. Run `mkdocs serve` to preview the generated site locally.
+5. Iterate until the pages look the way you want, then deploy (for example, `mkdocs gh-deploy`).
+
+See the [GSC MIxS project](https://genomicsstandardsconsortium.github.io/mixs) and its [source documentation templates](https://github.com/GenomicsStandardsConsortium/mixs/tree/main/src/doc-templates) for a real-world example of this kind of customization; MIxS renames "slots" to "terms".
+
+Note that one disadvantage of using custom templates is that you will not automatically receive improvements made to the core templates, so you will need to sync them manually. We are working on ways to make the Jinja2 templates more compositional so that this is less of an issue.
 
 ## Can I use LinkML in conjunction with SQL Databases?
 
