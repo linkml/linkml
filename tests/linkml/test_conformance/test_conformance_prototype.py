@@ -5,9 +5,10 @@ action to run against it, and an assertion about the action's output. The manife
 is loaded into classes generated from the conformance model, so the suite itself
 stays independent of any one LinkML implementation.
 
-Every manifest entry becomes its own test case, named after the entry.
+The model, generated classes, test manifest, and test resources are vendored and
+checked in. In the future they should be fetched alongside the metamodel definitions.
 
-The generated classes are checked in. To regenerate them after changing the model:
+To regenerate them after changing the model:
 
     uv run gen-python tests/linkml/test_conformance/input/model.yaml \
         > tests/linkml/test_conformance/generated.py
