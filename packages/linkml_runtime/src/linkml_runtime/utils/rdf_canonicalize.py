@@ -36,6 +36,7 @@ with stable blank node labels and sorted triples.
    post-process the output to expand such CURIEs to full ``<IRI>`` form.
 """
 
+import hashlib
 import io
 import re
 import warnings
@@ -284,9 +285,89 @@ def _is_safe_prefix_iri(iri: str) -> bool:
     return True
 
 
+def _relabel_blank_nodes_by_hash(triples: list["ox.Triple"]) -> list["ox.Triple"]:
+    """Relabel blank nodes by a Merkle hash of their canonical subtree.
+
+    RDFC-1.0 gives each blank node a *stable content-derived hash* internally,
+    but then labels them ``_:c14n0, _:c14n1, ...`` by ordinal position in a
+    global sort.  That ordinal is what makes diffs churn: inserting one blank
+    node shifts every later label.  This pass re-derives a label from each
+    blank node's own subtree content, so unrelated nodes keep their identifier
+    across edits (change-locality).
+
+    The label is a hash over the node's outgoing triples, substituting each
+    blank-node object with its own (recursively computed) hash.  This is
+    well-defined for acyclic blank-node structure (trees/DAGs), which covers
+    essentially all LinkML-generated RDF (OWL restrictions, SHACL property
+    shapes, RDF lists).  Blank nodes whose reachable closure contains a cycle
+    are left with their ``c14n`` label (correctness over locality).  Genuinely
+    automorphic siblings (identical subtree content) share a hash and are kept
+    distinct with a bare counter suffix, mirroring the label contract of
+    oxigraph's ``UnstableHashedIds`` variant (oxigraph#1824).
+
+    :param triples: RDFC-1.0 canonicalized triples (blank nodes labeled ``c14nN``).
+    :return: Triples with content-derived blank-node labels where computable.
+    """
+    out_edges: dict[str, list[tuple[str, ox.Term]]] = {}
+    for t in triples:
+        if isinstance(t.subject, ox.BlankNode):
+            out_edges.setdefault(t.subject.value, []).append((str(t.predicate), t.object))
+
+    # Merkle hash per blank node; None marks a node that reaches a cycle.
+    memo: dict[str, str | None] = {}
+
+    def node_hash(bid: str, stack: frozenset[str]) -> str | None:
+        if bid in memo:
+            return memo[bid]
+        if bid in stack:
+            return None  # back-edge: this closure contains a cycle
+        inner_stack = stack | {bid}
+        reprs: list[str] = []
+        for pred, obj in out_edges.get(bid, []):
+            if isinstance(obj, ox.BlankNode):
+                child = node_hash(obj.value, inner_stack)
+                if child is None:
+                    memo[bid] = None
+                    return None
+                obj_repr = "B:" + child
+            else:
+                obj_repr = "T:" + str(obj)
+            reprs.append(pred + "\x00" + obj_repr)
+        digest = hashlib.sha256("\x01".join(sorted(reprs)).encode("utf-8")).hexdigest()
+        memo[bid] = digest
+        return digest
+
+    for bid in out_edges:
+        node_hash(bid, frozenset())
+
+    # Group by hash to disambiguate genuine automorphic collisions.
+    by_hash: dict[str, list[str]] = {}
+    for bid, digest in memo.items():
+        if digest is not None:
+            by_hash.setdefault(digest, []).append(bid)
+
+    # Label contract matches oxigraph's UnstableHashedIds variant (oxigraph#1824,
+    # merged upstream but unreleased): the label is the bare hash, and colliding
+    # (automorphic) siblings get a bare counter suffix -- ``hash``, ``hash1``, ...
+    # Keeping the same shape means swapping to the real oxigraph hashes later
+    # changes only the hash values, not the labeling contract.
+    label_map: dict[str, str] = {}
+    for digest, bids in by_hash.items():
+        for k, bid in enumerate(sorted(bids)):
+            label_map[bid] = digest[:24] if k == 0 else f"{digest[:24]}{k}"
+
+    def remap(term: "ox.Term") -> "ox.Term":
+        if isinstance(term, ox.BlankNode) and term.value in label_map:
+            return ox.BlankNode(label_map[term.value])
+        return term
+
+    return [ox.Triple(remap(t.subject), t.predicate, remap(t.object)) for t in triples]
+
+
 def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
+    stable_blank_node_labels: bool = False,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -300,6 +381,9 @@ def canonicalize_rdf_graph(
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :param stable_blank_node_labels: If True, relabel blank nodes by a hash of
+        their subtree content instead of RDFC-1.0's ordinal ``c14nN`` labels,
+        so a small graph change yields a small diff (change-locality).
     :return: Deterministic string serialization of the graph.
     """
     ox_format = _FORMAT_MAP.get(output_format.lower())
@@ -346,8 +430,11 @@ def canonicalize_rdf_graph(
     # is load-bearing for byte-identical output across runs; see
     # tests/linkml_runtime/test_utils/test_rdf_canonicalize.py::test_sort_is_load_bearing.
     quads = list(dataset)
+    canonical_triples = [ox.Triple(q.subject, q.predicate, q.object) for q in quads]
+    if stable_blank_node_labels:
+        canonical_triples = _relabel_blank_nodes_by_hash(canonical_triples)
     sorted_triples = sorted(
-        (ox.Triple(q.subject, q.predicate, q.object) for q in quads),
+        canonical_triples,
         key=lambda t: (str(t.subject), str(t.predicate), str(t.object)),
     )
 
