@@ -1,4 +1,5 @@
 import json
+import re
 import textwrap
 
 import pytest
@@ -1624,6 +1625,37 @@ def test_eligible_enum_structured_value_still_works(tmp_path):
     # The meaning → @id mapping makes the structured value a node with @id
     assert isinstance(subjects[0], URIRef), f"Expected URIRef, got {type(subjects[0]).__name__}: {subjects[0]}"
     assert str(subjects[0]) == "https://example.org/myns/Red"
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_use_uris(caplog, input_path, use_curies):
+    schema = input_path("multiple-ontologies.yaml")
+    generator = ContextGenerator(schema, mergeimports=True, use_curies=use_curies)
+    generated = json.loads(generator.serialize())
+    ctx = generated["@context"]
+    if use_curies:
+        assert "schema:Event" in ctx
+        assert "schema:location" in ctx
+        assert "s4city:Event" in ctx
+        assert "s4ehaw:hasLocation" in ctx
+        assert "ex:something_else" in ctx
+
+        expected_warning = False
+        for log_record in caplog.records:
+            if log_record.levelname == "WARNING" and re.match(
+                ".*https://saref.etsi.org/saref4auto/RendezvousLocation.*",
+                log_record.message,
+            ):
+                expected_warning = True
+        assert expected_warning
+
+        assert "SarefEvent" not in ctx
+        assert "schema_location" not in ctx
+    else:
+        assert "SchemaEvent" in ctx
+        assert "schema_location" in ctx
+        assert "SarefEvent" in ctx
+        assert "saref_location" in ctx
 
 
 def test_kitchen_sink_employment_event_type_falls_back(kitchen_sink_path):

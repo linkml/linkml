@@ -1,0 +1,34 @@
+id: https://example.org/unsafe-prefix-names
+name: unsafe_prefix_names
+description: >-
+  Schema whose prefixes cover the unsafe-identifier categories that previously
+  caused NameError or variable-shadowing in generated Python.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  # dotted prefix — the core reproduction case from the issue
+  allotrope.equipment: http://purl.allotrope.org/ontologies/equipment#AFE_
+  # hyphenated prefix
+  my-prefix: https://example.org/my-prefix/
+  # Python builtin name (would shadow builtins.float without the fix)
+  float: https://example.org/float/
+  # Python hard keyword
+  in: https://example.org/in/
+  # plain safe prefix — must remain unchanged
+  ex: https://example.org/ex/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  Thing:
+    class_uri: ex:Thing
+    attributes:
+      id:
+        identifier: true
+        range: string
+      name:
+        range: string
