@@ -11,7 +11,7 @@ from jinja2 import Template
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
-from linkml.utils.generator import read_generator_config, shared_arguments
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
@@ -227,6 +227,7 @@ class JavaGenerator(OOCodeGenerator):
     generatorversion = "0.0.1"
     valid_formats = ["java"]
     file_extension = "java"
+    config_section_name = "java"
 
     # ObjectVars
     template_file: str | None = None
@@ -495,8 +496,9 @@ class JavaGenerator(OOCodeGenerator):
     "--config-file",
     "-C",
     type=click.File("rb"),
-    help="Path to a gen-project-style YAML config file setting "
-    "'generator_args: {java: {package: ...}}'. An explicit --package always takes "
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {java: {package: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
     "precedence over the config file.",
 )
 @click.option(
@@ -522,10 +524,11 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--use-aliases/--no-use-aliases", default=False, help="Use aliases when available to name fields")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
+@click.pass_context
 def cli(
+    ctx,
     yamlfile,
     output_directory=None,
-    package=None,
     config_file=None,
     template_dir=None,
     template_variant=None,
@@ -543,9 +546,23 @@ def cli(
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
-    if package is None:
-        package = read_generator_config(config_file, "java").get("package")
-    JavaGenerator.validate_generator_args({"package": package})
+    # --package now consumed from **args so config overlay can fill, and it reaches the generator
+    config = read_generator_config(config_file, JavaGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    JavaGenerator.validate_generator_args(args)
+    # rebind named locals so overlaid config values are honored and never collide with **args below
+    output_directory = args.pop("output_directory", output_directory)
+    template_dir = args.pop("template_dir", template_dir)
+    template_variant = args.pop("template_variant", template_variant)
+    template_file = args.pop("template_file", template_file)
+    generate_records = args.pop("generate_records", generate_records)
+    genmeta = args.pop("genmeta", genmeta)
+    classvars = args.pop("classvars", classvars)
+    slots = args.pop("slots", slots)
+    true_enums = args.pop("true_enums", true_enums)
+    use_aliases = args.pop("use_aliases", use_aliases)
+    extra_template = args.pop("extra_template", extra_template)
+    visitor = args.pop("visitor", visitor)
     if generate_records:
         template_variant = "records"
     if template_file is not None:
@@ -568,7 +585,6 @@ def cli(
     # its own traceback rather than being caught and mistaken for one.
     generator = JavaGenerator(
         yamlfile,
-        package=package,
         template_dir=template_dir,
         template_file=template_file,
         genmeta=genmeta,

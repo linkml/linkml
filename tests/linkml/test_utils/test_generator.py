@@ -7,6 +7,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
+from pathlib import Path
 from typing import cast
 
 import click
@@ -14,7 +15,13 @@ import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators.shaclgen import ShaclGenerator
-from linkml.utils.generator import Generator, config_mapping, parse_config_yaml, read_generator_config
+from linkml.utils.generator import (
+    Generator,
+    apply_config_defaults,
+    config_mapping,
+    parse_config_yaml,
+    read_generator_config,
+)
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -885,3 +892,136 @@ def test_generation_date_suppression_does_not_mutate_callers_schema():
     assert schema.generation_date == "2020-01-01T00:00:00"
     assert gen.schema is not schema
     assert gen.schema.generation_date is None
+
+
+# ------------------------------------------------------------------------------
+# apply_config_defaults: the overlay a CLI runs after read_generator_config so a
+# config file fills only options the user did not set on the command line.
+# Uses a minimal throwaway click command so the tests exercise the real click
+# ParameterSource machinery, not a mock of it.
+# ------------------------------------------------------------------------------
+
+
+def _run_with_config(config, cli_args=()):
+    """Invoke a throwaway click command, returning its resolved kwargs and the click result."""
+    from click.testing import CliRunner
+
+    captured: dict = {}
+
+    @click.command()
+    @click.option("--foo")
+    @click.option("--bar/--no-bar", default=False)
+    @click.option("--baz", multiple=True)
+    @click.option("--path-opt", type=click.Path(path_type=Path))
+    @click.option("--fmt", type=click.Choice(["a", "b"]))
+    @click.option("--verbose", "-v", count=True)
+    @click.version_option("1.0")
+    @click.pass_context
+    def runner_cmd(ctx, **kwargs):
+        apply_config_defaults(ctx, config, kwargs)
+        captured.update(kwargs)
+
+    return captured, CliRunner().invoke(runner_cmd, list(cli_args), standalone_mode=False)
+
+
+def _invoke_with_config(config, cli_args=()):
+    """Invoke the throwaway command, asserting it succeeded, and return its resolved kwargs."""
+    captured, result = _run_with_config(config, cli_args)
+    assert result.exception is None, result.output
+    return captured
+
+
+def test_apply_config_defaults_overlays_when_option_is_at_default():
+    """Config value wins when the user did not pass the option -- the CLI/env/default
+    precedence chain, without which config-file support would do nothing."""
+    kwargs = _invoke_with_config({"foo": "from-config"})
+    assert kwargs["foo"] == "from-config"
+
+
+def test_apply_config_defaults_command_line_beats_config():
+    """A value explicitly passed on the command line is never overwritten by the
+    config; this is the precedence guarantee documented in --config-file's help."""
+    kwargs = _invoke_with_config({"foo": "from-config"}, cli_args=["--foo", "from-cli"])
+    assert kwargs["foo"] == "from-cli"
+
+
+def test_apply_config_defaults_unknown_key_warns_per_key(caplog):
+    """Each unknown key gets its own warning so a config-file typo is individually
+    obvious, rather than being silently dropped or collapsed into a single message."""
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        kwargs = _invoke_with_config({"typo_one": 1, "typo_two": 2, "foo": "ok"})
+    messages = [rec.getMessage() for rec in caplog.records]
+    assert any("typo_one" in m for m in messages)
+    assert any("typo_two" in m for m in messages)
+    assert kwargs["foo"] == "ok"
+
+
+def test_apply_config_defaults_skips_parse_time_callback_options():
+    """--verbose etc. run click callbacks at parse time; a config value would be
+    stored but never trigger the callback, so those options are honored only from
+    the command line to avoid a silently-ineffective config setting."""
+    kwargs = _invoke_with_config({"verbose": 3})
+    assert kwargs["verbose"] == 0
+
+
+def test_apply_config_defaults_empty_config_is_noop():
+    """An empty (or missing) generator section leaves args untouched -- the common
+    case for a shared config file that only names some generators. ``ctx`` is never
+    dereferenced on this path, so passing ``None`` would crash if it were."""
+    args = {"foo": None, "bar": False}
+    assert apply_config_defaults(None, {}, args) is args
+    assert args == {"foo": None, "bar": False}
+
+
+def test_apply_config_defaults_converts_values_with_the_option_type():
+    """A config value is cast by its option's click type, so `path_opt: /tmp` reaches the
+    generator as a Path -- the same object the command line yields, not a raw str that
+    blows up later on the first Path method call."""
+    kwargs = _invoke_with_config({"path_opt": "/tmp"})
+    assert kwargs["path_opt"] == Path("/tmp")
+
+
+def test_apply_config_defaults_rejects_a_value_the_option_type_refuses():
+    """An invalid config value fails as a click usage error, exactly as it would on the
+    command line, instead of reaching the generator and crashing there."""
+    _, result = _run_with_config({"fmt": "nope"})
+    assert isinstance(result.exception, click.BadParameter)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [("one", ("one",)), (["one", "two"], ("one", "two"))],
+)
+def test_apply_config_defaults_wraps_scalars_for_repeatable_options(value, expected):
+    """A repeatable option gets a tuple whether the YAML supplied a scalar or a list.
+    Without the scalar wrap, click iterates the string per character and the generator
+    silently acts on 'o', 'n', 'e' instead of 'one'."""
+    kwargs = _invoke_with_config({"baz": value})
+    assert kwargs["baz"] == expected
+
+
+def test_apply_config_defaults_ignores_options_click_never_passes(caplog):
+    """`--version` is expose_value=False, so click never hands it to the callback; naming
+    it in a config file is a typo like any other, and overlaying it would inject a kwarg
+    the generator's __init__ cannot accept."""
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        kwargs = _invoke_with_config({"version": "1.2"})
+    assert "version" not in kwargs
+    assert any("version" in rec.getMessage() for rec in caplog.records)
+
+
+def test_apply_config_defaults_returns_the_same_dict():
+    """The helper mutates and returns the same dict, so callers can chain or ignore
+    the return value; the type contract mirrors ``dict.update``."""
+    from click.testing import CliRunner
+
+    @click.command()
+    @click.option("--foo")
+    @click.pass_context
+    def cmd(ctx, **kwargs):
+        args = {}
+        result = apply_config_defaults(ctx, {"foo": "x"}, args)
+        assert result is args
+        assert args == {"foo": "x"}
+
+    assert CliRunner().invoke(cmd, [], standalone_mode=False).exception is None

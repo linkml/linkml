@@ -473,10 +473,66 @@ def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
     assert f"expected a YAML mapping at {where}" in result.output
 
 
+def test_cli_config_file_sets_a_repeatable_option(tmp_path):
+    """A repeatable option (`--visitor`) accepts a YAML scalar as a one-element list.
+    Treated as a bare string it would be iterated per character, generating a visitor
+    per letter instead of the one that was asked for."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n    visitor: Thing\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (out_dir / "IThingVisitor.java").exists()
+    assert [p.name for p in out_dir.glob("I*Visitor.java")] == ["IThingVisitor.java"]
+
+
+def test_cli_config_file_typed_option_is_converted(tmp_path):
+    """A config value for a `click.Path` option arrives as a Path, like it would from the
+    command line; as a raw str it reaches the generator and fails on the first Path call."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    template_dir = tmp_path / "templates"
+    template_dir.mkdir()
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(f"generator_args:\n  java:\n    package: org.example\n    template_dir: {template_dir}\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example")
+
+
+def test_cli_config_file_unknown_key_is_warned_not_injected(tmp_path, caplog):
+    """A key click never exposes (`version`, from --version) is a config typo: warn and
+    skip it, rather than passing a kwarg the generator's __init__ would reject."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n    version: '1.2'\n")
+    out_dir = tmp_path / "out"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        result = CliRunner().invoke(
+            cli,
+            ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert any("version" in rec.getMessage() for rec in caplog.records)
+
+
 def test_cli_config_file_real_project_config_shape(tmp_path):
     """gen-java's --config-file accepts a full, real-world gen-project config.yaml
-    (other generators' sections, excludes/includes, etc.) and only reads
-    generator_args.java.package out of it, ignoring the rest."""
+    (other generators' sections, excludes/includes, etc.), reading only its own
+    generator_args.java section and ignoring the other generators'."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
