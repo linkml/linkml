@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -131,6 +132,11 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
+    include_generation_date: bool = False
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible (byte-stable) across runs; the date of generation is normally recoverable
+    from version control."""
+
     useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
@@ -209,6 +215,15 @@ class Generator(metaclass=abc.ABCMeta):
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            if (
+                isinstance(schema, SchemaDefinition)
+                and not self.include_generation_date
+                and schema.generation_date is not None
+            ):
+                # SchemaView keeps a reference to a SchemaDefinition it is handed,
+                # so clearing generation_date below would reach back into the
+                # caller's object. Copy first so the generator owns what it mutates.
+                schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, str | Path):
@@ -219,6 +234,12 @@ class Generator(metaclass=abc.ABCMeta):
             # This ensures consistency with SchemaLoader-based generators.
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
+
+        # Drop the load-time generation_date stamp unless it was explicitly asked for.
+        # This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD
+        # generators, so clearing it here covers every generator uniformly.
+        if not self.include_generation_date and self.schema is not None:
+            self.schema.generation_date = None
 
         self._init_namespaces()
 
@@ -948,7 +969,18 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
+def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+    """Get command-line arguments common to all generators.
+
+    Use this decorator on the Click entry point for a generator to automatically
+    configure the entry point to accept all common options.
+
+    :param g: The generator for which to add options.
+    :param accepts_directory_input: If True, the generator's entry point will
+        accept both a file or a directory as its main input. The default is to
+        accept a file only.
+    """
+
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
             logging.basicConfig(level=logging.DEBUG, force=True)
@@ -960,7 +992,9 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
             sys.tracebacklimit = 0
 
     def decorator(f: Command) -> Command:
-        f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
+        f.params.append(
+            Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=accepts_directory_input, path_type=Path))
+        )
         f.params.append(
             Option(
                 ("--format", "-f"),
@@ -976,6 +1010,15 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
                 default=True,
                 show_default=True,
                 help="Include metadata in output",
+            )
+        )
+        f.params.append(
+            Option(
+                ("--generation-date/--no-generation-date", "include_generation_date"),
+                default=False,
+                show_default=True,
+                help="Stamp output with the generation_date timestamp. Off by default so output is "
+                "reproducible across runs.",
             )
         )
         f.params.append(
@@ -1018,22 +1061,49 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
     return decorator
 
 
-def _config_mapping(value: Any, where: str) -> dict[str, Any]:
-    """Check that one level of a config file is a mapping, and hand it back.
+def parse_config_yaml(value: Any, source: str) -> Any:
+    """Parse YAML, naming what was being read if it does not parse.
+
+    Unparsable YAML is a mistake in what was supplied, so it is reported against the
+    option it came from rather than escaping as a traceback. PyYAML reports a scalar it
+    cannot construct (an impossible date such as ``2024-02-30``) as a bare ``ValueError``
+    rather than a ``YAMLError``; that is a parse failure too, and is named the same way.
+
+    :param value: YAML text, or an open file to read it from.
+    :param source: The option it came from, e.g. ``"--config-file"``.
+    :return: Whatever the YAML held.
+    :raises ValueError: if the YAML is malformed.
+    """
+    try:
+        return yaml.safe_load(value)
+    except (yaml.YAMLError, ValueError) as e:
+        raise ValueError(f"{source}: could not parse as YAML: {e}") from e
+
+
+def config_mapping(value: Any, where: str, source: str) -> dict[str, Any]:
+    """Check that one level of a configuration is a mapping, and hand it back.
 
     An empty value (``java:`` with nothing under it) reads as None saying "nothing
     configured here", so it returns as empty mapping. Anything else that is not a
-    mapping is a mistake in the file, and says so rather than being skipped.
+    mapping is a mistake in the configuration, and says so where it was given rather
+    than failing later.
 
-    :param value: Whatever was found at this point in the file.
+    Shared by every entry point that reads this configuration format, so a given
+    mistake is reported the same way whether it reaches ``gen-project`` or one of the
+    individual generator CLIs. ``ValueError`` rather than :class:`click.UsageError`,
+    so a caller using this as a library gets the same checks without click semantics;
+    command-line callers translate it at their own boundary.
+
+    :param value: Whatever was found at this point in the configuration.
     :param where: Where that was, for the error message, e.g. ``"'generator_args'"``.
+    :param source: The option it came from, e.g. ``"--config-file"``.
     :return: The mapping, empty if nothing was configured.
-    :raises click.UsageError: if the value is neither a mapping nor empty.
+    :raises ValueError: if the value is neither a mapping nor empty.
     """
     if value is None:
         return {}
     if not isinstance(value, dict):
-        raise click.UsageError(f"--config-file: expected a YAML mapping at {where}, found {type(value).__name__}")
+        raise ValueError(f"{source}: expected a YAML mapping at {where}, found {type(value).__name__}")
     return value
 
 
@@ -1065,12 +1135,12 @@ def read_generator_config(config_file: IO[bytes] | None, generator_name: str) ->
     """
     if config_file is None:
         return {}
+    source = "--config-file"
+    # the shared checks raise ValueError so they can be reused off the command line;
+    # this is a CLI entry point, so a bad file is reported as a usage error here
     try:
-        parsed = yaml.safe_load(config_file)
-    except yaml.YAMLError as e:
-        # unparsable YAML is a mistake in the file, so report it the same way a
-        # misshapen one is, rather than as a traceback
-        raise click.UsageError(f"--config-file: could not parse as YAML: {e}") from e
-    config_data = _config_mapping(parsed, "the top level")
-    generator_args = _config_mapping(config_data.get("generator_args"), "'generator_args'")
-    return _config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'")
+        config_data = config_mapping(parse_config_yaml(config_file, source), "the top level", source)
+        generator_args = config_mapping(config_data.get("generator_args"), "'generator_args'", source)
+        return config_mapping(generator_args.get(generator_name), f"'generator_args.{generator_name}'", source)
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
