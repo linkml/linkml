@@ -65,7 +65,7 @@ components:
 # OpenAPI Schema Object keys a template placeholder is allowed to override.
 #
 # Various annotations can describe a schema without constraining it, so an override can
-# change what a reader sees but never alter structural aspects of the schema, and never
+# change what a reader sees but never alter structural aspects of the schema, and never affect
 # whether a payload is accepted. So any JSON body the generated schema accepted before
 # an override is still accepted after it, and a body it rejected is still rejected.
 #
