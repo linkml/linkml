@@ -1,0 +1,4 @@
+@prefix : <https://neverblink.eu/linkml/tests/basic/> .
+
+_:b1 a :SomeClass;
+    :some_other_slot "not an integer" .

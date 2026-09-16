@@ -164,6 +164,7 @@ known-first-party = ["linkml", "linkml_runtime"]
 "packages/linkml_runtime/src/linkml_runtime/processing/validation_datamodel.py" = ["UP007", "UP045"]
 "packages/linkml/src/linkml/workspaces/datamodel/workspaces.py" = ["UP007", "UP045"]
 "packages/linkml/src/linkml/reporting/model.py" = ["UP007", "UP045"]
+"tests/linkml/test_conformance/generated.py" = ["UP007"]
 
 # Notebooks can have unsorted imports
 "tests/linkml/test_notebooks/input/*" = ["E402"]
