@@ -1086,6 +1086,19 @@ wheels = [
 ]
 
 [[package]]
+name = "diffable-rdf"
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyoxigraph" },
+    { name = "rdflib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/df/1d71c0c984eac1cfd25531aabf84528941b01083c875da49d44882d1b5af/diffable_rdf-0.4.0.tar.gz", hash = "sha256:a84afaa10332e6a039b6ddcabf76bced3049e4da467c88ee786d0fa35218111e", size = 838040, upload-time = "2026-09-11T11:43:12.844Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7f/49/b62ee864fe6769b759f04e3709fd79711b1cdf49223b1bb0e985e507ead3/diffable_rdf-0.4.0-py3-none-any.whl", hash = "sha256:c59c57429465f786fdbc8d38ddbb687da16748c5752f0c2ac4a77b5527aa9aed", size = 46126, upload-time = "2026-09-11T11:43:11.536Z" },
+]
+
+[[package]]
 name = "distlib"
 version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2618,6 +2631,7 @@ dependencies = [
     { name = "click" },
     { name = "curies" },
     { name = "deprecated" },
+    { name = "diffable-rdf" },
     { name = "hbreader" },
     { name = "isodate", marker = "python_full_version < '3.11'" },
     { name = "json-flattener" },
@@ -2650,6 +2664,7 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'dev'" },
     { name = "curies", specifier = ">=0.14.6" },
     { name = "deprecated" },
+    { name = "diffable-rdf", specifier = ">=0.4.0" },
     { name = "hbreader" },
     { name = "isodate", marker = "python_full_version < '3.11'", specifier = ">=0.7.2,<1.0.0" },
     { name = "json-flattener", specifier = ">=0.1.9" },
