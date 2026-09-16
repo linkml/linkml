@@ -1,0 +1,11 @@
+id: https://example.org/baz
+name: org-example-baz
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+
+  Baz:
