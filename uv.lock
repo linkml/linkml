@@ -2408,6 +2408,11 @@ dependencies = [
     { name = "watchdog" },
 ]
 
+[package.optional-dependencies]
+diff-stable = [
+    { name = "linkml-runtime", extra = ["diff-stable"] },
+]
+
 [package.dev-dependencies]
 bigquery = [
     { name = "sqlalchemy-bigquery" },
@@ -2422,6 +2427,7 @@ dev = [
     { name = "ipython-genutils" },
     { name = "jsonpatch" },
     { name = "jupyter" },
+    { name = "linkml-runtime", extra = ["diff-stable"] },
     { name = "mock" },
     { name = "myst-nb" },
     { name = "nbconvert" },
@@ -2474,6 +2480,7 @@ shacl = [
 tests = [
     { name = "black" },
     { name = "duckdb" },
+    { name = "linkml-runtime", extra = ["diff-stable"] },
     { name = "numpydantic" },
     { name = "pyshacl" },
     { name = "sqlalchemy-bigquery" },
@@ -2513,6 +2520,7 @@ requires-dist = [
     { name = "jsonasobj2", specifier = ">=1.0.3,<2.0.0" },
     { name = "jsonschema", extras = ["format"], specifier = ">=4.26.0" },
     { name = "linkml-runtime", editable = "packages/linkml_runtime" },
+    { name = "linkml-runtime", extras = ["diff-stable"], marker = "extra == 'diff-stable'", editable = "packages/linkml_runtime" },
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "openpyxl" },
     { name = "parse" },
@@ -2533,6 +2541,7 @@ requires-dist = [
     { name = "typing-extensions", marker = "python_full_version < '3.12'", specifier = ">=4.6.0" },
     { name = "watchdog", specifier = ">=0.9.0" },
 ]
+provides-extras = ["diff-stable"]
 
 [package.metadata.requires-dev]
 bigquery = [{ name = "sqlalchemy-bigquery", specifier = ">=1.9.0" }]
@@ -2546,6 +2555,7 @@ dev = [
     { name = "ipython-genutils" },
     { name = "jsonpatch", specifier = ">=1.33" },
     { name = "jupyter" },
+    { name = "linkml-runtime", extras = ["diff-stable"], editable = "packages/linkml_runtime" },
     { name = "mock", specifier = ">=5.1.0" },
     { name = "myst-nb", marker = "python_full_version >= '3.10'", specifier = ">=1.4.0" },
     { name = "nbconvert" },
@@ -2593,6 +2603,7 @@ shacl = [{ name = "pyshacl", specifier = ">=0.40.1" }]
 tests = [
     { name = "black", specifier = ">=24.0.0" },
     { name = "duckdb", specifier = ">=1.5.5" },
+    { name = "linkml-runtime", extras = ["diff-stable"], editable = "packages/linkml_runtime" },
     { name = "numpydantic", specifier = ">=1.10.0" },
     { name = "pyshacl", specifier = ">=0.40.1" },
     { name = "sqlalchemy-bigquery", specifier = ">=1.17.2" },
@@ -2622,7 +2633,6 @@ dependencies = [
     { name = "click" },
     { name = "curies" },
     { name = "deprecated" },
-    { name = "diffable-rdf" },
     { name = "hbreader" },
     { name = "isodate", marker = "python_full_version < '3.11'" },
     { name = "json-flattener" },
@@ -2642,6 +2652,9 @@ dev = [
     { name = "coverage" },
     { name = "requests-cache" },
 ]
+diff-stable = [
+    { name = "diffable-rdf" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -2655,7 +2668,7 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'dev'" },
     { name = "curies", specifier = ">=0.14.6" },
     { name = "deprecated" },
-    { name = "diffable-rdf", specifier = ">=0.4.0" },
+    { name = "diffable-rdf", marker = "extra == 'diff-stable'", specifier = ">=0.4.0" },
     { name = "hbreader" },
     { name = "isodate", marker = "python_full_version < '3.11'", specifier = ">=0.7.2,<1.0.0" },
     { name = "json-flattener", specifier = ">=0.1.9" },
@@ -2670,7 +2683,7 @@ requires-dist = [
     { name = "requests" },
     { name = "requests-cache", marker = "extra == 'dev'", specifier = ">=1.3.3" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["dev", "diff-stable"]
 
 [package.metadata.requires-dev]
 dev = [
