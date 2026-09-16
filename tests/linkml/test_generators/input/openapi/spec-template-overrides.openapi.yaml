@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: Template Annotation Override Test
+  version: '1.0.0'
+servers:
+  - url: https://example.org/
+paths:
+  /api/described:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Described'
+  /api/undescribed:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Undescribed'
+  /api/untouched:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Untouched'
+  /api/fixed:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FixedRef'
+components:
+  schemas:
+    # every overridable annotation on a class that already has a LinkML description;
+    # externalDocs is a YAML anchor shared with Untouched below
+    Described:
+      type: object
+      title: Described Title
+      description: class description from the template
+      example: {color: RED}
+      externalDocs: &shared_docs {url: https://example.org/docs, description: more}
+      deprecated: true
+      x-vendor-flag: kept
+      x-linkml-schema: https://w3id.org/linkml/tests/template_overrides
+      x-linkml-source: Described
+    # no override declared, no LinkML description either
+    Undescribed:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/template_overrides
+      x-linkml-source: Undescribed
+    # no description override: the LinkML-derived description must survive untouched;
+    # reuses the shared externalDocs anchor
+    Untouched:
+      type: object
+      externalDocs: *shared_docs
+      x-linkml-schema: https://w3id.org/linkml/tests/template_overrides
+      x-linkml-source: Untouched
+    # annotation override on a renamed enum that no endpoint references directly:
+    # it is reached only through Described.color and must still be published as Colour
+    Colour:
+      type: object
+      description: enum description from the template
+      x-linkml-schema: https://w3id.org/linkml/tests/template_overrides
+      x-linkml-source: ColorEnum
+    # annotation override on a renamed type; `type: object` here must NOT clobber the
+    # generated `type: string`
+    FixedRef:
+      type: object
+      description: type description from the template
+      x-linkml-schema: https://w3id.org/linkml/tests/template_overrides
+      x-linkml-source: FixedType

@@ -3,9 +3,10 @@ from pathlib import Path
 import pytest
 import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from referencing.exceptions import PointerToNowhere
 
-from linkml.generators.openapigen import OpenApiGenerator
+from linkml.generators.openapigen import OVERRIDABLE_SCHEMA_KEYS, OpenApiGenerator
 
 
 def gen_openapi_spec(head_path, kitchen_sink_path):
@@ -252,8 +253,10 @@ def test_keep_unreferenced_preserves_template_schema(input_path, kitchen_sink_pa
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Person" in schemas
-    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
-    assert "MarriageEvent" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it,
+    # and is published under the OpenAPI name the template gave it, not the LinkML one
+    assert "OpaqueEvent" in schemas
+    assert "MarriageEvent" not in schemas
 
 
 def test_unreferenced_chain_pruned_by_default(input_path):
@@ -528,3 +531,174 @@ def test_refs_to_non_schema_components_allowed(input_path, kitchen_sink_path):
     # the schema is generated as usual
     assert "Person" in spec["components"]["schemas"]
     assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+
+
+@pytest.fixture
+def override_text(input_path):
+    """Raw generated YAML for the template-annotation-override fixtures."""
+    schema_path = str(input_path("openapi/schema_template_overrides.yaml"))
+    head_path = str(input_path("openapi/spec-template-overrides.openapi.yaml"))
+    return OpenApiGenerator(schema_path).serialize(head_path)
+
+
+@pytest.fixture
+def override_spec(override_text):
+    """Parsed generated spec for the template-annotation-override fixtures."""
+    return yaml.safe_load(override_text)
+
+
+# The two tests below split `OVERRIDABLE_SCHEMA_KEYS` between them along different axes;
+# `test_overridable_key_coverage_is_complete` asserts the split leaves no key untested.
+DESCRIPTION_OVERRIDE_CASES = [
+    ("Described", "class description from the template"),
+    ("Colour", "enum description from the template"),
+    ("FixedRef", "type description from the template"),
+]
+NON_DESCRIPTION_OVERRIDE_CASES = [
+    ("title", "Described Title"),
+    ("example", {"color": "RED"}),
+    ("externalDocs", {"url": "https://example.org/docs", "description": "more"}),
+    ("deprecated", True),
+]
+
+
+@pytest.mark.parametrize(("schema_name", "expected"), DESCRIPTION_OVERRIDE_CASES)
+def test_template_description_overrides_linkml_description(override_spec, schema_name, expected):
+    """Test that a description declared in the template wins over the LinkML-derived one.
+
+    The LinkML value is the default; a template placeholder that explicitly declares an
+    annotation signals deliberate intent for the published API and must take precedence.
+    Covers classes, enums and types, which reach the output via different code paths.
+
+    Keep apart from :func:`test_every_overridable_annotation_is_applied` because:
+
+    * Property. That test asserts pass-through, this one precedence. Only ``description``
+      can appear in both LinkML and override, so it alone can collide. The others are
+      never generated, and ``title`` is stripped before overlay - reaching an empty slot.
+    * Axis. That test varies key, schema fixed; this one varies schema kind, key fixed.
+      Merging would need every key declared on every schema; the fixture does that for
+      ``Described`` alone.
+    """
+    assert override_spec["components"]["schemas"][schema_name]["description"] == expected
+
+
+@pytest.mark.parametrize(("key", "expected"), NON_DESCRIPTION_OVERRIDE_CASES)
+def test_every_overridable_annotation_is_applied(override_spec, key, expected):
+    """Test that each overridable key other than ``description`` is overlaid verbatim.
+
+    ``description`` is covered by :func:`test_template_description_overrides_linkml_description`,
+    which asserts the stronger precedence property that only that key needs; see its docstring
+    for why the two are kept apart.
+
+    ``title`` is notable: the generator strips the generated (name-duplicating) title, but
+    a title the template declares explicitly is deliberate and must survive.
+
+    The non-scalar cases matter too -- ``example`` and ``externalDocs`` are mappings, so this
+    also pins that the overlay copies a value of any shape rather than only scalars.
+    """
+    assert override_spec["components"]["schemas"]["Described"][key] == expected
+
+
+def test_overridable_key_coverage_is_complete():
+    """Test that the two tests above between them cover every key in ``OVERRIDABLE_SCHEMA_KEYS``.
+
+    Their parametrize lists are written by hand, so without this guard adding a key to
+    ``OVERRIDABLE_SCHEMA_KEYS`` would ship with no test and nothing would fail. A failure here
+    means: add the new key to ``NON_DESCRIPTION_OVERRIDE_CASES`` and declare it on the
+    ``Described`` placeholder in spec-template-overrides.openapi.yaml.
+    """
+    covered = {key for key, _ in NON_DESCRIPTION_OVERRIDE_CASES} | {"description"}
+    assert covered == OVERRIDABLE_SCHEMA_KEYS
+
+
+def test_linkml_description_kept_when_template_declares_none(override_spec):
+    """Test that a schema whose placeholder declares no description keeps the LinkML one."""
+    schemas = override_spec["components"]["schemas"]
+    assert schemas["Untouched"]["description"] == "class description from LinkML, untouched"
+    assert schemas["Undescribed"]["description"] == ""
+
+
+def test_template_override_does_not_clobber_generated_type(override_spec):
+    """Test that a placeholder's ``type: object`` never overwrites the generated type.
+
+    Placeholders conventionally carry ``type: object`` (the generic template emits it),
+    but LinkML types and enums generate as ``type: string``. Overlaying structural keys
+    would yield a schema rejecting every valid payload, so only annotations are merged.
+    """
+    schemas = override_spec["components"]["schemas"]
+    assert schemas["FixedRef"]["type"] == "string"
+    assert schemas["FixedRef"]["enum"] == ["fixed-value"]
+    assert schemas["Colour"]["type"] == "string"
+    assert schemas["Colour"]["enum"] == ["RED", "BLUE"]
+
+
+def test_template_override_applies_to_renamed_schema(override_spec):
+    """Test that overrides are keyed by OpenAPI name, so renamed resources receive them.
+
+    ``FixedRef`` is the template's name for the LinkML type ``FixedType``; the override
+    must be applied after renaming or it would silently miss every renamed resource.
+    """
+    schemas = override_spec["components"]["schemas"]
+    assert "FixedRef" in schemas
+    assert "FixedType" not in schemas
+    assert schemas["FixedRef"]["description"] == "type description from the template"
+
+
+def test_rename_applies_to_transitively_reached_schema(override_spec):
+    """Test that a declared placeholder renames its schema even without an endpoint.
+
+    ``Colour`` is declared for the LinkML enum ``ColorEnum`` but no endpoint references
+    it; it is reached only through ``Described.color``. It must still be published under
+    the declared name, with its ``$ref`` rewired and its override applied -- otherwise a
+    renamed-but-unreferenced placeholder is silently ignored.
+    """
+    schemas = override_spec["components"]["schemas"]
+    assert "Colour" in schemas
+    assert "ColorEnum" not in schemas
+    assert schemas["Described"]["properties"]["color"] == {"$ref": "#/components/schemas/Colour"}
+
+
+def test_vendor_extensions_pass_through_but_bookkeeping_does_not(override_spec):
+    """Test that ``x-`` extensions are published while LinkML bookkeeping keys are not.
+
+    ``x-linkml-schema``/``x-linkml-source`` map the template to the LinkML schema and are
+    meaningless to API consumers, so they must never reach the generated document.
+    """
+    described = override_spec["components"]["schemas"]["Described"]
+    assert described["x-vendor-flag"] == "kept"
+    assert "x-linkml-" not in str(override_spec)
+
+
+def test_shared_template_anchor_is_not_emitted_as_yaml_alias(override_text, override_spec):
+    """Test that a value shared between placeholders via a YAML anchor is emitted inline.
+
+    ``yaml.safe_load`` resolves an anchor and its aliases to one Python object; inserting
+    that object into several schemas would make ``yaml.dump`` re-emit it as ``&id001`` /
+    ``*id001``, which is valid YAML but unidiomatic OpenAPI that anchor-unaware tooling
+    rejects. Each schema must receive its own copy.
+    """
+    schemas = override_spec["components"]["schemas"]
+    assert schemas["Described"]["externalDocs"] == schemas["Untouched"]["externalDocs"]
+    # an alias would emit the URL once and `*id001` the second time
+    assert override_text.count("url: https://example.org/docs") == 2
+    assert "*id" not in override_text
+
+
+def test_spec_with_template_overrides_is_valid(override_spec):
+    """Test that applying overrides still yields a valid OpenAPI 3.0.3 document."""
+    assert validate(override_spec, cls=OpenAPIV30SpecValidator) is None
+
+
+def test_wrongly_typed_annotation_override_is_rejected(tmp_path, input_path):
+    """Test that an annotation override of the wrong type fails template validation.
+
+    OpenAPI requires ``deprecated`` to be a boolean. A LinkML-style string reason is
+    rejected by the up-front template validation, before the override path runs, rather
+    than being published into an invalid document.
+    """
+    schema_path = str(input_path("openapi/schema_template_overrides.yaml"))
+    good = Path(str(input_path("openapi/spec-template-overrides.openapi.yaml"))).read_text()
+    bad_path = tmp_path / "bad.openapi.yaml"
+    bad_path.write_text(good.replace("deprecated: true", "deprecated: use something else"))
+    with pytest.raises(OpenAPIValidationError):
+        OpenApiGenerator(schema_path).serialize(str(bad_path))

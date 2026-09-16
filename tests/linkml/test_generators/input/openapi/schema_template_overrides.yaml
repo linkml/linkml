@@ -1,0 +1,38 @@
+# LinkML schema exercising template-declared annotation overrides
+id: https://w3id.org/linkml/tests/template_overrides
+name: template_overrides
+default_prefix: template_overrides
+imports:
+  - linkml:types
+
+types:
+  FixedType:
+    base: str
+    uri: xsd:string
+    equals_string: "fixed-value"
+    description: type description from LinkML
+
+enums:
+  ColorEnum:
+    description: enum description from LinkML
+    permissible_values:
+      RED: {}
+      BLUE: {}
+
+classes:
+  Described:
+    description: class description from LinkML
+    attributes:
+      color:
+        range: ColorEnum
+
+  Undescribed:
+    attributes:
+      name:
+        range: string
+
+  Untouched:
+    description: class description from LinkML, untouched
+    attributes:
+      name:
+        range: string
