@@ -39,10 +39,10 @@ with stable blank node labels and sorted triples.
 import io
 import re
 import warnings
+from importlib.util import find_spec
 
 import pyoxigraph as ox
 import rdflib
-from diffable_rdf import wl_relabel_quads
 from rdflib.compare import to_canonical_graph
 
 
@@ -302,15 +302,20 @@ def canonicalize_rdf_graph(
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
-    :param diff_stable: Derive blank-node labels from each node's own
-        neighbourhood instead of RDFC-1.0's global ``c14nN`` numbering, so that
-        editing one part of a schema does not renumber unrelated blank nodes.
-        Output is deterministic and isomorphic either way; only the choice of
-        label changes. Off by default because enabling it relabels existing
-        output. Has no effect on the rdflib fallback path (non-standard RDF),
-        which warns rather than silently ignoring the request.
+    :param diff_stable: Use diffable-rdf labels to reduce blank-node churn across
+        edits. Requires the ``diff-stable`` extra; disabled by default. The
+        non-standard RDF fallback warns when it cannot apply these labels.
     :return: Deterministic string serialization of the graph.
+    :raises ImportError: If diff-stable labels are requested without diffable-rdf.
     """
+    if diff_stable:
+        if find_spec("diffable_rdf") is None:
+            raise ImportError(
+                "diff_stable=True requires diffable-rdf. Install "
+                "'linkml-runtime[diff-stable]' or 'linkml[diff-stable]'."
+            )
+        from diffable_rdf import wl_relabel_quads
+
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
         warnings.warn(
@@ -340,13 +345,6 @@ def canonicalize_rdf_graph(
             stacklevel=2,
         )
         if diff_stable:
-            # Weisfeiler-Lehman refinement consumes canonical pyoxigraph quads,
-            # and this path exists precisely because pyoxigraph refused the
-            # graph, so there are none to refine. The fallback is deterministic
-            # but not diff-stable: say so rather than returning output that
-            # silently ignores the argument. ``shaclgen --include-annotations``
-            # reaches this path, because an annotation tag without a ``:``
-            # becomes a literal predicate.
             warnings.warn(
                 "diff_stable=True was requested but this graph took the rdflib fallback, "
                 "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
@@ -367,15 +365,6 @@ def canonicalize_rdf_graph(
 
     quads = list(dataset)
 
-    # 3b. Optionally re-label blank nodes with locality-sensitive hashes.
-    # RDFC-1.0 guarantees that identical graphs get identical labels, but it
-    # does not guarantee that *similar* graphs get similar labels: the labels
-    # are assigned by a global ordering, so inserting one blank node can
-    # renumber every label after it and turn a one-line semantic change into a
-    # whole-file diff. Weisfeiler-Lehman labels are derived only from each
-    # node's local neighbourhood, so unrelated regions keep their labels.
-    # Output stays deterministic and isomorphic either way; this only changes
-    # which label each blank node receives.
     if diff_stable:
         quads = wl_relabel_quads(quads)
 
