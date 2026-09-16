@@ -1496,7 +1496,18 @@
 
 <div class="viewcode-block" id="shared_arguments">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.shared_arguments">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Generator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Generator</span><span class="p">],</span> <span class="n">accepts_directory_input</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get command-line arguments common to all generators.</span>
+
+<span class="sd">    Use this decorator on the Click entry point for a generator to automatically</span>
+<span class="sd">    configure the entry point to accept all common options.</span>
+
+<span class="sd">    :param g: The generator for which to add options.</span>
+<span class="sd">    :param accepts_directory_input: If True, the generator&#39;s entry point will</span>
+<span class="sd">        accept both a file or a directory as its main input. The default is to</span>
+<span class="sd">        accept a file only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">verbosity_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1508,7 +1519,9 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">tracebacklimit</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Command</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Command</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Argument</span><span class="p">((</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Argument</span><span class="p">((</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="n">accepts_directory_input</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">))</span>
+        <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">Option</span><span class="p">(</span>
                 <span class="p">(</span><span class="s2">&quot;--format&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">),</span>

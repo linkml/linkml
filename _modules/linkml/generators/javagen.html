@@ -420,6 +420,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated_fields</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_generator_config</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span>
 
@@ -620,6 +621,32 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_root_schemas</span><span class="p">(</span><span class="n">schema_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">importmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds all the root schemas in the specified directory.</span>
+
+<span class="sd">    A root schema, in the context of this method, in a schema that is not</span>
+<span class="sd">    imported by any other schema found under the specified directory.</span>
+
+<span class="sd">    :param schema_directory: The directory where to search for schemas.</span>
+<span class="sd">    :param importmap: The import map to use, if any.</span>
+<span class="sd">    :return: A list of paths to root schemas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># This is woefully inefficient as we have to load each schema</span>
+    <span class="c1"># through SchemaView, but this is necessary to ensure that we</span>
+    <span class="c1"># use the very same import resolution logic as the generator.</span>
+    <span class="n">imported_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">schema_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">schema_path</span> <span class="ow">in</span> <span class="n">schema_directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;**/*.yaml&quot;</span><span class="p">):</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">)</span>
+        <span class="n">schema_ids</span><span class="p">[</span><span class="n">schema_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">all_schema</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">view</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="n">imported_ids</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">root_schemas</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">schema_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imported_ids</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">root_schemas</span>
+
+
 <div class="viewcode-block" id="JavaGenerator">
 <a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator">[docs]</a>
 <span class="nd">@deprecated_fields</span><span class="p">({</span><span class="s2">&quot;head&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;emit_metadata&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">})</span>
@@ -642,10 +669,6 @@
     <span class="n">template_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">template_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">template_cache</span><span class="p">:</span> <span class="n">TemplateCache</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">TemplateCache</span><span class="p">())</span>
-
-    <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="n">DEFAULT_TEMPLATE_DIR</span><span class="p">)</span>
@@ -897,7 +920,7 @@
 
 
 
-<span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">JavaGenerator</span><span class="p">)</span>
+<span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">JavaGenerator</span><span class="p">,</span> <span class="n">accepts_directory_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--output-directory&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
@@ -947,13 +970,11 @@
     <span class="n">generate_records</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">head</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">emit_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">genmeta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">true_enums</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">use_aliases</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">extra_template</span><span class="o">=</span><span class="p">[],</span>
     <span class="n">visitor</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">importmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate java classes to represent a LinkML model&quot;&quot;&quot;</span>
@@ -976,6 +997,35 @@
     <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;metadata-flag&quot;</span><span class="p">)</span>
         <span class="n">args</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">head</span>
+
+    <span class="k">if</span> <span class="n">yamlfile</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="c1"># Generate code for all root schemas under the specified directory,</span>
+        <span class="c1"># inferring the package name from the directory hierarchy</span>
+        <span class="n">schemas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">schema_path</span> <span class="ow">in</span> <span class="n">_find_root_schemas</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">importmap</span><span class="p">):</span>
+            <span class="n">package_dir</span> <span class="o">=</span> <span class="n">schema_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">package_name</span> <span class="o">=</span> <span class="n">package_dir</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_valid_java_package</span><span class="p">(</span><span class="n">package_name</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Inferred package name </span><span class="si">{</span><span class="n">package_name</span><span class="si">}</span><span class="s2"> is not a valid Java package name, aborting directory mode&quot;</span>
+                <span class="p">)</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span> <span class="o">/</span> <span class="n">package_dir</span>
+            <span class="n">schemas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">package_name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">schema_path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">package_name</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">:</span>
+            <span class="n">JavaGenerator</span><span class="p">(</span>
+                <span class="n">schema_path</span><span class="p">,</span>
+                <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">,</span>
+                <span class="n">package</span><span class="o">=</span><span class="n">package_name</span><span class="p">,</span>
+                <span class="n">template_dir</span><span class="o">=</span><span class="n">template_dir</span><span class="p">,</span>
+                <span class="n">template_file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span>
+                <span class="n">true_enums</span><span class="o">=</span><span class="n">true_enums</span><span class="p">,</span>
+                <span class="n">use_aliases</span><span class="o">=</span><span class="n">use_aliases</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">args</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+                <span class="n">output_dir</span><span class="p">,</span> <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span> <span class="n">extra_templates</span><span class="o">=</span><span class="n">extra_template</span><span class="p">,</span> <span class="n">visitors</span><span class="o">=</span><span class="n">visitor</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span>
+            <span class="p">)</span>
+        <span class="k">return</span>
+
     <span class="c1"># The package was already validated above; a ValueError raised while actually</span>
     <span class="c1"># constructing the generator here is therefore a genuine failure (e.g. an</span>
     <span class="c1"># unloadable schema), not a bad package name, and is left to propagate with</span>
@@ -985,11 +1035,9 @@
         <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
         <span class="n">template_dir</span><span class="o">=</span><span class="n">template_dir</span><span class="p">,</span>
         <span class="n">template_file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span>
-        <span class="n">genmeta</span><span class="o">=</span><span class="n">genmeta</span><span class="p">,</span>
-        <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
-        <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>
         <span class="n">true_enums</span><span class="o">=</span><span class="n">true_enums</span><span class="p">,</span>
         <span class="n">use_aliases</span><span class="o">=</span><span class="n">use_aliases</span><span class="p">,</span>
+        <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">generator</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
