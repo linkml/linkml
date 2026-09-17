@@ -3931,3 +3931,36 @@ classes:
     assert original_annots["bar"] == "some value"
     induced_annots = sv.annotation_dict("foo", class_name="TestClass")
     assert induced_annots["bar"] == "some other value"
+
+
+def test_relative_import_in_url_imported_schema(tmp_path: Path) -> None:
+    """A relative import inside a schema imported by URL resolves against that URL.
+
+    The importing schema's key is an absolute URL, which must not be normalised as a
+    filesystem path: doing so collapses the ``//`` of the scheme and the result is then
+    mistaken for a CURIE (#3499).
+    """
+    modules = tmp_path / "modules"
+    modules.mkdir()
+    (modules / "leaf.yaml").write_text(
+        "id: https://example.org/leaf\nname: leaf\ndefault_range: string\nslots:\n  leaf_slot:\n"
+    )
+    (modules / "middle.yaml").write_text(
+        "id: https://example.org/middle\nname: middle\ndefault_range: string\n"
+        "imports: [./leaf]\nslots:\n  middle_slot:\n"
+    )
+    consumer = tmp_path / "consumer"
+    consumer.mkdir()
+    root = consumer / "root.yaml"
+    # as_uri() rather than an f-string: on Windows a bare path yields backslashes and only
+    # two slashes after the scheme, which is not a valid URIorCURIE and is rejected when the
+    # importing schema is loaded
+    middle_url = (modules / "middle").as_uri()
+    root.write_text(
+        "id: https://example.org/root\nname: root\ndefault_range: string\n"
+        f"imports: ['{middle_url}']\nclasses:\n  Thing:\n    slots: [middle_slot]\n"
+    )
+
+    slots = SchemaView(str(root)).all_slots(imports=True)
+    assert "middle_slot" in slots
+    assert "leaf_slot" in slots

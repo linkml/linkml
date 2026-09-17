@@ -554,9 +554,15 @@ class SchemaView:
                     # lookups; locating the actual file happens in _load_closure_import, which
                     # uses the raw import name and the importer's own location.
 
-                    # if i is not a CURIE and sn looks like a path with at least one parent folder,
-                    # normalise i with respect to sn
-                    if "/" in sn and ":" not in i:
+                    # if i is not a CURIE and sn looks like a filesystem path with at least one
+                    # parent folder, normalise i with respect to sn.
+                    #
+                    # URLs are excluded: os.path.normpath() collapses the double slash in a
+                    # scheme, so file://a/b would become file:/a/b, and the mangled key is then
+                    # indistinguishable from a CURIE. A URL-keyed schema keeps the literal
+                    # import as its key and is located by _load_closure_import instead, which
+                    # resolves it against the URL the importing schema was fetched from.
+                    if "/" in sn and "://" not in sn and ":" not in i:
                         if WINDOWS:
                             # This cannot be simplified. os.path.normpath() must be called before .as_posix()
                             key = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
