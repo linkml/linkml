@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -131,6 +132,11 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
+    include_generation_date: bool = False
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible (byte-stable) across runs; the date of generation is normally recoverable
+    from version control."""
+
     useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
@@ -209,6 +215,15 @@ class Generator(metaclass=abc.ABCMeta):
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            if (
+                isinstance(schema, SchemaDefinition)
+                and not self.include_generation_date
+                and schema.generation_date is not None
+            ):
+                # SchemaView keeps a reference to a SchemaDefinition it is handed,
+                # so clearing generation_date below would reach back into the
+                # caller's object. Copy first so the generator owns what it mutates.
+                schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, str | Path):
@@ -219,6 +234,12 @@ class Generator(metaclass=abc.ABCMeta):
             # This ensures consistency with SchemaLoader-based generators.
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
+
+        # Drop the load-time generation_date stamp unless it was explicitly asked for.
+        # This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD
+        # generators, so clearing it here covers every generator uniformly.
+        if not self.include_generation_date and self.schema is not None:
+            self.schema.generation_date = None
 
         self._init_namespaces()
 
@@ -948,7 +969,18 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
+def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+    """Get command-line arguments common to all generators.
+
+    Use this decorator on the Click entry point for a generator to automatically
+    configure the entry point to accept all common options.
+
+    :param g: The generator for which to add options.
+    :param accepts_directory_input: If True, the generator's entry point will
+        accept both a file or a directory as its main input. The default is to
+        accept a file only.
+    """
+
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
             logging.basicConfig(level=logging.DEBUG, force=True)
@@ -960,7 +992,9 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
             sys.tracebacklimit = 0
 
     def decorator(f: Command) -> Command:
-        f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
+        f.params.append(
+            Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=accepts_directory_input, path_type=Path))
+        )
         f.params.append(
             Option(
                 ("--format", "-f"),
@@ -976,6 +1010,15 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
                 default=True,
                 show_default=True,
                 help="Include metadata in output",
+            )
+        )
+        f.params.append(
+            Option(
+                ("--generation-date/--no-generation-date", "include_generation_date"),
+                default=False,
+                show_default=True,
+                help="Stamp output with the generation_date timestamp. Off by default so output is "
+                "reproducible across runs.",
             )
         )
         f.params.append(
