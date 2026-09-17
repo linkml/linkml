@@ -7,7 +7,7 @@
 December 2 and 3, 2026 from 15:00 – 19:00 UTC (16:00–20:00 CET Berlin/Paris, 07:00–11:00 PST US West)
 
 ### Where
-Zoom. The Zoom link for the Symposium will be shared after you register. 
+Zoom. The Zoom link for the Symposium will be shared after you register.
 
 ## Register for the Symposium
 **While participation is free, registration via [this form](https://forms.gle/V6CxJkqx3FdqPjqn8) is required to join.** <br> Once you submit the registration form, you will receive an .ics calendar link via email to block the time on your calendar.
