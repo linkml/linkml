@@ -33,4 +33,4 @@ The presentation schedule for the Symposium will be finalized and shared with th
 | Dec 3 | 15:00 | |Coming Soon! | |
 
 ## Questions and Support
-Reach out to Sarah Gehrke (sarah@tislab.org) or Nico Matentzoglu (nicolas.matentzoglu@gmail.com) via email or Slack if you have any questions.
+Post your question in [this discussion](https://github.com/orgs/linkml/discussions/3482) or reach out to Sarah Gehrke (sarah@tislab.org) or Nico Matentzoglu (nicolas.matentzoglu@gmail.com) via email or Slack.
