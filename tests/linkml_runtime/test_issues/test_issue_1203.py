@@ -1,22 +1,17 @@
 """Tests for https://github.com/linkml/linkml/issues/1203.
 
-Verifies that ``EnumDefinitionImpl`` *instances* support intuitive equality,
+Verifies that generated dataclass enumerations support intuitive equality,
 hashing, stringification, and membership checks against strings, other
 ``EnumDefinitionImpl`` instances, and ``PermissibleValue`` objects.
 
-.. note::
-    The bare class-attribute form (e.g. ``EnumValues.A``) is a raw
-    ``PermissibleValue`` dataclass emitted by ``pythongen``.  Making *that*
-    object compare/hash/stringify like a string is the structural fix
-    tracked by https://github.com/linkml/linkml/issues/723 and delivered by
-    PR https://github.com/linkml/linkml/pull/3597 (which promotes bare
-    attributes to real ``EnumDefinitionImpl`` instances).  Assertions that
-    exercise the bare-attribute form belong with that PR and are
-    intentionally not exercised here.
+Also verifies the Phase-1 structural fix (#723): bare ``PermissibleValue``
+class attributes emitted by ``pythongen`` are promoted to real
+``EnumDefinitionImpl`` instances at class-creation time.
 """
 
 import pytest
 
+import linkml_runtime  # noqa: F401
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl, EnumDefinitionMeta
 
@@ -62,18 +57,59 @@ def test_wrapper_subclass_instantiation() -> None:
 
 
 def test_base_class_setattr_with_no_defn() -> None:
-    """``EnumDefinitionMeta.__setattr__`` must tolerate ``_defn`` being ``None``.
+    """Assigning attributes on the abstract base must not raise.
 
-    The abstract base ``EnumDefinitionImpl`` has ``_defn = None``; assigning
-    attributes on it (e.g. during monkey-patching) must not raise.
+    ``EnumDefinitionImpl`` has ``_defn = None``; the metaclass must not
+    explode when used (e.g. for monkey-patching).
     """
-    # No exception expected.
     EnumDefinitionImpl._test_marker_1203 = "ok"  # noqa: SLF001
     assert EnumDefinitionImpl._test_marker_1203 == "ok"  # noqa: SLF001
     del EnumDefinitionImpl._test_marker_1203
 
 
 # ---------------------------------------------------------------------------
+# Phase 1 (#723): PermissibleValue -> EnumDefinitionImpl promotion
+
+
+def test_member_is_enum_instance_not_permissible_value() -> None:
+    """``MyEnum.A`` must be an ``EnumDefinitionImpl`` instance, not a raw PV."""
+    assert isinstance(EnumValues.A, EnumValues)
+    assert isinstance(EnumValues.A, EnumDefinitionImpl)
+    assert type(EnumValues.A) is EnumValues
+    assert not isinstance(EnumValues.A, PermissibleValue)
+
+
+def test_member_identity_stable() -> None:
+    """Repeated lookups return the same promoted instance (promotion runs once)."""
+    assert EnumValues.A is EnumValues.A
+    assert EnumValuesWrapper.A is EnumValues.A  # inherited via MRO
+
+
+def test_member_text_property() -> None:
+    """``EnumDefinitionImpl`` exposes ``.text`` as a delegate to the underlying PV."""
+    assert EnumValues.A.text == "A"
+    assert EnumValues("A").text == "A"
+
+
+def test_member_code_is_underlying_pv() -> None:
+    """``MyEnum.A._code`` is the original ``PermissibleValue``."""
+    assert isinstance(EnumValues.A._code, PermissibleValue)
+    assert EnumValues.A._code.text == "A"
+
+
+def test_permissible_value_remains_clean_dataclass() -> None:
+    """``PermissibleValue`` retains default dataclass equality and is unhashable.
+
+    Phase 1 removes the runtime monkey-patch; the metamodel descriptor
+    behaves like a plain dataclass again.
+    """
+    pv = PermissibleValue(text="A")
+    assert pv == PermissibleValue(text="A")  # field-wise equality
+    assert pv != PermissibleValue(text="B")
+    with pytest.raises(TypeError):
+        hash(pv)
+
+
 # 1. Equality comparison
 # ---------------------------------------------------------------------------
 
@@ -83,6 +119,8 @@ def test_base_class_setattr_with_no_defn() -> None:
     [
         (EnumValues.A, EnumValues("A")),
         (EnumValues("A"), EnumValues.A),
+        (EnumValues.A, "A"),
+        ("A", EnumValues.A),
         (EnumValues("A"), "A"),
         ("A", EnumValues("A")),
         (EnumValues("A"), EnumValues("A")),
@@ -96,8 +134,11 @@ def test_enum_equality(left, right) -> None:
 @pytest.mark.parametrize(
     ("left", "right"),
     [
+        (EnumValues.A, "B"),
+        ("B", EnumValues.A),
         (EnumValues("A"), "B"),
         ("B", EnumValues("A")),
+        (EnumValues.A, EnumValues.B),
         (EnumValues("A"), EnumValues("B")),
     ],
 )
@@ -114,12 +155,14 @@ def test_enum_inequality(left, right) -> None:
     "needle",
     [
         "A",
+        EnumValues.A,
         EnumValues("A"),
     ],
 )
 @pytest.mark.parametrize(
     "haystack_factory",
     [
+        lambda: {EnumValues.A, EnumValues.B},
         lambda: {EnumValues("A"), EnumValues("B")},
         lambda: {"A", "B"},
     ],
@@ -129,7 +172,9 @@ def test_enum_membership_in_set(needle, haystack_factory) -> None:
 
 
 def test_enum_hashable() -> None:
+    assert hash(EnumValues.A) == hash("A")
     assert hash(EnumValues("A")) == hash("A")
+    assert hash(EnumValues.A) == hash(EnumValues("A"))
 
 
 # ---------------------------------------------------------------------------
@@ -138,6 +183,7 @@ def test_enum_hashable() -> None:
 
 
 def test_enum_stringification() -> None:
+    assert str(EnumValues.A) == "A"
     assert str(EnumValues("A")) == "A"
 
 

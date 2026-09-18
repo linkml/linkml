@@ -4,6 +4,7 @@ import json
 import os
 import re
 import textwrap
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import cast
 
@@ -80,6 +81,8 @@ class OpenApiGenerator(Generator):
     uses_schemaloader = False
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
+    keep_unreferenced: bool = False
+    inline_enums: bool = False
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_versions: dict[str, str] = field(
@@ -120,6 +123,8 @@ class OpenApiGenerator(Generator):
                         f"x-linkml-schema '{schema['x-linkml-schema']}' "
                         f"but the loaded schema has id '{self.schemaview.schema.id}'"
                     )
+                if "x-linkml-source" not in schema:
+                    raise KeyError(f"Template data schema '{name}' is missing required 'x-linkml-source'")
 
     def _find_referenced_schemas(self) -> set[str]:
         """Return the set of resource names referenced by the template's endpoints."""
@@ -133,7 +138,12 @@ class OpenApiGenerator(Generator):
                             result.add(resource_name)
                 if "parameters" in req_spec:
                     for param_spec in req_spec["parameters"]:
-                        if "$ref" in param_spec["schema"]:
+                        # a $ref parameter directly references a reusable parameter object
+                        # (whose schema lives inside components/parameters), so it cannot
+                        # reference a component schema on its own
+                        if "$ref" in param_spec:
+                            continue
+                        if param_spec.get("schema", {}).get("$ref"):
                             resource_name = param_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
                             result.add(resource_name)
                 if "responses" in req_spec:
@@ -179,12 +189,39 @@ class OpenApiGenerator(Generator):
             for item in element:
                 self._find_references(item, referenced_data_schemas)
 
+    def _build_reference_map(self, elem_schemas: dict) -> dict[str, set[str]]:
+        """Map each schema name to the set of LinkML schema names it directly references (forward adjacency)."""
+        ref_map: dict[str, set[str]] = {}
+        for name, schema in elem_schemas.items():
+            refs: set[str] = set()
+            self._find_references(schema, refs)
+            ref_map[name] = refs
+        return ref_map
+
+    def _reachable_from_seeds(self, ref_map: dict[str, set[str]], seeds: set[str]) -> set[str]:
+        """Return the transitive closure of ``seeds`` over the ``$ref`` edges in ``ref_map``.
+
+        A schema is reachable when it can be traced back, through a chain of references, to a schema referenced by the
+        template endpoints. Computed in a single flood-fill pass (O(nodes + edges)); cycles are handled by the
+        ``seen`` guard.
+        """
+        seen = set(seeds)
+        stack = list(seeds)
+        while stack:
+            for ref in ref_map.get(stack.pop(), ()):
+                if ref not in seen:
+                    seen.add(ref)
+                    stack.append(ref)
+        return seen
+
     def _fix_openapi_spec(self, element: dict | list) -> dict | list:
         """
         Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:
 
         - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn't support ``const``)
         - ``type`` as a list (e.g. nullable ``["string", "null"]``) becomes ``anyOf``
+        - ``examples`` (a list) becomes ``example`` (its first element); OpenAPI 3.0 has
+          no plural ``examples`` keyword on the Schema Object, only singular ``example``
         - ``$ref`` paths are rewritten from ``#/$defs/`` to ``#/components/schemas/``
         """
         fixed_element = None
@@ -195,6 +232,13 @@ class OpenApiGenerator(Generator):
                     fixed_element["enum"] = [value]
                 elif key == "type" and isinstance(value, list):
                     fixed_element["anyOf"] = [{"type": item} for item in value if item != "null"]
+                elif key == "examples" and isinstance(value, list):
+                    if value:
+                        # lossy by necessity: OpenAPI 3.0 allows only one example.
+                        # assigned rather than recursed into, since an example is data,
+                        # not schema -- recursing could rewrite a `const`/`type` key
+                        # that happens to appear inside the example value itself
+                        fixed_element["example"] = value[0]
                 else:
                     if isinstance(value, dict | list):
                         value = self._fix_openapi_spec(value)
@@ -243,31 +287,75 @@ class OpenApiGenerator(Generator):
             raise TypeError(f"Unexpected type '{type(element)}', only 'dict' and 'list' supported.")
         return renamed_element
 
-    def _sanitize_schemas(
-        self, name_map: dict[str, str], openapi_schemas: dict, endpoint_ref_linkml_names: set[str]
-    ) -> dict:
+    def _sanitize_schemas(self, name_map: dict[str, str], elem_schemas: dict, req_linkml_names: set[str]) -> dict:
         """
         Prune unreachable schemas, remove redundant metadata, convert JSON Schema constructs
         to OpenAPI 3.0.3 compat, and apply any OpenAPI↔LinkML name renames.
         """
-        referenced_schemas = endpoint_ref_linkml_names.copy()
-        for openapi_schema in openapi_schemas.values():
-            self._find_references(openapi_schema, referenced_schemas)
-        while set(openapi_schemas.keys()).difference(referenced_schemas):
-            openapi_schema_names = list(openapi_schemas.keys())
-            for openapi_schema_name in openapi_schema_names:
-                if openapi_schema_name not in referenced_schemas:
-                    del openapi_schemas[openapi_schema_name]
-            referenced_schemas = endpoint_ref_linkml_names.copy()
-            for openapi_schema in openapi_schemas.values():
-                self._find_references(openapi_schema, referenced_schemas)
+        # Keep only schemas transitively reachable from the endpoint-referenced seeds.
+        # The reference graph is built once and traversed in a single pass; no fixpoint
+        # iteration is needed because the closure is grown outward from the seeds directly.
+        ref_map = self._build_reference_map(elem_schemas)
+        reachable = self._reachable_from_seeds(ref_map, req_linkml_names)
+        for elem_schema_name in list(elem_schemas.keys()):
+            if elem_schema_name not in reachable:
+                del elem_schemas[elem_schema_name]
         # title always duplicates the schema dict key, so it is redundant in components/schemas
-        for openapi_schema in openapi_schemas.values():
-            openapi_schema.pop("title", None)
-        openapi_schemas = cast(dict, self._fix_openapi_spec(openapi_schemas))
+        for elem_schema in elem_schemas.values():
+            elem_schema.pop("title", None)
+        elem_schemas = cast(dict, self._fix_openapi_spec(elem_schemas))
+        if self.inline_enums:
+            # inline before renaming so the enum/type guard matches LinkML names,
+            # not the (possibly renamed) OpenAPI schema names
+            elem_schemas = self._inline_enum_schemas(elem_schemas, req_linkml_names)
         if name_map:
-            openapi_schemas = cast(dict, self._rename(name_map, openapi_schemas))
-        return openapi_schemas
+            elem_schemas = cast(dict, self._rename(name_map, elem_schemas))
+        return elem_schemas
+
+    def _inline_enum_schemas(self, data_schemas: dict, endpoint_schemas: set[str] | None = None) -> dict:
+        """Inline enum subschemas into their parents instead of separate entries.
+
+        ``endpoint_schemas`` holds the LinkML names referenced by the template's endpoints;
+        those enums keep their standalone entry because removing it would leave a dangling
+        endpoint ``$ref``.
+        """
+        endpoint_schemas = endpoint_schemas or set()
+        enum_schemas = {
+            name: schema
+            for name, schema in data_schemas.items()
+            if isinstance(schema, dict)
+            and "enum" in schema
+            and "properties" not in schema
+            and name not in self.schemaview.all_types()
+            and name not in endpoint_schemas
+        }
+        if not enum_schemas:
+            return data_schemas
+
+        def _replace_refs(obj):
+            if isinstance(obj, dict):
+                if "$ref" in obj:
+                    ref_name = obj["$ref"].split("/")[-1]
+                    if ref_name in enum_schemas:
+                        # inline the enum definition, but preserve any sibling keywords
+                        # placed next to the ``$ref`` (e.g. a slot-level ``description``).
+                        # A sibling value overrides the enum's own only when it carries
+                        # information: an empty/blank value must not eclipse a meaningful
+                        # one from either side.
+                        inlined = deepcopy(enum_schemas[ref_name])
+                        for key, value in obj.items():
+                            if key == "$ref":
+                                continue
+                            value = _replace_refs(value)
+                            if value or key not in inlined or not inlined[key]:
+                                inlined[key] = value
+                        return inlined
+                return {k: _replace_refs(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [_replace_refs(item) for item in obj]
+            return obj
+
+        return {k: _replace_refs(v) for k, v in data_schemas.items() if k not in enum_schemas}
 
     def _find_schemas_line(self, template_text: str) -> int:
         """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
@@ -285,6 +373,21 @@ class OpenApiGenerator(Generator):
             if isinstance(key, ScalarNode) and key.value == "schemas":
                 return key.start_mark.line
         raise ValueError("OpenAPI template is missing 'schemas' section under 'components'")
+
+    @staticmethod
+    def _collect_refs(obj: dict | list) -> list[str]:
+        """Recursively collect every internal ``$ref`` target string found in ``obj``."""
+        refs: list[str] = []
+        if isinstance(obj, dict):
+            ref = obj.get("$ref")
+            if isinstance(ref, str) and ref.startswith("#/"):
+                refs.append(ref)
+            for value in obj.values():
+                refs.extend(OpenApiGenerator._collect_refs(value))
+        elif isinstance(obj, list):
+            for item in obj:
+                refs.extend(OpenApiGenerator._collect_refs(item))
+        return refs
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
@@ -322,9 +425,10 @@ class OpenApiGenerator(Generator):
         endpoint_ref_openapi_names = self._find_referenced_schemas()  # OpenAPI names referenced by endpoints
         openapi_schemas = self._template["components"]["schemas"]  # schemas provided by the OpenAPI template
         # collect the LinkML names referenced by endpoints (seed for sanitizing below)
-        endpoint_ref_linkml_names: set[str] = {
-            openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names
-        }
+        if self.keep_unreferenced:
+            req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in openapi_schemas.keys()}
+        else:
+            req_linkml_names: set[str] = {openapi_schemas[n]["x-linkml-source"] for n in endpoint_ref_openapi_names}
         # when OpenAPI and LinkML names differ, record the synonym for later renaming
         name_map: dict[str, str] = {
             openapi_schemas[n]["x-linkml-source"]: n
@@ -336,14 +440,14 @@ class OpenApiGenerator(Generator):
         # $defs. LinkML types are not part of $defs and are generated separately.
         # all_req_schemas contains all directly or transitively required schemas from
         # LinkML classes and types
-        json_schema = JsonSchemaGenerator(self.schemaview.schema, include_null=False).generate()
+        json_schema = JsonSchemaGenerator(self.schemaview.schema, include_null=False, preserve_names=True).generate()
         all_req_schemas: dict[str, dict] = json.loads(json_schema.to_json())["$defs"]
-        for linkml_name in endpoint_ref_linkml_names:
+        for linkml_name in req_linkml_names:
             if linkml_name in self.schemaview.all_types():
                 all_req_schemas[linkml_name] = self._generate_type_schema(linkml_name)
 
         # sanitize schemas not transitively reachable from any endpoint-referenced schema
-        sanitized_data_schemas = self._sanitize_schemas(name_map, all_req_schemas, endpoint_ref_linkml_names)
+        sanitized_data_schemas = self._sanitize_schemas(name_map, all_req_schemas, req_linkml_names)
 
         # instantiate the real OpenAPI YAML replacing the schema placeholders
         lines = template_text.splitlines(keepends=True)
@@ -353,8 +457,28 @@ class OpenApiGenerator(Generator):
         indented_schemas = textwrap.indent(schemas_yaml, "    ")
         result = text_before_schemas + "  schemas:\n" + indented_schemas
 
+        # detect and report dangling references
+        result_obj = yaml.safe_load(result)
+        # resolve every internal $ref against its own section: a ref of the form
+        # #/components/<section>/<name> must point at an existing <name> in that section
+        all_refs: list[str] = []
+        components = result_obj.get("components", {})
+        for ref in self._collect_refs(result_obj):
+            if not ref.startswith("#/components/"):
+                continue
+            try:
+                _, __, section_name, target = ref.split("/", 3)
+            except ValueError:
+                all_refs.append(ref)
+                continue
+            section = components.get(section_name, {})
+            if not isinstance(section, dict) or target not in section:
+                all_refs.append(ref)
+        if all_refs:
+            raise ValueError(f"Dangling $ref in generated OpenAPI spec: {','.join(sorted(set(all_refs)))}")
+
         # validate the generated output against the OpenAPI specification before returning
-        openapi_validate(yaml.safe_load(result), cls=oad_validator_class)
+        openapi_validate(result_obj, cls=oad_validator_class)
         return result
 
     def printout_template(self) -> str:
@@ -380,8 +504,22 @@ class OpenApiGenerator(Generator):
     "-t",
     help="OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes",
 )
+@click.option(
+    "--keep-unreferenced",
+    "-k",
+    is_flag=True,
+    default=False,
+    help="Keep schemas listed in the template even if not referenced by any endpoint",
+)
+@click.option(
+    "--inline-enums",
+    "-e",
+    is_flag=True,
+    default=False,
+    help="Inline enum subschemas into their parent schemas instead of generating separate schema entries",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, template, **args):
+def cli(yamlfile, template, keep_unreferenced, inline_enums, **args):
     """Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
     If no OpenAPI template is provided,
     a generic one with one exemplary class/type schema is printed out."""
@@ -390,7 +528,12 @@ def cli(yamlfile, template, **args):
         print(OpenApiGenerator(yamlfile, **args).printout_template())
         return
     print(
-        OpenApiGenerator(yamlfile, **args).serialize(template_file=template, **args),
+        OpenApiGenerator(
+            yamlfile,
+            keep_unreferenced=keep_unreferenced,
+            inline_enums=inline_enums,
+            **args,
+        ).serialize(template_file=template, **args),
         end="",
     )
 

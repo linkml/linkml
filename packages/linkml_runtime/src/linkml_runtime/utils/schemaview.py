@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import sys
 import uuid
 import warnings
@@ -43,6 +44,7 @@ from linkml_runtime.utils.context_utils import map_import, parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.pattern import PatternResolver
+from linkml_runtime.utils.uri_validator import validate_curie, validate_uri
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -266,8 +268,8 @@ class SchemaView:
 
     schema: SchemaDefinition | None = None
     schema_map: dict[SchemaDefinitionName, SchemaDefinition] | None = None
-    importmap: Mapping[str, str] | None = None
-    """Optional mapping between schema names and local paths/URLs"""
+    importmap: Mapping[str, str | dict[str, Any]] | None = None
+    """Optional mapping between schema names and local paths/URLs, or in-memory schema dicts"""
     modifications: int = 0
     uuid: str | None = None
 
@@ -278,7 +280,7 @@ class SchemaView:
     def __init__(
         self,
         schema: str | Path | SchemaDefinition,
-        importmap: dict[str, str] | None = None,
+        importmap: dict[str, str | dict[str, Any]] | None = None,
         merge_imports: bool = False,
         base_dir: str | None = None,
     ) -> None:
@@ -286,8 +288,10 @@ class SchemaView:
 
         :param schema: schema or path to schema to be viewed
         :type schema: str | Path | SchemaDefinition
-        :param importmap: import mapping, defaults to None
-        :type importmap: dict[str, str] | None, optional
+        :param importmap: import mapping. Values may be file-path/URL strings or
+            in-memory schema dicts (loaded directly, without filesystem or network
+            access). Defaults to None.
+        :type importmap: dict[str, str | dict[str, Any]] | None, optional
         :param merge_imports: whether or not to merge imports, defaults to False
         :type merge_imports: bool, optional
         :param base_dir: base directory for import map, defaults to None
@@ -336,6 +340,7 @@ class SchemaView:
 
         - a URL (specified as either a full URL or a CURIE)
         - a local file path
+        - an in-memory schema dict supplied via the importmap
 
         The import should leave off the .yaml suffix.
 
@@ -360,6 +365,13 @@ class SchemaView:
 
         default_import_map = {"linkml:": str(SCHEMA_DIRECTORY)}
         importmap = {**default_import_map, **self.importmap}
+        # An importmap entry may be an in-memory schema dict, which is loaded
+        # directly without touching the filesystem or network.
+        mapped = importmap.get(str(imp))
+        if isinstance(mapped, dict):
+            from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
+            return YAMLLoader().load(mapped, target_class=SchemaDefinition)
         sname = map_import(importmap, self.namespaces, imp)
         if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
@@ -1444,6 +1456,34 @@ class SchemaView:
             return self.expand_curie(uri)
         return uri
 
+    def get_curie(
+        self,
+        element: ElementName | Element,
+        imports: bool = True,
+    ) -> str:
+        """Return the CURIE for a schema element, compressing full URIs where possible.
+
+        This is the CURIE-returning companion to :meth:`get_uri`.  It first resolves
+        the element's declared URI via :meth:`get_uri`, then compresses it to a CURIE
+        using the schema's registered prefixes via :meth:`compress_uri`.
+
+        When the declared URI is already a CURIE (the common case) it is returned
+        unchanged.  When no URI is declared, :meth:`get_uri` constructs the fallback
+        ``"<default_prefix>:<element_name>"`` CURIE, which is then returned as-is.
+        When the URI is a full URI that cannot be compressed, a :exc:`ValueError` is
+        raised.
+
+        :param element: Name of schema element or element object.
+        :param imports: Include imports closure when resolving the element.
+        :return: A CURIE string such as ``"schema:Event"`` or ``"ex:something_else"``.
+        :raises ValueError: When the element's URI is a fully-qualified URI with no
+            matching prefix registered in the schema, or when it is not a valid URI or
+            CURIE.
+        """
+        e = self.get_element(element, imports=imports)
+        uri = self.get_uri(e, imports=imports)
+        return self.compress_uri(uri)
+
     def expand_curie(self, uri: str) -> str:
         """Expand a URI or CURIE to a full URI.
 
@@ -1458,6 +1498,43 @@ class SchemaView:
                 if pfx in ns:
                     return ns[pfx] + local_id
         return uri
+
+    def compress_uri(self, uri: str) -> str:
+        """Compress a URI or CURIE to a CURIE string using the schema's registered prefixes.
+
+        This is the inverse of :meth:`expand_curie`.
+
+        Resolution order:
+
+        1. Try to compress *uri* with
+           :meth:`~linkml_runtime.utils.namespaces.Namespaces.curie_for`.
+        2. If compression fails but *uri* is already a valid CURIE, return it as-is
+           (emitting a warning when it looks like a plain ``http(s)://`` URL to alert
+           callers that disambiguation is impossible).
+        3. If *uri* is a fully-qualified URI with no matching prefix, raise
+           :exc:`ValueError`.
+        4. If *uri* is neither a valid URI nor a valid CURIE, raise :exc:`ValueError`.
+
+        :param uri: A URI or CURIE string.
+        :return: A CURIE string such as ``"schema:Event"`` or ``"ex:something_else"``.
+        :raises ValueError: When *uri* is a fully-qualified URI whose namespace is not
+            registered, or when it is not a syntactically valid URI or CURIE.
+        """
+        ns = self.namespaces()
+        curie = ns.curie_for(uri) if validate_uri(uri) else None
+        if curie:
+            return curie
+        if validate_curie(uri):
+            if re.match("https?://.*", uri):
+                logger.warning(
+                    f"'{uri}' looks like a URL but no registered prefix matches it; "
+                    "it cannot be unambiguously compressed to a CURIE."
+                )
+            return uri
+        elif validate_uri(uri):
+            raise ValueError(f"'{uri}' cannot be converted to a CURIE, corresponding prefix not defined")
+        else:
+            raise ValueError(f"'{uri}' does not seem to be either a valid URI or a valid CURIE")
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_identifier(self, identifier: str) -> list[str]:
@@ -1629,17 +1706,25 @@ class SchemaView:
         return False
 
     @lru_cache(None)
-    def annotation_dict(self, element_name: ElementName, imports: bool = True) -> dict[URIorCURIE, Any]:
+    def annotation_dict(
+        self, element_name: ElementName, imports: bool = True, class_name: ClassDefinitionName | None = None
+    ) -> dict[URIorCURIE, Any]:
         """Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
 
         See also: https://github.com/linkml/linkml/issues/296
 
-        :param element_name:
-        :param imports:
+        :param element_name: The name of the schema element for which to retrieve annotations.
+        :param imports: Whether to include the imports closure when looking up for the element.
+        :param class_name: If set, `element_name` is assumed to be a slot name, and this method
+            will return the annotations carried by the induced slot in the context of the
+            indicated class.
         :return: annotation dictionary
         """
+        if class_name is not None:
+            induced_slot = self.induced_slot(element_name, class_name, imports=imports)
+            return {k: v.value for k, v in induced_slot.annotations._items()}
         e = self.get_element(element_name, imports=imports)
         return {k: v.value for k, v in e.annotations.items()}
 

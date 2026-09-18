@@ -76,7 +76,7 @@ class {{ classname(c.name) }}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Ba
 {% else %}
 
     # One-To-Many: {{ mapping }}
-    {{ mapping.source_slot }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(foreign_keys="[{{ mapping.target_class }}.{{ mapping.target_slot }}]")
+    {{ mapping.source_slot }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(foreign_keys="[{{ classname(mapping.target_class) }}.{{ mapping.target_slot }}]")
 {% endif %}
 {% endfor %}
 

@@ -51,7 +51,7 @@ class CommonMetadata(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='common_metadata', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='common_metadata_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.common_metadata_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.common_metadata_id]")
     
     
     todos_rel = relationship( "CommonMetadataTodos" )
@@ -70,7 +70,7 @@ class CommonMetadata(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='common_metadata', source_slot='examples', mapping_type=None, target_class='example', target_slot='common_metadata_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.common_metadata_id]")
+    examples = relationship( "Example", foreign_keys="[Example.common_metadata_id]")
     
     
     # ManyToMany
@@ -88,7 +88,7 @@ class CommonMetadata(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='common_metadata', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='common_metadata_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.common_metadata_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.common_metadata_id]")
     
     
     mappings_rel = relationship( "CommonMetadataMappings" )
@@ -177,7 +177,7 @@ class Element(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.element_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.element_name]")
     
     
     implements_rel = relationship( "ElementImplements" )
@@ -191,15 +191,15 @@ class Element(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.element_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.element_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.element_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.element_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.element_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.element_name]")
     
     
     todos_rel = relationship( "ElementTodos" )
@@ -218,7 +218,7 @@ class Element(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='examples', mapping_type=None, target_class='example', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.element_name]")
+    examples = relationship( "Example", foreign_keys="[Example.element_name]")
     
     
     # ManyToMany
@@ -236,7 +236,7 @@ class Element(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.element_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.element_name]")
     
     
     mappings_rel = relationship( "ElementMappings" )
@@ -360,7 +360,7 @@ class AnonymousEnumExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_enum_expression', source_slot='permissible_values', mapping_type=None, target_class='permissible_value', target_slot='anonymous_enum_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    permissible_values = relationship( "PermissibleValue", foreign_keys="[permissible_value.anonymous_enum_expression_id]")
+    permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.anonymous_enum_expression_id]")
     
     
     # ManyToMany
@@ -421,15 +421,15 @@ class EnumBinding(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_binding', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='enum_binding_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.enum_binding_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.enum_binding_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_binding', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='enum_binding_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.enum_binding_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.enum_binding_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_binding', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='enum_binding_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.enum_binding_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.enum_binding_id]")
     
     
     todos_rel = relationship( "EnumBindingTodos" )
@@ -448,7 +448,7 @@ class EnumBinding(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_binding', source_slot='examples', mapping_type=None, target_class='example', target_slot='enum_binding_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.enum_binding_id]")
+    examples = relationship( "Example", foreign_keys="[Example.enum_binding_id]")
     
     
     # ManyToMany
@@ -466,7 +466,7 @@ class EnumBinding(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_binding', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='enum_binding_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.enum_binding_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.enum_binding_id]")
     
     
     mappings_rel = relationship( "EnumBindingMappings" )
@@ -632,15 +632,15 @@ class StructuredAlias(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.structured_alias_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.structured_alias_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.structured_alias_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.structured_alias_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.structured_alias_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.structured_alias_id]")
     
     
     todos_rel = relationship( "StructuredAliasTodos" )
@@ -659,7 +659,7 @@ class StructuredAlias(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='examples', mapping_type=None, target_class='example', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.structured_alias_id]")
+    examples = relationship( "Example", foreign_keys="[Example.structured_alias_id]")
     
     
     # ManyToMany
@@ -677,7 +677,7 @@ class StructuredAlias(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.structured_alias_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.structured_alias_id]")
     
     
     mappings_rel = relationship( "StructuredAliasMappings" )
@@ -770,15 +770,15 @@ class AnonymousExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='anonymous_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.anonymous_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.anonymous_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='anonymous_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.anonymous_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.anonymous_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='anonymous_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.anonymous_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.anonymous_expression_id]")
     
     
     todos_rel = relationship( "AnonymousExpressionTodos" )
@@ -797,7 +797,7 @@ class AnonymousExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='anonymous_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.anonymous_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.anonymous_expression_id]")
     
     
     # ManyToMany
@@ -815,7 +815,7 @@ class AnonymousExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='anonymous_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.anonymous_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.anonymous_expression_id]")
     
     
     mappings_rel = relationship( "AnonymousExpressionMappings" )
@@ -918,15 +918,15 @@ class PathExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.path_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.path_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.path_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.path_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.path_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.path_expression_id]")
     
     
     todos_rel = relationship( "PathExpressionTodos" )
@@ -945,7 +945,7 @@ class PathExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.path_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.path_expression_id]")
     
     
     # ManyToMany
@@ -963,7 +963,7 @@ class PathExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.path_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.path_expression_id]")
     
     
     mappings_rel = relationship( "PathExpressionMappings" )
@@ -1045,7 +1045,7 @@ class ClassExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    slot_conditions = relationship( "SlotDefinition", foreign_keys="[slot_definition.class_expression_id]")
+    slot_conditions = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_expression_id]")
     
 
     def __repr__(self):
@@ -1106,15 +1106,15 @@ class ArrayExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.array_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.array_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.array_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.array_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.array_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.array_expression_id]")
     
     
     todos_rel = relationship( "ArrayExpressionTodos" )
@@ -1133,7 +1133,7 @@ class ArrayExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.array_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.array_expression_id]")
     
     
     # ManyToMany
@@ -1151,7 +1151,7 @@ class ArrayExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.array_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.array_expression_id]")
     
     
     mappings_rel = relationship( "ArrayExpressionMappings" )
@@ -1236,15 +1236,15 @@ class DimensionExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.dimension_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.dimension_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.dimension_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.dimension_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.dimension_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.dimension_expression_id]")
     
     
     todos_rel = relationship( "DimensionExpressionTodos" )
@@ -1263,7 +1263,7 @@ class DimensionExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.dimension_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.dimension_expression_id]")
     
     
     # ManyToMany
@@ -1281,7 +1281,7 @@ class DimensionExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.dimension_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.dimension_expression_id]")
     
     
     mappings_rel = relationship( "DimensionExpressionMappings" )
@@ -1365,15 +1365,15 @@ class PatternExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.pattern_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.pattern_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.pattern_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.pattern_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.pattern_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.pattern_expression_id]")
     
     
     todos_rel = relationship( "PatternExpressionTodos" )
@@ -1392,7 +1392,7 @@ class PatternExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.pattern_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.pattern_expression_id]")
     
     
     # ManyToMany
@@ -1410,7 +1410,7 @@ class PatternExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.pattern_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.pattern_expression_id]")
     
     
     mappings_rel = relationship( "PatternExpressionMappings" )
@@ -1493,19 +1493,19 @@ class ImportExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='import_map', mapping_type=None, target_class='setting', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    import_map = relationship( "Setting", foreign_keys="[setting.import_expression_id]")
+    import_map = relationship( "Setting", foreign_keys="[Setting.import_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.import_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.import_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.import_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.import_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.import_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.import_expression_id]")
     
     
     todos_rel = relationship( "ImportExpressionTodos" )
@@ -1524,7 +1524,7 @@ class ImportExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.import_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.import_expression_id]")
     
     
     # ManyToMany
@@ -1542,7 +1542,7 @@ class ImportExpression(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.import_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.import_expression_id]")
     
     
     mappings_rel = relationship( "ImportExpressionMappings" )
@@ -1794,15 +1794,15 @@ class PermissibleValue(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='permissible_value', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='permissible_value_text', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.permissible_value_text]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.permissible_value_text]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='permissible_value', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='permissible_value_text', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.permissible_value_text]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.permissible_value_text]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='permissible_value', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='permissible_value_text', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.permissible_value_text]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.permissible_value_text]")
     
     
     todos_rel = relationship( "PermissibleValueTodos" )
@@ -1821,7 +1821,7 @@ class PermissibleValue(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='permissible_value', source_slot='examples', mapping_type=None, target_class='example', target_slot='permissible_value_text', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.permissible_value_text]")
+    examples = relationship( "Example", foreign_keys="[Example.permissible_value_text]")
     
     
     # ManyToMany
@@ -1839,7 +1839,7 @@ class PermissibleValue(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='permissible_value', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='permissible_value_text', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.permissible_value_text]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.permissible_value_text]")
     
     
     mappings_rel = relationship( "PermissibleValueMappings" )
@@ -1926,15 +1926,15 @@ class UniqueKey(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.unique_key_unique_key_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.unique_key_unique_key_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.unique_key_unique_key_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.unique_key_unique_key_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.unique_key_unique_key_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.unique_key_unique_key_name]")
     
     
     todos_rel = relationship( "UniqueKeyTodos" )
@@ -1953,7 +1953,7 @@ class UniqueKey(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='examples', mapping_type=None, target_class='example', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.unique_key_unique_key_name]")
+    examples = relationship( "Example", foreign_keys="[Example.unique_key_unique_key_name]")
     
     
     # ManyToMany
@@ -1971,7 +1971,7 @@ class UniqueKey(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.unique_key_unique_key_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.unique_key_unique_key_name]")
     
     
     mappings_rel = relationship( "UniqueKeyMappings" )
@@ -2054,15 +2054,15 @@ class TypeMapping(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.type_mapping_framework]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.type_mapping_framework]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.type_mapping_framework]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.type_mapping_framework]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.type_mapping_framework]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.type_mapping_framework]")
     
     
     todos_rel = relationship( "TypeMappingTodos" )
@@ -2081,7 +2081,7 @@ class TypeMapping(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='examples', mapping_type=None, target_class='example', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.type_mapping_framework]")
+    examples = relationship( "Example", foreign_keys="[Example.type_mapping_framework]")
     
     
     # ManyToMany
@@ -2099,7 +2099,7 @@ class TypeMapping(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.type_mapping_framework]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.type_mapping_framework]")
     
     
     mappings_rel = relationship( "TypeMappingMappings" )
@@ -2232,7 +2232,7 @@ class Extension(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='extension', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='extension_tag', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.extension_tag]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.extension_tag]")
     
 
     def __repr__(self):
@@ -2253,7 +2253,7 @@ class Extensible(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='extensible', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='extensible_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.extensible_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.extensible_id]")
     
 
     def __repr__(self):
@@ -2274,7 +2274,7 @@ class Annotatable(Base):
     
     
     # One-To-Many: OneToAnyMapping(source_class='annotatable', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='annotatable_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.annotatable_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.annotatable_id]")
     
 
     def __repr__(self):
@@ -10638,7 +10638,7 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='prefixes', mapping_type=None, target_class='prefix', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    prefixes = relationship( "Prefix", foreign_keys="[prefix.schema_definition_name]")
+    prefixes = relationship( "Prefix", foreign_keys="[Prefix.schema_definition_name]")
     
     
     emit_prefixes_rel = relationship( "SchemaDefinitionEmitPrefixes" )
@@ -10652,31 +10652,31 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='subsets', mapping_type=None, target_class='subset_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    subsets = relationship( "SubsetDefinition", foreign_keys="[subset_definition.schema_definition_name]")
+    subsets = relationship( "SubsetDefinition", foreign_keys="[SubsetDefinition.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='types', mapping_type=None, target_class='type_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    types = relationship( "TypeDefinition", foreign_keys="[type_definition.schema_definition_name]")
+    types = relationship( "TypeDefinition", foreign_keys="[TypeDefinition.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='enums', mapping_type=None, target_class='enum_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    enums = relationship( "EnumDefinition", foreign_keys="[enum_definition.schema_definition_name]")
+    enums = relationship( "EnumDefinition", foreign_keys="[EnumDefinition.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='slots', mapping_type=None, target_class='slot_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    slots = relationship( "SlotDefinition", foreign_keys="[slot_definition.schema_definition_name]")
+    slots = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='classes', mapping_type=None, target_class='class_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    classes = relationship( "ClassDefinition", foreign_keys="[class_definition.schema_definition_name]")
+    classes = relationship( "ClassDefinition", foreign_keys="[ClassDefinition.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='settings', mapping_type=None, target_class='setting', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    settings = relationship( "Setting", foreign_keys="[setting.schema_definition_name]")
+    settings = relationship( "Setting", foreign_keys="[Setting.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    bindings = relationship( "EnumBinding", foreign_keys="[enum_binding.schema_definition_name]")
+    bindings = relationship( "EnumBinding", foreign_keys="[EnumBinding.schema_definition_name]")
     
     
     id_prefixes_rel = relationship( "SchemaDefinitionIdPrefixes" )
@@ -10685,7 +10685,7 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.schema_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.schema_definition_name]")
     
     
     implements_rel = relationship( "SchemaDefinitionImplements" )
@@ -10699,15 +10699,15 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.schema_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.schema_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.schema_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.schema_definition_name]")
     
     
     todos_rel = relationship( "SchemaDefinitionTodos" )
@@ -10726,7 +10726,7 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.schema_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.schema_definition_name]")
     
     
     # ManyToMany
@@ -10744,7 +10744,7 @@ class SchemaDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.schema_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.schema_definition_name]")
     
     
     mappings_rel = relationship( "SchemaDefinitionMappings" )
@@ -10935,7 +10935,7 @@ class TypeDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.type_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.type_definition_name]")
     
     
     implements_rel = relationship( "TypeDefinitionImplements" )
@@ -10949,15 +10949,15 @@ class TypeDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.type_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.type_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.type_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.type_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.type_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.type_definition_name]")
     
     
     todos_rel = relationship( "TypeDefinitionTodos" )
@@ -10976,7 +10976,7 @@ class TypeDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.type_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.type_definition_name]")
     
     
     # ManyToMany
@@ -10994,7 +10994,7 @@ class TypeDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.type_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.type_definition_name]")
     
     
     mappings_rel = relationship( "TypeDefinitionMappings" )
@@ -11089,7 +11089,7 @@ class SubsetDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.subset_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.subset_definition_name]")
     
     
     implements_rel = relationship( "SubsetDefinitionImplements" )
@@ -11103,15 +11103,15 @@ class SubsetDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.subset_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.subset_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.subset_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.subset_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.subset_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.subset_definition_name]")
     
     
     todos_rel = relationship( "SubsetDefinitionTodos" )
@@ -11130,7 +11130,7 @@ class SubsetDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.subset_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.subset_definition_name]")
     
     
     # ManyToMany
@@ -11148,7 +11148,7 @@ class SubsetDefinition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.subset_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.subset_definition_name]")
     
     
     mappings_rel = relationship( "SubsetDefinitionMappings" )
@@ -11259,7 +11259,7 @@ class Definition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.definition_name]")
     
     
     implements_rel = relationship( "DefinitionImplements" )
@@ -11273,15 +11273,15 @@ class Definition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.definition_name]")
     
     
     todos_rel = relationship( "DefinitionTodos" )
@@ -11300,7 +11300,7 @@ class Definition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.definition_name]")
     
     
     # ManyToMany
@@ -11318,7 +11318,7 @@ class Definition(Element):
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.definition_name]")
     
     
     mappings_rel = relationship( "DefinitionMappings" )
@@ -11397,7 +11397,7 @@ class EnumExpression(Expression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_expression', source_slot='permissible_values', mapping_type=None, target_class='permissible_value', target_slot='enum_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    permissible_values = relationship( "PermissibleValue", foreign_keys="[permissible_value.enum_expression_id]")
+    permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.enum_expression_id]")
     
     
     # ManyToMany
@@ -11473,7 +11473,7 @@ class SlotExpression(Expression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    bindings = relationship( "EnumBinding", foreign_keys="[enum_binding.slot_expression_id]")
+    bindings = relationship( "EnumBinding", foreign_keys="[EnumBinding.slot_expression_id]")
     
     
     equals_string_in_rel = relationship( "SlotExpressionEqualsStringIn" )
@@ -11568,7 +11568,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    bindings = relationship( "EnumBinding", foreign_keys="[enum_binding.anonymous_slot_expression_id]")
+    bindings = relationship( "EnumBinding", foreign_keys="[EnumBinding.anonymous_slot_expression_id]")
     
     
     equals_string_in_rel = relationship( "AnonymousSlotExpressionEqualsStringIn" )
@@ -11593,15 +11593,15 @@ class AnonymousSlotExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.anonymous_slot_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.anonymous_slot_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.anonymous_slot_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.anonymous_slot_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.anonymous_slot_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.anonymous_slot_expression_id]")
     
     
     todos_rel = relationship( "AnonymousSlotExpressionTodos" )
@@ -11620,7 +11620,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.anonymous_slot_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.anonymous_slot_expression_id]")
     
     
     # ManyToMany
@@ -11638,7 +11638,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.anonymous_slot_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.anonymous_slot_expression_id]")
     
     
     mappings_rel = relationship( "AnonymousSlotExpressionMappings" )
@@ -11742,19 +11742,19 @@ class AnonymousClassExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    slot_conditions = relationship( "SlotDefinition", foreign_keys="[slot_definition.anonymous_class_expression_id]")
+    slot_conditions = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.anonymous_class_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.anonymous_class_expression_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.anonymous_class_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.anonymous_class_expression_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.anonymous_class_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.anonymous_class_expression_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.anonymous_class_expression_id]")
     
     
     todos_rel = relationship( "AnonymousClassExpressionTodos" )
@@ -11773,7 +11773,7 @@ class AnonymousClassExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.anonymous_class_expression_id]")
+    examples = relationship( "Example", foreign_keys="[Example.anonymous_class_expression_id]")
     
     
     # ManyToMany
@@ -11791,7 +11791,7 @@ class AnonymousClassExpression(AnonymousExpression):
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.anonymous_class_expression_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.anonymous_class_expression_id]")
     
     
     mappings_rel = relationship( "AnonymousClassExpressionMappings" )
@@ -11887,15 +11887,15 @@ class ClassRule(ClassLevelRule):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_rule', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='class_rule_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.class_rule_id]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.class_rule_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_rule', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='class_rule_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.class_rule_id]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.class_rule_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_rule', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='class_rule_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.class_rule_id]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.class_rule_id]")
     
     
     todos_rel = relationship( "ClassRuleTodos" )
@@ -11914,7 +11914,7 @@ class ClassRule(ClassLevelRule):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_rule', source_slot='examples', mapping_type=None, target_class='example', target_slot='class_rule_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.class_rule_id]")
+    examples = relationship( "Example", foreign_keys="[Example.class_rule_id]")
     
     
     # ManyToMany
@@ -11932,7 +11932,7 @@ class ClassRule(ClassLevelRule):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_rule', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='class_rule_id', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.class_rule_id]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.class_rule_id]")
     
     
     mappings_rel = relationship( "ClassRuleMappings" )
@@ -12029,11 +12029,11 @@ class Annotation(Extension):
     
     
     # One-To-Many: OneToAnyMapping(source_class='annotation', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='annotation_tag', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.annotation_tag]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.annotation_tag]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='annotation', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='annotation_tag', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.annotation_tag]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.annotation_tag]")
     
 
     def __repr__(self):
@@ -12091,7 +12091,7 @@ class EnumDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='permissible_values', mapping_type=None, target_class='permissible_value', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    permissible_values = relationship( "PermissibleValue", foreign_keys="[permissible_value.enum_definition_name]")
+    permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.enum_definition_name]")
     
     
     # ManyToMany
@@ -12130,7 +12130,7 @@ class EnumDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.enum_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.enum_definition_name]")
     
     
     implements_rel = relationship( "EnumDefinitionImplements" )
@@ -12144,15 +12144,15 @@ class EnumDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.enum_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.enum_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.enum_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.enum_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.enum_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.enum_definition_name]")
     
     
     todos_rel = relationship( "EnumDefinitionTodos" )
@@ -12171,7 +12171,7 @@ class EnumDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.enum_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.enum_definition_name]")
     
     
     # ManyToMany
@@ -12189,7 +12189,7 @@ class EnumDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.enum_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.enum_definition_name]")
     
     
     mappings_rel = relationship( "EnumDefinitionMappings" )
@@ -12369,7 +12369,7 @@ class SlotDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    bindings = relationship( "EnumBinding", foreign_keys="[enum_binding.slot_definition_name]")
+    bindings = relationship( "EnumBinding", foreign_keys="[EnumBinding.slot_definition_name]")
     
     
     equals_string_in_rel = relationship( "SlotDefinitionEqualsStringIn" )
@@ -12412,7 +12412,7 @@ class SlotDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.slot_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.slot_definition_name]")
     
     
     implements_rel = relationship( "SlotDefinitionImplements" )
@@ -12426,15 +12426,15 @@ class SlotDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.slot_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.slot_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.slot_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.slot_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.slot_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.slot_definition_name]")
     
     
     todos_rel = relationship( "SlotDefinitionTodos" )
@@ -12453,7 +12453,7 @@ class SlotDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.slot_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.slot_definition_name]")
     
     
     # ManyToMany
@@ -12471,7 +12471,7 @@ class SlotDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.slot_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.slot_definition_name]")
     
     
     mappings_rel = relationship( "SlotDefinitionMappings" )
@@ -12578,11 +12578,11 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_usage', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    slot_usage = relationship( "SlotDefinition", foreign_keys="[slot_definition.class_definition_name]")
+    slot_usage = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='attributes', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    attributes = relationship( "SlotDefinition", foreign_keys="[slot_definition.class_definition_name]")
+    attributes = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
     
     
     # ManyToMany
@@ -12594,15 +12594,15 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='unique_keys', mapping_type=None, target_class='unique_key', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    unique_keys = relationship( "UniqueKey", foreign_keys="[unique_key.class_definition_name]")
+    unique_keys = relationship( "UniqueKey", foreign_keys="[UniqueKey.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='rules', mapping_type=None, target_class='class_rule', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    rules = relationship( "ClassRule", foreign_keys="[class_rule.class_definition_name]")
+    rules = relationship( "ClassRule", foreign_keys="[ClassRule.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='classification_rules', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    classification_rules = relationship( "AnonymousClassExpression", foreign_keys="[anonymous_class_expression.class_definition_name]")
+    classification_rules = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_name]")
     
     
     # ManyToMany
@@ -12626,7 +12626,7 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    slot_conditions = relationship( "SlotDefinition", foreign_keys="[slot_definition.class_definition_name]")
+    slot_conditions = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
     
     
     # ManyToMany
@@ -12648,7 +12648,7 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    local_names = relationship( "LocalName", foreign_keys="[local_name.class_definition_name]")
+    local_names = relationship( "LocalName", foreign_keys="[LocalName.class_definition_name]")
     
     
     implements_rel = relationship( "ClassDefinitionImplements" )
@@ -12662,15 +12662,15 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.class_definition_name]")
+    extensions = relationship( "Extension", foreign_keys="[Extension.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.class_definition_name]")
+    annotations = relationship( "Annotation", foreign_keys="[Annotation.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.class_definition_name]")
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[AltDescription.class_definition_name]")
     
     
     todos_rel = relationship( "ClassDefinitionTodos" )
@@ -12689,7 +12689,7 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='examples', mapping_type=None, target_class='example', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.class_definition_name]")
+    examples = relationship( "Example", foreign_keys="[Example.class_definition_name]")
     
     
     # ManyToMany
@@ -12707,7 +12707,7 @@ class ClassDefinition(Definition):
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.class_definition_name]")
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[StructuredAlias.class_definition_name]")
     
     
     mappings_rel = relationship( "ClassDefinitionMappings" )

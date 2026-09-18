@@ -114,9 +114,17 @@ def test_github_io_path(source, fmt):
     assert res.status_code != 404, url
 
 
+@pytest.mark.upstream
 @pytest.mark.skipif(not HAVE_REQUESTS_CACHE, reason="Need to cache this")
 @pytest.mark.parametrize("source,fmt", W3ID_FORMATS)
 def test_url_for_format(source, fmt):
+    """The published PURL for each format actually resolves.
+
+    This checks the state of w3id.org, not this repo's diff -- a PR cannot
+    break it -- so it runs in the weekly workflow. The per-PR guarantee that
+    ``URL_FOR`` produces well-formed, stub-resolvable URLs lives in
+    ``tests/linkml/test_offline_network.py``.
+    """
     url = URL_FOR(source, fmt)
     res = requests.get(url)
     assert res.status_code != 404, url
@@ -201,7 +209,7 @@ def _linkml_model_main_url(source: Source, fmt: Format) -> str:
     return f"{LINKML_MODEL_MAIN_BASE}{rel}"
 
 
-@pytest.mark.network
+@pytest.mark.upstream
 @pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
 def test_vendored_files_match_upstream(source, fmt, upstream_file_reader):
     """Detect drift between vendored files and the upstream commit they were vendored from.
@@ -229,8 +237,7 @@ def test_vendored_files_match_upstream(source, fmt, upstream_file_reader):
     )
 
 
-@pytest.mark.network
-@pytest.mark.upstream_main
+@pytest.mark.upstream
 @pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
 def test_vendored_files_match_upstream_main(source, fmt):
     """Detect drift between vendored files and the linkml-model main branch.
