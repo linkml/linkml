@@ -61,9 +61,17 @@ jobs:
       #   * merge_group  -> the queue base
       #   * otherwise (workflow_dispatch, first/force push) -> audit
       #
-      # A pyproject.toml change is always a real dependency change. uv.lock is
-      # regenerated non-deterministically, so a textual change there is only
-      # treated as real if the resolved (name, version) set actually differs.
+      # uv.lock is the source of truth: `uv audit` reads it, so if the resolved
+      # (name, version) set is unchanged the audit result cannot differ. It is
+      # also regenerated non-deterministically, so a textual change there is only
+      # treated as real if that set actually differs.
+      #
+      # pyproject.toml is deliberately not checked on its own. A dependency
+      # change there must also change uv.lock -- `uv lock --check` in main.yaml
+      # fails the PR otherwise -- so matching on the path only added false
+      # positives, running the full CVE audit for edits that touch no
+      # dependencies at all (ruff config, build settings, metadata). Those PRs
+      # then inherited whatever advisories happened to be open that day.
       - name: Detect dependency changes
         id: deps
         shell: bash
@@ -85,10 +93,7 @@ jobs:
 
           changed_files="$(git diff --name-only "$base...HEAD")"
 
-          if grep -qE '(^|/)pyproject\.toml$' <<<"$changed_files"; then
-            echo "pyproject.toml changed; auditing."
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          elif grep -qE '(^|/)uv\.lock$' <<<"$changed_files"; then
+          if grep -qE '(^|/)uv\.lock$' <<<"$changed_files"; then
             changed="$(python3 .github/scripts/uv_lock_deps_changed.py "$base")"
             if [ "$changed" = "true" ]; then
               echo "uv.lock resolved dependency set changed; auditing."
