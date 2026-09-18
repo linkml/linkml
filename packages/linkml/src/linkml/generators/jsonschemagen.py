@@ -813,6 +813,19 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         return constraints
 
+    @staticmethod
+    def _value_is_nullable(slot: SlotDefinition | AnonymousSlotExpression) -> bool:
+        """Whether a ``null`` value is acceptable for the slot's value.
+
+        A ``null`` value is acceptable when either the slot is not ``required`` (the
+        classic optional case) or when the slot declares ``value_presence: UNCOMMITTED``.
+        The latter allows a slot to be ``required`` (its key must be present) while still
+        permitting an explicit ``null`` value, yielding a nullable JSON Schema property.
+        """
+        if not slot.required:
+            return True
+        return slot.value_presence == PresenceEnum(PresenceEnum.UNCOMMITTED)
+
     def get_subschema_for_slot(
         self,
         slot: SlotDefinition | AnonymousSlotExpression,
@@ -824,6 +837,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         Args:
             include_null: Include ``type: null`` when generating ranges that are not required
         """
+        # ``non_null_value`` is True when a ``null`` value is NOT acceptable, i.e. the slot
+        # is required and does not declare ``value_presence: UNCOMMITTED``. It is used in
+        # place of ``slot.required`` for null-emission decisions so that a required slot
+        # with ``value_presence: UNCOMMITTED`` still gets a nullable value schema.
+        non_null_value = not self._value_is_nullable(slot)
         prop = JsonSchema()
         slot_is_multivalued = cast(bool, "multivalued" in slot and slot.multivalued)
         slot_is_inlined = self.schemaview.is_inlined(slot)
@@ -864,16 +882,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                             additionalProps = additionalProps[0]
                         else:
                             additionalProps = JsonSchema({"anyOf": additionalProps})
-                        if slot.required or not include_null:
+                        if non_null_value or not include_null:
                             typ = "object"
                         else:
                             typ = ["object", "null"]
                         prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=slot.required)
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=non_null_value)
                 else:
-                    prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
+                    prop = JsonSchema.ref_for(reference, required=non_null_value or not include_null)
 
             else:
                 if not slot_is_boolean or slot.range != self.schemaview.schema.default_range:
@@ -886,7 +904,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         # for multivalued slots, nullability applies to the array (via array_of
                         # below), not to the individual elements
                         prop = JsonSchema.ref_for(
-                            reference, required=slot.required or slot_is_multivalued or not include_null
+                            reference, required=non_null_value or slot_is_multivalued or not include_null
                         )
                     elif typ and fmt is None:
                         prop = JsonSchema({"type": typ})
@@ -894,10 +912,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
-                    prop = JsonSchema.array_of(prop, include_null, required=slot.required)
+                    prop = JsonSchema.array_of(prop, include_null, required=non_null_value)
                 else:
                     # handle optionals - bools like any_of, etc. below as they call this method recursively
-                    if not slot.required and not slot_is_boolean and include_null:
+                    if not non_null_value and not slot_is_boolean and include_null:
                         if "type" in prop:
                             prop["type"] = [prop["type"], "null"]
 
@@ -930,7 +948,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             bool_subschema["anyOf"] = _deduplicate_subschemas(
                 [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
             )
-            if not slot.required and not prop.is_array and include_null:
+            if not non_null_value and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
@@ -954,7 +972,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if prop.is_array:
                 if "items" not in prop:
                     prop["items"] = {}
-                if slot.required or not include_null:
+                if non_null_value or not include_null:
                     prop["type"] = "array"
                 else:
                     prop["type"] = ["array", "null"]
