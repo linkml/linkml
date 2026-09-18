@@ -40,6 +40,36 @@ Some projects may opt to manage their data alongside the schema in the same repo
 for "registry" style projects, but in other cases the data may be best managed separately in a dedicated
 store or a repository like Zenodo or Figshare.
 
+(rdf-in-version-control)=
+### Keep generated RDF diffs small
+
+When you track generated RDF in Git, adding a class or property can change many
+blank-node labels. The default RDFC-1.0 numbering is repeatable for the same graph,
+but an insertion can renumber existing nodes and obscure the actual schema edit.
+
+The optional `--diff-stable` flag uses
+[diffable-rdf](https://github.com/ASCS-eV/diffable-rdf) to reduce this label churn.
+In a uv project containing your schema, install LinkML with the extra and generate
+SHACL as follows (using a release that includes this option):
+
+```bash
+uv add 'linkml[diff-stable]'
+uv run gen-shacl --diff-stable schema.yaml > schema.shacl.ttl
+```
+
+The flag also works with `gen-owl`, `gen-rdf`, and `gen-shex --format rdf`.
+Python callers of `canonicalize_rdf_graph(..., diff_stable=True)` can install
+`linkml-runtime[diff-stable]`. The feature is disabled by default; enabling it
+changes existing labels once, so keep that regeneration separate from schema edits.
+
+Labels depend on blank-node neighborhoods. Edits within connected structures or
+among symmetric nodes can still affect other labels; minimum diffs are not
+guaranteed. Keep tool versions consistent when comparing generated files.
+The relabeled output is not the standard RDFC canonical representation.
+ShExC, ShEx JSON and instance-data conversion are outside this option's scope.
+Non-standard RDF takes the existing fallback path, which warns that it cannot
+apply diff-stable labels.
+
 ### Permissively License Your Code and Data
 
 (adapted from [O3 guidelines](https://osf.io/vuzt3/))
