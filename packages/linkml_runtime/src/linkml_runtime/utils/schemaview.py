@@ -1442,7 +1442,9 @@ class SchemaView:
                 # Two classes reusing an attribute name give a bare placeholder slot with no
                 # from_schema, so the schema has to be looked up by name instead.
                 schema_name = self.in_schema(e.name)  # the schema's own name, e.g. 'core'
-                schema = self.schema_map.get(schema_name)  # None if imported by path, as keys are import strings
+                # .get(), not [...]: keys are imports as written, so a relative import misses
+                # here -- a miss is expected and must fall through to the name match below.
+                schema = self.schema_map.get(schema_name)
                 if schema is None:
                     schema = next((sc for sc in self.schema_map.values() if sc.name == schema_name), None)
                 if schema is None:
