@@ -1439,11 +1439,10 @@ class SchemaView:
                     msg = f"Cannot find {e.from_schema} in schema_map"
                     raise ValueError(msg)
             else:
-                schema = self.schema_map[self.in_schema(e.name)]
-                # schema_map is keyed by the import as written in the importing schema, which
-                # is not always the imported schema's name: `imports: [./child]` is keyed
-                # './child' while in_schema() reports 'child'. Fall back to matching on the
-                # name, as the from_schema branch above does on the id.
+                # Two classes reusing an attribute name give a bare placeholder slot with no
+                # from_schema, so the schema has to be looked up by name instead.
+                schema_name = self.in_schema(e.name)  # the schema's own name, e.g. 'core'
+                schema = self.schema_map.get(schema_name)  # None if imported by path, as keys are import strings
                 if schema is None:
                     schema = next((sc for sc in self.schema_map.values() if sc.name == schema_name), None)
                 if schema is None:
