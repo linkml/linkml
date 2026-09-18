@@ -307,6 +307,7 @@ class SchemaView:
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
+        self._inlined_inference_in_progress: set[CLASS_NAME] = set()
 
     def __key(self) -> tuple[str | URI, str, int]:
         return self.schema.id, self.uuid, self.modifications
@@ -1893,6 +1894,47 @@ class SchemaView:
                 setattr(induced_slot, metaslot_name, v)
         if induced_slot.inlined_as_list:
             induced_slot.inlined = True
+        # Materialize the inlining metaslots so that ``induced_slot`` is the single source of
+        # truth: consumers can read concrete booleans from ``inlined`` / ``inlined_as_list``
+        # instead of re-deriving them from the range class. The *rules* live in
+        # :meth:`is_inlined` / :meth:`is_inlined_as_list`; here we only decide whether they
+        # apply to this slot and, if so, copy the resolved value onto the slot.
+        #
+        # The rules apply only to a slot whose range is a concrete class other than the
+        # unconstrained ``linkml:Any`` (a slot ranged on ``Any`` typically supplies its real
+        # ranges via an ``any_of`` / ``exactly_one_of`` expression and must not be forced
+        # inline). For scalar ranges and ``linkml:Any`` the metaslots are left unset
+        # (``None``).
+        #
+        # :meth:`is_inlined` induces the range's slots (via ``get_identifier_slot``), which
+        # can re-enter this method for a range that (transitively) points back at
+        # ``slot_name`` — an identifier cycle. A re-entrancy guard keyed on the range class
+        # breaks that recursion: while resolving the identifier of a range we are already
+        # resolving, treat it as having no identifier (its inlining is being decided further
+        # up the stack).
+        slot_range = induced_slot.range
+        range_class = self.all_classes(imports=imports).get(slot_range) if slot_range is not None else None
+        range_is_unconstrained = range_class is not None and range_class.class_uri == "linkml:Any"
+        if (
+            range_class is not None
+            and not range_is_unconstrained
+            and slot_range not in self._inlined_inference_in_progress
+        ):
+            self._inlined_inference_in_progress.add(slot_range)
+            try:
+                if induced_slot.inlined is None:
+                    induced_slot.inlined = self.is_inlined(induced_slot, imports=imports)
+                if induced_slot.inlined_as_list is None and induced_slot.inlined:
+                    # inlined_as_list only has meaning when the slot is inlined, and it only
+                    # resolves unambiguously to a list (a range with no key/identifier slot,
+                    # or an explicitly asserted ``inlined_as_list: true``). Materialize that
+                    # forced ``True``; for a keyed/identified range the list-vs-dict form is
+                    # not spec-mandated and is left unset (``None``) so consumers/consumers
+                    # generators can decide.
+                    if self.is_inlined_as_list(induced_slot, imports=imports):
+                        induced_slot.inlined_as_list = True
+            finally:
+                self._inlined_inference_in_progress.discard(slot_range)
         if induced_slot.identifier or induced_slot.key:
             induced_slot.required = True
         if mangle_name:
@@ -2134,6 +2176,63 @@ class SchemaView:
             # assume it is a ref, not inlined
             return id_slot is None
         return False
+
+    def is_inlined_as_list(self, slot: SlotDefinition, imports: bool = True) -> bool:
+        """Return true if slot is inferred or asserted to be inlined as a list.
+
+        An inlined multivalued slot is rendered as a list (rather than a dict keyed on
+        an identifier/key slot) when:
+
+        * ``slot.inlined_as_list`` is ``True`` (directly or inherited through the slot's
+          ``is_a`` / ``mixins`` ancestry), **or**
+        * the slot is inlined (see :meth:`is_inlined`), multivalued, and its range is a
+          class with no identifier or key slot to key the dict on.
+
+        A slot that is not inlined, not multivalued, or whose range has an identifier or key
+        slot is not inlined as a list.
+
+        :param slot:
+        :param imports:
+        :return:
+        """
+        slot_range = slot.range
+        if slot_range not in self.all_classes():
+            return False
+
+        # A slot explicitly declared not-inlined can never be inlined as a list.
+        if slot.inlined is False:
+            return False
+
+        resolved_inlined_as_list = slot.inlined_as_list
+        slot_name = getattr(slot, "name", None)
+        if resolved_inlined_as_list is None and slot_name:
+            # walk all ancestors (reflexive=False to skip the slot itself, checked above).
+            try:
+                ancestors = self.slot_ancestors(slot_name, imports=imports, reflexive=False)
+            except ValueError:
+                ancestors = []
+            if ancestors:
+                all_slots = self.all_slots(imports=imports)
+                for anc_name in ancestors:
+                    anc = all_slots.get(anc_name)
+                    if anc is None:
+                        continue
+                    resolved_inlined_as_list = resolved_inlined_as_list or anc.inlined_as_list
+                    if resolved_inlined_as_list:
+                        break
+
+        if resolved_inlined_as_list is not None:
+            # Explicitly asserted (or inherited) value wins over the range-based rule.
+            return bool(resolved_inlined_as_list)
+
+        # Otherwise: inlined as a list only when the slot is inlined, multivalued, and the
+        # range has no identifier or key slot to key a dict on.
+        return bool(
+            self.is_inlined(slot, imports=imports)
+            and slot.multivalued
+            and self.get_identifier_slot(slot_range, imports=imports) is None
+            and self.get_key_slot(slot_range, imports=imports) is None
+        )
 
     def slot_applicable_range_elements(self, slot: SlotDefinition) -> list[ClassDefinitionName]:
         """Retrieve all applicable metamodel elements for a slot range.
