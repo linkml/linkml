@@ -39,6 +39,7 @@ with stable blank node labels and sorted triples.
 import io
 import re
 import warnings
+from importlib.util import find_spec
 
 import pyoxigraph as ox
 import rdflib
@@ -287,6 +288,7 @@ def _is_safe_prefix_iri(iri: str) -> bool:
 def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
+    diff_stable: bool = False,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -300,8 +302,20 @@ def canonicalize_rdf_graph(
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :param diff_stable: Use diffable-rdf labels to reduce blank-node churn across
+        edits. Requires the ``diff-stable`` extra; disabled by default. The
+        non-standard RDF fallback warns when it cannot apply these labels.
     :return: Deterministic string serialization of the graph.
+    :raises ImportError: If diff-stable labels are requested without diffable-rdf.
     """
+    if diff_stable:
+        if find_spec("diffable_rdf") is None:
+            raise ImportError(
+                "diff_stable=True requires diffable-rdf. Install "
+                "'linkml-runtime[diff-stable]' or 'linkml[diff-stable]'."
+            )
+        from diffable_rdf import wl_relabel_quads
+
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
         warnings.warn(
@@ -330,6 +344,16 @@ def canonicalize_rdf_graph(
             RDFCanonicalizationWarning,
             stacklevel=2,
         )
+        if diff_stable:
+            warnings.warn(
+                "diff_stable=True was requested but this graph took the rdflib fallback, "
+                "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
+                "deterministic but NOT diff-stable: an unrelated edit may still renumber "
+                "blank nodes. Make the offending terms standard RDF (absolute IRIs, IRI "
+                "predicates) to get diff-stable labels.",
+                RDFCanonicalizationWarning,
+                stacklevel=2,
+            )
         return _deterministic_fallback_serialize(graph, output_format)
 
     dataset = ox.Dataset()
@@ -339,13 +363,17 @@ def canonicalize_rdf_graph(
     # 3. Canonicalize blank node labels with RDFC-1.0.
     dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
 
+    quads = list(dataset)
+
+    if diff_stable:
+        quads = wl_relabel_quads(quads)
+
     # 4. Sort triples for deterministic ordering.
     # RDFC-1.0 stabilizes blank-node labels but pyoxigraph's Dataset
     # iteration order is not sorted and varies across processes (verified
     # empirically against pyoxigraph 0.5.8). The explicit string-key sort
     # is load-bearing for byte-identical output across runs; see
     # tests/linkml_runtime/test_utils/test_rdf_canonicalize.py::test_sort_is_load_bearing.
-    quads = list(dataset)
     sorted_triples = sorted(
         (ox.Triple(q.subject, q.predicate, q.object) for q in quads),
         key=lambda t: (str(t.subject), str(t.predicate), str(t.object)),
