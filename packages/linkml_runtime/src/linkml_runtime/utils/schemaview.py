@@ -1453,7 +1453,9 @@ class SchemaView:
             if pfx == sfx(str(schema.id)):
                 uri = f"{pfx}{e_type_path}{e_name}"
         if expand:
-            return self.expand_curie(uri)
+            if ":" in uri:
+                return self.expand_curie(uri)
+            return uri
         return uri
 
     def get_curie(
@@ -1485,19 +1487,50 @@ class SchemaView:
         return self.compress_uri(uri)
 
     def expand_curie(self, uri: str) -> str:
-        """Expand a URI or CURIE to a full URI.
+        """Expand a CURIE to a full URI using the schema's registered prefixes.
 
-        :param uri:
-        :return: URI as a string
+        This is the strict inverse of :meth:`compress_uri`.
+
+        Resolution order:
+
+        1. If *uri* is already a valid full URI (contains ``"://"``), return it
+           unchanged — no expansion needed.
+        2. If *uri* looks like a CURIE (contains ``":"`` with exactly one colon and a
+           registered prefix), return the concatenated full URI.
+        3. If *uri* looks like a CURIE but the prefix is not in the schema's registered
+           namespaces, try each ``default_curi_maps`` entry of every schema in the
+           schema_map (i.e. the schema itself and all its imports) to find the prefix.
+        4. If the prefix is still not found, raise :exc:`ValueError`.
+        5. If *uri* contains no ``":"`` at all (bare name), raise :exc:`ValueError`.
+
+        :param uri: A CURIE or full URI string.
+        :return: A full URI string.
+        :raises ValueError: When *uri* is a CURIE whose prefix cannot be resolved via
+            the schema's registered namespaces or any explicitly declared
+            ``default_curi_maps``, or when it is neither a CURIE nor a full URI.
         """
+        if "://" in uri:
+            return uri
         if ":" in uri:
             parts = uri.split(":")
             if len(parts) == 2:
-                [pfx, local_id] = parts
+                pfx, local_id = parts
                 ns = self.namespaces()
                 if pfx in ns:
                     return ns[pfx] + local_id
-        return uri
+                # Fallback: try resolving via default_curi_maps declared in any
+                # schema in the schema_map. This handles cases where a sub-schema
+                # (e.g. units.yaml) uses a CURIE whose prefix is defined by a
+                # context map (e.g. semweb_context) that is declared in the
+                # sub-schema itself or one of its siblings/parents.
+                for s in self.schema_map.values():
+                    for cmap in s.default_curi_maps:
+                        tmp_ns = Namespaces()
+                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                        if pfx in tmp_ns:
+                            return tmp_ns[pfx] + local_id
+                raise ValueError(f"'{uri}' cannot be expanded: prefix '{pfx}' is not registered in the schema")
+        raise ValueError(f"'{uri}' is neither a CURIE nor a full URI")
 
     def compress_uri(self, uri: str) -> str:
         """Compress a URI or CURIE to a CURIE string using the schema's registered prefixes.
