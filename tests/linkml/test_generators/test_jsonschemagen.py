@@ -1133,6 +1133,52 @@ def test_use_uris(caplog, input_path, use_curies):
         assert "saref_location" in generated["$defs"]["SarefEvent"]["properties"]
 
 
+def _collect_refs(node):
+    """Recursively yield every ``$ref`` string value in a JSON schema fragment."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "$ref" and isinstance(value, str):
+                yield value
+            else:
+                yield from _collect_refs(value)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _collect_refs(item)
+
+
+def test_use_curies_refs_resolve_to_defs(kitchen_sink_path):
+    """Regression test for https://github.com/linkml/linkml/issues/3981.
+
+    Under ``--use-curies`` the ``$defs`` entries for classes are keyed by their
+    CURIE (e.g. ``ks:Company``), but the internal ``$ref`` targets that point at
+    those classes were emitted with the camelCased element name (e.g.
+    ``#/$defs/Company``), producing dangling references. Every ``$ref`` into
+    ``#/$defs/`` must resolve to an existing key in ``$defs``.
+
+    The kitchen sink schema exercises this on many inlined class-range slots and
+    emits CURIE-form class references, so it reproduces the original bug (each
+    such reference was dangling before the fix).
+    """
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, use_curies=True)
+    generated = json.loads(generator.serialize())
+
+    # The generated schema must be structurally valid JSON Schema.
+    jsonschema.Draft7Validator.check_schema(generated)
+
+    def_keys = set(generated["$defs"])
+    # CURIE keying must be active (guards the test against a no-op schema).
+    assert any(":" in key for key in def_keys)
+
+    prefix = "#/$defs/"
+    defs_refs = [ref for ref in _collect_refs(generated) if ref.startswith(prefix)]
+    # At least one class reference must be in CURIE form, otherwise the fixed
+    # code path is never exercised and the test could pass vacuously.
+    assert any(":" in ref[len(prefix) :] for ref in defs_refs)
+
+    dangling = [ref for ref in defs_refs if ref[len(prefix) :] not in def_keys]
+    assert dangling == [], f"dangling $refs not present in $defs: {dangling}"
+
+
 # --------------------------------------------------
 # Arrays!!!
 # --------------------------------------------------

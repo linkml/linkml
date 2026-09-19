@@ -218,6 +218,7 @@ def _slot_examples_for_json_schema(
 class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
     PRESERVE_NAMES: bool = False
+    USE_CURIES: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -247,7 +248,7 @@ class JsonSchema(dict):
             names = [names]
 
         for name in names:
-            canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+            canonical_name = name if self.PRESERVE_NAMES or self.USE_CURIES else camelcase(name)
 
             if "$defs" not in self or canonical_name not in self["$defs"]:
                 self._lax_forward_refs[canonical_name] = identifier_name
@@ -319,7 +320,7 @@ class JsonSchema(dict):
     @classmethod
     def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
-            def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
+            def_name = class_name if cls.PRESERVE_NAMES or cls.USE_CURIES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
@@ -476,6 +477,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
+        # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
+        # pre-converted to CURIEs, so they must not be camelcased again.
+        JsonSchema.USE_CURIES = self.use_curies
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
@@ -756,6 +760,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     reference = descendants
                 else:
                     reference = slot.range
+                if self.use_curies:
+                    # $defs for classes are keyed by CURIE under --use-curies,
+                    # so the $ref targets must use the same CURIE keys.
+                    if isinstance(reference, list):
+                        reference = [self._curie(self.schemaview.get_class(r)) for r in reference]
+                    else:
+                        reference = self._curie(self.schemaview.get_class(reference))
             else:
                 id_slot = self.schemaview.get_identifier_slot(slot.range)
                 return self.get_type_info_for_slot_subschema(id_slot)
