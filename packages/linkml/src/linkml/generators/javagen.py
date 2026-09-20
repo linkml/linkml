@@ -289,6 +289,7 @@ class JavaGenerator(OOCodeGenerator):
     template_file: str | None = None
     template_dir: Path | None = None
     template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
+    custom_type_map: dict[str, str] = field(default_factory=lambda: dict())
 
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
@@ -326,13 +327,30 @@ class JavaGenerator(OOCodeGenerator):
         return name
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
-        if t.uri:
+        typ: str | None = None
+
+        # For looking up in the custom type map, we try with the
+        # "native" URI first, and then the "declared" URI. This is
+        # because declared URIs may not be enough to unambiguously
+        # distinguish between types (for example, both linkml:uri and
+        # linkml:uriorcurie have the same declared URI xsd:anyURI;
+        # likewise, linkml:string, linkml:curie, and linkml:ncname all
+        # share the same declared URI xsd:string).
+        uri = self.schemaview.get_uri(t, expand=True, native=True)
+        typ = self.custom_type_map.get(uri)
+        if typ is None:
+            # Try again with the declared URI
+            uri = self.schemaview.get_uri(t, expand=True, native=False)
+            typ = self.custom_type_map.get(uri)
+        if typ is None and t.uri:
+            # Fallback to the static map
+            typ = TYPEMAP.get(t.uri)
+        if typ:
             # We use "boxed" types (Boolean, Integer, Double, Float) by
             # default because we need to represent the case where a
             # value has not explicitly been set. But that requirement no
             # longer holds when required == true, so in that case we can
             # use primitive types (boolean, int, double, float) instead.
-            typ = TYPEMAP.get(t.uri)
             if required and (typ == "Boolean" or typ == "Double" or typ == "Float"):
                 typ = typ.lower()
             elif required and typ == "Integer":
@@ -342,6 +360,20 @@ class JavaGenerator(OOCodeGenerator):
             return self.map_type(self.schemaview.get_type(t.typeof))
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
+
+    def _read_custom_type_map(self, variant: str | None = None) -> None:
+        """Parses the variant-specific type map, if present."""
+        self.custom_type_map.clear()
+        mapfile = self.template_cache.get_file("_types.map", variant=variant)
+        if mapfile is not None and mapfile.exists():
+            with mapfile.open("r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("#"):
+                        continue
+                    items = line.split()
+                    if len(items) == 2:
+                        self.custom_type_map[items[0]] = items[1]
 
     def render(
         self,
@@ -370,6 +402,7 @@ class JavaGenerator(OOCodeGenerator):
         :return: A :class:`JavaBundle` whose ``files`` maps each output filename
             (e.g. ``"Address.java"``) to its rendered source.
         """
+        self._read_custom_type_map(variant=template_variant)
         oodocs = self.create_documents()
         # Create additional documents for additional templates and visitors
         if extra_templates:

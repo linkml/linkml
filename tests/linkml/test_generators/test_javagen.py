@@ -605,3 +605,16 @@ def test_lookup_template_specific_files():
     # Looking up a template-specific non-template file
     incenp_typemap = tc.get_file("_types.map", variant="org.incenp.linkml")
     assert incenp_typemap is not None
+
+
+def test_custom_type_lookup(input_path):
+    """The generator can map LinkML types to template-specficif Java types."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    # We are not interested in the rendered output for this test, we just need
+    # to trigger reading the (possibly template-specific) type map.
+    gen.render()
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "URI"
+
+    # Again, but using a specific template
+    gen.render(template_variant="org.incenp.linkml")
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "String"
