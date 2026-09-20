@@ -160,14 +160,14 @@ class TemplateCache:
     """
 
     def __init__(self):
-        self.template_files: dict[str, Path] = {}
+        self.files: dict[str, Path] = {}
         self.templates: dict[Path, Template] = {}
 
     def add_directory(self, template_dir: Path) -> None:
         """Adds all templates in the specified directory to the cache."""
 
-        for template in template_dir.glob("*.jinja2"):
-            self.template_files[template.stem] = template
+        for file in [f for f in template_dir.iterdir() if not f.is_dir()]:
+            self.files[file.name] = file
 
     def force_template(self, template_file: Path) -> None:
         """Sets the template to systematically use for all objects.
@@ -177,7 +177,7 @@ class TemplateCache:
         contents of the templates directory.
         """
 
-        self.template_files["__FORCE__"] = template_file
+        self.files["__FORCE__"] = template_file
 
     def get_template(self, name: str, fallback: str = "class", variant: str | None = None) -> Template | None:
         """Finds the template for a given object.
@@ -192,18 +192,9 @@ class TemplateCache:
 
         candidate: Path | None = None
 
-        candidate = self.template_files.get("__FORCE__")
-
-        if candidate is None and variant is not None:
-            candidate = self.template_files.get(name + "-" + variant)
-            if candidate is None:
-                candidate = self.template_files.get(fallback + "-" + variant)
-
+        candidate = self.files.get("__FORCE__")
         if candidate is None:
-            candidate = self.template_files.get(name)
-        if candidate is None:
-            candidate = self.template_files.get(fallback)
-
+            candidate = self._get_file(name, fallback=fallback, variant=variant, suffix=".jinja2")
         if candidate is None:
             return None
 
@@ -211,6 +202,45 @@ class TemplateCache:
             with candidate.open("r") as f:
                 self.templates[candidate] = Template(f.read())
         return self.templates[candidate]
+
+    def get_file(self, name, variant: str | None = None) -> Path | None:
+        """Finds a (non-template) file.
+
+        :param name: The basename of the file to find.
+        :param variant: The name of an optional template variant.
+        :return: The requested file, or None if there is no corresponding file
+            in any of the template directories.
+        """
+        f = Path(name)
+        return self._get_file(f.stem, variant=variant, suffix=f.suffix)
+
+    def _get_file(
+        self, name: str, fallback: str | None = None, variant: str | None = None, suffix: str = ""
+    ) -> Path | None:
+        """Shared logic for the get_template and get_file methods.
+
+        :param name: The basename of the file to find.
+        :param fallback: Another file to look up for if the specified file
+            cannot be found.
+        :param variant: The name of an optional template variant.
+        :param suffix: The suffix of the file to look for (e.g. `.jinja2` for
+            a template file).
+        :return: The path to the requested file, or None if the file (or the
+            fallback) could not be found.
+        """
+        candidate: Path | None = None
+
+        if variant is not None:
+            candidate = self.files.get(name + "-" + variant + suffix)
+            if candidate is None and fallback is not None:
+                candidate = self.files.get(fallback + "-" + variant + suffix)
+
+        if candidate is None:
+            candidate = self.files.get(name + suffix)
+        if candidate is None and fallback is not None:
+            candidate = self.files.get(fallback + suffix)
+
+        return candidate
 
 
 def _find_root_schemas(schema_directory: Path, importmap: str | Mapping[str, str] | None = None) -> list[Path]:

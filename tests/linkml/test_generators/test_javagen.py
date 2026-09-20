@@ -5,7 +5,14 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.javagen import JavaBundle, JavaGenerator, _find_root_schemas, cli
+from linkml.generators.javagen import (
+    DEFAULT_TEMPLATE_DIR,
+    JavaBundle,
+    JavaGenerator,
+    TemplateCache,
+    _find_root_schemas,
+    cli,
+)
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -563,3 +570,38 @@ def test_calling_on_directory_abort_on_invalid_package(input_path, tmp_path):
     )
     assert result.exit_code != 0, result.output
     assert not output_directory.exists()
+
+
+def test_lookup_template_specific_files():
+    """TemplateCache allows to find requested files."""
+    tc = TemplateCache()
+    tc.add_directory(DEFAULT_TEMPLATE_DIR)
+
+    # Looking up a standard template
+    std_class_template = tc.get_template("class")
+    assert std_class_template is not None
+
+    # Looking up a class template for a unknown variant should yield
+    # the standard template
+    unknown_var_class_template = tc.get_template("class", variant="no.such.variant")
+    assert unknown_var_class_template == std_class_template
+
+    # Looking up a template for a specific class should yield the
+    # default class template if there is no class-specific template
+    foo_class_template = tc.get_template("foo")
+    assert foo_class_template == std_class_template
+
+    # Looking up the standard class template for an existing variant,
+    # should return that template instead of the standard template
+    incenp_class_template = tc.get_template("class", variant="org.incenp.linkml")
+    assert incenp_class_template is not None
+    assert incenp_class_template != std_class_template
+
+    # Looking up a template for a specific class for a variant,
+    # should return the default class template for that variant
+    foo_class_template = tc.get_template("foo", variant="org.incenp.linkml")
+    assert foo_class_template == incenp_class_template
+
+    # Looking up a template-specific non-template file
+    incenp_typemap = tc.get_file("_types.map", variant="org.incenp.linkml")
+    assert incenp_typemap is not None
