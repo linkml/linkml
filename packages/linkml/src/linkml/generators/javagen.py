@@ -361,6 +361,25 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
+    def get_custom_type_uri(self, name: str) -> str | None:
+        """Gets the URI of a custom-mapped type.
+
+        :param name: The name of a LinkML element.
+        :return: If the given name is the name of a LinkML type for which a
+            custom mapping to a Java type exists, this returns the URI of the
+            type. Otherwise this returns None.
+        """
+        if name in self.schemaview.all_types():
+            # Same logic as for map_type: we query using the native URI
+            # first, then fallback to the declared URI
+            uri = self.schemaview.get_uri(name, expand=True, native=True)
+            if uri in self.custom_type_map:
+                return uri
+            uri = self.schemaview.get_uri(name, expand=True, native=False)
+            if uri in self.custom_type_map:
+                return uri
+        return None
+
     def _read_custom_type_map(self, variant: str | None = None) -> None:
         """Parses the variant-specific type map, if present."""
         self.custom_type_map.clear()

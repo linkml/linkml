@@ -1,1 +1,3 @@
 https://w3id.org/linkml/Uriorcurie String
+http://www.w3.org/2001/XMLSchema#base64Binary BinaryBlob
+http://www.w3.org/2001/XMLSchema#hexBinary BinaryBlob
