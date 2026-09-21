@@ -436,11 +436,13 @@ slots:
     aliases:
       - workflow status
     domain: element
-    range: uriorcurie
+    range: string
     description: status of the element
-    slot_uri: bibo:status
+    close_mappings:
+      - bibo:status
     examples:
-      - value: "bibo:draft"
+      - value: "testing"
+      - value: "unstable"
     see_also:
       - https://www.hl7.org/fhir/valueset-publication-status.html  ## Draft, Active, Retired, Unknown
       - https://www.hl7.org/fhir/versions.html#std-process  ## Draft, Trial Use, Normative, Informative, Deprecated
