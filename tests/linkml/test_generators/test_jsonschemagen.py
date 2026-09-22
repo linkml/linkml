@@ -1758,3 +1758,30 @@ def test_root_class_governs_the_top_level(tmp_path, root_via):
 
     assert schema["additionalProperties"] is False
     assert schema["$defs"]["Closed"]["additionalProperties"] is False
+
+
+@pytest.mark.jsonschemagen
+def test_multiple_tree_roots_pick_one_consistently(tmp_path):
+    """With more than one ``tree_root``, the top level comes from a single class.
+
+    biolink-model declares two. The top-level ``additionalProperties`` and the
+    subschema merged beneath it must not come from different classes.
+    """
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  Closed:\n    tree_root: true\n").replace(
+        "  ExplicitlyOpen:\n", "  ExplicitlyOpen:\n    tree_root: true\n"
+    )
+    schema = _generate(tmp_path, schema_text)
+
+    # `Closed` is first, so it is the root: closed, and its properties are merged up.
+    assert schema["additionalProperties"] is False
+    assert set(schema["properties"]) == set(schema["$defs"]["Closed"]["properties"])
+
+
+@pytest.mark.jsonschemagen
+def test_top_class_matches_regardless_of_case(tmp_path):
+    """``top_class`` is habitually passed in CamelCase for a spelled-out class name."""
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  closed thing:\n")
+    schema = _generate(tmp_path, schema_text, top_class="ClosedThing")
+
+    assert schema["additionalProperties"] is False
+    assert "name" in schema["properties"]
