@@ -1672,3 +1672,55 @@ def test_generate_array_error_complex_unbounded_shape(array_error_complex_unboun
         _ = JsonSchemaGenerator(
             array_error_complex_unbounded,
         ).generate()
+
+
+_EXTRA_SLOTS_SCHEMA = """
+id: https://example.org/extra-slots-default
+name: extra_slots_default
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Closed:
+    slots:
+      - name
+  ExplicitlyOpen:
+    extra_slots:
+      allowed: true
+    slots:
+      - name
+slots:
+  name:
+    range: string
+"""
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize(
+    "not_closed,expected_closed,expected_top",
+    [
+        pytest.param(None, False, True, id="unset-follows-metamodel"),
+        pytest.param(False, False, False, id="closed-applies-everywhere"),
+        pytest.param(True, True, True, id="not-closed-applies-everywhere"),
+    ],
+)
+def test_extra_slots_absent_defaults_to_closed(tmp_path, not_closed, expected_closed, expected_top):
+    """A class with no ``extra_slots`` is closed unless ``not_closed`` is set explicitly.
+
+    ``meta.yaml`` documents an absent ``extra_slots`` as "forbid all additional data
+    (default)", so the generator must not silently open such classes. Setting
+    ``not_closed`` explicitly still overrides that for every class, which is what
+    linkml#3611 asked for.
+    """
+    schema_path = tmp_path / "extra_slots_default.yaml"
+    schema_path.write_text(_EXTRA_SLOTS_SCHEMA)
+
+    kwargs = {} if not_closed is None else {"not_closed": not_closed}
+    schema = json.loads(JsonSchemaGenerator(str(schema_path), **kwargs).serialize())
+
+    assert schema["$defs"]["Closed"]["additionalProperties"] is expected_closed
+    assert schema["additionalProperties"] is expected_top
+    # An explicit `extra_slots.allowed` always wins, whatever `not_closed` says.
+    assert schema["$defs"]["ExplicitlyOpen"]["additionalProperties"] is True

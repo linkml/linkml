@@ -1,7 +1,7 @@
 {
     "$defs": {
         "AccessibleDnaRegion": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A region (or regions) of a chromatinized genome that has been measured to be more accessible to an enzyme such as DNase-I or Tn5 Transpose",
             "properties": {
                 "category": {
@@ -136,7 +136,7 @@
             "type": "object"
         },
         "Activity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities.",
             "properties": {
                 "category": {
@@ -247,13 +247,13 @@
             "type": "object"
         },
         "ActivityAndBehavior": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Activity or behavior of any independent integral living, organization or mechanical actor in the world",
             "title": "ActivityAndBehavior",
             "type": "object"
         },
         "AdministrativeEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -364,7 +364,7 @@
             "type": "object"
         },
         "Agent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "person, group, organization or project that provides a piece of information (i.e. a knowledge association)",
             "properties": {
                 "address": {
@@ -507,7 +507,7 @@
             "type": "string"
         },
         "AnatomicalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A subcellular location, cell type or gross anatomical part",
             "properties": {
                 "category": {
@@ -635,7 +635,7 @@
             "type": "object"
         },
         "AnatomicalEntityToAnatomicalEntityAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -1006,7 +1006,7 @@
             "type": "object"
         },
         "AnatomicalEntityToAnatomicalEntityOntogenicAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship between two anatomical entities where the relationship is ontogenic, i.e. the two entities are related by development. A number of different relationship types can be used to specify the precise nature of the relationship.",
             "properties": {
                 "adjusted_p_value": {
@@ -1380,7 +1380,7 @@
             "type": "object"
         },
         "AnatomicalEntityToAnatomicalEntityPartOfAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship between two anatomical entities where the relationship is mereological, i.e the two entities are related by parthood. This includes relationships between cellular components and cells, between cells and tissues, tissues and whole organisms",
             "properties": {
                 "adjusted_p_value": {
@@ -1760,7 +1760,7 @@
             "type": "object"
         },
         "Annotation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Biolink Model root class for entity annotations.",
             "title": "Annotation",
             "type": "object"
@@ -1788,7 +1788,7 @@
             "type": "string"
         },
         "Article": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a piece of writing on a particular topic presented as a stand-alone section of a larger publication",
             "properties": {
                 "authors": {
@@ -2006,7 +2006,7 @@
             "type": "object"
         },
         "Association": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A typed association between two entities, supported by evidence",
             "properties": {
                 "adjusted_p_value": {
@@ -2377,7 +2377,7 @@
             "type": "object"
         },
         "Attribute": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age, crispiness. An environmental sample may have attributes such as depth, lat, long, material.",
             "properties": {
                 "category": {
@@ -2510,7 +2510,7 @@
             "type": "object"
         },
         "Bacterium": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A member of a group of unicellular microorganisms lacking a nuclear membrane, that reproduce by binary fission and are often motile.",
             "properties": {
                 "category": {
@@ -2638,7 +2638,7 @@
             "type": "object"
         },
         "Behavior": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -2796,7 +2796,7 @@
             "type": "object"
         },
         "BehaviorToBehavioralFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between an mixture behavior and a behavioral feature manifested by the individual exhibited or has exhibited the behavior.",
             "properties": {
                 "adjusted_p_value": {
@@ -3304,7 +3304,7 @@
             "type": "object"
         },
         "BehavioralExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A behavioral exposure is a factor relating to behavior impacting an individual.",
             "properties": {
                 "category": {
@@ -3445,7 +3445,7 @@
             "type": "object"
         },
         "BehavioralFeature": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A phenotypic feature which is behavioral in nature.",
             "properties": {
                 "category": {
@@ -3573,13 +3573,13 @@
             "type": "object"
         },
         "BehavioralOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An outcome resulting from an exposure event which is the manifestation of human behavior.",
             "title": "BehavioralOutcome",
             "type": "object"
         },
         "BiologicalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -3707,7 +3707,7 @@
             "type": "object"
         },
         "BiologicalProcess": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "One or more causally connected executions of molecular functions",
             "properties": {
                 "category": {
@@ -3865,7 +3865,7 @@
             "type": "object"
         },
         "BiologicalProcessOrActivity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Either an individual molecular activity, or a collection of causally connected molecular activities in a biological system.",
             "properties": {
                 "category": {
@@ -4023,7 +4023,7 @@
             "type": "object"
         },
         "BiologicalSex": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -4156,7 +4156,7 @@
             "type": "object"
         },
         "BioticExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).",
             "properties": {
                 "category": {
@@ -4297,7 +4297,7 @@
             "type": "object"
         },
         "Book": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.",
             "properties": {
                 "authors": {
@@ -4490,7 +4490,7 @@
             "type": "object"
         },
         "BookChapter": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "authors": {
@@ -4701,7 +4701,7 @@
             "type": "object"
         },
         "Case": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An individual (human) organism that has a patient role in some clinical context.",
             "properties": {
                 "category": {
@@ -4829,7 +4829,7 @@
             "type": "object"
         },
         "CaseToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An abstract association for use where the case is the subject",
             "properties": {
                 "object": {
@@ -4854,7 +4854,7 @@
             "type": "object"
         },
         "CaseToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a case (e.g. individual patient) and a phenotypic feature in which the individual has or has had the phenotype.",
             "properties": {
                 "adjusted_p_value": {
@@ -5362,7 +5362,7 @@
             "type": "object"
         },
         "CausalGeneToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -5912,7 +5912,7 @@
             "type": "string"
         },
         "Cell": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -6040,7 +6040,7 @@
             "type": "object"
         },
         "CellLine": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -6168,7 +6168,7 @@
             "type": "object"
         },
         "CellLineAsAModelOfDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -6618,7 +6618,7 @@
             "type": "object"
         },
         "CellLineToDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An relationship between a cell line and a disease or a phenotype, where the cell line is derived from an individual with that disease or phenotype.",
             "properties": {
                 "adjusted_p_value": {
@@ -6993,7 +6993,7 @@
             "type": "object"
         },
         "CellLineToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An relationship between a cell line and another entity",
             "properties": {
                 "object": {
@@ -7018,7 +7018,7 @@
             "type": "object"
         },
         "CellularComponent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A location in or around a cell",
             "properties": {
                 "category": {
@@ -7146,7 +7146,7 @@
             "type": "object"
         },
         "CellularOrganism": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -7274,7 +7274,7 @@
             "type": "object"
         },
         "ChemicalAffectsGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Describes an effect that a chemical has on a gene or gene product (e.g. an impact of on its abundance, activity,localization, processing, expression, etc.)",
             "properties": {
                 "adjusted_p_value": {
@@ -7840,7 +7840,7 @@
             "type": "object"
         },
         "ChemicalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical entity is a physical entity that pertains to chemistry or biochemistry.",
             "properties": {
                 "available_from": {
@@ -7992,7 +7992,7 @@
             "type": "object"
         },
         "ChemicalEntityAssessesNamedThingAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -8374,13 +8374,13 @@
             "type": "string"
         },
         "ChemicalEntityOrGeneOrGeneProduct": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A union of chemical entities and children, and gene or gene product. This mixin is helpful to use when searching across chemical entities that must include genes and their children as chemical entities.",
             "title": "ChemicalEntityOrGeneOrGeneProduct",
             "type": "object"
         },
         "ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A regulatory relationship between two genes",
             "properties": {
                 "adjusted_p_value": {
@@ -8765,13 +8765,13 @@
             "type": "object"
         },
         "ChemicalEntityOrProteinOrPolypeptide": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A union of chemical entities and children, and protein and polypeptide. This mixin is helpful to use when searching across chemical entities that must include genes and their children as chemical entities.",
             "title": "ChemicalEntityOrProteinOrPolypeptide",
             "type": "object"
         },
         "ChemicalEntityToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a chemical entity and another entity",
             "properties": {
                 "object": {
@@ -8796,7 +8796,7 @@
             "type": "object"
         },
         "ChemicalExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical exposure is an intake of a particular chemical entity.",
             "properties": {
                 "category": {
@@ -8937,7 +8937,7 @@
             "type": "object"
         },
         "ChemicalGeneInteractionAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "describes a physical interaction between a chemical entity and a gene or gene product. Any biological or chemical effect resulting from such an interaction are out of scope, and covered by the ChemicalAffectsGeneAssociation type (e.g. impact of a chemical on the abundance, activity, structure, etc, of either participant in the interaction)",
             "properties": {
                 "adjusted_p_value": {
@@ -9409,7 +9409,7 @@
             "type": "object"
         },
         "ChemicalMixture": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical mixture is a chemical entity composed of two or more molecular entities.",
             "properties": {
                 "available_from": {
@@ -9600,13 +9600,13 @@
             "type": "object"
         },
         "ChemicalOrDrugOrTreatment": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "title": "ChemicalOrDrugOrTreatment",
             "type": "object"
         },
         "ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disesae or phenotypic feature is a secondary, typically (but not always) undesirable effect.",
             "properties": {
                 "FDA_adverse_event_level": {
@@ -10068,7 +10068,7 @@
             "type": "object"
         },
         "ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disease or phenotypic feature is a secondary undesirable effect.",
             "properties": {
                 "FDA_adverse_event_level": {
@@ -10544,7 +10544,7 @@
             "type": "string"
         },
         "ChemicalRole": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A role played by the molecular entity or part thereof within a chemical context.",
             "examples": [
                 "CHEBI:35469"
@@ -10680,7 +10680,7 @@
             "type": "object"
         },
         "ChemicalToChemicalAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.",
             "properties": {
                 "adjusted_p_value": {
@@ -11051,7 +11051,7 @@
             "type": "object"
         },
         "ChemicalToChemicalDerivationAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction: IF R has-input C1 AND R has-output C2 AND R enabled-by P AND R type Reaction THEN C1 derives-into C2 catalyst qualifier P",
             "properties": {
                 "adjusted_p_value": {
@@ -11436,7 +11436,7 @@
             "type": "object"
         },
         "ChemicalToDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise to or exacerbates the phenotype.",
             "properties": {
                 "adjusted_p_value": {
@@ -11811,7 +11811,7 @@
             "type": "object"
         },
         "ChemicalToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a chemical entity and another entity",
             "properties": {
                 "object": {
@@ -11836,7 +11836,7 @@
             "type": "object"
         },
         "ChemicalToPathwayAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a chemical entity and a biological process or pathway.",
             "properties": {
                 "adjusted_p_value": {
@@ -12207,7 +12207,7 @@
             "type": "object"
         },
         "ChiSquaredAnalysisResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of a chi squared analysis.",
             "properties": {
                 "category": {
@@ -12357,7 +12357,7 @@
             "type": "string"
         },
         "ClinicalAttribute": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Attributes relating to a clinical manifestation",
             "properties": {
                 "category": {
@@ -12490,7 +12490,7 @@
             "type": "object"
         },
         "ClinicalCourse": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the affected individual",
             "properties": {
                 "category": {
@@ -12623,7 +12623,7 @@
             "type": "object"
         },
         "ClinicalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any entity or process that exists in the clinical domain and outside the biological realm. Diseases are placed under biological entities",
             "properties": {
                 "category": {
@@ -12734,7 +12734,7 @@
             "type": "object"
         },
         "ClinicalFinding": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "this category is currently considered broad enough to tag clinical lab measurements and other biological attributes taken as 'clinical traits' with some statistical score, for example, a p value in genetic associations.",
             "properties": {
                 "category": {
@@ -12862,7 +12862,7 @@
             "type": "object"
         },
         "ClinicalIntervention": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -12973,7 +12973,7 @@
             "type": "object"
         },
         "ClinicalMeasurement": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A clinical measurement is a special kind of attribute which results from a laboratory observation from a subject individual or sample. Measurements can be connected to their subject by the 'has attribute' slot.",
             "properties": {
                 "category": {
@@ -13106,7 +13106,7 @@
             "type": "object"
         },
         "ClinicalModifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Used to characterize and specify the phenotypic abnormalities defined in the phenotypic abnormality sub-ontology, with respect to severity, laterality, and other aspects",
             "properties": {
                 "category": {
@@ -13239,7 +13239,7 @@
             "type": "object"
         },
         "ClinicalTrial": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -13350,7 +13350,7 @@
             "type": "object"
         },
         "CodingSequence": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -13485,7 +13485,7 @@
             "type": "object"
         },
         "Cohort": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A group of people banded together or treated as a group who share common characteristics. A cohort 'study' is a particular form of longitudinal study that samples a cohort, performing a cross-section at intervals through time.",
             "properties": {
                 "category": {
@@ -13613,7 +13613,7 @@
             "type": "object"
         },
         "CommonDataElement": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A Common Data Element (CDE) is a standardized, precisely defined question, paired with a set of allowable responses, used systematically across different sites, studies, or clinical trials to ensure consistent data collection. Multiple CDEs (from one or more Collections) can be curated into Forms. (https://cde.nlm.nih.gov/home)",
             "properties": {
                 "category": {
@@ -13750,7 +13750,7 @@
             "type": "object"
         },
         "ComplexChemicalExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A complex chemical exposure is an intake of a chemical mixture (e.g. gasoline), other than a drug.",
             "properties": {
                 "category": {
@@ -13883,7 +13883,7 @@
             "type": "object"
         },
         "ComplexMolecularMixture": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A complex molecular mixture is a chemical mixture composed of two or more molecular entities with unknown concentration and stoichiometry.",
             "properties": {
                 "available_from": {
@@ -14074,7 +14074,7 @@
             "type": "object"
         },
         "ConceptCountAnalysisResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of a concept count analysis.",
             "properties": {
                 "category": {
@@ -14211,7 +14211,7 @@
             "type": "object"
         },
         "ConfidenceLevel": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Level of confidence in a statement",
             "properties": {
                 "category": {
@@ -14348,7 +14348,7 @@
             "type": "object"
         },
         "ContributorAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between an entity (such as a publication) and various agents that contribute to its realisation",
             "properties": {
                 "adjusted_p_value": {
@@ -14726,7 +14726,7 @@
             "type": "object"
         },
         "CorrelatedGeneToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -15251,7 +15251,7 @@
             "type": "object"
         },
         "Dataset": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an item that refers to a collection of data from a data source.",
             "properties": {
                 "category": {
@@ -15388,7 +15388,7 @@
             "type": "object"
         },
         "DatasetDistribution": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an item that holds distribution level information about a dataset.",
             "properties": {
                 "category": {
@@ -15531,7 +15531,7 @@
             "type": "object"
         },
         "DatasetSummary": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an item that holds summary level information about a dataset.",
             "properties": {
                 "category": {
@@ -15680,7 +15680,7 @@
             "type": "object"
         },
         "DatasetVersion": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an item that holds version level information about a dataset.",
             "properties": {
                 "category": {
@@ -15835,7 +15835,7 @@
             "type": "object"
         },
         "Device": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A thing made or adapted for a particular purpose, especially a piece of mechanical or electronic equipment",
             "properties": {
                 "category": {
@@ -15946,7 +15946,7 @@
             "type": "object"
         },
         "DiagnosticAid": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A device or substance used to help diagnose disease or injury",
             "properties": {
                 "category": {
@@ -16068,7 +16068,7 @@
             "type": "string"
         },
         "Disease": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A disorder of structure or function, especially one that produces specific signs, phenotypes or symptoms or that affects a specific location and is not simply a direct result of physical injury.  A disposition to undergo pathological processes that exists in an organism because of one or more disorders in that organism.",
             "properties": {
                 "category": {
@@ -16196,7 +16196,7 @@
             "type": "object"
         },
         "DiseaseOrPhenotypicFeature": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these as distinct, others such as MESH conflate.  Please see definitions of phenotypic feature and disease in this model for their independent descriptions.  This class is helpful to enforce domains and ranges that may involve either a disease or a phenotypic feature.",
             "properties": {
                 "category": {
@@ -16324,7 +16324,7 @@
             "type": "object"
         },
         "DiseaseOrPhenotypicFeatureExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A disease or phenotypic feature state, when viewed as an exposure, represents an precondition, leading to or influencing an outcome, e.g. HIV predisposing an individual to infections; a relative deficiency of skin pigmentation predisposing an individual to skin cancer.",
             "properties": {
                 "category": {
@@ -16465,13 +16465,13 @@
             "type": "object"
         },
         "DiseaseOrPhenotypicFeatureOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Physiological outcomes resulting from an exposure event which is the manifestation of a disease or other characteristic phenotype.",
             "title": "DiseaseOrPhenotypicFeatureOutcome",
             "type": "object"
         },
         "DiseaseOrPhenotypicFeatureToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -16500,7 +16500,7 @@
             "type": "object"
         },
         "DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between either a disease or a phenotypic feature and its mode of (genetic) inheritance.",
             "properties": {
                 "adjusted_p_value": {
@@ -16881,7 +16881,7 @@
             "type": "object"
         },
         "DiseaseOrPhenotypicFeatureToLocationAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between either a disease or a phenotypic feature and an anatomical entity, where the disease/feature manifests in that site.",
             "properties": {
                 "adjusted_p_value": {
@@ -17259,7 +17259,7 @@
             "type": "object"
         },
         "DiseaseToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -17287,7 +17287,7 @@
             "type": "object"
         },
         "DiseaseToExposureEventAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between an exposure event and a disease.",
             "properties": {
                 "adjusted_p_value": {
@@ -17661,7 +17661,7 @@
             "type": "object"
         },
         "DiseaseToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a disease and a phenotypic feature in which the phenotypic feature is associated with the disease in some way.",
             "properties": {
                 "adjusted_p_value": {
@@ -18179,7 +18179,7 @@
             "type": "object"
         },
         "Drug": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease",
             "properties": {
                 "available_from": {
@@ -18390,7 +18390,7 @@
             "type": "string"
         },
         "DrugExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A drug exposure is an intake of a particular drug.",
             "properties": {
                 "category": {
@@ -18531,7 +18531,7 @@
             "type": "object"
         },
         "DrugLabel": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a document accompanying a drug or its container that provides written, printed or graphic information about the drug, including drug contents, specific instructions or warnings for administration, storage and disposal instructions, etc.",
             "properties": {
                 "authors": {
@@ -18723,7 +18723,7 @@
             "type": "object"
         },
         "DrugToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a drug and another entity",
             "properties": {
                 "object": {
@@ -18748,7 +18748,7 @@
             "type": "object"
         },
         "DrugToGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a drug and a gene or gene product.",
             "properties": {
                 "adjusted_p_value": {
@@ -19119,7 +19119,7 @@
             "type": "object"
         },
         "DrugToGeneInteractionExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "drug to gene interaction exposure is a drug exposure is where the interactions of the drug with specific genes are known to constitute an 'exposure' to the organism, leading to or influencing an outcome.",
             "properties": {
                 "category": {
@@ -19281,7 +19281,7 @@
             "type": "string"
         },
         "DruggableGeneToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -19797,7 +19797,7 @@
             "type": "object"
         },
         "Entity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Root Biolink Model class for all things and informational relationships, real or imagined.",
             "properties": {
                 "category": {
@@ -19873,7 +19873,7 @@
             "type": "object"
         },
         "EntityToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -20265,7 +20265,7 @@
             "type": "object"
         },
         "EntityToDiseaseAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "mixin class for any association whose object (target node) is a disease",
             "properties": {
                 "disease_context_qualifier": {
@@ -20366,7 +20366,7 @@
             "type": "object"
         },
         "EntityToDiseaseOrPhenotypicFeatureAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -20395,7 +20395,7 @@
             "type": "object"
         },
         "EntityToExposureEventAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between some entity and an exposure event.",
             "properties": {
                 "object": {
@@ -20420,7 +20420,7 @@
             "type": "object"
         },
         "EntityToFeatureOrDiseaseQualifiersMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Qualifiers for entity to disease or phenotype associations.",
             "properties": {
                 "disease_context_qualifier": {
@@ -20518,7 +20518,7 @@
             "type": "object"
         },
         "EntityToOutcomeAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between some entity and an outcome",
             "properties": {
                 "object": {
@@ -20543,7 +20543,7 @@
             "type": "object"
         },
         "EntityToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -20935,7 +20935,7 @@
             "type": "object"
         },
         "EntityToPhenotypicFeatureAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "anatomical_context_qualifier": {
@@ -21097,7 +21097,7 @@
             "type": "object"
         },
         "EnvironmentalExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A environmental exposure is a factor relating to abiotic processes in the environment including sunlight (UV-B), atmospheric (heat, cold, general pollution) and water-born contaminants.",
             "properties": {
                 "category": {
@@ -21238,7 +21238,7 @@
             "type": "object"
         },
         "EnvironmentalFeature": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -21349,7 +21349,7 @@
             "type": "object"
         },
         "EnvironmentalFoodContaminant": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "available_from": {
@@ -21501,7 +21501,7 @@
             "type": "object"
         },
         "EnvironmentalProcess": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -21612,13 +21612,13 @@
             "type": "object"
         },
         "EpidemiologicalOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An epidemiological outcome, such as societal disease burden, resulting from an exposure event.",
             "title": "EpidemiologicalOutcome",
             "type": "object"
         },
         "EpigenomicEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "has_biological_sequence": {
@@ -21633,7 +21633,7 @@
             "type": "object"
         },
         "Event": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Something that happens at a given place and time.",
             "properties": {
                 "category": {
@@ -21744,7 +21744,7 @@
             "type": "object"
         },
         "EvidenceType": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Class of evidence that supports an association",
             "properties": {
                 "category": {
@@ -21881,7 +21881,7 @@
             "type": "object"
         },
         "Exon": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA splicing.",
             "properties": {
                 "category": {
@@ -22009,7 +22009,7 @@
             "type": "object"
         },
         "ExonToTranscriptRelationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A transcript is formed from multiple exons",
             "properties": {
                 "adjusted_p_value": {
@@ -22380,7 +22380,7 @@
             "type": "object"
         },
         "ExposureEvent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes",
             "properties": {
                 "id": {
@@ -22403,7 +22403,7 @@
             "type": "object"
         },
         "ExposureEventToOutcomeAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between an exposure event and an outcome.",
             "properties": {
                 "adjusted_p_value": {
@@ -22789,7 +22789,7 @@
             "type": "object"
         },
         "ExposureEventToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between an environment and a phenotypic feature, where being in the environment influences the phenotype.",
             "properties": {
                 "adjusted_p_value": {
@@ -23308,7 +23308,7 @@
             "type": "string"
         },
         "FeatureOrDiseaseQualifiersToEntityMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Qualifiers for disease or phenotype to entity associations.",
             "properties": {
                 "frequency_qualifier": {
@@ -23395,7 +23395,7 @@
             "type": "object"
         },
         "Food": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A substance consumed by a living organism as a source of nutrition",
             "properties": {
                 "available_from": {
@@ -23586,7 +23586,7 @@
             "type": "object"
         },
         "FoodAdditive": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "available_from": {
@@ -23738,7 +23738,7 @@
             "type": "object"
         },
         "FrequencyQualifierMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Qualifier for frequency type associations",
             "properties": {
                 "frequency_qualifier": {
@@ -23770,7 +23770,7 @@
             "type": "object"
         },
         "FrequencyQuantifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "has_count": {
@@ -23805,7 +23805,7 @@
             "type": "object"
         },
         "FunctionalAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a macromolecular machine mixin (gene, gene product or complex of gene products) and either a molecular activity, a biological process or a cellular location in which a function is executed.",
             "properties": {
                 "adjusted_p_value": {
@@ -24183,7 +24183,7 @@
             "type": "object"
         },
         "Fungus": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A kingdom of eukaryotic, heterotrophic organisms that live as saprobes or parasites, including mushrooms, yeasts, smuts, molds, etc. They reproduce either sexually or asexually, and have life cycles that range from simple to complex. Filamentous fungi refer to those that grow as multicellular colonies (mushrooms and molds).",
             "properties": {
                 "category": {
@@ -24311,7 +24311,7 @@
             "type": "object"
         },
         "Gene": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene locus may include regulatory regions, transcribed regions and/or other functional sequence regions.",
             "properties": {
                 "category": {
@@ -24453,7 +24453,7 @@
             "type": "object"
         },
         "GeneAffectsChemicalAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Describes an effect that a gene or gene product has on a chemical entity (e.g. an impact of on its abundance, activity, localization, processing, transport, etc.)",
             "examples": [
                 "JsonObj(subject='TRPC4', predicate='affects', qualified_predicte='causes', object='Barium', object_aspect_qualifier='transport', object_direction_qualifier='increased')"
@@ -25032,7 +25032,7 @@
             "type": "object"
         },
         "GeneAsAModelOfDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -25548,7 +25548,7 @@
             "type": "object"
         },
         "GeneExpressionMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the expression occurs.",
             "properties": {
                 "expression_site": {
@@ -25590,7 +25590,7 @@
             "type": "object"
         },
         "GeneFamily": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "any grouping of multiple genes or gene products related by common descent",
             "properties": {
                 "category": {
@@ -25728,7 +25728,7 @@
             "type": "object"
         },
         "GeneGroupingMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "any grouping of multiple genes or gene products",
             "properties": {
                 "has_gene_or_gene_product": {
@@ -25746,7 +25746,7 @@
             "type": "object"
         },
         "GeneHasVariantThatContributesToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -26277,7 +26277,7 @@
             "type": "object"
         },
         "GeneOrGeneProduct": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another",
             "properties": {
                 "name": {
@@ -26367,7 +26367,7 @@
             "type": "string"
         },
         "GeneProductIsoformMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This is an abstract class that can be mixed in with different kinds of gene products to indicate that the gene product is intended to represent a specific isoform rather than a canonical or reference or generic product. The designation of canonical or reference may be arbitrary, or it may represent the superclass of all isoforms.",
             "properties": {
                 "name": {
@@ -26402,7 +26402,7 @@
             "type": "object"
         },
         "GeneProductMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.",
             "properties": {
                 "name": {
@@ -26437,7 +26437,7 @@
             "type": "object"
         },
         "GeneRegulatesGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Describes a regulatory relationship between two genes or gene products.",
             "examples": [
                 "JsonObj(subject='NCBIGene:551', predicate='regulates', qualified_predicte='causes', object='NCBIGene:1636', object_aspect_qualifier='activity_or_abundance', object_direction_qualifier='downregulated')"
@@ -26846,7 +26846,7 @@
             "type": "object"
         },
         "GeneToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -27371,7 +27371,7 @@
             "type": "object"
         },
         "GeneToDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -27898,7 +27898,7 @@
             "type": "object"
         },
         "GeneToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -27923,7 +27923,7 @@
             "type": "object"
         },
         "GeneToExpressionSiteAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a gene and a gene expression site, possibly qualified by stage/timing info.",
             "properties": {
                 "adjusted_p_value": {
@@ -28317,7 +28317,7 @@
             "type": "object"
         },
         "GeneToGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "abstract parent class for different kinds of gene-gene or gene product to gene product relationships. Includes homology and interaction.",
             "properties": {
                 "adjusted_p_value": {
@@ -28688,7 +28688,7 @@
             "type": "object"
         },
         "GeneToGeneCoexpressionAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Indicates that two genes are co-expressed, generally under the same conditions.",
             "properties": {
                 "adjusted_p_value": {
@@ -29096,7 +29096,7 @@
             "type": "object"
         },
         "GeneToGeneFamilyAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Set membership of a gene in a family of genes related by common evolutionary ancestry usually inferred by sequence comparisons. The genes in a given family generally share common sequence motifs which generally map onto shared gene product structure-function relationships.",
             "properties": {
                 "adjusted_p_value": {
@@ -29470,7 +29470,7 @@
             "type": "object"
         },
         "GeneToGeneHomologyAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A homology association between two genes. May be orthology (in which case the species of subject and object should differ) or paralogy (in which case the species may be the same)",
             "properties": {
                 "adjusted_p_value": {
@@ -29847,7 +29847,7 @@
             "type": "object"
         },
         "GeneToGeneProductRelationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A gene is transcribed and potentially translated to a gene product",
             "properties": {
                 "adjusted_p_value": {
@@ -30221,7 +30221,7 @@
             "type": "object"
         },
         "GeneToGoTermAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -30598,7 +30598,7 @@
             "type": "object"
         },
         "GeneToPathwayAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between a gene or gene product and a biological process or pathway.",
             "properties": {
                 "adjusted_p_value": {
@@ -30969,7 +30969,7 @@
             "type": "object"
         },
         "GeneToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -31496,7 +31496,7 @@
             "type": "object"
         },
         "GeneticInheritance": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive, etc.",
             "properties": {
                 "category": {
@@ -31624,7 +31624,7 @@
             "type": "object"
         },
         "Genome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A genome is the sum of genetic material within a cell or virion.",
             "properties": {
                 "category": {
@@ -31759,7 +31759,7 @@
             "type": "object"
         },
         "GenomicBackgroundExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or other pre-existing genomic conditions constitute a kind of 'exposure' to the organism, leading to or influencing an outcome.",
             "properties": {
                 "category": {
@@ -31934,7 +31934,7 @@
             "type": "object"
         },
         "GenomicEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "has_biological_sequence": {
@@ -31949,7 +31949,7 @@
             "type": "object"
         },
         "GenomicSequenceLocalization": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship between a sequence feature and a nucleic acid entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig.",
             "properties": {
                 "adjusted_p_value": {
@@ -32370,7 +32370,7 @@
             "type": "object"
         },
         "Genotype": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An information content entity that describes a genome by specifying the total variation in genomic sequence and/or gene expression, relative to some established background",
             "properties": {
                 "category": {
@@ -32511,7 +32511,7 @@
             "type": "object"
         },
         "GenotypeAsAModelOfDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -32961,7 +32961,7 @@
             "type": "object"
         },
         "GenotypeToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -33411,7 +33411,7 @@
             "type": "object"
         },
         "GenotypeToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -33436,7 +33436,7 @@
             "type": "object"
         },
         "GenotypeToGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between a genotype and a gene. The genotype have have multiple variants in that gene or a single one. There is no assumption of cardinality",
             "properties": {
                 "adjusted_p_value": {
@@ -33807,7 +33807,7 @@
             "type": "object"
         },
         "GenotypeToGenotypePartAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between one genotype and a genotypic entity that is a sub-component of it",
             "properties": {
                 "adjusted_p_value": {
@@ -34181,7 +34181,7 @@
             "type": "object"
         },
         "GenotypeToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype, either in isolation or through environment",
             "properties": {
                 "adjusted_p_value": {
@@ -34692,7 +34692,7 @@
             "type": "object"
         },
         "GenotypeToVariantAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any association between a genotype and a sequence variant.",
             "properties": {
                 "adjusted_p_value": {
@@ -35063,7 +35063,7 @@
             "type": "object"
         },
         "GenotypicSex": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An attribute corresponding to the genotypic sex of the individual, based upon genotypic composition of sex chromosomes.",
             "properties": {
                 "category": {
@@ -35196,7 +35196,7 @@
             "type": "object"
         },
         "GeographicExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A geographic exposure is a factor relating to geographic proximity to some impactful entity.",
             "properties": {
                 "category": {
@@ -35337,7 +35337,7 @@
             "type": "object"
         },
         "GeographicLocation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a location that can be described in lat/long coordinates",
             "properties": {
                 "category": {
@@ -35462,7 +35462,7 @@
             "type": "object"
         },
         "GeographicLocationAtTime": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a location that can be described in lat/long coordinates, for a particular time",
             "properties": {
                 "category": {
@@ -35595,7 +35595,7 @@
             "type": "object"
         },
         "GrossAnatomicalStructure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -35723,7 +35723,7 @@
             "type": "object"
         },
         "Haplotype": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A set of zero or more Alleles on a single instance of a Sequence[VMC]",
             "properties": {
                 "category": {
@@ -35858,7 +35858,7 @@
             "type": "object"
         },
         "Hospitalization": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -35969,13 +35969,13 @@
             "type": "object"
         },
         "HospitalizationOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An outcome resulting from an exposure event which is the increased manifestation of acute (e.g. emergency room visit) or chronic (inpatient) hospitalization.",
             "title": "HospitalizationOutcome",
             "type": "object"
         },
         "Human": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A member of the the species Homo sapiens.",
             "properties": {
                 "category": {
@@ -36103,7 +36103,7 @@
             "type": "object"
         },
         "IndividualOrganism": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An instance of an organism. For example, Richard Nixon, Charles Darwin, my pet cat. Example ID: ORCID:0000-0002-5355-2576",
             "properties": {
                 "category": {
@@ -36231,7 +36231,7 @@
             "type": "object"
         },
         "InformationContentEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a piece of information that typically describes some topic of discourse or is used as support.",
             "properties": {
                 "category": {
@@ -36368,7 +36368,7 @@
             "type": "object"
         },
         "InformationContentEntityToNamedThingAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "association between a named thing and a information content entity where the specific context of the relationship between that named thing and the publication is unknown. For example, model organisms databases often capture the knowledge that a gene is found in a journal article, but not specifically the context in which that gene was documented in the article. In these cases, this association with the accompanying predicate 'mentions' could be used. Conversely, for more specific associations (like 'gene to disease association', the publication should be captured as an edge property).",
             "properties": {
                 "adjusted_p_value": {
@@ -36742,7 +36742,7 @@
             "type": "object"
         },
         "Invertebrate": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An animal lacking a vertebral column. This group consists of 98% of all animal species.",
             "properties": {
                 "category": {
@@ -36870,7 +36870,7 @@
             "type": "object"
         },
         "JournalArticle": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an article, typically presenting results of research, that is published in an issue of a scientific journal.",
             "properties": {
                 "authors": {
@@ -37101,7 +37101,7 @@
             "type": "string"
         },
         "LifeStage": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A stage of development or growth of an organism, including post-natal adult stages",
             "properties": {
                 "category": {
@@ -37229,7 +37229,7 @@
             "type": "object"
         },
         "LogOddsAnalysisResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of a log odds ratio analysis.",
             "properties": {
                 "category": {
@@ -37376,7 +37376,7 @@
             "type": "string"
         },
         "MacromolecularComplex": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, carbohydrates or lipids, in which at least one component is a protein and the constituent parts function together.",
             "properties": {
                 "category": {
@@ -37504,7 +37504,7 @@
             "type": "object"
         },
         "MacromolecularMachineMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A union of gene locus, gene product, and macromolecular complex. These are the basic units of function in a cell. They either carry out individual biological activities, or they encode molecules which do this.",
             "properties": {
                 "name": {
@@ -37519,7 +37519,7 @@
             "type": "object"
         },
         "MacromolecularMachineToBiologicalProcessAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a biological process or pathway (as represented in the GO biological process branch), where the entity carries out some part of the process, regulates it, or acts upstream of it.",
             "properties": {
                 "adjusted_p_value": {
@@ -37908,7 +37908,7 @@
             "type": "object"
         },
         "MacromolecularMachineToCellularComponentAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a cellular component (as represented in the GO cellular component branch), where the entity carries out its function in the cellular component.",
             "properties": {
                 "adjusted_p_value": {
@@ -38297,7 +38297,7 @@
             "type": "object"
         },
         "MacromolecularMachineToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "an association which has a macromolecular machine mixin as a subject",
             "properties": {
                 "object": {
@@ -38333,7 +38333,7 @@
             "type": "object"
         },
         "MacromolecularMachineToMolecularActivityAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a molecular activity (as represented in the GO molecular function branch), where the entity carries out the activity, or contributes to its execution.",
             "properties": {
                 "adjusted_p_value": {
@@ -38722,7 +38722,7 @@
             "type": "object"
         },
         "Mammal": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A member of the class Mammalia, a clade of endothermic amniotes distinguished from reptiles and birds by the possession of hair, three middle ear bones, mammary glands, and a neocortex",
             "properties": {
                 "category": {
@@ -38850,7 +38850,7 @@
             "type": "object"
         },
         "MappingCollection": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A collection of deprecated mappings.",
             "properties": {
                 "predicate_mappings": {
@@ -38868,7 +38868,7 @@
             "type": "object"
         },
         "MaterialSample": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a portion of a substance) to be used for testing, analysis, inspection, investigation, demonstration, or trial use. [SIO]",
             "properties": {
                 "category": {
@@ -38979,7 +38979,7 @@
             "type": "object"
         },
         "MaterialSampleDerivationAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a material sample and the material entity from which it is derived.",
             "properties": {
                 "adjusted_p_value": {
@@ -39354,7 +39354,7 @@
             "type": "object"
         },
         "MaterialSampleToDiseaseOrPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a material sample and a disease or phenotype.",
             "properties": {
                 "adjusted_p_value": {
@@ -39729,7 +39729,7 @@
             "type": "object"
         },
         "MaterialSampleToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a material sample and something.",
             "properties": {
                 "object": {
@@ -39754,7 +39754,7 @@
             "type": "object"
         },
         "MicroRNA": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -39882,7 +39882,7 @@
             "type": "object"
         },
         "ModelToDiseaseAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This mixin is used for any association class for which the subject (source node) plays the role of a 'model', in that it recapitulates some features of the disease in a way that is useful for studying the disease outside a patient carrying the disease",
             "properties": {
                 "object": {
@@ -39910,7 +39910,7 @@
             "type": "object"
         },
         "MolecularActivity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An execution of a molecular function carried out by a gene product or macromolecular complex.",
             "properties": {
                 "category": {
@@ -40068,7 +40068,7 @@
             "type": "object"
         },
         "MolecularActivityToChemicalEntityAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Added in response to capturing relationship between microbiome activities as measured via measurements of blood analytes as collected via blood and stool samples",
             "properties": {
                 "adjusted_p_value": {
@@ -40439,7 +40439,7 @@
             "type": "object"
         },
         "MolecularActivityToMolecularActivityAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Added in response to capturing relationship between microbiome activities as measured via measurements of blood analytes as collected via blood and stool samples",
             "properties": {
                 "adjusted_p_value": {
@@ -40810,7 +40810,7 @@
             "type": "object"
         },
         "MolecularActivityToPathwayAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Association that holds the relationship between a reaction and the pathway it participates in.",
             "properties": {
                 "adjusted_p_value": {
@@ -41190,7 +41190,7 @@
             "type": "object"
         },
         "MolecularEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A molecular entity is a chemical entity composed of individual or covalently bonded atoms.",
             "properties": {
                 "available_from": {
@@ -41349,7 +41349,7 @@
             "type": "object"
         },
         "MolecularMixture": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A molecular mixture is a chemical mixture composed of two or more molecular entities with known concentration and stoichiometry.",
             "properties": {
                 "available_from": {
@@ -41540,13 +41540,13 @@
             "type": "object"
         },
         "MortalityOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An outcome of death from resulting from an exposure event.",
             "title": "MortalityOutcome",
             "type": "object"
         },
         "NamedThing": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a databased entity or concept/class",
             "properties": {
                 "category": {
@@ -41657,7 +41657,7 @@
             "type": "object"
         },
         "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -42097,7 +42097,7 @@
             "type": "object"
         },
         "NoncodingRNAProduct": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -42225,7 +42225,7 @@
             "type": "object"
         },
         "NucleicAcidEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A nucleic acid entity is a molecular entity characterized by availability in gene databases of nucleotide-based sequence representations of its precise sequence; for convenience of representation, partial sequences of various kinds are included.",
             "properties": {
                 "available_from": {
@@ -42408,7 +42408,7 @@
             "type": "object"
         },
         "NucleicAcidSequenceMotif": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A linear nucleotide sequence pattern that is widespread and has, or is conjectured to have, a biological significance. e.g. the TATA box promoter motif, transcription factor binding consensus sequences.",
             "properties": {
                 "category": {
@@ -42536,7 +42536,7 @@
             "type": "object"
         },
         "NucleosomeModification": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical modification of a histone protein within a nucleosome octomer or a substitution of a histone with a variant histone isoform. e.g. Histone 4 Lysine 20 methylation (H4K20me), histone variant H2AZ substituting H2A.",
             "properties": {
                 "category": {
@@ -42671,7 +42671,7 @@
             "type": "object"
         },
         "ObservedExpectedFrequencyAnalysisResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of a observed expected frequency analysis.",
             "properties": {
                 "category": {
@@ -42808,13 +42808,13 @@
             "type": "object"
         },
         "Occurrent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A processual entity.",
             "title": "Occurrent",
             "type": "object"
         },
         "Onset": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "The age group in which (disease) symptom manifestations appear.",
             "properties": {
                 "category": {
@@ -42947,7 +42947,7 @@
             "type": "object"
         },
         "OntologyClass": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.",
             "examples": [
                 "UBERON:0000955"
@@ -42965,7 +42965,7 @@
             "type": "object"
         },
         "OrganismAttribute": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "describes a characteristic of an organismal entity.",
             "properties": {
                 "category": {
@@ -43098,7 +43098,7 @@
             "type": "object"
         },
         "OrganismTaxon": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.",
             "properties": {
                 "category": {
@@ -43215,7 +43215,7 @@
             "type": "object"
         },
         "OrganismTaxonToEntityAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between an organism taxon and another entity",
             "properties": {
                 "object": {
@@ -43240,7 +43240,7 @@
             "type": "object"
         },
         "OrganismTaxonToEnvironmentAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -43611,7 +43611,7 @@
             "type": "object"
         },
         "OrganismTaxonToOrganismTaxonAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship between two organism taxon nodes",
             "properties": {
                 "adjusted_p_value": {
@@ -43982,7 +43982,7 @@
             "type": "object"
         },
         "OrganismTaxonToOrganismTaxonInteraction": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens",
             "properties": {
                 "adjusted_p_value": {
@@ -44371,7 +44371,7 @@
             "type": "object"
         },
         "OrganismTaxonToOrganismTaxonSpecialization": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo",
             "properties": {
                 "adjusted_p_value": {
@@ -44745,7 +44745,7 @@
             "type": "object"
         },
         "OrganismToOrganismAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -45116,7 +45116,7 @@
             "type": "object"
         },
         "OrganismalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding chemical entities",
             "properties": {
                 "category": {
@@ -45244,7 +45244,7 @@
             "type": "object"
         },
         "OrganismalEntityAsAModelOfDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -45694,13 +45694,13 @@
             "type": "object"
         },
         "Outcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.",
             "title": "Outcome",
             "type": "object"
         },
         "PairwiseGeneToGeneInteraction": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein interaction) or directed (e.g. phosphorylation)",
             "properties": {
                 "adjusted_p_value": {
@@ -46082,7 +46082,7 @@
             "type": "object"
         },
         "PairwiseMolecularInteraction": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An interaction at the molecular level between two physical entities",
             "properties": {
                 "adjusted_p_value": {
@@ -46479,7 +46479,7 @@
             "type": "object"
         },
         "Patent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a legal document granted by a patent issuing authority which confers upon the patenter the sole right to make, use and sell an invention for a set period of time.",
             "properties": {
                 "authors": {
@@ -46671,13 +46671,13 @@
             "type": "object"
         },
         "PathognomonicityQuantifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A relationship quantifier between a variant or symptom and a disease, which is high when the presence of the feature implies the existence of the disease",
             "title": "PathognomonicityQuantifier",
             "type": "object"
         },
         "PathologicalAnatomicalExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. thrombosis leading to an ischemic disease outcome.",
             "properties": {
                 "category": {
@@ -46818,13 +46818,13 @@
             "type": "object"
         },
         "PathologicalAnatomicalOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An outcome resulting from an exposure event which is the manifestation of an abnormal anatomical structure.",
             "title": "PathologicalAnatomicalOutcome",
             "type": "object"
         },
         "PathologicalAnatomicalStructure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.",
             "properties": {
                 "category": {
@@ -46952,13 +46952,13 @@
             "type": "object"
         },
         "PathologicalEntityMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A pathological (abnormal) structure or process.",
             "title": "PathologicalEntityMixin",
             "type": "object"
         },
         "PathologicalProcess": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.",
             "properties": {
                 "category": {
@@ -47116,7 +47116,7 @@
             "type": "object"
         },
         "PathologicalProcessExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A pathological process, when viewed as an exposure, representing a precondition, leading to or influencing an outcome, e.g. autoimmunity leading to disease.",
             "properties": {
                 "category": {
@@ -47257,13 +47257,13 @@
             "type": "object"
         },
         "PathologicalProcessOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An outcome resulting from an exposure event which is the manifestation of a pathological process.",
             "title": "PathologicalProcessOutcome",
             "type": "object"
         },
         "Pathway": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -47431,7 +47431,7 @@
             "type": "string"
         },
         "Phenomenon": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question",
             "properties": {
                 "category": {
@@ -47542,7 +47542,7 @@
             "type": "object"
         },
         "PhenotypicFeature": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A combination of entity and quality that makes up a phenotyping statement. An observable characteristic of an individual resulting from the interaction of its genotype with its molecular and physical environment.",
             "examples": [
                 "MP:0001262"
@@ -47673,7 +47673,7 @@
             "type": "object"
         },
         "PhenotypicFeatureToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -48183,7 +48183,7 @@
             "type": "object"
         },
         "PhenotypicFeatureToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "frequency_qualifier": {
@@ -48309,7 +48309,7 @@
             "type": "object"
         },
         "PhenotypicFeatureToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Association between two concept nodes of phenotypic character, qualified by the predicate used. This association may typically be used to specify 'similar_to' or 'member_of' relationships.",
             "properties": {
                 "adjusted_p_value": {
@@ -48822,7 +48822,7 @@
             "type": "object"
         },
         "PhenotypicQuality": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A property of a phenotype",
             "examples": [
                 "weight"
@@ -48958,7 +48958,7 @@
             "type": "object"
         },
         "PhenotypicSex": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An attribute corresponding to the phenotypic sex of the individual, based upon the reproductive organs present.",
             "properties": {
                 "category": {
@@ -49091,7 +49091,7 @@
             "type": "object"
         },
         "PhysicalEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An entity that has material reality (a.k.a. physical essence).",
             "properties": {
                 "category": {
@@ -49202,19 +49202,19 @@
             "type": "object"
         },
         "PhysicalEssence": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.",
             "title": "PhysicalEssence",
             "type": "object"
         },
         "PhysicalEssenceOrOccurrent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Either a physical or processual entity.",
             "title": "PhysicalEssenceOrOccurrent",
             "type": "object"
         },
         "PhysiologicalProcess": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -49372,7 +49372,7 @@
             "type": "object"
         },
         "PlanetaryEntity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any entity or process that exists at the level of the whole planet",
             "properties": {
                 "category": {
@@ -49483,7 +49483,7 @@
             "type": "object"
         },
         "Plant": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -49611,7 +49611,7 @@
             "type": "object"
         },
         "Polypeptide": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A polypeptide is a molecular entity characterized by availability in protein databases of amino-acid-based sequence representations of its precise primary structure; for convenience of representation, partial sequences of various kinds are included, even if they do not represent a physical molecule.",
             "properties": {
                 "category": {
@@ -49739,7 +49739,7 @@
             "type": "object"
         },
         "PopulationOfIndividualOrganisms": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A collection of individuals from the same taxonomic class distinguished by one or more characteristics.  Characteristics can include, but are not limited to, shared geographic location, genetics, phenotypes.",
             "properties": {
                 "category": {
@@ -49867,7 +49867,7 @@
             "type": "object"
         },
         "PopulationToPopulationAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a two populations",
             "properties": {
                 "adjusted_p_value": {
@@ -50238,7 +50238,7 @@
             "type": "object"
         },
         "PosttranslationalModification": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical modification of a polypeptide or protein that occurs after translation. e.g. polypeptide cleavage to form separate proteins, methylation or acetylation of histone tail amino acids, protein ubiquitination.",
             "properties": {
                 "category": {
@@ -50366,7 +50366,7 @@
             "type": "object"
         },
         "PredicateMapping": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A deprecated predicate mapping object contains the deprecated predicate and an example of the rewiring that should be done to use a qualified statement in its place.",
             "properties": {
                 "anatomical_context_qualifier": {
@@ -50580,7 +50580,7 @@
             "type": "object"
         },
         "PreprintPublication": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a document reresenting an early version of an author's original scholarly work, such as a research paper or a review, prior to formal peer review and publication in a peer-reviewed scholarly or scientific journal.",
             "properties": {
                 "authors": {
@@ -50772,7 +50772,7 @@
             "type": "object"
         },
         "Procedure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A series of actions conducted in a certain order or manner",
             "properties": {
                 "category": {
@@ -50883,7 +50883,7 @@
             "type": "object"
         },
         "ProcessRegulatesProcessAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Describes a regulatory relationship between two genes or gene products.",
             "properties": {
                 "adjusted_p_value": {
@@ -51257,7 +51257,7 @@
             "type": "object"
         },
         "ProcessedMaterial": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A chemical entity (often a mixture) processed for consumption for nutritional, medical or technical use. Is a material entity that is created or changed during material processing.",
             "properties": {
                 "available_from": {
@@ -51448,7 +51448,7 @@
             "type": "object"
         },
         "Protein": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated translation of mRNA",
             "properties": {
                 "category": {
@@ -51576,7 +51576,7 @@
             "type": "object"
         },
         "ProteinDomain": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A conserved part of protein sequence and (tertiary) structure that can evolve, function, and exist independently of the rest of the protein chain. Protein domains maintain their structure and function independently of the proteins in which they are found. e.g. an SH3 domain.",
             "properties": {
                 "category": {
@@ -51714,7 +51714,7 @@
             "type": "object"
         },
         "ProteinFamily": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -51852,7 +51852,7 @@
             "type": "object"
         },
         "ProteinIsoform": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Represents a protein that is a specific isoform of the canonical or reference protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/",
             "properties": {
                 "category": {
@@ -51980,7 +51980,7 @@
             "type": "object"
         },
         "Publication": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Any \u2018published\u2019 piece of information. Publications are considered broadly to include any document or document part made available in print or on the web - which may include scientific journal issues, individual articles, and books - as well as things like pre-prints, white papers, patents, drug labels, web pages, protocol documents,  and even a part of a publication if of significant knowledge scope (e.g. a figure, figure legend, or section highlighted by NLP).",
             "properties": {
                 "authors": {
@@ -52172,7 +52172,7 @@
             "type": "object"
         },
         "QuantityValue": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A value of an attribute that is quantitative and measurable, expressed as a combination of a unit and a numeric value",
             "properties": {
                 "has_numeric_value": {
@@ -52194,7 +52194,7 @@
             "type": "object"
         },
         "RNAProduct": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {
@@ -52322,7 +52322,7 @@
             "type": "object"
         },
         "RNAProductIsoform": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Represents a protein that is a specific isoform of the canonical or reference RNA",
             "properties": {
                 "category": {
@@ -52470,7 +52470,7 @@
             "type": "string"
         },
         "ReactionToCatalystAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -52870,7 +52870,7 @@
             "type": "object"
         },
         "ReactionToParticipantAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -53270,7 +53270,7 @@
             "type": "object"
         },
         "ReagentTargetedGene": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A gene altered in its expression level in the context of some experiment as a result of being targeted by gene-knockdown reagent(s) such as a morpholino or RNAi.",
             "properties": {
                 "category": {
@@ -53405,7 +53405,7 @@
             "type": "object"
         },
         "RegulatoryRegion": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A region (or regions) of the genome that contains known or putative regulatory elements that act in cis- or trans- to affect the transcription of gene",
             "properties": {
                 "category": {
@@ -53540,13 +53540,13 @@
             "type": "object"
         },
         "RelationshipQuantifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "title": "RelationshipQuantifier",
             "type": "object"
         },
         "RelationshipType": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An OWL property used as an edge label",
             "properties": {
                 "id": {
@@ -53561,7 +53561,7 @@
             "type": "object"
         },
         "RelativeFrequencyAnalysisResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of a relative frequency analysis.",
             "properties": {
                 "category": {
@@ -53722,7 +53722,7 @@
             "type": "string"
         },
         "RetrievalSource": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Provides information about how a particular InformationResource served as a source from which knowledge expressed in an Edge, or data used to generate this knowledge, was retrieved.",
             "properties": {
                 "category": {
@@ -53876,13 +53876,13 @@
             "type": "object"
         },
         "SensitivityQuantifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "title": "SensitivityQuantifier",
             "type": "object"
         },
         "SequenceAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a sequence feature and a nucleic acid entity it is localized to.",
             "properties": {
                 "adjusted_p_value": {
@@ -54262,7 +54262,7 @@
             "type": "string"
         },
         "SequenceFeatureRelationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "For example, a particular exon is part of a particular transcript or gene",
             "properties": {
                 "adjusted_p_value": {
@@ -54633,7 +54633,7 @@
             "type": "object"
         },
         "SequenceVariant": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration.",
             "properties": {
                 "category": {
@@ -54782,7 +54782,7 @@
             "type": "object"
         },
         "SequenceVariantModulatesTreatmentAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a sequence variant and a treatment or health intervention. The treatment object itself encompasses both the disease and the drug used.",
             "properties": {
                 "adjusted_p_value": {
@@ -55153,7 +55153,7 @@
             "type": "object"
         },
         "Serial": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.",
             "properties": {
                 "authors": {
@@ -55367,7 +55367,7 @@
             "type": "object"
         },
         "SeverityValue": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "describes the severity of a phenotypic feature or disease",
             "properties": {
                 "category": {
@@ -55500,7 +55500,7 @@
             "type": "object"
         },
         "SiRNA": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A small RNA molecule that is the product of a longer exogenous or endogenous dsRNA, which is either a bimolecular duplex or very long hairpin, processed (via the Dicer pathway) such that numerous siRNAs accumulate from both strands of the dsRNA. SRNAs trigger the cleavage of their target molecules.",
             "properties": {
                 "category": {
@@ -55628,7 +55628,7 @@
             "type": "object"
         },
         "SmallMolecule": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A small molecule entity is a molecular entity characterized by availability in small-molecule databases of SMILES, InChI, IUPAC, or other unambiguous representation of its precise chemical structure; for convenience of representation, any valid chemical representation is included, even if it is not strictly molecular (e.g., sodium ion).",
             "properties": {
                 "available_from": {
@@ -55787,7 +55787,7 @@
             "type": "object"
         },
         "Snv": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist",
             "properties": {
                 "category": {
@@ -55936,7 +55936,7 @@
             "type": "object"
         },
         "SocioeconomicAttribute": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Attributes relating to a socioeconomic manifestation",
             "properties": {
                 "category": {
@@ -56069,7 +56069,7 @@
             "type": "object"
         },
         "SocioeconomicExposure": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g. poverty).",
             "properties": {
                 "category": {
@@ -56208,13 +56208,13 @@
             "type": "object"
         },
         "SocioeconomicOutcome": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An general social or economic outcome, such as healthcare costs, utilization, etc., resulting from an exposure event",
             "title": "SocioeconomicOutcome",
             "type": "object"
         },
         "SpecificityQuantifier": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "title": "SpecificityQuantifier",
             "type": "object"
@@ -56231,7 +56231,7 @@
             "type": "string"
         },
         "Study": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a detailed investigation and/or analysis",
             "properties": {
                 "category": {
@@ -56342,7 +56342,7 @@
             "type": "object"
         },
         "StudyPopulation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A group of people banded together or treated as a group as participants in a research study.",
             "properties": {
                 "category": {
@@ -56470,7 +56470,7 @@
             "type": "object"
         },
         "StudyResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A collection of data items from a study that are about a particular study subject or experimental unit (the 'focus' of the Result) - optionally with context/provenance metadata that may be relevant to the interpretation of this data as evidence.",
             "properties": {
                 "category": {
@@ -56607,7 +56607,7 @@
             "type": "object"
         },
         "StudyVariable": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a variable that is used as a measure in the investigation of a study",
             "properties": {
                 "category": {
@@ -56744,13 +56744,13 @@
             "type": "object"
         },
         "SubjectOfInvestigation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An entity that has the role of being studied in an investigation, study, or experiment",
             "title": "SubjectOfInvestigation",
             "type": "object"
         },
         "TaxonToTaxonAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -57121,7 +57121,7 @@
             "type": "object"
         },
         "TaxonomicRank": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A descriptor for the rank within a taxonomic classification. Example instance: TAXRANK:0000017 (kingdom)",
             "properties": {
                 "id": {
@@ -57136,7 +57136,7 @@
             "type": "object"
         },
         "TextMiningResult": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A result of text mining.",
             "properties": {
                 "category": {
@@ -57273,7 +57273,7 @@
             "type": "object"
         },
         "ThingWithTaxon": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes",
             "properties": {
                 "in_taxon": {
@@ -57298,7 +57298,7 @@
             "type": "object"
         },
         "Transcript": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An RNA synthesized on a DNA or RNA template by an RNA polymerase.",
             "properties": {
                 "category": {
@@ -57426,7 +57426,7 @@
             "type": "object"
         },
         "TranscriptToGeneRelationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A gene is a collection of transcripts",
             "properties": {
                 "adjusted_p_value": {
@@ -57797,7 +57797,7 @@
             "type": "object"
         },
         "TranscriptionFactorBindingSite": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A region (or regions) of the genome that contains a region of DNA known or predicted to bind a protein that modulates gene transcription",
             "properties": {
                 "category": {
@@ -57932,7 +57932,7 @@
             "type": "object"
         },
         "Treatment": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures",
             "properties": {
                 "category": {
@@ -58081,7 +58081,7 @@
             "type": "object"
         },
         "VariantAsAModelOfDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -58534,7 +58534,7 @@
             "type": "object"
         },
         "VariantToDiseaseAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -58987,7 +58987,7 @@
             "type": "object"
         },
         "VariantToEntityAssociationMixin": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "object": {
@@ -59016,7 +59016,7 @@
             "type": "object"
         },
         "VariantToGeneAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a variant and a gene, where the variant has a genetic association with the gene (i.e. is in linkage disequilibrium)",
             "properties": {
                 "adjusted_p_value": {
@@ -59396,7 +59396,7 @@
             "type": "object"
         },
         "VariantToGeneExpressionAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a variant and expression of a gene (i.e. e-QTL)",
             "properties": {
                 "adjusted_p_value": {
@@ -59817,7 +59817,7 @@
             "type": "object"
         },
         "VariantToPhenotypicFeatureAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "adjusted_p_value": {
@@ -60329,7 +60329,7 @@
             "type": "object"
         },
         "VariantToPopulationAssociation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An association between a variant and a population, where the variant has particular frequency in the population",
             "properties": {
                 "adjusted_p_value": {
@@ -60750,7 +60750,7 @@
             "type": "object"
         },
         "Vertebrate": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A sub-phylum of animals consisting of those having a bony or cartilaginous vertebral column.",
             "properties": {
                 "category": {
@@ -60878,7 +60878,7 @@
             "type": "object"
         },
         "Virus": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A virus is a microorganism that replicates itself as a microRNA and infects the host cell.",
             "properties": {
                 "category": {
@@ -61006,7 +61006,7 @@
             "type": "object"
         },
         "WebPage": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a document that is published according to World Wide Web standards, which may incorporate text, graphics, sound, and/or other features.",
             "properties": {
                 "authors": {
@@ -61198,7 +61198,7 @@
             "type": "object"
         },
         "Zygosity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "category": {

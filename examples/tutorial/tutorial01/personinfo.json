@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Person": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "age": {
@@ -47,3 +47,4 @@
     "type": "object",
     "version": null
 }
+

@@ -414,8 +414,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     # @deprecated("Use top_class")
     topClass: str | None = None
 
-    not_closed: bool | None = True
-    """If not closed, then an open-ended set of attributes can be instantiated for any object"""
+    not_closed: bool | None = None
+    """Whether objects may carry attributes the schema does not define.
+
+    ``None`` means unspecified, and each use site falls back to its own default:
+    the top-level schema is open, while a class with no ``extra_slots`` is closed,
+    per the metamodel (``meta.yaml`` documents an absent ``extra_slots`` as "forbid
+    all additional data (default)").
+
+    Setting it explicitly -- ``--not-closed`` / ``--closed`` -- overrides both, which
+    is what #3611 asked for.
+    """
 
     indent: int = 4
 
@@ -488,7 +497,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
-        top_additional_properties = self.not_closed
+        top_additional_properties = self.not_closed if self.not_closed is not None else True
         if self.top_class:
             top_class_def = self.schemaview.get_class(self.top_class)
             if top_class_def is not None:
@@ -1011,7 +1020,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.is_class_unconstrained(cls):
             return True
         elif not cls.extra_slots:
-            return self.not_closed
+            # The metamodel's default is closed; `not_closed` overrides it only
+            # when the caller set it explicitly.
+            return self.not_closed if self.not_closed is not None else False
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
         elif cls.extra_slots.range_expression:
@@ -1209,10 +1220,11 @@ Top level class; slots of this class will become top level properties in the jso
 )
 @click.option(
     "--not-closed/--closed",
-    default=True,
-    show_default=True,
+    default=None,
     help="""
-Set additionalProperties=False if closed otherwise true if not closed at the global level
+Whether objects may carry attributes the schema does not define. Applies to every
+class as well as the top level. Unset, the top level is open and a class with no
+`extra_slots` is closed, following the metamodel.
 """,
 )
 @click.option(
