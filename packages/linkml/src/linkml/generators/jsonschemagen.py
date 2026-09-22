@@ -415,7 +415,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     topClass: str | None = None
 
     not_closed: bool = False
-    """Whether a class may carry attributes the schema does not define.
+    """Allow data to include properties that the schema does not declare.
 
     Defaults to closed, following the metamodel: ``meta.yaml`` documents an absent
     ``extra_slots`` as "forbid all additional data (default)". An explicit
@@ -1252,9 +1252,9 @@ Top level class; slots of this class will become top level properties in the jso
     default=False,
     show_default=True,
     help="""
-Whether a class may carry attributes the schema does not define. Closed by default,
-following the metamodel; an explicit `extra_slots` on a class always wins. The top
-level takes its value from the document's root class.
+Allow data to include properties that the schema does not declare. Closed by
+default, following the metamodel; an explicit `extra_slots` on a class always
+wins. The top level takes its value from the document's root class.
 """,
 )
 @click.option(
