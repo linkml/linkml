@@ -61333,7 +61333,7 @@
     },
     "$id": "https://w3id.org/biolink/biolink-model",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "A collection of deprecated mappings.",
     "metamodel_version": "1.11.0",
     "properties": {

@@ -414,16 +414,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     # @deprecated("Use top_class")
     topClass: str | None = None
 
-    not_closed: bool | None = None
-    """Whether objects may carry attributes the schema does not define.
+    not_closed: bool = False
+    """Whether a class may carry attributes the schema does not define.
 
-    ``None`` means unspecified, and each use site falls back to its own default:
-    the top-level schema is open, while a class with no ``extra_slots`` is closed,
-    per the metamodel (``meta.yaml`` documents an absent ``extra_slots`` as "forbid
-    all additional data (default)").
+    Defaults to closed, following the metamodel: ``meta.yaml`` documents an absent
+    ``extra_slots`` as "forbid all additional data (default)". An explicit
+    ``extra_slots`` on a class always takes precedence over this.
 
-    Setting it explicitly -- ``--not-closed`` / ``--closed`` -- overrides both, which
-    is what #3611 asked for.
+    This governs classes only. The top-level schema takes ``additionalProperties``
+    from the document's root class -- see :meth:`start_schema`.
     """
 
     indent: int = 4
@@ -497,11 +496,22 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
-        top_additional_properties = self.not_closed if self.not_closed is not None else True
+        # The root class governs the top level, whether it was named with --top-class
+        # or declared with `tree_root: true`. Honouring only the former is what left
+        # the two disagreeing (#3608).
+        root_class_def = None
         if self.top_class:
-            top_class_def = self.schemaview.get_class(self.top_class)
-            if top_class_def is not None:
-                top_additional_properties = self.get_additional_properties(top_class_def)
+            root_class_def = self.schemaview.get_class(self.top_class)
+        else:
+            root_class_def = next((c for c in self.schemaview.all_classes().values() if c.tree_root), None)
+
+        if root_class_def is not None:
+            top_additional_properties = self.get_additional_properties(root_class_def)
+        else:
+            # No root class means the top level has no properties of its own, so
+            # closing it would admit nothing but `{}`. Stay open regardless of
+            # `not_closed`, which governs classes.
+            top_additional_properties = True
 
         self.top_level_schema = JsonSchema(
             {
@@ -1020,9 +1030,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.is_class_unconstrained(cls):
             return True
         elif not cls.extra_slots:
-            # The metamodel's default is closed; `not_closed` overrides it only
-            # when the caller set it explicitly.
-            return self.not_closed if self.not_closed is not None else False
+            return self.not_closed
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
         elif cls.extra_slots.range_expression:
@@ -1220,11 +1228,12 @@ Top level class; slots of this class will become top level properties in the jso
 )
 @click.option(
     "--not-closed/--closed",
-    default=None,
+    default=False,
+    show_default=True,
     help="""
-Whether objects may carry attributes the schema does not define. Applies to every
-class as well as the top level. Unset, the top level is open and a class with no
-`extra_slots` is closed, following the metamodel.
+Whether a class may carry attributes the schema does not define. Closed by default,
+following the metamodel; an explicit `extra_slots` on a class always wins. The top
+level takes its value from the document's root class.
 """,
 )
 @click.option(

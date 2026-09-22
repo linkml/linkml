@@ -1181,7 +1181,7 @@
     },
     "$id": "https://w3id.org/linkml/tests/kitchen_sink",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "",
     "metamodel_version": "1.11.0",
     "properties": {
