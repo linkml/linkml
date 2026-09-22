@@ -15,3 +15,4 @@ Learn about ways to get involved with the LinkML community.
    Community-Meetings
    workshops-and-presentations
    office-hours
+   symposium-2026
