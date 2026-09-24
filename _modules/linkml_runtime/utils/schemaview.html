@@ -747,6 +747,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">modifications</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolved_importmap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;User-supplied importmap merged over the built-in ``linkml:`` metamodel mapping.</span>
+
+<span class="sd">        Values are usually strings, but may be an in-memory schema dict (see ``load_import``).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCHEMA_DIRECTORY</span>
+
+        <span class="c1"># user entries come last so they can override the built-in linkml: entry</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;linkml:&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">SCHEMA_DIRECTORY</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">}</span>
+
 <div class="viewcode-block" id="SchemaView.load_import">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.load_import">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">from_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
@@ -777,10 +787,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">from_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">from_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCHEMA_DIRECTORY</span>
-
-        <span class="n">default_import_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;linkml:&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">SCHEMA_DIRECTORY</span><span class="p">)}</span>
-        <span class="n">importmap</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_import_map</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">}</span>
+        <span class="n">importmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_importmap</span><span class="p">()</span>
         <span class="c1"># An importmap entry may be an in-memory schema dict, which is loaded</span>
         <span class="c1"># directly without touching the filesystem or network.</span>
         <span class="n">mapped</span> <span class="o">=</span> <span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">imp</span><span class="p">))</span>
@@ -860,6 +867,38 @@
 
         <span class="k">return</span> <span class="n">d</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_closure_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raw_imp</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">importer_sn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load one schema for :meth:`imports_closure`.</span>
+
+<span class="sd">        ``sn`` is the closure key (possibly normalized as root-relative); ``raw_imp`` is the</span>
+<span class="sd">        import exactly as written in the importing schema; ``importer_sn`` is that schema&#39;s key.</span>
+
+<span class="sd">        When an importmap or CURIE mapping applies to ``sn``, resolution stays relative to the</span>
+<span class="sd">        origin schema. Otherwise the raw import is resolved against the *importing* schema&#39;s</span>
+<span class="sd">        recorded ``source_file``, so a schema an importmap redirected outside the root tree</span>
+<span class="sd">        still finds its own relative imports (#3499). For unredirected trees both resolutions</span>
+<span class="sd">        denote the same file. Fall back to origin-schema resolution when the importer has no</span>
+<span class="sd">        ``source_file`` (e.g. in-memory schemas).</span>
+
+<span class="sd">        Pre-existing limitation: distinct files imported under the same un-normalizable name</span>
+<span class="sd">        share one closure key; the first one loaded wins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raw_imp is None only for the root schema (it has no importer)</span>
+        <span class="k">if</span> <span class="n">raw_imp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+        <span class="n">importmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_importmap</span><span class="p">()</span>
+        <span class="c1"># an in-memory schema dict has no location of its own, and a mapping hit on sn means an</span>
+        <span class="c1"># importmap/CURIE entry governs this key; both resolve against the origin schema</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sn</span><span class="p">)),</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="n">map_import</span><span class="p">(</span><span class="n">importmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">,</span> <span class="n">sn</span><span class="p">)</span> <span class="o">!=</span> <span class="n">sn</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+        <span class="n">importer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">importer_sn</span><span class="p">)</span>
+        <span class="c1"># without a source_file there is no directory to resolve the import against</span>
+        <span class="k">if</span> <span class="n">importer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">importer</span><span class="o">.</span><span class="n">source_file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+        <span class="c1"># raw_imp, not sn: resolving the root-relative key against the importer&#39;s directory</span>
+        <span class="c1"># would apply the relative prefix twice (subdir/types against &lt;root&gt;/subdir/)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">raw_imp</span><span class="p">,</span> <span class="n">from_schema</span><span class="o">=</span><span class="n">importer</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SchemaView.imports_closure">
 <a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">[docs]</a>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -898,7 +937,9 @@
 
         <span class="n">closure</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">todo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="c1"># (closure key, import name as written in the importing schema, importing schema&#39;s key);</span>
+        <span class="c1"># the root schema has no importer, hence the Nones</span>
+        <span class="n">todo</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">traverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -907,13 +948,13 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">imports</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">traverse</span> <span class="ow">and</span> <span class="n">traverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">todo</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># visit item</span>
-            <span class="n">sn</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">sn</span><span class="p">,</span> <span class="n">raw_imp</span><span class="p">,</span> <span class="n">importer_sn</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_closure_import</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">raw_imp</span><span class="p">,</span> <span class="n">importer_sn</span><span class="p">)</span>
 
             <span class="c1"># resolve item&#39;s imports if it has not been visited already</span>
             <span class="c1"># we will get duplicates, but not cycles this way, and</span>
@@ -924,30 +965,37 @@
                     <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">sn</span><span class="p">:</span>
                         <span class="k">continue</span>
 
-                    <span class="c1"># resolve relative imports relative to the importing schema, rather than the</span>
-                    <span class="c1"># origin schema. Imports can be a URI or Curie, and imports from the same</span>
-                    <span class="c1"># directory don&#39;t require a ./, so if the current (sn) import is a relative</span>
-                    <span class="c1"># path, and the target import doesn&#39;t have : (as in a curie or a URI)</span>
-                    <span class="c1"># we prepend the relative path. This WILL make the key in the `schema_map` not</span>
-                    <span class="c1"># equal to the literal text specified in the importing schema, but this is</span>
-                    <span class="c1"># essential to sensible deduplication: e.g. for</span>
+                    <span class="c1"># compute the closure key for this import: when the current (sn) key is a</span>
+                    <span class="c1"># relative path and the target import has no : (as in a CURIE or URI), the</span>
+                    <span class="c1"># import is normalised against sn&#39;s parent. This makes the key in the</span>
+                    <span class="c1"># `schema_map` not equal to the literal text specified in the importing</span>
+                    <span class="c1"># schema, but it is essential to sensible deduplication: e.g. for</span>
                     <span class="c1"># - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)</span>
                     <span class="c1"># - types.yaml</span>
                     <span class="c1"># - subdir/subschema.yaml (imports ./types.yaml)</span>
                     <span class="c1"># - subdir/types.yaml</span>
                     <span class="c1"># we should treat the two `types.yaml` as separate schemas from the POV of the</span>
-                    <span class="c1"># origin schema.</span>
+                    <span class="c1"># origin schema. The key identifies the schema and drives importmap/CURIE</span>
+                    <span class="c1"># lookups; locating the actual file happens in _load_closure_import, which</span>
+                    <span class="c1"># uses the raw import name and the importer&#39;s own location.</span>
 
-                    <span class="c1"># if i is not a CURIE and sn looks like a path with at least one parent folder,</span>
-                    <span class="c1"># normalise i with respect to sn</span>
-                    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">sn</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="c1"># if i is not a CURIE and sn looks like a filesystem path with at least one</span>
+                    <span class="c1"># parent folder, normalise i with respect to sn.</span>
+                    <span class="c1">#</span>
+                    <span class="c1"># URLs are excluded: os.path.normpath() collapses the double slash in a</span>
+                    <span class="c1"># scheme, so file://a/b would become file:/a/b, and the mangled key is then</span>
+                    <span class="c1"># indistinguishable from a CURIE. A URL-keyed schema keeps the literal</span>
+                    <span class="c1"># import as its key and is located by _load_closure_import instead, which</span>
+                    <span class="c1"># resolves it against the URL the importing schema was fetched from.</span>
+                    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">sn</span> <span class="ow">and</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sn</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">WINDOWS</span><span class="p">:</span>
                             <span class="c1"># This cannot be simplified. os.path.normpath() must be called before .as_posix()</span>
-                            <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PurePath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">PurePath</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">))</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="n">PurePath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">PurePath</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">))</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">)))</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">i</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sn</span><span class="p">))</span>
 
             <span class="c1"># add item to closure</span>
             <span class="c1"># append + pop (above) is FILO queue, which correctly extends tree leaves,</span>
