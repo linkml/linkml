@@ -2784,3 +2784,893 @@ classes:
     has_boolean = any("BOUND" in q for q in queries)
     assert has_exclusive, "Expected one exclusive-value SPARQL constraint"
     assert has_boolean, "Expected one boolean-guard SPARQL constraint"
+
+
+# ---------------------------------------------------------------------------
+# Class expressions → sh:or / sh:and / sh:xone / sh:not
+# ---------------------------------------------------------------------------
+
+EX_CE = rdflib.Namespace("https://example.org/class-expressions/")
+
+_CLASS_EXPRESSION_HEADER = """
+id: https://example.org/class-expressions
+name: class_expressions
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/class-expressions/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+"""
+
+_REFERENCE_SYSTEM_SCHEMA = (
+    _CLASS_EXPRESSION_HEADER
+    + """
+slots:
+  codeEPSG:
+    range: integer
+  coordinateSystemName: {{}}
+classes:
+  ReferenceSystem:
+    class_uri: ex:ReferenceSystem
+    slots: [codeEPSG, coordinateSystemName]
+    {operator}:
+      - slot_conditions:
+          codeEPSG:
+            required: true
+      - slot_conditions:
+          coordinateSystemName:
+            required: true
+"""
+)
+
+_LOGICAL_PREDICATES = (SH["or"], SH["and"], SH.xone, SH["not"])
+
+
+def _list_members(g, shape, predicate):
+    """Members of the single SHACL list that *shape* has for *predicate*."""
+    lists = list(g.objects(shape, predicate))
+    assert len(lists) == 1, f"expected one {predicate} list on {shape}, got {len(lists)}"
+    return list(Collection(g, lists[0]))
+
+
+def _condition(g, member, path):
+    """The property shape for *path* inside the member shape *member*."""
+    shapes = [p for p in g.objects(member, SH.property) if (p, SH.path, path) in g]
+    assert len(shapes) == 1, f"expected one condition on {path}, got {len(shapes)}"
+    return shapes[0]
+
+
+def _conforms(shacl_ttl: str, data_ttl: str) -> bool:
+    """Validate *data_ttl*; meta_shacl makes pyshacl fail on an ill-formed shapes graph."""
+    import pyshacl
+
+    conforms, _, _ = pyshacl.validate(
+        data_graph=data_ttl,
+        shacl_graph=shacl_ttl,
+        data_graph_format="turtle",
+        shacl_graph_format="turtle",
+        advanced=True,
+        meta_shacl=True,
+    )
+    return conforms
+
+
+@pytest.mark.parametrize(
+    "operator,predicate",
+    [("any_of", SH["or"]), ("all_of", SH["and"]), ("exactly_one_of", SH.xone)],
+)
+def test_class_expression_list_operator_generates_logical_constraint(operator, predicate):
+    """any_of, all_of and exactly_one_of become sh:or, sh:and and sh:xone over the member shapes."""
+    g = _parse_shacl(_REFERENCE_SYSTEM_SCHEMA.format(operator=operator))
+
+    members = _list_members(g, EX_CE.ReferenceSystem, predicate)
+    assert len(members) == 2
+    for member, path in zip(members, (EX_CE.codeEPSG, EX_CE.coordinateSystemName)):
+        condition = _condition(g, member, path)
+        assert (condition, SH.minCount, Literal(1)) in g
+        assert (member, SH.targetClass, None) not in g
+    others = set(_LOGICAL_PREDICATES) - {predicate}
+    assert not any((EX_CE.ReferenceSystem, p, None) in g for p in others)
+
+
+def test_class_expression_none_of_generates_one_sh_not_per_member():
+    """none_of becomes one sh:not per member; the negated constraints all apply (SHACL §2.1.1)."""
+    g = _parse_shacl(_REFERENCE_SYSTEM_SCHEMA.format(operator="none_of"))
+
+    negated = list(g.objects(EX_CE.ReferenceSystem, SH["not"]))
+    assert len(negated) == 2
+    paths = {path for member in negated for p in g.objects(member, SH.property) for path in g.objects(p, SH.path)}
+    assert paths == {EX_CE.codeEPSG, EX_CE.coordinateSystemName}
+
+
+@pytest.mark.parametrize(
+    "operator,properties,expected",
+    [
+        ("any_of", 'ex:codeEPSG 4326 ; ex:coordinateSystemName "WGS 84"', True),
+        ("any_of", "ex:codeEPSG 4326", True),
+        ("any_of", "", False),
+        ("exactly_one_of", "ex:codeEPSG 4326", True),
+        ("exactly_one_of", 'ex:codeEPSG 4326 ; ex:coordinateSystemName "WGS 84"', False),
+        ("exactly_one_of", "", False),
+        ("all_of", 'ex:codeEPSG 4326 ; ex:coordinateSystemName "WGS 84"', True),
+        ("all_of", "ex:codeEPSG 4326", False),
+        ("none_of", "", True),
+        ("none_of", "ex:codeEPSG 4326", False),
+    ],
+)
+def test_class_expression_pyshacl_end_to_end(operator, properties, expected):
+    """End-to-end: each operator admits exactly the instances the metamodel says it holds for."""
+    shacl_ttl = ShaclGenerator(_REFERENCE_SYSTEM_SCHEMA.format(operator=operator), mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:rs a ex:ReferenceSystem {";" if properties else ""} {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+_FORMAT_PROFILES_SCHEMA = (
+    _CLASS_EXPRESSION_HEADER
+    + """
+slots:
+  fileFormat: {}
+  formatType: {}
+  version: {}
+  hasChannel:
+    range: Channel
+    multivalued: true
+    inlined: true
+classes:
+  Channel:
+    class_uri: ex:Channel
+  Format:
+    class_uri: ex:Format
+    slots: [fileFormat, formatType, version, hasChannel]
+    any_of:
+      - description: A single-channel trace.
+        slot_conditions:
+          fileFormat:
+            equals_string_in: [OSI, TXTH]
+          formatType:
+            required: true
+          version:
+            required: true
+      - description: A multi-channel container.
+        slot_conditions:
+          fileFormat:
+            required: true
+            equals_string: MCAP
+          hasChannel:
+            required: true
+"""
+)
+
+
+@pytest.mark.parametrize(
+    "properties,expected",
+    [
+        ('ex:fileFormat "OSI" ; ex:formatType "SensorView" ; ex:version "3.7.0"', True),
+        ('ex:fileFormat "MCAP" ; ex:hasChannel ex:ch', True),
+        ('ex:fileFormat "MCAP" ; ex:formatType "SensorView" ; ex:version "3.7.0"', False),
+        ('ex:fileFormat "OSI" ; ex:formatType "SensorView" ; ex:hasChannel ex:ch', False),
+    ],
+)
+def test_class_expression_any_of_profiles_pyshacl_end_to_end(properties, expected):
+    """End-to-end: a class-level any_of selects between two complete profiles of a class."""
+    shacl_ttl = ShaclGenerator(_FORMAT_PROFILES_SCHEMA, mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:ch a ex:Channel .
+    ex:f a ex:Format ; {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+def test_class_expression_member_metadata():
+    """A member's title and description annotate its shape, as they do for a class's NodeShape."""
+    g = _parse_shacl(_FORMAT_PROFILES_SCHEMA)
+
+    comments = {str(c) for m in _list_members(g, EX_CE.Format, SH["or"]) for c in g.objects(m, RDFS.comment)}
+    assert comments == {"A single-channel trace.", "A multi-channel container."}
+
+
+_CONDITIONS_SCHEMA = (
+    _CLASS_EXPRESSION_HEADER
+    + """
+enums:
+  ColourEnum:
+    permissible_values:
+      red: {}
+      blue: {}
+slots:
+  label: {}
+  size:
+    range: integer
+  count:
+    multivalued: true
+  exact:
+    multivalued: true
+  colour: {}
+  target: {}
+  note: {}
+classes:
+  Target:
+    class_uri: ex:Target
+  Thing:
+    class_uri: ex:Thing
+    slots: [label, size, count, exact, colour, target, note]
+    all_of:
+      - title: every condition
+        slot_conditions:
+          label:
+            description: Starts upper case.
+            required: true
+            pattern: "^[A-Z]"
+            equals_string_in: [Alpha, Beta]
+          size:
+            minimum_value: 1
+            maximum_value: 10
+            equals_number: 5
+          count:
+            required: true
+            minimum_cardinality: 2
+            maximum_cardinality: 4
+          exact:
+            exact_cardinality: 3
+          colour:
+            range: ColourEnum
+          target:
+            value_presence: PRESENT
+            range: Target
+          note:
+            value_presence: ABSENT
+"""
+)
+
+
+def test_class_expression_slot_condition_fields():
+    """Each supported slot-condition field maps to the SHACL constraint the slot loop uses for it."""
+    g = _parse_shacl(_CONDITIONS_SCHEMA)
+    (member,) = _list_members(g, EX_CE.Thing, SH["and"])
+    assert (member, RDFS.label, Literal("every condition")) in g
+
+    def values(path, predicate):
+        return set(g.objects(_condition(g, member, path), predicate))
+
+    def in_list(path):
+        (node,) = values(path, SH["in"])
+        return list(Collection(g, node))
+
+    assert values(EX_CE.label, SH.minCount) == {Literal(1)}
+    assert values(EX_CE.label, SH.pattern) == {Literal("^[A-Z]")}
+    assert values(EX_CE.label, SH.description) == {Literal("Starts upper case.")}
+    assert in_list(EX_CE.label) == [Literal("Alpha"), Literal("Beta")]
+
+    # equals_number is a value comparison; SHACL allows one sh:minInclusive and one
+    # sh:maxInclusive per shape, so next to the bounds it moves into an sh:and member
+    assert values(EX_CE.size, SH.minInclusive) == {Literal(1)}
+    assert values(EX_CE.size, SH.maxInclusive) == {Literal(10)}
+    (and_node,) = values(EX_CE.size, SH["and"])
+    repeated = {(p, o) for m in Collection(g, and_node) for p, o in g.predicate_objects(m)}
+    assert repeated == {(SH.minInclusive, Literal(5)), (SH.maxInclusive, Literal(5))}
+    assert values(EX_CE.size, SH["in"]) == set()
+    assert values(EX_CE.size, SH.minCount) == set()
+    assert values(EX_CE.size, SH.hasValue) == set()
+
+    # required and a cardinality give one sh:minCount, the stricter of the two
+    assert values(EX_CE["count"], SH.minCount) == {Literal(2)}
+    assert values(EX_CE["count"], SH.maxCount) == {Literal(4)}
+    assert values(EX_CE.exact, SH.minCount) == {Literal(3)}
+    assert values(EX_CE.exact, SH.maxCount) == {Literal(3)}
+
+    assert in_list(EX_CE.colour) == [Literal("red"), Literal("blue")]
+
+    assert values(EX_CE.target, SH.minCount) == {Literal(1)}
+    assert values(EX_CE.target, SH["class"]) == {EX_CE.Target}
+    assert values(EX_CE.target, SH.nodeKind) == {SH.BlankNodeOrIRI}
+
+    assert values(EX_CE.note, SH.maxCount) == {Literal(0)}
+    assert values(EX_CE.note, SH.minCount) == set()
+
+
+@pytest.mark.parametrize(
+    "condition,properties,expected",
+    [
+        # outside none_of a value constraint says nothing about presence
+        ("any_of", "", True),
+        ("any_of", 'ex:label "b"', False),
+        # inside none_of it requires the slot, so an absent slot is not rejected
+        ("none_of", "", True),
+        ("none_of", 'ex:label "A"', False),
+        ("none_of", 'ex:label "B"', True),
+    ],
+)
+def test_class_expression_presence_semantics(condition, properties, expected):
+    """A condition holds vacuously for an absent slot, except under none_of, as in the JSON Schema generator."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + f"""
+slots:
+  label: {{}}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [label]
+    {condition}:
+      - slot_conditions:
+          label:
+            {"pattern: '^[A-Z]'" if condition == "any_of" else "equals_string: A"}
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:t a ex:Thing {";" if properties else ""} {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+def test_class_expression_nested_and_is_a():
+    """Nested expressions recurse into the member shape; is_a gives sh:class."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  a: {}
+  b: {}
+  c: {}
+classes:
+  Marker:
+    class_uri: ex:Marker
+  Thing:
+    class_uri: ex:Thing
+    slots: [a, b, c]
+    any_of:
+      - all_of:
+          - slot_conditions:
+              a:
+                required: true
+          - slot_conditions:
+              b:
+                required: true
+      - is_a: Marker
+        slot_conditions:
+          c:
+            required: true
+"""
+    )
+    # open shapes: the instance is also a Marker, whose own shape declares no slots
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False, closed=False).serialize()
+    g = rdflib.Graph().parse(data=shacl_ttl)
+    first, second = _list_members(g, EX_CE.Thing, SH["or"])
+    assert len(_list_members(g, first, SH["and"])) == 2
+    assert (second, SH["class"], EX_CE.Marker) in g
+
+    prefix = "@prefix ex: <https://example.org/class-expressions/> ."
+    assert _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing ; ex:a "1" ; ex:b "2" .')
+    assert not _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing ; ex:a "1" .')
+    assert _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing, ex:Marker ; ex:c "3" .')
+    assert not _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing ; ex:c "3" .')
+
+
+def test_class_expression_reaches_subclass_instances_through_the_target():
+    """The constraint sits on the declaring class's shape only and reaches subclass instances via sh:targetClass."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  a: {}
+  b: {}
+classes:
+  Parent:
+    class_uri: ex:Parent
+    slots: [a, b]
+    any_of:
+      - slot_conditions:
+          a:
+            required: true
+      - slot_conditions:
+          b:
+            required: true
+  Child:
+    class_uri: ex:Child
+    is_a: Parent
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False, closed=False).serialize()
+    g = rdflib.Graph().parse(data=shacl_ttl)
+    assert (EX_CE.Parent, SH["or"], None) in g
+    assert (EX_CE.Child, SH["or"], None) not in g
+
+    data = """
+    @prefix ex: <https://example.org/class-expressions/> .
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+    ex:Child rdfs:subClassOf ex:Parent .
+    ex:c a ex:Child .
+    """
+    assert not _conforms(shacl_ttl, data)
+
+
+def test_class_expression_untranslatable_operator_skipped_with_warning(caplog):
+    """An operator with an untranslatable member is skipped whole, with a warning; the others are kept."""
+    import logging
+
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  tags:
+    multivalued: true
+  a: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [tags, a]
+    any_of:
+      - slot_conditions:
+          tags:
+            has_member:
+              equals_string: x
+      - slot_conditions:
+          a:
+            required: true
+    none_of:
+      - slot_conditions:
+          a:
+            equals_string: forbidden
+"""
+    )
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.shaclgen"):
+        g = _parse_shacl(schema)
+
+    assert (EX_CE.Thing, SH["or"], None) not in g
+    assert (EX_CE.Thing, SH["not"], None) in g
+    assert any(
+        "any_of" in rec.message and "has_member" in rec.message and "tags" in rec.message for rec in caplog.records
+    )
+
+
+def test_class_expression_condition_on_identifier_skipped_with_warning(caplog):
+    """An identifier is the node's IRI, not a property arc, so a condition on it is not translated."""
+    import logging
+
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  id:
+    identifier: true
+  a: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [id, a]
+    exactly_one_of:
+      - slot_conditions:
+          id:
+            pattern: "^ex:"
+      - slot_conditions:
+          a:
+            required: true
+"""
+    )
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.shaclgen"):
+        g = _parse_shacl(schema)
+
+    assert (EX_CE.Thing, SH.xone, None) not in g
+    assert any("exactly_one_of" in rec.message and "identifier" in rec.message for rec in caplog.records)
+
+
+def test_class_expression_absent_leaves_node_shapes_unchanged():
+    """Without class-level expressions no node shape gets a logical constraint; slot-level any_of is unaffected."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  value:
+    any_of:
+      - range: integer
+      - range: string
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [value]
+"""
+    )
+    g = _parse_shacl(schema)
+
+    for shape in g.subjects(SH.targetClass, None):
+        assert not any((shape, p, None) in g for p in _LOGICAL_PREDICATES)
+    (value_shape,) = [p for p in g.objects(EX_CE.Thing, SH.property) if (p, SH.path, EX_CE.value) in g]
+    assert (value_shape, SH["or"], None) in g
+
+
+def test_class_expression_condition_path_is_the_slot_induced_for_the_class():
+    """A condition's sh:path is the one the class's own property shape uses, slot_usage and attributes included."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  code:
+    slot_uri: ex:baseCode
+  exact mappings:
+    slot_uri: ex:exactMatch
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [code, exact mappings]
+    slot_usage:
+      code:
+        slot_uri: ex:thingCode
+    attributes:
+      loc:
+        slot_uri: ex:thingLoc
+    any_of:
+      - slot_conditions:
+          code:
+            required: true
+      - slot_conditions:
+          exact_mappings:
+            required: true
+      - slot_conditions:
+          loc:
+            required: true
+  Other:
+    class_uri: ex:Other
+    attributes:
+      loc:
+        slot_uri: ex:otherLoc
+"""
+    )
+    g = _parse_shacl(schema)
+
+    class_paths = {path for p in g.objects(EX_CE.Thing, SH.property) for path in g.objects(p, SH.path)}
+    condition_paths = [
+        path
+        for member in _list_members(g, EX_CE.Thing, SH["or"])
+        for p in g.objects(member, SH.property)
+        for path in g.objects(p, SH.path)
+    ]
+    assert condition_paths and set(condition_paths) <= class_paths
+    assert set(condition_paths) == {EX_CE.thingCode, EX_CE.exactMatch, EX_CE.thingLoc}
+
+
+def test_class_expression_nested_none_of_requires_the_slot():
+    """A none_of nested in another operator requires the slot too, so it reads like a class's own none_of."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  label: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [label]
+    all_of:
+      - none_of:
+          - slot_conditions:
+              label:
+                equals_string: A
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False).serialize()
+    prefix = "@prefix ex: <https://example.org/class-expressions/> ."
+    assert _conforms(shacl_ttl, f"{prefix} ex:t a ex:Thing .")
+    assert _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing ; ex:label "B" .')
+    assert not _conforms(shacl_ttl, f'{prefix} ex:t a ex:Thing ; ex:label "A" .')
+
+
+@pytest.mark.parametrize(
+    "condition,properties,expected",
+    [
+        # a cardinality is taken literally inside none_of: "not at most zero values" means present
+        ("maximum_cardinality: 0", "", False),
+        ("maximum_cardinality: 0", 'ex:tag "x"', True),
+        ("maximum_cardinality: 1", 'ex:tag "x"', False),
+        ("maximum_cardinality: 1", 'ex:tag "x", "y"', True),
+    ],
+)
+def test_class_expression_none_of_takes_cardinality_literally(condition, properties, expected):
+    """Inside none_of only a condition silent on presence and cardinality is made to require the slot."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + f"""
+slots:
+  tag:
+    multivalued: true
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [tag]
+    none_of:
+      - slot_conditions:
+          tag:
+            {condition}
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:t a ex:Thing {";" if properties else ""} {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+def test_class_expression_equals_string_on_enum_uses_the_meaning():
+    """equals_string on an enum slot compares against the permissible value as _add_enum renders it."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+enums:
+  FormatEnum:
+    permissible_values:
+      OSI:
+        meaning: ex:OSI
+      MCAP: {}
+slots:
+  fileFormat:
+    range: FormatEnum
+  hasChannel: {}
+classes:
+  Format:
+    class_uri: ex:Format
+    slots: [fileFormat, hasChannel]
+    any_of:
+      - slot_conditions:
+          fileFormat:
+            equals_string: OSI
+      - slot_conditions:
+          fileFormat:
+            equals_string: MCAP
+          hasChannel:
+            required: true
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False).serialize()
+    g = rdflib.Graph().parse(data=shacl_ttl)
+    first, second = _list_members(g, EX_CE.Format, SH["or"])
+    (osi_in,) = g.objects(_condition(g, first, EX_CE.fileFormat), SH["in"])
+    assert list(Collection(g, osi_in)) == [EX_CE.OSI]
+    (mcap_in,) = g.objects(_condition(g, second, EX_CE.fileFormat), SH["in"])
+    assert list(Collection(g, mcap_in)) == [Literal("MCAP")]
+
+    prefix = "@prefix ex: <https://example.org/class-expressions/> ."
+    assert _conforms(shacl_ttl, f"{prefix} ex:f a ex:Format ; ex:fileFormat ex:OSI .")
+    assert not _conforms(shacl_ttl, f'{prefix} ex:f a ex:Format ; ex:fileFormat "MCAP" .')
+
+
+@pytest.mark.parametrize("value,expected", [("5.0", True), ("5", True), ("6.0", False)])
+def test_class_expression_equals_number_compares_values(value, expected):
+    """equals_number matches the value, whatever numeric datatype carries it."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  size:
+    range: float
+  label: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [size, label]
+    any_of:
+      - slot_conditions:
+          size:
+            equals_number: 5
+      - slot_conditions:
+          label:
+            required: true
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False, closed=False).serialize()
+    # sh:datatype xsd:float on the class's own property shape would reject an xsd:decimal,
+    # so every value is given as xsd:float
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    ex:t a ex:Thing ; ex:size "{value}"^^xsd:float .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+_UNTRANSLATABLE_CONDITIONS = {
+    # an identifier is the node's IRI; here it becomes one only through slot_usage
+    "identifier": """
+slots:
+  id: {}
+  a: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [id, a]
+    slot_usage:
+      id:
+        identifier: true
+    any_of:
+      - slot_conditions:
+          id:
+            required: true
+      - slot_conditions:
+          a:
+            required: true
+""",
+    "'undefined', which is not a slot": """
+slots:
+  a: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [a]
+    any_of:
+      - slot_conditions:
+          undefined:
+            required: true
+      - slot_conditions:
+          a:
+            required: true
+""",
+    "does not hold strings": """
+slots:
+  count:
+    range: integer
+  a: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [count, a]
+    any_of:
+      - slot_conditions:
+          count:
+            equals_string: "5"
+      - slot_conditions:
+          a:
+            required: true
+""",
+}
+
+
+@pytest.mark.parametrize("reason", list(_UNTRANSLATABLE_CONDITIONS))
+def test_class_expression_untranslatable_condition_skipped_with_warning(caplog, reason):
+    """A condition on an identifier, on no slot, or equals_string on a non-string range is not translated."""
+    import logging
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.shaclgen"):
+        g = _parse_shacl(_CLASS_EXPRESSION_HEADER + _UNTRANSLATABLE_CONDITIONS[reason])
+
+    assert (EX_CE.Thing, SH["or"], None) not in g
+    assert any("any_of" in rec.message and reason in rec.message for rec in caplog.records)
+
+
+def test_class_expression_is_a_with_native_names_uses_sh_node():
+    """With native names, is_a references the member class's shape, suffix included, as a range does."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + """
+slots:
+  a: {}
+classes:
+  Marker:
+    class_uri: ex:Marker
+  Thing:
+    class_uri: ex:Thing
+    slots: [a]
+    any_of:
+      - is_a: Marker
+      - slot_conditions:
+          a:
+            required: true
+"""
+    )
+    g = _parse_shacl(schema, use_class_uri_names=False, suffix="Shape")
+
+    (first, _) = _list_members(g, EX_CE.ThingShape, SH["or"])
+    assert set(g.objects(first, SH.node)) == {EX_CE.MarkerShape}
+    assert (first, SH["class"], None) not in g
+
+
+_REPEATED_PARAMETERS_SCHEMA = (
+    _CLASS_EXPRESSION_HEADER
+    + """
+types:
+  Code:
+    typeof: string
+    pattern: "^[A-Z]+$"
+enums:
+  LetterEnum:
+    permissible_values:
+      A: {}
+      B: {}
+      C: {}
+slots:
+  size:
+    range: integer
+  label: {}
+  letter: {}
+  code: {}
+  other: {}
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [size, label, letter, code, other]
+    any_of:
+      - slot_conditions:
+          size:
+            minimum_value: 3
+            equals_number: 5
+          label:
+            equals_string: A
+            equals_string_in: [A, B]
+          letter:
+            range: LetterEnum
+            equals_string: B
+          code:
+            range: Code
+            pattern: "^AB"
+      - slot_conditions:
+          other:
+            required: true
+"""
+)
+
+
+@pytest.mark.parametrize(
+    "properties,expected",
+    [
+        ('ex:size 5 ; ex:label "A" ; ex:letter "B" ; ex:code "ABC"', True),
+        ("ex:size 4", False),
+        ('ex:label "B"', False),
+        ('ex:letter "A"', False),
+        ('ex:code "ABc"', False),
+        ('ex:code "XY"', False),
+        ('ex:size 4 ; ex:other "x"', True),
+    ],
+)
+def test_class_expression_repeated_parameters_stay_well_formed(properties, expected):
+    """A parameter SHACL allows once per shape, needed twice by one condition, goes into sh:and.
+
+    _conforms runs pyshacl with meta_shacl, which fails on an ill-formed shapes graph.
+    """
+    shacl_ttl = ShaclGenerator(_REPEATED_PARAMETERS_SCHEMA, mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:t a ex:Thing ; {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
+
+
+@pytest.mark.parametrize(
+    "extra,properties,expected",
+    [
+        ("", "", True),
+        ("maximum_cardinality: 5", "", True),
+        ("minimum_cardinality: 0", "", True),
+        ("maximum_cardinality: 5", 'ex:tag "A"', False),
+        ("maximum_cardinality: 5", 'ex:tag "B"', True),
+    ],
+)
+def test_class_expression_none_of_presence_is_monotonic(extra, properties, expected):
+    """Inside none_of, a cardinality that an absent slot satisfies does not flip an absent slot to rejected."""
+    schema = (
+        _CLASS_EXPRESSION_HEADER
+        + f"""
+slots:
+  tag:
+    multivalued: true
+classes:
+  Thing:
+    class_uri: ex:Thing
+    slots: [tag]
+    none_of:
+      - slot_conditions:
+          tag:
+            equals_string: A
+            {extra}
+"""
+    )
+    shacl_ttl = ShaclGenerator(schema, mergeimports=False).serialize()
+    data = f"""
+    @prefix ex: <https://example.org/class-expressions/> .
+    ex:t a ex:Thing {";" if properties else ""} {properties} .
+    """
+    assert _conforms(shacl_ttl, data) is expected
