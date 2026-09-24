@@ -64,6 +64,36 @@ The following LinkML constructs can be used to express boolean constraints:
 
 These can be applied at the class or slot level. The range of each of these is an array of *expressions*.
 
+### Class-level expressions and absent slots
+
+At the class level, each member of `any_of`, `all_of`, `exactly_one_of` and `none_of` is a class expression whose `slot_conditions` constrain the instance's slots. The expressions of a class also constrain the instances of its subclasses, and of the classes that use it as a mixin.
+
+A slot condition needs a meaning when its slot is absent. The JSON Schema and SHACL generators read it as an SQL `CHECK` constraint reads a condition on a null value: an instance is invalid only when an expression is definitely false.
+
+- A condition that decides whether its slot may be absent is true or false as usual. Such a condition sets `value_presence: PRESENT` or `ABSENT`, `required: true`, a minimum or exact cardinality of at least 1, or a maximum or exact cardinality of 0.
+- Any other condition is *unknown* when its slot is absent.
+- `any_of`, `all_of` and `none_of` combine these as "or", "and" and "not". An unknown member doesn't make `any_of` true, nor `none_of` false.
+- `exactly_one_of` holds when exactly one member is definitely true.
+
+```yaml
+classes:
+  Sample:
+    none_of:
+      - slot_conditions:
+          status:
+            equals_string: retracted
+```
+
+A `Sample` without `status` is valid: the condition is unknown, so `none_of` isn't false. To require the slot, state it with `status: {required: true}`.
+
+| Expression | `{}` | `{label: A}` | `{label: B}` |
+|---|---|---|---|
+| `any_of: [label = A]` | valid | valid | invalid |
+| `none_of: [label = A]` | valid | invalid | valid |
+| `exactly_one_of: [label = A, note = B]` | invalid | valid | invalid |
+
+[Rules](#rules) are read differently: their preconditions require their slots, and so do their postconditions unless the rule is `open_world`.
+
 ### Unions as ranges
 
 [any_of](https://w3id.org/linkml/any_of) can be used to express that a range must satisfy any of a set of ranges.
