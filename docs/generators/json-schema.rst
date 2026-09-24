@@ -130,6 +130,13 @@ LinkML supports analogous elements:
 
 Use of these elements will be translated into the appropriate JSON-Schema construct.
 
+At the class level, a class carries the expressions of its ancestors and mixins.
+A slot condition is unknown for an absent slot unless it decides whether the slot
+may be absent, and an instance is invalid only when an expression is definitely
+false, as described under "Class-level expressions and absent slots" in
+:doc:`Advanced features </schemas/advanced>`.
+The SHACL generator reads them the same way.
+
 Inlining
 ^^^^^^^^
 

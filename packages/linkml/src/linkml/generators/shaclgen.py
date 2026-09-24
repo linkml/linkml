@@ -2,7 +2,7 @@ import logging
 import os
 import string
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -11,12 +11,23 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
+from linkml.generators.common.class_expression import value_bounds
 from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
-from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    AnonymousSlotExpression,
+    ClassDefinition,
+    ClassExpression,
+    Element,
+    ElementName,
+    PresenceEnum,
+    SlotDefinition,
+    SlotExpression,
+)
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
@@ -208,6 +219,8 @@ class ShaclGenerator(Generator):
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
+        self._class_expressions_added: set[tuple[URIRef, str, str]] = set()
+        self._class_expression_problems: dict[tuple[str, str, str], list[str]] = {}
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
@@ -248,12 +261,7 @@ class ShaclGenerator(Generator):
                 self._add_annotations(shape_pv, c)
             order = 0
             for s in sv.class_induced_slots(c.name):
-                # fixed in linkml-runtime 1.1.3
-                if s.name in sv.element_by_schema_map():
-                    slot_uri = URIRef(sv.get_uri(s, expand=True))
-                else:
-                    pfx = sv.schema.default_prefix
-                    slot_uri = URIRef(sv.expand_curie(f"{pfx}:{underscore(s.name)}"))
+                slot_uri = URIRef(self._slot_iri(s))
                 pnode = BNode()
                 shape_pv(SH.property, pnode)
 
@@ -371,21 +379,7 @@ class ShaclGenerator(Generator):
                                 f" require range 'string' and not '{r}'"
                             )
 
-                    if r in all_classes:
-                        cls_def = sv.get_class(r)
-                        is_any = cls_def and getattr(cls_def, "class_uri", None) == "linkml:Any"
-                        self._add_class(prop_pv, r)
-                        if not is_any:
-                            if sv.get_identifier_slot(r) is not None:
-                                prop_pv(SH.nodeKind, SH.IRI)
-                            else:
-                                prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
-                    elif r in sv.all_types():
-                        self._add_type(prop_pv, r)
-                    elif r in sv.all_enums():
-                        self._add_enum(g, prop_pv, r)
-                    else:
-                        add_simple_data_type(prop_pv, r)
+                    self._add_range(g, prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
                     if s.equals_string:
@@ -405,12 +399,361 @@ class ShaclGenerator(Generator):
                 if default_value:
                     prop_pv(SH.defaultValue, default_value)
 
+            self._add_class_expressions(g, class_uri_with_suffix, c)
+
             if self.emit_rules:
                 self._add_rules(g, class_uri_with_suffix, c)
 
+        self._report_class_expression_problems()
         return g
 
     LINKML_ANY_URI = "https://w3id.org/linkml/Any"
+
+    # -------------------------------------------------------------------
+    # Class expressions → sh:or / sh:and / sh:xone / sh:not
+    # -------------------------------------------------------------------
+
+    # The SHACL logical constraint component, taking a list, of each list operator.
+    _LIST_OPERATORS = {"any_of": SH["or"], "all_of": SH["and"], "exactly_one_of": SH.xone}
+    _CLASS_EXPRESSION_OPERATORS = ("any_of", "all_of", "exactly_one_of", "none_of")
+
+    # The fields of an anonymous class expression that carry meaning, derived from
+    # the metamodel, so that a new semantic field is reported as untranslatable
+    # instead of being ignored.  Every other field is metadata.
+    _CLASS_EXPRESSION_FIELDS = frozenset(f.name for f in fields(ClassExpression)) | {"is_a"}
+
+    # Slot-condition fields translated by _slot_condition_shape: those deciding
+    # whether the slot is present, and those constraining its values.
+    _SLOT_CONDITION_PRESENCE_FIELDS = frozenset(
+        {"required", "value_presence", "minimum_cardinality", "maximum_cardinality", "exact_cardinality"}
+    )
+    _SLOT_CONDITION_VALUE_FIELDS = frozenset(
+        {"minimum_value", "maximum_value", "pattern", "equals_string", "equals_string_in", "equals_number", "range"}
+    )
+    _SLOT_CONDITION_FIELDS = _SLOT_CONDITION_PRESENCE_FIELDS | _SLOT_CONDITION_VALUE_FIELDS
+
+    # Parameters a shape may have at most one value of: sh:minInclusive and
+    # sh:maxInclusive (SHACL §4.3), sh:in (§4.8.3), sh:datatype and sh:nodeKind
+    # (§4.1), and sh:pattern, as a parameter of a component with more than one
+    # parameter (§2.1.1).  A condition that needs one of them twice gets the
+    # second value in an sh:and member.
+    _SINGLE_VALUE_PARAMETERS = frozenset(
+        {SH.minInclusive, SH.maxInclusive, SH["in"], SH.pattern, SH.datatype, SH.nodeKind}
+    )
+
+    # Fields on a slot condition / class expression that carry no constraint
+    # semantics: they never change which instances satisfy the condition, so
+    # they are ignored by the operator accounting below.  Anything set on a
+    # condition that is neither here nor explicitly translated by a converter
+    # makes the rule untranslatable — the converters must SKIP such a rule
+    # rather than emit a query that silently drops a conjunct (which would
+    # widen the trigger or narrow the check: a mis-translation, not a skip).
+    # Derived from the metamodel: the metadata every ``element`` carries, minus
+    # anything that is a ``slot_expression`` operator.
+    _NON_OPERATOR_FIELDS = frozenset(f.name for f in fields(Element)) - frozenset(
+        f.name for f in fields(SlotExpression)
+    )
+
+    @classmethod
+    def _set_operator_fields(
+        cls, condition: SlotDefinition | AnonymousSlotExpression | AnonymousClassExpression
+    ) -> set[str]:
+        """Return the names of the constraint-bearing fields actually set on a
+        rule condition or class expression.
+
+        A field counts as *set* when it is not ``None`` and not an empty
+        collection (SchemaView materialises unset multivalued fields as empty
+        lists / dicts).  Scalars are never judged by truthiness, so legitimate
+        falsy constraints such as ``minimum_value: 0`` or
+        ``equals_string: ""`` still count as set.  Metadata fields
+        (:data:`_NON_OPERATOR_FIELDS`) are excluded.
+
+        The converters compare this set against the exact operator set they
+        translate and skip the rule on any mismatch, so an unrecognised (or
+        future-metamodel) operator can never be silently dropped.
+        """
+        return {
+            name
+            for name, value in vars(condition).items()
+            if not name.startswith("_")
+            and name not in cls._NON_OPERATOR_FIELDS
+            and value is not None
+            and not (isinstance(value, list | dict) and not value)
+        }
+
+    def _add_class_expressions(self, g: Graph, shape_uri: URIRef, cls: ClassDefinition) -> None:
+        """Emit the class-level boolean expressions of *cls* as SHACL logical constraints.
+
+        Each operator is mapped to the SHACL logical constraint component with the
+        same semantics (`SHACL §4.6 <https://www.w3.org/TR/shacl/#core-components-logical>`_):
+
+        * ``any_of`` → ``sh:or``, ``all_of`` → ``sh:and``, ``exactly_one_of`` →
+          ``sh:xone``, each over a list of the member shapes;
+        * ``none_of`` → one ``sh:not`` per member. A shape's values of ``sh:not``
+          are separate constraints that all apply (SHACL §2.1.1), so the node must
+          conform to none of the members.
+
+        Every member becomes an anonymous node shape: ``is_a`` gives ``sh:class``,
+        each slot condition gives an ``sh:property`` on the path of the slot as
+        induced for *cls* (so ``slot_usage`` applies), and nested expressions
+        recurse.
+
+        The specification doesn't say what a slot condition means for an absent
+        slot.  As with an SQL CHECK constraint (ISO/IEC 9075), which is
+        satisfied unless its condition is false, a class expression is violated
+        only when it is definitely false, and a condition that doesn't state
+        presence (:func:`~linkml.generators.common.class_expression.states_presence`) is unknown
+        for an absent slot.
+        Each operator is therefore translated in its "not false" form, and,
+        under a negation, in its "definitely true" form, where such a condition
+        requires its slot.  ``exactly_one_of`` holds when exactly one member is
+        definitely true.
+
+        A class expression constrains every instance of its class, so the shape
+        of *cls* carries the expressions of its ancestors and mixins as well, as
+        it carries their slots.  Each is translated in the context of *cls*,
+        where ``slot_usage`` may refine a slot it names.  Classes that share a
+        ``class_uri`` share one shape, which carries each expression once.
+
+        An operator whose members use anything that cannot be translated is
+        skipped as a whole, with a warning: dropping one member would change what
+        the operator admits.
+        """
+        sv = self.schemaview
+        for owner in sv.class_ancestors(cls.name):
+            for operator in self._CLASS_EXPRESSION_OPERATORS:
+                members = getattr(sv.get_class(owner), operator, None) or []
+                if not members or (shape_uri, owner, operator) in self._class_expressions_added:
+                    continue
+                self._class_expressions_added.add((shape_uri, owner, operator))
+                reason = next(filter(None, (self._untranslatable(cls, m) for m in members)), None)
+                if reason is not None:
+                    classes = self._class_expression_problems.setdefault((owner, operator, reason), [])
+                    if cls.name not in classes:
+                        classes.append(cls.name)
+                    continue
+                self._add_logical_constraint(g, shape_uri, cls, operator, members, definite=False)
+
+    def _report_class_expression_problems(self) -> None:
+        """Warn once about each class expression that is not translated, naming the
+        class shapes it is missing from unless that is only the declaring class."""
+        for (owner, operator, reason), classes in self._class_expression_problems.items():
+            shapes = "" if classes == [owner] else f" (in the shapes of {', '.join(map(repr, classes))})"
+            logger.warning(
+                "Class %r: %s is not translated to SHACL, because it uses %s%s.", owner, operator, reason, shapes
+            )
+
+    def _add_logical_constraint(
+        self,
+        g: Graph,
+        subject: URIRef | BNode,
+        cls: ClassDefinition,
+        operator: str,
+        members: list[AnonymousClassExpression],
+        definite: bool,
+    ) -> None:
+        """Add the logical constraint for *operator* over *members* to *subject*.
+
+        With *definite* the constraint holds when the expression is definitely
+        true, otherwise when it is not false.  ``none_of`` gives one ``sh:not``
+        per member, in the opposite form, since an expression is not false
+        exactly when its negation is not definitely true.  ``exactly_one_of``
+        counts the members that are definitely true, in either form.  The
+        other list operators keep the form.
+        """
+        if operator == "none_of":
+            for member in members:
+                g.add((subject, SH["not"], self._class_expression_shape(g, cls, member, not definite)))
+            return
+        predicate = self._LIST_OPERATORS[operator]
+        member_form = True if operator == "exactly_one_of" else definite
+        shapes = [self._class_expression_shape(g, cls, m, member_form) for m in members]
+        list_node = BNode()
+        Collection(g, list_node, shapes)
+        g.add((subject, predicate, list_node))
+
+    def _class_expression_shape(
+        self, g: Graph, cls: ClassDefinition, expr: AnonymousClassExpression, definite: bool
+    ) -> BNode:
+        """Build the anonymous node shape for one class expression *expr*, in its
+        "definitely true" form with *definite*, otherwise its "not false" form."""
+        node = BNode()
+
+        def node_pv(p, v):
+            if v is not None:
+                g.add((node, p, v))
+
+        if expr.title is not None:
+            node_pv(RDFS.label, Literal(expr.title, lang=self._resolve_language(expr)))
+        if expr.description is not None:
+            node_pv(RDFS.comment, Literal(expr.description, lang=self._resolve_language(expr)))
+        if expr.is_a is not None:
+            self._add_class(node_pv, expr.is_a)
+        for slot_name, condition in expr.slot_conditions.items():
+            node_pv(SH.property, self._slot_condition_shape(g, cls, slot_name, condition, definite))
+        for operator in self._CLASS_EXPRESSION_OPERATORS:
+            members = getattr(expr, operator) or []
+            if members:
+                self._add_logical_constraint(g, node, cls, operator, members, definite)
+        return node
+
+    def _slot_condition_shape(
+        self, g: Graph, cls: ClassDefinition, slot_name: str, condition: SlotDefinition, definite: bool
+    ) -> BNode:
+        """Build the property shape for the condition on *slot_name*, in its
+        "definitely true" form with *definite*, otherwise its "not false" form."""
+        slot = self._condition_slot(cls, slot_name)
+        pnode = BNode()
+        repeated = []
+
+        def prop_pv(p, v):
+            if v is None:
+                return
+            if p in self._SINGLE_VALUE_PARAMETERS and (pnode, p, None) in g:
+                repeated.append((p, v))
+            else:
+                g.add((pnode, p, v))
+
+        prop_pv(SH.path, URIRef(self._slot_iri(slot)))
+        if condition.title is not None:
+            prop_pv(SH.name, Literal(condition.title, lang=self._resolve_language(condition)))
+        if condition.description is not None:
+            prop_pv(SH.description, Literal(condition.description, lang=self._resolve_language(condition)))
+
+        lower, upper = value_bounds(condition, definite)
+        if lower:
+            prop_pv(SH.minCount, Literal(lower))
+        if upper is not None:
+            prop_pv(SH.maxCount, Literal(upper))
+
+        if condition.minimum_value is not None:
+            prop_pv(SH.minInclusive, Literal(condition.minimum_value))
+        if condition.maximum_value is not None:
+            prop_pv(SH.maxInclusive, Literal(condition.maximum_value))
+        if condition.pattern is not None:
+            prop_pv(SH.pattern, Literal(condition.pattern))
+        value_range = condition.range or slot.range
+        for values in (
+            [condition.equals_string] if condition.equals_string is not None else [],
+            condition.equals_string_in,
+        ):
+            if values:
+                in_node = BNode()
+                Collection(g, in_node, self._string_value_terms(value_range, values))
+                prop_pv(SH["in"], in_node)
+        if condition.equals_number is not None:
+            # A value comparison, unlike the slot loop's sh:hasValue: 5 matches 5.0,
+            # and like every other value constraint in a condition it holds when the
+            # slot is absent.
+            prop_pv(SH.minInclusive, Literal(condition.equals_number))
+            prop_pv(SH.maxInclusive, Literal(condition.equals_number))
+        if condition.range is not None:
+            self._add_range(g, prop_pv, condition.range)
+        if repeated:
+            # Each repeated parameter in a member shape of its own: all of them hold
+            # for every value, as they would on the property shape itself.
+            members = []
+            for p, v in repeated:
+                member = BNode()
+                g.add((member, p, v))
+                members.append(member)
+            and_node = BNode()
+            Collection(g, and_node, members)
+            g.add((pnode, SH["and"], and_node))
+        return pnode
+
+    def _string_value_terms(self, r: ElementName | None, values: list[str]) -> list[URIRef | Literal]:
+        """The RDF terms of the ``equals_string`` / ``equals_string_in`` *values* of a slot with range *r*.
+
+        Permissible values of an enum are rendered as :meth:`_add_enum` renders them, as
+        the IRI of their ``meaning`` where they have one; anything else is a plain literal.
+        """
+        sv = self.schemaview
+        if r in sv.all_enums():
+            pvs = sv.get_enum(r).permissible_values
+            return [
+                URIRef(sv.expand_curie(pvs[v].meaning)) if v in pvs and pvs[v].meaning else Literal(v) for v in values
+            ]
+        return [Literal(v) for v in values]
+
+    def _condition_slot(self, cls: ClassDefinition, slot_name: str) -> SlotDefinition | None:
+        """The slot a condition of *cls* names, as induced for *cls*, or ``None`` if there is none."""
+        try:
+            return self.schemaview.induced_slot(slot_name, cls.name)
+        except ValueError:
+            return None
+
+    def _type_uri(self, r: ElementName | None) -> str | None:
+        """The expanded datatype IRI of type range *r*, or ``None`` when *r* is not a type.
+
+        Resolved through the induced type, so a type derived with ``typeof``
+        inherits the ``uri`` of its ancestor.  A built-in type name in a schema
+        that does not import ``linkml:types`` resolves as the main slot loop
+        resolves it (:class:`ShaclDataType`).
+        """
+        sv = self.schemaview
+        if r in sv.all_types():
+            return sv.get_uri(sv.induced_type(r), expand=True)
+        builtin = next((t for t in ShaclDataType if t.linkml_type == r), None)
+        return str(builtin.uri_ref) if builtin is not None else None
+
+    def _is_string_range(self, r: ElementName | None) -> bool:
+        """Whether a slot with range *r* holds strings, which ``equals_string`` compares against.
+
+        True for an enum, whose permissible values are rendered as their
+        ``meaning`` IRI or as a plain literal (as :meth:`_add_enum` renders
+        them); for a type whose datatype is ``xsd:string``, whose values are
+        plain literals; and for no range at all, whose values are untyped and
+        compared as strings, as the JSON Schema generator compares them.  A
+        type with any other datatype, including one derived from ``string``
+        (``xsd:anyURI``, ``xsd:token``, ...), holds typed literals or IRIs
+        that a string literal does not match.
+        """
+        if r is None or r in self.schemaview.all_enums():
+            return True
+        return self._type_uri(r) == str(XSD.string)
+
+    def _untranslatable(self, cls: ClassDefinition, expr: AnonymousClassExpression) -> str | None:
+        """Return what in class expression *expr* of *cls* cannot be translated, or ``None``."""
+        sv = self.schemaview
+        unknown = self._set_operator_fields(expr) - self._CLASS_EXPRESSION_FIELDS
+        if unknown:
+            return f"'{sorted(unknown)[0]}'"
+        if expr.is_a is not None and expr.is_a not in sv.all_classes():
+            return f"is_a '{expr.is_a}', which is not a class"
+        for slot_name, condition in expr.slot_conditions.items():
+            unknown = self._set_operator_fields(condition) - self._SLOT_CONDITION_FIELDS
+            if unknown:
+                return f"'{sorted(unknown)[0]}' in the condition on slot '{slot_name}'"
+            slot = self._condition_slot(cls, slot_name)
+            if slot is None:
+                return f"a condition on '{slot_name}', which is not a slot"
+            if slot.identifier:
+                # An identifier is the node's IRI, not a property arc.
+                return f"a condition on the identifier slot '{slot_name}'"
+            if condition.range is not None and not self._is_known_range(condition.range):
+                return f"the unknown range '{condition.range}' in the condition on slot '{slot_name}'"
+            value_range = condition.range or slot.range
+            if (condition.equals_string is not None or condition.equals_string_in) and not self._is_string_range(
+                value_range
+            ):
+                return f"equals_string on slot '{slot_name}', whose range '{value_range}' does not hold strings"
+        for operator in self._CLASS_EXPRESSION_OPERATORS:
+            for member in getattr(expr, operator) or []:
+                reason = self._untranslatable(cls, member)
+                if reason is not None:
+                    return reason
+        return None
+
+    def _is_known_range(self, r: ElementName) -> bool:
+        """Whether *r* names a class, type or enum of the schema, or a built-in type."""
+        sv = self.schemaview
+        return (
+            r in sv.all_classes()
+            or r in sv.all_types()
+            or r in sv.all_enums()
+            or any(datatype.linkml_type == r for datatype in ShaclDataType)
+        )
 
     # -------------------------------------------------------------------
     # Rules → sh:sparql
@@ -670,6 +1013,37 @@ class ShaclGenerator(Generator):
         if self.suffix:
             range_ref += self.suffix
         func(SH["node"], URIRef(range_ref))
+
+    def _slot_iri(self, slot: SlotDefinition) -> str:
+        """The full IRI of *slot*, exactly as ``sh:path`` in the main slot loop renders it.
+
+        An induced slot carries its ``slot_usage`` overrides, so an overridden
+        ``slot_uri`` yields the same IRI as ``sh:path``; otherwise the query
+        would use a property the data never uses and never fire.
+        """
+        sv = self.schemaview
+        if slot.name in sv.element_by_schema_map():
+            return sv.get_uri(slot, expand=True)
+        return sv.expand_curie(f"{sv.schema.default_prefix}:{underscore(slot.name)}")
+
+    def _add_range(self, g: Graph, func: Callable, r: ElementName) -> None:
+        """Add the value-type constraint for range *r*: a class, type, enum or built-in datatype."""
+        sv = self.schemaview
+        if r in sv.all_classes():
+            cls_def = sv.get_class(r)
+            is_any = cls_def and getattr(cls_def, "class_uri", None) == "linkml:Any"
+            self._add_class(func, r)
+            if not is_any:
+                if sv.get_identifier_slot(r) is not None:
+                    func(SH.nodeKind, SH.IRI)
+                else:
+                    func(SH.nodeKind, SH.BlankNodeOrIRI)
+        elif r in sv.all_types():
+            self._add_type(func, r)
+        elif r in sv.all_enums():
+            self._add_enum(g, func, r)
+        else:
+            add_simple_data_type(func, r)
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
