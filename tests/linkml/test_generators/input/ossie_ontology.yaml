@@ -1,0 +1,50 @@
+id: https://example.org/ossieontology
+name: ossieontology
+description: Test schema for the Ossie generator.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  oo: https://example.org/ossieontology/
+default_prefix: oo
+default_range: string
+imports:
+  - linkml:types
+  # Any schema with a class of its own will do.
+  # Used to test if --pruning-mode is working.
+  - core
+
+classes:
+  Registry:
+    tree_root: true
+    attributes:
+      people:
+        range: Person
+        multivalued: true
+        inlined_as_list: true
+
+  HasAliases:
+    mixin: true
+    slots:
+      - aliases
+
+  Person:
+    description: A human being
+    mixins:
+      - HasAliases
+    slots:
+      - vital_status
+
+  # Not reachable from Registry.
+  # Used to test if --tree-root is working.
+  Organization:
+
+slots:
+  aliases:
+    multivalued: true
+  vital_status:
+    range: VitalStatus
+
+enums:
+  VitalStatus:
+    permissible_values:
+      ALIVE:
+      DEAD:
