@@ -333,6 +333,16 @@ class SchemaView:
         self._hash = None
         self.modifications += 1
 
+    def _resolved_importmap(self) -> dict[str, Any]:
+        """User-supplied importmap merged over the built-in ``linkml:`` metamodel mapping.
+
+        Values are usually strings, but may be an in-memory schema dict (see ``load_import``).
+        """
+        from linkml_runtime import SCHEMA_DIRECTORY
+
+        # user entries come last so they can override the built-in linkml: entry
+        return {"linkml:": str(SCHEMA_DIRECTORY), **self.importmap}
+
     def load_import(self, imp: str, from_schema: SchemaDefinition | None = None) -> SchemaDefinition:
         """Handle import directives.
 
@@ -361,10 +371,7 @@ class SchemaView:
         """
         if from_schema is None:
             from_schema = self.schema
-        from linkml_runtime import SCHEMA_DIRECTORY
-
-        default_import_map = {"linkml:": str(SCHEMA_DIRECTORY)}
-        importmap = {**default_import_map, **self.importmap}
+        importmap = self._resolved_importmap()
         # An importmap entry may be an in-memory schema dict, which is loaded
         # directly without touching the filesystem or network.
         mapped = importmap.get(str(imp))
@@ -437,6 +444,38 @@ class SchemaView:
 
         return d
 
+    def _load_closure_import(self, sn: str, raw_imp: str | None, importer_sn: str | None) -> SchemaDefinition:
+        """Load one schema for :meth:`imports_closure`.
+
+        ``sn`` is the closure key (possibly normalized as root-relative); ``raw_imp`` is the
+        import exactly as written in the importing schema; ``importer_sn`` is that schema's key.
+
+        When an importmap or CURIE mapping applies to ``sn``, resolution stays relative to the
+        origin schema. Otherwise the raw import is resolved against the *importing* schema's
+        recorded ``source_file``, so a schema an importmap redirected outside the root tree
+        still finds its own relative imports (#3499). For unredirected trees both resolutions
+        denote the same file. Fall back to origin-schema resolution when the importer has no
+        ``source_file`` (e.g. in-memory schemas).
+
+        Pre-existing limitation: distinct files imported under the same un-normalizable name
+        share one closure key; the first one loaded wins.
+        """
+        # raw_imp is None only for the root schema (it has no importer)
+        if raw_imp is None:
+            return self.load_import(sn)
+        importmap = self._resolved_importmap()
+        # an in-memory schema dict has no location of its own, and a mapping hit on sn means an
+        # importmap/CURIE entry governs this key; both resolve against the origin schema
+        if isinstance(importmap.get(str(sn)), dict) or map_import(importmap, self.namespaces, sn) != sn:
+            return self.load_import(sn)
+        importer = self.schema_map.get(importer_sn)
+        # without a source_file there is no directory to resolve the import against
+        if importer is None or not importer.source_file:
+            return self.load_import(sn)
+        # raw_imp, not sn: resolving the root-relative key against the importer's directory
+        # would apply the relative prefix twice (subdir/types against <root>/subdir/)
+        return self.load_import(raw_imp, from_schema=importer)
+
     @lru_cache(None)
     def imports_closure(
         self, imports: bool = True, traverse: bool | None = None, inject_metadata: bool = True
@@ -473,7 +512,9 @@ class SchemaView:
 
         closure = deque()
         visited = set()
-        todo = [self.schema.name]
+        # (closure key, import name as written in the importing schema, importing schema's key);
+        # the root schema has no importer, hence the Nones
+        todo = [(self.schema.name, None, None)]
 
         if traverse is not None:
             warnings.warn(
@@ -482,13 +523,13 @@ class SchemaView:
             )
 
         if not imports or (not traverse and traverse is not None):
-            return todo
+            return [self.schema.name]
 
         while len(todo) > 0:
             # visit item
-            sn = todo.pop()
+            sn, raw_imp, importer_sn = todo.pop()
             if sn not in self.schema_map:
-                self.schema_map[sn] = self.load_import(sn)
+                self.schema_map[sn] = self._load_closure_import(sn, raw_imp, importer_sn)
 
             # resolve item's imports if it has not been visited already
             # we will get duplicates, but not cycles this way, and
@@ -499,30 +540,37 @@ class SchemaView:
                     if i == sn:
                         continue
 
-                    # resolve relative imports relative to the importing schema, rather than the
-                    # origin schema. Imports can be a URI or Curie, and imports from the same
-                    # directory don't require a ./, so if the current (sn) import is a relative
-                    # path, and the target import doesn't have : (as in a curie or a URI)
-                    # we prepend the relative path. This WILL make the key in the `schema_map` not
-                    # equal to the literal text specified in the importing schema, but this is
-                    # essential to sensible deduplication: e.g. for
+                    # compute the closure key for this import: when the current (sn) key is a
+                    # relative path and the target import has no : (as in a CURIE or URI), the
+                    # import is normalised against sn's parent. This makes the key in the
+                    # `schema_map` not equal to the literal text specified in the importing
+                    # schema, but it is essential to sensible deduplication: e.g. for
                     # - main.yaml (imports ./types.yaml, ./subdir/subschema.yaml)
                     # - types.yaml
                     # - subdir/subschema.yaml (imports ./types.yaml)
                     # - subdir/types.yaml
                     # we should treat the two `types.yaml` as separate schemas from the POV of the
-                    # origin schema.
+                    # origin schema. The key identifies the schema and drives importmap/CURIE
+                    # lookups; locating the actual file happens in _load_closure_import, which
+                    # uses the raw import name and the importer's own location.
 
-                    # if i is not a CURIE and sn looks like a path with at least one parent folder,
-                    # normalise i with respect to sn
-                    if "/" in sn and ":" not in i:
+                    # if i is not a CURIE and sn looks like a filesystem path with at least one
+                    # parent folder, normalise i with respect to sn.
+                    #
+                    # URLs are excluded: os.path.normpath() collapses the double slash in a
+                    # scheme, so file://a/b would become file:/a/b, and the mangled key is then
+                    # indistinguishable from a CURIE. A URL-keyed schema keeps the literal
+                    # import as its key and is located by _load_closure_import instead, which
+                    # resolves it against the URL the importing schema was fetched from.
+                    if "/" in sn and "://" not in sn and ":" not in i:
                         if WINDOWS:
                             # This cannot be simplified. os.path.normpath() must be called before .as_posix()
-                            todo.append(PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix())
+                            key = PurePath(os.path.normpath(PurePath(sn).parent / i)).as_posix()
                         else:
-                            todo.append(os.path.normpath(str(Path(sn).parent / i)))
+                            key = os.path.normpath(str(Path(sn).parent / i))
                     else:
-                        todo.append(i)
+                        key = i
+                    todo.append((key, i, sn))
 
             # add item to closure
             # append + pop (above) is FILO queue, which correctly extends tree leaves,
