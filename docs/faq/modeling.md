@@ -216,6 +216,11 @@ However, adding the `meaning` property, you can use _any_ prefix (e.g. `mynamesp
 So, if you like to have your enum be serialised as an IRI (RDF Resource) in RDF-based serialisations,
 all you need to do is specify the `meaning` slot; if you do not do this, the enum value will be interpreted as a string literal.
 
+> __NOTE__
+> This functionality is only supported for RDF-based serialization using the `ttl` generator. JSON-LD serializations currently mirror the same behavior
+> as JSON serialization, and always use the string literal value (see
+> [linkml#2497](https://github.com/linkml/linkml/issues/2497)).
+
 ### How do I constrain a slot to a branch of an ontology or a whole ontology?
 
 LinkML basic enums allow you to restrict a value to a fixed set of terms. This works well, if
@@ -227,8 +232,14 @@ However, this does not work so well if you want to constrain something
 to a very large vocabulary - for example, any job code from an
 occupation ontology, any body part from an anatomical ontology.
 
+There are three main approaches to constraining a slot to an external ontology (or any other form of externally managed
+collection of IRIs such as those in a SKOS vocabulary)
+without manually managing permissible values:
 
-In this case, you can use *dynamic enums*:
+#### 1. Dynamic Enums
+
+Linkml supports restricting an enum to a subset of an externally managed ontology via _dynamic enums_. An example
+syntax is below:
 
 ```yaml
 slots:
@@ -246,10 +257,19 @@ enums:
         - rdfs:subClassOf
 ```
 
-This restricts to any subclass (transitive, non-self) of the term [cell](http://purl.obolibrary.org/obo/CL_0000000) in the cell ontology.
+This restricts to any subclass (transitive, non-self) of the term [cell](http://purl.obolibrary.org/obo/CL_0000000) in
+the cell ontology. Standard LinkML generators do not natively support expanding this enum definition to a full static
+list of permissible values, but there are some external tools like Ontology Access Kit's
+[vskit CLI](https://incatools.github.io/ontology-access-kit/examples/AdHoc/ValueSets.html) that support value set
+expansion for dynamic enums in LinkML schemas (with some limitations, see
+[vskit support for OWL ontologies](https://linkml.io/linkml/schemas/enums.html#tooling-to-support-dynamic-enums)).
 
+Other patterns for dynamic enums also exist, such as regex matching on IRIs and boolean logic for inclusion/exclusion
+of ontology terms. These are described in more detail in the [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) documentation.
 
-An alternative pattern is to use a regular expression:
+#### 2. Using Regex Constraints on Custom Types
+
+An alternative pattern is to use a regular expression on a custom type:
 
 ```yaml
 types:
@@ -265,7 +285,9 @@ slots:
 
 However, this has a number of limitations
 
-You can also model ontology terms directly, e.g
+#### 3. Modeling Ontology Terms Directly as Classes
+
+You can also model ontology terms directly, e.g.
 
 ```yaml
 default_prefix: my_schema
@@ -295,7 +317,8 @@ slots:
 
 ```
 
-declare id_prefixes for a class that constrain the kinds of identifiers used to describe the class
+Additionally, you can declare `id_prefixes` for a class to constrain the kinds of identifiers used to describe the class. Read more about
+[id_prefixes](https://linkml.io/linkml/faq/modeling.html#what-are-id-prefixes-used-for).
 
 ```yaml
 default_prefix: my_schema
@@ -328,7 +351,6 @@ slots:
 
 ```
 
-See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) for more details.
 
 ### Can I use LinkML to develop ontologies?
 
