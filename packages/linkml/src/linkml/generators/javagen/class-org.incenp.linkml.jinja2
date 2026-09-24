@@ -14,24 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-{# The annotations required by the LinkML-Java runtime -#}
-import org.incenp.linkml.core.annotations.Converter;
-import org.incenp.linkml.core.annotations.ExtensionHolder;
-import org.incenp.linkml.core.annotations.Identifier;
-import org.incenp.linkml.core.annotations.Inlined;
-import org.incenp.linkml.core.annotations.LinkURI;
-import org.incenp.linkml.core.annotations.Required;
-import org.incenp.linkml.core.annotations.SlotName;
-import org.incenp.linkml.core.annotations.TypeDesignator;
-import org.incenp.linkml.core.CurieConverter;
+{# The annotations and types required by the LinkML-Java runtime -#}
+import org.incenp.linkml.core.annotations.*;
+import org.incenp.linkml.core.types.*;
 
 @LinkURI("{{ cls.class_uri }}")
 public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_a %} extends {{ cls.is_a }}{% endif %} {
 {# The fields representing the slots. -#}
 {%- for f in cls.fields %}
-{%-   if f.source_slot.range == "uriorcurie" %}
-{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
-{%-   elif f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+{%-   if f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
 {%-     set real_range = "List<? extends " + f.range[5:] %}
 {%-   else %}
 {%-     set real_range = f.range %}
@@ -63,12 +54,11 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {#- The runtime must also know whether the slot is required. #}
 {%-   if f.source_slot.required %}
     @Required
-{%- elif f.source_slot.recommended %}
+{%-   elif f.source_slot.recommended %}
     @Required(isRecommended = true)
-{%- endif %}
-{%-   if f.source_slot.range == "uriorcurie" %}
-{#- We need a custom converter for these slots. #}
-    @Converter(CurieConverter.class)
+{%-   endif %}
+{%-   if gen.get_custom_type_uri(f.source_slot.range) %}
+    @TypeURI("{{ gen.get_custom_type_uri(f.source_slot.range) }}")
 {%-   endif %}
 {#- We will need the slot URI for RDF import/export later. #}
     @LinkURI("{{ f.slot_uri }}")
@@ -84,9 +74,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- The public accessors. #}
 {%- for f in cls.fields %}
-{%-   if f.source_slot.range == "uriorcurie" %}
-{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
-{%-   elif f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+{%-   if f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
 {%-     set real_range = "List<? extends " + f.range[5:] %}
 {%-   else %}
 {%-     set real_range = f.range %}
