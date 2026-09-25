@@ -1731,6 +1731,55 @@ def test_all_enums(schema_view_with_imports: SchemaView) -> None:
             assert e.from_schema == "https://w3id.org/linkml/tests/core"
 
 
+def _write_shared_attribute_tree(tmp_path: Path) -> Path:
+    """Two modules, each declaring the same attribute name, imported as ./child_a and ./child_b."""
+    for suffix in ("a", "b"):
+        (tmp_path / f"child_{suffix}.yaml").write_text(
+            f"id: https://example.org/child_{suffix}\n"
+            f"name: child_{suffix}\n"
+            "prefixes: {linkml: 'https://w3id.org/linkml/', ex: 'https://example.org/'}\n"
+            "default_prefix: ex\n"
+            "default_range: string\n"
+            "imports: [linkml:types]\n"
+            "classes:\n"
+            f"  Child{suffix}:\n"
+            "    is_a: Parent\n"
+            "    attributes:\n"
+            "      shared_attribute:\n"
+            "        range: string\n"
+        )
+    main = tmp_path / "main.yaml"
+    main.write_text(
+        "id: https://example.org/main\n"
+        "name: main\n"
+        "prefixes: {linkml: 'https://w3id.org/linkml/', ex: 'https://example.org/'}\n"
+        "default_prefix: ex\n"
+        "default_range: string\n"
+        "imports: [linkml:types, ./child_a, ./child_b]\n"
+        "classes:\n"
+        "  Parent:\n"
+        "    description: parent class, defined in the importing schema\n"
+    )
+    return main
+
+
+def test_get_uri_element_defined_in_relatively_imported_schema(tmp_path: Path) -> None:
+    """get_uri resolves an element whose schema was imported under a relative path.
+
+    ``schema_map`` is keyed by the import as written (``./child_b``) while ``in_schema()``
+    reports the schema's name (``child_b``). An attribute declared in more than one class
+    has no ``from_schema``, so the lookup falls back to the key and must tolerate the
+    difference. This is what makes ``gen-shacl`` fail on modular schemas (#3878).
+    """
+    main = _write_shared_attribute_tree(tmp_path)
+    view = SchemaView(str(main))
+
+    # precondition: the attribute is declared in more than one class, so it has no
+    # from_schema and get_uri has to locate its schema rather than being handed it
+    assert view.get_element("shared_attribute").from_schema is None
+    assert view.get_uri("shared_attribute", expand=True) == "https://example.org/shared_attribute"
+
+
 def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     """Test the get_uri function."""
     view = schema_view_with_imports

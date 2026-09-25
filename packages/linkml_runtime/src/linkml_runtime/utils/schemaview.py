@@ -1487,7 +1487,17 @@ class SchemaView:
                     msg = f"Cannot find {e.from_schema} in schema_map"
                     raise ValueError(msg)
             else:
-                schema = self.schema_map[self.in_schema(e.name)]
+                # Two classes reusing an attribute name give a bare placeholder slot with no
+                # from_schema, so the schema has to be looked up by name instead.
+                schema_name = self.in_schema(e.name)  # the schema's own name, e.g. 'core'
+                # .get(), not [...]: keys are imports as written, so a relative import misses
+                # here -- a miss is expected and must fall through to the name match below.
+                schema = self.schema_map.get(schema_name)
+                if schema is None:
+                    schema = next((sc for sc in self.schema_map.values() if sc.name == schema_name), None)
+                if schema is None:
+                    msg = f"Cannot find schema {schema_name} in schema_map"
+                    raise ValueError(msg)
             if use_element_type:
                 e_type = e.class_name.split("_", 1)[0]  # for example "class_definition"
                 e_type_path = f"{e_type}/"
