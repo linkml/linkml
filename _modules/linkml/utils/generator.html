@@ -429,6 +429,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -439,7 +440,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">click</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Option</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.cli.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span> <span class="n">log_level_option</span>
@@ -573,8 +573,67 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to output file. Note all generators may not implement this</span>
 <span class="sd">    uniformly, see https://github.com/linkml/linkml/issues/923&quot;&quot;&quot;</span>
 
-    <span class="n">namespaces</span><span class="p">:</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;All prefix expansions used&quot;&quot;&quot;</span>
+    <span class="n">_namespaces</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class-level sentinel default for the private backing store of the</span>
+<span class="sd">    :attr:`namespaces` property. Declaring it as a ``ClassVar`` keeps it out of</span>
+<span class="sd">    the dataclass-generated ``__init__`` while still providing a safe default</span>
+<span class="sd">    read (``None``) before the instance attribute is assigned. The public,</span>
+<span class="sd">    constructor-visible name is the field ``namespaces``.  On ``main`` that was a</span>
+<span class="sd">    plain dataclass field, so ``namespaces=`` was an implicit constructor kwarg;</span>
+<span class="sd">    it is preserved here so external callers/subclasses relying on it are not</span>
+<span class="sd">    silently broken by the switch to a property-backed field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the namespace registry.</span>
+
+<span class="sd">        On the SchemaLoader path (``uses_schemaloader=True``) this returns the</span>
+<span class="sd">        pre-built :class:`~linkml_runtime.utils.namespaces.Namespaces` object</span>
+<span class="sd">        populated by SchemaLoader.</span>
+
+<span class="sd">        On the SchemaView path (``uses_schemaloader=False``) accessing this</span>
+<span class="sd">        property is a sign of a hybrid design anti-pattern. A deprecation</span>
+<span class="sd">        warning is emitted and the call is transparently forwarded to</span>
+<span class="sd">        ``self.schemaview.namespaces()`` so that existing callers continue to</span>
+<span class="sd">        work while being nudged towards the correct API.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Emit a warning when a SchemaView-based generator reads self.namespaces.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_schemaloader</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> uses SchemaView (uses_schemaloader=False) but &quot;</span>
+                <span class="s2">&quot;self.namespaces was accessed.  Use self.schemaview.namespaces() for URI &quot;</span>
+                <span class="s2">&quot;resolution instead; self.namespaces is a SchemaLoader-era artifact that &quot;</span>
+                <span class="s2">&quot;is not populated on the SchemaView path.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Return the namespace map, preferring an explicitly injected one.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_schemaloader</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@namespaces</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save passed namespace registry in the private backing store of the</span>
+<span class="sd">        :attr:`namespaces` property.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">namespaces</span><span class="p">:</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">namespaces</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor kwarg backing the ``namespaces`` property (see above).</span>
+
+<span class="sd">    This does NOT create a second attribute that shadows the property.</span>
+<span class="sd">    A dataclass &quot;field&quot; is just an *annotation* plus a *default value*;</span>
+<span class="sd">    the only real class attribute named ``namespaces`` remains the</span>
+<span class="sd">    ``namespaces`` property object.</span>
+<span class="sd">    ``@dataclass`` reads that property object as the field&#39;s default and bakes it</span>
+<span class="sd">    into the generated ``__init__`` as ``namespaces=&lt;property object&gt;``</span>
+<span class="sd">    -- it does not overwrite the property, so attribute access still goes through</span>
+<span class="sd">    the getter/setter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means output is to a directory, False is to stdout&quot;&quot;&quot;</span>
@@ -602,6 +661,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If set, include extra schema outside of the imports mechanism&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># The ``namespaces`` dataclass field defaults to the property object</span>
+        <span class="c1"># itself (see its declaration).  When no ``namespaces=`` kwarg is passed,</span>
+        <span class="c1"># the generated __init__ routes that default through the property setter</span>
+        <span class="c1"># into ``self._namespaces``; normalise that sentinel back to ``None`` so</span>
+        <span class="c1"># the SchemaLoader/SchemaView paths can populate it as usual.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="ow">is</span> <span class="n">Generator</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;namespaces&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -652,8 +718,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_generation_date</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_namespaces</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_using_schemaloader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]):</span>
         <span class="c1"># currently generators are very liberal in what they accept, including</span>
         <span class="c1"># other generators.</span>
@@ -664,7 +728,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">synopsis</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">loaded</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">namespaces</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">namespaces</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">base_dir</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">importmap</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_data</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">source_file_date</span>
@@ -693,33 +757,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">synopsis</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">loaded</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">base_dir</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">importmap</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_data</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">source_file_date</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">source_file_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema_location</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema_defaults</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="o">=</span> <span class="n">Namespaces</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;prefix_reference&quot;</span><span class="p">):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">prefix_reference</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">JsonObj</span><span class="p">):</span>
-                <span class="n">prefixes</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;prefix_reference&quot;</span><span class="p">):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">prefix_reference</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
 
 <div class="viewcode-block" id="Generator.validate_generator_args">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator.validate_generator_args">[docs]</a>
