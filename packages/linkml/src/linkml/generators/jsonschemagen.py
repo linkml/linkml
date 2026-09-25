@@ -483,8 +483,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             self.top_class = self.topClass
 
         super().__post_init__()
-        if self.namespaces is None:
-            raise TypeError("Schema text must be supplied to JSON schema generator.  Preparsed schema will not work")
 
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
