@@ -327,6 +327,19 @@ Generates Python namespace definition modules for use with the LinkML runtime.
 | Sierra Taylor Moxon | @sierra-moxon | 1 |
 | Jonny Saunders | @sneakers-the-rat | 1 |
 
+### Ossie Generator (`gen-ossie`)
+
+Generates an Apache Ossie ontology from the schema.
+
+This generator is a wrapper around [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala).
+
+**Issues and PRs**: [LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala)
+
+| Contributor | GitHub | Lines |
+|-------------| --- | --- |
+| Piotr Sowiński | @Ostrzyciel | — |
+| Kacper Grzymkowski | @niegrzybkowski | — |
+
 ### OWL Generator (`gen-owl`)
 
 Generates an OWL ontology representation of a LinkML schema.
