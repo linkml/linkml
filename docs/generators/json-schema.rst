@@ -378,6 +378,72 @@ will generate:
 LinkML also supports `Structured patterns <https://w3id.org/linkml/structured_pattern>`_, these are
 compiled down to patterns during JSON Schema generation.
 
+Dictionary key constraints (propertyNames)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A multivalued, inlined slot whose range class has an identifier slot is
+compiled to a JSON object keyed by that identifier (see *Inlining* above).
+When the identifier slot carries string-applicable constraints, they are
+emitted as a `propertyNames <https://json-schema.org/understanding-json-schema/reference/object.html#property-names>`_
+schema on the container object, so the *keys* of the dictionary are validated,
+not just the values:
+
+.. code-block:: yaml
+
+    slots:
+      tags:
+        range: Tag
+        multivalued: true
+        inlined: true
+      uid:
+        identifier: true
+        pattern: "^(0|[1-9][0-9]*)$"
+
+generates on the container:
+
+.. code-block:: json
+
+    "tags": {
+       "additionalProperties": {"$ref": "#/$defs/Tag"},
+       "propertyNames": {"pattern": "^(0|[1-9][0-9]*)$"},
+       "type": "object"
+    }
+
+The constraints carried over from the key slot are the ones applicable to JSON
+Schema strings, because object keys are always strings (`JSON Schema Core
+2019-09, §9.3.2.5 <https://json-schema.org/draft/2019-09/json-schema-core.html#rfc.section.9.3.2.5>`_):
+
+* ``pattern`` -- whether written directly on the slot, resolved from a
+  ``structured_pattern``, or inherited from the slot's ``range`` type (for
+  example an identifier with ``range: ncname``, or a user-defined type that
+  declares a ``pattern``);
+* ``equals_string_in``, emitted as ``enum``;
+* a string ``equals_string``, emitted as ``const``.
+
+The emitted key pattern is always the same one that applies to the identifier
+*inside* the value object, so a key and a redundantly repeated in-object
+identifier are now validated identically.
+
+Numeric constraints -- ``minimum_value``/``maximum_value``, and the numeric
+``const`` produced by ``equals_number`` -- are deliberately **not** carried
+over: they cannot be satisfied by a string key, and a numeric ``const`` would
+reject every key. The ``allOf`` produced by a ``range_expression``, and the
+permissible values of an ``enum``-ranged identifier, are likewise out of scope.
+
+``propertyNames`` composes conjunctively with ``additionalProperties``, so keys
+and values are constrained independently. It is emitted only when the key slot
+actually carries one of the constraints listed above; an unconstrained key slot
+produces exactly the same output as before.
+
+.. note::
+
+   Because type-level patterns are included, an identifier slot whose range is
+   ``ncname`` (or another pattern-bearing type) gains a ``propertyNames``
+   entry even if the slot itself declares no constraint. The generated schema
+   becomes stricter, but only in ways the model already required: data whose
+   keys satisfy the declared identifier type is unaffected.
+
+
 Rules
 ^^^^^
 
