@@ -412,7 +412,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
@@ -825,8 +825,16 @@
     <span class="c1"># @deprecated(&quot;Use top_class&quot;)</span>
     <span class="n">topClass</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">not_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If not closed, then an open-ended set of attributes can be instantiated for any object&quot;&quot;&quot;</span>
+    <span class="n">not_closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow data to include properties that the schema does not declare.</span>
+
+<span class="sd">    Defaults to closed, following the metamodel: ``meta.yaml`` documents an absent</span>
+<span class="sd">    ``extra_slots`` as &quot;forbid all additional data (default)&quot;. An explicit</span>
+<span class="sd">    ``extra_slots`` on a class always takes precedence over this.</span>
+
+<span class="sd">    This governs classes only. The top-level schema takes ``additionalProperties``</span>
+<span class="sd">    from the document&#39;s root class -- see :meth:`start_schema`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 
@@ -834,6 +842,9 @@
 
     <span class="n">top_class</span><span class="p">:</span> <span class="n">ClassDefinitionName</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># JSON object is one instance of this</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class instantiated by the root node of the document tree&quot;&quot;&quot;</span>
+
+    <span class="n">_root_class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the resolved root class, set by :meth:`start_schema`.&quot;&quot;&quot;</span>
 
     <span class="n">include_range_class_descendants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.</span>
@@ -896,14 +907,49 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No class in schema named </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_names_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compare class names the way ``--top-class`` has always been matched.</span>
+
+<span class="sd">        ``top_class`` is habitually passed in CamelCase while the schema spells the</span>
+<span class="sd">        class out (``top_class=&quot;AnyType&quot;`` for ``any type``), so the comparison is</span>
+<span class="sd">        on ``camelcase`` unless ``preserve_names`` is set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_root_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The class the root of the document instantiates, or ``None`` if there is none.</span>
+
+<span class="sd">        Named by ``--top-class``, or failing that declared with ``tree_root: true``.</span>
+<span class="sd">        A schema may carry more than one ``tree_root`` (biolink-model does), so the</span>
+<span class="sd">        first is taken; the point is that every use site agrees on which it is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">tree_root</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_root_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether *cls* is the class the root of the document instantiates.</span>
+
+<span class="sd">        Compares against the name resolved in :meth:`start_schema`, so the top-level</span>
+<span class="sd">        ``additionalProperties`` and the subschema merged beneath it cannot come from</span>
+<span class="sd">        two different classes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_class_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_class_name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">start_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="n">inline</span>
 
-        <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">:</span>
-            <span class="n">top_class_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">top_class_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_additional_properties</span><span class="p">(</span><span class="n">top_class_def</span><span class="p">)</span>
+        <span class="n">root_class_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_class</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root_class_name</span> <span class="o">=</span> <span class="n">root_class_def</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">root_class_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">root_class_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_additional_properties</span><span class="p">(</span><span class="n">root_class_def</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No root class means the top level has no properties of its own, so</span>
+            <span class="c1"># closing it would admit nothing but `{}`. Stay open regardless of</span>
+            <span class="c1"># `not_closed`, which governs classes.</span>
+            <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">(</span>
             <span class="p">{</span>
@@ -1030,13 +1076,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">class_subschema</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="ow">and</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
-            <span class="p">)</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">tree_root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_root_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">class_subschema</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># check this first to ensure we don&#39;t overwrite things like additionalProperties</span>
                 <span class="c1"># or description on the root. But we do want to copy over properties, required,</span>
@@ -1624,10 +1664,12 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--not-closed/--closed&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Set additionalProperties=False if closed otherwise true if not closed at the global level</span>
+<span class="s2">Allow data to include properties that the schema does not declare. Closed by</span>
+<span class="s2">default, following the metamodel; an explicit `extra_slots` on a class always</span>
+<span class="s2">wins. The top level takes its value from the document&#39;s root class.</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>

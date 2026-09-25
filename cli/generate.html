@@ -2320,10 +2320,12 @@ Note that declaring a slot as inlined: true will always inline the class</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-json-schema-not-closed">
 <span id="cmdoption-linkml-generate-full-json-schema-closed"></span><span class="sig-name descname"><span class="pre">--not-closed</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--closed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-json-schema-not-closed" title="Link to this definition">¶</a></dt>
-<dd><p>Set additionalProperties=False if closed otherwise true if not closed at the global level</p>
+<dd><p>Allow data to include properties that the schema does not declare. Closed by
+default, following the metamodel; an explicit <cite>extra_slots</cite> on a class always
+wins. The top level takes its value from the document’s root class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 </dl>
 </dd></dl>
