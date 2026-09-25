@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Activity": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a provence-generating activity",
             "properties": {
                 "description": {
@@ -53,7 +53,7 @@
             "type": "object"
         },
         "Address": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "altitude": {
@@ -79,7 +79,7 @@
             "type": "object"
         },
         "Agent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "a provence-generating agent",
             "properties": {
                 "acted_on_behalf_of": {
@@ -117,7 +117,7 @@
             ]
         },
         "AnyOfClasses": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute2": {
@@ -135,7 +135,7 @@
             "type": "object"
         },
         "AnyOfEnums": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute3": {
@@ -156,7 +156,7 @@
             "type": "object"
         },
         "AnyOfMix": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute4": {
@@ -180,7 +180,7 @@
             "type": "object"
         },
         "AnyOfSimpleType": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute1": {
@@ -201,7 +201,7 @@
             "type": "object"
         },
         "BirthEvent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "ended_at_time": {
@@ -246,7 +246,7 @@
             "type": "object"
         },
         "ClassWithSpaces": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "slot_with_space_1": {
@@ -260,7 +260,7 @@
             "type": "object"
         },
         "CodeSystem": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "id": {
@@ -290,7 +290,7 @@
             "type": "object"
         },
         "Company": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "aliases": {
@@ -325,7 +325,7 @@
             "type": "object"
         },
         "Concept": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "id": {
@@ -361,7 +361,7 @@
             "type": "string"
         },
         "Dataset": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "activities": {
@@ -416,7 +416,7 @@
             "type": "object"
         },
         "DiagnosisConcept": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "id": {
@@ -450,7 +450,7 @@
             "type": "string"
         },
         "EmploymentEvent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "employed_at": {
@@ -519,7 +519,7 @@
             "type": "string"
         },
         "EqualsString": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute5": {
@@ -534,7 +534,7 @@
             "type": "object"
         },
         "EqualsStringIn": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "attribute6": {
@@ -552,7 +552,7 @@
             "type": "object"
         },
         "Event": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "ended_at_time": {
@@ -591,7 +591,7 @@
             "type": "object"
         },
         "FakeClass": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "test_attribute": {
@@ -605,7 +605,7 @@
             "type": "object"
         },
         "FamilialRelationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "cordialness": {
@@ -657,7 +657,7 @@
             "type": "string"
         },
         "Friend": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "name": {
@@ -671,7 +671,7 @@
             "type": "object"
         },
         "HasAliases": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "aliases": {
@@ -731,7 +731,7 @@
             "type": "string"
         },
         "MarriageEvent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "ended_at_time": {
@@ -782,7 +782,7 @@
             "type": "object"
         },
         "MedicalEvent": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "diagnosis": {
@@ -847,7 +847,7 @@
             "type": "object"
         },
         "Organization": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "An organization.\n\nThis description\nincludes newlines\n\n## Markdown headers\n\n * and\n * a\n * list",
             "properties": {
                 "aliases": {
@@ -884,7 +884,7 @@
             "type": "string"
         },
         "Person": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "A person, living or dead",
             "properties": {
                 "addresses": {
@@ -994,7 +994,7 @@
             "type": "object"
         },
         "Place": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "aliases": {
@@ -1023,7 +1023,7 @@
             "type": "object"
         },
         "ProcedureConcept": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "id": {
@@ -1049,7 +1049,7 @@
             "type": "object"
         },
         "Relationship": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "cordialness": {
@@ -1093,7 +1093,7 @@
             "type": "object"
         },
         "SubSubClass2": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "slot_with_space_1": {
@@ -1117,7 +1117,7 @@
             "type": "object"
         },
         "SubclassTest": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "slot_with_space_1": {
@@ -1141,7 +1141,7 @@
             "type": "object"
         },
         "TubSubClass1": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "Same depth as Sub sub class 1",
             "properties": {
                 "slot_with_space_1": {
@@ -1165,7 +1165,7 @@
             "type": "object"
         },
         "WithLocation": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "in_location": {
@@ -1181,7 +1181,7 @@
     },
     "$id": "https://w3id.org/linkml/tests/kitchen_sink",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "",
     "metamodel_version": "1.11.0",
     "properties": {
