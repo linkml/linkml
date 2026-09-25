@@ -33,10 +33,10 @@
 {% if element.examples %}
 ## Examples
 
-| Value |
-| --- |
+| Value | Description |
+| --- | --- |
 {% for x in element.examples -%}
-| {{ x.value }} |
+| {{ x.value }} | {{ x.description if x.description is not none else '' }} |
 {% endfor %}
 {% endif -%}
 
