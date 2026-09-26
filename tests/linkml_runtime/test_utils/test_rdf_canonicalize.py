@@ -1,17 +1,25 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
+import difflib
+import inspect
 import os
 import re
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 import pyoxigraph as ox
 import pytest
 import rdflib
-from rdflib import BNode, Graph, Literal, URIRef
-from rdflib.namespace import RDF
+from rdflib import BNode, Graph, Literal, Namespace, URIRef
+from rdflib.namespace import OWL, RDF, RDFS, SH, XSD
 
+from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.rdfgen import RDFGenerator
+from linkml.generators.shaclgen import ShaclGenerator
+from linkml.generators.shexgen import ShExGenerator
+from linkml.utils.generator import Generator
 from linkml_runtime.utils import rdf_canonicalize as rdf_canon_mod
 from linkml_runtime.utils.rdf_canonicalize import (
     RDFCanonicalizationWarning,
@@ -227,7 +235,8 @@ def test_curie_in_literal_with_hash_not_treated_as_comment():
     assert "ex:bar\\. more" in str(obj)
 
 
-def test_sort_is_load_bearing():
+@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
+def test_sort_is_load_bearing(diff_stable: bool) -> None:
     """Output is byte-identical across subprocesses with different PYTHONHASHSEED values.
 
     RDFC-1.0 stabilizes blank-node labels, but pyoxigraph's ``Dataset`` iteration
@@ -240,6 +249,8 @@ def test_sort_is_load_bearing():
     """
     program = textwrap.dedent(
         """
+        import sys
+
         from rdflib import BNode, Graph, Literal, URIRef
         from rdflib.namespace import RDF
         from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
@@ -255,7 +266,7 @@ def test_sort_is_load_bearing():
             g.add((URIRef("http://example.com/x"), URIRef("http://example.com/has"), bn))
             g.add((bn, URIRef("http://example.com/q"), Literal(f"bn_{i}")))
 
-        print(canonicalize_rdf_graph(g, output_format="turtle"), end="")
+        print(canonicalize_rdf_graph(g, output_format="turtle", diff_stable=sys.argv[1] == "True"), end="")
         """
     )
 
@@ -264,7 +275,7 @@ def test_sort_is_load_bearing():
         # wholesale drops SystemRoot on Windows, which breaks winsock init.
         env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
-            [sys.executable, "-c", program],
+            [sys.executable, "-c", program, str(diff_stable)],
             check=True,
             capture_output=True,
             text=True,
@@ -507,3 +518,241 @@ def test_fallback_is_deterministic_across_processes(output_format):
     assert out_a == out_b, (
         "Fallback output differs across PYTHONHASHSEED values; blank-node canonicalization may be missing"
     )
+
+
+def _shapes_graph(count: int, extra: bool = False) -> Graph:
+    """A graph shaped like generator output: one blank node per named subject."""
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    names = [f"{i:02d}" for i in range(count)] + (["AAAinserted"] if extra else [])
+    for name in names:
+        subject = URIRef(f"http://example.com/Shape{name}")
+        prop = BNode()
+        g.add((subject, URIRef("http://example.com/property"), prop))
+        g.add((prop, URIRef("http://example.com/path"), URIRef(f"http://example.com/p{name}")))
+    return g
+
+
+def _changed_line_count(before: str, after: str) -> int:
+    """Count added and removed content lines in a unified diff."""
+
+    diff = difflib.unified_diff(before.splitlines(), after.splitlines(), n=0, lineterm="")
+    return sum(1 for line in diff if line[:1] in "+-" and not line.startswith(("+++", "---")))
+
+
+def test_diff_stable_is_opt_in() -> None:
+    """Diff-stable labels require an explicit request."""
+    assert inspect.signature(canonicalize_rdf_graph).parameters["diff_stable"].default is False
+
+
+@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
+@pytest.mark.parametrize("output_format", ["nt", "turtle"])
+def test_diff_stable_preserves_semantics(diff_stable: bool, output_format: str) -> None:
+    """Each serialization preserves the source graph under blank-node renaming."""
+    graph = _make_graph_with_bnodes()
+    output = canonicalize_rdf_graph(graph, output_format=output_format, diff_stable=diff_stable)
+    parsed = Graph().parse(data=output, format=output_format)
+    assert len(parsed) == len(graph)
+    assert rdflib.compare.isomorphic(graph, parsed)
+
+
+@pytest.mark.diffable_rdf
+def test_diff_stable_is_deterministic() -> None:
+    """A cycle's tied signatures remain independent of input blank-node IDs."""
+    graphs = []
+    predicate = URIRef("http://example.com/next")
+    for labels, reverse in [("abcd", False), ("dbac", True)]:
+        nodes = [BNode(label) for label in labels]
+        triples = [(node, predicate, nodes[(i + 1) % len(nodes)]) for i, node in enumerate(nodes)]
+        graph = Graph()
+        for triple in reversed(triples) if reverse else triples:
+            graph.add(triple)
+        graphs.append(graph)
+
+    assert rdflib.compare.isomorphic(*graphs)
+    outputs = [canonicalize_rdf_graph(graph, output_format="nt", diff_stable=True) for graph in graphs]
+    assert outputs[0] == outputs[1]
+    for graph, output in zip(graphs, outputs):
+        assert rdflib.compare.isomorphic(graph, Graph().parse(data=output, format="nt"))
+
+
+@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
+def test_diff_stable_insertion_labels(diff_stable: bool) -> None:
+    """An independent insertion renumbers RDFC labels but preserves the old WL label."""
+    before = Graph().parse(
+        data="""@prefix ex: <http://example.com/> .
+        ex:Shape00 ex:property _:old .
+        _:old ex:path ex:p00 .
+        """,
+        format="turtle",
+    )
+    after = Graph()
+    for triple in before:
+        after.add(triple)
+    inserted = BNode()
+    ex = Namespace("http://example.com/")
+    after.add((ex.ShapeAAAinserted, ex.property, inserted))
+    after.add((inserted, ex.path, ex.pAAAinserted))
+
+    outputs = [canonicalize_rdf_graph(graph, output_format="nt", diff_stable=diff_stable) for graph in (before, after)]
+    parsed = [set(ox.parse(output, format=ox.RdfFormat.N_TRIPLES)) for output in outputs]
+    old_subject = ox.NamedNode(str(ex.Shape00))
+    new_subject = ox.NamedNode(str(ex.ShapeAAAinserted))
+    property_iri = ox.NamedNode(str(ex.property))
+    path_iri = ox.NamedNode(str(ex.path))
+    (old_before,) = {q.object for q in parsed[0] if q.subject == old_subject and q.predicate == property_iri}
+    (old_after,) = {q.object for q in parsed[1] if q.subject == old_subject and q.predicate == property_iri}
+    (new_after,) = {q.object for q in parsed[1] if q.subject == new_subject and q.predicate == property_iri}
+    assert all(isinstance(node, ox.BlankNode) for node in (old_before, old_after, new_after))
+    assert old_after != new_after
+    inserted_quads = {
+        ox.Quad(new_subject, property_iri, new_after),
+        ox.Quad(new_after, path_iri, ox.NamedNode(str(ex.pAAAinserted))),
+    }
+    assert parsed[0] == {
+        ox.Quad(old_subject, property_iri, old_before),
+        ox.Quad(old_before, path_iri, ox.NamedNode(str(ex.p00))),
+    }
+    assert (
+        parsed[1]
+        == {
+            ox.Quad(old_subject, property_iri, old_after),
+            ox.Quad(old_after, path_iri, ox.NamedNode(str(ex.p00))),
+        }
+        | inserted_quads
+    )
+
+    if diff_stable:
+        assert all(re.fullmatch(_STABLE_LABEL, node.value) for node in (old_before, old_after, new_after))
+        assert old_before == old_after
+        assert parsed[1] - parsed[0] == inserted_quads
+        assert parsed[0] - parsed[1] == set()
+    else:
+        assert (old_before.value, old_after.value, new_after.value) == ("c14n0", "c14n1", "c14n0")
+    for graph, output in zip((before, after), outputs):
+        assert rdflib.compare.isomorphic(graph, Graph().parse(data=output, format="nt"))
+
+
+@pytest.mark.diffable_rdf
+def test_diff_stable_confines_an_insertion_to_the_lines_it_touches() -> None:
+    """Diff-stable labels reduce Turtle line churn for independent property nodes."""
+    before, after = _shapes_graph(20), _shapes_graph(20, extra=True)
+    baseline = _changed_line_count(canonicalize_rdf_graph(before), canonicalize_rdf_graph(after))
+    stable = _changed_line_count(
+        canonicalize_rdf_graph(before, diff_stable=True),
+        canonicalize_rdf_graph(after, diff_stable=True),
+    )
+    assert stable < baseline / 4, f"expected diff-stable output to churn far less; got {stable} vs baseline {baseline}"
+
+
+_STABLE_LABEL = r"b[0-9a-f]{12}(?:_[1-9][0-9]*)?"
+
+
+_DIFF_STABLE_SCHEMA = """\
+id: https://example.org/diffstable
+name: diffstable
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/diffstable/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Person:
+    slots: [name, knows]
+  Organization:
+    slots: [name]
+slots:
+  name:
+    range: string
+  knows:
+    range: Person
+    multivalued: true
+"""
+
+
+@pytest.fixture
+def diff_stable_schema(tmp_path: Path) -> Path:
+    """Write the small schema for real generator calls."""
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(_DIFF_STABLE_SCHEMA, encoding="utf-8")
+    return schema
+
+
+@pytest.mark.diffable_rdf
+@pytest.mark.parametrize(
+    ("generator", "kwargs"),
+    [
+        pytest.param(OwlSchemaGenerator, {}, id="owlgen"),
+        pytest.param(RDFGenerator, {}, id="rdfgen", marks=pytest.mark.network),
+        pytest.param(ShaclGenerator, {}, id="shaclgen"),
+        pytest.param(ShExGenerator, {"format": "rdf"}, id="shexgen", marks=pytest.mark.network),
+    ],
+)
+def test_diff_stable_reaches_every_rdf_generator(
+    diff_stable_schema: Path, generator: type[Generator], kwargs: dict[str, str]
+) -> None:
+    """Every RDF generator emits the designed schema with diff-stable labels."""
+    output = generator(str(diff_stable_schema), diff_stable=True, **kwargs).serialize()
+    quads = list(ox.parse(output, format=ox.RdfFormat.TURTLE))
+    blank_nodes = {term for quad in quads for term in (quad.subject, quad.object) if isinstance(term, ox.BlankNode)}
+    assert blank_nodes
+    assert all(re.fullmatch(_STABLE_LABEL, node.value) for node in blank_nodes)
+    graph = Graph().parse(data=output, format="turtle")
+    ex = Namespace("https://example.org/diffstable/")
+    if generator is OwlSchemaGenerator:
+        assert (ex.Person, RDF.type, OWL.Class) in graph
+        assert (ex.Organization, RDF.type, OWL.Class) in graph
+        (restriction,) = {
+            node
+            for node in graph.objects(ex.Person, RDFS.subClassOf)
+            if (node, OWL.onProperty, ex.knows) in graph and (node, OWL.allValuesFrom, ex.Person) in graph
+        }
+        assert isinstance(restriction, BNode)
+        assert (restriction, RDF.type, OWL.Restriction) in graph
+        assert (restriction, OWL.allValuesFrom, ex.Person) in graph
+    elif generator is ShaclGenerator:
+        for subject, paths in [(ex.Person, {ex.name, ex.knows}), (ex.Organization, {ex.name})]:
+            assert (subject, RDF.type, SH.NodeShape) in graph
+            assert (subject, SH.targetClass, subject) in graph
+            properties = set(graph.objects(subject, SH.property))
+            assert {graph.value(prop, SH.path) for prop in properties} == paths
+            (ignored,) = graph.objects(subject, SH.ignoredProperties)
+            assert set(graph.predicate_objects(ignored)) == {(RDF.first, RDF.type), (RDF.rest, RDF.nil)}
+        (knows,) = {node for node in graph.objects(ex.Person, SH.property) if (node, SH.path, ex.knows) in graph}
+        assert (knows, SH["class"], ex.Person) in graph
+    elif generator is RDFGenerator:
+        linkml = Namespace("https://w3id.org/linkml/")
+        schema = ex.diffstable
+        assert (schema, RDF.type, linkml.SchemaDefinition) in graph
+        assert set(graph.objects(schema, linkml.classes)) == {ex.Person, ex.Organization}
+        (prefix,) = {node for node in graph.objects(schema, SH.declare) if (node, SH.prefix, Literal("ex")) in graph}
+        assert (prefix, SH.namespace, Literal(str(ex), datatype=XSD.anyURI)) in graph
+    else:
+        assert generator is ShExGenerator
+        shex = Namespace("http://www.w3.org/ns/shex#")
+        assert (ex.Person, RDF.type, shex.Shape) in graph
+        (expression,) = graph.objects(ex.Person, shex.expression)
+        assert (expression, RDF.type, shex.EachOf) in graph
+        (expressions,) = graph.objects(expression, shex.expressions)
+        assert ex.Person_tes in set(graph.items(expressions))
+        assert (ex.Person_tes, RDF.type, shex.EachOf) in graph
+        (slots,) = graph.objects(ex.Person_tes, shex.expressions)
+        (knows,) = {node for node in graph.items(slots) if (node, shex.predicate, ex.knows) in graph}
+        assert (knows, RDF.type, shex.TripleConstraint) in graph
+        assert (knows, shex.valueExpr, ex.Person) in graph
+        assert (knows, shex.min, Literal(0)) in graph
+        assert (knows, shex.max, Literal(-1)) in graph
+
+
+@pytest.mark.diffable_rdf
+def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback() -> None:
+    """A relative IRI requires the fallback and a warning that labels cannot apply."""
+    graph = _make_graph_with_bnodes()
+    graph.add((URIRef("testing"), URIRef("http://example.com/p"), Literal("v")))
+    with pytest.warns(RDFCanonicalizationWarning, match="NOT diff-stable"):
+        stable = canonicalize_rdf_graph(graph, diff_stable=True)
+    with pytest.warns(RDFCanonicalizationWarning):
+        plain = canonicalize_rdf_graph(graph, diff_stable=False)
+    assert stable == plain

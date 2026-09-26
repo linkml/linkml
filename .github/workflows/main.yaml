@@ -237,3 +237,29 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
         run: uv build --all-packages
+      - name: Test optional diff-stable installations
+        shell: bash
+        run: |
+          shopt -s nullglob
+          runtime_wheels=(dist/linkml_runtime-*.whl)
+          linkml_wheels=(dist/linkml-*.whl)
+          test "${#runtime_wheels[@]}" -eq 1
+          test "${#linkml_wheels[@]}" -eq 1
+          for scenario in runtime_without_extra linkml_without_extra runtime_with_extra linkml_with_extra; do
+            scenario_env="$RUNNER_TEMP/$scenario"
+            uv venv --python 3.13 "$scenario_env"
+            packages=("${runtime_wheels[0]}" pytest)
+            case "$scenario" in
+              runtime_with_extra) packages=("${runtime_wheels[0]}[diff-stable]" pytest) ;;
+              linkml_without_extra) packages+=("${linkml_wheels[0]}") ;;
+              linkml_with_extra) packages+=("${linkml_wheels[0]}[diff-stable]") ;;
+            esac
+            uv pip install --python "$scenario_env/bin/python" "${packages[@]}"
+            uv pip check --python "$scenario_env/bin/python"
+            (
+              cd "$RUNNER_TEMP"
+              uv run --no-project "$scenario_env/bin/python" -I -m pytest \
+                --noconftest --import-mode=importlib \
+                "$GITHUB_WORKSPACE/.github/tests/test_diff_stable_install.py" -k "$scenario" -v
+            )
+          done
