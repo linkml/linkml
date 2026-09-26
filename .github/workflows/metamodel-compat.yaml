@@ -98,7 +98,7 @@ jobs:
             gh issue create \
               --title "${ISSUE_TITLE}" \
               --body-file temp/issue_body.md \
-              --label "metamodel-compat"
+              --label "metamodel-compat,dependencies"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -121,7 +121,7 @@ jobs:
             **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           branch: update-metamodel-fixtures
           delete-branch: true
-          labels: metamodel-compat
+          labels: metamodel-compat, dependencies
 
       # Only the soft upstream-main comparison runs here. Scoping to that single test
       # keeps an unrelated failure -- a hard UPSTREAM_SHA mismatch, a collection error --
@@ -188,7 +188,7 @@ jobs:
             gh issue create \
               --title "${ISSUE_TITLE}" \
               --body-file temp/drift_issue_body.md \
-              --label "vendored-model-drift"
+              --label "vendored-model-drift,dependencies"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
