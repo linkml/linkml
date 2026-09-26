@@ -500,6 +500,22 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         cls = self.before_generate_class(cls, self.schemaview)
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
+
+        # Exclude the type-designator slot from a class's own struct fields
+        # when this class is a concrete variant of some tagged ancestor
+        # OrSubtype enum. The tag is emitted at the enum level
+        # (#[serde(tag = "...")]); if the variant struct ALSO carries the
+        # same-named field, serde emits a duplicate JSON key on serialize
+        # and rejects it on deserialize ("duplicate field"). The field stays
+        # on the ancestor's own struct (it isn't wrapped as anyone's variant).
+        for ancestor_name in self.schemaview.class_ancestors(cls.name, reflexive=False):
+            if not has_real_subtypes(self.schemaview, ancestor_name):
+                continue
+            td = self.schemaview.get_type_designator_slot(ancestor_name)
+            if td is None:
+                continue
+            induced_attrs = [a for a in induced_attrs if a.name != td.name]
+
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
         slot_range_unions = []
         for a in induced_attrs:
@@ -982,6 +998,17 @@ class RustGenerator(Generator, LifecycleMixin):
         for superclass in superclasses:
             attribs_sc = self.schemaview.class_induced_slots(superclass.name)
             attribs = [a for a in attribs if a.name not in [sc.name for sc in attribs_sc]]
+
+        # Mirror generate_class's exclusion: when cls generates a tagged
+        # OrSubtype enum, the type-designator slot no longer exists as a
+        # real field on descendant structs (its value is implicit in the
+        # enum tag / constant per variant), so it must not be exposed as a
+        # dynamic polymorphic-trait accessor either -- the trait impl body
+        # would otherwise reference a struct field that generate_class no
+        # longer emits.
+        td = self.schemaview.get_type_designator_slot(cls.name)
+        if td is not None:
+            attribs = [a for a in attribs if a.name != td.name]
 
         rust_attribs = []
         for a in attribs:
