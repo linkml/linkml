@@ -3,7 +3,7 @@ import sys
 from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 import click
 import yaml
@@ -17,6 +17,7 @@ from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.utils.context_utils import parse_import_map
 
 
 class Config(BaseModel):
@@ -94,6 +95,7 @@ def _normalize_and_validate(
     plugins: list[ValidationPlugin],
     exit_on_first_failure: bool,
     include_context: bool,
+    importmap: dict[str, str | dict] | None = None,
 ) -> Counter:
     """Run ReferenceValidator to normalize data, then validate the result
     using the standard Validator path.
@@ -112,7 +114,7 @@ def _normalize_and_validate(
             f"Use 'linkml validate -s schema.yaml {data_path}' without --fix for other formats."
         )
 
-    sv = SchemaView(schema)
+    sv = SchemaView(schema, importmap=importmap)
     normalizer = ReferenceValidator(sv)
 
     with open(data_path) as f:
@@ -139,7 +141,7 @@ def _normalize_and_validate(
     click.echo(yaml.dump(output_object, sort_keys=False))
 
     # Validate normalized output using the standard Validator path
-    validator = Validator(sv.schema, validation_plugins=plugins, strict=exit_on_first_failure)
+    validator = Validator(sv.schema, validation_plugins=plugins, strict=exit_on_first_failure, importmap=importmap)
     for result in validator.iter_results(output_object, target_class):
         severity_counter[result.severity] += 1
         click.echo(f"[{result.severity.value}] [{data_path}/{result.instance_index}] {result.message}", err=True)
@@ -207,6 +209,12 @@ def _normalize_and_validate(
     "Diagnostics go to stderr. The normalized output is then validated to "
     "report any remaining issues.",
 )
+@click.option(
+    "--importmap",
+    "-im",
+    type=click.File(),
+    help="Import mapping file (YAML or JSON) used to resolve the schema's imports.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -219,6 +227,7 @@ def cli(
     include_context: bool,
     allow_null_for_optional_enums: bool,
     fix: bool,
+    importmap: TextIO | None,
 ):
     """Validate data against a LinkML schema, or validate a schema against the metamodel.
 
@@ -285,6 +294,8 @@ def cli(
         except ValueError as e:
             raise click.ClickException(str(e)) from e
 
+    import_map = parse_import_map(importmap.read(), str(Path(importmap.name).parent)) if importmap is not None else None
+
     severity_counter = Counter()
 
     if fix:
@@ -297,10 +308,13 @@ def cli(
             plugins,
             exit_on_first_failure,
             include_context,
+            import_map,
         )
     else:
         loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
-        validator = Validator(schema_def, validation_plugins=plugins, strict=exit_on_first_failure)
+        validator = Validator(
+            schema_def, validation_plugins=plugins, strict=exit_on_first_failure, importmap=import_map
+        )
 
         for loader in loaders:
             for result in validator.iter_results_from_source(loader, cfg.target_class):
