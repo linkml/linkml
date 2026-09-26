@@ -1,0 +1,70 @@
+{% raw %}
+def _coerce_keyed_collection(value: Any, key_name: str, value_name: Optional[str] = None) -> Any:
+    """
+    Normalize the input forms of a multivalued, inlined-as-dict slot to a dict
+    of dicts, injecting the dict key into each value's key/identifier slot
+    (``key_name``). A scalar entry value is assigned to ``value_name`` when
+    given (the positional second-slot semantics of the dataclass metamodel,
+    e.g. ``annotations: {tag: v}`` or ``prefixes: {pfx: url}``). Mirrors the
+    normalization YAMLRoot performs for the equivalent dataclass models.
+
+    >>> _coerce_keyed_collection({"a": {"v": 1}, "b": None}, "k")
+    {'a': {'k': 'a', 'v': 1}, 'b': {'k': 'b'}}
+    >>> _coerce_keyed_collection({"pfx": "url"}, "k", value_name="ref")
+    {'pfx': {'k': 'pfx', 'ref': 'url'}}
+    >>> _coerce_keyed_collection({"k": "a", "v": 1}, "k")  # flat single object
+    {'a': {'k': 'a', 'v': 1}}
+    >>> _coerce_keyed_collection([{"k": "a"}, "b"], "k")
+    {'a': {'k': 'a'}, 'b': {'k': 'b'}}
+    >>> _coerce_keyed_collection("a", "k")
+    {'a': {'k': 'a'}}
+    >>> _coerce_keyed_collection({"a": {"k": "b"}}, "k")
+    Traceback (most recent call last):
+    ...
+    ValueError: k mismatch: dict key 'a' != 'b'
+    """
+    if isinstance(value, str):
+        return {value: {key_name: value}}
+    if isinstance(value, dict):
+        if key_name in value and isinstance(value[key_name], (str, int, float)) and not isinstance(value[key_name], bool):
+            # flat single-object form, e.g. annotations: {tag: t, value: v} --
+            # only when the key field holds a scalar (a None/dict body means an
+            # entry whose dict key happens to equal the key slot's name)
+            return {value[key_name]: dict(value)}
+        out = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                key = str(key)
+            if item is None:
+                out[key] = {key_name: key}
+            elif isinstance(item, dict):
+                if key_name not in item:
+                    out[key] = {key_name: key, **item}
+                elif item[key_name] != key:
+                    # a dict key contradicting the value's own key slot is
+                    # unrecoverable ambiguity: fail fast rather than pick one
+                    raise ValueError(f"{key_name} mismatch: dict key {key!r} != {item[key_name]!r}")
+                else:
+                    out[key] = item
+            elif value_name is not None and isinstance(item, (str, int, float, bool)):
+                # simple form: dict key + scalar value, e.g. prefixes: {pfx: url}
+                out[key] = {key_name: key, value_name: item}
+            else:
+                out[key] = item
+        return out
+    if isinstance(value, list):
+        out = {}
+        for item in value:
+            if isinstance(item, dict):
+                if key_name not in item:
+                    raise ValueError(f"Missing {key_name} in list item {item!r}")
+                out[item[key_name]] = item
+            elif isinstance(item, (str, int, float)):
+                out[item] = {key_name: item}
+            elif hasattr(item, key_name):
+                out[getattr(item, key_name)] = item
+            else:
+                raise ValueError(f"Cannot key list item {item!r} by {key_name}")
+        return out
+    return value
+{% endraw %}
