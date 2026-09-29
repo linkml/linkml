@@ -407,7 +407,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.generators.openapigen</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Generate OpenAPI v3.0.3 Specification YAML files.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Generate OpenAPI YAML files.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -419,21 +419,28 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">openapi_spec_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIV30SpecValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openapi_spec_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIV30SpecValidator</span><span class="p">,</span> <span class="n">OpenAPIV31SpecValidator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openapi_spec_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span> <span class="k">as</span> <span class="n">openapi_validate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openapi_spec_validator.validation.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecValidator</span> <span class="k">as</span> <span class="n">OaSpecValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">yaml</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingNode</span><span class="p">,</span> <span class="n">ScalarNode</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonschemagen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonSchemaGenerator</span><span class="p">,</span> <span class="n">json_schema_types</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
-<span class="n">openapi_generic_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;openapi: 3.0.3</span>
+<span class="n">SUPPORTED_OPENAPI_VERSIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span> <span class="s2">&quot;3.1.0&quot;</span><span class="p">]</span>
+
+<span class="n">openapi_generic_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;# TODO: remove this whole comment block after processing</span>
 <span class="s2"># This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.</span>
+<span class="s2"># Make sure to set the right OpenAPI version in the `openapi` top-level attribute.</span>
+<span class="s2"># These are the supported OpenAPI versions: </span><span class="si">{openapi_version_list}</span>
 <span class="s2"># It adds one (random) class or type of the LinkML schema as an example.</span>
 <span class="s2"># Please adapt it to your needs.</span>
 <span class="s2"># See more information in the online documentation:</span>
 <span class="s2">#   https://linkml.io/linkml/generators/openapi.html</span>
+<span class="s2">openapi: x.y.z</span>
 <span class="s2">info:</span>
 <span class="s2">  title: Generic example referring in LinkML-modelled resources</span>
 <span class="s2">  version: 0.1.0</span>
@@ -450,20 +457,24 @@
 <span class="s2">          content:</span>
 <span class="s2">            application/json:</span>
 <span class="s2">              schema:</span>
+<span class="s2">                # TODO: remove this whole comment block after processing</span>
 <span class="s2">                # any broken reference will cause template instantiation to fail</span>
 <span class="s2">                # OpenAPI editors typically also report them</span>
 <span class="s2">                $ref: &#39;#/components/schemas/</span><span class="si">{data_schema}</span><span class="s2">&#39;</span>
 <span class="s2">components:</span>
+<span class="s2">  # TODO: remove this whole comment block after processing</span>
 <span class="s2">  # any data schema provided here that is not used by at least</span>
 <span class="s2">  # one endpoint will be eliminated from the template instantiation</span>
 <span class="s2">  # OpenAPI editors typically also report them</span>
 <span class="s2">  schemas:</span>
+<span class="s2">    # TODO: remove this whole comment block after processing</span>
 <span class="s2">    # this resource name can differ from the name in the LinkML schema</span>
 <span class="s2">    # it must only match the corresponding endpoint `$ref` references</span>
 <span class="s2">    # it creates a mapping between names in OpenAPI and LinkML</span>
 <span class="s2">    </span><span class="si">{data_schema}</span><span class="s2">:</span>
 <span class="s2">      type: object</span>
 <span class="s2">      description: Resource schema to be generated from the LinkML data model.</span>
+<span class="s2">      # TODO: remove this whole comment block after processing</span>
 <span class="s2">      # schema ID mismatching with provided schema will cause template</span>
 <span class="s2">      # instantiation to fail</span>
 <span class="s2">      x-linkml-schema: </span><span class="si">{linkml_schema_id}</span>
@@ -476,18 +487,32 @@
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OpenApiGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.</span>
+<span class="sd">    Generates OpenAPI YAML from a LinkML schema.</span>
 
 <span class="sd">    The generator composes a user-provided OpenAPI template (containing the API header,</span>
 <span class="sd">    paths/endpoints, and security schemes) with JSON Schema components generated from</span>
 <span class="sd">    the LinkML schema via :class:`.JsonSchemaGenerator`. Only data schemas referenced</span>
 <span class="sd">    by the template&#39;s endpoints (and their transitive dependencies) are included in</span>
 <span class="sd">    the ``components/schemas`` section.</span>
+
+<span class="sd">    Currently following generation paths are supported (others might follow):</span>
+
+<span class="sd">    * **v3.0.3** — uses :class:`.JsonSchemaGenerator` and applies post-processing</span>
+<span class="sd">      transforms (``const`` → ``enum``, nullable ``type`` lists → ``anyOf``,</span>
+<span class="sd">      ``$defs`` → ``components/schemas``) required by OpenAPI 3.0.3.</span>
+<span class="sd">    * **v3.1.0** — uses :class:`.PydanticGenerator` to compile a Python module,</span>
+<span class="sd">      then calls :meth:`pydantic.BaseModel.model_json_schema` on each class.</span>
+<span class="sd">      Because OpenAPI 3.1.0 is fully aligned with JSON Schema 2020-12, no</span>
+<span class="sd">      post-processing transforms are needed beyond rewriting ``$defs`` references</span>
+<span class="sd">      and stripping ``linkml_meta`` annotations.</span>
+
+<span class="sd">    The OpenAPI version to be generated is obtained from the template&#39;s top-level</span>
+<span class="sd">    attribute `openapi`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.2.0&quot;</span>
-    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;openapi303&quot;</span><span class="p">]</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;openapi&quot;</span><span class="p">]</span>
     <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -496,30 +521,23 @@
     <span class="n">inline_enums</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="c1"># Mapping of valid_formats entries to OpenAPI version strings.</span>
     <span class="c1"># Extend this dict when adding support for additional OpenAPI versions.</span>
-    <span class="n">_openapi_versions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;openapi303&quot;</span><span class="p">:</span> <span class="s2">&quot;3.0.3&quot;</span><span class="p">},</span>
+    <span class="n">_openapi_versions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">SUPPORTED_OPENAPI_VERSIONS</span><span class="p">,</span>
         <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Mapping of OpenAPI version strings to validators from openapi-spec-validator.</span>
     <span class="c1"># Extend this dict when adding support for additional OpenAPI versions.</span>
     <span class="n">_openapi_validators</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">OaSpecValidator</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;3.0.3&quot;</span><span class="p">:</span> <span class="n">OpenAPIV30SpecValidator</span><span class="p">},</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;3.0.3&quot;</span><span class="p">:</span> <span class="n">OpenAPIV30SpecValidator</span><span class="p">,</span> <span class="s2">&quot;3.1.0&quot;</span><span class="p">:</span> <span class="n">OpenAPIV31SpecValidator</span><span class="p">},</span>
         <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_oad_template</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">oad_validator_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OaSpecValidator</span><span class="p">],</span> <span class="n">expected_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">format_name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
+    <span class="n">_openapi_version</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># OpenAPI version declared in the template</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_oad_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oad_validator_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">OaSpecValidator</span><span class="p">],</span> <span class="n">expected_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the OpenAPI template&quot;&quot;&quot;</span>
-        <span class="c1"># Validate that the template declares the expected OpenAPI version</span>
-        <span class="n">declared_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_template</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;openapi&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">declared_version</span> <span class="o">!=</span> <span class="n">expected_version</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Template OpenAPI version is &#39;</span><span class="si">{</span><span class="n">declared_version</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but format &#39;</span><span class="si">{</span><span class="n">format_name</span><span class="si">}</span><span class="s2">&#39; requires version &#39;</span><span class="si">{</span><span class="n">expected_version</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-            <span class="p">)</span>
         <span class="c1"># Validate the input template against the OpenAPI specification.</span>
         <span class="c1"># This also catches dangling $ref targets in endpoints.</span>
         <span class="n">openapi_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_template</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">oad_validator_class</span><span class="p">)</span>
@@ -625,11 +643,11 @@
                     <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">seen</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_openapi_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_openapi_spec_v303</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:</span>
 
-<span class="sd">        - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn&#39;t support ``const``)</span>
+<span class="sd">        - ``const`` becomes ``enum`` with a single value</span>
 <span class="sd">        - ``type`` as a list (e.g. nullable ``[&quot;string&quot;, &quot;null&quot;]``) becomes ``anyOf``</span>
 <span class="sd">        - ``examples`` (a list) becomes ``example`` (its first element); OpenAPI 3.0 has</span>
 <span class="sd">          no plural ``examples`` keyword on the Schema Object, only singular ``example``</span>
@@ -652,7 +670,7 @@
                         <span class="n">fixed_element</span><span class="p">[</span><span class="s2">&quot;example&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">):</span>
-                        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec_v303</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">):</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">,</span> <span class="s2">&quot;#/components/schemas/&quot;</span><span class="p">)</span>
                     <span class="n">fixed_element</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -660,7 +678,7 @@
             <span class="n">fixed_element</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">element</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec_v303</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">):</span>
                     <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">,</span> <span class="s2">&quot;#/components/schemas/&quot;</span><span class="p">)</span>
                 <span class="n">fixed_element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -698,10 +716,47 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected type &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, only &#39;dict&#39; and &#39;list&#39; supported.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">renamed_element</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_strip_linkml_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove ``linkml_meta`` annotations recursively from Pydantic JSON Schema output.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;linkml_meta&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_strip_linkml_meta</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">element</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_strip_linkml_meta</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">element</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_defs_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rewrite ``#/$defs/`` references to ``#/components/schemas/`` in-place.</span>
+
+<span class="sd">        This is the only structural transformation needed for OpenAPI 3.1.0,</span>
+<span class="sd">        since it is fully aligned with JSON Schema 2020-12.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">keys_to_update</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">):</span>
+                    <span class="n">keys_to_update</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">,</span> <span class="s2">&quot;#/components/schemas/&quot;</span><span class="p">)))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_defs_refs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">new_value</span> <span class="ow">in</span> <span class="n">keys_to_update</span><span class="p">:</span>
+                <span class="n">element</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">):</span>
+                    <span class="n">element</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#/$defs/&quot;</span><span class="p">,</span> <span class="s2">&quot;#/components/schemas/&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_defs_refs</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">element</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_schemas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">elem_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req_linkml_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prune unreachable schemas, remove redundant metadata, convert JSON Schema constructs</span>
-<span class="sd">        to OpenAPI 3.0.3 compat, and apply any OpenAPI↔LinkML name renames.</span>
+<span class="sd">        to OpenAPI 3.0.3 compat, and apply any OpenAPI&lt;-&gt;LinkML name renames.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Keep only schemas transitively reachable from the endpoint-referenced seeds.</span>
         <span class="c1"># The reference graph is built once and traversed in a single pass; no fixpoint</span>
@@ -714,7 +769,18 @@
         <span class="c1"># title always duplicates the schema dict key, so it is redundant in components/schemas</span>
         <span class="k">for</span> <span class="n">elem_schema</span> <span class="ow">in</span> <span class="n">elem_schemas</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">elem_schema</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec</span><span class="p">(</span><span class="n">elem_schemas</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span> <span class="o">==</span> <span class="s2">&quot;3.0.3&quot;</span><span class="p">:</span>
+            <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_openapi_spec_v303</span><span class="p">(</span><span class="n">elem_schemas</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span> <span class="o">==</span> <span class="s2">&quot;3.1.0&quot;</span><span class="p">:</span>
+            <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_linkml_meta</span><span class="p">(</span><span class="n">elem_schemas</span><span class="p">))</span>
+            <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_defs_refs</span><span class="p">(</span><span class="n">elem_schemas</span><span class="p">))</span>
+            <span class="c1"># OpenAPI 3.1 restricts components/schemas keys to ^[a-zA-Z0-9._-]+$</span>
+            <span class="c1"># (no spaces). Sanitize offending schema names and rewrite every $ref.</span>
+            <span class="n">sanitize_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_schema_names</span><span class="p">(</span><span class="n">elem_schemas</span><span class="p">,</span> <span class="n">reserved</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">name_map</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">sanitize_map</span><span class="p">:</span>
+                <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename</span><span class="p">(</span><span class="n">sanitize_map</span><span class="p">,</span> <span class="n">elem_schemas</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OpenAPI version &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span><span class="si">}</span><span class="s2">&#39; is not supported&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inline_enums</span><span class="p">:</span>
             <span class="c1"># inline before renaming so the enum/type guard matches LinkML names,</span>
             <span class="c1"># not the (possibly renamed) OpenAPI schema names</span>
@@ -722,6 +788,32 @@
         <span class="k">if</span> <span class="n">name_map</span><span class="p">:</span>
             <span class="n">elem_schemas</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename</span><span class="p">(</span><span class="n">name_map</span><span class="p">,</span> <span class="n">elem_schemas</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">elem_schemas</span>
+
+    <span class="c1"># OpenAPI 3.1 schema-name pattern; keys under components/schemas must match it.</span>
+    <span class="n">_OPENAPI_31_NAME_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-zA-Z0-9._-]+$&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_schema_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">openapi_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">reserved</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a map of schema names invalid under OpenAPI 3.1 to sanitized equivalents.</span>
+
+<span class="sd">        OpenAPI 3.1 constrains ``components/schemas`` keys to ``^[a-zA-Z0-9._-]+$``,</span>
+<span class="sd">        so LinkML names containing spaces (or other disallowed characters) must be</span>
+<span class="sd">        rewritten. Any run of invalid characters collapses to a single underscore;</span>
+<span class="sd">        uniqueness is ensured against existing and already-reserved names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">openapi_schemas</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">|</span> <span class="n">reserved</span>
+        <span class="n">name_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">openapi_schemas</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_OPENAPI_31_NAME_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9._-]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;schema&quot;</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">base</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">existing</span> <span class="ow">or</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">name_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">suffix</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">name_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span>
+            <span class="n">existing</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name_map</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_inline_enum_schemas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">endpoint_schemas</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inline enum subschemas into their parents instead of separate entries.</span>
@@ -800,28 +892,95 @@
                 <span class="n">refs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">OpenApiGenerator</span><span class="o">.</span><span class="n">_collect_refs</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">refs</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_schemas_v303</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate component schemas for OpenAPI v3.0.3 via :class:`.JsonSchemaGenerator`.&quot;&quot;&quot;</span>
+        <span class="c1"># JsonSchemaGenerator.generate() emits every class/enum of the LinkML schema into</span>
+        <span class="c1"># $defs. LinkML types are not part of $defs and are generated separately.</span>
+        <span class="c1"># all_req_schemas contains all directly or transitively required schemas from</span>
+        <span class="c1"># LinkML classes and types</span>
+        <span class="c1"># not_closed=True is deliberate: APIs are extended backwards-compatibly by</span>
+        <span class="c1"># adding attributes to existing objects, which additionalProperties=False</span>
+        <span class="c1"># blocks. Stated explicitly rather than inherited from the generator default,</span>
+        <span class="c1"># which follows the metamodel and closes classes with no `extra_slots`.</span>
+        <span class="n">json_schema</span> <span class="o">=</span> <span class="n">JsonSchemaGenerator</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">preserve_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">not_closed</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="n">all_req_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">())[</span><span class="s2">&quot;$defs&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
+                <span class="n">all_req_schemas</span><span class="p">[</span><span class="n">linkml_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_type_schema</span><span class="p">(</span><span class="n">linkml_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_req_schemas</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_schemas_v310</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate component schemas for OpenAPI v3.1.0 via :class:`.PydanticGenerator`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">materialized_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">materialize_derived_schema</span><span class="p">()</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">PydanticGenerator</span><span class="p">(</span><span class="n">materialized_schema</span><span class="p">,</span> <span class="n">extra_fields</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
+        <span class="n">pydantic_classes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">obj</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">BaseModel</span>
+        <span class="p">}</span>
+        <span class="n">defined_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">module</span><span class="p">)[</span><span class="s2">&quot;linkml_meta&quot;</span><span class="p">][</span><span class="s2">&quot;types&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="n">all_schemas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">pydantic_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;$defs&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
+                <span class="n">all_schemas</span> <span class="o">|=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()[</span><span class="s2">&quot;$defs&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">defined_types</span><span class="p">:</span>
+            <span class="c1"># not_closed=True is deliberate, mirroring the v3.0.3 path: APIs are extended</span>
+            <span class="c1"># backwards-compatibly by adding attributes to existing objects, which</span>
+            <span class="c1"># additionalProperties=False blocks. The generated class schemas above are open</span>
+            <span class="c1"># (extra_fields=&quot;allow&quot;); this JsonSchema merge must not clobber them with the</span>
+            <span class="c1"># metamodel-default closed class schemas.</span>
+            <span class="n">json_schema</span> <span class="o">=</span> <span class="n">JsonSchemaGenerator</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">preserve_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">not_closed</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+            <span class="n">all_schemas</span> <span class="o">|=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">())[</span><span class="s2">&quot;$defs&quot;</span><span class="p">]</span>
+
+        <span class="c1"># LinkML types are not emitted as standalone Pydantic classes nor reliably as</span>
+        <span class="c1"># JSON Schema $defs (their constraints are inlined into referencing slots).</span>
+        <span class="c1"># Endpoint-referenced types must therefore be generated explicitly, mirroring</span>
+        <span class="c1"># the v3.0.3 path.</span>
+        <span class="k">for</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">linkml_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_schemas</span> <span class="ow">and</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
+                <span class="n">all_schemas</span><span class="p">[</span><span class="n">linkml_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_type_schema</span><span class="p">(</span><span class="n">linkml_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_schemas</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_schemas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_ref_schema_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span> <span class="o">==</span> <span class="s2">&quot;3.1.0&quot;</span><span class="p">:</span>
+            <span class="n">all_req_schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_schemas_v310</span><span class="p">(</span><span class="n">endpoint_ref_schema_names</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">all_req_schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_schemas_v303</span><span class="p">(</span><span class="n">endpoint_ref_schema_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_req_schemas</span>
+
 <div class="viewcode-block" id="OpenApiGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/openapi.html#linkml.generators.openapigen.OpenApiGenerator.serialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate OpenAPI YAML from ``template_file`` and the loaded LinkML schema.&quot;&quot;&quot;</span>
         <span class="c1"># load the template</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">template_file</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An OpenAPI template file is required&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">template_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
             <span class="n">template_text</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_template</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">template_text</span><span class="p">)</span>
-        <span class="c1"># determine the expected OpenAPI version from the active output format</span>
-        <span class="n">format_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">expected_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_versions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">format_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">expected_version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported output format &#39;</span><span class="si">{</span><span class="n">format_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="c1"># determine the OpenAPI version from the provided template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_template</span><span class="p">[</span><span class="s2">&quot;openapi&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUPPORTED_OPENAPI_VERSIONS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported OpenAPI version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Only supported versions are </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_versions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># get the corresponding OpenAPI validator</span>
-        <span class="n">oad_validator_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_validators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">expected_version</span><span class="p">)</span>
+        <span class="n">oad_validator_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_validators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">oad_validator_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No validator available for OpenAPI version </span><span class="si">{</span><span class="n">expected_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No validator available for OpenAPI version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># validate the OpenAPI template before further processing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_oad_template</span><span class="p">(</span><span class="n">oad_validator_class</span><span class="p">,</span> <span class="n">expected_version</span><span class="p">,</span> <span class="n">format_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_oad_template</span><span class="p">(</span><span class="n">oad_validator_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openapi_version</span><span class="p">)</span>
         <span class="c1"># if no schemas to instantiate, return the template itself</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="s2">&quot;components&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_template</span>
@@ -842,28 +1001,17 @@
             <span class="n">req_linkml_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">openapi_schemas</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;x-linkml-source&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">openapi_schemas</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">req_linkml_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">openapi_schemas</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;x-linkml-source&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">endpoint_ref_openapi_names</span><span class="p">}</span>
-        <span class="c1"># when OpenAPI and LinkML names differ, record the synonym for later renaming</span>
+        <span class="c1"># when OpenAPI and LinkML names differ, record the synonym for later renaming.</span>
+        <span class="c1"># The template may declare a resource name (x-linkml-source mapping) for schemas</span>
+        <span class="c1"># referenced only by other schemas, not just those referenced directly by</span>
+        <span class="c1"># endpoints; every declared mapping must be honoured throughout the spec.</span>
         <span class="n">name_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">openapi_schemas</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;x-linkml-source&quot;</span><span class="p">]:</span> <span class="n">n</span>
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">endpoint_ref_openapi_names</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">openapi_schemas</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">openapi_schemas</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;x-linkml-source&quot;</span><span class="p">]</span>
         <span class="p">}</span>
 
-        <span class="c1"># JsonSchemaGenerator.generate() emits every class/enum of the LinkML schema into</span>
-        <span class="c1"># $defs. LinkML types are not part of $defs and are generated separately.</span>
-        <span class="c1"># all_req_schemas contains all directly or transitively required schemas from</span>
-        <span class="c1"># LinkML classes and types</span>
-        <span class="c1"># not_closed=True is deliberate: APIs are extended backwards-compatibly by</span>
-        <span class="c1"># adding attributes to existing objects, which additionalProperties=False</span>
-        <span class="c1"># blocks. Stated explicitly rather than inherited from the generator default,</span>
-        <span class="c1"># which follows the metamodel and closes classes with no `extra_slots`.</span>
-        <span class="n">json_schema</span> <span class="o">=</span> <span class="n">JsonSchemaGenerator</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">include_null</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">preserve_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">not_closed</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
-        <span class="n">all_req_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">())[</span><span class="s2">&quot;$defs&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="n">req_linkml_names</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">linkml_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
-                <span class="n">all_req_schemas</span><span class="p">[</span><span class="n">linkml_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_type_schema</span><span class="p">(</span><span class="n">linkml_name</span><span class="p">)</span>
+        <span class="n">all_req_schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_schemas</span><span class="p">(</span><span class="n">req_linkml_names</span><span class="p">)</span>
 
         <span class="c1"># sanitize schemas not transitively reachable from any endpoint-referenced schema</span>
         <span class="n">sanitized_data_schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_schemas</span><span class="p">(</span><span class="n">name_map</span><span class="p">,</span> <span class="n">all_req_schemas</span><span class="p">,</span> <span class="n">req_linkml_names</span><span class="p">)</span>
@@ -914,7 +1062,11 @@
         <span class="n">first_element</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">element_names</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[ :\d]&quot;</span><span class="p">,</span> <span class="n">first_element</span><span class="p">):</span>
             <span class="n">first_element</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">first_element</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
-        <span class="k">return</span> <span class="n">openapi_generic_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">linkml_schema_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">data_schema</span><span class="o">=</span><span class="n">first_element</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">openapi_generic_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">linkml_schema_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">data_schema</span><span class="o">=</span><span class="n">first_element</span><span class="p">,</span>
+            <span class="n">openapi_version_list</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_openapi_versions</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 
 
@@ -923,7 +1075,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--template&quot;</span><span class="p">,</span>
     <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;OpenAPI template - includes the header, the endpoints and the security schemes&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--keep-unreferenced&quot;</span><span class="p">,</span>
@@ -941,7 +1093,7 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">keep_unreferenced</span><span class="p">,</span> <span class="n">inline_enums</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an OpenAPI YAML with resources modelled with LinkML.</span>
 <span class="sd">    If no OpenAPI template is provided,</span>
 <span class="sd">    a generic one with one exemplary class/type schema is printed out.&quot;&quot;&quot;</span>
     <span class="c1"># if no template provided, print out a generic one</span>

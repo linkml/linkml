@@ -416,8 +416,9 @@
           <section id="openapi">
 <h1>OpenAPI<a class="headerlink" href="#openapi" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://www.openapis.org/">OpenAPI</a> is a specification for describing
-RESTful HTTP APIs. The OpenAPI generator produces an OpenAPI v3.0.3
-specification in YAML from a LinkML schema.</p>
+RESTful HTTP APIs. The OpenAPI generator produces an OpenAPI
+specification in YAML from a LinkML schema. As of now it supports OpenAPI
+specification versions v3.0.3 and v3.1.0.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This generator produces a complete OpenAPI spec by combining a
@@ -429,20 +430,23 @@ LinkML schema.</p>
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>The generator works in two stages:</p>
 <ol class="arabic simple">
-<li><p>The user provides an <strong>OpenAPI template</strong> — a valid OpenAPI v3.0.3 YAML
+<li><p>The user provides an <strong>OpenAPI template</strong> — a valid OpenAPI YAML
 file that defines the API metadata (title, version, servers), paths
-(endpoints), and security schemes.</p></li>
+(endpoints), and security schemes. It also specifies the version of
+the OpenAPI specification in its top-level attribute <cite>openapi</cite>.</p></li>
 <li><p>The generator fills the <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section with JSON Schema
 definitions generated from the LinkML schema, keeping only those classes
 that are transitively reachable from the endpoints.</p></li>
 </ol>
 <p>Both the input template and the final output are automatically validated
-against the OpenAPI 3.0.3 specification using
+against the corresponding OpenAPI specification version using
 <a class="reference external" href="https://github.com/p1c2u/openapi-spec-validator">openapi-spec-validator</a>.</p>
 <p>To run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span>personinfo.yaml<span class="w"> </span>--template<span class="w"> </span>api-template.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.openapi.yaml
 </pre></div>
 </div>
+<p>The <strong>template’s top-level attribute `openapi` MUST specify the supported OpenAPI
+version</strong>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">--template</span></code> / <code class="docutils literal notranslate"><span class="pre">-t</span></code> option is required when generating a concrete
 specification. If omitted, the generator prints a generic template that can
 be used as a starting point:</p>
@@ -455,13 +459,8 @@ be used as a starting point:</p>
 <p>The generator validates both the input template and the final output against
 the OpenAPI specification using
 <a class="reference external" href="https://github.com/p1c2u/openapi-spec-validator">openapi-spec-validator</a>.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">openapi</span></code> field in the template is checked against the expected
-version for the chosen output format (currently <code class="docutils literal notranslate"><span class="pre">openapi303</span></code> →
-<code class="docutils literal notranslate"><span class="pre">3.0.3</span></code>). If the versions do not match, the generator raises a
-<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
-<p>Additionally, the template’s <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section must declare each
-resource that is referenced by an endpoint, using two custom extension
-fields:</p>
+<p>The template’s <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section must declare each resource
+that is referenced by an endpoint, using two custom extension fields:</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">x-linkml-schema</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> of the LinkML schema being used. Must match exactly.</p>
 </dd>
@@ -547,7 +546,7 @@ Description) document.</p>
 <h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
 <section id="gen-openapi">
 <h4>gen-openapi<a class="headerlink" href="#gen-openapi" title="Link to this heading">¶</a></h4>
-<p>Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
+<p>Generate an OpenAPI YAML with resources modelled with LinkML.
 If no OpenAPI template is provided,
 a generic one with one exemplary class/type schema is printed out.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
@@ -557,7 +556,7 @@ a generic one with one exemplary class/type schema is printed out.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-openapi-t">
 <span id="cmdoption-gen-openapi-template"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template&gt;</span></span><a class="headerlink" href="#cmdoption-gen-openapi-t" title="Link to this definition">¶</a></dt>
-<dd><p>OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes</p>
+<dd><p>OpenAPI template - includes the header, the endpoints and the security schemes</p>
 </dd></dl>
 
 <dl class="std option">
@@ -584,10 +583,10 @@ a generic one with one exemplary class/type schema is printed out.</p>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'openapi303'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'openapi'</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>openapi303</p>
+<dd class="field-even"><p>openapi</p>
 </dd>
 </dl>
 </dd></dl>
@@ -682,16 +681,29 @@ a generic one with one exemplary class/type schema is printed out.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.openapigen.OpenApiGenerator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.openapigen.</span></span><span class="sig-name descname"><span class="pre">OpenApiGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_generation_date:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;property</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_unreferenced:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline_enums:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/openapigen.html#OpenApiGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.openapigen.OpenApiGenerator" title="Link to this definition">¶</a></dt>
-<dd><p>Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.</p>
+<dd><p>Generates OpenAPI YAML from a LinkML schema.</p>
 <p>The generator composes a user-provided OpenAPI template (containing the API header,
 paths/endpoints, and security schemes) with JSON Schema components generated from
 the LinkML schema via <a class="reference internal" href="json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a>. Only data schemas referenced
 by the template’s endpoints (and their transitive dependencies) are included in
 the <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section.</p>
+<p>Currently following generation paths are supported (others might follow):</p>
+<ul class="simple">
+<li><p><strong>v3.0.3</strong> — uses <a class="reference internal" href="json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a> and applies post-processing
+transforms (<code class="docutils literal notranslate"><span class="pre">const</span></code> → <code class="docutils literal notranslate"><span class="pre">enum</span></code>, nullable <code class="docutils literal notranslate"><span class="pre">type</span></code> lists → <code class="docutils literal notranslate"><span class="pre">anyOf</span></code>,
+<code class="docutils literal notranslate"><span class="pre">$defs</span></code> → <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code>) required by OpenAPI 3.0.3.</p></li>
+<li><p><strong>v3.1.0</strong> — uses <a class="reference internal" href="pydantic.html#linkml.generators.pydanticgen.PydanticGenerator" title="linkml.generators.pydanticgen.PydanticGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticGenerator</span></code></a> to compile a Python module,
+then calls <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel.model_json_schema" title="(in Pydantic v0.0.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pydantic.BaseModel.model_json_schema()</span></code></a> on each class.
+Because OpenAPI 3.1.0 is fully aligned with JSON Schema 2020-12, no
+post-processing transforms are needed beyond rewriting <code class="docutils literal notranslate"><span class="pre">$defs</span></code> references
+and stripping <code class="docutils literal notranslate"><span class="pre">linkml_meta</span></code> annotations.</p></li>
+</ul>
+<p>The OpenAPI version to be generated is obtained from the template’s top-level
+attribute <cite>openapi</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.openapigen.OpenApiGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/openapigen.html#OpenApiGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.openapigen.OpenApiGenerator.serialize" title="Link to this definition">¶</a></dt>
-<dd><p>Generate an OpenAPI v3.0.3 spec from <code class="docutils literal notranslate"><span class="pre">template_file</span></code> and the loaded LinkML schema.</p>
+<dd><p>Generate OpenAPI YAML from <code class="docutils literal notranslate"><span class="pre">template_file</span></code> and the loaded LinkML schema.</p>
 </dd></dl>
 
 </dd></dl>
