@@ -27,7 +27,7 @@ Join the LinkML community for regular sessions featuring presentations on LinkML
 
 | Date | Presenter 1	| Topic 1	| Presenter 2	| Topic 2 |
 | :---: | :---: | :---: | :----: | :---: |
-| October 15, 2026|Piotr Sowiński|[LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala)| | Open slot!<br> Volunteers welcome|
+| October 15, 2026|Piotr Sowiński|[LinkML-Scala](https://github.com/NeverBlink-OSS/linkml-scala)| Maia Kapur | Autonomous science development at EMSL & model viewer in the BASALT GitHub docs | 
 | [September 17, 2026](https://docs.google.com/presentation/d/1b_XGol4vnEKsAp0zwCKludfVP_IOFnYoxwW3gBRbbLU/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Matt Gehring| How sniff.world uses LinkML: from consuming Biolink to publishing its own schemas| Nolan Nicols |[Provenance as a Primitive: Building Knowledge Graphs with LOKF](https://docs.google.com/presentation/d/155JuRM4nBrLsFOFkMv3ZQfgQleqwieP27c0vWAo9SZM/edit?slide=id.p1#slide=id.p1)|
 | [August 20, 2026](https://docs.google.com/presentation/d/1_DgJTclLsi9XEcnmgAfftVD5HZ1Aa0TF6abGB_YCGx0/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Patrick Golden| Working across boundaries: LinkML in the [Zebrafish Phenotype Atlas Project](https://zappfish.org/)|Alex Anderson| Semantic Converters for Power Systems Data Interoperability and Agentic AI|
 | [July 16, 2026](https://docs.google.com/presentation/d/1A05qfTbmI8RXyvoBSplpjSU9e4OP6BlIKJvQ1-eWhGw/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Sierra Moxon | LinkML Microschemas |Stephan Heunis |[The ORINOCO project at Research Center Jülich - building self-hostable research information infrastructure](https://pool.psychoinformatics.de/ui/?sh%3ANodeShape=xyzri%3AXYZProject&pid=xyzrins%3Aprojects%2Forinoco) |
