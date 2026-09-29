@@ -17,11 +17,11 @@ Mapping summary:
 - ``identifier: true`` → ``@key``
 - ``required`` / ``multivalued`` / ``*_cardinality`` → ``@card``, on ``owns`` for scalar slots and on the owner's ``plays`` for class-ranged ones
 - ``minimum_value`` / ``maximum_value`` → ``@range(...)``; ``pattern`` → ``@regex(...)``, on ``owns``
-- ``description`` → ``@doc(...)`` (requires TypeDB >= 3.12)
+- ``description`` → ``@doc(...)``
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
 
@@ -67,20 +67,9 @@ _TYPEDB_PRIMITIVE: dict[str, str] = {
     "datetime": "datetime",
     "datetimestamp": "datetime",
     "time": "datetime",
-}
-
-# Types with dedicated TypeDB value types that are always safe to use (any TypeDB 3.x).
-_TYPEDB_PRIMITIVE_NATIVE: dict[str, str] = {
     "date": "date",
     "decimal": "decimal",
     "duration": "duration",
-}
-
-# Fallback mapping for the above when native types are not assumed available.
-_TYPEDB_PRIMITIVE_FALLBACK: dict[str, str] = {
-    "date": "datetime",
-    "decimal": "double",
-    "duration": "string",
 }
 
 
@@ -209,14 +198,11 @@ def _typedb_name(name: str) -> str:
     return result
 
 
-def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None, native_types: bool = True) -> str | None:
+def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None) -> str | None:
     """Return the TypeDB value type for a scalar range, or None if range is a class/enum.
 
     Walks the LinkML type hierarchy to find the XSD URI, then maps to a TypeDB primitive.
     Returns None if the range refers to a class or enum (i.e. not a scalar type).
-
-    :param native_types: map ``date``/``decimal``/``duration`` to native TypeDB 3.12+ types
-        instead of ``datetime``/``double``/``string``
     """
     if range_name is None:
         return "string"
@@ -229,7 +215,7 @@ def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None, native_ty
     if range_name in all_enums:
         return "string"  # enums become string attributes
 
-    primitives = {**_TYPEDB_PRIMITIVE, **(_TYPEDB_PRIMITIVE_NATIVE if native_types else _TYPEDB_PRIMITIVE_FALLBACK)}
+    primitives = _TYPEDB_PRIMITIVE
 
     # Walk type aliases until we find an XSD URI
     type_def = sv.get_type(range_name)
@@ -286,8 +272,6 @@ def _build_regex_annotation(induced: SlotDefinition) -> str | None:
 
 def _build_doc_annotation(description: str | None) -> str | None:
     """Return a ``@doc(...)`` annotation string, or ``None`` if unset.
-
-    ``@doc`` requires TypeDB >= 3.12.
 
     :param description: the LinkML ``description`` text
     :return: annotation string like ``@doc("...")`` or ``None``
@@ -641,11 +625,6 @@ class TypeDBGenerator(Generator):
     uses_schemaloader = False
     file_extension = "tql"
 
-    # Instance vars
-    native_types: bool = field(default=True)
-    """Target TypeDB >= 3.12 (native ``date``/``decimal``/``duration``, ``@doc``).
-    Set False for older TypeDB 3.x."""
-
     def serialize(self, **kwargs) -> str:
         """Generate a TypeQL define block from the LinkML schema.
 
@@ -833,10 +812,10 @@ class TypeDBGenerator(Generator):
                 slot_name = attr_names.get(induced_slot.name, _typedb_name(induced_slot.name))
                 if slot_name in seen:
                     continue
-                value_type = _resolve_typedb_value_type(sv, induced_slot.range, self.native_types)
+                value_type = _resolve_typedb_value_type(sv, induced_slot.range)
                 if value_type is None:
                     continue  # object range → relation, not attribute
-                doc_ann = _build_doc_annotation(induced_slot.description) if self.native_types else None
+                doc_ann = _build_doc_annotation(induced_slot.description)
                 if doc_ann:
                     seen[slot_name] = f"attribute {slot_name} {doc_ann}, value {value_type};"
                 else:
@@ -849,10 +828,10 @@ class TypeDBGenerator(Generator):
                 continue
             slot_def = all_slots_for_base.get(slot_name_orig)
             slot_range = sv.induced_slot(slot_name_orig).range if slot_def else None
-            value_type = _resolve_typedb_value_type(sv, slot_range, self.native_types)
+            value_type = _resolve_typedb_value_type(sv, slot_range)
             if value_type is None:
                 continue  # object range → relation, not attribute
-            doc_ann = _build_doc_annotation(slot_def.description if slot_def else None) if self.native_types else None
+            doc_ann = _build_doc_annotation(slot_def.description if slot_def else None)
             if doc_ann:
                 seen[safe_name] = f"attribute {safe_name} {doc_ann}, value {value_type};"
             else:
@@ -922,7 +901,7 @@ class TypeDBGenerator(Generator):
         for induced in sv.class_induced_slots(class_name):
             if induced.name not in parent_slot_names:
                 continue
-            if _resolve_typedb_value_type(sv, induced.range, self.native_types) is None:
+            if _resolve_typedb_value_type(sv, induced.range) is None:
                 continue  # object-ranged slots are roles, handled elsewhere
             inherited = sv.induced_slot(induced.name, parent)
             if (
@@ -1130,7 +1109,7 @@ class TypeDBGenerator(Generator):
             if slot_name in declared_slot_names or slot_def.abstract:
                 continue
             induced = sv.induced_slot(slot_name)
-            if not induced.domain or _resolve_typedb_value_type(sv, induced.range, self.native_types) is None:
+            if not induced.domain or _resolve_typedb_value_type(sv, induced.range) is None:
                 continue
             for owner in self._player_classes_for_range(sv, induced.domain):
                 if owner in domain_owned:
@@ -1243,7 +1222,7 @@ class TypeDBGenerator(Generator):
                     "supertype — review whether the supertype should be abstract instead."
                 )
 
-            doc_ann = _build_doc_annotation(class_def.description) if self.native_types else None
+            doc_ann = _build_doc_annotation(class_def.description)
 
             is_a_parent = sv.get_class(class_def.is_a) if class_def.is_a else None
             # No `sub` when is_a points at a mixin, or a relation's parent is not a relation.
@@ -1278,7 +1257,7 @@ class TypeDBGenerator(Generator):
                 # relation inherits nothing, so it also declares slots from non-relation ancestors.
                 scalar_slots = direct_slots_cache[class_name] if has_relation_supertype else sv.class_induced_slots(class_name)
                 for induced in scalar_slots:
-                    value_type = _resolve_typedb_value_type(sv, induced.range, self.native_types)
+                    value_type = _resolve_typedb_value_type(sv, induced.range)
                     if value_type is not None:
                         slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
                         parts.append(self._build_owns_stmt(slot_tname, induced))
@@ -1309,7 +1288,7 @@ class TypeDBGenerator(Generator):
                 # Slots that appear on ANY non-mixin ancestor are already inherited
                 # in TypeDB — redeclaring them causes [SVL42].
                 for induced in direct_slots_cache[class_name]:
-                    value_type = _resolve_typedb_value_type(sv, induced.range, self.native_types)
+                    value_type = _resolve_typedb_value_type(sv, induced.range)
                     if value_type is None:
                         continue  # object range → relation
                     slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
@@ -1367,7 +1346,7 @@ class TypeDBGenerator(Generator):
         lines: list[str] = []
         for slot_name, sr in slot_relations.items():
             parts = [f"relation {sr.relation}"]
-            doc_ann = _build_doc_annotation(all_slots[slot_name].description) if self.native_types else None
+            doc_ann = _build_doc_annotation(all_slots[slot_name].description)
             if doc_ann:
                 parts[0] += f" {doc_ann}"
             # One link per value: every link has exactly one owner and one target.
@@ -1394,20 +1373,11 @@ class TypeDBGenerator(Generator):
 
 
 @shared_arguments(TypeDBGenerator)
-@click.option(
-    "--no-native-types",
-    "native_types",
-    is_flag=True,
-    default=True,
-    flag_value=False,
-    help="Target TypeDB 3.x versions before 3.12: fall back date/decimal/duration to "
-    "datetime/double/string and omit @doc annotations.",
-)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="typedb")
-def cli(yamlfile, native_types, **args):
+def cli(yamlfile, **args):
     """Generate TypeDB TypeQL schema definitions from a LinkML model."""
-    print(TypeDBGenerator(yamlfile, native_types=native_types, **args).serialize())
+    print(TypeDBGenerator(yamlfile, **args).serialize())
 
 
 if __name__ == "__main__":

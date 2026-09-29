@@ -9,6 +9,8 @@ Overview
 schema into a TypeQL 3.x ``define`` block that can be loaded directly into a TypeDB server to
 define the schema for your database.
 
+The generated schema requires **TypeDB 3.12 or later**.
+
 Each LinkML **class** becomes a TypeDB **entity** type, or a **relation** type if it represents a
 relationship; ``is_a`` becomes ``sub``, and mixins are inlined into the classes that use them.
 Scalar slots become **attribute** types attached via ``owns``, and slot ``is_a`` hierarchies
@@ -34,8 +36,7 @@ its scalar slots become ``owns``.
 If a slot is not declared by any class but has a ``domain`` class, the domain class owns it
 (if it is scalar-ranged) or plays its owning role (if it is class-ranged).
 
-A ``description`` on a class or slot becomes ``@doc("...")`` on the type it produces
-(TypeDB >= 3.12).
+A ``description`` on a class or slot becomes ``@doc("...")`` on the type it produces.
 
 Hierarchies
 ^^^^^^^^^^^
@@ -99,8 +100,8 @@ Type Mapping
      - ``double``
      -
    * - ``xsd:decimal``
-     - ``decimal`` (native_types=True, default) or ``double``
-     - Native ``decimal`` requires TypeDB >= 3.12
+     - ``decimal``
+     -
    * - ``xsd:boolean``
      - ``boolean``
      -
@@ -108,20 +109,17 @@ Type Mapping
      - ``datetime``
      -
    * - ``xsd:date``
-     - ``date`` (native_types=True, default) or ``datetime``
-     - Native ``date`` requires TypeDB >= 3.12
+     - ``date``
+     -
    * - ``xsd:duration``
-     - ``duration`` (native_types=True, default) or ``string``
-     - Native ``duration`` requires TypeDB >= 3.12
+     - ``duration``
+     -
    * - Enum range
      - ``string``
      - Permitted values enforced via a ``@values(...)`` annotation
    * - Unknown / unresolved
      - ``string``
      - Fallback
-
-For TypeDB older than 3.12, pass ``--no-native-types`` (or ``native_types=False``), which also
-omits ``@doc``.
 
 Cardinality Annotations
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -192,9 +190,6 @@ Limitations
   allow an abstract type under a concrete one.
 - A scalar slot whose value type differs from its ``is_a`` parent's is emitted as a separate
   attribute rather than a subtype, since a TypeDB attribute subtype has its parent's value type.
-- When targeting TypeDB versions older than 3.12 with ``--no-native-types``, ``date``,
-  ``decimal`` and ``duration`` are stored as ``datetime``, ``double`` and ``string``, and
-  ``description`` is dropped.
 
 Docs
 ----

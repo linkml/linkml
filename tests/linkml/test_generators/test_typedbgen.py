@@ -918,7 +918,7 @@ slots:
 
 
 def test_description_produces_doc_annotation(tmp_path):
-    """A class/slot description produces a @doc annotation by default (TypeDB >= 3.12)."""
+    """A class/slot description produces a @doc annotation."""
     schema_yaml = """
 id: http://example.org/test
 name: test-schema
@@ -956,9 +956,6 @@ slots:
     schema_file.write_text(schema_yaml)
     output = TypeDBGenerator(str(schema_file)).serialize()
     assert 'relation parent @doc("a parent of this person"),' in output
-    output = TypeDBGenerator(str(schema_file), native_types=False).serialize()
-    assert "relation parent," in output
-    assert "@doc" not in output
 
 
 def test_multiline_description_escaped_in_doc_annotation(tmp_path):
@@ -985,35 +982,8 @@ slots:
     assert "\n      line two" not in output
 
 
-def test_no_native_types_falls_back_date_decimal_duration(tmp_path):
-    """With native_types=False, date/decimal/duration fall back and @doc is omitted."""
-    schema_yaml = """
-id: http://example.org/test
-name: test-schema
-prefixes:
-  linkml: https://w3id.org/linkml/
-  xsd: http://www.w3.org/2001/XMLSchema#
-imports:
-  - linkml:types
-classes:
-  Thing:
-    description: a thing
-    slots:
-      - born
-slots:
-  born:
-    range: date
-"""
-    schema_file = tmp_path / "test.yaml"
-    schema_file.write_text(schema_yaml)
-    gen = TypeDBGenerator(str(schema_file), native_types=False)
-    output = gen.serialize()
-    assert "attribute born, value datetime;" in output
-    assert "@doc" not in output
-
-
-def test_native_types_uses_date_value_type(tmp_path):
-    """With native_types=True (default), date maps to TypeDB's native date type."""
+def test_date_uses_native_date_value_type(tmp_path):
+    """``date`` maps to TypeDB's native date value type."""
     schema_yaml = """
 id: http://example.org/test
 name: test-schema
