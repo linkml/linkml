@@ -16,6 +16,7 @@ from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.rustgen import RustGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
+from linkml.generators.solrgen import SolrSchemaGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator
@@ -41,6 +42,7 @@ __all__ = [
     "rdfgen",
     "shexgen",
     "shaclgen",
+    "solrgen",
     "sssomgen",
     "summarygen",
     "typedbgen",
@@ -58,6 +60,7 @@ __all__ = [
     "RustGenerator",
     "ShaclGenerator",
     "ShExGenerator",
+    "SolrSchemaGenerator",
     "SQLAlchemyGenerator",
     "SQLTableGenerator",
     "SQLValidationGenerator",
