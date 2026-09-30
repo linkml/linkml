@@ -40,6 +40,54 @@ LinkML treats slots as first class entities. They are defined in their own secti
 
 However, this can also be slightly inconvenient for simple schemas, especially those where we have classes with slots that are completely "owned" by that class. The attribute slot can be used to avoid having to specify the slot separately
 
+## What is a good way to handle default values in the schema?
+
+This comes up often with measurements: the investigators always record `body_mass` in kilograms, so you want the schema to document that unit, but you do not want every data record to repeat `quantity_unit: kg`.
+
+There are two complementary tools.
+
+**Document a unit on the slot itself** when the unit is part of the model, not part of each instance. Use the [unit](https://w3id.org/linkml/unit) metamodel slot (for example `ucum_code`). Validators then do not require a unit field in the data:
+
+```yaml
+classes:
+  Subject:
+    attributes:
+      id:
+        identifier: true
+      body_mass:
+        range: decimal
+        unit:
+          ucum_code: kg
+```
+
+See [how to model measurements](../howtos/model-measurements.md) for other quantity patterns, including a generic `Measurement` class with `quantity_kind` / `quantity_value` / `quantity_unit`.
+
+**Fill in a value when instance data omits it** with [`ifabsent`](../schemas/slots.md#default-values). That is the right tool when the slot still exists on instances, but most records should get a schema-level default:
+
+```yaml
+classes:
+  Measurement:
+    attributes:
+      quantity_kind:
+        range: uriorcurie
+      quantity_value:
+        range: decimal
+      quantity_unit:
+        range: string
+        ifabsent: string(kg)
+```
+
+With that schema, this instance is valid even though `quantity_unit` is not present in the input:
+
+```yaml
+id: P001
+measurements:
+  - quantity_kind: body mass
+    quantity_value: 70
+```
+
+Use `ifabsent` when the field can still be overridden per instance. Use `unit` / `ucum_code` when the unit is fixed documentation of the slot and should not appear in instance data at all. You can combine them: a dedicated `body_mass` slot with `unit.ucum_code: kg`, or a reusable `Measurement` class whose `quantity_unit` defaults via `ifabsent`.
+
 ## What are induced slots?
 
 Because the same slot can be reused in different classes (with each class potentially refining semantics using [slot_usage](https://w3id.org/linkml/slot_usage)),
