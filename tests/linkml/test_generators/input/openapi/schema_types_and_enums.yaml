@@ -1,4 +1,4 @@
-# LinkML schema mixing a fixed-value type and a real enum
+# LinkML schema mixing fixed-value types, constrained types and a class with examples
 id: https://w3id.org/linkml/tests/types_and_enums
 name: types_and_enums
 default_prefix: types_and_enums
@@ -6,6 +6,17 @@ imports:
   - linkml:types
 
 types:
+  CodeString:
+    base: str
+    pattern: "^[A-Z]{2,10}$"
+    description: A 2-10 character uppercase code
+
+  PositiveInt:
+    base: int
+    minimum_value: 1
+    maximum_value: 9999
+    description: A positive integer between 1 and 9999
+
   FixedType:
     description: a LinkML type (not an enum) constrained to a single value
     base: str
@@ -20,9 +31,25 @@ enums:
       INACTIVE:
 
 classes:
+  WithCode:
+    description: A thing with a code
+    attributes:
+      code:
+        range: CodeString
+        required: true
+
   Foo:
     attributes:
       fixed:
         range: FixedType
       status:
         range: Status
+
+  WithExamples:
+    description: A thing with example values
+    attributes:
+      name:
+        range: string
+        examples:
+          - value: sample
+          - value: second

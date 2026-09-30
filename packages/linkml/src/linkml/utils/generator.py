@@ -20,7 +20,9 @@ import logging
 import os
 import re
 import sys
+import warnings
 from collections.abc import Callable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -29,7 +31,6 @@ from typing import IO, Any, ClassVar, TextIO, Union, cast
 import click
 import yaml
 from click import Argument, Command, Option
-from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
@@ -131,6 +132,11 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
+    include_generation_date: bool = False
+    """True stamps the output with a generation_date timestamp. Off by default so output is
+    reproducible (byte-stable) across runs; the date of generation is normally recoverable
+    from version control."""
+
     useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
@@ -156,8 +162,67 @@ class Generator(metaclass=abc.ABCMeta):
     """Path to output file. Note all generators may not implement this
     uniformly, see https://github.com/linkml/linkml/issues/923"""
 
-    namespaces: Namespaces | None = None
-    """All prefix expansions used"""
+    _namespaces: ClassVar[Namespaces | None] = None
+    """Class-level sentinel default for the private backing store of the
+    :attr:`namespaces` property. Declaring it as a ``ClassVar`` keeps it out of
+    the dataclass-generated ``__init__`` while still providing a safe default
+    read (``None``) before the instance attribute is assigned. The public,
+    constructor-visible name is the field ``namespaces``.  On ``main`` that was a
+    plain dataclass field, so ``namespaces=`` was an implicit constructor kwarg;
+    it is preserved here so external callers/subclasses relying on it are not
+    silently broken by the switch to a property-backed field.
+    """
+
+    @property
+    def namespaces(self) -> Namespaces | None:
+        """Return the namespace registry.
+
+        On the SchemaLoader path (``uses_schemaloader=True``) this returns the
+        pre-built :class:`~linkml_runtime.utils.namespaces.Namespaces` object
+        populated by SchemaLoader.
+
+        On the SchemaView path (``uses_schemaloader=False``) accessing this
+        property is a sign of a hybrid design anti-pattern. A deprecation
+        warning is emitted and the call is transparently forwarded to
+        ``self.schemaview.namespaces()`` so that existing callers continue to
+        work while being nudged towards the correct API.
+        """
+        # Emit a warning when a SchemaView-based generator reads self.namespaces.
+        if not self.uses_schemaloader and self.schemaview is not None:
+            warnings.warn(
+                f"{type(self).__name__} uses SchemaView (uses_schemaloader=False) but "
+                "self.namespaces was accessed.  Use self.schemaview.namespaces() for URI "
+                "resolution instead; self.namespaces is a SchemaLoader-era artifact that "
+                "is not populated on the SchemaView path.",
+                UserWarning,
+                stacklevel=3,
+            )
+
+        # Return the namespace map, preferring an explicitly injected one.
+        if self._namespaces is not None:
+            return self._namespaces
+        if not self.uses_schemaloader and self.schemaview is not None:
+            return self.schemaview.namespaces()
+        return None
+
+    @namespaces.setter
+    def namespaces(self, value: Namespaces | None) -> None:
+        """Save passed namespace registry in the private backing store of the
+        :attr:`namespaces` property."""
+        self._namespaces = value
+
+    namespaces: Namespaces | None = namespaces
+    """Constructor kwarg backing the ``namespaces`` property (see above).
+
+    This does NOT create a second attribute that shadows the property.
+    A dataclass "field" is just an *annotation* plus a *default value*;
+    the only real class attribute named ``namespaces`` remains the
+    ``namespaces`` property object.
+    ``@dataclass`` reads that property object as the field's default and bakes it
+    into the generated ``__init__`` as ``namespaces=<property object>``
+    -- it does not overwrite the property, so attribute access still goes through
+    the getter/setter.
+    """
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
@@ -185,6 +250,13 @@ class Generator(metaclass=abc.ABCMeta):
     """If set, include extra schema outside of the imports mechanism"""
 
     def __post_init__(self) -> None:
+        # The ``namespaces`` dataclass field defaults to the property object
+        # itself (see its declaration).  When no ``namespaces=`` kwarg is passed,
+        # the generated __init__ routes that default through the property setter
+        # into ``self._namespaces``; normalise that sentinel back to ``None`` so
+        # the SchemaLoader/SchemaView paths can populate it as usual.
+        if self._namespaces is Generator.__dict__["namespaces"]:
+            self._namespaces = None
         if not self.logger:
             self.logger = logger
         if self.log_level is not None:
@@ -209,6 +281,15 @@ class Generator(metaclass=abc.ABCMeta):
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            if (
+                isinstance(schema, SchemaDefinition)
+                and not self.include_generation_date
+                and schema.generation_date is not None
+            ):
+                # SchemaView keeps a reference to a SchemaDefinition it is handed,
+                # so clearing generation_date below would reach back into the
+                # caller's object. Copy first so the generator owns what it mutates.
+                schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
                 if isinstance(self.include, str | Path):
@@ -220,7 +301,11 @@ class Generator(metaclass=abc.ABCMeta):
             if not self.schema.metamodel_version:
                 self.schema.metamodel_version = metamodel_version
 
-        self._init_namespaces()
+        # Drop the load-time generation_date stamp unless it was explicitly asked for.
+        # This is the metaslot that gets serialized as a data triple by the RDF/JSON-LD
+        # generators, so clearing it here covers every generator uniformly.
+        if not self.include_generation_date and self.schema is not None:
+            self.schema.generation_date = None
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
@@ -232,7 +317,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = gen.schema
             self.synopsis = gen.synopsis
             self.loaded = gen.loaded
-            self.namespaces = gen.namespaces
+            self._namespaces = gen.namespaces
             self.base_dir = gen.base_dir
             self.importmap = gen.importmap
             self.source_file_data = gen.source_file_date
@@ -261,33 +346,13 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = loader.schema
             self.synopsis = loader.synopsis
             self.loaded = loader.loaded
-            self.namespaces = loader.namespaces
+            self._namespaces = loader.namespaces
             self.base_dir = loader.base_dir
             self.importmap = loader.importmap
             self.source_file_data = loader.source_file_date
             self.source_file_size = loader.source_file_size
             self.schema_location = loader.schema_location
             self.schema_defaults = loader.schema_defaults
-
-    def _init_namespaces(self):
-        if self.namespaces is None:
-            self.namespaces = Namespaces()
-            if isinstance(self.schema.prefixes, dict):
-                for key, value in self.schema.prefixes.items():
-                    if hasattr(value, "prefix_reference"):
-                        self.namespaces[key] = value.prefix_reference
-                    else:
-                        self.namespaces[key] = value
-            elif isinstance(self.schema.prefixes, JsonObj):
-                prefixes = vars(self.schema.prefixes)
-                for key, value in prefixes.items():
-                    if hasattr(value, "prefix_reference"):
-                        self.namespaces[key] = value.prefix_reference
-                    else:
-                        self.namespaces[key] = value
-            else:
-                for prefix in self.schema.prefixes.values():
-                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     @classmethod
     def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
@@ -948,7 +1013,18 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
+def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+    """Get command-line arguments common to all generators.
+
+    Use this decorator on the Click entry point for a generator to automatically
+    configure the entry point to accept all common options.
+
+    :param g: The generator for which to add options.
+    :param accepts_directory_input: If True, the generator's entry point will
+        accept both a file or a directory as its main input. The default is to
+        accept a file only.
+    """
+
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
             logging.basicConfig(level=logging.DEBUG, force=True)
@@ -960,7 +1036,9 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
             sys.tracebacklimit = 0
 
     def decorator(f: Command) -> Command:
-        f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
+        f.params.append(
+            Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=accepts_directory_input, path_type=Path))
+        )
         f.params.append(
             Option(
                 ("--format", "-f"),
@@ -976,6 +1054,15 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
                 default=True,
                 show_default=True,
                 help="Include metadata in output",
+            )
+        )
+        f.params.append(
+            Option(
+                ("--generation-date/--no-generation-date", "include_generation_date"),
+                default=False,
+                show_default=True,
+                help="Stamp output with the generation_date timestamp. Off by default so output is "
+                "reproducible across runs.",
             )
         )
         f.params.append(
