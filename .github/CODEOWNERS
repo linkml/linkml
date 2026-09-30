@@ -50,6 +50,22 @@
 /tests/linkml/test_generators/input/openapi/             @Silvanoc @noelmcloughlin
 /tests/linkml/test_scripts/test_gen_openapi.py           @Silvanoc @noelmcloughlin
 
+# rdfsgen:
+#
+# EXPERIMENT: delegated self-contained area, see
+# docs/maintainers/codeowners.md#experiment-delegating-self-contained-areas
+# Wrapper around LinkML-Scala: https://github.com/NeverBlink-OSS/linkml-scala
+
+/docs/generators/rdfs.rst                                          @Ostrzyciel @niegrzybkowski
+/packages/linkml/src/linkml/generators/rdfsgen.py                  @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/test_rdfsgen.py                      @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/input/rdfs_vocabulary.yaml           @Ostrzyciel @niegrzybkowski
+
+# Shared machinery for LinkML-Scala backed generators:
+
+/packages/linkml/src/linkml/generators/common/scala.py             @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/test_scala_backed.py                 @Ostrzyciel @niegrzybkowski
+
 # zodgen:
 /docs/generators/zod.rst                                          @linkml/core-team @noelmcloughlin
 /packages/linkml/src/linkml/generators/zodgen.py                  @linkml/core-team @noelmcloughlin
