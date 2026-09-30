@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import sys
 import textwrap
@@ -7,6 +8,7 @@ from pathlib import Path
 
 import pytest
 import rdflib
+import rdflib.compare
 from rdflib import Graph, URIRef
 
 from linkml import METAMODEL_CONTEXT_URI
@@ -187,6 +189,32 @@ def test_rdf_type_in_jsonld(self):
     graph.parse(data=JSONLD, format="json-ld", prefix=True)
     ttl_str = graph.serialize(format="turtle")
     graph.parse(data=ttl_str, format="turtle")
+
+
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
+def test_stable_blank_node_labels(input_path):
+    """--stable-blank-node-labels relabels blank nodes by content hash, isomorphic to the default.
+
+    The schema-as-RDF contains recursive (cyclic) blank-node structure, so a residue of
+    ordinal ``c14n`` labels legitimately remains -- #3704 keeps those for cyclic closures
+    (correctness over locality). The assertion is therefore that content-hash labels are
+    introduced and the ordinal count strictly drops, not that every ``c14n`` is gone.
+
+    Hash labels are bare 24-hex-char strings, matching the label contract of
+    oxigraph's ``UnstableHashedIds`` variant (oxigraph#1824).
+    """
+    schema = input_path("personinfo.yaml")
+    default = RDFGenerator(schema).serialize()
+    hashed = RDFGenerator(schema, stable_blank_node_labels=True).serialize()
+    hash_label = re.compile(r"_:[0-9a-f]{24}\b")
+    assert "_:c14n" in default, "default should use ordinal c14n labels"
+    assert not hash_label.search(default), "default should not contain content-hash labels"
+    assert hash_label.search(hashed), "opt-in output should introduce content-hash blank-node labels"
+    assert hashed.count("_:c14n") < default.count("_:c14n"), "opt-in should relabel blank nodes by hash"
+    g_default = Graph().parse(data=default, format="turtle")
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert rdflib.compare.isomorphic(g_default, g_hashed), "opt-in relabeling changed the graph"
 
 
 # ----------------------------------------------------------------------------
