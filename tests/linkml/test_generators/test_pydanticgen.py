@@ -347,6 +347,193 @@ slots:
     assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
+KEYED_DICT_SCHEMA = """
+id: https://example.org/keyed
+name: keyed
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Container:
+    attributes:
+      items:
+        range: Item
+        multivalued: true
+        inlined: true
+      prefixes:
+        range: PrefixLike
+        multivalued: true
+        inlined: true
+      aliases:
+        range: AliasLike
+        multivalued: true
+        inlined: true
+  AliasLike:
+    attributes:
+      literal:
+        required: true
+      pred: {}
+  Item:
+    attributes:
+      name:
+        key: true
+      value: {}
+      flag:
+        range: boolean
+      tags:
+        multivalued: true
+  PrefixLike:
+    attributes:
+      pfx:
+        key: true
+      ref:
+        required: true
+"""
+
+
+@pytest.fixture(scope="module")
+def keyed_dict_module():
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE, coerce_input=True).serialize()
+    return compile_python(code, PACKAGE)
+
+
+def test_coerce_input_off_by_default():
+    """Without coerce_input, no YAMLRoot-style input normalization is generated."""
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    assert "_coerce_keyed_collection" not in code
+    assert "_coerce_inlined_list" not in code
+    assert "coerce_list_" not in code
+    assert "coerce_numbers_to_str" not in code
+
+
+def test_coercion_helper_doctests():
+    """The coercion helper templates compile standalone and their doctests cover every input form."""
+    import doctest
+
+    from linkml.generators.pydanticgen.template import InlinedListCoercion, KeyedCollectionCoercion
+
+    source = "from typing import Any, Optional\n"
+    source += KeyedCollectionCoercion().render() + "\n" + InlinedListCoercion().render()
+    module = compile_python(source, "coercion_helpers")
+    results = doctest.testmod(module, name="coercion_helpers")
+    assert results.attempted > 0
+    assert results.failed == 0
+
+
+def test_keyed_dict_generated_code():
+    """Inlined-as-dict slots get a before-validator injecting the dict key into the key slot."""
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE, coerce_input=True).serialize()
+    assert "def _coerce_keyed_collection(" in code
+    assert "@field_validator('items', mode='before')" in code
+    # explicit @classmethod on generated validators, per pydantic docs recommendation (#3471)
+    assert "@field_validator('items', mode='before')\n    @classmethod" in code
+    assert '_coerce_keyed_collection(v, "name", value_name="value")' in code
+    # simple-dict union form is coerced via the value class's key slot
+    assert "@field_validator('prefixes', mode='before')" in code
+    assert '_coerce_keyed_collection(v, "pfx", value_name="ref")' in code
+
+
+@pytest.mark.parametrize(
+    "items,expected_names",
+    [
+        ({"a": {"value": "1"}, "b": {"value": "2"}}, ["a", "b"]),
+        ({"a": None, "b": None}, ["a", "b"]),
+        ({"a": {"name": "a", "value": "1"}}, ["a"]),
+        ([{"name": "a", "value": "1"}, {"name": "b"}], ["a", "b"]),
+        (["a", "b"], ["a", "b"]),
+        ("a", ["a"]),
+    ],
+    ids=["dict-no-key", "dict-null-body", "dict-explicit-key", "list-of-dicts", "list-of-keys", "bare-key"],
+)
+def test_keyed_dict_coercion_forms(keyed_dict_module, items, expected_names):
+    """All YAML input forms of an inlined-as-dict slot normalize to a keyed dict of objects."""
+    container = keyed_dict_module.Container.model_validate({"items": items})
+    assert list(container.items.keys()) == expected_names
+    for name, item in container.items.items():
+        assert item.name == name
+
+
+def test_keyed_dict_coercion_key_mismatch(keyed_dict_module):
+    """A dict key conflicting with the value's explicit key slot fails fast."""
+    with pytest.raises(ValidationError, match="mismatch"):
+        keyed_dict_module.Container.model_validate({"items": {"a": {"name": "b"}}})
+
+
+def test_keyed_dict_flat_single_object(keyed_dict_module):
+    """A flat single-object body (key slot among the dict keys) wraps to one entry."""
+    container = keyed_dict_module.Container.model_validate({"items": {"name": "a", "value": "1"}})
+    assert list(container.items.keys()) == ["a"]
+    assert container.items["a"].value == "1"
+
+
+@pytest.mark.parametrize(
+    "tags,expected",
+    [("solo", ["solo"]), (["a", "b"], ["a", "b"]), (None, None)],
+    ids=["scalar-wrapped", "list-passthrough", "none-passthrough"],
+)
+def test_multivalued_list_scalar_coercion(keyed_dict_module, tags, expected):
+    """A single value for a multivalued list slot wraps into a singleton list."""
+    item = keyed_dict_module.Item.model_validate({"name": "x", "tags": tags})
+    assert item.tags == expected
+
+
+@pytest.mark.parametrize(
+    "aliases,expected",
+    [
+        ({"dad": {"pred": "EXACT"}}, [("dad", "EXACT")]),
+        ({"dad": None, "mom": None}, [("dad", None), ("mom", None)]),
+        ({"literal": "dad", "pred": "EXACT"}, [("dad", "EXACT")]),
+        ([{"literal": "dad"}], [("dad", None)]),
+    ],
+    ids=["dict-keyed-by-required-slot", "dict-null-bodies", "flat-single-object", "list-passthrough"],
+)
+def test_inlined_list_dict_form(keyed_dict_module, aliases, expected):
+    """Inlined-as-list slots accept dict forms keyed by the range's first required slot."""
+    container = keyed_dict_module.Container.model_validate({"aliases": aliases})
+    assert [(a.literal, a.pred) for a in container.aliases] == expected
+
+
+@pytest.mark.parametrize(
+    "prefixes",
+    [
+        {"linkml": "https://w3id.org/linkml/"},
+        {"linkml": {"ref": "https://w3id.org/linkml/"}},
+    ],
+    ids=["simple-string-value", "object-value-key-injected"],
+)
+def test_keyed_dict_simple_dict_union(keyed_dict_module, prefixes):
+    """Simple-dict slots normalize scalar and object values to full objects.
+
+    Matches dataclass metamodel semantics: ``prefixes: {pfx: url}`` loads as
+    PrefixLike(pfx=..., ref=url), so consumers can rely on attribute access.
+    """
+    container = keyed_dict_module.Container.model_validate({"prefixes": prefixes})
+    value = container.prefixes["linkml"]
+    assert value.pfx == "linkml"
+    assert value.ref == "https://w3id.org/linkml/"
+
+
+def test_coerce_input_metamodel_smoke():
+    """The LinkML metamodel itself deserializes under a coerce_input-generated model.
+
+    This is the motivating use case: ``meta.yaml`` leans on every permissive
+    input form (``prefixes: {pfx: url}``, keyed dicts, scalar shorthands) that
+    YAMLRoot normalizes for the dataclass metamodel.
+    """
+    from linkml import LOCAL_METAMODEL_YAML_FILE
+
+    source = PydanticGenerator(LOCAL_METAMODEL_YAML_FILE, extra_fields="allow", coerce_input=True).serialize()
+    module = compile_python(source, "meta_pydantic")
+    data = yaml.safe_load(Path(LOCAL_METAMODEL_YAML_FILE).read_text())
+    schema = module.SchemaDefinition.model_validate(data)
+    assert set(schema.classes) == set(data["classes"])
+    assert set(schema.slots) == set(data["slots"])
+    assert set(schema.enums) == set(data["enums"])
+    assert schema.prefixes["linkml"].prefix_reference == "https://w3id.org/linkml/"
+
+
 @pytest.mark.parametrize(
     "range,multivalued,inlined,inlined_as_list,B_has_identifier,expected,notes",
     [
