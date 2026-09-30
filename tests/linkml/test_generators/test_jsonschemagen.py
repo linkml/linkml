@@ -1672,3 +1672,116 @@ def test_generate_array_error_complex_unbounded_shape(array_error_complex_unboun
         _ = JsonSchemaGenerator(
             array_error_complex_unbounded,
         ).generate()
+
+
+_EXTRA_SLOTS_SCHEMA = """
+id: https://example.org/extra-slots-default
+name: extra_slots_default
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Closed:
+    slots:
+      - name
+  ExplicitlyOpen:
+    extra_slots:
+      allowed: true
+    slots:
+      - name
+slots:
+  name:
+    range: string
+"""
+
+
+def _generate(tmp_path, schema_text, **kwargs):
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text)
+    return json.loads(JsonSchemaGenerator(str(schema_path), **kwargs).serialize())
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        pytest.param({}, False, id="default-is-closed"),
+        pytest.param({"not_closed": False}, False, id="closed"),
+        pytest.param({"not_closed": True}, True, id="not-closed"),
+    ],
+)
+def test_extra_slots_absent_defaults_to_closed(tmp_path, kwargs, expected):
+    """A class with no ``extra_slots`` is closed unless ``not_closed`` says otherwise.
+
+    ``meta.yaml`` documents an absent ``extra_slots`` as "forbid all additional data
+    (default)", so the generator must not silently open such classes.
+    """
+    schema = _generate(tmp_path, _EXTRA_SLOTS_SCHEMA, **kwargs)
+
+    assert schema["$defs"]["Closed"]["additionalProperties"] is expected
+    # An explicit `extra_slots.allowed` always wins, whatever `not_closed` says.
+    assert schema["$defs"]["ExplicitlyOpen"]["additionalProperties"] is True
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize("kwargs", [{}, {"not_closed": False}, {"not_closed": True}])
+def test_rootless_schema_keeps_an_open_top_level(tmp_path, kwargs):
+    """With no root class the top level has no properties, so it must stay open.
+
+    Closing it would produce a schema admitting nothing but ``{}``. ``not_closed``
+    governs classes, not the top level.
+    """
+    schema = _generate(tmp_path, _EXTRA_SLOTS_SCHEMA, **kwargs)
+
+    assert schema["additionalProperties"] is True
+    jsonschema.validate({"name": "alice"}, schema)
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize("root_via", ["tree_root", "top_class"])
+def test_root_class_governs_the_top_level(tmp_path, root_via):
+    """The root class sets the top-level ``additionalProperties``.
+
+    Previously only ``--top-class`` did this and ``tree_root: true`` did not, so the
+    two disagreed about the same document (linkml#3608).
+    """
+    schema_text = _EXTRA_SLOTS_SCHEMA
+    kwargs = {}
+    if root_via == "tree_root":
+        schema_text = schema_text.replace("  Closed:\n", "  Closed:\n    tree_root: true\n")
+    else:
+        kwargs["top_class"] = "Closed"
+
+    schema = _generate(tmp_path, schema_text, **kwargs)
+
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["Closed"]["additionalProperties"] is False
+
+
+@pytest.mark.jsonschemagen
+def test_multiple_tree_roots_pick_one_consistently(tmp_path):
+    """With more than one ``tree_root``, the top level comes from a single class.
+
+    biolink-model declares two. The top-level ``additionalProperties`` and the
+    subschema merged beneath it must not come from different classes.
+    """
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  Closed:\n    tree_root: true\n").replace(
+        "  ExplicitlyOpen:\n", "  ExplicitlyOpen:\n    tree_root: true\n"
+    )
+    schema = _generate(tmp_path, schema_text)
+
+    # `Closed` is first, so it is the root: closed, and its properties are merged up.
+    assert schema["additionalProperties"] is False
+    assert set(schema["properties"]) == set(schema["$defs"]["Closed"]["properties"])
+
+
+@pytest.mark.jsonschemagen
+def test_top_class_matches_regardless_of_case(tmp_path):
+    """``top_class`` is habitually passed in CamelCase for a spelled-out class name."""
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  closed thing:\n")
+    schema = _generate(tmp_path, schema_text, top_class="ClosedThing")
+
+    assert schema["additionalProperties"] is False
+    assert "name" in schema["properties"]

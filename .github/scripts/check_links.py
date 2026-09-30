@@ -52,6 +52,8 @@ SKIP_DOMAINS = {
     "snomed.info",
     # LinkML metamodel - w3id redirects to linkml.io/linkml-model which may have issues
     "w3id.org",
+    # Certificate expired Sep/24/2026
+    "datashapes.org",
 }
 
 
