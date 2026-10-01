@@ -204,23 +204,62 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Per-PR CI runs fully offline; this weekly job is where the outside world
-      # gets checked instead. Two kinds of reality check, in addition to the
-      # drift comparison above:
+  # Per-PR CI runs fully offline; this job is where the outside world gets
+  # checked instead:
+  #
+  # - `upstream` tests assert facts about the outside world (published PURLs
+  #   resolve, w3id rewrite rules behave, vendored files match the pinned
+  #   upstream commit). A PR cannot break these.
+  # - `network` tests normally run against local stubs. Running them live
+  #   here catches *stub drift*: if the real servers change behaviour, the
+  #   stubs keep asserting yesterday's reality and only this run notices.
+  #
+  # A failure is re-run after a delay so outages don't count. One that persists
+  # is recorded in tests/upstream_failures.yaml and proposed as a PR labelled
+  # `dependencies`; that PR's CI re-runs it live (upstream-failures.yaml), so it
+  # arrives red. See tests/upstream_failures.py for how to resolve one.
+  reality-checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      LIVE_FLAGS: --with-network --with-upstream --with-slow --with-biolink
+      RETRY_DELAY_SECONDS: 900
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2.0.2
+
+      # In the pytest steps below, exit 1 (tests failed) is what gets recorded.
+      # Anything higher -- collection error, usage error, nothing collected -- is a
+      # broken job whose outcomes file would be empty and read as "all clear", so
+      # it fails the step instead.
       #
-      # - `upstream` tests assert facts about the outside world (published PURLs
-      #   resolve, w3id rewrite rules behave, vendored files match the pinned
-      #   upstream commit). A PR cannot break these, so failing them here rather
-      #   than in per-PR CI turns an upstream outage from a blocked PR into a
-      #   red weekly run.
-      # - `network` tests normally run against local stubs. Running them live
-      #   here catches *stub drift*: if the real servers change behaviour, the
-      #   stubs keep asserting yesterday's reality and only this run notices.
+      # The soft upstream-main comparison is reported by the drift check above.
       - name: Run upstream reality checks
-        if: always()
         run: |
-          uv run pytest tests/ -m upstream --with-upstream \
-            -k "not test_vendored_files_match_upstream_main" -v
+          set +e
+          uv run pytest tests/ -m upstream ${LIVE_FLAGS} \
+            -k "not test_vendored_files_match_upstream_main" \
+            --upstream-outcomes temp/outcomes-upstream.json -v
+          RC=$?; [ "$RC" -le 1 ] || { echo "::error::pytest exited $RC: broken run, not an upstream failure"; exit "$RC"; }
 
       # Notebook tests are excluded: their `!uv pip install` cells mutate the
       # venv off the lock (#3581), which is why per-PR CI gives them a dedicated
@@ -232,7 +271,66 @@ jobs:
       # and would otherwise be collected but skipped, silently exempting their
       # stubs from this live check.
       - name: Run network-marked tests against the live network
-        if: always()
         run: |
+          set +e
           uv run pytest tests/ --ignore=tests/linkml/test_notebooks \
-            -m "network and not kroki" --with-network --with-slow --with-biolink -v
+            -m "network and not kroki" ${LIVE_FLAGS} \
+            --upstream-outcomes temp/outcomes-network.json -v
+          RC=$?; [ "$RC" -le 1 ] || { echo "::error::pytest exited $RC: broken run, not an upstream failure"; exit "$RC"; }
+
+      - name: Re-run failures after a delay
+        run: |
+          mapfile -t FAILED < <(uv run python -m tests.upstream_failures failed \
+            temp/outcomes-upstream.json temp/outcomes-network.json)
+          if [ "${#FAILED[@]}" -eq 0 ]; then
+            echo "No live failures."
+            echo '{}' > temp/outcomes-retry.json
+            exit 0
+          fi
+          echo "${#FAILED[@]} live failure(s); re-running in ${RETRY_DELAY_SECONDS}s to rule out an outage."
+          sleep "${RETRY_DELAY_SECONDS}"
+          set +e
+          uv run pytest "${FAILED[@]}" ${LIVE_FLAGS} --upstream-outcomes temp/outcomes-retry.json -v
+          RC=$?; [ "$RC" -le 1 ] || { echo "::error::pytest exited $RC: broken run, not an upstream failure"; exit "$RC"; }
+
+      - name: Update recorded upstream failures
+        run: |
+          uv run python -m tests.upstream_failures update \
+            temp/outcomes-upstream.json temp/outcomes-network.json \
+            --retry temp/outcomes-retry.json \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          git diff --stat -- tests/upstream_failures.yaml
+
+      # create-pull-request rebuilds its branch from main on every run, which would
+      # discard fixes or acceptances already pushed to an open PR. Leave an open one
+      # alone; anything new is picked up the week after it merges.
+      - name: Check for an open upstream-failures PR
+        id: open_pr
+        run: |
+          OPEN=$(gh pr list --head upstream-failures --state open --json number --jq '.[0].number // empty')
+          echo "number=${OPEN}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Propose the change as a PR
+        if: steps.open_pr.outputs.number == ''
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: tests/upstream_failures.yaml
+          commit-message: "Update recorded upstream test failures"
+          title: "Upstream reality checks changed"
+          body: |
+            The weekly live checks found a change in `tests/upstream_failures.yaml`: a new failure that persisted across a delayed re-run, or a recorded one that has recovered. See the diff for the tests and error excerpts.
+
+            For each **new** entry, either:
+            - **fix it** (stub, w3id rewrite rule or code) and delete the entry, or
+            - **accept it** by adding `accepted: <reason, upstream issue link>`, which quarantines it as a strict xfail in live runs.
+
+            The `Upstream failures` check re-runs the listed tests live, so this PR is red until every new entry is resolved. Entries this PR removes are recoveries; the check confirms they pass.
+
+            CI does not start on its own for bot-opened PRs: close and reopen this PR to run it.
+
+            **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          branch: upstream-failures
+          delete-branch: true
+          labels: dependencies
