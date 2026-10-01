@@ -57,7 +57,6 @@ jobs:
       # Open the PR whether or not the compatibility tests passed: a red PR in the
       # `dependencies` queue gets fixed, an issue gets lost. The compat tests are
       # marked slow, so the PR's own Slow Tests job shows the same failure.
-      # The body goes through a file because the test output is untrusted text.
       #
       # create-pull-request rebuilds its branch from main on every run, which would
       # discard fixes already pushed to an open PR, so an open one is left alone.
@@ -81,14 +80,7 @@ jobs:
             if [ "${{ steps.run_tests.outcome }}" = "success" ]; then
               echo "Updates the metamodel test fixtures to the latest linkml-model. The compatibility tests passed with these changes."
             else
-              echo "Updates the metamodel test fixtures to the latest linkml-model. **The compatibility tests fail with these changes**: the toolkit needs updating to handle the new metamodel. Push fixes to this branch."
-              echo
-              echo "<details><summary>Test output (last 100 lines)</summary>"
-              echo
-              echo '```'
-              tail -n 100 temp/test_output.txt
-              echo '```'
-              echo "</details>"
+              echo "Updates the metamodel test fixtures to the latest linkml-model. **The compatibility tests fail with these changes** (see the workflow run): the toolkit needs updating to handle the new metamodel. Push fixes to this branch."
             fi
             echo
             echo "CI does not start on its own for bot-opened PRs: close and reopen this PR to run it."
