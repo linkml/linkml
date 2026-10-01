@@ -2,7 +2,8 @@
 #
 # This workflow downloads the latest metamodel from linkml-model and runs
 # the compatibility tests to ensure the linkml toolkit can process it.
-# If tests pass and the metamodel has changed, it creates a PR with the update.
+# If the metamodel has changed, it opens a PR with the update -- red if the
+# toolkit can't handle it yet.
 #
 # It also checks whether the vendored linkml-model files have drifted from
 # upstream main, and opens (or updates) a tracking issue when drift is found.
@@ -53,72 +54,55 @@ jobs:
           uv run pytest tests/linkml/test_metamodel_compat/ --with-slow -v 2>&1 | tee temp/test_output.txt
         continue-on-error: true
 
-      - name: Check for existing issue
-        if: steps.run_tests.outcome == 'failure'
-        id: check_issue
+      # Open the PR whether or not the compatibility tests passed: a red PR in the
+      # `dependencies` queue gets fixed, an issue gets lost. The compat tests are
+      # marked slow, so the PR's own Slow Tests job shows the same failure.
+      # The body goes through a file because the test output is untrusted text.
+      #
+      # create-pull-request rebuilds its branch from main on every run, which would
+      # discard fixes already pushed to an open PR, so an open one is left alone.
+      - name: Check for an open fixture PR
+        id: open_pr
         run: |
-          EXISTING_ISSUE=$(gh issue list --label "metamodel-compat" --state open --json number --jq '.[0].number // empty')
-          echo "existing_issue=${EXISTING_ISSUE}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create or update issue on failure
-        if: steps.run_tests.outcome == 'failure'
-        run: |
-          ISSUE_TITLE="Metamodel compatibility test failure"
-
-          # Build the body in a file rather than a shell variable: the test output is
-          # untrusted text that must not be re-evaluated by the shell.
-          {
-            cat <<EOF
-          ## Metamodel Compatibility Test Failure
-
-          The weekly metamodel compatibility test has failed. This indicates that the
-          current linkml toolkit may not be compatible with the latest linkml-model metamodel.
-
-          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          ### Test Output (last 100 lines)
-          EOF
-            echo '```'
-            tail -n 100 temp/test_output.txt
-            echo '```'
-            cat <<'EOF'
-
-          ### Next Steps
-          1. Review the test output above
-          2. Check for recent changes in [linkml-model](https://github.com/linkml/linkml-model)
-          3. Update the linkml toolkit to handle any metamodel changes
-          EOF
-          } > temp/issue_body.md
-
-          if [ -n "${{ steps.check_issue.outputs.existing_issue }}" ]; then
-            gh issue comment "${{ steps.check_issue.outputs.existing_issue }}" --body-file temp/issue_body.md
+          OPEN=$(gh pr list --head update-metamodel-fixtures --state open --json number --jq '.[0].number // empty')
+          if [ -n "${OPEN}" ]; then
+            echo "Fixture PR #${OPEN} is already open; leaving it alone."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
           else
-            gh issue create \
-              --title "${ISSUE_TITLE}" \
-              --body-file temp/issue_body.md \
-              --label "metamodel-compat,dependencies"
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fail if tests failed
-        if: steps.run_tests.outcome == 'failure'
-        run: exit 1
+      - name: Write PR body
+        if: steps.open_pr.outputs.proceed == 'true'
+        run: |
+          {
+            if [ "${{ steps.run_tests.outcome }}" = "success" ]; then
+              echo "Updates the metamodel test fixtures to the latest linkml-model. The compatibility tests passed with these changes."
+            else
+              echo "Updates the metamodel test fixtures to the latest linkml-model. **The compatibility tests fail with these changes**: the toolkit needs updating to handle the new metamodel. Push fixes to this branch."
+              echo
+              echo "<details><summary>Test output (last 100 lines)</summary>"
+              echo
+              echo '```'
+              tail -n 100 temp/test_output.txt
+              echo '```'
+              echo "</details>"
+            fi
+            echo
+            echo "CI does not start on its own for bot-opened PRs: close and reopen this PR to run it."
+            echo
+            echo "**Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > temp/pr_body.md
 
       - name: Create PR with updated metamodel
-        if: steps.run_tests.outcome == 'success'
+        if: steps.open_pr.outputs.proceed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "Update metamodel test fixtures from linkml-model"
           title: "Update metamodel test fixtures from linkml-model"
-          body: |
-            This PR updates the metamodel test fixtures to the latest version from linkml-model.
-
-            The metamodel compatibility tests have passed with these changes.
-
-            **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          body-path: temp/pr_body.md
           branch: update-metamodel-fixtures
           delete-branch: true
           labels: metamodel-compat, dependencies
