@@ -6,16 +6,18 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
   hooks:
+  # Vendored linkml-model files are excluded from every hook that rewrites them:
+  # they are byte-for-byte copies from upstream, and editing them here makes the
+  # vendored copy diverge from upstream and invalidates VENDORED_MANIFEST.
   - id: end-of-file-fixer
-    exclude: __snapshots__
+    exclude: (__snapshots__|packages/linkml_runtime/src/linkml_runtime/linkml_model/)
   - id: check-yaml
     exclude: (__snapshots__|test_utils/input)
   - id: check-toml
   - id: trailing-whitespace
     # TODO: This is temporary while bioliank is being fixed upstream.
     # TODO: Should look at snapshot exclusion to find upstream problems
-    # Exclude linkml_runtime model schemas to preserve exact formatting for snapshot tests
-    exclude: (__snapshots__|biolink-model.yaml|packages/linkml_runtime/src/linkml_runtime/linkml_model/model/schema/.*\.yaml)
+    exclude: (__snapshots__|biolink-model.yaml|packages/linkml_runtime/src/linkml_runtime/linkml_model/)
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ensure this version stays in sync with tox.ini
   rev: v0.11.13

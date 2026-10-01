@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Thing": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "identifier": {
@@ -18,7 +18,7 @@
     },
     "$id": "http://example.com/dataset",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "",
     "metamodel_version": "1.11.0",
     "properties": {
