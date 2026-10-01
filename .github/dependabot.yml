@@ -46,6 +46,13 @@ updates:
           - "*"
         update-types:
           - "patch"
+      # `uv audit` reads the whole lock, so when several advisories land together,
+      # one security PR per package can never go green: each still fails on the
+      # others. Grouping makes Dependabot bump them all in one PR.
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
     # Bounds rebase storms: every open PR runs the full matrix, and dependabot
     # rebases all of them when main moves.
     open-pull-requests-limit: 3
