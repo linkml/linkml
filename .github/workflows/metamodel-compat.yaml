@@ -299,20 +299,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # create-pull-request rebuilds its branch from main on every run, which would
+      # discard snapshot fixes already pushed to an open re-vendor PR. Leave an open
+      # one alone; a newer release is picked up once it is merged or closed.
+      - name: Check for an open re-vendor PR
+        if: steps.pin_check.outputs.stale == 'true'
+        id: open_pr
+        run: |
+          OPEN=$(gh pr list --head update-vendored-linkml-model --state open --json number --jq '.[0].number // empty')
+          if [ -n "${OPEN}" ]; then
+            echo "Re-vendor PR #${OPEN} is already open; leaving it alone."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # `make update_model` finishes with a pre-commit run, which isn't in the uv groups.
       - name: Install pre-commit
-        if: steps.pin_check.outputs.stale == 'true'
+        if: steps.open_pr.outputs.proceed == 'true'
         run: uv tool install pre-commit
 
       - name: Re-vendor the latest release
-        if: steps.pin_check.outputs.stale == 'true'
+        if: steps.open_pr.outputs.proceed == 'true'
         run: make -C packages/linkml_runtime update_model
 
       # Labelled `dependencies` so it lands in the same queue as Dependabot's PRs.
-      # The branch is fixed, so a newer release updates this PR rather than opening
-      # another. PRs opened with GITHUB_TOKEN don't trigger CI, hence the note.
+      # PRs opened with GITHUB_TOKEN don't trigger CI, hence the note in the body.
       - name: Create PR with the re-vendored model
-        if: steps.pin_check.outputs.stale == 'true'
+        if: steps.open_pr.outputs.proceed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
           add-paths: packages/linkml_runtime/src/linkml_runtime/linkml_model
