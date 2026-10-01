@@ -145,7 +145,10 @@ New tests in any directory should be written using pytest.
   Examples:
 
   `uv run pytest tests/linkml/test_scripts/test_gen_owl.py --with-slow --generate-snapshots`
-  `uv run pytest tests/linkml/test_scripts/test_gen_shex.py --generate-snapshots --with-network`
+  `uv run pytest tests/linkml/test_scripts/test_gen_shex.py --generate-snapshots`
+
+  Tests marked `network` run against local stubs by default (no network needed); pass
+  `--with-network` only if you specifically want to exercise the live network instead.
 
   Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
   in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).

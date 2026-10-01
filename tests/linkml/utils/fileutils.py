@@ -1,10 +1,11 @@
-def assert_file_contains(filename, text, after=None) -> None:
+def assert_file_contains(filename, text, after=None, invert=False) -> None:
     """
     Check that a file contains a specific bit of text in a line, and raise an assertion failure if it does not.
 
     :param filename: the name of the file to be checked
     :param text: the motif that must be present in the file
     :param after: if present, the text to search for must appear after a line containing this
+    :param invert: if true, check that the file does NOT contain the text
     """
     found = False
     is_after = False
@@ -18,4 +19,4 @@ def assert_file_contains(filename, text, after=None) -> None:
                         found = True
             if after is not None and after in line:
                 is_after = True
-    assert found
+    assert found != invert

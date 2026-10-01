@@ -37,7 +37,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
                                   creator=lambda x_: {{ classname(mapping.join_class) }}({{mapping.target_slot}}=x_))
     {% else %}
     # One-To-Many: {{mapping}}
-    {{mapping.source_slot}} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ mapping.target_class }}.{{mapping.target_slot}}]")
+    {{mapping.source_slot}} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ classname(mapping.target_class) }}.{{mapping.target_slot}}]")
     {% endif -%}
     {%- endfor %}
 

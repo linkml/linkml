@@ -1,3 +1,4 @@
+import json
 import re
 
 import pytest
@@ -70,3 +71,49 @@ def test_include_option(input_path):
     extra_import_path = str(input_path("deprecation.yaml"))
     result = runner.invoke(cli, ["--include", extra_import_path, schema])
     assert "C4" in result.output
+
+
+_INCLUDE_NULL_SCHEMA = """
+id: https://example.org/test-include-null-cli
+name: test-include-null-cli
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  C:
+    attributes:
+      opt:
+        range: string
+      opt_multi:
+        range: string
+        multivalued: true
+      req:
+        range: string
+        required: true
+"""
+
+
+@pytest.mark.parametrize(
+    "flag,expected_opt,expected_opt_multi",
+    [
+        ([], ["string", "null"], ["array", "null"]),
+        (["--include-null"], ["string", "null"], ["array", "null"]),
+        (["--no-include-null"], "string", "array"),
+    ],
+)
+def test_include_null_cli_option(flag, expected_opt, expected_opt_multi, tmp_path):
+    """The --include-null/--no-include-null CLI option must control whether optional
+    slots accept an explicit JSON null, across scalar and multivalued ranges, while
+    leaving required slots unaffected."""
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(_INCLUDE_NULL_SCHEMA)
+    runner = CliRunner()
+    result = runner.invoke(cli, flag + [str(schema)])
+    assert result.exit_code == 0, result.output
+    props = json.loads(result.output)["$defs"]["C"]["properties"]
+    assert props["opt"]["type"] == expected_opt
+    assert props["opt_multi"]["type"] == expected_opt_multi
+    # required scalar slot is unaffected by the flag
+    assert props["req"]["type"] == "string"

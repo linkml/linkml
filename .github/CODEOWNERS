@@ -37,11 +37,6 @@
 /tests/linkml_runtime/test_loaders_dumpers/test_dumpers_pydantic.py  @sneakers-the-rat @kevinschaper
 /tests/linkml_runtime/test_loaders_dumpers/test_loaders_pydantic.py  @sneakers-the-rat @kevinschaper
 
-# yarrrml:
-/docs/generators/yarrrml.rst                          @Ostrzyciel @lapkinvladimir
-/packages/linkml/src/linkml/generators/yarrrmlgen.py  @Ostrzyciel @lapkinvladimir
-/tests/linkml/test_generators/test_yarrrmlgen.py      @Ostrzyciel @lapkinvladimir
-
 # openapigen:
 #
 # EXPERIMENT: delegated self-contained area, see

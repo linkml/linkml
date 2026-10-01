@@ -94,6 +94,59 @@ expected to be serialised in the JSON or YAML serialisations; the
 ``--use-aliases`` option only affects the symbol used to represent the
 slot in the Java code.
 
+Package Configuration
+---------------------
+The generated Java ``package`` statement is driven by the following precedence:
+
+1. ``--package`` command-line option (or ``package=...`` when using ``JavaGenerator`` programmatically)
+2. ``generator_args.java.package`` set via ``--config-file``/``-C`` (see :ref:`java-configuration-file` below)
+3. Fallback default: ``example``
+
+The package name is validated wherever it comes from. An invalid name (``1bad.pkg``,
+``org.class.model``) is reported as an error.
+
+NOTE:
+    The package name is *not* configurable via schema-level annotations: LinkML
+    classes, slots, and enums live in a single global namespace regardless of
+    which (sub-)schema declares them - the package is a global configuration for
+    the generator, not a property of the model.
+
+
+The package applies to every generated class and enum: ``gen-java`` emits one file per
+class into a single flat output directory, and cross-class references rely on all
+generated types sharing one package.
+
+.. _java-configuration-file:
+
+Configuration File
+-------------------
+
+As an alternative to the ``--package`` argument, ``gen-java`` accepts a
+``--config-file``/``-C`` YAML file -- the **same format** used by
+``gen-project``'s own ``--config-file`` (see :doc:`project-generator`), so a single
+project-wide ``config.yaml`` can be shared between ``gen-project`` and a
+standalone ``gen-java`` run. ``package`` lives under ``generator_args.java``,
+since that file is structured to configure every generator at once:
+
+.. code-block:: yaml
+
+    # config.yaml
+    generator_args:
+      java:
+        package: org.example.model
+
+``gen-java`` only ever reads ``generator_args.java.package`` out of this file --
+every other key (``directory``, ``excludes``, other generators' ``generator_args``
+entries, etc.) is ignored, so a full multi-generator project ``config.yaml`` can be
+passed as-is without modification.
+
+An explicit ``--package`` command-line option always overrides a value set via
+``--config-file``.
+
+The same configuration-file mechanism is supported by ``gen-golang`` (see
+:doc:`golang`), which reads ``generator_args.golang.package`` from the same file.
+
+
 Generating Visitor Patterns
 ---------------------------
 
