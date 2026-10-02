@@ -11706,7 +11706,7 @@ class AnonymousClassExpression(AnonymousExpression):
     __tablename__ = 'anonymous_class_expression'
 
     id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
-    is_a = Column(Text(), ForeignKey('definition.name'))
+    is_a = Column(Text(), ForeignKey('class_definition.name'))
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())

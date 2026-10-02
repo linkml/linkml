@@ -1249,7 +1249,11 @@
       "description": "status of the element",
       "examples": [
         {
-          "value": "bibo:draft",
+          "value": "testing",
+          "@type": "Example"
+        },
+        {
+          "value": "unstable",
           "@type": "Example"
         }
       ],
@@ -1264,16 +1268,16 @@
       "aliases": [
         "workflow status"
       ],
-      "mappings": [
+      "close_mappings": [
         "http://purl.org/ontology/bibo/status"
       ],
       "domain": "Element",
-      "slot_uri": "http://purl.org/ontology/bibo/status",
+      "slot_uri": "https://w3id.org/linkml/status",
       "owner": "status",
       "domain_of": [
         "CommonMetadata"
       ],
-      "range": "uriorcurie",
+      "range": "string",
       "@type": "SlotDefinition"
     },
     {
@@ -6496,6 +6500,32 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "anonymous_class_expression_is_a",
+      "definition_uri": "https://w3id.org/linkml/is_a",
+      "description": "A class that any instance satisfying this expression must also be an instance of",
+      "in_subset": [
+        "SpecificationSubset",
+        "BasicSubset",
+        "ObjectOrientedProfile",
+        "OwlProfile"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "rank": 11,
+      "is_a": "is_a",
+      "abstract": true,
+      "domain": "AnonymousClassExpression",
+      "slot_uri": "https://w3id.org/linkml/is_a",
+      "alias": "is_a",
+      "owner": "AnonymousClassExpression",
+      "domain_of": [
+        "AnonymousClassExpression"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "is_a",
+      "range": "ClassDefinition",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "class_definition_is_a",
       "definition_uri": "https://w3id.org/linkml/is_a",
       "description": "A primary parent class from which inheritable metaslots are propagated",
@@ -8069,7 +8099,7 @@
         "rank",
         "categories",
         "keywords",
-        "is_a",
+        "anonymous_class_expression_is_a",
         "class_expression_any_of",
         "class_expression_exactly_one_of",
         "class_expression_none_of",
@@ -8949,7 +8979,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.11.0",
+  "metamodel_version": "1.12.0",
   "source_file": "meta.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,
@@ -9739,8 +9769,7 @@
         "@id": "source_ontology"
       },
       "status": {
-        "@type": "xsd:anyURI",
-        "@id": "bibo:status"
+        "@id": "status"
       },
       "string_serialization": {
         "@id": "string_serialization"
