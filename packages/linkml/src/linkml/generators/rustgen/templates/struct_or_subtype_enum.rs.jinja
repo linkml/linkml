@@ -1,19 +1,73 @@
 #[derive(Debug, Clone, PartialEq)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 {% if type_designator_field %}
-#[cfg_attr(feature="serde", serde(tag = "{{ type_designator_field }}"))]
+{#- Tagged case: `Serialize`/`Deserialize` are hand-written below rather than
+    derived with `serde(tag = ...)`. An internally tagged derive *consumes* the
+    designator key, so it would both emit it twice (once as the enum tag, once as
+    the variant struct's own field) and strip it from the struct on the way back
+    in. Delegating instead keeps the designator a normal slot on every struct. -#}
 {% else %}
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature="serde", serde(untagged))]
 {% endif %}
 pub enum {{ enum_name }} {
 {%- for t in struct_names -%}
-    {% if type_designator_field  %}
-    {% set tds = type_designators[t] %}
-    #[serde(rename = "{{ tds[0] }}",  {% for t in tds[1:] %} alias="{{ t }}", {% endfor %} )]
-    {% endif %}
     {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
 {%- endfor -%}
 }
+
+{% if type_designator_field %}
+#[cfg(feature = "serde")]
+impl Serialize for {{ enum_name }} {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        // The designator is a real field on the variant struct, so serializing the
+        // inner value already emits it -- no enum-level tag to add.
+        match self {
+{%- for t in struct_names %}
+            {{ enum_name }}::{{ t }}(inner) => inner.serialize(serializer),
+{%- endfor %}
+        }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for {{ enum_name }} {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        use serde::de::Error as _;
+
+        const EXPECTED: &[&str] = &[
+        {%- for t in struct_names %}
+            {%- for d in type_designators[t] %}
+            "{{ d }}",
+            {%- endfor %}
+        {%- endfor %}
+        ];
+
+        // Buffer the input so the designator can be read without consuming it: it
+        // is passed on to the variant struct, which keeps it as its own field.
+        let value = Value::deserialize(deserializer)?;
+        let tag = match &value {
+            Value::Map(map) => map
+                .get(&Value::String("{{ type_designator_field }}".to_string()))
+                .and_then(|v| match v {
+                    Value::String(s) => Some(s.clone()),
+                    _ => None,
+                }),
+            _ => None,
+        };
+        let tag = tag.ok_or_else(|| D::Error::missing_field("{{ type_designator_field }}"))?;
+
+        match tag.as_str() {
+{%- for t in struct_names %}
+            {% for d in type_designators[t] %}"{{ d }}"{% if not loop.last %} | {% endif %}{% endfor %} => {{ t }}::deserialize(
+                serde_value::ValueDeserializer::<D::Error>::new(value),
+            )
+            .map({{ enum_name }}::{{ t }}),
+{%- endfor %}
+            other => Err(D::Error::unknown_variant(other, EXPECTED)),
+        }
+    }
+}
+{% endif %}
 
 {% for t in struct_names %}
 impl From<{{ t }}>   for {{ enum_name }} { fn from(x: {{ t }})   -> Self { Self::{{ t }}(x) } }
