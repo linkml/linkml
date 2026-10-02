@@ -3,6 +3,65 @@
 Generates idiomatic Go code from LinkML schemas. Supports custom templates
 via the `--template-dir` CLI option.
 
+## JSON tag preservation
+
+By default a field's JSON tag is the snake-cased slot name (`underscore(slot.alias or slot.name)`).
+Some pipelines need CURIE keys instead (for example a JSON-LD CURIE such as
+`demo:id`, which contains a colon). The tag is resolved with the following
+precedence:
+
+1. **Slot CURIE** -- with `--use-curies` (or `use_curies=True`), the tag is the
+   slot's CURIE, resolved with `SchemaView.get_curie`. This is the same resolution
+   used by the JSON-LD context generator and the JSON Schema generator under their
+   `--use-curies` flags, so the Go JSON tags equal the JSON Schema property names
+   and the JSON-LD context keys for the same schema. A declared `slot_uri` is
+   compacted to its CURIE (e.g. `demo:id`); a slot without a declared URI is
+   synthesized as `<default_prefix>:<name>` (e.g. `ex:id`) and compacted.
+2. **Automatic fallback** -- when `--use-curies` is not set and snake-casing
+   changes the key (e.g. an alias containing `-` or whitespace), the original
+   `slot_alias` is used as the JSON tag. This mirrors the Pydantic generator's
+   `Field(alias=...)` behavior.
+3. **Default** -- the snake-cased slot alias (unchanged legacy behavior).
+
+The CURIE mode is opt-in: output is unchanged when it is not enabled. Only the
+JSON tag is affected; `go_name` is still derived from `camelcase(slot_alias)` so
+the exported Go field identifier stays valid (colons never leak into the field
+name). The negative CLI form is `--not-use-curies`, matching the sibling
+generators.
+
+Example (`ex` is the schema's `default_prefix`):
+
+```yaml
+prefixes:
+  ex: https://example.org/
+  demo: https://example.org/demo/
+default_prefix: ex
+
+classes:
+  Entity:
+    slots:
+      - id
+      - demo_id
+
+slots:
+  id:
+    range: string
+    required: true
+    identifier: true
+  demo_id:
+    range: string
+    slot_uri: demo:id
+```
+
+with `--use-curies` generates:
+
+```go
+type Entity struct {
+	Id     string  `json:"ex:id"`
+	DemoId *string `json:"demo:id,omitempty"`
+}
+```
+
 ## Custom Templates
 
 Pass `--template-dir <dir>` to override any built-in template. Place a file
@@ -56,7 +115,7 @@ Rendered once per slot/field.
 | Variable | Type | Description |
 |---|---|---|
 | `go_name` | `str` | CamelCase field name for Go |
-| `json_name` | `str` | snake_case name used in the JSON struct tag |
+| `json_name` | `str` | Name used in the JSON struct tag (see [JSON tag preservation](#json-tag-preservation)) |
 | `type` | `str` | Go type string (e.g. `string`, `int`, `[]Person`, `*Address`) |
 | `required` | `bool` | Whether the field is required |
 | `identifier` | `bool` | Whether the field is the identifier slot |

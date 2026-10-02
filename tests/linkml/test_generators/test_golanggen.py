@@ -356,6 +356,264 @@ def test_comments_from_descriptions():
     assert "// A human being" in code
 
 
+# ---------------------------------------------------------------------------
+# JSON tag preservation: declared slot_uri CURIEs + underscore fallback
+# ---------------------------------------------------------------------------
+
+JSON_TAG_FALLBACK_SCHEMA = """
+id: https://example.org/json_tag_fallback
+name: json_tag_fallback_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+classes:
+  Thing:
+    slots:
+      - demo_id
+      - business_id
+      - firstName
+
+slots:
+  demo_id:
+    range: string
+  business_id:
+    range: string
+    alias: demo-id
+  firstName:
+    range: string
+"""
+
+
+def test_json_tag_fallback_not_triggered_when_unchanged():
+    """A slot whose snake-cased name equals its alias is emitted unchanged."""
+    module = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).render()
+    demo_id = module.structs["Thing"].fields["demo_id"]
+
+    # underscore("demo_id") == "demo_id" → fallback must not fire
+    assert demo_id.json_name == "demo_id"
+
+
+def test_json_tag_fallback_preserves_original_alias():
+    """When snake-casing changes the key, the original `slot_alias` is preserved.
+
+    This mirrors the Pydantic generator's `Field(alias=slot_alias)` behavior.
+    """
+    module = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).render()
+    business_id = module.structs["Thing"].fields["business_id"]
+
+    # underscore("demo-id") == "demo_id" != "demo-id" → preserve the original alias
+    assert business_id.json_name == "demo-id"
+
+    code = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).serialize()
+    assert 'json:"demo_id,omitempty"' in code
+    assert 'json:"demo-id,omitempty"' in code
+
+
+def test_json_tag_legacy_names_unchanged():
+    """Names that already round-trip through `underscore()` are untouched.
+
+    `underscore("firstName") == "firstName"`, so the fallback does not fire.
+    """
+    code = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).serialize()
+
+    assert 'FirstName *string `json:"firstName,omitempty"`' in code
+
+
+# ---------------------------------------------------------------------------
+# `use_curies`: slot CURIEs as JSON tags, aligned with the JSON-LD context and
+# JSON Schema generators
+# ---------------------------------------------------------------------------
+
+CURIE_JSON_TAG_SCHEMA = """
+id: https://example.org/curie_tag
+name: curie_tag_test
+default_prefix: ex
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+  demo: https://example.org/demo/
+
+imports:
+  - linkml:types
+
+classes:
+  Entity:
+    tree_root: true
+    slots:
+      - id
+      - demo_id
+      - name
+
+slots:
+  id:
+    range: string
+    required: true
+    identifier: true
+  demo_id:
+    range: string
+    slot_uri: demo:id
+  name:
+    range: string
+"""
+
+
+def test_use_curies_disabled_by_default():
+    """`use_curies` is off by default and leaves the tag name-based."""
+    gen = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA)
+    assert gen.use_curies is False
+
+    module = gen.render()
+    assert module.structs["Entity"].fields["demo_id"].json_name == "demo_id"
+
+
+def test_use_curies_uses_declared_slot_uri():
+    """A declared slot_uri is compacted to its CURIE and used as the JSON tag."""
+    module = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).render()
+    entity = module.structs["Entity"]
+
+    assert entity.fields["demo_id"].json_name == "demo:id"
+    # valid Go identifier is preserved; the colon never leaks into the field name
+    assert entity.fields["demo_id"].go_name == "DemoId"
+
+    code = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).serialize()
+    assert 'DemoId *string `json:"demo:id,omitempty"`' in code
+    assert "Demo:id" not in code
+
+
+def test_use_curies_synthesizes_default_prefix_curies():
+    """Slots without a declared slot_uri are keyed as ``<default_prefix>:<name>``.
+
+    This matches ``SchemaView.get_curie``, which the JSON-LD context and JSON
+    Schema generators use under their ``--use-curies`` flags.
+    """
+    module = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).render()
+    entity = module.structs["Entity"]
+
+    assert entity.fields["id"].json_name == "ex:id"
+    assert entity.fields["name"].json_name == "ex:name"
+
+
+def test_use_curies_matches_jsonld_and_jsonschema_keys():
+    """Go JSON tags equal the JSON Schema property names and JSON-LD context keys.
+
+    The three generators describe the same documents, so when ``--use-curies`` is
+    enabled they must agree on the key naming.
+    """
+    import json
+
+    from linkml.generators.jsonldcontextgen import ContextGenerator
+    from linkml.generators.jsonschemagen import JsonSchemaGenerator
+
+    go_module = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).render()
+    go_tags = {field.json_name for field in go_module.structs["Entity"].fields.values()}
+
+    schema_json = json.loads(JsonSchemaGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).serialize())
+    schema_props = set(schema_json["properties"].keys())
+
+    context = json.loads(ContextGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).serialize())
+    context_body = context.get("@context", context)
+    context_keys = {key for key in context_body if not key.startswith("@")}
+
+    assert go_tags == schema_props
+    assert go_tags <= context_keys
+
+
+def test_use_curies_omitempty_interaction():
+    """`omitempty` suppression still follows identifier/required under `use_curies`."""
+    code = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True).serialize()
+
+    # optional slots → omitempty
+    assert 'DemoId *string `json:"demo:id,omitempty"`' in code
+    assert 'Name *string `json:"ex:name,omitempty"`' in code
+    # identifier slot → no omitempty
+    assert 'Id string `json:"ex:id"`' in code
+
+
+def test_use_curies_omitzero_interaction():
+    """When nullable_primitives=False, CURIE-tagged optional fields still get omitzero."""
+    code = GolangGenerator(schema=CURIE_JSON_TAG_SCHEMA, use_curies=True, nullable_primitives=False).serialize()
+
+    assert 'json:"demo:id,omitempty,omitzero"' in code
+    # identifier slot → neither omitempty nor omitzero
+    assert 'json:"ex:id"' in code
+
+
+CURIE_KEY_SCHEMA = """
+id: https://example.org/curie_key
+name: curie_key_test
+default_prefix: ex
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+  demo: https://example.org/demo/
+
+imports:
+  - linkml:types
+
+classes:
+  Bag:
+    slots:
+      - demo_key
+      - extra
+
+slots:
+  demo_key:
+    range: string
+    key: true
+    slot_uri: demo:key
+  extra:
+    range: string
+"""
+
+
+def test_use_curies_key_suppresses_omitempty():
+    """A `key` slot keeps its CURIE tag without omitempty under `use_curies`."""
+    code = GolangGenerator(schema=CURIE_KEY_SCHEMA, use_curies=True).serialize()
+
+    assert 'DemoKey string `json:"demo:key"`' in code
+    assert 'Extra *string `json:"ex:extra,omitempty"`' in code
+
+
+def test_cli_use_curies(tmp_path):
+    """CLI --use-curies enables CURIE JSON tags."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(CURIE_JSON_TAG_SCHEMA)
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--use-curies"])
+
+    assert result.exit_code == 0
+    assert 'json:"demo:id,omitempty"' in result.output
+
+
+def test_cli_not_use_curies(tmp_path):
+    """The negative form is `--not-use-curies`, matching the sibling generators."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(CURIE_JSON_TAG_SCHEMA)
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--not-use-curies"])
+
+    assert result.exit_code == 0
+    assert 'json:"demo:id,omitempty"' not in result.output
+    assert 'json:"demo_id,omitempty"' in result.output
+
+
 MULTILINE_DESCRIPTION_SCHEMA = """
 id: https://example.org/multiline
 name: multiline_test
