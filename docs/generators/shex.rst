@@ -64,6 +64,8 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
+``--normalize-prefixes`` is described under :ref:`prefix-normalization`.
+
 .. currentmodule:: linkml.generators.shexgen
 
 .. click:: linkml.generators.shexgen:cli

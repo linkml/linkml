@@ -11,6 +11,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
+from linkml.generators.common.prefixes import bind_preferred_prefixes, normalize_prefixes_option, preferred_prefixes
 from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
@@ -142,6 +143,10 @@ class ShaclGenerator(Generator):
     ignores any per-slot ``in_language``.
     """
 
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
+
     diff_stable: bool = False
     """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
 
@@ -210,6 +215,8 @@ class ShaclGenerator(Generator):
 
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
+        if self.normalize_prefixes:
+            bind_preferred_prefixes(g, preferred_prefixes(self.schemaview))
 
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
@@ -972,6 +979,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate SHACL turtle from a LinkML model"""

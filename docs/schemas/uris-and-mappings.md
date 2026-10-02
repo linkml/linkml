@@ -50,6 +50,49 @@ LinkML also provides a way to import prefix maps to avoid repetitively declaring
 best practice to explicitly declare prefix maps, and to use the linter to check for
 consistency with standard prefix registries like bioregistry and prefix.cc.
 
+(prefix-normalization)=
+### Conventional prefix names in generated artifacts
+
+A schema may declare its own name for a well-known namespace, such as `dce` for
+`http://purl.org/dc/elements/1.1/`. By default every generator writes the names the schema
+declares. With `--normalize-prefixes` the generators write the conventional name, here `dc`, and
+all of them write the same name for each namespace. Only names change; every IRI stays the same.
+
+| generator | output for `dce: http://purl.org/dc/elements/1.1/` |
+|---|---|
+| gen-owl, gen-shacl, gen-shex, gen-sparql, gen-yarrrml, gen-sssom | `dc` only |
+| gen-jsonld-context | `dc` in what it writes; `dce` stays defined |
+
+The two groups differ because their prefixes do different jobs:
+
+- In a self-contained document such as Turtle, ShExC or SPARQL, a prefix only abbreviates IRIs
+  within that document: prefixes "are not a formal part of the RDF data model"
+  ([RDF 1.1 Concepts §1.4](https://www.w3.org/TR/rdf11-concepts/#vocabularies)). The document
+  uses the conventional name alone. It renames only the prefixes it declares.
+- A JSON-LD context is shared with the data written against it. A compact IRI whose prefix the
+  context does not define is read as an IRI of its own
+  ([JSON-LD 1.1 §4.1.5](https://www.w3.org/TR/json-ld11/#compact-iris)), so data written as
+  `dce:title` would stop expanding. The context keeps every name the schema declares and adds the
+  conventional one, so data may use either. JSON-LD compaction picks the shortest name
+  ([JSON-LD 1.1 API, IRI Compaction](https://www.w3.org/TR/json-ld11-api/#iri-compaction)), so
+  compacted data may still use the declared one. With `--no-prefixes` nothing is renamed, since the
+  prefixes then come from another context, such as the one gen-prefix-map writes.
+
+The conventional names come from two curated sources, the `linked_data` context of
+[prefixmaps](https://github.com/linkml/prefixmaps) and the names rdflib binds by default;
+crowd-sourced registries such as prefix.cc are not used. One plan per schema decides the names. A
+name that the schema or one of its imports declares keeps denoting its namespace, since LinkML
+expands the CURIEs of data with all of them: `linkml:types` declares `schema` for
+`http://schema.org/`, so a schema's `sdo` for `https://schema.org/` keeps its name unless the
+schema declares `schema` itself. A prefix also keeps its declared name, with a warning, when two
+namespaces want the same conventional name, or when the name is that of a class, slot or
+permissible value, which a JSON-LD context uses as a term.
+
+gen-prefix-map doesn't offer the option, since a prefix map gives each namespace one name, the
+schema's. gen-python, gen-pydantic and gen-namespaces don't either, since their prefix names are part
+of the generated code's interface, and gen-rdf and gen-jsonld write CURIEs as literal data. To
+change the names that users of a schema write, rename the prefixes in the schema itself.
+
 ## class uri and slot uri
 
 Slot and class URIs in LinkML provide the *meaning* for a class or slot, and give a robust and unique place to consistently find information about a class or slot in a LinkML model on the web.

@@ -13,6 +13,7 @@ from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, Triple
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.prefixes import bind_preferred_prefixes, normalize_prefixes_option, preferred_prefixes
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
@@ -42,6 +43,9 @@ class ShExGenerator(Generator):
     # ObjectVars
     diff_stable: bool = False
     """Reduce blank-node label churn in RDF output. See :ref:`rdf-in-version-control`."""
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
 
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
@@ -180,10 +184,14 @@ class ShExGenerator(Generator):
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
+            if self.normalize_prefixes:
+                bind_preferred_prefixes(g, preferred_prefixes(self.prefix_schemaview()))
             shex = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=self.diff_stable)
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)
+            if self.normalize_prefixes:
+                bind_preferred_prefixes(g, preferred_prefixes(self.prefix_schemaview()))
             shex = str(ShExC(self.shex, base=sfx(self.namespaces._base), namespaces=g))
 
         if output:
@@ -270,6 +278,7 @@ class ShExGenerator(Generator):
         "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate a ShEx Schema for a  LinkML model"""

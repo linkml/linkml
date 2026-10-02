@@ -5,6 +5,13 @@ from datetime import date
 import click
 
 from linkml._version import __version__
+from linkml.generators.common.prefixes import (
+    curie_prefixes,
+    document_prefixes,
+    normalize_prefixes_option,
+    preferred_prefixes,
+    standardize_prefix,
+)
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     LINKML,
@@ -57,6 +64,14 @@ class SSSOMGenerator(Generator):
         "close_mappings": "skos:closeMatch",
         "exact_mappings": "skos:exactMatch",
     }
+
+    # The columns whose values are entity references, i.e. CURIEs (SSSOM: ``EntityReference`` slots)
+    curie_columns = frozenset({"subject_id", "predicate_id", "object_id", "match_type"})
+
+    # ObjectVars
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
 
     def __post_init__(self):
         super().__post_init__()
@@ -163,6 +178,16 @@ class SSSOMGenerator(Generator):
         metadata["creator_id"] = "linkml_user"
         metadata["mapping_date"] = date.today().strftime("%Y-%m-%d")
         metadata["curie_map"] = {k: v.prefix_reference for k, v in schema.prefixes.items()}
+        rows = self.table_as_list
+        if self.normalize_prefixes:
+            columns = [i for i, name in enumerate(self.msdf_columns) if name in self.curie_columns]
+            curies = {row[i] for row in rows for i in columns}
+            undeclared = curie_prefixes(list(curies)) - metadata["curie_map"].keys()
+            plan = document_prefixes(metadata["curie_map"], preferred_prefixes(self.prefix_schemaview()), undeclared)
+            metadata["curie_map"] = {record.prefix: record.uri_prefix for record in plan.records}
+            rows = [
+                [standardize_prefix(cell, plan) if i in columns else cell for i, cell in enumerate(row)] for row in rows
+            ]
         with open(self.output_file, "w", encoding="UTF-8") as sssom_tsv:
             for k, v in metadata.items():
                 if k != "curie_map":
@@ -176,12 +201,13 @@ class SSSOMGenerator(Generator):
             # Write column names first
             sssom_tsv.writelines("\t".join(self.msdf_columns) + "\n")
             # Write the msdf next
-            sssom_tsv.writelines("\t".join(i) + "\n" for i in self.table_as_list)
+            sssom_tsv.writelines("\t".join(i) + "\n" for i in rows)
 
 
 @shared_arguments(SSSOMGenerator)
 @click.command(name="sssom")
 @click.option("-o", "--output", help="Output file name")
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate SSSOM TSV to represent a LinkML model"""

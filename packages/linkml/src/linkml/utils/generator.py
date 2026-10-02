@@ -59,6 +59,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.schemaview import load_schema_wrap
 
 logger = logging.getLogger(__name__)
 
@@ -279,6 +280,7 @@ class Generator(metaclass=abc.ABCMeta):
         schema = self.schema
         if isinstance(schema, Path):
             schema = str(schema)
+        self._schema_source = schema
 
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
@@ -798,6 +800,28 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             # Class
             return self.class_identifier_path(slot.range, bool(slot.inlined))
+
+    def prefix_schemaview(self) -> SchemaView:
+        """Return a SchemaView of the schema as given, with its imports unmerged.
+
+        Prefix normalization reads the schema's own prefixes and those of its imports
+        from it (:func:`~linkml.generators.common.prefixes.preferred_prefixes`), the
+        same way for generators built on SchemaView and on SchemaLoader, whose
+        resolved schema has its imports merged.
+        """
+        if self.schemaview is not None:
+            return self.schemaview
+        source = self._schema_source
+        if isinstance(source, Generator):
+            return source.prefix_schemaview()
+        if not isinstance(source, str | SchemaDefinition):
+            source = self.schema
+        elif isinstance(source, str) and "\n" in source and self.base_dir:
+            # SchemaView resolves local imports against the schema's file, which YAML text
+            # has none of; resolve them against base_dir, as SchemaLoader does.
+            source = load_schema_wrap(source)
+            source.source_file = os.path.join(self.base_dir, f"{source.name}.yaml")
+        return SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
 
     def aliased_slot_name(self, slot: SlotDefinitionName | SlotDefinition) -> SlotDefinitionName:
         """Return the overloaded slot name -- the alias if one exists otherwise the actual name

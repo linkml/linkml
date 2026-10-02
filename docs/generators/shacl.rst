@@ -87,6 +87,8 @@ Example Output:
 Command Line
 ^^^^^^^^^^^^
 
+``--normalize-prefixes`` is described under :ref:`prefix-normalization`.
+
 .. currentmodule:: linkml.generators.shaclgen
 
 .. click:: linkml.generators.shaclgen:cli

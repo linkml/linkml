@@ -9,16 +9,22 @@ import click
 from jinja2 import Template
 
 from linkml._version import __version__
+from linkml.generators.common.prefixes import (
+    document_prefixes,
+    normalize_prefixes_option,
+    preferred_prefixes,
+    standardize_prefix,
+)
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import Prefix
+from linkml_runtime.linkml_model.meta import Element, Prefix
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
 template = """
-{% for pfxn, pfx in schema.prefixes.items() -%}
-PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
+{% for pfxn, pfx in prefixes.items() -%}
+PREFIX {{pfxn}}: <{{pfx}}>
 {% endfor %}
 
 {% for cn, c in schema.classes.items() if not c.mixin and not c.abstract %}
@@ -30,11 +36,11 @@ PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
 # @CHECK permitted_{{cn}}
 SELECT ?g ?s ?p WHERE {
  GRAPH ?g {
-  ?s rdf:type {{ schema_view.get_uri(cn) }} ;
+  ?s rdf:type {{ uri(cn) }} ;
      ?p ?o .
   FILTER ( ?p NOT IN (
    {% for sn in schema_view.class_slots(cn) -%}
-   {{ schema_view.get_uri(schema_view.get_slot(sn, attributes=True)) }},
+   {{ uri(schema_view.get_slot(sn, attributes=True)) }},
    {% endfor -%}
    rdf:type ))
  }
@@ -52,11 +58,11 @@ SELECT
   ?subject
   ?predicate WHERE {
  GRAPH ?graph {
-  ?subject rdf:type {{ schema_view.get_uri(cn) }} .
-  FILTER NOT EXISTS { ?subject  {{ schema_view.get_uri(slot) }} ?o  }
+  ?subject rdf:type {{ uri(cn) }} .
+  FILTER NOT EXISTS { ?subject  {{ uri(slot) }} ?o  }
  }
  VALUES ?check { linkml:required }
- VALUES ?predicate { {{schema_view.get_uri(slot)}} }
+ VALUES ?predicate { {{uri(slot)}} }
  {{ extra }}
 }  {{ limit }}
 {% endif %}
@@ -71,19 +77,19 @@ SELECT
   ?object
 WHERE {
  GRAPH ?graph {
-  ?subject rdf:type {{ schema_view.get_uri(cn) }} ;
+  ?subject rdf:type {{ uri(cn) }} ;
      ?predicate ?object .
   FILTER NOT EXISTS {
     ?object rdf:type ?otype .
     FILTER ( ?otype IN (
       {% for a in schema_view.class_descendants(slot.range) -%}
-      {{ schema_view.get_uri(a) }}
+      {{ uri(a) }}
       {{ ", " if not loop.last else "" }}
       {% endfor -%} ))
   }
  }
  VALUES ?check { linkml:range }
- VALUES ?predicate { {{ schema_view.get_uri(slot) }}  }
+ VALUES ?predicate { {{ uri(slot) }}  }
  {{ extra }}
 }  {{ limit }}
 {% endif %}
@@ -140,9 +146,14 @@ class SparqlGenerator(Generator):
     named_graphs: list[str] | None = None
     limit: int | None = None
     sparql: str | None = None
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
 
     def __post_init__(self):
         super().__post_init__()
+        # The plan reads the schema as given, before materialization adds the imports' prefixes.
+        self._prefix_plan = preferred_prefixes(self.schemaview) if self.normalize_prefixes else None
         # Materialization rewrites the schema (attributes -> slots, extra prefixes), so work on a
         # copy: mutating the shared SchemaView corrupts the input for any generator that runs after
         # us under gen-project (#3770). Copying the whole view preserves import-resolution context.
@@ -161,7 +172,20 @@ class SparqlGenerator(Generator):
             limit = f"LIMIT {limit}"
         else:
             limit = ""
-        sparql = template_obj.render(schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra)
+        sv = self.schemaview
+        prefixes = {str(name): str(p.prefix_reference) for name, p in self.schema.prefixes.items()}
+        plan = None
+        if self._prefix_plan is not None:
+            plan = document_prefixes(prefixes, self._prefix_plan)
+            prefixes = {record.prefix: record.uri_prefix for record in plan.records}
+
+        def uri(element: Element | str) -> str:
+            curie = sv.get_uri(element)
+            return curie if plan is None else standardize_prefix(curie, plan)
+
+        sparql = template_obj.render(
+            schema_view=sv, schema=self.schema, prefixes=prefixes, uri=uri, limit=limit, extra=extra
+        )
         self.sparql = sparql
         queries = self.split_sparql(sparql)
         return queries
@@ -196,6 +220,7 @@ class SparqlGenerator(Generator):
 @shared_arguments(SparqlGenerator)
 @click.command(name="sparql")
 @click.option("--dir", "-d", help="Directory in which queries will be deposited")
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir, **kwargs):
     """Generate SPARQL queries for validation
