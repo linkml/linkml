@@ -1,7 +1,6 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
 import difflib
-import inspect
 import os
 import re
 import subprocess
@@ -235,8 +234,7 @@ def test_curie_in_literal_with_hash_not_treated_as_comment():
     assert "ex:bar\\. more" in str(obj)
 
 
-@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
-def test_sort_is_load_bearing(diff_stable: bool) -> None:
+def test_sort_is_load_bearing():
     """Output is byte-identical across subprocesses with different PYTHONHASHSEED values.
 
     RDFC-1.0 stabilizes blank-node labels, but pyoxigraph's ``Dataset`` iteration
@@ -249,8 +247,6 @@ def test_sort_is_load_bearing(diff_stable: bool) -> None:
     """
     program = textwrap.dedent(
         """
-        import sys
-
         from rdflib import BNode, Graph, Literal, URIRef
         from rdflib.namespace import RDF
         from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
@@ -266,7 +262,7 @@ def test_sort_is_load_bearing(diff_stable: bool) -> None:
             g.add((URIRef("http://example.com/x"), URIRef("http://example.com/has"), bn))
             g.add((bn, URIRef("http://example.com/q"), Literal(f"bn_{i}")))
 
-        print(canonicalize_rdf_graph(g, output_format="turtle", diff_stable=sys.argv[1] == "True"), end="")
+        print(canonicalize_rdf_graph(g, output_format="turtle"), end="")
         """
     )
 
@@ -275,7 +271,7 @@ def test_sort_is_load_bearing(diff_stable: bool) -> None:
         # wholesale drops SystemRoot on Windows, which breaks winsock init.
         env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
-            [sys.executable, "-c", program, str(diff_stable)],
+            [sys.executable, "-c", program],
             check=True,
             capture_output=True,
             text=True,
@@ -540,9 +536,12 @@ def _changed_line_count(before: str, after: str) -> int:
     return sum(1 for line in diff if line[:1] in "+-" and not line.startswith(("+++", "---")))
 
 
-def test_diff_stable_is_opt_in() -> None:
-    """Diff-stable labels require an explicit request."""
-    assert inspect.signature(canonicalize_rdf_graph).parameters["diff_stable"].default is False
+def test_diff_stable_without_the_extra_names_the_extra(mock_missing_import) -> None:
+    """Requesting the opt-in path without diffable-rdf says how to install it."""
+    mock_missing_import("diffable_rdf")
+
+    with pytest.raises(ImportError, match=r"linkml-runtime\[diff-stable\]"):
+        canonicalize_rdf_graph(_make_graph_with_bnodes(), diff_stable=True)
 
 
 @pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
