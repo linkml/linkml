@@ -395,7 +395,19 @@ class OwlSchemaGenerator(Generator):
                     if metaslot_range == "uri":
                         obj = URIRef(v)
                     elif metaslot_range == "uriorcurie":
-                        obj = URIRef(this_sv.expand_curie(v))
+                        try:
+                            obj = URIRef(msv.expand_curie(v))
+                        except ValueError:
+                            try:
+                                obj = URIRef(this_sv.expand_curie(v))
+                            except ValueError:
+                                logger.warning(
+                                    "uriorcurie metaslot value %r cannot be expanded to a URI "
+                                    "(neither prefix is registered in the metamodel or schema); "
+                                    "emitting as a relative IRI reference",
+                                    v,
+                                )
+                                obj = URIRef(v)
                     elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
                         obj = Literal(v, lang=lang)
                     else:
@@ -429,10 +441,14 @@ class OwlSchemaGenerator(Generator):
                 if default_prefix in this_sv.schema.prefixes:
                     default_prefix = this_sv.schema.prefixes[default_prefix].prefix_reference
                 k = default_prefix + k
-                k_uri = this_sv.expand_curie(k)
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                except ValueError:
+                    k_uri = None
             else:
-                k_uri = this_sv.expand_curie(k)
-                if k_uri == k:
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                except ValueError:
                     k_uri = None
             if k_uri:
                 if isinstance(v.value, str):
@@ -962,7 +978,12 @@ class OwlSchemaGenerator(Generator):
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
-                eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
+                try:
+                    eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
+                except ValueError:
+                    # equals_string is a bare name or uses an unregistered prefix;
+                    # treat it as a relative URI reference (rdflib resolves against the base)
+                    eq_uri = URIRef(equals_string)
                 owl_exprs.append(eq_uri)
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
