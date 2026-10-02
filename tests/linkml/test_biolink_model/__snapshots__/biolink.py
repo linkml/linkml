@@ -1413,6 +1413,22 @@ class OrganismTaxonToOrganismTaxonInteractionId(OrganismTaxonToOrganismTaxonAsso
 class OrganismTaxonToEnvironmentAssociationId(AssociationId):
     pass
 
+def _coerce_enum_slot(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+
 
 @dataclass(repr=False)
 class MappingCollection(YAMLRoot):
@@ -1481,9 +1497,6 @@ class PredicateMapping(YAMLRoot):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, str):
             self.subject_form_or_variant_qualifier = str(self.subject_form_or_variant_qualifier)
 
@@ -1502,9 +1515,6 @@ class PredicateMapping(YAMLRoot):
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
-
         if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, str):
             self.object_form_or_variant_qualifier = str(self.object_form_or_variant_qualifier)
 
@@ -1516,9 +1526,6 @@ class PredicateMapping(YAMLRoot):
 
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, str):
             self.object_context_qualifier = str(self.object_context_qualifier)
-
-        if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, CausalMechanismQualifierEnum):
-            self.causal_mechanism_qualifier = CausalMechanismQualifierEnum(self.causal_mechanism_qualifier)
 
         if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, str):
             self.anatomical_context_qualifier = str(self.anatomical_context_qualifier)
@@ -1539,6 +1546,11 @@ class PredicateMapping(YAMLRoot):
         self.broad_match = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.broad_match]
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "causal_mechanism_qualifier": ("CausalMechanismQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -3148,8 +3160,6 @@ class RetrievalSource(InformationContentEntity):
 
         if self._is_empty(self.resource_role):
             self.MissingRequiredField("resource_role")
-        if not isinstance(self.resource_role, ResourceRoleEnum):
-            self.resource_role = ResourceRoleEnum(self.resource_role)
 
         if self.upstream_resource_ids is not None and not isinstance(self.upstream_resource_ids, URIorCURIE):
             self.upstream_resource_ids = URIorCURIE(self.upstream_resource_ids)
@@ -3164,6 +3174,11 @@ class RetrievalSource(InformationContentEntity):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"resource_role": ("ResourceRoleEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 class PhysicalEssenceOrOccurrent(YAMLRoot):
@@ -3736,7 +3751,6 @@ class ChemicalEntity(NamedThing):
 
         if not isinstance(self.available_from, list):
             self.available_from = [self.available_from] if self.available_from is not None else []
-        self.available_from = [v if isinstance(v, DrugAvailabilityEnum) else DrugAvailabilityEnum(v) for v in self.available_from]
 
         if self.max_tolerated_dose is not None and not isinstance(self.max_tolerated_dose, str):
             self.max_tolerated_dose = str(self.max_tolerated_dose)
@@ -3754,6 +3768,11 @@ class ChemicalEntity(NamedThing):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -3788,6 +3807,11 @@ class MolecularEntity(ChemicalEntity):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class SmallMolecule(MolecularEntity):
@@ -3820,6 +3844,11 @@ class SmallMolecule(MolecularEntity):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ChemicalMixture(ChemicalEntity):
@@ -3849,15 +3878,8 @@ class ChemicalMixture(ChemicalEntity):
         if self.is_supplement is not None and not isinstance(self.is_supplement, str):
             self.is_supplement = str(self.is_supplement)
 
-        if self.highest_FDA_approval_status is not None and not isinstance(self.highest_FDA_approval_status, ApprovalStatusEnum):
-            self.highest_FDA_approval_status = ApprovalStatusEnum(self.highest_FDA_approval_status)
-
-        if self.drug_regulatory_status_world_wide is not None and not isinstance(self.drug_regulatory_status_world_wide, ApprovalStatusEnum):
-            self.drug_regulatory_status_world_wide = ApprovalStatusEnum(self.drug_regulatory_status_world_wide)
-
         if not isinstance(self.routes_of_delivery, list):
             self.routes_of_delivery = [self.routes_of_delivery] if self.routes_of_delivery is not None else []
-        self.routes_of_delivery = [v if isinstance(v, DrugDeliveryEnum) else DrugDeliveryEnum(v) for v in self.routes_of_delivery]
 
         super().__post_init__(**kwargs)
         if self._is_empty(self.category):
@@ -3865,6 +3887,11 @@ class ChemicalMixture(ChemicalEntity):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -3909,6 +3936,11 @@ class NucleicAcidEntity(MolecularEntity):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -4042,6 +4074,11 @@ class MolecularMixture(ChemicalMixture):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ComplexMolecularMixture(ChemicalMixture):
@@ -4071,6 +4108,11 @@ class ComplexMolecularMixture(ChemicalMixture):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -4298,6 +4340,11 @@ class ProcessedMaterial(ChemicalMixture):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class Drug(MolecularMixture):
@@ -4327,6 +4374,11 @@ class Drug(MolecularMixture):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class EnvironmentalFoodContaminant(ChemicalEntity):
@@ -4353,6 +4405,11 @@ class EnvironmentalFoodContaminant(ChemicalEntity):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class FoodAdditive(ChemicalEntity):
@@ -4378,6 +4435,11 @@ class FoodAdditive(ChemicalEntity):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -4407,6 +4469,11 @@ class Food(ChemicalMixture):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"available_from": ("DrugAvailabilityEnum", True), "highest_FDA_approval_status": ("ApprovalStatusEnum", False), "drug_regulatory_status_world_wide": ("ApprovalStatusEnum", False), "routes_of_delivery": ("DrugDeliveryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -7392,13 +7459,9 @@ class Association(Entity):
 
         if self._is_empty(self.knowledge_level):
             self.MissingRequiredField("knowledge_level")
-        if not isinstance(self.knowledge_level, KnowledgeLevelEnum):
-            self.knowledge_level = KnowledgeLevelEnum(self.knowledge_level)
 
         if self._is_empty(self.agent_type):
             self.MissingRequiredField("agent_type")
-        if not isinstance(self.agent_type, AgentTypeEnum):
-            self.agent_type = AgentTypeEnum(self.agent_type)
 
         if self.negated is not None and not isinstance(self.negated, Bool):
             self.negated = Bool(self.negated)
@@ -7528,6 +7591,11 @@ class Association(Entity):
             return super().__new__(target_cls,*args,**kwargs)
 
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ChemicalEntityAssessesNamedThingAssociation(Association):
@@ -7570,6 +7638,11 @@ class ChemicalEntityAssessesNamedThingAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -7622,6 +7695,11 @@ class ContributorAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GenotypeToGenotypePartAssociation(Association):
@@ -7667,6 +7745,11 @@ class GenotypeToGenotypePartAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -7715,6 +7798,11 @@ class GenotypeToGeneAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GenotypeToVariantAssociation(Association):
@@ -7761,6 +7849,11 @@ class GenotypeToVariantAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GeneToGeneAssociation(Association):
@@ -7797,6 +7890,11 @@ class GeneToGeneAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -7845,6 +7943,11 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GeneToGeneFamilyAssociation(Association):
@@ -7892,6 +7995,11 @@ class GeneToGeneFamilyAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -7979,6 +8087,11 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
@@ -8015,6 +8128,11 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8065,6 +8183,11 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8147,6 +8270,11 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8335,6 +8463,11 @@ class ChemicalToChemicalAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
@@ -8369,16 +8502,15 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
         if self.stoichiometry is not None and not isinstance(self.stoichiometry, int):
             self.stoichiometry = int(self.stoichiometry)
 
-        if self.reaction_direction is not None and not isinstance(self.reaction_direction, ReactionDirectionEnum):
-            self.reaction_direction = ReactionDirectionEnum(self.reaction_direction)
-
-        if self.reaction_side is not None and not isinstance(self.reaction_side, ReactionSideEnum):
-            self.reaction_side = ReactionSideEnum(self.reaction_side)
-
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "reaction_direction": ("ReactionDirectionEnum", False), "reaction_side": ("ReactionSideEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8412,6 +8544,11 @@ class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "reaction_direction": ("ReactionDirectionEnum", False), "reaction_side": ("ReactionSideEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8466,6 +8603,11 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
@@ -8512,6 +8654,11 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8563,23 +8710,14 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.FDA_adverse_event_level is not None and not isinstance(self.FDA_adverse_event_level, FDAIDAAdverseEventEnum):
-            self.FDA_adverse_event_level = FDAIDAAdverseEventEnum(self.FDA_adverse_event_level)
-
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -8591,6 +8729,11 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "FDA_adverse_event_level": ("FDAIDAAdverseEventEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8639,6 +8782,11 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "FDA_adverse_event_level": ("FDAIDAAdverseEventEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GeneToPathwayAssociation(Association):
@@ -8684,6 +8832,11 @@ class GeneToPathwayAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8731,6 +8884,11 @@ class MolecularActivityToPathwayAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ChemicalToPathwayAssociation(Association):
@@ -8776,6 +8934,11 @@ class ChemicalToPathwayAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8840,6 +9003,11 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ChemicalGeneInteractionAssociation(Association):
@@ -8891,23 +9059,8 @@ class ChemicalGeneInteractionAssociation(Association):
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.subject_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.subject_form_or_variant_qualifier)
-
-        if self.subject_part_qualifier is not None and not isinstance(self.subject_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.subject_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_part_qualifier)
-
-        if self.subject_derivative_qualifier is not None and not isinstance(self.subject_derivative_qualifier, ChemicalEntityDerivativeEnum):
-            self.subject_derivative_qualifier = ChemicalEntityDerivativeEnum(self.subject_derivative_qualifier)
-
         if self.subject_context_qualifier is not None and not isinstance(self.subject_context_qualifier, AnatomicalEntityId):
             self.subject_context_qualifier = AnatomicalEntityId(self.subject_context_qualifier)
-
-        if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.object_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.object_form_or_variant_qualifier)
-
-        if self.object_part_qualifier is not None and not isinstance(self.object_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.object_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_part_qualifier)
 
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, AnatomicalEntityId):
             self.object_context_qualifier = AnatomicalEntityId(self.object_context_qualifier)
@@ -8919,6 +9072,11 @@ class ChemicalGeneInteractionAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "subject_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False), "subject_derivative_qualifier": ("ChemicalEntityDerivativeEnum", False), "object_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "object_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -8952,13 +9110,9 @@ class GeneRegulatesGeneAssociation(Association):
 
         if self._is_empty(self.object_aspect_qualifier):
             self.MissingRequiredField("object_aspect_qualifier")
-        if not isinstance(self.object_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.object_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.object_aspect_qualifier)
 
         if self._is_empty(self.object_direction_qualifier):
             self.MissingRequiredField("object_direction_qualifier")
-        if not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self._is_empty(self.qualified_predicate):
             self.MissingRequiredField("qualified_predicate")
@@ -8987,6 +9141,11 @@ class GeneRegulatesGeneAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "object_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9033,6 +9192,11 @@ class ProcessRegulatesProcessAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9091,41 +9255,11 @@ class ChemicalAffectsGeneAssociation(Association):
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
-        if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.subject_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.subject_form_or_variant_qualifier)
-
-        if self.subject_part_qualifier is not None and not isinstance(self.subject_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.subject_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_part_qualifier)
-
-        if self.subject_derivative_qualifier is not None and not isinstance(self.subject_derivative_qualifier, ChemicalEntityDerivativeEnum):
-            self.subject_derivative_qualifier = ChemicalEntityDerivativeEnum(self.subject_derivative_qualifier)
-
-        if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.subject_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.subject_aspect_qualifier)
-
         if self.subject_context_qualifier is not None and not isinstance(self.subject_context_qualifier, AnatomicalEntityId):
             self.subject_context_qualifier = AnatomicalEntityId(self.subject_context_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
-        if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.object_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.object_form_or_variant_qualifier)
-
-        if self.object_part_qualifier is not None and not isinstance(self.object_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.object_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_part_qualifier)
-
-        if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.object_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.object_aspect_qualifier)
-
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, AnatomicalEntityId):
             self.object_context_qualifier = AnatomicalEntityId(self.object_context_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
-
-        if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, CausalMechanismQualifierEnum):
-            self.causal_mechanism_qualifier = CausalMechanismQualifierEnum(self.causal_mechanism_qualifier)
 
         if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, AnatomicalEntityId):
             self.anatomical_context_qualifier = AnatomicalEntityId(self.anatomical_context_qualifier)
@@ -9140,6 +9274,11 @@ class ChemicalAffectsGeneAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "subject_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False), "subject_derivative_qualifier": ("ChemicalEntityDerivativeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "object_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False), "object_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "causal_mechanism_qualifier": ("CausalMechanismQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9199,44 +9338,14 @@ class GeneAffectsChemicalAssociation(Association):
         if not isinstance(self.object, ChemicalEntityId):
             self.object = ChemicalEntityId(self.object)
 
-        if self.subject_form_or_variant_qualifier is not None and not isinstance(self.subject_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.subject_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.subject_form_or_variant_qualifier)
-
-        if self.subject_part_qualifier is not None and not isinstance(self.subject_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.subject_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.subject_part_qualifier)
-
         if self.subject_derivative_qualifier is not None and not isinstance(self.subject_derivative_qualifier, str):
             self.subject_derivative_qualifier = str(self.subject_derivative_qualifier)
-
-        if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.subject_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.subject_aspect_qualifier)
 
         if self.subject_context_qualifier is not None and not isinstance(self.subject_context_qualifier, AnatomicalEntityId):
             self.subject_context_qualifier = AnatomicalEntityId(self.subject_context_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
-        if self.object_form_or_variant_qualifier is not None and not isinstance(self.object_form_or_variant_qualifier, ChemicalOrGeneOrGeneProductFormOrVariantEnum):
-            self.object_form_or_variant_qualifier = ChemicalOrGeneOrGeneProductFormOrVariantEnum(self.object_form_or_variant_qualifier)
-
-        if self.object_part_qualifier is not None and not isinstance(self.object_part_qualifier, GeneOrGeneProductOrChemicalPartQualifierEnum):
-            self.object_part_qualifier = GeneOrGeneProductOrChemicalPartQualifierEnum(self.object_part_qualifier)
-
-        if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.object_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.object_aspect_qualifier)
-
         if self.object_context_qualifier is not None and not isinstance(self.object_context_qualifier, AnatomicalEntityId):
             self.object_context_qualifier = AnatomicalEntityId(self.object_context_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
-
-        if self.object_derivative_qualifier is not None and not isinstance(self.object_derivative_qualifier, ChemicalEntityDerivativeEnum):
-            self.object_derivative_qualifier = ChemicalEntityDerivativeEnum(self.object_derivative_qualifier)
-
-        if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, CausalMechanismQualifierEnum):
-            self.causal_mechanism_qualifier = CausalMechanismQualifierEnum(self.causal_mechanism_qualifier)
 
         if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, AnatomicalEntityId):
             self.anatomical_context_qualifier = AnatomicalEntityId(self.anatomical_context_qualifier)
@@ -9251,6 +9360,11 @@ class GeneAffectsChemicalAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "subject_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_form_or_variant_qualifier": ("ChemicalOrGeneOrGeneProductFormOrVariantEnum", False), "object_part_qualifier": ("GeneOrGeneProductOrChemicalPartQualifierEnum", False), "object_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "object_derivative_qualifier": ("ChemicalEntityDerivativeEnum", False), "causal_mechanism_qualifier": ("CausalMechanismQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9297,6 +9411,11 @@ class DrugToGeneAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9379,6 +9498,11 @@ class MaterialSampleDerivationAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
@@ -9424,6 +9548,11 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9538,6 +9667,11 @@ class DiseaseToExposureEventAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class EntityToOutcomeAssociationMixin(YAMLRoot):
@@ -9627,6 +9761,11 @@ class ExposureEventToOutcomeAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class FrequencyQualifierMixin(YAMLRoot):
@@ -9693,14 +9832,8 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -9709,6 +9842,11 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
             self.disease_context_qualifier = DiseaseId(self.disease_context_qualifier)
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9736,19 +9874,18 @@ class FeatureOrDiseaseQualifiersToEntityMixin(FrequencyQualifierMixin):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9818,6 +9955,11 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
 
         super().__post_init__(**kwargs)
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class PhenotypicFeatureToEntityAssociationMixin(FeatureOrDiseaseQualifiersToEntityMixin):
@@ -9859,6 +10001,11 @@ class PhenotypicFeatureToEntityAssociationMixin(FeatureOrDiseaseQualifiersToEnti
             self.has_percentage = float(self.has_percentage)
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -9919,14 +10066,8 @@ class PhenotypicFeatureToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -9950,6 +10091,11 @@ class PhenotypicFeatureToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10002,6 +10148,11 @@ class InformationContentEntityToNamedThingAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
@@ -10026,6 +10177,11 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
             self.object = DiseaseId(self.object)
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10106,6 +10262,11 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
@@ -10151,6 +10312,11 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10275,14 +10441,8 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -10306,6 +10466,11 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10366,14 +10531,8 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -10397,6 +10556,11 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10477,14 +10641,8 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -10508,6 +10666,11 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10568,14 +10731,8 @@ class CaseToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -10599,6 +10756,11 @@ class CaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10659,14 +10821,8 @@ class BehaviorToBehavioralFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -10690,6 +10846,11 @@ class BehaviorToBehavioralFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10804,17 +10965,8 @@ class GeneToDiseaseOrPhenotypicFeatureAssociation(Association):
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, GeneOrGeneProductOrChemicalEntityAspectEnum):
-            self.subject_aspect_qualifier = GeneOrGeneProductOrChemicalEntityAspectEnum(self.subject_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
-
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
 
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
@@ -10841,6 +10993,11 @@ class GeneToDiseaseOrPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10887,9 +11044,6 @@ class GeneToPhenotypicFeatureAssociation(GeneToDiseaseOrPhenotypicFeatureAssocia
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -10915,6 +11069,11 @@ class GeneToPhenotypicFeatureAssociation(GeneToDiseaseOrPhenotypicFeatureAssocia
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -10957,9 +11116,6 @@ class GeneToDiseaseAssociation(GeneToDiseaseOrPhenotypicFeatureAssociation):
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -10973,6 +11129,11 @@ class GeneToDiseaseAssociation(GeneToDiseaseOrPhenotypicFeatureAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11015,9 +11176,6 @@ class CausalGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -11031,6 +11189,11 @@ class CausalGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11073,9 +11236,6 @@ class CorrelatedGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -11089,6 +11249,11 @@ class CorrelatedGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11132,9 +11297,6 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -11146,12 +11308,16 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
 
         if not isinstance(self.has_evidence, list):
             self.has_evidence = [self.has_evidence] if self.has_evidence is not None else []
-        self.has_evidence = [v if isinstance(v, DruggableGeneCategoryEnum) else DruggableGeneCategoryEnum(v) for v in self.has_evidence]
 
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "has_evidence": ("DruggableGeneCategoryEnum", True)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11205,14 +11371,8 @@ class PhenotypicFeatureToDiseaseAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11227,6 +11387,11 @@ class PhenotypicFeatureToDiseaseAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11274,6 +11439,11 @@ class VariantToGeneAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11326,6 +11496,11 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11393,6 +11568,11 @@ class VariantToPopulationAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class PopulationToPopulationAssociation(Association):
@@ -11438,6 +11618,11 @@ class PopulationToPopulationAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11494,14 +11679,8 @@ class VariantToPhenotypicFeatureAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11525,6 +11704,11 @@ class VariantToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11577,14 +11761,8 @@ class VariantToDiseaseAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11596,6 +11774,11 @@ class VariantToDiseaseAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11648,14 +11831,8 @@ class GenotypeToDiseaseAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11667,6 +11844,11 @@ class GenotypeToDiseaseAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11741,9 +11923,6 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
 
@@ -11757,6 +11936,11 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11799,14 +11983,8 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11818,6 +11996,11 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11860,14 +12043,8 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11879,6 +12056,11 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -11931,14 +12113,8 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -11950,6 +12126,11 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12002,14 +12183,8 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
         if self.subject_aspect_qualifier is not None and not isinstance(self.subject_aspect_qualifier, str):
             self.subject_aspect_qualifier = str(self.subject_aspect_qualifier)
 
-        if self.subject_direction_qualifier is not None and not isinstance(self.subject_direction_qualifier, DirectionQualifierEnum):
-            self.subject_direction_qualifier = DirectionQualifierEnum(self.subject_direction_qualifier)
-
         if self.object_aspect_qualifier is not None and not isinstance(self.object_aspect_qualifier, str):
             self.object_aspect_qualifier = str(self.object_aspect_qualifier)
-
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         if self.qualified_predicate is not None and not isinstance(self.qualified_predicate, str):
             self.qualified_predicate = str(self.qualified_predicate)
@@ -12021,6 +12196,11 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12060,6 +12240,11 @@ class OrganismToOrganismAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class TaxonToTaxonAssociation(Association):
@@ -12097,6 +12282,11 @@ class TaxonToTaxonAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12144,6 +12334,11 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "subject_aspect_qualifier": ("GeneOrGeneProductOrChemicalEntityAspectEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False), "subject_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12199,6 +12394,11 @@ class GeneToExpressionSiteAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class SequenceVariantModulatesTreatmentAssociation(Association):
@@ -12235,6 +12435,11 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12277,6 +12482,11 @@ class FunctionalAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12364,6 +12574,11 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation):
@@ -12410,6 +12625,11 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12458,6 +12678,11 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class MolecularActivityToChemicalEntityAssociation(Association):
@@ -12499,6 +12724,11 @@ class MolecularActivityToChemicalEntityAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12542,6 +12772,11 @@ class MolecularActivityToMolecularActivityAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class GeneToGoTermAssociation(FunctionalAssociation):
@@ -12580,6 +12815,11 @@ class GeneToGoTermAssociation(FunctionalAssociation):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class EntityToDiseaseAssociation(Association):
@@ -12605,16 +12845,15 @@ class EntityToDiseaseAssociation(Association):
         if not isinstance(self.id, EntityToDiseaseAssociationId):
             self.id = EntityToDiseaseAssociationId(self.id)
 
-        if self.clinical_approval_status is not None and not isinstance(self.clinical_approval_status, ClinicalApprovalStatusEnum):
-            self.clinical_approval_status = ClinicalApprovalStatusEnum(self.clinical_approval_status)
-
-        if self.max_research_phase is not None and not isinstance(self.max_research_phase, ResearchPhaseEnum):
-            self.max_research_phase = ResearchPhaseEnum(self.max_research_phase)
-
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "clinical_approval_status": ("ClinicalApprovalStatusEnum", False), "max_research_phase": ("ResearchPhaseEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12641,16 +12880,15 @@ class EntityToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.id, EntityToPhenotypicFeatureAssociationId):
             self.id = EntityToPhenotypicFeatureAssociationId(self.id)
 
-        if self.clinical_approval_status is not None and not isinstance(self.clinical_approval_status, ClinicalApprovalStatusEnum):
-            self.clinical_approval_status = ClinicalApprovalStatusEnum(self.clinical_approval_status)
-
-        if self.max_research_phase is not None and not isinstance(self.max_research_phase, ResearchPhaseEnum):
-            self.max_research_phase = ResearchPhaseEnum(self.max_research_phase)
-
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "clinical_approval_status": ("ClinicalApprovalStatusEnum", False), "max_research_phase": ("ResearchPhaseEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12682,6 +12920,11 @@ class SequenceAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12736,19 +12979,15 @@ class GenomicSequenceLocalization(SequenceAssociation):
         if self.end_interbase_coordinate is not None and not isinstance(self.end_interbase_coordinate, int):
             self.end_interbase_coordinate = int(self.end_interbase_coordinate)
 
-        if self.genome_build is not None and not isinstance(self.genome_build, StrandEnum):
-            self.genome_build = StrandEnum(self.genome_build)
-
-        if self.strand is not None and not isinstance(self.strand, StrandEnum):
-            self.strand = StrandEnum(self.strand)
-
-        if self.phase is not None and not isinstance(self.phase, PhaseEnum):
-            self.phase = PhaseEnum(self.phase)
-
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "genome_build": ("StrandEnum", False), "strand": ("StrandEnum", False), "phase": ("PhaseEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12791,6 +13030,11 @@ class SequenceFeatureRelationship(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class TranscriptToGeneRelationship(SequenceFeatureRelationship):
@@ -12831,6 +13075,11 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12878,6 +13127,11 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class ExonToTranscriptRelationship(SequenceFeatureRelationship):
@@ -12918,6 +13172,11 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -12961,13 +13220,15 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
-        if self.object_direction_qualifier is not None and not isinstance(self.object_direction_qualifier, DirectionQualifierEnum):
-            self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
-
         super().__post_init__(**kwargs)
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False), "object_direction_qualifier": ("DirectionQualifierEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -13001,6 +13262,11 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -13050,6 +13316,11 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToAnatomicalEntityAssociation):
@@ -13097,6 +13368,11 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -13174,6 +13450,11 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAssociation):
@@ -13219,6 +13500,11 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 @dataclass(repr=False)
@@ -13272,6 +13558,11 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
 
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
+
 
 @dataclass(repr=False)
 class OrganismTaxonToEnvironmentAssociation(Association):
@@ -13309,6 +13600,11 @@ class OrganismTaxonToEnvironmentAssociation(Association):
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.category]
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"knowledge_level": ("KnowledgeLevelEnum", False), "agent_type": ("AgentTypeEnum", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 # Enumerations

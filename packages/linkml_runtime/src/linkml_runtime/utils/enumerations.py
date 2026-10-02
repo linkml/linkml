@@ -42,15 +42,24 @@ class EnumDefinitionMeta(type):
                 type.__setattr__(cls, name, cls(attr))
 
     def __getitem__(cls, item):
+        # Walk the MRO so that empty wrapper subclasses (e.g. identifier
+        # wrappers emitted by ``pythongen``) can inherit permissible values
+        # from their parent enum class.  After promotion the attribute is an
+        # ``EnumDefinitionImpl`` instance; raw ``PermissibleValue`` entries
+        # (set directly by user code or by ``_addvals`` before promotion has
+        # run) are returned as-is.  Anything else found on the MRO (the
+        # ``text``/``code`` properties, methods, ``_defn``) is not a code.
         for klass in cls.__mro__:
-            if item in klass.__dict__:
-                return klass.__dict__[item]
+            value = klass.__dict__.get(item)
+            if _is_permissible_entry(value):
+                return value
         raise KeyError(item)
 
     def __setitem__(cls, key, value):
         if key in cls.__dict__:
             raise ValueError(f"{cls.__name__} - {key} already assigned")
-        cls.__dict__[key] = value
+        # ``cls.__dict__`` is a read-only mappingproxy; go through the type.
+        type.__setattr__(cls, key, value)
 
     def __contains__(cls, item) -> bool:
         # Accept strings, ``PermissibleValue`` instances, and ``EnumDefinitionImpl``
@@ -63,12 +72,29 @@ class EnumDefinitionMeta(type):
                 item = code.text
         elif isinstance_dt(item, "PermissibleValue"):
             item = item.text
-        return any(item in klass.__dict__ for klass in cls.__mro__)
+        return any(_is_permissible_entry(klass.__dict__.get(item)) for klass in cls.__mro__)
 
 
 def isinstance_dt(cls: type, inst: str) -> bool:
     """Duck typing isinstance to prevent recursion errors"""
     return inst in [c.__name__ for c in type(cls).mro()]
+
+
+def _is_permissible_entry(value: object) -> bool:
+    """True if ``value`` is an enum member entry.
+
+    That is a promoted ``EnumDefinitionImpl`` instance or a raw
+    ``PermissibleValue``.  ``EnumDefinitionMeta`` lookups use this so that
+    ordinary class attributes that also live on the MRO (the ``text``/``code``
+    properties, methods, ``_defn``) are never mistaken for permissible values.
+    """
+    if value is None:
+        return False
+    if isinstance(value, EnumDefinitionImpl):
+        return True
+    # ``PermissibleValue`` lives in ``linkml_model.meta`` which imports this module,
+    # so duck-type it to avoid a circular import.
+    return isinstance_dt(value, "PermissibleValue")
 
 
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
@@ -82,13 +108,13 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         else:
             key = code
 
-        if key not in self.__class__ and self._defn.code_set:
-            code = self._lookup(key)
-            if code:
-                self.__class__[key] = code
-                self._code = code
-        elif key not in self.__class__:
-            raise ValueError(f"Unknown {self.__class__.__name__} enumeration code: {key}")
+        if key not in self.__class__:
+            # Unknown code: a code_set enum may resolve it via the ``_lookup`` hook.
+            looked_up = self._lookup(key) if self._defn.code_set else None
+            if not looked_up:
+                raise ValueError(f"Unknown {self.__class__.__name__} enumeration code: {key}")
+            self.__class__[key] = looked_up
+            self._code = looked_up
         elif isinstance_dt(code, "PermissibleValue"):
             if getattr(self, "code", None):
                 if self._code != code:
