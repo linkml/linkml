@@ -28,6 +28,67 @@ Code
 .. autoclass:: GolangGenerator
     :members: serialize
 
+JSON Tag Preservation
+---------------------
+
+By default each field's JSON tag is the snake-cased slot name
+(``underscore(slot.alias or slot.name)``). Some schemas need a serialization key
+that cannot be expressed as a Go identifier -- for example a JSON-LD CURIE such as
+``demo:id``, which contains a colon. The generator resolves the tag with the
+following precedence:
+
+1. **Slot CURIE** -- with ``--use-curies`` (or ``use_curies=True``), the tag is the
+   slot's CURIE, resolved with ``SchemaView.get_curie``. This is the same
+   resolution used by the JSON-LD context generator and the JSON Schema generator
+   under their ``--use-curies`` flags, so the Go JSON tags equal the JSON Schema
+   property names and the JSON-LD context keys for the same schema. A declared
+   ``slot_uri`` is compacted to its CURIE (e.g. ``demo:id``); a slot without a
+   declared URI is synthesized as ``<default_prefix>:<name>`` (e.g. ``ex:id``) and
+   compacted.
+2. **Automatic fallback** -- when ``--use-curies`` is not set and snake-casing
+   changes the key (for example an alias containing ``-`` or whitespace), the
+   original ``slot_alias`` is used. This mirrors the Pydantic generator, which
+   preserves the original key via ``Field(alias=...)``.
+3. **Default** -- the snake-cased slot alias (unchanged legacy behavior).
+
+The CURIE mode is opt-in: output is unchanged when it is not enabled. Only the
+JSON tag is affected -- ``go_name`` is still derived from ``camelcase(slot_alias)``,
+so colons never leak into the exported Go field identifier. The negative CLI form
+is ``--not-use-curies``, matching the sibling generators.
+
+Given (``ex`` is the schema's ``default_prefix``):
+
+.. code-block:: yaml
+
+    prefixes:
+      ex: https://example.org/
+      demo: https://example.org/demo/
+    default_prefix: ex
+
+    classes:
+      Entity:
+        slots:
+          - id
+          - demo_id
+
+    slots:
+      id:
+        range: string
+        required: true
+        identifier: true
+      demo_id:
+        range: string
+        slot_uri: demo:id
+
+``gen-golang --use-curies`` produces:
+
+.. code-block:: go
+
+    type Entity struct {
+        Id     string  `json:"ex:id"`
+        DemoId *string `json:"demo:id,omitempty"`
+    }
+
 Package Configuration
 ---------------------
 
