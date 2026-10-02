@@ -1,0 +1,5 @@
+@prefix : <https://neverblink.eu/linkml/tests/basic/> .
+
+_:b1 a :SomeClass;
+    :some_slot "some value";
+    :some_other_slot 123 .
