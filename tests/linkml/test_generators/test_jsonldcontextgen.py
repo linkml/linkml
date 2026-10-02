@@ -1671,15 +1671,7 @@ def test_kitchen_sink_employment_event_type_falls_back(kitchen_sink_path):
             assert "@vocab" not in slot_def.get("@context", {})
 
 
-@pytest.mark.parametrize(
-    "use_curies",
-    [
-        pytest.param(
-            True,
-            marks=pytest.mark.xfail(reason="Issue #4056: @id term is keyed by CURIE", strict=True),
-        )
-    ],
-)
+@pytest.mark.parametrize("use_curies", [True, False])
 def test_identifier_slot_aliases_id(tmp_path, use_curies):
     """Identifier slots without slot_uri must alias @id.
 
@@ -1718,15 +1710,7 @@ def test_identifier_slot_aliases_id(tmp_path, use_curies):
     assert not any(k.endswith(":id") for k in ctx)
 
 
-@pytest.mark.parametrize(
-    "use_curies",
-    [
-        pytest.param(
-            True,
-            marks=pytest.mark.xfail(reason="Issue #4056: identifier slot_uri is emitted as a CURIE key", strict=True),
-        )
-    ],
-)
+@pytest.mark.parametrize("use_curies", [True, False])
 def test_identifier_slot_with_slot_uri_aliases_id(tmp_path, use_curies):
     """Identifier slots with slot_uri must still alias @id (slot_uri is ignored).
 
