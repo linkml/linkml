@@ -195,6 +195,58 @@ class ProtoGenerator(Generator):
             return camelcase(slot_range)
         return _PROTO_DEFAULT_SCALAR
 
+    def _identifier_slot_for(self, cls_name: str) -> SlotDefinition | None:
+        """Return the identifier slot of *cls_name*, walking ``is_a`` if needed.
+
+        Mirrors ``schemaview.get_identifier_slot`` against the SchemaLoader-merged
+        schema (this generator uses ``uses_schemaloader = True`` so it does not
+        carry a SchemaView).
+        """
+        cls = self.schema.classes.get(cls_name)
+        if cls is None:
+            return None
+        for sname in cls.slots or []:
+            s = self.schema.slots.get(sname)
+            if s is not None and s.identifier:
+                return s
+        if cls.is_a:
+            return self._identifier_slot_for(cls.is_a)
+        return None
+
+    def _is_inlined(self, slot: SlotDefinition) -> bool:
+        """Approximate ``schemaview.is_inlined`` against the merged schema.
+
+        A slot is inlined when its value carries the full nested object, rather
+        than a bare identifier reference. The rules we honour, in order:
+
+          1. ``slot.inlined`` or ``slot.inlined_as_list`` set explicitly -> True.
+          2. Range is a class with no identifier slot -> True (forced inline:
+             references aren't possible without an identifier).
+          3. Range is not a class (scalar/enum/missing) -> True (vacuously).
+          4. Otherwise -> False (identifier reference).
+        """
+        if slot.inlined or slot.inlined_as_list:
+            return True
+        if slot.range and slot.range in self.schema.classes:
+            return self._identifier_slot_for(slot.range) is None
+        return True
+
+    def _proto_range_for_slot(self, slot: SlotDefinition) -> str:
+        """Resolve *slot* to a proto3 type, honouring inlined-vs-reference.
+
+        When the slot range is a class **and** the slot is not inlined, the
+        proto field carries the identifier scalar of the range class instead
+        of a nested message reference. This is the wire-correct mapping:
+        an "Address" reference becomes ``string address`` (carrying the
+        Address's id), not ``Address address`` (which would inline the
+        whole nested message).
+        """
+        if slot.range and slot.range in self.schema.classes and not self._is_inlined(slot):
+            id_slot = self._identifier_slot_for(slot.range)
+            if id_slot is not None:
+                return self._proto_range(id_slot.range)
+        return self._proto_range(slot.range)
+
     def _proto_scalar_for_type(self, type_name: str) -> str:
         """Map a LinkML type to a proto3 scalar by walking its ``typeof`` chain.
 
@@ -263,18 +315,28 @@ class ProtoGenerator(Generator):
         # message, and reserves 19000-19999. Honor LinkML's `rank` slot (allow
         # pinning numbers for wire compatibility) and auto-assign the rest (starting
         # at 1), skipping numbers already claimed by rank, and reserved range.
+        #
+        # W6: when no slot has an explicit rank, pin the identifier slot
+        # (if any) to field number 1. This matches the proto3 convention
+        # used by phenopackets, FHIR-on-proto, and other wire-shaped schemas
+        # where the identifier always lives at field 1.
 
         # Doing this once up front keeps visit_class_slot a simple lookup.
-        used_ranks = {s.rank for s in self.all_slots(cls) if s.rank}
+        slots = list(self.all_slots(cls))
+        self._field_numbers = {s.name: s.rank for s in slots if s.rank}
+        if not self._field_numbers:
+            id_slot = next((s for s in slots if s.identifier), None)
+            if id_slot is not None:
+                self._field_numbers[id_slot.name] = 1
+        used = set(self._field_numbers.values())
         next_auto = 1
-        self._field_numbers = {}
-        for slot in self.all_slots(cls):
-            if slot.rank:
-                self._field_numbers[slot.name] = slot.rank
-            else:
-                next_auto = self._next_field_number(next_auto, used_ranks)
-                self._field_numbers[slot.name] = next_auto
-                next_auto += 1
+        for slot in slots:
+            if slot.name in self._field_numbers:
+                continue
+            next_auto = self._next_field_number(next_auto, used)
+            self._field_numbers[slot.name] = next_auto
+            used.add(next_auto)
+            next_auto += 1
 
         items = []
         if cls.description:
@@ -293,13 +355,26 @@ class ProtoGenerator(Generator):
         # (no leading or trailing `_`, no `__`, no `_<digit>`).
         slotname = _to_proto_ident(underscore(aliased_slot_name))
 
-        slot_range = self._proto_range(slot.range)
+        # W2: non-inlined class ranges resolve to the identifier scalar of the
+        # range class (typically `string`) rather than the class name. This is
+        # what proto3 wire consumers actually need - a reference, not an
+        # inlined nested message.
+        slot_range = self._proto_range_for_slot(slot)
         lines: list[str] = []
         # Slot description -> `//` comments, mirroring the class-level loop in
         # visit_class. Useful for both meta and wire consumers.
         if slot.description:
             for dline in slot.description.split("\n"):
                 lines.append(f"  // {dline}")
+        # W6: mark the identifier slot. Cheap signal for downstream consumers
+        # and matches how phenopackets/FHIR proto files annotate their id field.
+        if slot.identifier:
+            lines.append("  // identifier")
+        # W8: proto3 has no `required` keyword (it was dropped from proto2),
+        # but a comment is still useful for downstream consumers and for
+        # round-trip into LinkML.
+        if slot.required:
+            lines.append("  // required")
         # Every proto3 field statement must end with `;` - without it `protoc`
         # rejects the file. The field number comes from the pre-computed map
         # built in visit_class so we never emit forbidden ""= 0".
