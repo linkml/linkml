@@ -20,6 +20,7 @@ from rdflib.plugin import plugins as rdflib_plugins
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.generators.common.annotations import declared_annotation
+from linkml.generators.common.prefixes import bind_preferred_prefixes, normalize_prefixes_option, preferred_prefixes
 from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
@@ -123,6 +124,10 @@ class OwlSchemaGenerator(Generator):
     """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
 
     # ObjectVars
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
+
     diff_stable: bool = False
     """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
 
@@ -391,6 +396,8 @@ class OwlSchemaGenerator(Generator):
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in schema.prefixes.values():
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
+        if self.normalize_prefixes:
+            bind_preferred_prefixes(graph, preferred_prefixes(self.schemaview))
         graph.add((base, RDF.type, OWL.Ontology))
 
         # Add main schema elements
@@ -2018,6 +2025,7 @@ class OwlSchemaGenerator(Generator):
         "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile: str, metadata_profile: str, **kwargs: Any) -> None:
     """Generate an OWL representation of a LinkML model

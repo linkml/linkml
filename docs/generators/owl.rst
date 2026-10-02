@@ -116,6 +116,13 @@ for each property (§5.8.1). Slots without the role keep their object or data pr
 projection, also when a metaclass declares them; LinkML then puns the annotated element
 as an individual, as it does for all metadata.
 
+Prefix normalization
+^^^^^^^^^^^^^^^^^^^^
+
+``--normalize-prefixes`` writes the conventional names of well-known namespaces, the same in
+every generator; see :ref:`prefix-normalization`.
+
+
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
