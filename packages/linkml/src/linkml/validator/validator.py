@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, TextIO
@@ -22,6 +22,11 @@ class Validator:
         :class:`linkml.validator.plugins.ValidationPlugin`. Defaults to ``None``.
     :param strict: If ``True``, stop validating after the first validation problem
         is found. Defaults to ``False``.
+    :param importmap: A map used to resolve the schema's imports. Values may be
+        file-path/URL strings or in-memory schema dicts. Imports on the schema are
+        left intact and resolved through this map when the JSON Schema is generated,
+        so schemas with custom import URIs (for example, stored in a database) can be
+        validated without pre-merging or clearing their imports. Defaults to ``None``.
     """
 
     def __init__(
@@ -30,6 +35,7 @@ class Validator:
         validation_plugins: list[ValidationPlugin] | None = None,
         *,
         strict: bool = False,
+        importmap: Mapping[str, str | dict] | None = None,
     ) -> None:
         if isinstance(schema, Path):
             schema = str(schema)
@@ -41,6 +47,7 @@ class Validator:
             self._schema.source_file = schema
         self._validation_plugins = validation_plugins
         self.strict = strict
+        self._importmap = importmap
 
     def validate(self, instance: Any, target_class: str | None = None) -> ValidationReport:
         """Validate the given instance
@@ -119,4 +126,4 @@ class Validator:
 
     @lru_cache
     def _context(self, target_class: str | None = None) -> ValidationContext:
-        return ValidationContext(self._schema, target_class)
+        return ValidationContext(self._schema, target_class, importmap=self._importmap)
