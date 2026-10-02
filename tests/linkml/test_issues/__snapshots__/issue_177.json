@@ -1,7 +1,7 @@
 {
     "$defs": {
         "C1": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "sa": {
@@ -21,7 +21,7 @@
             "type": "object"
         },
         "C2": {
-            "additionalProperties": true,
+            "additionalProperties": false,
             "description": "",
             "properties": {
                 "sb": {
@@ -37,7 +37,7 @@
     },
     "$id": "http://example.org/tests/issue177",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "",
     "metamodel_version": "1.11.0",
     "properties": {

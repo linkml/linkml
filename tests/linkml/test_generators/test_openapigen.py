@@ -3,7 +3,7 @@ from textwrap import dedent
 
 import pytest
 import yaml
-from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from openapi_spec_validator import OpenAPIV30SpecValidator, OpenAPIV31SpecValidator, validate
 from referencing.exceptions import PointerToNowhere
 
 from linkml.generators.openapigen import OpenApiGenerator
@@ -13,6 +13,19 @@ from linkml_runtime.loaders import YAMLLoader
 # ---------------------------------------------------------------------------
 # Reusable YAML fragments
 # ---------------------------------------------------------------------------
+
+# OpenAPI versions the test-suite is driven with, mapped to the validator class from
+# openapi-spec-validator used to check the generated specs. The generator selects the
+# generation path from the template's top-level ``openapi`` attribute, so a version is
+# exercised simply by advertising it in the template. Extend this dict together with
+# the generator when a new OpenAPI version becomes supported.
+OAS_VALIDATORS: dict[str, type] = {
+    "3.0.3": OpenAPIV30SpecValidator,
+    "3.1.0": OpenAPIV31SpecValidator,
+}
+
+# Default OpenAPI version used by templates/tests that are not version-parametrized.
+DEFAULT_OAS_VERSION = "3.0.3"
 
 # LinkML schema document preamble shared by the inline enum/chain test schemas.
 LINKML_HEADER = """\
@@ -25,7 +38,7 @@ imports:
 
 # OpenAPI template header (title + quoted version) shared by most small templates.
 OPENAPI_HEADER = """\
-openapi: 3.0.3
+openapi: {oas_version}
 info:
   title: {title}
   version: '1.0.0'
@@ -202,6 +215,7 @@ def openapi_template(
     header: str = "",
     comment: str = "",
     components: str = "",
+    oas_version: str = DEFAULT_OAS_VERSION,
 ) -> str:
     """Compose an OpenAPI template from the shared header, endpoints and schemas.
 
@@ -211,8 +225,9 @@ def openapi_template(
     :param header: optional extra header block (e.g. servers/security)
     :param comment: optional leading comment line(s)
     :param components: extra ``components`` sections before ``schemas`` (e.g. responses)
+    :param oas_version: the OpenAPI version the template advertises
     """
-    doc = dedent(OPENAPI_HEADER).format(title=title)
+    doc = dedent(OPENAPI_HEADER).format(title=title, oas_version=oas_version)
     if header:
         doc += dedent(header) + "\n"
     doc += "paths:\n"
@@ -238,6 +253,7 @@ def single_endpoint_template(
     header: str = "",
     comment: str = "",
     secure: bool = False,
+    oas_version: str = DEFAULT_OAS_VERSION,
 ) -> str:
     """Compose a template with one GET endpoint referencing one generated schema.
 
@@ -250,10 +266,13 @@ def single_endpoint_template(
     :param header: optional extra header block (e.g. servers/security)
     :param comment: optional leading comment line(s)
     :param secure: add per-endpoint ``security``
+    :param oas_version: the OpenAPI version the template advertises
     """
     endpoint = get_endpoint(path_name, schema_name, description=description, secure=secure)
     schemas = schema_stub(schema_name, schema_id, source)
-    return openapi_template(title, endpoints=endpoint, schemas=schemas, header=header, comment=comment)
+    return openapi_template(
+        title, endpoints=endpoint, schemas=schemas, header=header, comment=comment, oas_version=oas_version
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -320,177 +339,265 @@ SCHEMA_UNREFERENCED_WITH_UNRELATED = linkml_schema("unreferenced_with_unrelated"
 # Inline OpenAPI templates
 # ---------------------------------------------------------------------------
 
-TEMPLATE_ENDPOINT_ENUM = single_endpoint_template(
-    "Endpoint Enum Test",
-    "/fixed-enum",
-    "FixedEnum",
-    schema_id=ENDPOINT_ENUM_ID,
-    source="FixedEnum",
-    description="ok",
-)
 
-TEMPLATE_ENUM_SLOT_DESCRIPTION = single_endpoint_template(
-    "Enum Slot Description Test",
-    "/foo",
-    "Foo",
-    schema_id=ENUM_SLOT_DESCRIPTION_ID,
-    source="Foo",
-    description="ok",
-)
+def template_endpoint_enum(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint references an enum defined in the LinkML schema.
 
-TEMPLATE_EXAMPLES = single_endpoint_template(
-    "LinkML examples test",
-    "/api/with-examples",
-    "WithExamples",
-    schema_id=TYPES_AND_ENUMS_ID,
-    source="WithExamples",
-    header=TEMPLATE_SERVERS_SECURITY,
-    comment="# OpenAPI template referring a class whose slot declares multiple examples",
-)
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Endpoint Enum Test",
+        "/fixed-enum",
+        "FixedEnum",
+        schema_id=ENDPOINT_ENUM_ID,
+        source="FixedEnum",
+        description="ok",
+        oas_version=oas_version,
+    )
 
-TEMPLATE_FIXED = openapi_template(
-    "LinkML tests",
-    endpoints=POST_FIXED,
-    schemas="",
-    header=TEMPLATE_SERVERS_SECURITY,
-    comment="# OpenAPI template provided as template that is fully fixed\n# because there are no fields to be replaced",
-)
 
-TEMPLATE_KEEP_SCOPED = single_endpoint_template(
-    "Keep Unreferenced Scoped Test",
-    "/api/foo",
-    "Foo",
-    schema_id=UNREFERENCED_WITH_UNRELATED_ID,
-    source="Foo",
-)
+def template_enum_slot_description(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose referenced class has a slot-level enum description.
 
-TEMPLATE_LOWERCASE_CLASS = single_endpoint_template(
-    "LinkML tests",
-    "/api/dataset",
-    "Dataset",
-    schema_id=KITCHEN_SINK_ID,
-    source="Dataset",
-)
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Enum Slot Description Test",
+        "/foo",
+        "Foo",
+        schema_id=ENUM_SLOT_DESCRIPTION_ID,
+        source="Foo",
+        description="ok",
+        oas_version=oas_version,
+    )
 
-TEMPLATE_MISSING_XLINKML_SOURCE = """\
-openapi: 3.0.3
-info: {title: Foo API, version: "1.0"}
-paths:
-  /foo:
-    get:
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/Foo'}
-components:
-  schemas:
-""" + "".join(
-    [
-        schema_stub("Foo", FOO_ID, "Foo"),
-        """\
+
+def template_examples(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose referenced class declares multiple slot examples.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "LinkML examples test",
+        "/api/with-examples",
+        "WithExamples",
+        schema_id=TYPES_AND_ENUMS_ID,
+        source="WithExamples",
+        header=TEMPLATE_SERVERS_SECURITY,
+        comment="# OpenAPI template referring a class whose slot declares multiple examples",
+        oas_version=oas_version,
+    )
+
+
+def template_fixed(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a fully fixed template with no replaceable fields.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "LinkML tests",
+        endpoints=POST_FIXED,
+        schemas="",
+        header=TEMPLATE_SERVERS_SECURITY,
+        comment="# OpenAPI template provided as template that is fully fixed\n"
+        + "# because there are no fields to be replaced",
+        oas_version=oas_version,
+    )
+
+
+def template_keep_scoped(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose single schema keeps ``keep_unreferenced`` scoped.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Keep Unreferenced Scoped Test",
+        "/api/foo",
+        "Foo",
+        schema_id=UNREFERENCED_WITH_UNRELATED_ID,
+        source="Foo",
+        oas_version=oas_version,
+    )
+
+
+def template_lowercase_class(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint references a lowercase-named LinkML class.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "LinkML tests",
+        "/api/dataset",
+        "Dataset",
+        schema_id=KITCHEN_SINK_ID,
+        source="Dataset",
+        oas_version=oas_version,
+    )
+
+
+def template_renamed_type(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template exposing a LinkML type under a different OpenAPI resource name.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Renamed Type Test",
+        "/fixed",
+        "Fixed",
+        schema_id=TYPES_AND_ENUMS_ID,
+        source="FixedType",
+        description="ok",
+        oas_version=oas_version,
+    )
+
+
+def template_renaming(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template exposing a LinkML class under a different OpenAPI resource name."""
+    return single_endpoint_template(
+        "LinkML tests - renaming",
+        "/api/persons",
+        "PersonResource",
+        schema_id=KITCHEN_SINK_ID,
+        source="Person",
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+def template_missing_xlinkml_source(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose second schema stub omits the ``x-linkml-source`` key.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Foo API",
+        endpoints=get_endpoint("/foo", "Foo", description="ok"),
+        schemas=""
+        + "".join(
+            [
+                schema_stub("Foo", FOO_ID, "Foo"),
+                """\
     Bar:
       type: object
       x-linkml-schema: https://example.org/foo
 """,
-    ]
-)
+            ]
+        ),
+        oas_version=oas_version,
+    )
 
-TEMPLATE_RENAMED_TYPE = single_endpoint_template(
-    "Renamed Type Test",
-    "/fixed",
-    "Fixed",
-    schema_id=TYPES_AND_ENUMS_ID,
-    source="FixedType",
-    description="ok",
-)
 
-TEMPLATE_RENAMING = single_endpoint_template(
-    "LinkML tests - renaming",
-    "/api/persons",
-    "PersonResource",
-    schema_id=KITCHEN_SINK_ID,
-    source="Person",
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+def template_shared_responses(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template referencing a reusable ``components/responses`` entry.
 
-TEMPLATE_SHARED_RESPONSES = openapi_template(
-    "Shared Responses Test",
-    endpoints=get_endpoint(
-        "/foo",
-        "Person",
-        description="ok",
-        responses="""        '404':
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Shared Responses Test",
+        endpoints=get_endpoint(
+            "/foo",
+            "Person",
+            description="ok",
+            responses="""        '404':
           $ref: '#/components/responses/NotFound'
 """,
-    ),
-    schemas=schema_stub("Person", KITCHEN_SINK_ID, "Person"),
-    components="""  responses:
+        ),
+        schemas=schema_stub("Person", KITCHEN_SINK_ID, "Person"),
+        components="""  responses:
     NotFound:
       description: not found
 """,
-)
+        oas_version=oas_version,
+    )
 
-TEMPLATE_REFERENCED_PARAMETER = openapi_template(
-    "t",
-    endpoints=get_endpoint(
-        "/foo",
-        "Foo",
-        description="ok",
-        extra="""      parameters:
+
+def template_referenced_parameter(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint parameter is given as a ``$ref``.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "t",
+        endpoints=get_endpoint(
+            "/foo",
+            "Foo",
+            description="ok",
+            extra="""      parameters:
         - $ref: '#/components/parameters/Limit'
 """,
-    ),
-    schemas=schema_stub("Foo", FOO_ID, "Foo"),
-    components="""  parameters:
+        ),
+        schemas=schema_stub("Foo", FOO_ID, "Foo"),
+        components="""  parameters:
     Limit:
       name: limit
       in: query
       schema:
         type: integer
 """,
-)
+        oas_version=oas_version,
+    )
 
-TEMPLATE_TYPES = single_endpoint_template(
-    "LinkML type constraints test",
-    "/api/code",
-    "CodeStringRef",
-    schema_id=TYPES_AND_ENUMS_ID,
-    source="CodeString",
-    comment="# OpenAPI template referring a Type defined in the LinkML schema",
-)
 
-TEMPLATE_TYPES_ENUMS = single_endpoint_template(
-    "Types and Enums Test",
-    "/api/fixed",
-    "FixedType",
-    schema_id=TYPES_AND_ENUMS_ID,
-    source="FixedType",
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+def template_types(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint references a LinkML Type (constraints inlined)."""
+    return single_endpoint_template(
+        "LinkML type constraints test",
+        "/api/code",
+        "CodeStringRef",
+        schema_id=TYPES_AND_ENUMS_ID,
+        source="CodeString",
+        comment="# OpenAPI template referring a Type defined in the LinkML schema",
+        oas_version=oas_version,
+    )
 
-TEMPLATE_WRONG_SCHEMA_ID = single_endpoint_template(
-    "LinkML tests - wrong schema id",
-    "/api/endpoint1",
-    "Person",
-    schema_id=WRONG_SCHEMA_ID,
-    source="Person",
-    header=TEMPLATE_SERVERS_SECURITY,
-)
 
-TEMPLATE_COMMENTS = openapi_template(
-    "Comment Preservation Test",
-    endpoints=get_endpoint(
-        "/api/person",
+def template_types_enums(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose endpoint references a LinkML type.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Types and Enums Test",
+        "/api/fixed",
+        "FixedType",
+        schema_id=TYPES_AND_ENUMS_ID,
+        source="FixedType",
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+def template_wrong_schema_id(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose schema declares a mismatched ``x-linkml-schema`` id."""
+    return single_endpoint_template(
+        "LinkML tests - wrong schema id",
+        "/api/endpoint1",
         "Person",
-        secure=True,
-        comment="# this endpoint comment must survive",
-    ),
-    schemas=schema_stub("Person", KITCHEN_SINK_ID, "Person"),
-    header=TEMPLATE_SERVERS_SECURITY,
-    comment="# top-level comment must survive round-trip",
-)
+        schema_id=WRONG_SCHEMA_ID,
+        source="Person",
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+def template_comments(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template carrying comments on the header and an endpoint.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Comment Preservation Test",
+        endpoints=get_endpoint(
+            "/api/person",
+            "Person",
+            secure=True,
+            comment="# this endpoint comment must survive",
+        ),
+        schemas=schema_stub("Person", KITCHEN_SINK_ID, "Person"),
+        header=TEMPLATE_SERVERS_SECURITY,
+        comment="# top-level comment must survive round-trip",
+        oas_version=oas_version,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -510,72 +617,107 @@ TEMPLATE_CHAIN_UNREFERENCED = openapi_template(
     header=TEMPLATE_SERVERS_SECURITY,
 )
 
-TEMPLATE_KEEP_UNREFERENCED = openapi_template(
-    "Keep Unreferenced Test",
-    endpoints=get_endpoint("/api/person", "Person", secure=True),
-    schemas=schema_stubs(
-        [
-            ("Person", KITCHEN_SINK_ID, "Person"),
-            ("OpaqueEvent", KITCHEN_SINK_ID, "MarriageEvent"),
-        ]
-    ),
-    header=TEMPLATE_SERVERS_SECURITY,
-)
 
-TEMPLATE_SHARED_ENUM = openapi_template(
-    "Shared Enum Test",
-    endpoints=get_endpoint("/foo", "Foo", description="ok") + get_endpoint("/bar", "Bar", description="ok"),
-    schemas=schema_stubs(
-        [
-            ("Foo", SHARED_ENUM_ID, "Foo"),
-            ("Bar", SHARED_ENUM_ID, "Bar"),
-        ]
-    ),
-)
+def template_keep_unreferenced(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose second schema is not referenced by any endpoint.
 
-TEMPLATE_DANGLING_REF = openapi_template(
-    "Dangling Reference Test",
-    endpoints=get_endpoint("/api/person", "Person", secure=True) + get_endpoint("/api/foo", "Foo", secure=True),
-    schemas=schema_stubs(
-        [
-            ("Person", KITCHEN_SINK_ID, "Person"),
-            ("Foo", KITCHEN_SINK_ID, "NonExistentClass"),
-        ]
-    ),
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Keep Unreferenced Test",
+        endpoints=get_endpoint("/api/person", "Person", secure=True),
+        schemas=schema_stubs(
+            [
+                ("Person", KITCHEN_SINK_ID, "Person"),
+                ("OpaqueEvent", KITCHEN_SINK_ID, "MarriageEvent"),
+            ]
+        ),
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
 
-TEMPLATE_DANGLING_REFS_MULTIPLE = openapi_template(
-    "Multiple Dangling References Test",
-    endpoints=(
-        get_endpoint("/api/person", "Person", secure=True)
-        + get_endpoint("/api/foo", "Foo", secure=True)
-        + get_endpoint("/api/bar", "Bar", secure=True)
-    ),
-    schemas=schema_stubs(
-        [
-            ("Person", KITCHEN_SINK_ID, "Person"),
-            ("Foo", KITCHEN_SINK_ID, "NonExistentClassFoo"),
-            ("Bar", KITCHEN_SINK_ID, "NonExistentClassBar"),
-        ]
-    ),
-    header=TEMPLATE_SERVERS_SECURITY,
-)
 
-TEMPLATE_HEAD = openapi_template(
-    "LinkML tests",
-    endpoints=POST_MEDICAL_EVENT
-    + get_endpoint("/api/person", "Person", secure=True)
-    + get_endpoint("/api/endpoint2", "MarriageEvent", secure=True),
-    schemas=schema_stubs(
-        [
-            ("MedicalEvent", KITCHEN_SINK_ID, "MedicalEvent"),
-            ("Person", KITCHEN_SINK_ID, "Person"),
-            ("MarriageEvent", KITCHEN_SINK_ID, "MarriageEvent"),
-        ]
-    ),
-    header=TEMPLATE_SERVERS_SECURITY,
-)
+def template_shared_enum(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose two endpoints reference classes sharing an enum.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Shared Enum Test",
+        endpoints=get_endpoint("/foo", "Foo", description="ok") + get_endpoint("/bar", "Bar", description="ok"),
+        schemas=schema_stubs(
+            [
+                ("Foo", SHARED_ENUM_ID, "Foo"),
+                ("Bar", SHARED_ENUM_ID, "Bar"),
+            ]
+        ),
+        oas_version=oas_version,
+    )
+
+
+def template_dangling_ref(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template with one schema sourced from a non-existent LinkML class.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Dangling Reference Test",
+        endpoints=get_endpoint("/api/person", "Person", secure=True) + get_endpoint("/api/foo", "Foo", secure=True),
+        schemas=schema_stubs(
+            [
+                ("Person", KITCHEN_SINK_ID, "Person"),
+                ("Foo", KITCHEN_SINK_ID, "NonExistentClass"),
+            ]
+        ),
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+def template_dangling_refs_multiple(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template with several schemas sourced from non-existent LinkML classes.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "Multiple Dangling References Test",
+        endpoints=(
+            get_endpoint("/api/person", "Person", secure=True)
+            + get_endpoint("/api/foo", "Foo", secure=True)
+            + get_endpoint("/api/bar", "Bar", secure=True)
+        ),
+        schemas=schema_stubs(
+            [
+                ("Person", KITCHEN_SINK_ID, "Person"),
+                ("Foo", KITCHEN_SINK_ID, "NonExistentClassFoo"),
+                ("Bar", KITCHEN_SINK_ID, "NonExistentClassBar"),
+            ]
+        ),
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
+
+
+def template_head(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose the kitchen_sink template with one post and two get endpoints.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return openapi_template(
+        "LinkML tests",
+        endpoints=POST_MEDICAL_EVENT
+        + get_endpoint("/api/person", "Person", secure=True)
+        + get_endpoint("/api/endpoint2", "MarriageEvent", secure=True),
+        schemas=schema_stubs(
+            [
+                ("MedicalEvent", KITCHEN_SINK_ID, "MedicalEvent"),
+                ("Person", KITCHEN_SINK_ID, "Person"),
+                ("MarriageEvent", KITCHEN_SINK_ID, "MarriageEvent"),
+            ]
+        ),
+        header=TEMPLATE_SERVERS_SECURITY,
+        oas_version=oas_version,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -600,21 +742,40 @@ def gen_openapi_spec(head_path, kitchen_sink_path):
     return openapigen.serialize(head_path)
 
 
+def assert_fixed_value(schema: dict, expected, oas_version: str) -> None:
+    """Assert a fixed-value schema exposes ``expected`` via the const/enum keyword of its version.
+
+    The v3.0.3 JsonSchema path emits a fixed LinkML type as a single-item ``enum`` while
+    the v3.1.0 Pydantic path keeps JSON Schema's native ``const``.
+    """
+    if oas_version == "3.0.3":
+        assert schema["enum"] == [expected]
+        assert "const" not in schema
+    else:
+        assert schema["const"] == expected
+        assert "enum" not in schema
+
+
+@pytest.fixture(params=list(OAS_VALIDATORS))
+def oas_version(request):
+    """The OpenAPI version under test; drives the version-parametrized fixtures/tests."""
+    return request.param
+
+
 @pytest.fixture
-def openapi_spec(tmp_path, kitchen_sink_path):
-    head_path = write_template(tmp_path, TEMPLATE_HEAD)
-    openapigen = OpenApiGenerator(kitchen_sink_path)
-    return yaml.safe_load(openapigen.serialize(head_path))
+def openapi_spec(tmp_path, kitchen_sink_path, oas_version):
+    head_path = write_template(tmp_path, template_head(oas_version=oas_version))
+    return yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path))
 
 
-def test_openapi(tmp_path, kitchen_sink_path):
+def test_openapi(tmp_path, kitchen_sink_path, oas_version):
     """Test if generation succeeds without failure and returns valid YAML."""
-    head_path = write_template(tmp_path, TEMPLATE_HEAD)
+    head_path = write_template(tmp_path, template_head(oas_version=oas_version))
     openapi_spec = gen_openapi_spec(head_path, kitchen_sink_path)
     # ensure that valid YAML has been generated
     assert yaml.safe_load(openapi_spec)
     # ensure that valid OpenAPI spec has been generated
-    assert validate(yaml.safe_load(openapi_spec), cls=OpenAPIV30SpecValidator) is None
+    assert validate(yaml.safe_load(openapi_spec), cls=OAS_VALIDATORS[oas_version]) is None
 
 
 def test_openapi_missing_template(kitchen_sink_path):
@@ -623,9 +784,9 @@ def test_openapi_missing_template(kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize()
 
 
-def test_openapi_fixed_template(tmp_path, kitchen_sink_path):
+def test_openapi_fixed_template(tmp_path, kitchen_sink_path, oas_version):
     """Test that a template with no replaceable fields is emitted byte-for-byte."""
-    head_path = write_template(tmp_path, TEMPLATE_FIXED)
+    head_path = write_template(tmp_path, template_fixed(oas_version=oas_version))
     oa_spec = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
     assert Path(head_path).read_text() == oa_spec
 
@@ -636,13 +797,29 @@ def test_openapi_spec_no_defs_references(openapi_spec):
         assert "#/$defs/" not in str(schema)
 
 
-def test_openapi_spec_const_to_enum_conversion(openapi_spec):
-    """Test that const values are converted to single-item enum arrays."""
+def test_openapi_spec_const_conversion(openapi_spec, oas_version):
+    """Test const handling per version: enum arrays on 3.0.3, preserved const on 3.1.0."""
     person = openapi_spec["components"]["schemas"]["Person"]
-    assert person["properties"]["species_name"]["enum"] == ["human"]
-    assert person["properties"]["stomach_count"]["enum"] == [1]
-    assert "const" not in person["properties"]["species_name"]
-    assert "const" not in person["properties"]["stomach_count"]
+    species_name = person["properties"]["species_name"]
+    stomach_count = person["properties"]["stomach_count"]
+    if oas_version == "3.0.3":
+        # OpenAPI 3.0 has no ``const``; the generator rewrites it to a single-item ``enum``
+        assert species_name["enum"] == ["human"]
+        assert stomach_count["enum"] == [1]
+        assert "const" not in species_name
+        assert "const" not in stomach_count
+    else:
+        # OpenAPI 3.1 is aligned with JSON Schema 2020-12, so ``const`` is kept as-is
+        assert "const" in str(species_name)
+        assert "const" in str(stomach_count)
+
+
+def test_openapi_v31_no_linkml_meta(tmp_path, kitchen_sink_path):
+    """Test that the v3.1.0 Pydantic path strips ``linkml_meta`` annotations from schemas."""
+    head_path = write_template(tmp_path, template_head(oas_version="3.1.0"))
+    spec = yaml.safe_load(gen_openapi_spec(head_path, kitchen_sink_path))
+    for schema in spec["components"]["schemas"].values():
+        assert "linkml_meta" not in str(schema)
 
 
 def test_openapi_spec_class_level_title_stripped(openapi_spec):
@@ -652,13 +829,17 @@ def test_openapi_spec_class_level_title_stripped(openapi_spec):
     assert person["properties"]["age_in_years"]["description"] == "number of years since birth"
 
 
-def test_openapi_spec_nullable_type_conversion(openapi_spec):
-    """Test that nullable type arrays are converted to anyOf."""
+def test_openapi_spec_nullable_type_conversion(openapi_spec, oas_version):
+    """Test nullable handling per version: anyOf on 3.0.3, native type arrays on 3.1.0."""
     emp_event = openapi_spec["components"]["schemas"]["EmploymentEvent"]
-    assert "anyOf" in emp_event["properties"]["type"]
-    assert "type" not in emp_event["properties"]["type"] or not isinstance(
-        emp_event["properties"]["type"]["type"], list
-    )
+    type_prop = emp_event["properties"]["type"]
+    if oas_version == "3.0.3":
+        # OpenAPI 3.0 forbids type arrays; nullable ``["x", "null"]`` becomes ``anyOf``
+        assert "anyOf" in type_prop
+        assert "type" not in type_prop or not isinstance(type_prop["type"], list)
+    else:
+        # OpenAPI 3.1 permits nullable type arrays and ``anyOf`` alike; either is valid
+        assert "anyOf" in type_prop or isinstance(type_prop.get("type"), list)
 
 
 def test_openapi_spec_schemas_are_extensible(openapi_spec):
@@ -666,12 +847,23 @@ def test_openapi_spec_schemas_are_extensible(openapi_spec):
 
     APIs are typically extended backwards-compatibly by adding new objects or new
     attributes to existing objects. Closed schemas (additionalProperties: false) block
-    that, so the generated OpenAPI schemas must stay open.
+    that, so the generated OpenAPI schemas must stay open -- at every nesting level,
+    including inlined sub-schemas (relevant for the v3.1.0 Pydantic path, which must be
+    driven with ``extra_fields="allow"``).
     """
-    for name, schema in openapi_spec["components"]["schemas"].items():
-        assert schema.get("additionalProperties") is not False, (
-            f"schema '{name}' is closed (additionalProperties: false), blocking API extension"
-        )
+
+    def _closed_paths(obj, path=""):
+        if isinstance(obj, dict):
+            if obj.get("additionalProperties") is False:
+                yield path or "<root>"
+            for key, value in obj.items():
+                yield from _closed_paths(value, f"{path}/{key}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                yield from _closed_paths(item, f"{path}[{i}]")
+
+    closed = list(_closed_paths(openapi_spec["components"]["schemas"]))
+    assert not closed, f"closed schemas (additionalProperties: false) block API extension: {closed}"
 
 
 def test_resources_presence_and_absence(openapi_spec):
@@ -688,33 +880,33 @@ def test_printout_template(kitchen_sink_path):
     """Test that printout_template returns a valid YAML generic template."""
     output = OpenApiGenerator(kitchen_sink_path).printout_template()
     parsed = yaml.safe_load(output)
-    assert parsed["openapi"] == "3.0.3"
+    assert parsed["openapi"] == "x.y.z"
     assert "paths" in parsed
     assert "schemas" in parsed["components"]
     # the schema id from kitchen_sink must appear in the template
     assert "https://w3id.org/linkml/tests/kitchen_sink" in output
 
 
-def test_schema_id_mismatch_raises(tmp_path, kitchen_sink_path):
+def test_schema_id_mismatch_raises(tmp_path, kitchen_sink_path, oas_version):
     """Test that a mismatched x-linkml-schema raises ValueError with a descriptive message."""
-    head_path = write_template(tmp_path, TEMPLATE_WRONG_SCHEMA_ID)
+    head_path = write_template(tmp_path, template_wrong_schema_id(oas_version=oas_version))
     with pytest.raises(ValueError, match="x-linkml-schema"):
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
 
 
-def test_missing_x_linkml_source_raises(input_path, tmp_path):
+def test_missing_x_linkml_source_raises(input_path, tmp_path, oas_version):
     """Test that a template schema missing x-linkml-source raises a descriptive KeyError.
 
     x-linkml-schema presence/value are validated nicely, but x-linkml-source was
     skipped, surfacing as a bare ``KeyError: 'x-linkml-source'`` during instantiation.
     """
     schema_path = input_path("openapi/schema_foo.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_MISSING_XLINKML_SOURCE)
+    head_path = write_template(tmp_path, template_missing_xlinkml_source(oas_version=oas_version))
     with pytest.raises(KeyError, match="Bar.*missing required 'x-linkml-source'"):
         OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path)
 
 
-def test_referenced_parameter_does_not_crash(input_path, tmp_path):
+def test_referenced_parameter_does_not_crash(input_path, tmp_path, oas_version):
     """Test that a template parameter given as a $ref does not raise KeyError.
 
     A parameter entry of the form ``{$ref: '#/components/parameters/Limit'}`` has no
@@ -722,13 +914,13 @@ def test_referenced_parameter_does_not_crash(input_path, tmp_path):
     reading ``param_spec["schema"]`` unconditionally crashed before generation.
     """
     schema_path = input_path("openapi/schema_foo.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_REFERENCED_PARAMETER)
+    head_path = write_template(tmp_path, template_referenced_parameter(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     # the reusable parameter survives untouched
     assert spec["paths"]["/foo"]["get"]["parameters"] == [{"$ref": "#/components/parameters/Limit"}]
     # and the endpoint schema is generated as usual
     assert "Foo" in spec["components"]["schemas"]
-    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
 
 
 def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
@@ -752,25 +944,30 @@ def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
         OpenApiGenerator(kitchen_sink_path).serialize(str(template))
 
 
-def test_openapi_type_constraints(input_path, tmp_path):
-    """Test that LinkML types with constraints (e.g., pattern) are properly generated in the spec."""
+def test_openapi_type_constraints(input_path, tmp_path, oas_version):
+    """Test that a LinkML type (constraints inlined) still yields a standalone component schema.
+
+    On both the v3.0.3 (JsonSchema) and v3.1.0 (Pydantic) paths, LinkML types are not
+    emitted as classes; an endpoint referencing a type directly (via x-linkml-source)
+    must still produce a component schema, otherwise the spec has a dangling ``$ref``.
+    """
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_TYPES)
+    head_path = write_template(tmp_path, template_types(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
-    # the type schema is exposed under the template's resource name
+    # the type schema is exposed under the template's resource name, not dangling
     code_str = schemas["CodeStringRef"]
     assert code_str["type"] == "string"
     assert code_str["pattern"] == "^[A-Z]{2,10}$"
     assert code_str["description"] == "A 2-10 character uppercase code"
-    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
     for schema in schemas.values():
         assert "#/$defs/" not in str(schema)
 
 
-def test_renaming(tmp_path, kitchen_sink_path):
+def test_renaming(tmp_path, kitchen_sink_path, oas_version):
     """Test that resource names differing from LinkML class names are renamed throughout the spec."""
-    head_path = write_template(tmp_path, TEMPLATE_RENAMING)
+    head_path = write_template(tmp_path, template_renaming(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # resource is exposed under the template name, not the LinkML class name
@@ -788,7 +985,7 @@ def test_openapi_examples_converted_to_singular_example(input_path, tmp_path):
     slot declaring ``examples`` -- this is a blocker, not a cosmetic gap.
     """
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_EXAMPLES)
+    head_path = write_template(tmp_path, template_examples())
     spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
     name_schema = spec["components"]["schemas"]["WithExamples"]["properties"]["name"]
     # first example is kept; the plural form is gone entirely
@@ -797,14 +994,14 @@ def test_openapi_examples_converted_to_singular_example(input_path, tmp_path):
     assert validate(spec, cls=OpenAPIV30SpecValidator) is None
 
 
-def test_template_text_preserved(tmp_path, kitchen_sink_path):
+def test_template_text_preserved(tmp_path, kitchen_sink_path, oas_version):
     """Test that everything above ``components/schemas`` is emitted verbatim.
 
     The generator no longer YAML round-trips the whole template (which would drop
     comments and normalise quoting/styling). Only the ``components/schemas`` section
     is regenerated; the header, paths and any comments above it must survive intact.
     """
-    head_path = write_template(tmp_path, TEMPLATE_COMMENTS)
+    head_path = write_template(tmp_path, template_comments(oas_version=oas_version))
     result = OpenApiGenerator(kitchen_sink_path).serialize(head_path)
     # comments are dropped by a YAML round-trip but preserved by text handling
     assert "# top-level comment must survive round-trip" in result
@@ -818,9 +1015,9 @@ def test_template_text_preserved(tmp_path, kitchen_sink_path):
     assert result.startswith(prefix)
 
 
-def test_unreferenced_schema_removed_by_default(tmp_path, kitchen_sink_path):
+def test_unreferenced_schema_removed_by_default(tmp_path, kitchen_sink_path, oas_version):
     """Test that template schemas not referenced by any endpoint are removed by default."""
-    head_path = write_template(tmp_path, TEMPLATE_KEEP_UNREFERENCED)
+    head_path = write_template(tmp_path, template_keep_unreferenced(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Person" in schemas
@@ -828,19 +1025,21 @@ def test_unreferenced_schema_removed_by_default(tmp_path, kitchen_sink_path):
     assert "MarriageEvent" not in schemas
 
 
-def test_keep_unreferenced_preserves_template_schema(tmp_path, kitchen_sink_path):
+def test_keep_unreferenced_preserves_template_schema(tmp_path, kitchen_sink_path, oas_version):
     """Test that keep_unreferenced retains template schemas not referenced by any endpoint.
 
     Unreferenced sub-schemas can convey objects that are opaque to the API but relevant
     to clients (e.g. present in provided artifacts). The keep_unreferenced flag makes
     their removal switchable.
     """
-    head_path = write_template(tmp_path, TEMPLATE_KEEP_UNREFERENCED)
+    head_path = write_template(tmp_path, template_keep_unreferenced(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Person" in schemas
-    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it
-    assert "MarriageEvent" in schemas
+    # OpaqueEvent(OpenAPI)/MarriageEvent(LinkML) is kept even though no endpoint references it,
+    # and is exposed under its OpenAPI resource name, not the LinkML class name
+    assert "OpaqueEvent" in schemas
+    assert "MarriageEvent" not in schemas
 
 
 def test_unreferenced_chain_pruned_by_default(tmp_path):
@@ -880,7 +1079,7 @@ def test_keep_unreferenced_pulls_transitive_chain(tmp_path):
     assert "Baz Qux" in schemas
 
 
-def test_keep_unreferenced_does_not_add_unrelated_schemas(tmp_path):
+def test_keep_unreferenced_does_not_add_unrelated_schemas(tmp_path, oas_version):
     """Test that keep_unreferenced stays scoped to the template, not "dump everything".
 
     The chain schema also contains classes not reachable from ``Foo`` or the template
@@ -891,7 +1090,7 @@ def test_keep_unreferenced_does_not_add_unrelated_schemas(tmp_path):
     every class.
     """
     schema_path = load_schema(SCHEMA_UNREFERENCED_WITH_UNRELATED)
-    head_path = write_template(tmp_path, TEMPLATE_KEEP_SCOPED)
+    head_path = write_template(tmp_path, template_keep_scoped(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, keep_unreferenced=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Foo" in schemas
@@ -911,13 +1110,13 @@ def test_enums_as_separate_schemas_by_default(openapi_spec):
     assert {"$ref": "#/components/schemas/EmploymentEventType"} in type_schema["anyOf"]
 
 
-def test_inline_enums_inlines_enum_schemas(tmp_path, kitchen_sink_path):
+def test_inline_enums_inlines_enum_schemas(tmp_path, kitchen_sink_path, oas_version):
     """Test that inline_enums inlines enum sub-schemas into their parents.
 
     With the flag set, an enum no longer gets its own ``components/schemas`` entry;
     instead its definition is inlined where it was referenced.
     """
-    head_path = write_template(tmp_path, TEMPLATE_HEAD)
+    head_path = write_template(tmp_path, template_head(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # the enum no longer has a standalone schema entry
@@ -930,7 +1129,7 @@ def test_inline_enums_inlines_enum_schemas(tmp_path, kitchen_sink_path):
     assert "EmploymentEventType" not in str(spec)
 
 
-def test_inline_enums_does_not_inline_types(input_path, tmp_path):
+def test_inline_enums_does_not_inline_types(input_path, tmp_path, oas_version):
     """Test that inline_enums does not mistake fixed-value LinkML types for enums.
 
     A type with ``equals_string`` becomes a single-element ``enum`` after the
@@ -939,27 +1138,27 @@ def test_inline_enums_does_not_inline_types(input_path, tmp_path):
     types must keep their named schema entry even when inlining is enabled.
     """
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_TYPES_ENUMS)
+    head_path = write_template(tmp_path, template_types_enums(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # the fixed-value type keeps its own named schema entry (not inlined)
     assert "FixedType" in schemas
-    assert schemas["FixedType"]["enum"] == ["fixed-value"]
+    assert_fixed_value(schemas["FixedType"], "fixed-value", oas_version)
     assert schemas["FixedType"]["type"] == "string"
 
 
-def test_inline_enums_disabled_keeps_types_and_enums_separate(input_path, tmp_path):
+def test_inline_enums_disabled_keeps_types_and_enums_separate(input_path, tmp_path, oas_version):
     """Test that with inline_enums disabled both types and enums keep separate schema entries."""
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_TYPES_ENUMS)
+    head_path = write_template(tmp_path, template_types_enums(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=False).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "FixedType" in schemas
-    assert schemas["FixedType"]["enum"] == ["fixed-value"]
+    assert_fixed_value(schemas["FixedType"], "fixed-value", oas_version)
     assert schemas["FixedType"]["type"] == "string"
 
 
-def test_inline_enums_keeps_endpoint_referenced_enum(tmp_path):
+def test_inline_enums_keeps_endpoint_referenced_enum(tmp_path, oas_version):
     """Test that inline_enums does not inline an enum referenced directly by an endpoint.
 
     Inlining removes the enum's standalone ``components/schemas`` entry, which would
@@ -967,7 +1166,7 @@ def test_inline_enums_keeps_endpoint_referenced_enum(tmp_path):
     endpoint must therefore keep its entry even when inlining is enabled.
     """
     schema_path = load_schema(SCHEMA_ENDPOINT_ENUM)
-    head_path = write_template(tmp_path, TEMPLATE_ENDPOINT_ENUM)
+    head_path = write_template(tmp_path, template_endpoint_enum(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "FixedEnum" in schemas
@@ -977,7 +1176,7 @@ def test_inline_enums_keeps_endpoint_referenced_enum(tmp_path):
     }
 
 
-def test_inline_enums_does_not_inline_renamed_enums(input_path, tmp_path):
+def test_inline_enums_does_not_inline_renamed_enums(input_path, tmp_path, oas_version):
     """Test that inlining a renamed enum does not bypass the type guard.
 
     When the endpoint refers to a LinkML ``enum`` under a different OpenAPI name, the
@@ -985,17 +1184,17 @@ def test_inline_enums_does_not_inline_renamed_enums(input_path, tmp_path):
     would be inlined away, leaving the endpoint's ``$ref`` dangling.
     """
     schema_path = input_path("openapi/schema_types_and_enums.yaml")
-    head_path = write_template(tmp_path, TEMPLATE_RENAMED_TYPE)
+    head_path = write_template(tmp_path, template_renamed_type(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     schemas = spec["components"]["schemas"]
     assert "Fixed" in schemas
-    assert schemas["Fixed"]["enum"] == ["fixed-value"]
+    assert_fixed_value(schemas["Fixed"], "fixed-value", oas_version)
     assert spec["paths"]["/fixed"]["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
         "$ref": "#/components/schemas/Fixed"
     }
 
 
-def test_inline_enums_shared_enum_no_yaml_anchors(tmp_path):
+def test_inline_enums_shared_enum_no_yaml_anchors(tmp_path, oas_version):
     """Test that inlining a shared enum does not emit YAML anchors.
 
     When the same enum is referenced from two classes, the inlined copy must not be the
@@ -1004,7 +1203,7 @@ def test_inline_enums_shared_enum_no_yaml_anchors(tmp_path):
     contain no anchors or aliases.
     """
     schema_path = load_schema(SCHEMA_SHARED_ENUM)
-    head_path = write_template(tmp_path, TEMPLATE_SHARED_ENUM)
+    head_path = write_template(tmp_path, template_shared_enum(oas_version=oas_version))
     result = OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path)
     spec = yaml.safe_load(result)
     color_foo = spec["components"]["schemas"]["Foo"]["properties"]["color"]
@@ -1019,7 +1218,7 @@ def test_inline_enums_shared_enum_no_yaml_anchors(tmp_path):
     assert color_foo is not color_bar
 
 
-def test_inline_enums_preserves_slot_description(tmp_path):
+def test_inline_enums_preserves_slot_description(tmp_path, oas_version):
     """Test that inlining an enum keeps the slot-level description of the referencing property.
 
     A property that references an enum carries its own ``description`` next to the
@@ -1028,7 +1227,7 @@ def test_inline_enums_preserves_slot_description(tmp_path):
     must not eclipse it).
     """
     schema_path = load_schema(SCHEMA_ENUM_SLOT_DESCRIPTION)
-    head_path = write_template(tmp_path, TEMPLATE_ENUM_SLOT_DESCRIPTION)
+    head_path = write_template(tmp_path, template_enum_slot_description(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(schema_path, inline_enums=True).serialize(head_path))
     color = spec["components"]["schemas"]["Foo"]["properties"]["color"]
     assert color["enum"] == ["FOO", "BAR"]
@@ -1054,7 +1253,7 @@ def test_no_dangling_references_for_valid_schema(openapi_spec):
         assert ref.removeprefix("#/components/schemas/") in schema_names
 
 
-def test_lowercase_class_name_preserved(tmp_path, kitchen_sink_path):
+def test_lowercase_class_name_preserved(tmp_path, kitchen_sink_path, oas_version):
     """Test that a lowercase LinkML class name is preserved, not camelCased, in the spec.
 
     ``JsonSchemaGenerator`` camelCases ``$defs`` keys unless ``preserve_names=True``.
@@ -1063,7 +1262,7 @@ def test_lowercase_class_name_preserved(tmp_path, kitchen_sink_path):
     is keyed ``Activity`` while the ``$ref`` from ``Dataset`` points to ``activity``,
     yielding a missing schema and a dangling reference.
     """
-    head_path = write_template(tmp_path, TEMPLATE_LOWERCASE_CLASS)
+    head_path = write_template(tmp_path, template_lowercase_class(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     schemas = spec["components"]["schemas"]
     # the LinkML name is preserved verbatim, not camelCased
@@ -1072,28 +1271,28 @@ def test_lowercase_class_name_preserved(tmp_path, kitchen_sink_path):
     # Dataset references the activity schema under its original name
     assert schemas["Dataset"]["properties"]["activities"]["items"] == {"$ref": "#/components/schemas/activity"}
     # the produced spec is valid (no dangling reference)
-    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
 
 
-def test_dangling_reference_raises(tmp_path, kitchen_sink_path):
+def test_dangling_reference_raises(tmp_path, kitchen_sink_path, oas_version):
     """Test that a generated spec containing an unresolvable $ref is rejected.
 
     The template declares a ``Foo`` schema sourced from a non-existent LinkML class,
     so no schema is generated for it while an endpoint still references it. The
     generator must detect the dangling ``$ref`` and fail loudly.
     """
-    head_path = write_template(tmp_path, TEMPLATE_DANGLING_REF)
+    head_path = write_template(tmp_path, template_dangling_ref(oas_version=oas_version))
     with pytest.raises(ValueError, match="Dangling .ref"):
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
 
 
-def test_dangling_reference_reports_all(tmp_path, kitchen_sink_path):
+def test_dangling_reference_reports_all(tmp_path, kitchen_sink_path, oas_version):
     """All dangling ``$ref`` targets must be gathered and reported together, not just the first one.
 
     The template declares two schemas (``Foo`` and ``Bar``) sourced from non-existent LinkML classes,
     each referenced by its own endpoint. The single raised error must mention both.
     """
-    head_path = write_template(tmp_path, TEMPLATE_DANGLING_REFS_MULTIPLE)
+    head_path = write_template(tmp_path, template_dangling_refs_multiple(oas_version=oas_version))
     with pytest.raises(ValueError, match="Dangling .ref") as exc_info:
         OpenApiGenerator(kitchen_sink_path).serialize(head_path)
     message = str(exc_info.value)
@@ -1101,17 +1300,17 @@ def test_dangling_reference_reports_all(tmp_path, kitchen_sink_path):
     assert "#/components/schemas/Bar" in message
 
 
-def test_refs_to_non_schema_components_allowed(tmp_path, kitchen_sink_path):
+def test_refs_to_non_schema_components_allowed(tmp_path, kitchen_sink_path, oas_version):
     """Test that $refs to reusable components other than schemas (e.g. responses) are allowed.
 
     The dangling-reference check must resolve every internal ``$ref`` against its own
     ``components`` section rather than assuming all targets live under ``schemas``.
     """
-    head_path = write_template(tmp_path, TEMPLATE_SHARED_RESPONSES)
+    head_path = write_template(tmp_path, template_shared_responses(oas_version=oas_version))
     spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
     # the reusable response survives and is still referenced by the endpoint
     assert "NotFound" in spec["components"]["responses"]
     assert spec["paths"]["/foo"]["get"]["responses"]["404"] == {"$ref": "#/components/responses/NotFound"}
     # the schema is generated as usual
     assert "Person" in spec["components"]["schemas"]
-    assert validate(spec, cls=OpenAPIV30SpecValidator) is None
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None

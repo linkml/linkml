@@ -5,7 +5,14 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.javagen import JavaBundle, JavaGenerator, _find_root_schemas, cli
+from linkml.generators.javagen import (
+    DEFAULT_TEMPLATE_DIR,
+    JavaBundle,
+    JavaGenerator,
+    TemplateCache,
+    _find_root_schemas,
+    cli,
+)
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -188,6 +195,8 @@ def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
     gen = JavaGenerator(input_path("personinfo.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "NamedThing.java", "private String id")
+    # Also check for the TypeURI annotation
+    assert_file_contains(tmp_path / "NamedThing.java", '@TypeURI("https://w3id.org/linkml/Uriorcurie")')
 
 
 def test_refined_slots(input_path, tmp_path):
@@ -563,3 +572,69 @@ def test_calling_on_directory_abort_on_invalid_package(input_path, tmp_path):
     )
     assert result.exit_code != 0, result.output
     assert not output_directory.exists()
+
+
+def test_lookup_template_specific_files():
+    """TemplateCache allows to find requested files."""
+    tc = TemplateCache()
+    tc.add_directory(DEFAULT_TEMPLATE_DIR)
+
+    # Looking up a standard template
+    std_class_template = tc.get_template("class")
+    assert std_class_template is not None
+
+    # Looking up a class template for a unknown variant should yield
+    # the standard template
+    unknown_var_class_template = tc.get_template("class", variant="no.such.variant")
+    assert unknown_var_class_template == std_class_template
+
+    # Looking up a template for a specific class should yield the
+    # default class template if there is no class-specific template
+    foo_class_template = tc.get_template("foo")
+    assert foo_class_template == std_class_template
+
+    # Looking up the standard class template for an existing variant,
+    # should return that template instead of the standard template
+    incenp_class_template = tc.get_template("class", variant="org.incenp.linkml")
+    assert incenp_class_template is not None
+    assert incenp_class_template != std_class_template
+
+    # Looking up a template for a specific class for a variant,
+    # should return the default class template for that variant
+    foo_class_template = tc.get_template("foo", variant="org.incenp.linkml")
+    assert foo_class_template == incenp_class_template
+
+    # Looking up a template-specific non-template file
+    incenp_typemap = tc.get_file("_types.map", variant="org.incenp.linkml")
+    assert incenp_typemap is not None
+
+
+def test_custom_type_lookup(input_path):
+    """The generator can map LinkML types to template-specficif Java types."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    # We are not interested in the rendered output for this test, we just need
+    # to trigger reading the (possibly template-specific) type map.
+    gen.render()
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "URI"
+
+    # Again, but using a specific template
+    gen.render(template_variant="org.incenp.linkml")
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "String"
+
+
+def test_get_custom_type_uri(input_path):
+    """get_custom_type_uri returns the URI for a custom-mapped type."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+
+    # Standard template with no custom map, all queries should
+    # return None
+    gen.render()
+    assert gen.get_custom_type_uri("uriorcurie") is None
+    assert gen.get_custom_type_uri("CrossReference") is None
+
+    # Again but with a template that does have a custom map
+    gen.render(template_variant="org.incenp.linkml")
+    # uriorcurie is mapped through its native URI
+    assert gen.get_custom_type_uri("uriorcurie") == "https://w3id.org/linkml/Uriorcurie"
+    # CrossReference is not mapped
+    assert gen.get_custom_type_uri("CrossReference") is None
