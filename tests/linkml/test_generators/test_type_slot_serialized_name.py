@@ -118,6 +118,12 @@ ex:subject a ex:Entity ; rdfs:label "Source entity" .
     assert go_tag in go_source
     assert 'json:"id"' in go_source
 
+    go_curie_source = GolangGenerator(str(schema_path), package="fixture", use_curies=True).serialize()
+    assert go_tag in go_curie_source
+    assert 'json:"id"' in go_curie_source
+    assert 'json:"bx:id,omitempty"' in go_curie_source
+    assert 'json:"bx:type,omitempty"' in go_curie_source
+
 
 def test_designates_type_does_not_make_business_predicate_a_keyword(tmp_path):
     """A non-RDF slot URI stays an ordinary CURIE even when designates_type is set."""
