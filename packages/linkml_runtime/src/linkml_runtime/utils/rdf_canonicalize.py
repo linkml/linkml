@@ -39,7 +39,6 @@ with stable blank node labels and sorted triples.
 import io
 import re
 import warnings
-from importlib.util import find_spec
 
 import pyoxigraph as ox
 import rdflib
@@ -305,16 +304,18 @@ def canonicalize_rdf_graph(
     :param diff_stable: Use diffable-rdf labels to reduce blank-node churn across
         edits. Requires the ``diff-stable`` extra; disabled by default. The
         non-standard RDF fallback warns when it cannot apply these labels.
+        See https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control
     :return: Deterministic string serialization of the graph.
     :raises ImportError: If diff-stable labels are requested without diffable-rdf.
     """
     if diff_stable:
-        if find_spec("diffable_rdf") is None:
+        try:
+            from diffable_rdf import wl_relabel_quads
+        except ImportError as exc:
             raise ImportError(
                 "diff_stable=True requires diffable-rdf. Install "
                 "'linkml-runtime[diff-stable]' or 'linkml[diff-stable]'."
-            )
-        from diffable_rdf import wl_relabel_quads
+            ) from exc
 
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
