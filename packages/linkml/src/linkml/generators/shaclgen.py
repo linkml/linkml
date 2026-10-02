@@ -1,4 +1,5 @@
 import logging
+import math
 import os
 import string
 from collections.abc import Callable
@@ -147,11 +148,15 @@ class ShaclGenerator(Generator):
 
     When ``True`` (default), recognised rule patterns are translated into
     SHACL-SPARQL constraints (``sh:SPARQLConstraint``) on the corresponding
-    ``sh:NodeShape``.  Currently two patterns are recognised:
+    ``sh:NodeShape``.  Currently three patterns are recognised:
 
     * *Boolean guard* — a precondition with ``value_presence: PRESENT`` on a
       value slot and a postcondition with ``equals_string: "true"`` on a
       boolean flag slot.
+    * *Presence implies value* — a precondition with ``value_presence: PRESENT``
+      on a value slot and a postcondition with ``equals_string`` or
+      ``equals_string_in`` on a (typically enum-valued) target slot.  This
+      generalises the boolean guard to arbitrary required values.
     * *Exclusive value* — a precondition with ``equals_string`` on a slot and
       a postcondition with ``maximum_cardinality`` on the *same* slot.
 
@@ -429,11 +434,24 @@ class ShaclGenerator(Generator):
           ``value_presence: PRESENT`` on a value slot and a *postcondition*
           with ``equals_string: "true"`` on a boolean flag slot.
 
+        * **Presence implies value** — a *precondition* with
+          ``value_presence: PRESENT`` on a value slot and a *postcondition*
+          with ``equals_string`` or ``equals_string_in`` on a target slot.
+          Enforces that when the value slot is present, the target slot must
+          be present and hold one of the allowed values (generalises the
+          boolean guard to enum-valued targets).
+
         * **Exclusive value** — a *precondition* with ``equals_string`` on
           a slot and a *postcondition* with ``maximum_cardinality`` on the
           *same* slot.  Enforces that when a specific value is present in a
           multivalued slot, the total number of values must not exceed the
           given cardinality (typically 1 for mutual exclusion).
+
+        Operator combinations outside these named patterns are handled by a
+        small compositional fallback (:meth:`_compose_rule_sparql`) covering
+        conditional-required / conditional-absent postconditions, numeric
+        threshold and nested-object preconditions, and ``has_member`` list
+        membership.
 
         See `W3C SHACL §5 <https://www.w3.org/TR/shacl/#sparql-constraints>`_.
         """
@@ -462,11 +480,11 @@ class ShaclGenerator(Generator):
                     cls.name,
                 )
 
-            if getattr(rule, "elseconditions", None):
+            if getattr(rule, "elseconditions", None) is not None:
                 logger.warning(
                     "Rule in class %r has elseconditions; "
-                    "only the forward (if/then) branch is emitted as sh:sparql. "
-                    "The else branch cannot be represented in SHACL-SPARQL.",
+                    "SHACL-SPARQL generation emits the forward (if/then) direction only. "
+                    "The else branch is not enforced.",
                     cls.name,
                 )
 
@@ -489,10 +507,218 @@ class ShaclGenerator(Generator):
 
             g.add((constraint, SH.select, Literal(sparql_query)))
 
+    # Fields on a slot condition / class expression that carry no constraint
+    # semantics: they never change which instances satisfy the condition, so
+    # they are ignored by the operator accounting below.  Anything set on a
+    # condition that is neither here nor explicitly translated by a converter
+    # makes the rule untranslatable — the converters must SKIP such a rule
+    # rather than emit a query that silently drops a conjunct (which would
+    # widen the trigger or narrow the check: a mis-translation, not a skip).
+    _NON_OPERATOR_FIELDS = frozenset(
+        {
+            "name",
+            "description",
+            "title",
+            "deprecated",
+            "todos",
+            "notes",
+            "comments",
+            "examples",
+            "in_subset",
+            "from_schema",
+            "imported_from",
+            "source",
+            "in_language",
+            "see_also",
+            "deprecated_element_has_exact_replacement",
+            "deprecated_element_has_possible_replacement",
+            "aliases",
+            "structured_aliases",
+            "local_names",
+            "mappings",
+            "exact_mappings",
+            "close_mappings",
+            "related_mappings",
+            "narrow_mappings",
+            "broad_mappings",
+            "created_by",
+            "contributors",
+            "created_on",
+            "last_updated_on",
+            "modified_by",
+            "status",
+            "rank",
+            "categories",
+            "keywords",
+            "extensions",
+            "annotations",
+            "alt_descriptions",
+            "id_prefixes",
+            "id_prefixes_are_closed",
+            "definition_uri",
+            "conforms_to",
+            "implements",
+            "instantiates",
+        }
+    )
+
+    @classmethod
+    def _set_operator_fields(cls, cond) -> set[str]:
+        """Return the names of the constraint-bearing fields actually set on a
+        rule condition or class expression.
+
+        A field counts as *set* when it is not ``None`` and not an empty
+        collection (SchemaView materialises unset multivalued fields as empty
+        lists / dicts).  Scalars are never judged by truthiness, so legitimate
+        falsy constraints such as ``minimum_value: 0`` or
+        ``equals_string: ""`` still count as set.  Metadata fields
+        (:data:`_NON_OPERATOR_FIELDS`) are excluded.
+
+        The converters compare this set against the exact operator set they
+        translate and skip the rule on any mismatch, so an unrecognised (or
+        future-metamodel) operator can never be silently dropped.
+        """
+        fields: set[str] = set()
+        for name, value in vars(cond).items():
+            if name.startswith("_") or name in cls._NON_OPERATOR_FIELDS:
+                continue
+            if value is None:
+                continue
+            if isinstance(value, list | dict) and not value:
+                continue
+            if isinstance(value, JsonObj) and not as_dict(value):
+                continue
+            fields.add(name)
+        return fields
+
+    def _rule_slot(self, sv, slot_name: str, cls: ClassDefinition):
+        """Resolve a rule condition's slot key to the slot it names, or ``None``
+        when no such slot exists.
+
+        Resolution order mirrors ``sh:path`` in the main slot loop: the induced
+        (class-specific) slot when the key names one of the class's slots, then
+        the underscored alias form (a rule key ``my_slot`` for a slot named
+        ``my slot`` — SchemaView normalises names the same way elsewhere), then
+        the base slot.  Callers treat ``None`` as *unknown slot* and skip the
+        rule rather than fabricating a predicate no shape uses.
+        """
+        class_slot_names = sv.class_slots(cls.name)
+        if slot_name in class_slot_names:
+            return sv.induced_slot(slot_name, cls.name)
+        canonical = next((s for s in class_slot_names if underscore(s) == underscore(slot_name)), None)
+        if canonical is not None:
+            return sv.induced_slot(canonical, cls.name)
+        return sv.get_slot(slot_name)
+
     def _rule_to_sparql(self, sv, cls: ClassDefinition, rule) -> str | None:
         """Convert a ``ClassRule`` to a SPARQL SELECT query string.
 
         Returns ``None`` when the rule does not match any supported pattern.
+        Each pattern requires its conditions to set **exactly** the operators
+        it translates; a rule whose pre/postconditions carry anything more
+        (extra scalar operators, expression-level ``any_of``/``all_of``/
+        ``none_of``/``exactly_one_of``, ...) is skipped rather than partially
+        translated.
+        """
+        pre = getattr(rule, "preconditions", None)
+        post = getattr(rule, "postconditions", None)
+        if not pre or not post:
+            return None
+
+        # Expression-level exactness: only a plain conjunction of slot
+        # conditions is translatable.  An any_of/all_of/none_of/exactly_one_of
+        # branch cannot be honoured by any converter below; dropping it would
+        # widen the precondition (false positives) or weaken the postcondition
+        # (false negatives), so the whole rule is skipped.
+        if self._set_operator_fields(pre) != {"slot_conditions"}:
+            return None
+        if self._set_operator_fields(post) != {"slot_conditions"}:
+            return None
+
+        pre_slots = pre.slot_conditions or {}
+        post_slots = post.slot_conditions or {}
+
+        if len(pre_slots) == 1 and len(post_slots) == 1:
+            pre_slot_name = next(iter(pre_slots))
+            post_slot_name = next(iter(post_slots))
+
+            pre_cond = pre_slots[pre_slot_name]
+            post_cond = post_slots[post_slot_name]
+
+            pre_ops = self._set_operator_fields(pre_cond)
+            post_ops = self._set_operator_fields(post_cond)
+
+            is_value_present = pre_ops == {"value_presence"} and pre_cond.value_presence == PresenceEnum(
+                PresenceEnum.PRESENT
+            )
+
+            # Pattern: boolean guard
+            # preconditions: exactly one slot with (only) value_presence PRESENT
+            # postconditions: exactly one boolean-range slot with (only)
+            # equals_string "true".  The range gate matters: on a non-boolean
+            # slot the string "true" must be compared as a string, which is
+            # the presence-implies-value pattern below — without the gate the
+            # boolean comparison mistranslates and flags conforming data.
+            if (
+                is_value_present
+                and post_ops == {"equals_string"}
+                and post_cond.equals_string == "true"
+                and getattr(self._rule_slot(sv, post_slot_name, cls), "range", None) == "boolean"
+            ):
+                return self._build_boolean_guard_sparql(sv, cls, post_slot_name, pre_slot_name)
+
+            # Pattern: presence implies value (enum guard)
+            # preconditions: value slot with (only) value_presence PRESENT
+            # postconditions: target slot with (only) equals_string or (only)
+            # equals_string_in.
+            # Semantics: "If the value slot is present, the target slot must be
+            # present and hold one of the allowed values."  Generalises the
+            # boolean guard (equals_string "true") to arbitrary enum values.
+            if is_value_present and post_ops in ({"equals_string"}, {"equals_string_in"}):
+                if post_ops == {"equals_string_in"}:
+                    allowed = list(post_cond.equals_string_in)
+                else:
+                    allowed = [post_cond.equals_string]
+                return self._build_presence_implies_value_sparql(sv, cls, pre_slot_name, post_slot_name, allowed)
+
+            # Pattern: exclusive value
+            # preconditions: slot X with (only) equals_string (a specific enum value)
+            # postconditions: same slot X with (only) maximum_cardinality N
+            # Semantics: "If value V is present in slot X, then X has at most N values."
+            if pre_ops == {"equals_string"} and post_ops == {"maximum_cardinality"} and pre_slot_name == post_slot_name:
+                return self._build_exclusive_value_sparql(
+                    sv, cls, pre_slot_name, pre_cond.equals_string, int(post_cond.maximum_cardinality)
+                )
+
+        # Fallback: a small compositional builder for operator combinations not
+        # covered by the three named patterns above (conditional-required,
+        # threshold preconditions, list membership, ...).  Tried only after the
+        # named patterns, so their output is unchanged.
+        composed = self._compose_rule_sparql(sv, cls, rule)
+        if composed is not None:
+            return composed
+
+        return None
+
+    def _compose_rule_sparql(self, sv, cls: ClassDefinition, rule) -> str | None:
+        """Compose a SHACL-SPARQL violation query for rule shapes not covered
+        by the three named patterns.
+
+        Translates a conjunction of *precondition* slot conditions and a single
+        *postcondition* slot condition into one ``SELECT $this`` query that
+        selects focus nodes which satisfy every precondition but violate the
+        postcondition.  Supported operators grow incrementally in
+        :meth:`_precondition_patterns` and :meth:`_postcondition_violation`;
+        the method returns ``None`` (rule skipped, never mis-translated) as soon
+        as any operator is unsupported.
+
+        A rule's ``postconditions`` are a conjunction, so violating a single
+        slot condition is sufficient; the single-postcondition case covers the
+        modeled cross-parameter rules.
+
+        Conforms to `SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_: ``$this``
+        is pre-bound to each focus node.
         """
         pre = getattr(rule, "preconditions", None)
         post = getattr(rule, "postconditions", None)
@@ -501,42 +727,254 @@ class ShaclGenerator(Generator):
 
         pre_slots = getattr(pre, "slot_conditions", None) or {}
         post_slots = getattr(post, "slot_conditions", None) or {}
+        if not pre_slots or len(post_slots) != 1:
+            return None
 
-        # Pattern: boolean guard
-        # preconditions: exactly one slot with value_presence PRESENT
-        # postconditions: exactly one slot with equals_string "true"
-        if len(pre_slots) == 1 and len(post_slots) == 1:
-            pre_slot_name = next(iter(pre_slots))
-            post_slot_name = next(iter(post_slots))
+        pre_lines = self._precondition_patterns(sv, cls, pre_slots)
+        if pre_lines is None:
+            return None
 
-            pre_cond = pre_slots[pre_slot_name]
-            post_cond = post_slots[post_slot_name]
+        post_slot_name, post_cond = next(iter(post_slots.items()))
+        violation = self._postcondition_violation(sv, cls, post_slot_name, post_cond)
+        if violation is None:
+            return None
 
-            # Note: PresenceEnum.PRESENT is a PermissibleValue, but parsed schemas
-            # return PresenceEnum instances — wrapping ensures type-compatible comparison.
-            is_value_present = getattr(pre_cond, "value_presence", None) == PresenceEnum(PresenceEnum.PRESENT)
-            is_flag_true = getattr(post_cond, "equals_string", None) == "true"
+        body = "\n".join(f"    {line}" for line in (pre_lines + violation))
+        return f"SELECT $this WHERE {{\n{body}\n}}"
 
-            if is_value_present and is_flag_true:
-                return self._build_boolean_guard_sparql(sv, cls, post_slot_name, pre_slot_name)
+    def _scalar_filters(self, var: str, cond, resolve: Callable[[str], str]) -> list[str] | None:
+        """Return the SPARQL ``FILTER`` lines for the scalar operators on *cond*.
 
-            # Pattern: exclusive value
-            # preconditions: slot X has equals_string (a specific enum value)
-            # postconditions: same slot X has maximum_cardinality N
-            # Semantics: "If value V is present in slot X, then X has at most N values."
-            pre_equals = getattr(pre_cond, "equals_string", None)
-            post_max_card = getattr(post_cond, "maximum_cardinality", None)
+        Unlike a first-match dispatch, **every** recognised operator contributes
+        a line, so a condition combining operators — e.g. a bounded range
+        ``{minimum_value: X, maximum_value: Y}`` — emits *both* bounds instead of
+        silently keeping only the first and under-constraining the query.
+        ``value_presence: PRESENT`` contributes no filter (the caller's triple
+        binding already enforces presence).
 
-            if pre_equals is not None and post_max_card is not None and pre_slot_name == post_slot_name:
-                return self._build_exclusive_value_sparql(sv, cls, pre_slot_name, pre_equals, int(post_max_card))
+        *resolve* maps an ``equals_string`` value to a SPARQL term (an enum
+        ``meaning`` IRI or an escaped string literal).
 
+        Returns ``None`` when *cond* sets no recognised scalar operator, sets
+        any operator *outside* the recognised set (per
+        :meth:`_set_operator_fields` — partial translation would drop a
+        conjunct), sets ``value_presence`` to anything but ``PRESENT``, or
+        carries a non-numeric threshold bound.  In every such case the caller
+        skips the rule it cannot faithfully translate rather than emitting an
+        under-constrained (or vacuous) query.
+        """
+        op_fields = self._set_operator_fields(cond)
+        if not op_fields or not op_fields <= {"value_presence", "equals_string", "minimum_value", "maximum_value"}:
+            return None  # unsupported operator present (or none at all): skip
+        if "value_presence" in op_fields and cond.value_presence != PresenceEnum(PresenceEnum.PRESENT):
+            # ABSENT (or a future presence value) cannot be expressed as a
+            # triple binding + filter; translating the other operators anyway
+            # would invert the declared trigger.
+            return None
+
+        filters: list[str] = []
+        if "equals_string" in op_fields:
+            filters.append(f"FILTER ( {var} = {resolve(cond.equals_string)} )")
+        if "minimum_value" in op_fields:
+            minimum = self._sparql_number(cond.minimum_value)
+            if minimum is None:
+                return None
+            filters.append(f"FILTER ( {var} >= {minimum} )")
+        if "maximum_value" in op_fields:
+            maximum = self._sparql_number(cond.maximum_value)
+            if maximum is None:
+                return None
+            filters.append(f"FILTER ( {var} <= {maximum} )")
+        return filters
+
+    def _precondition_patterns(self, sv, cls: ClassDefinition, pre_slots) -> list[str] | None:
+        """Translate a conjunction of precondition slot conditions into SPARQL
+        graph patterns (plus ``FILTER`` lines) that bind focus nodes satisfying
+        every condition.
+
+        Returns ``None`` if any condition sets no recognised operator.
+
+        Supported operators, which **combine** on a single condition (so a
+        bounded range ``{minimum_value: X, maximum_value: Y}`` emits both
+        bounds): ``value_presence: PRESENT``, ``equals_string``, and the numeric
+        thresholds ``minimum_value`` / ``maximum_value`` (inclusive, per the
+        LinkML metamodel).  A ``range_expression`` with inner ``slot_conditions``
+        reaches one hop into an inlined child object.
+        """
+        lines: list[str] = []
+        for i, (slot_name, cond) in enumerate(pre_slots.items()):
+            path = self._slot_uri(sv, slot_name, cls)
+            if path is None:
+                return None
+            var = f"?pre{i}"
+            if self._set_operator_fields(cond) == {"range_expression"}:
+                # One-hop into an inlined child object: bind the child node and
+                # apply the inner slot conditions to it.  The nested expression
+                # must itself be a plain conjunction of slot conditions; a
+                # condition mixing range_expression with scalar operators (or a
+                # nested any_of/...) is skipped rather than partially
+                # translated.
+                range_expr = cond.range_expression
+                if self._set_operator_fields(range_expr) != {"slot_conditions"}:
+                    return None
+                node = f"{var}_node"
+                lines.append(f"$this <{path}> {node} .")
+                inner = self._member_conditions(sv, cls, slot_name, node, range_expr.slot_conditions)
+                if inner is None:
+                    return None
+                lines.extend(inner)
+                continue
+            filters = self._scalar_filters(
+                var, cond, lambda v, sn=slot_name: self._resolve_enum_value_ref(sv, sn, v, cls)
+            )
+            if filters is None:
+                return None
+            lines.append(f"$this <{path}> {var} .")
+            lines.extend(filters)
+        return lines
+
+    def _member_conditions(
+        self, sv, cls: ClassDefinition, container_slot_name: str, node_var: str, slot_conditions
+    ) -> list[str] | None:
+        """Constrain the object bound to *node_var* — an instance of the range
+        class of *container_slot_name* — by a set of inner slot conditions.
+
+        Shared by the nested ``range_expression`` precondition (single inlined
+        child) and the ``has_member`` postcondition (a list member).  Inner
+        slots live on the container slot's **range class**, so both their
+        property IRIs and their enum values are resolved in that class's
+        induced context (the container slot itself is induced against *cls*,
+        honouring a ``slot_usage`` range narrowing).  Resolving against the
+        outer class instead would emit predicates the member nodes never carry
+        — the ``sh:path`` on the member shape and the SPARQL body would
+        diverge, making ``FILTER NOT EXISTS`` member checks vacuously true
+        (false positives) or preconditions never bind (false negatives).
+
+        Like preconditions, combining operators on one condition emits all of
+        them.  Returns ``None`` for unsupported inner operators or when the
+        container's range is not a class (inner conditions on a non-class
+        range cannot be resolved faithfully).
+        """
+        container = self._rule_slot(sv, container_slot_name, cls)
+        range_name = getattr(container, "range", None)
+        if not range_name or range_name not in sv.all_classes():
+            return None
+        range_cls = sv.get_class(range_name)
+
+        lines: list[str] = []
+        for j, (inner_name, icond) in enumerate(slot_conditions.items()):
+            ipath = self._slot_uri(sv, inner_name, range_cls)
+            if ipath is None:
+                return None
+            ivar = f"{node_var}_{j}"
+            filters = self._scalar_filters(
+                ivar,
+                icond,
+                lambda v, inm=inner_name: self._resolve_enum_value_ref(sv, inm, v, range_cls),
+            )
+            if filters is None:
+                return None
+            lines.append(f"{node_var} <{ipath}> {ivar} .")
+            lines.extend(filters)
+        return lines
+
+    @staticmethod
+    def _sparql_number(value) -> str | None:
+        """Render a numeric threshold bound as a SPARQL numeric literal, or
+        ``None`` when the value is not a finite number (callers then skip the
+        rule).
+
+        The metamodel range of ``minimum_value`` / ``maximum_value`` is
+        ``Anything``, so YAML strings, dates, booleans, ``.nan`` / ``.inf``
+        all pass through SchemaView unchanged.  Interpolating them raw is
+        unsound: ``"abc"`` yields unparsable SPARQL that poisons the whole
+        shapes graph at validation time, and a date like ``2020-01-01`` parses
+        as the arithmetic expression ``2020-01-01 = 2018`` and silently never
+        fires.  Only ``int`` / finite ``float`` (including the
+        ``extended_int`` / ``extended_float`` runtime subclasses) are
+        rendered; their ``str`` yields a plain numeric token (e.g. ``4000`` or
+        ``0.0``) that SPARQL compares with numeric promotion against
+        ``xsd:float`` / ``xsd:decimal`` data values.
+        """
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            return None
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        return str(value)
+
+    @staticmethod
+    def _sparql_string_literal(value: str) -> str:
+        """Render *value* as a double-quoted SPARQL string literal, escaping the
+        characters the grammar forbids raw.
+
+        ``equals_string`` / permissible-value names are schema-controlled but
+        may legitimately contain a double quote, backslash, or newline; without
+        escaping these would break the ``sh:select`` query (or allow SPARQL
+        injection).  See `SPARQL 1.1 §19.7 escape sequences
+        <https://www.w3.org/TR/sparql11-query/#grammarEscapes>`_.
+        """
+        escaped = (
+            str(value)
+            .replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
+        return f'"{escaped}"'
+
+    def _postcondition_violation(self, sv, cls: ClassDefinition, slot_name: str, cond) -> list[str] | None:
+        """Translate a single postcondition slot condition into SPARQL that
+        matches a *violation* of it.
+
+        Returns ``None`` for operators not handled here, or when the condition
+        sets anything beyond the single operator a branch translates (dropping
+        a co-set operator would weaken the postcondition — the rule is skipped
+        instead).
+
+        Supported operators:
+
+        * ``required: true`` — violation = the target slot is absent on a focus
+          node that satisfies the preconditions.
+        * ``value_presence: ABSENT`` — violation = the target slot *is* present
+          (inapplicable-slot / conditional-absent).
+        * ``has_member`` with a nested ``range_expression`` — violation = *no*
+          member of the (multivalued) target slot matches the inner conditions
+          (list-membership; e.g. the light-group list must contain a
+          ``{group: Vehicle, type: front_fog_light}`` entry).
+        """
+        path = self._slot_uri(sv, slot_name, cls)
+        if path is None:
+            return None
+        op_fields = self._set_operator_fields(cond)
+        if op_fields == {"required"} and cond.required is True:
+            return [f"FILTER NOT EXISTS {{ $this <{path}> ?post . }}"]
+        if op_fields == {"value_presence"} and cond.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+            return [f"$this <{path}> ?post ."]
+        if op_fields == {"has_member"}:
+            has_member = cond.has_member
+            if self._set_operator_fields(has_member) != {"range_expression"}:
+                return None
+            range_expr = has_member.range_expression
+            if self._set_operator_fields(range_expr) != {"slot_conditions"}:
+                return None
+            member_lines = [f"$this <{path}> ?mem ."]
+            inner = self._member_conditions(sv, cls, slot_name, "?mem", range_expr.slot_conditions)
+            if inner is None:
+                return None
+            member_lines.extend(inner)
+            block = " ".join(member_lines)
+            return [f"FILTER NOT EXISTS {{ {block} }}"]
         return None
 
-    def _build_boolean_guard_sparql(self, sv, cls: ClassDefinition, flag_slot_name: str, value_slot_name: str) -> str:
+    def _build_boolean_guard_sparql(
+        self, sv, cls: ClassDefinition, flag_slot_name: str, value_slot_name: str
+    ) -> str | None:
         """Build a SPARQL SELECT query for the boolean-guard pattern.
 
         The query detects violations where the value property is present
-        but the boolean flag is absent or not ``true``.
+        but the boolean flag is absent or not ``true``.  Returns ``None``
+        (rule skipped) when either slot name resolves to no slot.
 
         Conforms to `SHACL §5.3.1
         <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_:
@@ -544,6 +982,8 @@ class ShaclGenerator(Generator):
         """
         flag_uri = self._slot_uri(sv, flag_slot_name, cls)
         value_uri = self._slot_uri(sv, value_slot_name, cls)
+        if flag_uri is None or value_uri is None:
+            return None
 
         return (
             f"SELECT $this WHERE {{\n"
@@ -553,6 +993,44 @@ class ShaclGenerator(Generator):
             f'        ( !BOUND(?flag) || str(?flag) != "true" ) &&\n'
             f"        BOUND(?value)\n"
             f"    )\n"
+            f"}}"
+        )
+
+    def _build_presence_implies_value_sparql(
+        self,
+        sv,
+        cls: ClassDefinition,
+        value_slot_name: str,
+        target_slot_name: str,
+        allowed_values: list[str],
+    ) -> str | None:
+        """Build a SPARQL SELECT query for the presence-implies-value pattern.
+
+        Detects violations where the *value slot* is present but the *target
+        slot* is absent or holds a value outside the allowed set.  This
+        generalises the boolean-guard pattern to enum-valued targets: it
+        supports a single required value (``equals_string``) or a set of
+        acceptable values (``equals_string_in``).
+
+        Each allowed value is resolved via the target slot's enum ``meaning``
+        to a full IRI; values without a ``meaning`` (or non-enum targets) fall
+        back to a plain string literal.
+
+        Conforms to `SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_:
+        ``$this`` is pre-bound to each focus node.
+        """
+        value_uri = self._slot_uri(sv, value_slot_name, cls)
+        target_uri = self._slot_uri(sv, target_slot_name, cls)
+        if value_uri is None or target_uri is None:
+            return None
+        refs = ", ".join(self._resolve_enum_value_ref(sv, target_slot_name, v, cls) for v in allowed_values)
+
+        return (
+            f"SELECT $this WHERE {{\n"
+            f"    $this <{value_uri}> ?value .\n"
+            f"    OPTIONAL {{ $this <{target_uri}> ?target . }}\n"
+            f"    FILTER ( !BOUND(?target) || ?target NOT IN ({refs}) )\n"
             f"}}"
         )
 
@@ -583,7 +1061,9 @@ class ShaclGenerator(Generator):
         ``$this`` is pre-bound to each focus node.
         """
         slot_uri = self._slot_uri(sv, slot_name, cls)
-        value_ref = self._resolve_enum_value_ref(sv, slot_name, value_name)
+        if slot_uri is None:
+            return None
+        value_ref = self._resolve_enum_value_ref(sv, slot_name, value_name, cls)
 
         if max_card == 1:
             return (
@@ -606,15 +1086,20 @@ class ShaclGenerator(Generator):
             f"}}"
         )
 
-    def _resolve_enum_value_ref(self, sv, slot_name: str, value_name: str) -> str:
+    def _resolve_enum_value_ref(self, sv, slot_name: str, value_name: str, cls: ClassDefinition | None = None) -> str:
         """Resolve an enum value name to a SPARQL term (IRI or literal).
 
         Looks up the slot's range as an enum, finds the permissible value
         matching *value_name*, and returns its ``meaning`` as a full IRI
-        wrapped in angle brackets.  Falls back to a quoted literal if the
-        slot is not an enum or the value lacks a ``meaning``.
+        wrapped in angle brackets.  Falls back to an escaped quoted literal if
+        the slot is not an enum or the value lacks a ``meaning``.
+
+        When *cls* is given and the slot is declared on it, the slot is resolved
+        in the class's induced context, so a range narrowed via ``slot_usage``
+        (a class-specific enum) selects the correct permissible values instead
+        of the base slot's enum.
         """
-        slot = sv.get_slot(slot_name)
+        slot = self._rule_slot(sv, slot_name, cls) if cls is not None else sv.get_slot(slot_name)
         if slot:
             range_name = slot.range
             if range_name and range_name in sv.all_enums():
@@ -623,17 +1108,27 @@ class ShaclGenerator(Generator):
                 if pv and pv.meaning:
                     iri = sv.expand_curie(pv.meaning)
                     return f"<{iri}>"
-        return f'"{value_name}"'
+        return self._sparql_string_literal(value_name)
 
-    def _slot_uri(self, sv, slot_name: str, cls: ClassDefinition) -> str:
-        """Resolve a slot name to a full IRI string for use in SPARQL queries.
+    def _slot_uri(self, sv, slot_name: str, cls: ClassDefinition) -> str | None:
+        """Resolve a slot name to a full IRI string for use in SPARQL queries,
+        or ``None`` when the name resolves to no slot at all (callers then skip
+        the rule).
 
-        Mirrors the resolution logic used for ``sh:path`` in the main slot loop:
-        prefer ``sv.get_uri()`` for slots registered in the schema map, fall
-        back to ``default_prefix:underscored_name``.
+        Mirrors the resolution logic used for ``sh:path`` in the main slot loop,
+        including the **induced** (class-specific) slot: a ``slot_usage``
+        override of ``slot_uri`` must yield the same IRI as ``sh:path``.
+        Otherwise the SPARQL body would query a property the data never uses and
+        the constraint would silently never fire (a false negative).  A slot
+        that resolves but is not registered in the schema's element map falls
+        back to ``default_prefix:underscored_name``, again matching ``sh:path``;
+        an *unknown* name must NOT take that fallback — it would fabricate a
+        predicate no shape uses and emit a vacuous constraint.
         """
-        slot = sv.get_slot(slot_name)
-        if slot and slot_name in sv.element_by_schema_map():
+        slot = self._rule_slot(sv, slot_name, cls)
+        if slot is None:
+            return None
+        if slot.name in sv.element_by_schema_map():
             return sv.get_uri(slot, expand=True)
         pfx = sv.schema.default_prefix
         return sv.expand_curie(f"{pfx}:{underscore(slot_name)}")
@@ -924,8 +1419,9 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help=(
         "Emit sh:sparql constraints from LinkML rules: blocks. "
-        "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
-        "are translated into SHACL-SPARQL constraints on the corresponding "
+        "When enabled (default), recognised rule patterns (boolean-guard, "
+        "presence-implies-value, exclusive-value) are translated into "
+        "SHACL-SPARQL constraints on the corresponding "
         "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
     ),
 )
