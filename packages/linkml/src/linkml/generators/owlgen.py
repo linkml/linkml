@@ -21,7 +21,7 @@ from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.generators.common.subproperty import is_xsd_anyuri_range
 from linkml.utils.deprecation import deprecation_warning
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, normalize_graph_prefixes, normalize_prefixes_option, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -122,6 +122,10 @@ class OwlSchemaGenerator(Generator):
     """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
 
     # ObjectVars
+    normalize_prefixes: bool = False
+    """Rename non-standard prefix aliases to the well-known names of
+    :func:`~linkml.utils.generator.well_known_prefix_map`, e.g. ``sdo`` → ``schema``."""
+
     diff_stable: bool = False
     """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
 
@@ -319,6 +323,10 @@ class OwlSchemaGenerator(Generator):
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in schema.prefixes.values():
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
+        if self.normalize_prefixes:
+            normalize_graph_prefixes(
+                graph, {str(v.prefix_prefix): str(v.prefix_reference) for v in schema.prefixes.values()}
+            )
         graph.add((base, RDF.type, OWL.Ontology))
 
         # Add main schema elements
@@ -1856,6 +1864,7 @@ class OwlSchemaGenerator(Generator):
         "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile: str, metadata_profile: str, **kwargs: Any) -> None:
     """Generate an OWL representation of a LinkML model
