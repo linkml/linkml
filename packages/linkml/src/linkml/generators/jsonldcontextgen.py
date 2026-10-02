@@ -11,7 +11,7 @@ from typing import Any
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from rdflib import SKOS, XSD, Namespace
+from rdflib import RDF, SKOS, XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecated_fields
@@ -426,10 +426,29 @@ class ContextGenerator(Generator):
                     else:
                         slot_def["@container"] = "@set"
 
-                self._build_element_id(slot_def, slot.slot_uri)
-                self.add_mappings(slot)
+                # Check if this slot's URI is rdf:type. If so, map to the JSON-LD @type
+                # keyword instead of the normal predicate. This applies to any slot with
+                # slot_uri=rdf:type, regardless of range or other properties. The mapping
+                # preserves RDF round-trip semantics: in RDF, the dumper uses slot_uri
+                # as the predicate; JSON-LD @type keyword expands to rdf:type.
+                if self._slot_uri_is_rdf_type(slot):
+                    slot_def = {"@id": "@type"}
+                    # For @type keyword, always add @container: @set for multivalued slots
+                    # (not just when fix_multivalue_containers is enabled). Multiple types
+                    # are a natural and common use case.
+                    if slot.multivalued:
+                        slot_def["@container"] = "@set"
+                else:
+                    self._build_element_id(slot_def, slot.slot_uri)
+                    self.add_mappings(slot)
+
         if slot_def:
-            if self.use_curies:
+            if slot.identifier or self._slot_uri_is_rdf_type(slot):
+                # Slots that map to JSON-LD keywords (@id or @type) use the slot name
+                # as the context key (not CURIE), even when --use-curies is enabled.
+                # This preserves the semantic meaning of the keyword mapping.
+                key = underscore(aliased_slot_name)
+            elif self.use_curies:
                 key = self._curie(slot)
             else:
                 key = underscore(aliased_slot_name)
@@ -458,6 +477,22 @@ class ContextGenerator(Generator):
                 return "@id"
             return range_type.uri
         return None
+
+    def _slot_uri_is_rdf_type(self, slot: SlotDefinition) -> bool:
+        """Check if a slot's slot_uri resolves to rdf:type.
+
+        In RDF semantics (rdflib_dumper), ANY slot whose slot_uri is rdf:type
+        will emit rdf:type triples, regardless of other properties like designates_type.
+        In JSON-LD, we should map such slots to the @type keyword to preserve
+        round-trip semantics.
+
+        :param slot: SlotDefinition to check
+        :return: True if slot_uri resolves to rdf:type, False otherwise
+        """
+        if not slot.slot_uri:
+            return False
+        slot_uri = self.namespaces.uri_for(slot.slot_uri)
+        return slot_uri == RDF.type
 
     def _build_scoped_context(self, cls: ClassDefinition) -> dict:
         """Build a scoped JSON-LD context for class-level slot range overrides.
