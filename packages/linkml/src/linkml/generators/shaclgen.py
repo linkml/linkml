@@ -142,6 +142,9 @@ class ShaclGenerator(Generator):
     ignores any per-slot ``in_language``.
     """
 
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     emit_rules: bool = True
     """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
 
@@ -196,7 +199,7 @@ class ShaclGenerator(Generator):
     def serialize(self, **args) -> str:
         g = self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -927,6 +930,15 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
         "are translated into SHACL-SPARQL constraints on the corresponding "
         "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")

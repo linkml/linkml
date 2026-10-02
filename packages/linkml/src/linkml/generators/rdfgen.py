@@ -78,6 +78,9 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     emit_metadata: bool = False
     context: list[str] = None
     original_schema: SchemaDefinition = None
@@ -89,7 +92,7 @@ class RDFGenerator(Generator):
 
     def _data(self, g: Graph) -> str:
         fmt = "turtle" if self.format == "ttl" else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
@@ -136,6 +139,15 @@ class RDFGenerator(Generator):
     show_default=True,
     multiple=True,
     help="JSONLD context file (default: vendored meta.context.jsonld)",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
