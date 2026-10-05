@@ -1773,7 +1773,10 @@ def test_class_ranged_slot_is_a_becomes_sub_relation(tmp_path):
     """Each level subtypes its parent's relation and specializes the owning role; the
     played role is inherited unless the range narrows."""
     output = _slot_tree_output(tmp_path)
-    assert "relation interacts_with,\n      sub related_to,\n      relates interacts_with as related_to @card(1);" in output
+    assert (
+        "relation interacts_with,\n      sub related_to,\n      relates interacts_with as related_to @card(1);"
+        in output
+    )
     assert "relates binds as interacts_with @card(1)" in output
     assert "relates Protein as NamedThing @card(1)" in output
     assert "plays binds:Protein" in output

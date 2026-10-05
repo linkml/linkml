@@ -4,18 +4,22 @@ Converts a LinkML schema into a TypeQL ``define`` block that can be loaded
 directly into a TypeDB 3.x database.
 
 Mapping summary:
-- class → ``entity`` type; or with ``represents_relationship`` or ``SchemaView.is_relationship()`` → ``relation`` type with ``relates`` roles
+- class → ``entity`` type; or with ``represents_relationship`` or ``SchemaView.is_relationship()``
+  → ``relation`` type with ``relates`` roles
 - ``is_a`` → ``sub`` (classes and slots)
 - ``abstract: true`` → ``@abstract`` (dropped with a warning if any ancestor is concrete)
 - Scalar slot → ``attribute`` type + ``owns``; slot ``is_a`` → attribute subtype, but only if value types match
-- Class-ranged slot → binary ``relation`` named after the slot with "owning" role named after the slot, "played" role after the range class, both ``@card(1)``
-- Class-ranged slot ``is_a`` → sub-relation specializing the owning role; players of a slot's owning role also play those below it
+- Class-ranged slot → binary ``relation`` named after the slot with "owning" role named after the slot,
+  "played" role after the range class, both ``@card(1)``
+- Class-ranged slot ``is_a`` → sub-relation specializing the owning role; players of a slot's owning role
+  also play those below it
 - Non-abstract slot with a ``domain`` that no class declares → owned or played by the domain class
 - ``slot_usage`` range narrowing → specialized ``relates ... as ...`` (on a sub-relation for entity-like classes)
 - Mixin → not emitted; its slots are inlined, and a mixin range or domain resolves to its most general concrete classes
 - Enum → ``attribute value string @values(...)``; an enum set by ``slot_usage`` → ``@values`` on that ``owns``
 - ``identifier: true`` → ``@key``
-- ``required`` / ``multivalued`` / ``*_cardinality`` → ``@card``, on ``owns`` for scalar slots and on the owner's ``plays`` for class-ranged ones
+- ``required`` / ``multivalued`` / ``*_cardinality`` → ``@card``, on ``owns`` for scalar slots and on the
+  owner's ``plays`` for class-ranged ones
 - ``minimum_value`` / ``maximum_value`` → ``@range(...)``; ``pattern`` → ``@regex(...)``, on ``owns``
 - ``description`` → ``@doc(...)``
 """
@@ -435,9 +439,7 @@ class _RoleInfo:
     declared_on: str
 
 
-def _build_relationship_role_info(
-    sv: SchemaView, relationship_classes: set[str]
-) -> dict[tuple[str, str], _RoleInfo]:
+def _build_relationship_role_info(sv: SchemaView, relationship_classes: set[str]) -> dict[tuple[str, str], _RoleInfo]:
     """Compute per-(class, slot) role specialization info for relationship classes.
 
     A specialized role ``<range>_<parent-role>`` is introduced only where the range
@@ -574,9 +576,7 @@ def _build_class_range_narrowings(
         if base_range not in all_class_names:
             continue  # not a class-ranged slot at all
 
-        owning_role, base_played_role = role_names.get(
-            slot_name, (_typedb_name(slot_name), _typedb_name(base_range))
-        )
+        owning_role, base_played_role = role_names.get(slot_name, (_typedb_name(slot_name), _typedb_name(base_range)))
         base_relation = rel_names.get(slot_name, _typedb_name(slot_name))
 
         for class_name in sv.all_classes():
@@ -742,9 +742,7 @@ class TypeDBGenerator(Generator):
         for slot_name in sorted(defs, key=depth):
             induced = defs[slot_name]
             relation = rel_names.get(slot_name, _typedb_name(slot_name))
-            owning_role, played_role = role_names.get(
-                slot_name, (_typedb_name(slot_name), _typedb_name(induced.range))
-            )
+            owning_role, played_role = role_names.get(slot_name, (_typedb_name(slot_name), _typedb_name(induced.range)))
             parent = sv.get_slot(slot_name).is_a
             if parent not in result:
                 result[slot_name] = _SlotRelation(induced, relation, None, owning_role, played_role, relation, None)
@@ -1273,7 +1271,9 @@ class TypeDBGenerator(Generator):
 
                 # Scalar slots: direct ones only, since inherited ones can't be redeclared. A root
                 # relation inherits nothing, so it also declares slots from non-relation ancestors.
-                scalar_slots = direct_slots_cache[class_name] if has_relation_supertype else sv.class_induced_slots(class_name)
+                scalar_slots = (
+                    direct_slots_cache[class_name] if has_relation_supertype else sv.class_induced_slots(class_name)
+                )
                 for induced in scalar_slots:
                     value_type = _resolve_typedb_value_type(sv, induced.range)
                     if value_type is not None:
@@ -1285,9 +1285,7 @@ class TypeDBGenerator(Generator):
                         parts.append(self._build_owns_narrowing_stmt(slot_tname, induced))
                 domain_sources = [class_name]
                 if not has_relation_supertype:
-                    domain_sources += [
-                        a for a in sv.class_ancestors(class_name)[1:] if not sv.get_class(a).mixin
-                    ]
+                    domain_sources += [a for a in sv.class_ancestors(class_name)[1:] if not sv.get_class(a).mixin]
                 for source in domain_sources:
                     for induced in domain_owned.get(source, []):
                         slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
