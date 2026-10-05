@@ -188,6 +188,38 @@ enums:
     assert '@values("employed", "unemployed", "student")' in output
 
 
+def test_enum_without_static_values_is_plain_string(tmp_path):
+    """A dynamic enum (no permissible_values) becomes a plain string, not an empty @values()."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+types:
+  string:
+    base: str
+    uri: xsd:string
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    slots:
+      - process
+slots:
+  process:
+    range: ProcessEnum
+enums:
+  ProcessEnum:
+    reachable_from:
+      source_ontology: obo:go
+      source_nodes: [GO:0008150]
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute process, value string;" in output
+    assert "@values" not in output
+
+
 def test_multiple_enums_each_get_values_annotation(tmp_path):
     """Each enum-ranged slot gets its own @values annotation on its attribute declaration."""
     schema_yaml = """
@@ -1550,6 +1582,48 @@ slots:
     ma_block = re.search(r"entity molecular_activity\b[^;]*;", output, re.DOTALL)
     assert ma_block, f"molecular_activity entity block not found:\n{output}"
     assert "plays" not in ma_block.group(0)
+
+
+def test_class_ranged_narrowing_on_declaring_class(tmp_path):
+    """slot_usage narrowing a class-ranged slot on the class that declares it keeps the
+    base relation on the slot's own range, and the declaring class still plays the owning
+    role with its cardinality, since it has no supertype to inherit that from."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+default_range: string
+classes:
+  animal:
+    abstract: true
+    slots: [id]
+  dog:
+    is_a: animal
+  person:
+    slots: [id, pets]
+    slot_usage:
+      pets:
+        range: dog
+slots:
+  id: {identifier: true}
+  pets:
+    range: animal
+    multivalued: true
+    minimum_cardinality: 1
+    maximum_cardinality: 3
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert re.search(r"relation pets,\s+relates pets @card\(1\),\s+relates animal @card\(1\);", output)
+    assert "relation pets_person sub pets," in output
+    assert "relates dog_animal as animal" in output
+    person_block = re.search(r"entity person\b[^;]*;", output, re.DOTALL)
+    assert person_block, f"person entity block not found:\n{output}"
+    assert "plays pets:pets @card(1..3)" in person_block.group(0)
+    dog_block = re.search(r"entity dog\b[^;]*;", output, re.DOTALL)
+    assert dog_block, f"dog entity block not found:\n{output}"
+    assert "plays pets_person:dog_animal" in dog_block.group(0)
 
 
 def test_class_ranged_narrowing_restated_unchanged_is_not_redeclared(tmp_path):

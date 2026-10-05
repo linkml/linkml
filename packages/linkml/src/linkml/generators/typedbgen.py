@@ -380,13 +380,13 @@ def _build_role_names(sv: SchemaView, rel_names: dict[str, str]) -> dict[str, tu
     """
     result: dict[str, tuple[str, str]] = {}
     for slot_name in sv.all_slots():
-        induced = None
-        for class_name in sv.all_classes():
-            if slot_name in (sv.get_class(class_name).slots or []):
-                induced = sv.induced_slot(slot_name, class_name)
-                break
-        if induced is None:
-            induced = sv.induced_slot(slot_name)
+        # Name the played role after the slot's own range, not a class's slot_usage narrowing of it.
+        induced = sv.induced_slot(slot_name)
+        if induced.range not in sv.all_classes():
+            for class_name in sv.all_classes():
+                if slot_name in (sv.get_class(class_name).slots or []):
+                    induced = sv.induced_slot(slot_name, class_name)
+                    break
         if induced.range not in sv.all_classes():
             continue
         owning_role = _typedb_name(slot_name)
@@ -717,6 +717,11 @@ class TypeDBGenerator(Generator):
             ancestor_slot_names = self._ancestor_slot_names(sv, class_name)
             for induced in sv.class_induced_slots(class_name):
                 if induced.name not in ancestor_slot_names and induced.range in all_class_names:
+                    # If the declaring class narrows the range, the base relation keeps the
+                    # slot's own range and the narrowing becomes a sub-relation.
+                    base = sv.induced_slot(induced.name)
+                    if base.range in all_class_names and base.range != induced.range:
+                        induced = base
                     defs.setdefault(induced.name, induced)
         declared = set(defs)
         for slot_name in sv.all_slots():
@@ -844,9 +849,12 @@ class TypeDBGenerator(Generator):
             enum_name = sv.induced_slot(slot_name_orig).range
             if enum_name not in sv.all_enums() or slot_name not in seen:
                 continue
+            values_ann = self._enum_values(enum_name)
+            if values_ann is None:
+                continue  # no static values: stays a plain string attribute
             enum_attr_lines.append(f"# Enum: {_typedb_name(enum_name)}")
             seen.pop(slot_name)
-            enum_attr_lines.append(f"attribute {slot_name}, value string {self._enum_values(enum_name)};")
+            enum_attr_lines.append(f"attribute {slot_name}, value string {values_ann};")
 
         # Attribute subtyping: slot is_a becomes sub (slot mixins are dropped). Iterated to a
         # fixed point so multi-level chains resolve regardless of dict order.
@@ -912,10 +920,16 @@ class TypeDBGenerator(Generator):
                 narrowed.append(induced)
         return narrowed
 
-    def _enum_values(self, enum_name: str) -> str:
-        """Return a ``@values(...)`` annotation listing an enum's permissible values."""
+    def _enum_values(self, enum_name: str) -> str | None:
+        """Return a ``@values(...)`` annotation listing an enum's permissible values.
+
+        Returns ``None`` for an enum with no static values (e.g. a dynamic ``reachable_from``
+        enum), which is then a plain ``string``.
+        """
         enum_def = self.schemaview.get_enum(enum_name)
         permitted = list(enum_def.permissible_values.keys()) if enum_def else []
+        if not permitted:
+            return None
         return f"@values({', '.join(_typeql_string(v) for v in permitted)})"
 
     def _values_annotation(self, induced: SlotDefinition) -> str | None:
@@ -1145,19 +1159,20 @@ class TypeDBGenerator(Generator):
                     continue
                 narrowing = narrowing_by_class_slot.get((class_name, induced.name))
                 if narrowing is not None:
-                    # The owning role's plays is inherited; only the narrowed range needs one.
                     narrowed_stmt = self._build_plays_stmt(narrowing.sub_relation, narrowing.narrowed_played_role)
                     for player in self._player_classes_for_range(sv, narrowing.narrowed_range):
                         if player in plays_map:
                             plays_map[player].append(narrowed_stmt)
-                    continue
+                    if induced.name in ancestor_slot_names_cache[class_name]:
+                        continue  # the owning role's plays is inherited
 
                 sr = slot_relations[induced.name]
                 plays_map[class_name].append(self._build_plays_stmt(sr.relation, sr.owning_role, induced))
-                played_stmt = self._build_plays_stmt(sr.played_declared_on, sr.played_role)
-                for player in self._player_classes_for_range(sv, induced.range):
-                    if player in plays_map:
-                        plays_map[player].append(played_stmt)
+                if narrowing is None:
+                    played_stmt = self._build_plays_stmt(sr.played_declared_on, sr.played_role)
+                    for player in self._player_classes_for_range(sv, induced.range):
+                        if player in plays_map:
+                            plays_map[player].append(played_stmt)
 
                 # Players of a slot's owning role also play every role below it in the hierarchy.
                 for descendant in self._slot_relation_descendants(slot_relations, induced.name):
