@@ -2903,7 +2903,7 @@ def test_range_expression_nesting(framework, data_name, instance, is_valid):
         core_elements=["range_expression"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework not in [JSON_SCHEMA, OWL]:
+    if framework not in [JSON_SCHEMA, OWL, SHACL]:
         if not is_valid:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
