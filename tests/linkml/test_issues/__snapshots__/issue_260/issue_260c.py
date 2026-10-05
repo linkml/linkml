@@ -59,7 +59,7 @@ from rdflib import (
 from . issue_260a import String
 from . issue_260b import C260b
 
-metamodel_version = "1.11.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces
