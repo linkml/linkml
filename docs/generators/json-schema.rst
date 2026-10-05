@@ -180,6 +180,11 @@ A slot condition is unknown for an absent slot unless it decides whether the slo
 may be absent, and an instance is invalid only when an expression is definitely
 false, as described under "Class-level expressions and absent slots" in
 :doc:`Advanced features </schemas/advanced>`.
+A slot's `range_expression <https://w3id.org/linkml/range_expression>`_
+constrains each of its values in the same way, with its conditions on the slots
+of the value. For a slot inlined as a dict these are the values of the dict,
+except in its compact forms ``{id: value}`` and ``{id: null}``, which the
+expression can't reach.
 The SHACL generator reads them the same way.
 
 Inlining
