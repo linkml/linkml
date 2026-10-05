@@ -453,7 +453,7 @@ classes:
     slots:
     - extensions
     class_uri: linkml:Extensible
-metamodel_version: 1.11.0
+metamodel_version: 1.12.0
 source_file: issue_167b.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

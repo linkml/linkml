@@ -1,4 +1,4 @@
-# metamodel_version: 1.11.0
+# metamodel_version: 1.12.0
 enum AliasPredicateEnum
   {
     EXACT_SYNONYM
@@ -97,7 +97,7 @@ type AnonymousClassExpression implements ClassExpression
     rank: Int
     categories: [String]
     keywords: [String]
-    isA: Definition
+    isA: ClassDefinition
     anyOf: [AnonymousClassExpression]
     exactlyOneOf: [AnonymousClassExpression]
     noneOf: [AnonymousClassExpression]
