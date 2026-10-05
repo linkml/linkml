@@ -106,8 +106,9 @@ then adds nothing; one that only some instances belong to, because a descendant
 of the class has it among its ancestors, and then gives ``sh:class``; or one that
 none belongs to, and then gives a shape nothing conforms to. An instance belongs
 to its class and that class's ancestors, by ``is_a`` and by ``mixins``, so a
-class that may also be another is declared as a subclass with that mixin.
-Nested expressions recurse. Each entry of ``slot_conditions`` gives an
+class that may also be another is declared as a subclass with that mixin. For a
+type or an enum, ``is_a`` gives its value constraint. Nested expressions recurse.
+Each entry of ``slot_conditions`` gives an
 ``sh:property`` whose path is that of the slot as induced for the class, so
 ``slot_usage`` applies:
 
@@ -120,7 +121,9 @@ Nested expressions recurse. Each entry of ``slot_conditions`` gives an
 * ``equals_string`` and ``equals_string_in`` give ``sh:in``; on an enum slot the
   values are the permissible values as the enum renders them, the IRI of their
   ``meaning`` where they have one;
-* ``range`` gives the same class, type or enum constraint as a slot's range.
+* ``range`` gives the same class, type or enum constraint as a slot's range;
+* ``range_expression`` gives an ``sh:node``, as described under
+  `Range Expressions`_.
 
 A shape may have at most one value of ``sh:minInclusive``, ``sh:maxInclusive``
 or ``sh:in``, and of ``sh:pattern``, whose component also takes ``sh:flags``
@@ -170,10 +173,68 @@ slot's range.
 
 An operator whose members use anything else is skipped as a whole and logged as
 a warning, because leaving out one member would change what the operator
-admits. That covers, for example, ``has_member`` or a slot-level ``any_of``
-inside a slot condition, a condition on a name that is not a slot, a condition
+admits. That covers, for example, ``has_member``, ``equals_expression`` or a
+slot-level ``any_of`` inside a slot condition, a condition on a name that is not a slot, a condition
 on the identifier slot (the node's IRI rather than a property), and
 ``equals_string`` on a slot whose range does not hold strings.
+
+
+Range Expressions
+^^^^^^^^^^^^^^^^^
+
+A slot's `range_expression <https://w3id.org/linkml/range_expression>`__
+constrains each of its values as a class-level expression constrains an
+instance: its conditions constrain the slots of the value as induced for the
+range class, and a value violates it only when it is definitely false. It
+becomes an ``sh:node`` (`SHACL §4.7.1
+<https://www.w3.org/TR/shacl/#NodeConstraintComponent>`__) on the property shape,
+next to the range's ``sh:class``, so it constrains only the values of this slot,
+and matching it doesn't make a node an instance of the range. The JSON Schema
+generator reads it the same way.
+
+.. code-block:: yaml
+
+   classes:
+     Document:
+       slots: [license]
+       slot_usage:
+         license:
+           range_expression:
+             slot_conditions:
+               category:
+                 required: true
+                 equals_string: license
+     Resource:
+       slots: [category]
+   slots:
+     license:
+       range: Resource
+     category:
+       range: string
+
+.. code-block:: turtle
+
+   ex:Document a sh:NodeShape ;
+       sh:property [ sh:path ex:license ;
+               sh:class ex:Resource ;
+               sh:node [ sh:property [ sh:path ex:category ;
+                           sh:minCount 1 ;
+                           sh:in ( "license" ) ] ] ;
+               ... ] ;
+       ...
+
+A class alternative in a slot's ``any_of`` can carry its own
+``range_expression``, and so can a slot condition, where the expression takes
+the form of the condition: under ``sh:not``, its "definitely true" form. For
+values that aren't instances of a class, an expression can combine types and
+enums with ``is_a``, for example ``any_of: [{is_a: OpenLicense}, {is_a:
+ProprietaryLicense}]``; such values have no slots for a condition to constrain.
+An expression that uses anything SHACL can't express (see above) is skipped and
+logged as a warning.
+
+A value that is a reference is checked against its description in the data
+graph, as ``sh:class`` is. The JSON Schema generator can't check it, because
+there the value is just an identifier.
 
 
 Command Line

@@ -92,6 +92,8 @@ A `Sample` without `status` is valid: the condition is unknown, so `none_of` isn
 | `none_of: [label = A]` | valid | invalid | valid |
 | `exactly_one_of: [label = A, note = B]` | invalid | valid | invalid |
 
+A slot's [range_expression](https://w3id.org/linkml/range_expression) constrains each value of the slot in the same way: its conditions constrain the slots of the value, as induced for the slot's range class. In a slot condition, a `range_expression` is part of the condition, so under `none_of` it must hold definitely.
+
 [Rules](#rules) are read differently: their preconditions require their slots, and so do their postconditions unless the rule is `open_world`.
 
 ### Unions as ranges
