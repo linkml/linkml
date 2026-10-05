@@ -136,7 +136,7 @@ linkml:extensions dcterms:license "https://creativecommons.org/publicdomain/zero
 	linkml:id "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	linkml:imports "linkml:types"^^xsd:anyURI ;
 	linkml:inlined true ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:multivalued true ;
 	linkml:owner linkml:Extensible ;
 	linkml:range linkml:Extension ;
