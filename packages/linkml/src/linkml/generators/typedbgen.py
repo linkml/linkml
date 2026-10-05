@@ -21,10 +21,12 @@ Mapping summary:
 - ``required`` / ``multivalued`` / ``*_cardinality`` → ``@card``, on ``owns`` for scalar slots and on the
   owner's ``plays`` for class-ranged ones
 - ``minimum_value`` / ``maximum_value`` → ``@range(...)``; ``pattern`` → ``@regex(...)``, on ``owns``
+  (dropped with a warning if TypeDB's regex engine cannot compile it)
 - ``description`` → ``@doc(...)``
 """
 
 import os
+import re
 from dataclasses import dataclass
 
 import click
@@ -79,7 +81,9 @@ _TYPEDB_PRIMITIVE: dict[str, str] = {
 
 # TypeDB 3.x reserved keywords that cannot be used as user-defined type names.
 # When a slot or class name collides with one of these, we append a suffix.
-# Sourced from the official TypeQL keyword glossary (https://typedb.com/docs/typeql-reference/keywords/).
+# Covers every word in the ``reserved`` rule of the TypeQL grammar
+# (https://github.com/typedb/typeql/blob/master/rust/parser/typeql.pest), plus other keywords
+# from the TypeQL keyword glossary (https://typedb.com/docs/typeql-reference/keywords/).
 _TYPEDB_RESERVED: frozenset[str] = frozenset(
     {
         # Schema queries
@@ -101,6 +105,7 @@ _TYPEDB_RESERVED: frozenset[str] = frozenset(
         "offset",
         "reduce",
         "with",
+        "given",
         "end",
         # Pattern logic
         "or",
@@ -110,6 +115,7 @@ _TYPEDB_RESERVED: frozenset[str] = frozenset(
         "entity",
         "relation",
         "attribute",
+        "role",
         "struct",
         "fun",
         # Constraint statements
@@ -162,6 +168,8 @@ _TYPEDB_RESERVED: frozenset[str] = frozenset(
         "false",
         "asc",
         "desc",
+        "first",
+        "last",
         "return",
         "of",
         "from",
@@ -263,15 +271,69 @@ def _build_range_annotation(induced: SlotDefinition) -> str | None:
     return f"@range({lo_str}..{hi_str})"
 
 
-def _build_regex_annotation(induced: SlotDefinition) -> str | None:
+# Regex syntax that TypeDB's regex engine (the Rust ``regex`` crate) rejects: look-around
+# (``(?=``, ``(?!``, ``(?<=``, ``(?<!``), backreferences (``\1``, ``(?P=name)``, ``\k<name>``)
+# and atomic groups (``(?>``). A backslash escaped by another backslash is not a backreference.
+_UNSUPPORTED_REGEX = re.compile(r"\(\?<?[=!]|\(\?P=|\(\?>|(?<!\\)(?:\\\\)*\\(?:[1-9]|k<)")
+
+
+def _regex_supported(pattern: str) -> bool:
+    """Return True if TypeDB can compile ``pattern`` as a ``@regex`` annotation."""
+    return not _UNSUPPORTED_REGEX.search(pattern)
+
+
+def _regex_drop_reason(sv: SchemaView, induced: SlotDefinition) -> str | None:
+    """Return why a slot's ``pattern`` can't become ``@regex``, or ``None`` if it can (or has none).
+
+    Either reason would make TypeDB reject the whole schema. Class-ranged slots have no
+    attribute to annotate, so they return ``None`` too.
+    """
+    if not induced.pattern:
+        return None
+    value_type = _resolve_typedb_value_type(sv, induced.range)
+    if value_type is None:
+        return None
+    if value_type != "string":
+        return f"its value type is {value_type}, and TypeDB only allows @regex on string attributes"
+    if not _regex_supported(induced.pattern):
+        return "it uses look-around, backreferences or atomic groups, which TypeDB's regex engine does not support"
+    return None
+
+
+def _build_regex_annotation(sv: SchemaView, induced: SlotDefinition) -> str | None:
     """Return a ``@regex(...)`` annotation string from ``pattern``, or ``None`` if unset.
+
+    Also ``None`` when ``_regex_drop_reason`` gives a reason, since one such annotation makes
+    TypeDB reject the whole schema. ``serialize`` reports these as warnings.
 
     :param induced: the induced SlotDefinition carrying the ``pattern`` constraint
     :return: annotation string like ``@regex("^[A-Z]+$")`` or ``None``
     """
-    if not induced.pattern:
+    if not induced.pattern or _resolve_typedb_value_type(sv, induced.range) is None:
         return None
-    return f"@regex({_typeql_string(induced.pattern)})"
+    if _regex_drop_reason(sv, induced):
+        return None
+    return f"@regex({_typeql_regex_string(induced.pattern)})"
+
+
+def _typeql_regex_string(pattern: str) -> str:
+    """Return ``pattern`` as a double-quoted TypeQL string literal for ``@regex``.
+
+    TypeDB compiles the ``@regex`` literal as written, without decoding its escapes, so the
+    pattern's backslashes are kept as they are (``\\d`` stays ``\\d``) rather than doubled.
+    Only a bare ``"`` is escaped, to keep the literal well-formed; the regex engine reads
+    ``\\"`` as a plain ``"``.
+    """
+    out: list[str] = []
+    i = 0
+    while i < len(pattern):
+        if pattern[i] == "\\" and i + 1 < len(pattern):
+            out.append(pattern[i : i + 2])  # an existing escape, copied as is
+            i += 2
+            continue
+        out.append('\\"' if pattern[i] == '"' else pattern[i])
+        i += 1
+    return '"' + "".join(out) + '"'
 
 
 def _build_doc_annotation(description: str | None) -> str | None:
@@ -654,6 +716,27 @@ class TypeDBGenerator(Generator):
         lines.append("define")
         lines.append("")
 
+        # Patterns that can't become @regex are dropped; say which, so it isn't silent.
+        dropped: dict[str, tuple[str, str]] = {}
+        for slot_name in sv.all_slots():
+            induced = sv.induced_slot(slot_name)
+            reason = _regex_drop_reason(sv, induced)
+            if reason:
+                dropped[slot_name] = (reason, induced.pattern)
+        for class_def in sv.all_classes().values():
+            for slot_name, usage in (class_def.slot_usage or {}).items():
+                if not (usage.pattern or usage.range):
+                    continue
+                induced = sv.induced_slot(slot_name, class_def.name)
+                reason = _regex_drop_reason(sv, induced)
+                if reason and dropped.get(slot_name) != (reason, induced.pattern):
+                    dropped[f"{slot_name}' on '{class_def.name}"] = (reason, induced.pattern)
+        for where, (reason, pattern) in dropped.items():
+            flat = " ".join(pattern.splitlines())  # a newline would end the comment early
+            lines.append(f"  # WARNING: @regex dropped from slot '{where}': {reason}. Pattern: {flat}")
+        if dropped:
+            lines.append("")
+
         # ── Attribute types ──────────────────────────────────────────────────
         attr_defs = self._collect_attribute_defs(sv, attr_names)
         if attr_defs:
@@ -915,7 +998,8 @@ class TypeDBGenerator(Generator):
             inherited = sv.induced_slot(induced.name, parent)
             if (
                 _build_range_annotation(induced) != _build_range_annotation(inherited)
-                or _build_regex_annotation(induced) != _build_regex_annotation(inherited)
+                or _build_regex_annotation(self.schemaview, induced)
+                != _build_regex_annotation(self.schemaview, inherited)
                 or self._values_annotation(induced) != self._values_annotation(inherited)
             ):
                 narrowed.append(induced)
@@ -948,7 +1032,7 @@ class TypeDBGenerator(Generator):
         owns = f"owns {slot_tname}"
         for ann in (
             _build_range_annotation(induced),
-            _build_regex_annotation(induced),
+            _build_regex_annotation(self.schemaview, induced),
             self._values_annotation(induced),
         ):
             if ann:
@@ -983,7 +1067,7 @@ class TypeDBGenerator(Generator):
         range_ann = _build_range_annotation(induced)
         if range_ann:
             owns += f" {range_ann}"
-        regex_ann = _build_regex_annotation(induced)
+        regex_ann = _build_regex_annotation(self.schemaview, induced)
         if regex_ann:
             owns += f" {regex_ann}"
         values_ann = self._values_annotation(induced)
@@ -1230,9 +1314,15 @@ class TypeDBGenerator(Generator):
             parts: list[str] = []
             warnings: list[str] = []
             if class_def.abstract and not is_abstract:
+                parent = class_def.is_a
+                why = (
+                    "is not"
+                    if not sv.get_class(parent).abstract
+                    else "lost @abstract because it has a concrete ancestor"
+                )
                 warnings.append(
                     f"  # WARNING: '{tname}' is abstract in LinkML but its supertype "
-                    f"'{_typedb_name(class_def.is_a)}' is not; TypeDB requires an abstract "
+                    f"'{_typedb_name(parent)}' {why}; TypeDB requires an abstract "
                     "type's direct supertype to also be abstract [SVL14]. @abstract dropped "
                     "here rather than propagated to the (likely intentionally concrete) "
                     "supertype — review whether the supertype should be abstract instead."

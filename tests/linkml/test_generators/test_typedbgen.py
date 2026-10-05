@@ -257,9 +257,8 @@ enums:
     gen = TypeDBGenerator(str(schema_file))
     output = gen.serialize()
     assert 'attribute status, value string @values("employed", "unemployed");' in output
-    # 'role' is not a reserved TypeQL keyword (see the keyword glossary at
-    # https://typedb.com/docs/typeql-reference/keywords/), so it is not suffixed.
-    assert 'attribute role, value string @values("admin", "user", "guest");' in output
+    # 'role' is reserved by the TypeQL grammar, so the attribute is suffixed.
+    assert 'attribute role_attr, value string @values("admin", "user", "guest");' in output
 
 
 def test_abstract_class_produces_annotation(tmp_path):
@@ -952,9 +951,11 @@ slots:
     assert "entity Thing," in output
     assert "entity Organism, sub Thing;" in output
     assert "entity Animal, sub Organism;" in output
-    assert "organism @abstract" not in output
-    assert "animal @abstract" not in output
+    assert "Organism @abstract" not in output
+    assert "Animal @abstract" not in output
     assert output.count("SVL14") == 2
+    assert "supertype 'Thing' is not;" in output
+    assert "supertype 'Organism' lost @abstract because it has a concrete ancestor;" in output
 
 
 def test_enum_values_are_escaped(tmp_path):
@@ -1007,6 +1008,86 @@ slots:
     gen = TypeDBGenerator(str(schema_file))
     output = gen.serialize()
     assert 'owns code @regex("^[A-Z]{3}$")' in output
+
+
+def _pattern_output(tmp_path, pattern: str, slot_range: str = "string") -> str:
+    """Generate TypeQL for one class owning ``code`` with the given ``pattern`` and range."""
+    escaped = pattern.replace("'", "''")
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - code
+slots:
+  code:
+    range: {slot_range}
+    pattern: '{escaped}'
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    return TypeDBGenerator(str(schema_file)).serialize()
+
+
+def test_regex_keeps_pattern_backslashes(tmp_path):
+    """TypeDB compiles the @regex literal without decoding escapes, so backslashes are not
+    doubled: ``\\d`` must reach the regex engine as ``\\d``, not as a literal backslash."""
+    output = _pattern_output(tmp_path, r"^\d{4}\.\S+\{x\}$")
+    assert r'owns code @regex("^\d{4}\.\S+\{x\}$")' in output
+
+
+def test_regex_escapes_bare_double_quote(tmp_path):
+    """A bare double quote is escaped so the TypeQL string literal stays well-formed."""
+    output = _pattern_output(tmp_path, r'^say "hi"$')
+    assert r'owns code @regex("^say \"hi\"$")' in output
+
+
+@pytest.mark.parametrize("pattern", [r"^(?!x)\w+$", r"^a(?<=a)b$", r"^(a)\1$", r"^(?>a)b$"])
+def test_regex_unsupported_by_typedb_is_dropped_with_warning(tmp_path, pattern):
+    """Look-around, backreferences and atomic groups make TypeDB reject the whole schema
+    (nmdc-schema's ``websites`` pattern hit this), so @regex is dropped and the pattern reported."""
+    output = _pattern_output(tmp_path, pattern)
+    assert "@regex" not in output.replace("# WARNING: @regex dropped", "")
+    assert "owns code" in output
+    assert "WARNING: @regex dropped from slot 'code': it uses look-around" in output
+
+
+def test_regex_on_non_string_slot_is_dropped_with_warning(tmp_path):
+    """TypeDB only allows @regex on string attributes; nmdc-schema's ``elev`` is a double."""
+    output = _pattern_output(tmp_path, r"^[0-9.]+$", slot_range="float")
+    assert "attribute code, value double;" in output
+    assert "@regex(" not in output
+    assert "WARNING: @regex dropped from slot 'code': its value type is double" in output
+
+
+def test_unsupported_regex_narrowing_does_not_redeclare_owns(tmp_path):
+    """If a subclass narrows only by a pattern TypeDB can't compile, the narrowing has nothing
+    left to say, so the subclass must not redeclare ``owns`` (TypeDB [SVL42])."""
+    schema_yaml = r"""
+id: http://example.org/test
+name: test-schema
+classes:
+  Thing:
+    slots: [code]
+  Widget:
+    is_a: Thing
+    slot_usage:
+      code:
+        pattern: '^(?!x)\w+$'
+slots:
+  code:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert re.search(r"entity Widget, sub Thing;", output)
+    assert "WARNING: @regex dropped from slot 'code' on 'Widget'" in output
 
 
 def test_description_produces_doc_annotation(tmp_path):
@@ -1121,6 +1202,34 @@ slots:
     output = gen.serialize()
     assert "attribute list_attr, value string" in output
     assert "attribute median_attr, value string" in output
+
+
+@pytest.mark.parametrize(
+    "keyword",
+    ["alias", "asc", "desc", "end", "first", "given", "in", "last", "of", "return", "role", "struct", "try", "with"],
+)
+def test_grammar_reserved_keyword_gets_suffix(tmp_path, keyword):
+    """Every word in the TypeQL grammar's ``reserved`` rule is suffixed (#4037).
+
+    TypeDB rejects these as labels with ``[DEX31] The reserved keyword "..." cannot be
+    used as an identifier``; nmdc-schema's ``end`` slot hit this.
+    """
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+classes:
+  Thing:
+    slots:
+      - {keyword}
+slots:
+  {keyword}:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert f"attribute {keyword}_attr, value string" in output
+    assert f"owns {keyword}_attr" in output
 
 
 # ---------------------------------------------------------------------------
