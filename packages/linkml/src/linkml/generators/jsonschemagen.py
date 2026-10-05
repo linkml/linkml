@@ -2,7 +2,7 @@ import ast
 import json
 import logging
 import os
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from typing import Any, cast
 
@@ -14,7 +14,12 @@ from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.common.build import RangeResult
-from linkml.generators.common.class_expression import class_membership, value_bounds
+from linkml.generators.common.class_expression import (
+    CLASS_EXPRESSION_OPERATORS,
+    class_membership,
+    has_slot_conditions,
+    value_bounds,
+)
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import (
@@ -618,7 +623,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         # A class expression constrains every instance of its class, so a class carries the
         # expressions of its ancestors and mixins, translated in its own context.
         for owner in self.schemaview.class_ancestors(cls.name):
-            for operator in self.CLASS_EXPRESSION_OPERATORS:
+            for operator in CLASS_EXPRESSION_OPERATORS:
                 members = getattr(self.schemaview.get_class(owner), operator) or []
                 if members:
                     expression = self.get_subschema_for_class_operator(cls, operator, members, definite=False)
@@ -654,11 +659,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 if key not in self.top_level_schema:
                     self.top_level_schema[key] = value
 
-    CLASS_EXPRESSION_OPERATORS = ("any_of", "all_of", "exactly_one_of", "none_of")
     _CLASS_OPERATOR_KEYWORDS = {"any_of": "anyOf", "all_of": "allOf", "exactly_one_of": "oneOf"}
 
     def get_subschema_for_class_operator(
-        self, cls: ClassDefinition, operator: str, members: list[AnonymousClassExpression], definite: bool
+        self, cls: ClassDefinition | None, operator: str, members: list[AnonymousClassExpression], definite: bool
     ) -> JsonSchema:
         """The subschema of the class-level boolean expression *operator* over *members*, for *cls*.
 
@@ -684,16 +688,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
 
     def get_subschema_for_class_expression(
-        self, cls: ClassDefinition, expr: AnonymousClassExpression, definite: bool
+        self, cls: ClassDefinition | None, expr: AnonymousClassExpression, definite: bool
     ) -> JsonSchema:
         """The subschema of one member *expr* of a class-level boolean expression of *cls*.
 
         Each slot condition constrains the slot as induced for *cls*, so
-        ``slot_usage`` applies.  Its values must satisfy its value operators
-        and its ``range``; the number of values must lie within
+        ``slot_usage`` applies.  Its values must satisfy its value operators,
+        its ``range`` and its ``range_expression``, the latter in the form of
+        *expr*; the number of values must lie within
         :func:`~linkml.generators.common.class_expression.value_bounds`, where
         an empty list or dict counts as no value.  *definite* selects the form, as in
-        :meth:`get_subschema_for_class_operator`.
+        :meth:`get_subschema_for_class_operator`.  *cls* is ``None`` for values
+        that are not instances of a class.
         """
         subschema = JsonSchema()
         conjuncts: list[JsonSchema] = []
@@ -703,7 +709,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 prop_name = self._curie(slot)
             else:
                 prop_name = self.aliased_slot_name(slot)
-            values = self.get_subschema_for_slot(condition, omit_type=True, include_null=False)
+            value_condition = condition
+            if condition.range_expression is not None:
+                # translated below, in the form of *expr*
+                value_condition = copy(condition)
+                value_condition.range_expression = None
+            values = self.get_subschema_for_slot(value_condition, omit_type=True, include_null=False)
+            if condition.range_expression is not None:
+                expression = self.get_subschema_for_range_expression(
+                    condition.range or slot.range, condition.range_expression, definite
+                )
+                values = JsonSchema({"allOf": [values, expression]}) if values else expression
             lower, upper = value_bounds(condition, definite)
             if slot.multivalued and self._inlined_as_dict(slot):
                 # the values of a slot inlined as a dict are the values of the dict
@@ -736,17 +752,23 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 if lower > 1:
                     # a single-valued slot holds at most one value
                     conjuncts.append(JsonSchema({"not": {}}))
-        for operator in self.CLASS_EXPRESSION_OPERATORS:
+        for operator in CLASS_EXPRESSION_OPERATORS:
             members = getattr(expr, operator) or []
             if members:
                 conjuncts.append(self.get_subschema_for_class_operator(cls, operator, members, definite))
         if expr.is_a is not None:
             # `is_a: <C>` requires an instance of the expression to be an instance of <C>.  Every
-            # instance of *cls* is one, or none is, unless <C> is a descendant of *cls*: then, in
-            # JSON, only the instance's structure tells, so it must match the definition of <C>.
-            membership = class_membership(self.schemaview, cls.name, expr.is_a)
+            # instance of *cls* is one, or none is, unless some are through a descendant of *cls*:
+            # then, in JSON, only the instance's structure tells, so it must match the definition
+            # of <C>.  For a type or an enum, or a value that is no class instance, the value
+            # constraint applies.
+            sv = self.schemaview
+            is_class = expr.is_a in sv.all_classes()
+            membership = class_membership(sv, cls.name, expr.is_a) if is_class and cls is not None else None
             if membership is None:
-                conjuncts.append(self.get_subschema_for_slot(AnonymousSlotExpression(range=expr.is_a, inlined=True)))
+                conjuncts.append(
+                    self.get_subschema_for_slot(AnonymousSlotExpression(range=expr.is_a, inlined=is_class))
+                )
             elif not membership:
                 conjuncts.append(JsonSchema({"not": {}}))
         if conjuncts:
@@ -761,12 +783,41 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             and get_range_associated_slots(self.schemaview, slot.range)[0] is not None
         )
 
-    def _class_expression_slot(self, cls: ClassDefinition, slot_name: str) -> SlotDefinition | None:
+    def _class_expression_slot(self, cls: ClassDefinition | None, slot_name: str) -> SlotDefinition | None:
         """The slot a condition of a class expression of *cls* names, as induced for *cls*, if any."""
         sv = self.schemaview
-        if slot_name in sv.class_slots(cls.name):
+        if cls is not None and slot_name in sv.class_slots(cls.name):
             return sv.induced_slot(slot_name, cls.name)
         return sv.get_slot(slot_name)
+
+    def get_subschema_for_range_expression(
+        self, value_range: str | None, expression: AnonymousClassExpression, definite: bool
+    ) -> JsonSchema:
+        """The subschema a value of range *value_range* must satisfy under *expression*.
+
+        A ``range_expression`` constrains each value as a class-level expression
+        constrains an instance (:meth:`get_subschema_for_class_expression`): its
+        conditions constrain the slots of the value as induced for the class
+        *value_range*, and *definite* selects the form.
+
+        JSON Schema sees the slots of a value only when the value is an object.
+        A value of a class with an identifier may be a reference, of which it
+        sees only the identifier, and a value of a type or an enum has no slots.
+        On such a value, an expression that reads its slots is unknown: it holds
+        in the "not false" form and fails in the "definitely true" form.
+        """
+        sv = self.schemaview
+        value_class = sv.get_class(value_range) if value_range in sv.all_classes() else None
+        subschema = self.get_subschema_for_class_expression(value_class, expression, definite)
+        if value_class is None:
+            may_be_opaque = has_slot_conditions(expression)
+        else:
+            may_be_opaque = sv.get_identifier_slot(value_class.name, use_key=True) is not None
+        if not may_be_opaque:
+            return subschema
+        if definite:
+            return JsonSchema({"type": "object", "allOf": [subschema]})
+        return JsonSchema({"if": {"type": "object"}, "then": subschema})
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
@@ -938,7 +989,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             constraints.add_keyword("enum", slot.equals_string_in)
 
         if slot.range_expression:
-            subschema = self.get_subschema_for_anonymous_class(slot.range_expression)
+            subschema = self.get_subschema_for_range_expression(slot.range, slot.range_expression, definite=False)
             if subschema:
                 if "allOf" not in constraints:
                     constraints["allOf"] = []
@@ -990,6 +1041,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
 
         typ = None
+        inlined_as_dict = False
         if not omit_type:
             typ, fmt, reference = self.get_type_info_for_slot_subschema(slot)
             if slot_is_inlined:
@@ -1003,6 +1055,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     # if the range class has an ID and the slot is not inlined as a list, then we need to consider
                     # various inlined as dict formats
                     if range_id_slot is not None and not slot.inlined_as_list:
+                        inlined_as_dict = True
                         # At a minimum, the inlined dict can have keys (additionalProps) that are IDs
                         # and the values are the range class but possibly omitting the ID.
                         additionalProps = [JsonSchema.ref_for(reference, identifier_optional=True)]
@@ -1078,6 +1131,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             prop["items"].update(all_element_constraints)
             if any_element_constraints:
                 prop["contains"] = any_element_constraints
+        elif inlined_as_dict:
+            # The values of the slot are the values of the dict.
+            if own_constraints:
+                prop["additionalProperties"] = JsonSchema({"allOf": [prop["additionalProperties"], own_constraints]})
         else:
             prop.update(own_constraints)
 

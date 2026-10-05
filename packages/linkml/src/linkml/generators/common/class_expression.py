@@ -30,8 +30,11 @@ form.
 (2, 3)
 """
 
-from linkml_runtime.linkml_model.meta import PresenceEnum, SlotDefinition
+from linkml_runtime.linkml_model.meta import AnonymousClassExpression, PresenceEnum, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
+
+CLASS_EXPRESSION_OPERATORS = ("any_of", "all_of", "exactly_one_of", "none_of")
+"""The class-level boolean operators, which combine class expressions."""
 
 _PRESENT = PresenceEnum(PresenceEnum.PRESENT)
 _ABSENT = PresenceEnum(PresenceEnum.ABSENT)
@@ -95,6 +98,23 @@ def value_bounds(condition: SlotDefinition, definite: bool) -> tuple[int, int | 
         if bound is not None:
             target.append(int(bound))
     return max(lower), min(upper) if upper else None
+
+
+def has_slot_conditions(expr: AnonymousClassExpression) -> bool:
+    """Whether class expression *expr* or one of its members states a slot condition.
+
+    Such an expression reads the slots of the value it constrains.
+
+    >>> has_slot_conditions(AnonymousClassExpression(is_a="integer"))
+    False
+    >>> has_slot_conditions(
+    ...     AnonymousClassExpression(none_of=[AnonymousClassExpression(slot_conditions={"code": {"required": True}})])
+    ... )
+    True
+    """
+    return bool(expr.slot_conditions) or any(
+        has_slot_conditions(member) for operator in CLASS_EXPRESSION_OPERATORS for member in getattr(expr, operator)
+    )
 
 
 def class_membership(sv: SchemaView, cls_name: str, target: str) -> bool | None:
