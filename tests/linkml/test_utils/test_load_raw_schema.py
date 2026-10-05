@@ -107,6 +107,104 @@ def test_name_from_sourcefile(input_path):
         load_raw_schema(input_path("schema5.yaml"))
 
 
+def test_metadata_true_records_resolved_source_file(input_path):
+    """``metadata=True`` (the default) records the path the loader resolved."""
+    schema = load_raw_schema(input_path("schema1.yaml"))
+    assert schema.source_file is not None
+    assert os.path.basename(schema.source_file) == "schema1.yaml"
+
+
+def test_metadata_false_drops_loader_derived_source_file(input_path):
+    """``metadata=False`` suppresses the path the loader derived.
+
+    ``yaml_loader`` records the resolved (absolute) path on every file load, so without this
+    suppression ``metadata=False`` output would carry machine-specific paths.
+    """
+    assert load_raw_schema(input_path("schema1.yaml"), metadata=False).source_file is None
+
+
+def test_metadata_false_drops_caller_supplied_source_file(input_path):
+    """A ``source_file`` passed as a loader argument is loader metadata, so it is suppressed too."""
+    with open(input_path("schema1.yaml")) as f:
+        schema = load_raw_schema(f.read(), "schema1.yaml", metadata=False)
+    assert schema.source_file is None
+
+
+DECLARED_SOURCE_FILE = "declared-by-the-schema.yaml"
+
+SCHEMA_DECLARING_SOURCE_FILE = f"""
+id: http://example.org/declared_source_file
+name: declared_source_file
+source_file: {DECLARED_SOURCE_FILE}
+"""
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        pytest.param(SCHEMA_DECLARING_SOURCE_FILE, id="text"),
+        pytest.param(
+            {
+                "id": "http://example.org/declared_source_file",
+                "name": "declared_source_file",
+                "source_file": DECLARED_SOURCE_FILE,
+            },
+            id="dict",
+        ),
+    ],
+)
+def test_metadata_false_keeps_schema_declared_source_file(data):
+    """A ``source_file`` the schema itself declares is content, not loader metadata.
+
+    ``SchemaLoader`` loads in-memory (dict) imports with ``metadata=False`` specifically so that
+    fields the caller set on the dict are not overwritten, so the suppression must not clobber a
+    declared value.
+    """
+    schema = load_raw_schema(data, metadata=False)
+    assert schema.source_file == DECLARED_SOURCE_FILE
+
+
+def test_metadata_false_keeps_source_file_on_schema_definition_input():
+    """A ``SchemaDefinition`` input is caller content; its ``source_file`` must survive."""
+    sd = SchemaDefinition(id="http://example.org/t", name="t", source_file=DECLARED_SOURCE_FILE)
+    assert load_raw_schema(sd, metadata=False).source_file == DECLARED_SOURCE_FILE
+
+
+def test_metadata_true_accepts_schema_definition_input():
+    """``metadata=True`` (the default) works on a ``SchemaDefinition`` input.
+
+    This path used to raise ``NameError`` because ``schema_metadata`` was only created on the
+    str/dict/TextIO branch. There is no source to derive metadata from, so ``source_file`` stays
+    unset and only ``generation_date`` is stamped.
+    """
+    schema = load_raw_schema(SchemaDefinition(id="http://example.org/t", name="t"))
+    assert schema.source_file is None
+    assert schema.generation_date is not None
+
+
+def test_metadata_false_clears_source_file_even_when_declared_in_file(tmp_path):
+    """A ``source_file`` embedded in a loaded *file* is stale loader output, not content.
+
+    The metamodel marks the slot ``readonly: supplied by the schema loader``, so on file loads
+    ``yaml_loader`` replaces any embedded value with the resolved path — which ``metadata=False``
+    then suppresses. Only inputs with no source location (dict, inline text, SchemaDefinition)
+    keep a caller-set value; see the tests above.
+    """
+    schema_file = tmp_path / "declares_source_file.yaml"
+    schema_file.write_text(SCHEMA_DECLARING_SOURCE_FILE)
+
+    assert load_raw_schema(str(schema_file), metadata=False).source_file is None
+
+
+def test_metadata_true_resolved_path_wins_over_declared_in_file(tmp_path):
+    """With metadata recording on, the loader-resolved path replaces a file-embedded value."""
+    schema_file = tmp_path / "declares_source_file.yaml"
+    schema_file.write_text(SCHEMA_DECLARING_SOURCE_FILE)
+
+    schema = load_raw_schema(str(schema_file))
+    assert schema.source_file == str(schema_file)
+
+
 def test_load_text(input_path):
     """Test loading straight text"""
     with open(input_path("schema1.yaml")) as f:

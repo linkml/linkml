@@ -11,6 +11,7 @@ Run with::
 """
 
 import socket
+import sys
 import uuid
 from pathlib import Path
 
@@ -18,9 +19,18 @@ import pytest
 
 from linkml.generators.typedbgen import TypeDBGenerator
 
+# The typedb-driver wheel embeds a CPython 3.13 extension, so importing it on
+# 3.14 raises ImportError rather than ModuleNotFoundError. Skip before the
+# import is attempted; importorskip only treats a missing module as a skip.
+if sys.version_info >= (3, 14):
+    pytest.skip(
+        "typedb-driver native extension does not support Python 3.14",
+        allow_module_level=True,
+    )
+
 typedb = pytest.importorskip("typedb.driver", reason="typedb-driver not installed")
 
-from typedb.driver import Credentials, DriverOptions, TransactionType, TypeDB  # noqa: E402
+from typedb.driver import Credentials, DriverOptions, DriverTlsConfig, TransactionType, TypeDB  # noqa: E402
 
 TYPEDB_HOST = "localhost:1729"
 
@@ -41,7 +51,7 @@ pytestmark = pytest.mark.skipif(
 _INPUT_DIR = Path(__file__).parent / "input"
 
 TYPEDB_CREDENTIALS = Credentials("admin", "password")
-TYPEDB_OPTIONS = DriverOptions(is_tls_enabled=False)
+TYPEDB_OPTIONS = DriverOptions(DriverTlsConfig.disabled())
 
 
 @pytest.fixture(scope="module")
@@ -120,11 +130,11 @@ def test_relation_types_defined_in_db(typedb_driver, temp_db):
         tx.commit()
 
     with typedb_driver.transaction(temp_db, TransactionType.READ) as tx:
-        boss_result = list(tx.query('match $t sub has-boss; fetch { "t": $t };').resolve())
-        emp_result = list(tx.query('match $t sub has-employees; fetch { "t": $t };').resolve())
+        boss_result = list(tx.query('match $t sub has_boss; fetch { "t": $t };').resolve())
+        emp_result = list(tx.query('match $t sub has_employees; fetch { "t": $t };').resolve())
 
-    assert len(boss_result) >= 1, "has-boss relation type not found"
-    assert len(emp_result) >= 1, "has-employees relation type not found"
+    assert len(boss_result) >= 1, "has_boss relation type not found"
+    assert len(emp_result) >= 1, "has_employees relation type not found"
 
 
 @pytest.mark.integration

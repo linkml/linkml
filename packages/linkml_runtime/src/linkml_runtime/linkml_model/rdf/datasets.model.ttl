@@ -1,918 +1,650 @@
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix linkml: <https://w3id.org/linkml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-linkml:datasets a linkml:SchemaDefinition ;
-    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    dcterms:title "LinkML Datasets Datamodel" ;
-    rdfs:seeAlso "https://specs.frictionlessdata.io/data-resource"^^xsd:anyURI,
-        "https://www.w3.org/TR/hcls-dataset/"^^xsd:anyURI,
-        "https://www.w3.org/TR/void/"^^xsd:anyURI ;
-    sh:declare [ sh:namespace "https://w3id.org/linkml/report"^^xsd:anyURI ;
-            sh:prefix "datasets" ],
-        [ sh:namespace "http://rdfs.org/ns/void#"^^xsd:anyURI ;
-            sh:prefix "void" ],
-        [ sh:namespace "https://www.iana.org/assignments/media-types/"^^xsd:anyURI ;
-            sh:prefix "mediatypes" ],
-        [ sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
-            sh:prefix "skos" ],
-        [ sh:namespace "http://www.w3.org/ns/formats/"^^xsd:anyURI ;
-            sh:prefix "formats" ],
-        [ sh:namespace "http://open-services.net/ns/core#"^^xsd:anyURI ;
-            sh:prefix "oslc" ],
-        [ sh:namespace "http://purl.org/pav/"^^xsd:anyURI ;
-            sh:prefix "pav" ],
-        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
-            sh:prefix "linkml" ],
-        [ sh:namespace "http://www.w3.org/ns/dcat#"^^xsd:anyURI ;
-            sh:prefix "dcat" ],
-        [ sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI ;
-            sh:prefix "bibo" ],
-        [ sh:namespace "http://schema.org/"^^xsd:anyURI ;
-            sh:prefix "schema" ],
-        [ sh:namespace "https://specs.frictionlessdata.io/"^^xsd:anyURI ;
-            sh:prefix "frictionless" ],
-        [ sh:namespace "http://www.w3.org/ns/csvw#"^^xsd:anyURI ;
-            sh:prefix "csvw" ],
-        [ sh:namespace "https://w3id.org/shacl/"^^xsd:anyURI ;
-            sh:prefix "sh" ] ;
-    linkml:classes linkml:DataPackage,
-        linkml:DataResource,
-        linkml:FormatDialect,
-        linkml:Information ;
-    linkml:default_curi_maps "semweb_context" ;
-    linkml:default_prefix "datasets" ;
-    linkml:default_range linkml:string ;
-    linkml:description "A datamodel for datasets" ;
-    linkml:emit_prefixes "linkml",
-        "owl",
-        "rdf",
-        "rdfs",
-        "xsd" ;
-    linkml:enums linkml:FormatEnum,
-        linkml:MediaTypeEnum,
-        linkml:TestRole ;
-    linkml:generation_date "2026-05-05T18:49:23"^^xsd:dateTime ;
-    linkml:id "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:imports "linkml:types"^^xsd:anyURI ;
-    linkml:metamodel_version "1.7.0" ;
-    linkml:slots linkml:bytes,
-        linkml:compression,
-        linkml:conforms_to,
-        linkml:conforms_to_class,
-        linkml:conforms_to_schema,
-        linkml:created_by,
-        linkml:created_on,
-        linkml:description,
-        linkml:dialect,
-        linkml:download_url,
-        linkml:encoding,
-        linkml:format,
-        linkml:formatDialect__comment_prefix,
-        linkml:formatDialect__delimiter,
-        linkml:formatDialect__double_quote,
-        linkml:formatDialect__header,
-        linkml:formatDialect__quote_char,
-        linkml:hash,
-        linkml:id,
-        linkml:issued,
-        linkml:keywords,
-        linkml:language,
-        linkml:last_updated_on,
-        linkml:license,
-        linkml:md5,
-        linkml:media_type,
-        linkml:modified_by,
-        linkml:page,
-        linkml:path,
-        linkml:profile,
-        linkml:publisher,
-        linkml:resources,
-        linkml:sha256,
-        linkml:status,
-        linkml:test_roles,
-        linkml:themes,
-        linkml:title,
-        linkml:version,
-        linkml:was_derived_from ;
-    linkml:source_file "datasets.yaml" ;
-    linkml:source_file_date "2026-05-05T18:15:53"^^xsd:dateTime ;
-    linkml:source_file_size 7835 ;
-    linkml:types linkml:boolean,
-        linkml:curie,
-        linkml:date,
-        linkml:date_or_datetime,
-        linkml:datetime,
-        linkml:decimal,
-        linkml:double,
-        linkml:float,
-        linkml:integer,
-        linkml:jsonpath,
-        linkml:jsonpointer,
-        linkml:ncname,
-        linkml:nodeidentifier,
-        linkml:objectidentifier,
-        linkml:sparqlpath,
-        linkml:string,
-        linkml:time,
-        linkml:uri,
-        linkml:uriorcurie .
-
-linkml:JSON-LD linkml:meaning "formats:JSON-LD"^^xsd:anyURI .
-
-linkml:LD%20Patch linkml:meaning "formats:LD_Patch"^^xsd:anyURI .
-
-linkml:MediaTypeEnum skos:exactMatch "dcterms:MediaType"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportMediaTypeEnum"^^xsd:anyURI ;
-    linkml:permissible_values linkml:csv,
-        linkml:rdf-xml .
-
-linkml:Microdata linkml:meaning "formats:microdata"^^xsd:anyURI .
-
-linkml:N-Quads linkml:meaning "formats:N-Quads"^^xsd:anyURI .
-
-linkml:N-Triples linkml:meaning "formats:N-Triples"^^xsd:anyURI .
-
-linkml:N3 linkml:meaning "formats:N3"^^xsd:anyURI .
-
-linkml:OWL%20Functional%20Syntax linkml:meaning "formats:OWL_Functional"^^xsd:anyURI .
-
-linkml:OWL%20Manchester%20Syntax linkml:meaning "formats:OWL_Manchester"^^xsd:anyURI .
-
-linkml:OWL%20XML%20Serialization linkml:meaning "formats:OWL_XML"^^xsd:anyURI .
-
-linkml:POWDER linkml:meaning "formats:POWDER"^^xsd:anyURI .
-
-linkml:POWDER-S linkml:meaning "formats:POWDER-S"^^xsd:anyURI .
-
-linkml:PROV-N linkml:meaning "formats:PROV-N"^^xsd:anyURI .
-
-linkml:PROV-XML linkml:meaning "formats:PROV-XML"^^xsd:anyURI .
-
-<https://w3id.org/linkml/RDF/JSON> linkml:meaning "formats:RDF_JSON"^^xsd:anyURI .
-
-<https://w3id.org/linkml/RDF/XML> linkml:meaning "formats:RDF_XML"^^xsd:anyURI .
-
-linkml:RDFa linkml:meaning "formats:RDFa"^^xsd:anyURI .
-
-linkml:RIF%20XML%20Syntax linkml:meaning "formats:RIF_XML"^^xsd:anyURI .
-
-linkml:SPARQL%20Results%20in%20CSV linkml:meaning "formats:SPARQL_Results_CSV"^^xsd:anyURI .
-
-linkml:SPARQL%20Results%20in%20JSON linkml:meaning "formats:SPARQL_Results_JSON"^^xsd:anyURI .
-
-linkml:SPARQL%20Results%20in%20TSV linkml:meaning "formats:SPARQL_Results_TSV"^^xsd:anyURI .
-
-linkml:SPARQL%20Results%20in%20XML linkml:meaning "formats:SPARQL_Results_XML"^^xsd:anyURI .
-
-linkml:TriG linkml:meaning "formats:TriG"^^xsd:anyURI .
-
-linkml:Turtle linkml:meaning "formats:Turtle"^^xsd:anyURI .
-
-linkml:boolean a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
-    skos:exactMatch "schema:Boolean"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "Bool" ;
-    linkml:definition_uri "https://w3id.org/linkml/Boolean"^^xsd:anyURI ;
-    linkml:description "A binary (true or false) value" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "bool" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI .
-
-linkml:comment_prefix a linkml:SlotDefinition .
-
-linkml:csv linkml:meaning "mediatypes:text/csv"^^xsd:anyURI .
-
-linkml:curie a linkml:TypeDefinition ;
-    dcterms:conformsTo "https://www.w3.org/TR/curie/" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    skos:note "in RDF serializations this MUST be expanded to a URI",
-        "in non-RDF serializations MAY be serialized as the compact representation" ;
-    linkml:base "Curie" ;
-    linkml:definition_uri "https://w3id.org/linkml/Curie"^^xsd:anyURI ;
-    linkml:description "a compact URI" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
-linkml:date a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
-        "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-    skos:exactMatch "schema:Date"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "XSDDate" ;
-    linkml:definition_uri "https://w3id.org/linkml/Date"^^xsd:anyURI ;
-    linkml:description "a date (year, month and day) in an idealized calendar" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#date"^^xsd:anyURI .
-
-linkml:date_or_datetime a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "str" ;
-    linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI ;
-    linkml:description "Either a date or a datetime" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI .
-
-linkml:decimal a linkml:TypeDefinition ;
-    skos:broadMatch "schema:Number"^^xsd:anyURI ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "Decimal" ;
-    linkml:definition_uri "https://w3id.org/linkml/Decimal"^^xsd:anyURI ;
-    linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI .
-
-linkml:delimiter a linkml:SlotDefinition .
-
-linkml:double a linkml:TypeDefinition ;
-    skos:closeMatch "schema:Float"^^xsd:anyURI ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "float" ;
-    linkml:definition_uri "https://w3id.org/linkml/Double"^^xsd:anyURI ;
-    linkml:description "A real number that conforms to the xsd:double specification" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI .
-
-linkml:double_quote a linkml:SlotDefinition .
-
-linkml:float a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
-    skos:exactMatch "schema:Float"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "float" ;
-    linkml:definition_uri "https://w3id.org/linkml/Float"^^xsd:anyURI ;
-    linkml:description "A real number that conforms to the xsd:float specification" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI .
-
-linkml:header a linkml:SlotDefinition .
-
-linkml:jsonpath a linkml:TypeDefinition ;
-    dcterms:conformsTo "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "str" ;
-    linkml:definition_uri "https://w3id.org/linkml/Jsonpath"^^xsd:anyURI ;
-    linkml:description "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
-linkml:jsonpointer a linkml:TypeDefinition ;
-    dcterms:conformsTo "https://datatracker.ietf.org/doc/html/rfc6901" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "str" ;
-    linkml:definition_uri "https://w3id.org/linkml/Jsonpointer"^^xsd:anyURI ;
-    linkml:description "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
-linkml:last_updated_on a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/pav/lastUpdatedOn"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportlast_updated_on"^^xsd:anyURI ;
-    linkml:description "time at which the element was last updated" ;
-    linkml:range linkml:datetime ;
-    linkml:slot_uri "http://purl.org/pav/lastUpdatedOn"^^xsd:anyURI .
-
-linkml:modified_by a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://open-services.net/ns/core#modifiedBy"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportmodified_by"^^xsd:anyURI ;
-    linkml:description "agent that modified the element" ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "http://open-services.net/ns/core#modifiedBy"^^xsd:anyURI .
-
-linkml:ncname a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "NCName" ;
-    linkml:definition_uri "https://w3id.org/linkml/Ncname"^^xsd:anyURI ;
-    linkml:description "Prefix part of CURIE" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
-linkml:nodeidentifier a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "NodeIdentifier" ;
-    linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier"^^xsd:anyURI ;
-    linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/ns/shex#nonLiteral"^^xsd:anyURI .
-
-linkml:objectidentifier a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    skos:note "Used for inheritance and type checking" ;
-    linkml:base "ElementIdentifier" ;
-    linkml:definition_uri "https://w3id.org/linkml/Objectidentifier"^^xsd:anyURI ;
-    linkml:description "A URI or CURIE that represents an object in the model." ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/ns/shex#iri"^^xsd:anyURI .
-
-linkml:profile a linkml:SlotDefinition ;
-    skos:exactMatch "https://specs.frictionlessdata.io/profiles"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportprofile"^^xsd:anyURI ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "https://w3id.org/linkml/reportprofile"^^xsd:anyURI .
-
-linkml:quote_char a linkml:SlotDefinition .
-
-linkml:rdf-xml linkml:meaning "mediatypes:application/rdf+xml"^^xsd:anyURI .
-
-linkml:sparqlpath a linkml:TypeDefinition ;
-    dcterms:conformsTo "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "str" ;
-    linkml:definition_uri "https://w3id.org/linkml/Sparqlpath"^^xsd:anyURI ;
-    linkml:description "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
-linkml:status a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/ontology/bibo/status"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportstatus"^^xsd:anyURI ;
-    linkml:description "status of the element" ;
-    linkml:examples [ a linkml:Example ;
-            skos:example "bibo:draft" ] ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "http://purl.org/ontology/bibo/status"^^xsd:anyURI .
-
-linkml:themes a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#theme"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportthemes"^^xsd:anyURI ;
-    linkml:multivalued true ;
-    linkml:range linkml:uriorcurie ;
-    linkml:singular_name "theme" ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#theme"^^xsd:anyURI .
-
-linkml:time a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
-        "URI is dateTime because OWL reasoners do not work with straight date or time" ;
-    skos:exactMatch "schema:Time"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "XSDTime" ;
-    linkml:definition_uri "https://w3id.org/linkml/Time"^^xsd:anyURI ;
-    linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#time"^^xsd:anyURI .
-
-linkml:FormatEnum skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportFormatEnum"^^xsd:anyURI ;
-    linkml:permissible_values linkml:JSON,
-        linkml:JSON-LD,
-        linkml:LD%20Patch,
-        linkml:Microdata,
-        linkml:N-Quads,
-        linkml:N-Triples,
-        linkml:N3,
-        linkml:OWL%20Functional%20Syntax,
-        linkml:OWL%20Manchester%20Syntax,
-        linkml:OWL%20XML%20Serialization,
-        linkml:POWDER,
-        linkml:POWDER-S,
-        linkml:PROV-N,
-        linkml:PROV-XML,
-        <https://w3id.org/linkml/RDF/JSON>,
-        <https://w3id.org/linkml/RDF/XML>,
-        linkml:RDFa,
-        linkml:RIF%20XML%20Syntax,
-        linkml:SPARQL%20Results%20in%20CSV,
-        linkml:SPARQL%20Results%20in%20JSON,
-        linkml:SPARQL%20Results%20in%20TSV,
-        linkml:SPARQL%20Results%20in%20XML,
-        linkml:TriG,
-        linkml:Turtle,
-        linkml:YAML .
-
-linkml:TestRole skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportTestRole"^^xsd:anyURI ;
-    linkml:permissible_values linkml:CounterExample,
-        linkml:Example .
-
-linkml:bytes a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#byteSize"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportbytes"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:integer ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#byteSize"^^xsd:anyURI .
-
-linkml:dialect a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/csvw#dialect"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportdialect"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://www.w3.org/ns/csvw#dialect"^^xsd:anyURI .
-
-linkml:encoding a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportencoding"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportencoding"^^xsd:anyURI .
-
-linkml:format a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/format"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportformat"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:FormatEnum ;
-    linkml:slot_uri "http://purl.org/dc/terms/format"^^xsd:anyURI .
-
-linkml:formatDialect__comment_prefix a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:prefLabel "comment_prefix" ;
-    linkml:domain_of linkml:FormatDialect ;
-    linkml:owner linkml:FormatDialect ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportcomment_prefix"^^xsd:anyURI .
-
-linkml:formatDialect__delimiter a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:prefLabel "delimiter" ;
-    linkml:domain_of linkml:FormatDialect ;
-    linkml:owner linkml:FormatDialect ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportdelimiter"^^xsd:anyURI .
-
-linkml:formatDialect__double_quote a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:prefLabel "double_quote" ;
-    linkml:domain_of linkml:FormatDialect ;
-    linkml:owner linkml:FormatDialect ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportdouble_quote"^^xsd:anyURI .
-
-linkml:formatDialect__header a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:prefLabel "header" ;
-    linkml:domain_of linkml:FormatDialect ;
-    linkml:owner linkml:FormatDialect ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportheader"^^xsd:anyURI .
-
-linkml:formatDialect__quote_char a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:prefLabel "quote_char" ;
-    linkml:domain_of linkml:FormatDialect ;
-    linkml:owner linkml:FormatDialect ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportquote_char"^^xsd:anyURI .
-
-linkml:integer a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
-    skos:exactMatch "schema:Integer"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "int" ;
-    linkml:definition_uri "https://w3id.org/linkml/Integer"^^xsd:anyURI ;
-    linkml:description "An integer" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI .
-
-linkml:md5 a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportmd5"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:is_a linkml:hash ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportmd5"^^xsd:anyURI .
-
-linkml:media_type a linkml:SlotDefinition ;
-    skos:exactMatch "http://schema.org/encodingFormat"^^xsd:anyURI,
-        "https://specs.frictionlessdata.io/mediatype"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#mediaType"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportmedia_type"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:examples [ a linkml:Example ;
-            skos:example "text/csv" ],
-        [ a linkml:Example ;
-            skos:example "application/json" ] ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#mediaType"^^xsd:anyURI .
-
-linkml:path a linkml:SlotDefinition ;
-    skos:closeMatch "https://specs.frictionlessdata.io/path"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportpath"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportpath"^^xsd:anyURI .
-
-linkml:resources a linkml:SlotDefinition ;
-    skos:exactMatch "http://schema.org/distribution"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#distribution"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportresources"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataPackage ;
-    linkml:multivalued true ;
-    linkml:owner linkml:DataPackage ;
-    linkml:range linkml:DataResource ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#distribution"^^xsd:anyURI .
-
-linkml:sha256 a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportsha256"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:is_a linkml:hash ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportsha256"^^xsd:anyURI .
-
-linkml:uri a linkml:TypeDefinition ;
-    dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
-    skos:closeMatch "schema:URL"^^xsd:anyURI ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    skos:note "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
-    linkml:base "URI" ;
-    linkml:definition_uri "https://w3id.org/linkml/Uri"^^xsd:anyURI ;
-    linkml:description "a complete URI" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
-
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
 linkml:DataPackage a linkml:ClassDefinition ;
-    rdfs:seeAlso "https://specs.frictionlessdata.io/data-package"^^xsd:anyURI ;
-    skos:altLabel "data resource collection",
-        "dataset",
-        "file collection" ;
-    skos:closeMatch "dcat:Catalog"^^xsd:anyURI ;
-    skos:exactMatch "dcat:Dataset"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "void:Dataset"^^xsd:anyURI ;
-    linkml:class_uri "http://rdfs.org/ns/void#Dataset"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportDataPackage"^^xsd:anyURI ;
-    linkml:description "A collection of data resources" ;
-    linkml:is_a linkml:Information ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:compression,
-        linkml:conforms_to,
-        linkml:conforms_to_class,
-        linkml:conforms_to_schema,
-        linkml:created_by,
-        linkml:created_on,
-        linkml:description,
-        linkml:download_url,
-        linkml:id,
-        linkml:issued,
-        linkml:keywords,
-        linkml:language,
-        linkml:license,
-        linkml:page,
-        linkml:publisher,
-        linkml:resources,
-        linkml:test_roles,
-        linkml:title,
-        linkml:version,
-        linkml:was_derived_from .
-
-linkml:compression a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportcompression"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportcompression"^^xsd:anyURI .
-
-linkml:conforms_to_class a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_class"^^xsd:anyURI ;
-    linkml:description "class in schema which the data object instantiates" ;
-    linkml:domain_of linkml:Information ;
-    linkml:is_a linkml:conforms_to ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_class"^^xsd:anyURI .
-
-linkml:conforms_to_schema a linkml:SlotDefinition ;
-    skos:exactMatch "https://specs.frictionlessdata.io/schema"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_schema"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:is_a linkml:conforms_to ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_schema"^^xsd:anyURI .
-
-linkml:created_by a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/pav/createdBy"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportcreated_by"^^xsd:anyURI ;
-    linkml:description "agent that created the element" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "http://purl.org/pav/createdBy"^^xsd:anyURI .
-
-linkml:created_on a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/pav/createdOn"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportcreated_on"^^xsd:anyURI ;
-    linkml:description "time at which the element was created" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:datetime ;
-    linkml:slot_uri "http://purl.org/pav/createdOn"^^xsd:anyURI .
-
-linkml:datetime a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
-    skos:exactMatch "schema:DateTime"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "XSDDateTime" ;
-    linkml:definition_uri "https://w3id.org/linkml/Datetime"^^xsd:anyURI ;
-    linkml:description "The combination of a date and time" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime"^^xsd:anyURI .
-
-linkml:description a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/description"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportdescription"^^xsd:anyURI ;
-    linkml:description "human readable description of the information" ;
-    linkml:domain_of linkml:DataResource,
-        linkml:Information ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://purl.org/dc/terms/description"^^xsd:anyURI .
-
-linkml:download_url a linkml:SlotDefinition ;
-    skos:closeMatch "https://specs.frictionlessdata.io/path"^^xsd:anyURI ;
-    skos:exactMatch "http://schema.org/url"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#downloadURL"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportdownload_url"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uri ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#downloadURL"^^xsd:anyURI .
-
-linkml:hash a linkml:SlotDefinition ;
-    skos:editorialNote "we recommend using a more specific slot such as sha256 or md5" ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reporthash"^^xsd:anyURI ;
-    linkml:domain_of linkml:DataResource ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reporthash"^^xsd:anyURI .
-
-linkml:id a linkml:SlotDefinition ;
-    skos:exactMatch "http://schema.org/name"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/identifier"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportid"^^xsd:anyURI ;
-    linkml:description "the unique name of th dataset" ;
-    linkml:domain_of linkml:Information ;
-    linkml:identifier true ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:required true ;
-    linkml:slot_uri "http://purl.org/dc/terms/identifier"^^xsd:anyURI .
-
-linkml:issued a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/issued"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportissued"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:datetime ;
-    linkml:slot_uri "http://purl.org/dc/terms/issued"^^xsd:anyURI .
-
-linkml:keywords a linkml:SlotDefinition ;
-    skos:exactMatch "http://schema.org/keywords"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#keyword"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportkeywords"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:multivalued true ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:singular_name "keyword" ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#keyword"^^xsd:anyURI .
-
-linkml:language a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportlanguage"^^xsd:anyURI ;
-    linkml:description "language in which the information is expressed" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "https://w3id.org/linkml/reportlanguage"^^xsd:anyURI .
-
-linkml:license a linkml:SlotDefinition ;
-    skos:exactMatch "https://specs.frictionlessdata.io/licenses"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/license"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportlicense"^^xsd:anyURI ;
-    linkml:description "license for the data" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://purl.org/dc/terms/license"^^xsd:anyURI .
-
-linkml:page a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/dcat#landingPage"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportpage"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://www.w3.org/ns/dcat#landingPage"^^xsd:anyURI .
-
-linkml:publisher a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/publisher"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportpublisher"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "http://purl.org/dc/terms/publisher"^^xsd:anyURI .
-
-linkml:test_roles a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reporttest_roles"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:multivalued true ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:TestRole ;
-    linkml:slot_uri "https://w3id.org/linkml/reporttest_roles"^^xsd:anyURI .
-
-linkml:title a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/title"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reporttitle"^^xsd:anyURI ;
-    linkml:description "the official title of the element" ;
-    linkml:domain_of linkml:DataResource,
-        linkml:Information ;
-    linkml:owner linkml:DataResource ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://purl.org/dc/terms/title"^^xsd:anyURI .
-
-linkml:version a linkml:SlotDefinition ;
-    skos:exactMatch "http://purl.org/dc/terms/hasVersion"^^xsd:anyURI,
-        "http://schema.org/version"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/pav/version"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportversion"^^xsd:anyURI ;
-    linkml:description "particular version of schema" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://purl.org/pav/version"^^xsd:anyURI .
-
-linkml:was_derived_from a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://www.w3.org/ns/prov#wasDerivedFrom"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportwas_derived_from"^^xsd:anyURI ;
-    linkml:description "A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.@en" ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:string ;
-    linkml:slot_uri "http://www.w3.org/ns/prov#wasDerivedFrom"^^xsd:anyURI .
-
-linkml:conforms_to a linkml:SlotDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "http://purl.org/dc/terms/conformsTo"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportconforms_to"^^xsd:anyURI ;
-    linkml:domain_of linkml:Information ;
-    linkml:owner linkml:Information ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri "http://purl.org/dc/terms/conformsTo"^^xsd:anyURI .
-
-linkml:uriorcurie a linkml:TypeDefinition ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "URIorCURIE" ;
-    linkml:definition_uri "https://w3id.org/linkml/Uriorcurie"^^xsd:anyURI ;
-    linkml:description "a URI or a CURIE" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
-
-linkml:FormatDialect a linkml:ClassDefinition ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:attributes linkml:comment_prefix,
-        linkml:delimiter,
-        linkml:double_quote,
-        linkml:header,
-        linkml:quote_char ;
-    linkml:class_uri "https://w3id.org/linkml/reportFormatDialect"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportFormatDialect"^^xsd:anyURI ;
-    linkml:description "Additional format information for a file" ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:formatDialect__comment_prefix,
-        linkml:formatDialect__delimiter,
-        linkml:formatDialect__double_quote,
-        linkml:formatDialect__header,
-        linkml:formatDialect__quote_char .
-
+	rdfs:seeAlso "https://specs.frictionlessdata.io/data-package"^^xsd:anyURI ;
+	skos:altLabel "data resource collection" , "dataset" , "file collection" ;
+	skos:closeMatch "dcat:Catalog"^^xsd:anyURI ;
+	skos:exactMatch "dcat:Dataset"^^xsd:anyURI , "void:Dataset"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportDataPackage"^^xsd:anyURI ;
+	linkml:description "A collection of data resources" ;
+	linkml:is_a linkml:Information ;
+	linkml:slot_usage _:c14n6 ;
+	linkml:slots linkml:compression , linkml:conforms_to , linkml:conforms_to_class , linkml:conforms_to_schema , linkml:created_by , linkml:created_on , linkml:description , linkml:download_url , linkml:id , linkml:issued , linkml:keywords , linkml:language , linkml:license , linkml:page , linkml:publisher , linkml:resources , linkml:test_roles , linkml:title , linkml:version , linkml:was_derived_from .
 linkml:DataResource a linkml:ClassDefinition ;
-    rdfs:seeAlso "https://specs.frictionlessdata.io/data-resource"^^xsd:anyURI ;
-    skos:exactMatch "schema:DataDownload"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    skos:mappingRelation "dcat:Distribution"^^xsd:anyURI ;
-    linkml:class_uri "http://www.w3.org/ns/dcat#Distribution"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportDataResource"^^xsd:anyURI ;
-    linkml:description "An individual file or table" ;
-    linkml:is_a linkml:Information ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:bytes,
-        linkml:compression,
-        linkml:conforms_to,
-        linkml:conforms_to_class,
-        linkml:conforms_to_schema,
-        linkml:created_by,
-        linkml:created_on,
-        linkml:description,
-        linkml:dialect,
-        linkml:download_url,
-        linkml:encoding,
-        linkml:format,
-        linkml:hash,
-        linkml:id,
-        linkml:issued,
-        linkml:keywords,
-        linkml:language,
-        linkml:license,
-        linkml:md5,
-        linkml:media_type,
-        linkml:page,
-        linkml:path,
-        linkml:publisher,
-        linkml:sha256,
-        linkml:test_roles,
-        linkml:title,
-        linkml:version,
-        linkml:was_derived_from .
-
-linkml:string a linkml:TypeDefinition ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
-    skos:exactMatch "schema:Text"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
-    linkml:base "str" ;
-    linkml:definition_uri "https://w3id.org/linkml/String"^^xsd:anyURI ;
-    linkml:description "A character string" ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
-
+	rdfs:seeAlso "https://specs.frictionlessdata.io/data-resource"^^xsd:anyURI ;
+	skos:exactMatch "dcat:Distribution"^^xsd:anyURI , "schema:DataDownload"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportDataResource"^^xsd:anyURI ;
+	linkml:description "An individual file or table" ;
+	linkml:is_a linkml:Information ;
+	linkml:slot_usage _:c14n8 ;
+	linkml:slots linkml:bytes , linkml:compression , linkml:conforms_to , linkml:conforms_to_class , linkml:conforms_to_schema , linkml:created_by , linkml:created_on , linkml:description , linkml:dialect , linkml:download_url , linkml:encoding , linkml:format , linkml:hash , linkml:id , linkml:issued , linkml:keywords , linkml:language , linkml:license , linkml:md5 , linkml:media_type , linkml:page , linkml:path , linkml:publisher , linkml:sha256 , linkml:test_roles , linkml:title , linkml:version , linkml:was_derived_from .
+linkml:FormatDialect a linkml:ClassDefinition ;
+	skos:exactMatch "datasets:FormatDialect"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:attributes linkml:comment_prefix , linkml:delimiter , linkml:double_quote , linkml:header , linkml:quote_char ;
+	linkml:definition_uri "https://w3id.org/linkml/reportFormatDialect"^^xsd:anyURI ;
+	linkml:description "Additional format information for a file" ;
+	linkml:slot_usage _:c14n7 ;
+	linkml:slots linkml:formatDialect__comment_prefix , linkml:formatDialect__delimiter , linkml:formatDialect__double_quote , linkml:formatDialect__header , linkml:formatDialect__quote_char .
+linkml:FormatEnum skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportFormatEnum"^^xsd:anyURI ;
+	linkml:permissible_values linkml:JSON-LD , linkml:JSON , linkml:LD\%20Patch , linkml:Microdata , linkml:N-Quads , linkml:N-Triples , linkml:N3 , linkml:OWL\%20Functional\%20Syntax , linkml:OWL\%20Manchester\%20Syntax , linkml:OWL\%20XML\%20Serialization , linkml:POWDER-S , linkml:POWDER , linkml:PROV-N , linkml:PROV-XML , linkml:RDF\/JSON , linkml:RDF\/XML , linkml:RDFa , linkml:RIF\%20XML\%20Syntax , linkml:SPARQL\%20Results\%20in\%20CSV , linkml:SPARQL\%20Results\%20in\%20JSON , linkml:SPARQL\%20Results\%20in\%20TSV , linkml:SPARQL\%20Results\%20in\%20XML , linkml:TriG , linkml:Turtle , linkml:YAML .
 linkml:Information a linkml:ClassDefinition ;
-    skos:closeMatch "schema:CreativeWork"^^xsd:anyURI ;
-    skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
-    linkml:abstract true ;
-    linkml:class_uri "https://w3id.org/linkml/reportInformation"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/reportInformation"^^xsd:anyURI ;
-    linkml:description "Grouping for datasets and data files" ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:compression,
-        linkml:conforms_to,
-        linkml:conforms_to_class,
-        linkml:conforms_to_schema,
-        linkml:created_by,
-        linkml:created_on,
-        linkml:description,
-        linkml:download_url,
-        linkml:id,
-        linkml:issued,
-        linkml:keywords,
-        linkml:language,
-        linkml:license,
-        linkml:page,
-        linkml:publisher,
-        linkml:test_roles,
-        linkml:title,
-        linkml:version,
-        linkml:was_derived_from .
+	skos:closeMatch "schema:CreativeWork"^^xsd:anyURI ;
+	skos:exactMatch "datasets:Information"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:abstract true ;
+	linkml:definition_uri "https://w3id.org/linkml/reportInformation"^^xsd:anyURI ;
+	linkml:description "Grouping for datasets and data files" ;
+	linkml:slot_usage _:c14n4 ;
+	linkml:slots linkml:compression , linkml:conforms_to , linkml:conforms_to_class , linkml:conforms_to_schema , linkml:created_by , linkml:created_on , linkml:description , linkml:download_url , linkml:id , linkml:issued , linkml:keywords , linkml:language , linkml:license , linkml:page , linkml:publisher , linkml:test_roles , linkml:title , linkml:version , linkml:was_derived_from .
+linkml:JSON-LD linkml:meaning "formats:JSON-LD"^^xsd:anyURI .
+linkml:LD\%20Patch linkml:meaning "formats:LD_Patch"^^xsd:anyURI .
+linkml:MediaTypeEnum skos:exactMatch "dcterms:MediaType"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportMediaTypeEnum"^^xsd:anyURI ;
+	linkml:permissible_values linkml:csv , linkml:rdf-xml .
+linkml:Microdata linkml:meaning "formats:microdata"^^xsd:anyURI .
+linkml:N-Quads linkml:meaning "formats:N-Quads"^^xsd:anyURI .
+linkml:N-Triples linkml:meaning "formats:N-Triples"^^xsd:anyURI .
+linkml:N3 linkml:meaning "formats:N3"^^xsd:anyURI .
+linkml:OWL\%20Functional\%20Syntax linkml:meaning "formats:OWL_Functional"^^xsd:anyURI .
+linkml:OWL\%20Manchester\%20Syntax linkml:meaning "formats:OWL_Manchester"^^xsd:anyURI .
+linkml:OWL\%20XML\%20Serialization linkml:meaning "formats:OWL_XML"^^xsd:anyURI .
+linkml:POWDER-S linkml:meaning "formats:POWDER-S"^^xsd:anyURI .
+linkml:POWDER linkml:meaning "formats:POWDER"^^xsd:anyURI .
+linkml:PROV-N linkml:meaning "formats:PROV-N"^^xsd:anyURI .
+linkml:PROV-XML linkml:meaning "formats:PROV-XML"^^xsd:anyURI .
+linkml:RDF\/JSON linkml:meaning "formats:RDF_JSON"^^xsd:anyURI .
+linkml:RDF\/XML linkml:meaning "formats:RDF_XML"^^xsd:anyURI .
+linkml:RDFa linkml:meaning "formats:RDFa"^^xsd:anyURI .
+linkml:RIF\%20XML\%20Syntax linkml:meaning "formats:RIF_XML"^^xsd:anyURI .
+linkml:SPARQL\%20Results\%20in\%20CSV linkml:meaning "formats:SPARQL_Results_CSV"^^xsd:anyURI .
+linkml:SPARQL\%20Results\%20in\%20JSON linkml:meaning "formats:SPARQL_Results_JSON"^^xsd:anyURI .
+linkml:SPARQL\%20Results\%20in\%20TSV linkml:meaning "formats:SPARQL_Results_TSV"^^xsd:anyURI .
+linkml:SPARQL\%20Results\%20in\%20XML linkml:meaning "formats:SPARQL_Results_XML"^^xsd:anyURI .
+linkml:TestRole skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportTestRole"^^xsd:anyURI ;
+	linkml:permissible_values linkml:CounterExample , linkml:Example .
+linkml:TriG linkml:meaning "formats:TriG"^^xsd:anyURI .
+linkml:Turtle linkml:meaning "formats:Turtle"^^xsd:anyURI .
+linkml:boolean a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
+	skos:exactMatch "schema:Boolean"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "Bool" ;
+	linkml:definition_uri "https://w3id.org/linkml/Boolean"^^xsd:anyURI ;
+	linkml:description "A binary (true or false) value" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "bool" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI .
+linkml:bytes a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#byteSize"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportbytes"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:integer ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#byteSize"^^xsd:anyURI .
+linkml:comment_prefix a linkml:SlotDefinition .
+linkml:compression a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportcompression"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportcompression"^^xsd:anyURI .
+linkml:conforms_to a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/conformsTo"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportconforms_to"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "http://purl.org/dc/terms/conformsTo"^^xsd:anyURI .
+linkml:conforms_to_class a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_class"^^xsd:anyURI ;
+	linkml:description "class in schema which the data object instantiates" ;
+	linkml:domain_of linkml:Information ;
+	linkml:is_a linkml:conforms_to ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_class"^^xsd:anyURI .
+linkml:conforms_to_schema a linkml:SlotDefinition ;
+	skos:exactMatch "https://specs.frictionlessdata.io/schema"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportconforms_to_schema"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:is_a linkml:conforms_to ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "https://w3id.org/linkml/reportconforms_to_schema"^^xsd:anyURI .
+linkml:created_by a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/pav/createdBy"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportcreated_by"^^xsd:anyURI ;
+	linkml:description "agent that created the element" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "http://purl.org/pav/createdBy"^^xsd:anyURI .
+linkml:created_on a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/pav/createdOn"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportcreated_on"^^xsd:anyURI ;
+	linkml:description "time at which the element was created" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:datetime ;
+	linkml:slot_uri "http://purl.org/pav/createdOn"^^xsd:anyURI .
+linkml:csv linkml:meaning "mediatypes:text/csv"^^xsd:anyURI .
+linkml:curie dcterms:conformsTo "https://www.w3.org/TR/curie/" ;
+	a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	skos:note "in RDF serializations this MUST be expanded to a URI" , "in non-RDF serializations MAY be serialized as the compact representation" ;
+	linkml:base "Curie" ;
+	linkml:definition_uri "https://w3id.org/linkml/Curie"^^xsd:anyURI ;
+	linkml:description "a compact URI" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:datasets dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+	dcterms:title "LinkML Datasets Datamodel" ;
+	a linkml:SchemaDefinition ;
+	rdfs:seeAlso "https://specs.frictionlessdata.io/data-resource"^^xsd:anyURI , "https://www.w3.org/TR/hcls-dataset/"^^xsd:anyURI , "https://www.w3.org/TR/void/"^^xsd:anyURI ;
+	sh:declare _:c14n0 , _:c14n1 , _:c14n10 , _:c14n11 , _:c14n13 , _:c14n14 , _:c14n15 , _:c14n16 , _:c14n17 , _:c14n18 , _:c14n19 , _:c14n2 , _:c14n20 , _:c14n21 , _:c14n3 ;
+	linkml:classes linkml:DataPackage , linkml:DataResource , linkml:FormatDialect , linkml:Information ;
+	linkml:default_curi_maps "semweb_context" ;
+	linkml:default_prefix "datasets" ;
+	linkml:default_range linkml:string ;
+	linkml:description "A datamodel for datasets" ;
+	linkml:emit_prefixes "linkml" , "owl" , "rdf" , "rdfs" , "xsd" ;
+	linkml:enums linkml:FormatEnum , linkml:MediaTypeEnum , linkml:TestRole ;
+	linkml:id "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:imports "linkml:types"^^xsd:anyURI ;
+	linkml:metamodel_version "1.11.0" ;
+	linkml:slots linkml:bytes , linkml:compression , linkml:conforms_to , linkml:conforms_to_class , linkml:conforms_to_schema , linkml:created_by , linkml:created_on , linkml:description , linkml:dialect , linkml:download_url , linkml:encoding , linkml:format , linkml:formatDialect__comment_prefix , linkml:formatDialect__delimiter , linkml:formatDialect__double_quote , linkml:formatDialect__header , linkml:formatDialect__quote_char , linkml:hash , linkml:id , linkml:issued , linkml:keywords , linkml:language , linkml:last_updated_on , linkml:license , linkml:md5 , linkml:media_type , linkml:modified_by , linkml:page , linkml:path , linkml:profile , linkml:publisher , linkml:resources , linkml:sha256 , linkml:status , linkml:test_roles , linkml:themes , linkml:title , linkml:version , linkml:was_derived_from ;
+	linkml:source_file "datasets.yaml" ;
+	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_size 7872 ;
+	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
+linkml:date a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"." , "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+	skos:exactMatch "schema:Date"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "XSDDate" ;
+	linkml:definition_uri "https://w3id.org/linkml/Date"^^xsd:anyURI ;
+	linkml:description "a date (year, month and day) in an idealized calendar" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#date"^^xsd:anyURI .
+linkml:date_or_datetime a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "str" ;
+	linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI ;
+	linkml:description "Either a date or a datetime" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI .
+linkml:datetime a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
+	skos:exactMatch "schema:DateTime"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "XSDDateTime" ;
+	linkml:definition_uri "https://w3id.org/linkml/Datetime"^^xsd:anyURI ;
+	linkml:description "The combination of a date and time" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime"^^xsd:anyURI .
+linkml:decimal a linkml:TypeDefinition ;
+	skos:broadMatch "schema:Number"^^xsd:anyURI ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "Decimal" ;
+	linkml:definition_uri "https://w3id.org/linkml/Decimal"^^xsd:anyURI ;
+	linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI .
+linkml:delimiter a linkml:SlotDefinition .
+linkml:description a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/description"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportdescription"^^xsd:anyURI ;
+	linkml:description "human readable description of the information" ;
+	linkml:domain_of linkml:DataResource , linkml:Information ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://purl.org/dc/terms/description"^^xsd:anyURI .
+linkml:dialect a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/csvw#dialect"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportdialect"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://www.w3.org/ns/csvw#dialect"^^xsd:anyURI .
+linkml:double a linkml:TypeDefinition ;
+	skos:closeMatch "schema:Float"^^xsd:anyURI ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "float" ;
+	linkml:definition_uri "https://w3id.org/linkml/Double"^^xsd:anyURI ;
+	linkml:description "A real number that conforms to the xsd:double specification" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI .
+linkml:double_quote a linkml:SlotDefinition .
+linkml:download_url a linkml:SlotDefinition ;
+	skos:closeMatch "https://specs.frictionlessdata.io/path"^^xsd:anyURI ;
+	skos:exactMatch "http://schema.org/url"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#downloadURL"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportdownload_url"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uri ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#downloadURL"^^xsd:anyURI .
+linkml:encoding a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportencoding"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportencoding"^^xsd:anyURI .
+linkml:float a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
+	skos:exactMatch "schema:Float"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "float" ;
+	linkml:definition_uri "https://w3id.org/linkml/Float"^^xsd:anyURI ;
+	linkml:description "A real number that conforms to the xsd:float specification" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI .
+linkml:format a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/format"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportformat"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:FormatEnum ;
+	linkml:slot_uri "http://purl.org/dc/terms/format"^^xsd:anyURI .
+linkml:formatDialect__comment_prefix a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:prefLabel "comment_prefix" ;
+	linkml:domain_of linkml:FormatDialect ;
+	linkml:owner linkml:FormatDialect ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportcomment_prefix"^^xsd:anyURI .
+linkml:formatDialect__delimiter a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:prefLabel "delimiter" ;
+	linkml:domain_of linkml:FormatDialect ;
+	linkml:owner linkml:FormatDialect ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportdelimiter"^^xsd:anyURI .
+linkml:formatDialect__double_quote a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:prefLabel "double_quote" ;
+	linkml:domain_of linkml:FormatDialect ;
+	linkml:owner linkml:FormatDialect ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportdouble_quote"^^xsd:anyURI .
+linkml:formatDialect__header a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:prefLabel "header" ;
+	linkml:domain_of linkml:FormatDialect ;
+	linkml:owner linkml:FormatDialect ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportheader"^^xsd:anyURI .
+linkml:formatDialect__quote_char a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:prefLabel "quote_char" ;
+	linkml:domain_of linkml:FormatDialect ;
+	linkml:owner linkml:FormatDialect ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportquote_char"^^xsd:anyURI .
+linkml:hash a linkml:SlotDefinition ;
+	skos:editorialNote "we recommend using a more specific slot such as sha256 or md5" ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reporthash"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reporthash"^^xsd:anyURI .
+linkml:header a linkml:SlotDefinition .
+linkml:id a linkml:SlotDefinition ;
+	skos:exactMatch "http://schema.org/name"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/identifier"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportid"^^xsd:anyURI ;
+	linkml:description "the unique name of th dataset" ;
+	linkml:domain_of linkml:Information ;
+	linkml:identifier true ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:required true ;
+	linkml:slot_uri "http://purl.org/dc/terms/identifier"^^xsd:anyURI .
+linkml:integer a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
+	skos:exactMatch "schema:Integer"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "int" ;
+	linkml:definition_uri "https://w3id.org/linkml/Integer"^^xsd:anyURI ;
+	linkml:description "An integer" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI .
+linkml:issued a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/issued"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportissued"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:datetime ;
+	linkml:slot_uri "http://purl.org/dc/terms/issued"^^xsd:anyURI .
+linkml:jsonpath dcterms:conformsTo "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
+	a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "str" ;
+	linkml:definition_uri "https://w3id.org/linkml/Jsonpath"^^xsd:anyURI ;
+	linkml:description "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:jsonpointer dcterms:conformsTo "https://datatracker.ietf.org/doc/html/rfc6901" ;
+	a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "str" ;
+	linkml:definition_uri "https://w3id.org/linkml/Jsonpointer"^^xsd:anyURI ;
+	linkml:description "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:keywords a linkml:SlotDefinition ;
+	skos:exactMatch "http://schema.org/keywords"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#keyword"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportkeywords"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:multivalued true ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:singular_name "keyword" ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#keyword"^^xsd:anyURI .
+linkml:language a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportlanguage"^^xsd:anyURI ;
+	linkml:description "language in which the information is expressed" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportlanguage"^^xsd:anyURI .
+linkml:last_updated_on a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/pav/lastUpdatedOn"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportlast_updated_on"^^xsd:anyURI ;
+	linkml:description "time at which the element was last updated" ;
+	linkml:range linkml:datetime ;
+	linkml:slot_uri "http://purl.org/pav/lastUpdatedOn"^^xsd:anyURI .
+linkml:license a linkml:SlotDefinition ;
+	skos:exactMatch "https://specs.frictionlessdata.io/licenses"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/license"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportlicense"^^xsd:anyURI ;
+	linkml:description "license for the data" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://purl.org/dc/terms/license"^^xsd:anyURI .
+linkml:md5 a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportmd5"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:is_a linkml:hash ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportmd5"^^xsd:anyURI .
+linkml:media_type a linkml:SlotDefinition ;
+	skos:exactMatch "http://schema.org/encodingFormat"^^xsd:anyURI , "https://specs.frictionlessdata.io/mediatype"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#mediaType"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportmedia_type"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:examples _:c14n5 , _:c14n9 ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#mediaType"^^xsd:anyURI .
+linkml:modified_by a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://open-services.net/ns/core#modifiedBy"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportmodified_by"^^xsd:anyURI ;
+	linkml:description "agent that modified the element" ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "http://open-services.net/ns/core#modifiedBy"^^xsd:anyURI .
+linkml:ncname a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "NCName" ;
+	linkml:definition_uri "https://w3id.org/linkml/Ncname"^^xsd:anyURI ;
+	linkml:description "Prefix part of CURIE" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:nodeidentifier a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "NodeIdentifier" ;
+	linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier"^^xsd:anyURI ;
+	linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/ns/shex#nonLiteral"^^xsd:anyURI .
+linkml:objectidentifier a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	skos:note "Used for inheritance and type checking" ;
+	linkml:base "ElementIdentifier" ;
+	linkml:definition_uri "https://w3id.org/linkml/Objectidentifier"^^xsd:anyURI ;
+	linkml:description "A URI or CURIE that represents an object in the model." ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/ns/shex#iri"^^xsd:anyURI .
+linkml:page a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#landingPage"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportpage"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#landingPage"^^xsd:anyURI .
+linkml:path a linkml:SlotDefinition ;
+	skos:closeMatch "https://specs.frictionlessdata.io/path"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportpath"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportpath"^^xsd:anyURI .
+linkml:profile a linkml:SlotDefinition ;
+	skos:exactMatch "https://specs.frictionlessdata.io/profiles"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportprofile"^^xsd:anyURI ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "https://w3id.org/linkml/reportprofile"^^xsd:anyURI .
+linkml:publisher a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/publisher"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportpublisher"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "http://purl.org/dc/terms/publisher"^^xsd:anyURI .
+linkml:quote_char a linkml:SlotDefinition .
+linkml:rdf-xml linkml:meaning "mediatypes:application/rdf+xml"^^xsd:anyURI .
+linkml:resources a linkml:SlotDefinition ;
+	skos:exactMatch "http://schema.org/distribution"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#distribution"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportresources"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataPackage ;
+	linkml:multivalued true ;
+	linkml:owner linkml:DataPackage ;
+	linkml:range linkml:DataResource ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#distribution"^^xsd:anyURI .
+linkml:sha256 a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportsha256"^^xsd:anyURI ;
+	linkml:domain_of linkml:DataResource ;
+	linkml:is_a linkml:hash ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/reportsha256"^^xsd:anyURI .
+linkml:sparqlpath dcterms:conformsTo "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
+	a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "str" ;
+	linkml:definition_uri "https://w3id.org/linkml/Sparqlpath"^^xsd:anyURI ;
+	linkml:description "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:status a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/ontology/bibo/status"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportstatus"^^xsd:anyURI ;
+	linkml:description "status of the element" ;
+	linkml:examples _:c14n12 ;
+	linkml:range linkml:uriorcurie ;
+	linkml:slot_uri "http://purl.org/ontology/bibo/status"^^xsd:anyURI .
+linkml:string a linkml:TypeDefinition ;
+	skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+	skos:exactMatch "schema:Text"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "str" ;
+	linkml:definition_uri "https://w3id.org/linkml/String"^^xsd:anyURI ;
+	linkml:description "A character string" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+linkml:test_roles a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reporttest_roles"^^xsd:anyURI ;
+	linkml:domain_of linkml:Information ;
+	linkml:multivalued true ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:TestRole ;
+	linkml:slot_uri "https://w3id.org/linkml/reporttest_roles"^^xsd:anyURI .
+linkml:themes a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/dcat#theme"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportthemes"^^xsd:anyURI ;
+	linkml:multivalued true ;
+	linkml:range linkml:uriorcurie ;
+	linkml:singular_name "theme" ;
+	linkml:slot_uri "http://www.w3.org/ns/dcat#theme"^^xsd:anyURI .
+linkml:time a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"." , "URI is dateTime because OWL reasoners do not work with straight date or time" ;
+	skos:exactMatch "schema:Time"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "XSDTime" ;
+	linkml:definition_uri "https://w3id.org/linkml/Time"^^xsd:anyURI ;
+	linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#time"^^xsd:anyURI .
+linkml:title a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/dc/terms/title"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reporttitle"^^xsd:anyURI ;
+	linkml:description "the official title of the element" ;
+	linkml:domain_of linkml:DataResource , linkml:Information ;
+	linkml:owner linkml:DataResource ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://purl.org/dc/terms/title"^^xsd:anyURI .
+linkml:uri dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
+	a linkml:TypeDefinition ;
+	skos:closeMatch "schema:URL"^^xsd:anyURI ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	skos:note "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
+	linkml:base "URI" ;
+	linkml:definition_uri "https://w3id.org/linkml/Uri"^^xsd:anyURI ;
+	linkml:description "a complete URI" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
+linkml:uriorcurie a linkml:TypeDefinition ;
+	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
+	skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+	linkml:base "URIorCURIE" ;
+	linkml:definition_uri "https://w3id.org/linkml/Uriorcurie"^^xsd:anyURI ;
+	linkml:description "a URI or a CURIE" ;
+	linkml:imported_from "linkml:types" ;
+	linkml:repr "str" ;
+	linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
+linkml:version a linkml:SlotDefinition ;
+	skos:exactMatch "http://purl.org/dc/terms/hasVersion"^^xsd:anyURI , "http://schema.org/version"^^xsd:anyURI ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://purl.org/pav/version"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportversion"^^xsd:anyURI ;
+	linkml:description "particular version of schema" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://purl.org/pav/version"^^xsd:anyURI .
+linkml:was_derived_from a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/datasets"^^xsd:anyURI ;
+	skos:mappingRelation "http://www.w3.org/ns/prov#wasDerivedFrom"^^xsd:anyURI ;
+	linkml:definition_uri "https://w3id.org/linkml/reportwas_derived_from"^^xsd:anyURI ;
+	linkml:description "A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.@en" ;
+	linkml:domain_of linkml:Information ;
+	linkml:owner linkml:Information ;
+	linkml:range linkml:string ;
+	linkml:slot_uri "http://www.w3.org/ns/prov#wasDerivedFrom"^^xsd:anyURI .
+_:c14n0 sh:namespace "https://specs.frictionlessdata.io/"^^xsd:anyURI ;
+	sh:prefix "frictionless" .
+_:c14n1 sh:namespace "http://purl.org/pav/"^^xsd:anyURI ;
+	sh:prefix "pav" .
+_:c14n10 sh:namespace "https://w3id.org/shacl/"^^xsd:anyURI ;
+	sh:prefix "sh" .
+_:c14n11 sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI ;
+	sh:prefix "bibo" .
+_:c14n12 a linkml:Example ;
+	skos:example "bibo:draft" .
+_:c14n13 sh:namespace "http://www.w3.org/ns/csvw#"^^xsd:anyURI ;
+	sh:prefix "csvw" .
+_:c14n14 sh:namespace "http://rdfs.org/ns/void#"^^xsd:anyURI ;
+	sh:prefix "void" .
+_:c14n15 sh:namespace "http://www.w3.org/ns/dcat#"^^xsd:anyURI ;
+	sh:prefix "dcat" .
+_:c14n16 sh:namespace "http://www.w3.org/ns/formats/"^^xsd:anyURI ;
+	sh:prefix "formats" .
+_:c14n17 sh:namespace "http://open-services.net/ns/core#"^^xsd:anyURI ;
+	sh:prefix "oslc" .
+_:c14n18 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+	sh:prefix "linkml" .
+_:c14n19 sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
+	sh:prefix "skos" .
+_:c14n2 sh:namespace "https://w3id.org/linkml/report"^^xsd:anyURI ;
+	sh:prefix "datasets" .
+_:c14n20 sh:namespace "http://schema.org/"^^xsd:anyURI ;
+	sh:prefix "schema" .
+_:c14n21 sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ;
+	sh:prefix "dcterms" .
+_:c14n3 sh:namespace "https://www.iana.org/assignments/media-types/"^^xsd:anyURI ;
+	sh:prefix "mediatypes" .
+_:c14n5 a linkml:Example ;
+	skos:example "application/json" .
+_:c14n9 a linkml:Example ;
+	skos:example "text/csv" .
+

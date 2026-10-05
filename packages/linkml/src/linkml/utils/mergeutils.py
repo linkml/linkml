@@ -128,6 +128,28 @@ def set_from_schema(schema: SchemaDefinition) -> None:
             t[k].definition_uri = f"{ns}{fragment}"
 
 
+# Fields that carry per-schema provenance rather than structural meaning. Two
+# element declarations that differ only in these fields describe the same
+# element re-exported from sibling schemas and should be merged silently.
+_PROVENANCE_FIELDS: frozenset[str] = frozenset(
+    {
+        "from_schema",
+        "imported_from",
+        "definition_uri",
+        "source_file",
+        "source_file_date",
+        "source_file_size",
+    }
+)
+
+
+def _structurally_equal(a: Element, b: Element) -> bool:
+    """Return True if two metamodel elements are equal ignoring provenance fields."""
+    a_dict = {k: v for k, v in dataclasses.asdict(a).items() if k not in _PROVENANCE_FIELDS}
+    b_dict = {k: v for k, v in dataclasses.asdict(b).items() if k not in _PROVENANCE_FIELDS}
+    return a_dict == b_dict
+
+
 def merge_dicts(
     target: dict[str, Element],
     source: dict[str, Element],
@@ -137,6 +159,16 @@ def merge_dicts(
 ) -> None:
     for k, v in source.items():
         if k in target and source[k].from_schema != target[k].from_schema:
+            if _structurally_equal(source[k], target[k]):
+                # Same element redeclared in a sibling import; keep the existing
+                # target entry (with its original provenance) and skip overwriting.
+                logger.debug(
+                    "Element '%s' is redeclared identically in %s and %s; treating as a single element.",
+                    k,
+                    target[k].from_schema,
+                    source[k].from_schema,
+                )
+                continue
             raise ValueError(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
         target[k] = deepcopy(v)
         # currently all imports closures are merged into main schema, EXCEPT

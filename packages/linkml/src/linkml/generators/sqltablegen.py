@@ -156,6 +156,9 @@ class SQLTableGenerator(Generator):
     inject_primary_keys: bool = True
     use_foreign_keys: bool = True
     rename_foreign_keys: bool = False
+    """If true, rename every class-range slot to ``<slot>_<target_pk>`` so the
+    emitted DDL column names match the SQLAlchemy 2.x declarative ORM output.
+    Off by default for backward compatibility."""
     direct_mapping: bool = False
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
@@ -182,9 +185,18 @@ class SQLTableGenerator(Generator):
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
-        sqltr = RelationalModelTransformer(SchemaView(self.schema))
+        # Forward importmap/base_dir; ``self.schema`` may still be a path with
+        # URI-style imports resolved via ``--importmap``, which a bare
+        # ``SchemaView(self.schema)`` would re-resolve through HTTP.
+        sqltr = RelationalModelTransformer(SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
+        elif self.rename_foreign_keys:
+            # Rename every class-range slot to <slot>_<target_pk> so DDL column
+            # names match the SQLAlchemy 2.x declarative ORM output. Off by
+            # default to preserve backward compatibility with existing
+            # gen-sqltables consumers.
+            sqltr.foreign_key_policy = ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS
         tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
         schema = tr_result.schema
 
@@ -362,10 +374,20 @@ class SQLTableGenerator(Generator):
             schema = self.schema
 
         if sv is None:  # if no SchemaView arg is provided, then create one
-            sv = SchemaView(schema)
+            # Forward importmap/base_dir so a URI-style schema input still
+            # resolves through the user's ``--importmap`` here.
+            sv = SchemaView(schema, base_dir=self.base_dir, importmap=self.importmap)
         if slot_range in sv.all_classes():
-            # FK type should be the same as the identifier of the foreign key
-            fk = sv.get_identifier_slot(slot_range)
+            # FK type should be the same as the identifier of the foreign key.
+            # Prefer the target's *direct* identifier: an abstract parent without
+            # an identifier gets an auto-injected integer PK from the relational
+            # transformer, and that injection leaks into subclasses via
+            # class_induced_slots — masking a real identifier declared on the
+            # subclass. Fall back to the inherited identifier for the common
+            # case where the subclass legitimately inherits its PK.
+            fk = RelationalModelTransformer.get_direct_identifier_attribute(sv, slot_range)
+            if fk is None:
+                fk = sv.get_identifier_slot(slot_range)
             if fk:
                 return self.get_sql_range(fk, sv.schema, sv=sv)  # reuse the Schemaview
             return Text()
@@ -447,6 +469,16 @@ class SQLTableGenerator(Generator):
     default=True,
     show_default=True,
     help="A manual override to omit the abstract classes, set to true as a default for testing sake",
+)
+@click.option(
+    "--rename-foreign-keys/--no-rename-foreign-keys",
+    default=False,
+    show_default=True,
+    help=(
+        "Rename every class-range slot to <slot>_<target_pk> in the emitted DDL "
+        "so column names match SQLAlchemy 2.x declarative ORM output "
+        "(gen-sqlalchemy --template declarative_2x)."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

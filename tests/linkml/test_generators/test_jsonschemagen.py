@@ -1,9 +1,14 @@
 import json
 import logging
+import re
 from collections.abc import Iterable
+from contextlib import nullcontext as does_not_raise
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 import jsonschema
+import numpy as np
 import pytest
 import yaml
 
@@ -332,6 +337,27 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+def test_slot_readonly_emits_read_only(input_path):
+    """A slot with a non-empty ``readonly`` value should emit ``readOnly: true`` on
+    the JSON Schema property; absent or empty ``readonly`` should omit the keyword.
+    Inherited slots must also carry ``readOnly: true`` on every subclass, because
+    JSON Schema has no class inheritance.
+
+    See: https://github.com/linkml/linkml/issues/3528
+    """
+    generated = json.loads(JsonSchemaGenerator(input_path("jsonschema_slot_readonly.yaml")).serialize())
+
+    # ``Sub`` inherits all three slots from ``Base`` via ``is_a``; JSON Schema has no
+    # class inheritance, so both classes must independently carry ``readOnly: true``
+    # on ``managed`` and omit it on the others.
+    for cls_name in ("Base", "Sub"):
+        props = generated["$defs"][cls_name]["properties"]
+        assert "readOnly" in props["managed"]
+        assert props["managed"]["readOnly"] is True
+        assert "readOnly" not in props["empty_reason"]
+        assert "readOnly" not in props["plain"]
+
+
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_identifier_non_nullability(input_path, not_closed):
     """
@@ -360,6 +386,7 @@ def test_slot_not_required_nullability(input_path, not_closed):
 
     References:
         - https://github.com/linkml/linkml/issues/2155
+        - https://github.com/linkml/linkml/issues/3736
     """
     schema = input_path("not_required.yaml")
     generator = JsonSchemaGenerator(schema, mergeimports=True, top_class="Optionals", not_closed=not_closed)
@@ -370,6 +397,11 @@ def test_slot_not_required_nullability(input_path, not_closed):
             assert "null" in prop["type"], f"{key} does not allow null"
         elif "anyOf" in prop:
             assert {"type": "null"} in prop["anyOf"], f"{key} does not allow null"
+        else:
+            pytest.fail(f"{key} has neither 'type' nor 'anyOf', so it cannot allow null: {prop}")
+
+    # nullability of an optional multivalued enum slot applies to the array, not its elements
+    assert properties["enum_range_multivalued"]["items"] == {"$ref": "#/$defs/StatusEnum"}
 
 
 def test_lifecycle_classes(kitchen_sink_path):
@@ -441,6 +473,124 @@ def test_lifecycle_slots(kitchen_sink_path):
         for prop in cls["properties"].values():
             assert prop["description"] == "TEST MODIFYING SLOTS"
             assert "faketype" in prop["type"]
+
+
+def test_extra_slots_false(input_path):
+    """
+    No extra slots allowed
+    """
+    valid_data = {"not_allowed": {"x": 1}}
+    invalid_data = {
+        "not_allowed": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+@pytest.mark.parametrize("test_model", ["allowed", "any_class"])
+def test_extra_slots_true(input_path, test_model: str):
+    """
+    Extra slots allowed
+    """
+    valid_data = {
+        test_model: {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}},
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+
+
+def test_extra_slots_string(input_path):
+    """
+    Extra slots allowed if they are strings
+    """
+    valid_data = {
+        "extra_string": {"x": 1, "y": "string"},
+    }
+    invalid_data = {
+        "extra_string": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_class(input_path):
+    """
+    Extra slots allowed if they match some classdef
+    """
+    valid_data = {
+        "extra_class": {"x": 1, "another": {"y": "string"}, "third": {"y": "some string"}},
+    }
+    invalid_data = {
+        "extra_class": {
+            "x": 1,
+            "another": {"y": 1},
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_anyof(input_path):
+    """
+    Extra slots allowed if they match a union of types
+    """
+    valid_data = {
+        "extra_anyof": {"x": 1, "another": "hey", "third": 2},
+    }
+    invalid_data = {
+        "extra_anyof": {
+            "x": 1,
+            "another": True,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_cardinality(input_path):
+    """
+    Extra slots allowed if they match some extended slot expression like `AnyOf`
+    """
+    valid_data = {
+        "extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5]},
+    }
+    invalid_data = {"extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5, 6]}}
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
 
 
 # **********************************************************
@@ -919,3 +1069,719 @@ classes:
     # InteractionAssociation should have narrowed constraint
     interaction_predicate = json_schema["$defs"]["InteractionAssociation"]["properties"]["predicate"]
     assert interaction_predicate["enum"] == ["interacts_with", "physically_interacts_with"]
+
+
+def test_add_lax_def_missing_required():
+    """add_lax_def must not crash when a class def has no ``required`` field.
+
+    Regression test for https://github.com/linkml/linkml/issues/3366.
+    The ``add_lax_def`` method deepcopies a class's JSON Schema ``$def`` and
+    removes the identifier from ``required``.  If the ``$def`` has no
+    ``required`` key (e.g. because the class inherited its identifier but
+    has no directly required slots), the unguarded dict access crashes with
+    ``KeyError: 'required'``.
+    """
+    from linkml.generators.jsonschemagen import JsonSchema
+
+    schema = JsonSchema({"$defs": {}})
+    # A class def without a "required" field
+    schema["$defs"]["MyClass"] = {"type": "object", "properties": {"id": {}}}
+    # Must not raise KeyError
+    schema.add_lax_def("MyClass", "id")
+    assert "MyClass__identifier_optional" in schema["$defs"]
+    assert "required" not in schema["$defs"]["MyClass__identifier_optional"]
+
+    # A class def where "required" exists but doesn't contain the identifier
+    schema["$defs"]["OtherClass"] = {"type": "object", "properties": {"id": {}}, "required": ["name"]}
+    schema.add_lax_def("OtherClass", "id")
+    assert "OtherClass__identifier_optional" in schema["$defs"]
+    assert schema["$defs"]["OtherClass__identifier_optional"]["required"] == ["name"]
+
+    # The normal case: "required" contains the identifier
+    schema["$defs"]["NormalClass"] = {"type": "object", "properties": {"id": {}}, "required": ["id", "name"]}
+    schema.add_lax_def("NormalClass", "id")
+    assert schema["$defs"]["NormalClass__identifier_optional"]["required"] == ["name"]
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_use_uris(caplog, input_path, use_curies):
+    schema = input_path("multiple-ontologies.yaml")
+    generator = JsonSchemaGenerator(schema, mergeimports=True, use_curies=use_curies)
+    generated = json.loads(generator.serialize())
+    if use_curies:
+        assert "schema:Event" in generated["$defs"]
+        assert "schema:location" in generated["$defs"]["schema:Event"]["properties"]
+        assert "s4city:Event" in generated["$defs"]
+        assert "s4ehaw:hasLocation" in generated["$defs"]["s4city:Event"]["properties"]
+        assert "ex:something_else" in generated["$defs"]["s4city:Event"]["properties"]
+
+        expected_warning = False
+        for log_record in caplog.records:
+            if (
+                log_record.levelname == "WARNING"
+                and re.match(".*https://saref.etsi.org/saref4auto/RendezvousLocation.*", log_record.message) is not None
+            ):
+                expected_warning = True
+        assert expected_warning
+
+        assert "SchemaEvent" not in generated["$defs"]
+        assert "schema_location" not in generated["$defs"]["schema:Event"]["properties"]
+    else:
+        assert "SchemaEvent" in generated["$defs"]
+        assert "schema_location" in generated["$defs"]["SchemaEvent"]["properties"]
+        assert "SarefEvent" in generated["$defs"]
+        assert "saref_location" in generated["$defs"]["SarefEvent"]["properties"]
+
+
+def _collect_refs(node):
+    """Recursively yield every ``$ref`` string value in a JSON schema fragment."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "$ref" and isinstance(value, str):
+                yield value
+            else:
+                yield from _collect_refs(value)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _collect_refs(item)
+
+
+def test_use_curies_refs_resolve_to_defs(kitchen_sink_path):
+    """Regression test for https://github.com/linkml/linkml/issues/3981.
+
+    Under ``--use-curies`` the ``$defs`` entries for classes are keyed by their
+    CURIE (e.g. ``ks:Company``), but the internal ``$ref`` targets that point at
+    those classes were emitted with the camelCased element name (e.g.
+    ``#/$defs/Company``), producing dangling references. Every ``$ref`` into
+    ``#/$defs/`` must resolve to an existing key in ``$defs``.
+
+    The kitchen sink schema exercises this on many inlined class-range slots and
+    emits CURIE-form class references, so it reproduces the original bug (each
+    such reference was dangling before the fix).
+    """
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, use_curies=True)
+    generated = json.loads(generator.serialize())
+
+    # The generated schema must be structurally valid JSON Schema.
+    jsonschema.Draft7Validator.check_schema(generated)
+
+    def_keys = set(generated["$defs"])
+    # CURIE keying must be active (guards the test against a no-op schema).
+    assert any(":" in key for key in def_keys)
+
+    prefix = "#/$defs/"
+    defs_refs = [ref for ref in _collect_refs(generated) if ref.startswith(prefix)]
+    # At least one class reference must be in CURIE form, otherwise the fixed
+    # code path is never exercised and the test could pass vacuously.
+    assert any(":" in ref[len(prefix) :] for ref in defs_refs)
+
+    dangling = [ref for ref in defs_refs if ref[len(prefix) :] not in def_keys]
+    assert dangling == [], f"dangling $refs not present in $defs: {dangling}"
+
+
+# --------------------------------------------------
+# Arrays!!!
+# --------------------------------------------------
+
+
+@dataclass
+class TestCase:
+    __test__ = False
+    type: Literal["pass", "fail-shape", "fail-dtype", "fail-scalar"]
+    array: np.ndarray
+
+    def expectation(self):
+        if self.type == "pass":
+            return does_not_raise()
+        else:
+            return pytest.raises(jsonschema.exceptions.ValidationError)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
+    + [TestCase(type="fail-scalar", array=a) for a in (4, 3.0, "three")],
+)
+def test_generate_array_anyshape(case, array_anyshape):
+    """
+    Any array shape, any dtype!
+    """
+
+    generated = JsonSchemaGenerator(array_anyshape, top_class="AnyType").generate()
+
+    if isinstance(case.array, np.ndarray):
+        array = case.array.tolist()
+    else:
+        array = case.array
+
+    with case.expectation():
+        jsonschema.validate({"array": array}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="fail-dtype", array=np.random.default_rng().random((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_anyshape_typed(case, array_anyshape):
+    """
+    Same as above, except dtype mismatches should cause a failure
+    """
+
+    generated = JsonSchemaGenerator(array_anyshape, top_class="Typed").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_dtype_union(case, array_dtype):
+    """
+    Array representations can validate union dtypes
+    """
+
+    generated = JsonSchemaGenerator(array_dtype, top_class="UnionDtype").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+def test_generate_array_dtype_class(array_dtype):
+    """
+    Array representations can use classes as ranges
+    """
+
+    generated = JsonSchemaGenerator(array_dtype, top_class="ClassDtype").generate()
+
+    array = np.full(shape=(2, 3, 4), fill_value={"x": 1, "y": 2})
+
+    # validates
+    jsonschema.validate({"array": array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_min(case, array_bounded):
+    """
+    Any integer array with greater than 2 dimensions.
+    """
+    generated = JsonSchemaGenerator(array_bounded, top_class="MinDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_max(case, array_bounded):
+    """
+    Any integer array with less or equal dimensions than 5
+    """
+
+    generated = JsonSchemaGenerator(array_bounded, top_class="MaxDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
+        TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_range(case, array_bounded):
+    """
+    Any integer array equal to or between 2 and 5 dimensions
+    """
+    generated = JsonSchemaGenerator(array_bounded, top_class="RangeDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3, 4, 5), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 2), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4, 5), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_exact(case, array_bounded):
+    """
+    Any integer array with exactly 3 dimensions
+    """
+
+    generated = JsonSchemaGenerator(array_bounded, top_class="ExactDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((3, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((1, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4, 6, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((3, 5, 4, 6), dtype=str)),
+        # FIXME: Add a float testcase back in here when https://github.com/linkml/linkml/issues/1955 is resolved
+    ],
+)
+def test_generate_array_parameterized_min(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the first dimension is equal to or greater than cardinality 2
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 4, 4, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 4, 6), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_max(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the second dimension is equal to or less than cardinality 5
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 2, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 5, 5, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 6, 6), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_range(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the third dimension has a cardinality between 2 and 5, inclusive
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 7), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_exact(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the fourch dimension has a cardinality of exactly 6
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
+    ],
+)
+def test_generate_array_complex_any(case, array_complex):
+    """
+    An array with at least four dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexAnyShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
+    ],
+)
+def test_generate_array_complex_max(case, array_complex):
+    """
+    An array with at most, or equal to 6 dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexMaxShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+    ],
+)
+def test_generate_array_complex_min(case, array_complex):
+    """
+    An array with at least 5 dimensions (with the rest of the usual requirements for complex shape test)
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexMinShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+    ],
+)
+def test_generate_array_complex_range(case, array_complex):
+    """
+    An array with between 5 and 7 dimensions, inclusive,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexRangeShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+    ],
+)
+def test_generate_array_complex_exact(case, array_complex):
+    """
+    An array with exactly 6 dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexExactShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+def test_generate_array_bounded_implicit_exact(array_bounded):
+    """
+    The representation of an bounded array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+
+    generated = JsonSchemaGenerator(
+        array_bounded,
+    ).generate()
+
+    explicit = generated["$defs"]["ExactDimensions"]["properties"]["array"]
+    implicit = generated["$defs"]["ImplicitExact"]["properties"]["array"]
+    assert explicit == implicit
+
+
+@pytest.mark.arrays
+def test_generate_array_complex_implicit_exact(array_complex):
+    """
+    The representation of an complex array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+
+    generated = JsonSchemaGenerator(
+        array_complex,
+    ).generate()
+    explicit = generated["$defs"]["ComplexExactShapeArray"]["properties"]["array"]
+    implicit = generated["$defs"]["ComplexImplicitExactShapeArray"]["properties"]["array"]
+    assert explicit == implicit
+
+
+@pytest.mark.arrays
+def test_generate_array_complex_noop_exact(array_complex, array_parameterized):
+    """
+    When the exact number of dimensions is equal to the number of parameterized dimensions,
+    the representation should be equivalent to if it hadn't been specified
+    """
+
+    generated_complex = JsonSchemaGenerator(
+        array_complex,
+    ).generate()
+    generated_parameterized = JsonSchemaGenerator(
+        array_parameterized,
+    ).generate()
+    complex = generated_complex["$defs"]["ComplexNoOpExactShapeArray"]["properties"]["array"]
+    parameterized = generated_parameterized["$defs"]["ParameterizedArray"]["properties"]["array"]
+    assert complex == parameterized
+
+
+@pytest.mark.arrays
+def test_generate_array_error_complex_exact_shape(array_error_complex_dimensions):
+    """
+    When we try and make a complex array where the exact number of dimensions are lower than the parameterized
+    dimensions, we should throw an error
+    """
+
+    with pytest.raises(ValueError, match=".*must be greater than the parameterized dimensions.*"):
+        _ = JsonSchemaGenerator(array_error_complex_dimensions).generate()
+
+
+@pytest.mark.arrays
+def test_generate_array_error_complex_unbounded_shape(array_error_complex_unbounded):
+    """
+    When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
+    we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
+    explicitly false.
+    """
+
+    with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
+        _ = JsonSchemaGenerator(
+            array_error_complex_unbounded,
+        ).generate()
+
+
+_EXTRA_SLOTS_SCHEMA = """
+id: https://example.org/extra-slots-default
+name: extra_slots_default
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Closed:
+    slots:
+      - name
+  ExplicitlyOpen:
+    extra_slots:
+      allowed: true
+    slots:
+      - name
+slots:
+  name:
+    range: string
+"""
+
+
+def _generate(tmp_path, schema_text, **kwargs):
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text)
+    return json.loads(JsonSchemaGenerator(str(schema_path), **kwargs).serialize())
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        pytest.param({}, False, id="default-is-closed"),
+        pytest.param({"not_closed": False}, False, id="closed"),
+        pytest.param({"not_closed": True}, True, id="not-closed"),
+    ],
+)
+def test_extra_slots_absent_defaults_to_closed(tmp_path, kwargs, expected):
+    """A class with no ``extra_slots`` is closed unless ``not_closed`` says otherwise.
+
+    ``meta.yaml`` documents an absent ``extra_slots`` as "forbid all additional data
+    (default)", so the generator must not silently open such classes.
+    """
+    schema = _generate(tmp_path, _EXTRA_SLOTS_SCHEMA, **kwargs)
+
+    assert schema["$defs"]["Closed"]["additionalProperties"] is expected
+    # An explicit `extra_slots.allowed` always wins, whatever `not_closed` says.
+    assert schema["$defs"]["ExplicitlyOpen"]["additionalProperties"] is True
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize("kwargs", [{}, {"not_closed": False}, {"not_closed": True}])
+def test_rootless_schema_keeps_an_open_top_level(tmp_path, kwargs):
+    """With no root class the top level has no properties, so it must stay open.
+
+    Closing it would produce a schema admitting nothing but ``{}``. ``not_closed``
+    governs classes, not the top level.
+    """
+    schema = _generate(tmp_path, _EXTRA_SLOTS_SCHEMA, **kwargs)
+
+    assert schema["additionalProperties"] is True
+    jsonschema.validate({"name": "alice"}, schema)
+
+
+@pytest.mark.jsonschemagen
+@pytest.mark.parametrize("root_via", ["tree_root", "top_class"])
+def test_root_class_governs_the_top_level(tmp_path, root_via):
+    """The root class sets the top-level ``additionalProperties``.
+
+    Previously only ``--top-class`` did this and ``tree_root: true`` did not, so the
+    two disagreed about the same document (linkml#3608).
+    """
+    schema_text = _EXTRA_SLOTS_SCHEMA
+    kwargs = {}
+    if root_via == "tree_root":
+        schema_text = schema_text.replace("  Closed:\n", "  Closed:\n    tree_root: true\n")
+    else:
+        kwargs["top_class"] = "Closed"
+
+    schema = _generate(tmp_path, schema_text, **kwargs)
+
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["Closed"]["additionalProperties"] is False
+
+
+@pytest.mark.jsonschemagen
+def test_multiple_tree_roots_pick_one_consistently(tmp_path):
+    """With more than one ``tree_root``, the top level comes from a single class.
+
+    biolink-model declares two. The top-level ``additionalProperties`` and the
+    subschema merged beneath it must not come from different classes.
+    """
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  Closed:\n    tree_root: true\n").replace(
+        "  ExplicitlyOpen:\n", "  ExplicitlyOpen:\n    tree_root: true\n"
+    )
+    schema = _generate(tmp_path, schema_text)
+
+    # `Closed` is first, so it is the root: closed, and its properties are merged up.
+    assert schema["additionalProperties"] is False
+    assert set(schema["properties"]) == set(schema["$defs"]["Closed"]["properties"])
+
+
+@pytest.mark.jsonschemagen
+def test_top_class_matches_regardless_of_case(tmp_path):
+    """``top_class`` is habitually passed in CamelCase for a spelled-out class name."""
+    schema_text = _EXTRA_SLOTS_SCHEMA.replace("  Closed:\n", "  closed thing:\n")
+    schema = _generate(tmp_path, schema_text, top_class="ClosedThing")
+
+    assert schema["additionalProperties"] is False
+    assert "name" in schema["properties"]

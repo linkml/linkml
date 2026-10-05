@@ -347,14 +347,16 @@ def _build_name_maps(sv: SchemaView, slot_ranges: dict[str, str | None]) -> tupl
         attr_names[slot_name] = candidate
 
     # ── Relation names ────────────────────────────────────────────────────────
-    # Relations are derived from object-ranged slots only.
+    # Relations are derived from object-ranged slots only. ``class_induced_slots``
+    # returns the union of inherited slots, top-level ``slots:`` references, and
+    # inline ``attributes:`` declarations, so all three sources contribute.
     taken = entity_names | set(attr_names.values())
     rel_names: dict[str, str] = {}
     candidates = [
-        slot_name
+        slot.name
         for class_name in sv.all_classes()
-        for slot_name in sv.get_class(class_name).slots or []
-        if sv.induced_slot(slot_name, class_name).range in all_class_names
+        for slot in sv.class_induced_slots(class_name)
+        if slot.range in all_class_names
     ] + [slot_name for slot_name, slot_range in slot_ranges.items() if slot_range in all_class_names]
     for slot_name in candidates:
         if slot_name in rel_names:
@@ -384,8 +386,9 @@ def _build_role_names(sv: SchemaView, rel_names: dict[str, str]) -> dict[str, tu
         induced = sv.induced_slot(slot_name)
         if induced.range not in sv.all_classes():
             for class_name in sv.all_classes():
-                if slot_name in (sv.get_class(class_name).slots or []):
-                    induced = sv.induced_slot(slot_name, class_name)
+                declared = next((s for s in sv.class_induced_slots(class_name) if s.name == slot_name), None)
+                if declared is not None:
+                    induced = declared
                     break
         if induced.range not in sv.all_classes():
             continue

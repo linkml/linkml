@@ -25,4 +25,7 @@
 {% if alias %}
 #[cfg_attr(feature = "serde", serde(alias = "{{ alias }}"))]
 {% endif %}
+{% if skip_serializing_if %}
+#[cfg_attr(feature = "serde", serde(skip_serializing_if = "{{ skip_serializing_if }}"))]
+{% endif %}
 pub {{ name }}: {{ type_for_field }}

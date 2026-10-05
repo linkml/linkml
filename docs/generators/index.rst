@@ -25,6 +25,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    json-schema
    protobuf
    graphql
+   openapi
 
 
 Linked Data Standards
@@ -78,6 +79,7 @@ languages such as Python, Javascript, or Java.
    python
    pydantic
    java
+   golang
    typescript
    rust
 
@@ -93,6 +95,7 @@ Generators specific to database frameworks, including SQL and graph databases.
    sqltable
    sqlalchemy
    sqlvalidation
+   bigquery
    typedb
 
 Others

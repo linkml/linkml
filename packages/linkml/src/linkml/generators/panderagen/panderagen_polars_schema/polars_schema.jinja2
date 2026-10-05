@@ -1,6 +1,14 @@
 {#-
   Jinja2 Template for the top level of a PolaRS dataframe schema
   Details at https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.schema.html
+
+  Three-pass emission prevents NameError when class A references class B's struct
+  before B is declared (which can happen with cyclic is_a / association graphs):
+
+    Pass 1: forward-declare all *Dict = {} so every dict name is bound.
+    Pass 2: populate each dict (using pl.Struct(XDict) instead of XStruct so
+            that only *Dict names, not *Struct names, need to be in scope).
+    Pass 3: bind *Struct = pl.Struct(*Dict) and *Schema = pl.Schema(*Dict).
 -#}
 {%- import 'header.jinja2' as header -%}
 {%- import 'class.jinja2' as class_macros -%}
@@ -9,7 +17,21 @@
 
 {{ enum_macros.render_enums(schema_view, generator) }}
 
+{%- if doc.classes %}
+# -- Pass 1: forward-declare empty dicts so all *Dict names are in scope --
 {% for cls in doc.classes -%}
-{{ class_macros.render_schema(cls, generator) }}
+{{ class_macros.declare_empty_dict(cls, generator) }}
+{% endfor %}
+
+# -- Pass 2: populate dicts (cross-refs use pl.Struct(XDict), not XStruct) --
+{% for cls in doc.classes -%}
+{{ class_macros.populate_dict(cls, generator) }}
 
 {% endfor %}
+
+# -- Pass 3: bind *Struct and *Schema names from the populated dicts --
+{% for cls in doc.classes -%}
+{{ class_macros.bind_struct_and_schema(cls, generator) }}
+
+{% endfor %}
+{%- endif %}

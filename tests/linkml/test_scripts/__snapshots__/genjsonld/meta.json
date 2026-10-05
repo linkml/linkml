@@ -1912,10 +1912,9 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "cordialness",
+        "FamilialRelationship_cordialness",
         "FamilialRelationship_type",
-        "FamilialRelationship_related_to",
-        "FamilialRelationship_cordialness"
+        "FamilialRelationship_related_to"
       ],
       "slot_usage": {}
     },
@@ -2224,7 +2223,7 @@
       "slot_usage": {}
     }
   ],
-  "metamodel_version": "1.11.0",
+  "metamodel_version": "1.12.0",
   "source_file": "kitchen_sink.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

@@ -29,9 +29,6 @@ def test_jsonschemagen_coerces_primitive_value_types(range_type, yaml_value, exp
     Example.value is always stored as str in the metamodel (non-string YAML values
     like 42 or true are coerced to "42" / "True"). The generator must convert them
     back to the correct JSON type so that generated examples validate correctly.
-
-    Boolean coercion uses get_boolean_config() so schema-level boolean_truthy /
-    boolean_falsy annotations are respected.
     """
     schema = dedent(f"""
         id: http://example.org/examples

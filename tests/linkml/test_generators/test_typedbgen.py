@@ -299,7 +299,7 @@ def test_kitchen_sink_output_has_define_block(kitchen_sink_path):
     assert "define" in output
 
 
-@pytest.mark.parametrize("class_name", ["person", "company", "dataset"])
+@pytest.mark.parametrize("class_name", ["Person", "Company", "Dataset"])
 def test_kitchen_sink_key_entities_present(kitchen_sink_path, class_name):
     """Key kitchen_sink classes appear as entity type declarations."""
     output = TypeDBGenerator(kitchen_sink_path, mergeimports=True).serialize()
@@ -666,6 +666,66 @@ slots:
     gen = TypeDBGenerator(str(schema_file))
     output = gen.serialize()
     assert f"owns tags {expected_card}" in output
+
+
+def test_inline_attributes_produce_owns(input_path):
+    """Classes that declare attributes inline via `attributes:` must own them.
+
+    Regression test for a bug where `gen-typedb` emitted the
+    `attribute <name>, value <type>;` declarations for inline attributes but
+    dropped the matching `owns <name>` clauses from the entity block, leaving
+    TypeDB unable to attach those attributes to inserted entities.
+    """
+    gen = TypeDBGenerator(str(input_path("typedb_inline_attributes.yaml")))
+    output = gen.serialize()
+
+    # Sanity: both shapes declare their attribute types.
+    assert "attribute shared_name" in output
+    assert "attribute inline_name" in output
+    assert "attribute inline_description" in output
+
+    # The `slots:`-based class works (control).
+    slots_block = re.search(r"^\s*entity ClassWithSlots\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert slots_block, f"ClassWithSlots entity block not found:\n{output}"
+    assert "owns shared_name" in slots_block.group(0)
+    assert "owns shared_description" in slots_block.group(0)
+
+    # The `attributes:`-based class must also own its inline attributes.
+    attrs_block = re.search(r"^\s*entity ClassWithAttributes\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert attrs_block, f"ClassWithAttributes entity block not found:\n{output}"
+    assert "owns inline_name" in attrs_block.group(0), (
+        f"inline `attributes:` were declared but not owned by the entity:\n{attrs_block.group(0)}"
+    )
+    assert "owns inline_description" in attrs_block.group(0)
+
+
+def test_inline_attributes_with_class_range_produce_relation(input_path):
+    """A class-ranged slot declared inline via `attributes:` must produce relates/plays.
+
+    Regression test for the object-ranged half of the inline-attributes fix: the
+    `inline_owner` attribute on `ClassWithAttributes` ranges over `ClassWithSlots`,
+    so it should be collected as a relation (with an owning role and a played role)
+    and both classes should get matching `plays` declarations, exactly like an
+    object-ranged slot declared via top-level `slots:`.
+    """
+    gen = TypeDBGenerator(str(input_path("typedb_inline_attributes.yaml")))
+    output = gen.serialize()
+
+    # The inline class-ranged slot produces a standalone relation type: the owning
+    # role is named after the slot and the played role after the range class.
+    relation_block = re.search(r"^\s*relation inline_owner\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert relation_block, f"inline_owner relation block not found:\n{output}"
+    assert "relates inline_owner" in relation_block.group(0)
+    assert "relates ClassWithSlots" in relation_block.group(0)
+
+    # Both the declaring class and the range class get plays declarations.
+    attrs_block = re.search(r"^\s*entity ClassWithAttributes\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert attrs_block, f"ClassWithAttributes entity block not found:\n{output}"
+    assert "plays inline_owner:inline_owner" in attrs_block.group(0)
+
+    slots_block = re.search(r"^\s*entity ClassWithSlots\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert slots_block, f"ClassWithSlots entity block not found:\n{output}"
+    assert "plays inline_owner:ClassWithSlots" in slots_block.group(0)
 
 
 def test_represents_relationship_class_becomes_relation(tmp_path):

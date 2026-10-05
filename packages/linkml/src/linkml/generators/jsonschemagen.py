@@ -3,24 +3,34 @@ import json
 import logging
 import os
 from copy import deepcopy
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, cast
 
 import click
 from jsonasobj2 import as_dict
+from pydantic import Field
 
 from linkml._version import __version__
 from linkml.generators.common import build
+from linkml.generators.common.array import ArrayRangeGenerator, ArrayRepresentation
+from linkml.generators.common.build import RangeResult
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
-from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.generators.common.type_designators import (
+    get_type_designator_value,
+    get_uriorcurie_type_designator_values,
+)
+from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
+    ArrayExpression,
     ClassDefinition,
     ClassDefinitionName,
+    DimensionExpression,
+    Element,
     EnumDefinition,
     Example,
     PermissibleValue,
@@ -57,10 +67,29 @@ _base_implied_patterns: dict[str, str] = {
 }
 
 
+def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
+    """Return *subschemas* with duplicate entries removed, preserving order.
+
+    Two subschemas are considered duplicates when their JSON representations are
+    identical.  This can occur, for example, when multiple ``any_of`` branches
+    point to different classes whose identifier slot shares the same scalar type
+    (e.g. both ``Person.id`` and ``Organization.id`` have ``range: string``),
+    producing redundant ``{"type": "string"}`` entries.
+    """
+    seen: set[str] = set()
+    result: list[JsonSchema] = []
+    for schema in subschemas:
+        key = json.dumps(schema, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            result.append(schema)
+    return result
+
+
 def _slot_examples_for_json_schema(
-    examples: list[Example],
+    examples: dict | Example | list[dict | Example] | None,
     *,
-    json_schema_type: str | None = None,
+    json_schema_type: list[str] | str | None = None,
     is_array_valued: bool,
 ) -> list:
     """Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects
@@ -132,12 +161,12 @@ def _slot_examples_for_json_schema(
     if not examples:
         return []
 
-    def _coerce_string_to_type(v: str, json_schema_type: str, is_array_valued: bool) -> Any:
+    def _coerce_string_to_type(v: str, json_schema_type: str | None, is_array_valued: bool) -> Any:
         """Coerce string to JSON type, falling back to the original on failure."""
 
         try:
             # Example.value is typed as Optional[str] in the LinkML metamodel. A list
-            # written in YAML as  value: ["a", "b"]  is coerced to its Python str()
+            # written in YAML as value: ["a", "b"] is coerced to its Python str()
             # representation "['a', 'b']" on load. Recover the original list with
             # ast.literal_eval when the string looks like a Python list literal.
             if is_array_valued and isinstance(v, str) and v.strip().startswith("["):
@@ -166,7 +195,7 @@ def _slot_examples_for_json_schema(
     merged_example = []
     direct_examples = []
 
-    for ex in examples:
+    for ex in cast(list[Example], examples):  # Element.__post_init__() ensures list
         if ex.object is not None:
             value = as_dict(ex.object)
         elif ex.value is not None:
@@ -189,13 +218,14 @@ def _slot_examples_for_json_schema(
 class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
     PRESERVE_NAMES: bool = False
+    USE_CURIES: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
 
-    def add_def(self, name: str, subschema: "JsonSchema") -> None:
-        canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+    def add_def(self, name: str, subschema: "JsonSchema", is_curie: bool = False, preserve_name: bool = False) -> None:
+        canonical_name = name if self.PRESERVE_NAMES or preserve_name or is_curie else camelcase(name)
 
         if "$defs" not in self:
             self["$defs"] = {}
@@ -218,13 +248,14 @@ class JsonSchema(dict):
             names = [names]
 
         for name in names:
-            canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+            canonical_name = name if self.PRESERVE_NAMES or self.USE_CURIES else camelcase(name)
 
             if "$defs" not in self or canonical_name not in self["$defs"]:
                 self._lax_forward_refs[canonical_name] = identifier_name
             else:
                 lax_cls = deepcopy(self["$defs"][canonical_name])
-                lax_cls["required"].remove(identifier_name)
+                if "required" in lax_cls and identifier_name in lax_cls["required"]:
+                    lax_cls["required"].remove(identifier_name)
                 self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(
@@ -289,7 +320,7 @@ class JsonSchema(dict):
     @classmethod
     def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
-            def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
+            def_name = class_name if cls.PRESERVE_NAMES or cls.USE_CURIES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
@@ -377,13 +408,22 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     valid_formats = ["json"]
     uses_schemaloader = False
     file_extension = "schema.json"
-    materialize_patterns: bool = False
+    materialize_patterns: bool | None = None
+    """Deprecated compatibility option; structured patterns are resolved automatically."""
 
     # @deprecated("Use top_class")
     topClass: str | None = None
 
-    not_closed: bool | None = True
-    """If not closed, then an open-ended set of attributes can be instantiated for any object"""
+    not_closed: bool = False
+    """Allow data to include properties that the schema does not declare.
+
+    Defaults to closed, following the metamodel: ``meta.yaml`` documents an absent
+    ``extra_slots`` as "forbid all additional data (default)". An explicit
+    ``extra_slots`` on a class always takes precedence over this.
+
+    This governs classes only. The top-level schema takes ``additionalProperties``
+    from the document's root class -- see :meth:`start_schema`.
+    """
 
     indent: int = 4
 
@@ -391,6 +431,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     top_class: ClassDefinitionName | str | None = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
+
+    _root_class_name: str | None = field(default=None, init=False, repr=False)
+    """Name of the resolved root class, set by :meth:`start_schema`."""
 
     include_range_class_descendants: bool = False
     """If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.
@@ -403,7 +446,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     top_level_schema: JsonSchema = None
 
     include_null: bool = True
-    """Whether to include a "null" type in optional slots"""
+    """Whether optional (non-required) slots also accept an explicit JSON ``null``.
+
+    When ``True`` (default) an optional slot is rendered with ``null`` added to its
+    type (e.g. ``["string", "null"]``), so an explicit ``null`` value validates. When
+    ``False`` the slot keeps its bare type and optionality is expressed solely by
+    absence from ``required``.
+
+    JSON Schema treats presence (``required``, Validation 6.5.3) as separate from the
+    value type (``type``, Validation 6.1.1, where ``null`` is one of the value types),
+    and JSON ``null`` is a distinct value, not an absent member (RFC 8259 sec. 3). Set
+    this ``False`` for strict parity with reference schemas that declare a bare type
+    and forbid ``null``."""
 
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
@@ -417,7 +471,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     slot's range type (CURIE for uriorcurie, full URI for uri, snake_case for string).
     """
 
+    use_curies: bool = False
+    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+
     def __post_init__(self):
+        if self.materialize_patterns is not None:
+            deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
@@ -426,13 +486,57 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
+        # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
+        # pre-converted to CURIEs, so they must not be camelcased again.
+        JsonSchema.USE_CURIES = self.use_curies
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
 
+    def _names_match(self, a: str, b: str) -> bool:
+        """Compare class names the way ``--top-class`` has always been matched.
+
+        ``top_class`` is habitually passed in CamelCase while the schema spells the
+        class out (``top_class="AnyType"`` for ``any type``), so the comparison is
+        on ``camelcase`` unless ``preserve_names`` is set.
+        """
+        return a == b if self.preserve_names else camelcase(a) == camelcase(b)
+
+    def _root_class(self) -> ClassDefinition | None:
+        """The class the root of the document instantiates, or ``None`` if there is none.
+
+        Named by ``--top-class``, or failing that declared with ``tree_root: true``.
+        A schema may carry more than one ``tree_root`` (biolink-model does), so the
+        first is taken; the point is that every use site agrees on which it is.
+        """
+        classes = self.schemaview.all_classes().values()
+        if self.top_class:
+            return next((c for c in classes if self._names_match(self.top_class, c.name)), None)
+        return next((c for c in classes if c.tree_root), None)
+
+    def _is_root_class(self, cls: ClassDefinition) -> bool:
+        """Whether *cls* is the class the root of the document instantiates.
+
+        Compares against the name resolved in :meth:`start_schema`, so the top-level
+        ``additionalProperties`` and the subschema merged beneath it cannot come from
+        two different classes.
+        """
+        return self._root_class_name is not None and self._names_match(self._root_class_name, cls.name)
+
     def start_schema(self, inline: bool = False):
         self.inline = inline
+
+        root_class_def = self._root_class()
+        self._root_class_name = root_class_def.name if root_class_def is not None else None
+
+        if root_class_def is not None:
+            top_additional_properties = self.get_additional_properties(root_class_def)
+        else:
+            # No root class means the top level has no properties of its own, so
+            # closing it would admit nothing but `{}`. Stay open regardless of
+            # `not_closed`, which governs classes.
+            top_additional_properties = True
 
         self.top_level_schema = JsonSchema(
             {
@@ -442,23 +546,24 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
-                "additionalProperties": self.not_closed,
+                "additionalProperties": top_additional_properties,
             }
         )
+
+    def _curie(self, element: Element) -> str:
+        return self.schemaview.get_curie(element)
 
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
 
         subschema_type = "object"
-        additional_properties = False
         if self.is_class_unconstrained(cls):
             subschema_type = ["null", "boolean", "object", "number", "string"]
-            additional_properties = True
 
         class_subschema = JsonSchema(
             {
                 "type": subschema_type,
-                "additionalProperties": additional_properties,
+                "additionalProperties": self.get_additional_properties(cls),
                 "description": be(cls.description),
             }
         )
@@ -548,20 +653,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Include class-level examples if present. Each Example on a class is an
         # independent full-instance example (same semantics as single-valued slots).
-        if getattr(cls, "examples", None):
+        if cls.examples:
             class_examples = _slot_examples_for_json_schema(cls.examples, is_array_valued=False)
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
 
-        self.top_level_schema.add_def(cls.name, class_subschema)
+        if self.use_curies:
+            self.top_level_schema.add_def(self._curie(cls), class_subschema, True)
+        else:
+            self.top_level_schema.add_def(cls.name, class_subschema)
 
-        if (
-            self.top_class is not None
-            and (
-                (self.preserve_names and self.top_class == cls.name)
-                or (not self.preserve_names and camelcase(self.top_class) == camelcase(cls.name))
-            )
-        ) or (self.top_class is None and cls.tree_root):
+        if self._is_root_class(cls):
             for key, value in class_subschema.items():
                 # check this first to ensure we don't overwrite things like additionalProperties
                 # or description on the root. But we do want to copy over properties, required,
@@ -577,6 +679,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
+            if self.use_curies:
+                prop_name = self._curie(slot)
+            else:
+                prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
             # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
             # so look it up on the schema's slot definition and wrap so item-level constraints apply.
@@ -594,9 +700,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 value_required = slot.required
             else:
                 value_required = properties_required
-            subschema.add_property(
-                self.aliased_slot_name(slot), prop, value_required=value_required, value_disallowed=value_disallowed
-            )
+            subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
             subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
@@ -674,7 +778,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            if schema_type.base:
+                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
@@ -693,6 +798,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     reference = descendants
                 else:
                     reference = slot.range
+                if self.use_curies:
+                    # $defs for classes are keyed by CURIE under --use-curies,
+                    # so the $ref targets must use the same CURIE keys.
+                    if isinstance(reference, list):
+                        reference = [self._curie(self.schemaview.get_class(r)) for r in reference]
+                    else:
+                        reference = self._curie(self.schemaview.get_class(reference))
             else:
                 id_slot = self.schemaview.get_identifier_slot(slot.range)
                 return self.get_type_info_for_slot_subschema(id_slot)
@@ -740,27 +852,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return constraints
 
     def get_subschema_for_slot(
-        self, slot: SlotDefinition | AnonymousSlotExpression, omit_type: bool = False, include_null: bool = True
+        self,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        omit_type: bool = False,
+        include_null: bool = True,
+        cls: ClassDefinition | None = None,
     ) -> JsonSchema:
         """
         Args:
             include_null: Include ``type: null`` when generating ranges that are not required
         """
         prop = JsonSchema()
-        if isinstance(slot, SlotDefinition) and slot.array:
-            # TODO: this is currently too lax, in that it will validate ANY array.
-            # see https://github.com/linkml/linkml/issues/2188
-            prop = JsonSchema(
-                {
-                    "type": ["null", "boolean", "object", "number", "string", "array"],
-                    "additionalProperties": True,
-                }
-            )
-            prop = JsonSchema.array_of(prop, include_null, required=slot.required)
-            if slot.examples:
-                prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
-            return prop
-        slot_is_multivalued = "multivalued" in slot and slot.multivalued
+        slot_is_multivalued = cast(bool, "multivalued" in slot and slot.multivalued)
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
 
@@ -811,12 +914,22 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
 
             else:
-                if reference is not None:
-                    prop = JsonSchema.ref_for(reference)
-                elif typ and fmt is None:
-                    prop = JsonSchema({"type": typ})
-                elif typ:
-                    prop = JsonSchema({"type": typ, "format": fmt})
+                if not slot_is_boolean or slot.range != self.schemaview.schema.default_range:
+                    # When a slot uses boolean constraints (any_of, all_of, etc.) AND its range
+                    # was not set explicitly but inherited from the schema's default_range, the
+                    # boolean constraints already fully describe the type.  Emitting prop["type"]
+                    # from the default_range would duplicate that constraint.  Skip it.
+                    # An explicit range on a boolean slot is intentional and is kept.
+                    if reference is not None:
+                        # for multivalued slots, nullability applies to the array (via array_of
+                        # below), not to the individual elements
+                        prop = JsonSchema.ref_for(
+                            reference, required=slot.required or slot_is_multivalued or not include_null
+                        )
+                    elif typ and fmt is None:
+                        prop = JsonSchema({"type": typ})
+                    elif typ:
+                        prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
                     prop = JsonSchema.array_of(prop, include_null, required=slot.required)
@@ -829,6 +942,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         prop.add_keyword("description", slot.description)
         if self.title_from == "title" and slot.title:
             prop.add_keyword("title", slot.title)
+        if getattr(slot, "readonly", None):
+            prop.add_keyword("readOnly", True)
 
         own_constraints = self.get_value_constraints_for_slot(slot)
 
@@ -850,19 +965,27 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
-            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            bool_subschema["anyOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            bool_subschema["allOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            bool_subschema["allOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            bool_subschema["oneOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                "anyOf": _deduplicate_subschemas(
+                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                )
             }
 
         if bool_subschema:
@@ -887,6 +1010,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 ),
             )
 
+        if isinstance(slot, SlotDefinition) and slot.array:
+            prop = self.get_array_subschema(slot, prop, cls=cls)
+
         return prop
 
     def handle_class_slot(self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition) -> None:
@@ -897,18 +1023,52 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        aliased_slot_name = self.aliased_slot_name(slot)
-        prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
+        if self.use_curies:
+            prop_name = self._curie(slot)
+        else:
+            prop_name = self.aliased_slot_name(slot)
+        prop = self.get_subschema_for_slot(slot, include_null=self.include_null, cls=cls)
         prop = self.after_generate_class_slot(
             SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
         ).schema_
-        subschema.add_property(
-            aliased_slot_name, prop, value_required=value_required, value_disallowed=value_disallowed
-        )
+        subschema.add_property(prop_name, prop, value_required=value_required, value_disallowed=value_disallowed)
 
         if slot.designates_type:
-            type_value = get_type_designator_value(self.schemaview, slot, cls)
-            prop["enum"] = [type_value]
+            if "uriorcurie" in self.schemaview.type_ancestors(slot.range):
+                prop["enum"] = get_uriorcurie_type_designator_values(self.schemaview, cls)
+            else:
+                prop["enum"] = [get_type_designator_value(self.schemaview, slot, cls)]
+
+    def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
+        """
+        Implements the `extra_slots` metamodel slot.
+
+        References:
+            https://github.com/linkml/linkml-model/pull/205
+        """
+        if self.is_class_unconstrained(cls):
+            return True
+        elif not cls.extra_slots:
+            return self.not_closed
+        elif cls.extra_slots.allowed is not None:
+            return cls.extra_slots.allowed
+        elif cls.extra_slots.range_expression:
+            return self.get_subschema_for_slot(cls.extra_slots.range_expression)
+        else:
+            return False
+
+    def get_array_subschema(
+        self, slot: SlotDefinition, prop: JsonSchema, cls: ClassDefinition | None = None
+    ) -> JsonSchema:
+        """
+        Generate a constrained array schema.
+        Treat the `prop` as the inner type of the array
+        """
+        arraygen = JsonSchemaArrayGenerator(slot.array, prop, slot, cls_name=cls.name if cls else None)
+        result = arraygen.make()
+        for name, top_def in result.defs.items():
+            self.top_level_schema.add_def(name, top_def, preserve_name=True)
+        return result.schema_
 
     def generate(self) -> JsonSchema:
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
@@ -928,11 +1088,143 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        if self.materialize_patterns:
-            logger.info("Materializing patterns in the schema before serialization")
-            self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
+
+
+class ArrayRangeResult(RangeResult):
+    schema_: JsonSchema
+    defs: dict[str, JsonSchema] = Field(default_factory=dict)
+    """top-level defs to inject, used when a recursive schema is needed"""
+
+
+class JsonSchemaArrayGenerator(ArrayRangeGenerator):
+    """Generate the JSON Schema for a LinkML Array!"""
+
+    REPR = ArrayRepresentation.JSON_SCHEMA
+
+    def __init__(
+        self, array: ArrayExpression | None, dtype: JsonSchema, slot: SlotDefinition, cls_name: str | None = None
+    ):
+        super().__init__(array, dtype)
+        self.slot = slot
+        self.dtype: JsonSchema = dtype
+        self.cls_name = cls_name
+
+    def make(self) -> ArrayRangeResult:
+        return super().make()
+
+    def _any_shape(self, array: ArrayExpression | None = None, with_inner_union: bool = False) -> ArrayRangeResult:
+        if self.cls_name:
+            fullname = f"{self.cls_name}-{self.slot.name}-anyshape"
+        else:
+            fullname = f"{self.slot.name}-anyshape"
+
+        schema = JsonSchema(items={"$ref": f"#/$defs/{fullname}"}, type="array")
+        if with_inner_union:
+            schema = JsonSchema(anyOf=[schema, self.dtype])
+
+        defs = {fullname: JsonSchema(anyOf=[{"items": {"$ref": f"#/$defs/{fullname}"}, "type": "array"}, self.dtype])}
+        return ArrayRangeResult(schema_=schema, defs=defs)
+
+    def _bounded_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        if array.exact_number_dimensions or (
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
+        ):
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+            return ArrayRangeResult(schema_=self._n_depth_array(exact_dims, self.dtype))
+        elif not array.maximum_number_dimensions and (
+            array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
+        ):
+            return self._any_shape()
+        elif array.maximum_number_dimensions:
+            # e.g., if min = 2, max = 3, range = Union[list[list[dtype]], list[list[list[dtype]]]]
+            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
+            ranges = [self._n_depth_array(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
+            return ArrayRangeResult(schema_=JsonSchema(anyOf=ranges))
+        else:
+            # min specified with no max
+            # e.g., if min = 3, range = list[list[AnyShapeArray[dtype]]]
+            anyshape = self._any_shape(array)
+            return ArrayRangeResult(
+                schema_=self._n_depth_array(array.minimum_number_dimensions - 1, anyshape.schema_), defs=anyshape.defs
+            )
+
+    def _parameterized_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        range = self.dtype
+        for dimension in reversed(array.dimensions):
+            range = self._parameterized_dimension(dimension, range)
+        return ArrayRangeResult(schema_=range)
+
+    def _complex_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        res = None
+        # first process any unlabeled dimensions which must be the innermost level of the range,
+        # then wrap that with labeled dimensions
+        if array.exact_number_dimensions or (
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
+        ):
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+            if exact_dims > len(array.dimensions):
+                res = ArrayRangeResult(schema_=self._n_depth_array(exact_dims - len(array.dimensions), self.dtype))
+            elif exact_dims == len(array.dimensions):
+                # equivalent to labeled shape
+                return self._parameterized_dimensions(array)
+            # else is invalid, see: ArrayValidator.array_consistent_n_dimensions
+
+        elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
+            # unlimited n dimensions, so innermost is AnyShape with dtype
+            res = self._any_shape(with_inner_union=True)
+
+            if array.minimum_number_dimensions:
+                # some minimum anonymous dimensions but unlimited max dimensions
+                # e.g., if min = 3, len(dim) = 2, then res.range = list[Union[AnyShapeArray[dtype], dtype]]
+                # res.range will be wrapped with the 2 labeled dimensions later
+                res.schema_ = self._n_depth_array(array.minimum_number_dimensions - len(array.dimensions), res.schema_)
+
+        elif array.maximum_number_dimensions:
+            initial_min = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 0
+            dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
+            dmax = array.maximum_number_dimensions - len(array.dimensions)
+
+            res = self._bounded_dimensions(
+                ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
+            )
+
+        if res is None:
+            raise ValueError("Unsupported array specification! this is almost certainly a bug!")  # pragma: no cover
+
+        # Wrap inner dimension with labeled dimension
+        for dim in reversed(array.dimensions):
+            res.schema_ = self._parameterized_dimension(dim, dtype=res.schema_)
+
+        return res
+
+    def _n_depth_array(self, dimensions: int, dtype: JsonSchema) -> JsonSchema:
+        if dimensions <= 0:
+            return dtype
+        arr = dtype
+        for _ in range(dimensions):
+            arr = JsonSchema(type="array", items=arr)
+        return arr
+
+    def _parameterized_dimension(self, dimension: DimensionExpression, dtype: JsonSchema) -> JsonSchema:
+        if dimension.exact_cardinality:
+            dmin = dimension.exact_cardinality
+            dmax = dimension.exact_cardinality
+        else:
+            dmin = dimension.minimum_cardinality
+            dmax = dimension.maximum_cardinality
+
+        arr = JsonSchema(type="array", items=dtype)
+        if dmin is not None:
+            arr["minItems"] = dmin
+        if dmax is not None:
+            arr["maxItems"] = dmax
+        return arr
 
 
 @shared_arguments(JsonSchemaGenerator)
@@ -955,10 +1247,20 @@ Top level class; slots of this class will become top level properties in the jso
 )
 @click.option(
     "--not-closed/--closed",
-    default=True,
+    default=False,
     show_default=True,
     help="""
-Set additionalProperties=False if closed otherwise true if not closed at the global level
+Allow data to include properties that the schema does not declare. Closed by
+default, following the metamodel; an explicit `extra_slots` on a class always
+wins. The top level takes its value from the document's root class.
+""",
+)
+@click.option(
+    "--use-curies/--not-use-curies",
+    default=False,
+    show_default=True,
+    help="""
+Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
 """,
 )
 @click.option(
@@ -996,9 +1298,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 )
 @click.option(
     "--materialize-patterns/--no-materialize-patterns",
-    default=True,  # Default set to True
-    show_default=True,
-    help="If set, patterns will be materialized in the generated JSON Schema.",
+    default=None,
+    help="Deprecated compatibility option; structured patterns are resolved automatically.",
 )
 @click.option(
     "--preserve-names/--normalize-names",
@@ -1011,6 +1312,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=True,
     show_default=True,
     help="If set, expand subproperty_of constraints to enum constraints.",
+)
+@click.option(
+    "--include-null/--no-include-null",
+    default=True,
+    show_default=True,
+    help="If set (default), optional slots also accept an explicit JSON null. "
+    "Use --no-include-null to forbid explicit null on optional slots.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

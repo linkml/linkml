@@ -87,7 +87,8 @@ To force inlining as a dictionary, set [inlined_as_list](https://w3id.org/linkml
 
 This is a slight variant on inlining as a list - here a dictionary keyed by identifier is provided
 
-**Note** this is only possible if the range of the slot is a class that has an identifier slot
+**Note** this is only possible if the range of the slot is a class that has a [singular key](constraints.md#singular-keys)
+(either a [key slot](https://w3id.org/linkml/key) or an [identifier slot](https://w3id.org/linkml/identifier)).
 
 schema:
 
@@ -186,9 +187,10 @@ prefixes:
 The procedure for determining whether a SimpleDict serialization can be used
 on a collection of classes is as follows:
 
-1. There must be a key or identifier slot (this is true for all slots inlined as dict)
+1. There must be a [singular key](constraints.md#singular-keys) (either a key slot or an identifier slot; this is true for all
+slots inlined as dict)
 2. One of the following must hold of the set of remaining slots:
-    - There is exactly one additional non-key slot (this forms the "primary" value)
+    - There is exactly one additional slot beyond the singular key slot (this forms the "primary" value)
     - If there are multiple candidates for the primary value, if exactly one is `required`, it is used.
 
 The primary value slot may be single-valued or multivalued. When multivalued, the SimpleDict form accepts a list as the value:
