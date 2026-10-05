@@ -224,6 +224,7 @@ class ShaclGenerator(Generator):
 
         self._class_expressions_added: set[tuple[URIRef, str, str]] = set()
         self._class_expression_problems: dict[tuple[str, str, str], list[str]] = {}
+        self._range_expression_problems: dict[tuple[str, str], list[str]] = {}
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
@@ -359,47 +360,28 @@ class ShaclGenerator(Generator):
                     range_list = []
                     for any in s.any_of:
                         r = any.range
+                        branch = BNode()
+
+                        def branch_pv(p, v):
+                            if v is not None:
+                                g.add((branch, p, v))
+
                         if r in all_classes:
-                            class_node = BNode()
-
-                            def cl_node_pv(p, v):
-                                if v is not None:
-                                    g.add((class_node, p, v))
-
-                            self._add_class(cl_node_pv, r)
-                            range_list.append(class_node)
+                            self._add_class(branch_pv, r)
                         elif r in sv.all_types():
-                            t_node = BNode()
-
-                            def t_node_pv(p, v):
-                                if v is not None:
-                                    g.add((t_node, p, v))
-
-                            self._add_type(t_node_pv, r)
-                            range_list.append(t_node)
+                            self._add_type(branch_pv, r)
                         elif r in sv.all_enums():
-                            en_node = BNode()
-
-                            def en_node_pv(p, v):
-                                if v is not None:
-                                    g.add((en_node, p, v))
-
-                            self._add_enum(g, en_node_pv, r)
-                            range_list.append(en_node)
+                            self._add_enum(g, branch_pv, r)
                         else:
-                            st_node = BNode()
-
-                            def st_node_pv(p, v):
-                                if v is not None:
-                                    g.add((st_node, p, v))
-
-                            add_simple_data_type(st_node_pv, r)
-                            range_list.append(st_node)
+                            add_simple_data_type(branch_pv, r)
                         # Propagate pattern constraint to the branch node.
                         # A branch may combine range + pattern (e.g. range: string
                         # with pattern: "^...") or specify pattern alone (no range).
                         if any.pattern:
-                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
+                            branch_pv(SH.pattern, Literal(any.pattern))
+                        if any.range_expression is not None:
+                            self._add_range_expression(g, branch_pv, c, s, r, any.range_expression)
+                        range_list.append(branch)
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
@@ -425,6 +407,8 @@ class ShaclGenerator(Generator):
 
                 if s.pattern:
                     prop_pv(SH.pattern, Literal(s.pattern))
+                if s.range_expression is not None:
+                    self._add_range_expression(g, prop_pv, c, s, s.range, s.range_expression)
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -439,6 +423,7 @@ class ShaclGenerator(Generator):
                 self._add_rules(g, class_uri_with_suffix, c)
 
         self._report_class_expression_problems()
+        self._report_range_expression_problems()
         return g
 
     LINKML_ANY_URI = "https://w3id.org/linkml/Any"
@@ -462,7 +447,16 @@ class ShaclGenerator(Generator):
         {"required", "value_presence", "minimum_cardinality", "maximum_cardinality", "exact_cardinality"}
     )
     _SLOT_CONDITION_VALUE_FIELDS = frozenset(
-        {"minimum_value", "maximum_value", "pattern", "equals_string", "equals_string_in", "equals_number", "range"}
+        {
+            "minimum_value",
+            "maximum_value",
+            "pattern",
+            "equals_string",
+            "equals_string_in",
+            "equals_number",
+            "range",
+            "range_expression",
+        }
     )
     _SLOT_CONDITION_FIELDS = _SLOT_CONDITION_PRESENCE_FIELDS | _SLOT_CONDITION_VALUE_FIELDS
 
@@ -529,9 +523,10 @@ class ShaclGenerator(Generator):
 
         Every member becomes an anonymous node shape: ``is_a`` gives ``sh:class``
         for a class that some instances of *cls* belong to through a descendant,
-        nothing for *cls* or an ancestor, which every instance belongs to, and a
+        nothing for *cls* or an ancestor, which every instance belongs to, a
         shape nothing conforms to for any other class
-        (:func:`~linkml.generators.common.class_expression.class_membership`);
+        (:func:`~linkml.generators.common.class_expression.class_membership`),
+        and the value constraint of a type or an enum;
         each slot condition gives an ``sh:property`` on the path of the slot as
         induced for *cls* (so ``slot_usage`` applies), and nested expressions
         recurse.
@@ -585,7 +580,7 @@ class ShaclGenerator(Generator):
         self,
         g: Graph,
         subject: URIRef | BNode,
-        cls: ClassDefinition,
+        cls: ClassDefinition | None,
         operator: str,
         members: list[AnonymousClassExpression],
         definite: bool,
@@ -611,7 +606,7 @@ class ShaclGenerator(Generator):
         g.add((subject, predicate, list_node))
 
     def _class_expression_shape(
-        self, g: Graph, cls: ClassDefinition, expr: AnonymousClassExpression, definite: bool
+        self, g: Graph, cls: ClassDefinition | None, expr: AnonymousClassExpression, definite: bool
     ) -> BNode:
         """Build the anonymous node shape for one class expression *expr*, in its
         "definitely true" form with *definite*, otherwise its "not false" form."""
@@ -626,13 +621,16 @@ class ShaclGenerator(Generator):
         if expr.description is not None:
             node_pv(RDFS.comment, Literal(expr.description, lang=self._resolve_language(expr)))
         if expr.is_a is not None:
-            # Every instance of *cls* is an instance of ``is_a``, or none is, unless ``is_a`` is a
-            # descendant of *cls*: only then does the node's type decide.
-            membership = class_membership(self.schemaview, cls.name, expr.is_a)
-            if membership is None:
-                self._add_class(node_pv, expr.is_a)
-            elif not membership:
-                node_pv(SH["not"], BNode())  # a shape nothing conforms to
+            if expr.is_a in self.schemaview.all_classes():
+                # Every instance of *cls* is an instance of ``is_a``, or none is, unless some are
+                # through a descendant of *cls*: only then does the node's type decide.
+                membership = class_membership(self.schemaview, cls.name, expr.is_a) if cls is not None else None
+                if membership is None:
+                    self._add_class(node_pv, expr.is_a)
+                elif not membership:
+                    node_pv(SH["not"], BNode())  # a shape nothing conforms to
+            else:
+                self._add_range(g, node_pv, expr.is_a)
         for slot_name, condition in expr.slot_conditions.items():
             node_pv(SH.property, self._slot_condition_shape(g, cls, slot_name, condition, definite))
         for operator in self._CLASS_EXPRESSION_OPERATORS:
@@ -693,6 +691,8 @@ class ShaclGenerator(Generator):
             prop_pv(SH.maxInclusive, Literal(condition.equals_number))
         if condition.range is not None:
             self._add_range(g, prop_pv, condition.range)
+        if condition.range_expression is not None:
+            prop_pv(SH.node, self._range_expression_shape(g, value_range, condition.range_expression, definite))
         if repeated:
             # Each repeated parameter in a member shape of its own: all of them hold
             # for every value, as they would on the property shape itself.
@@ -757,18 +757,23 @@ class ShaclGenerator(Generator):
             return True
         return self._type_uri(r) == str(XSD.string)
 
-    def _untranslatable(self, cls: ClassDefinition, expr: AnonymousClassExpression) -> str | None:
-        """Return what in class expression *expr* of *cls* cannot be translated, or ``None``."""
-        sv = self.schemaview
+    def _untranslatable(self, cls: ClassDefinition | None, expr: AnonymousClassExpression) -> str | None:
+        """Return what in class expression *expr* of *cls* cannot be translated, or ``None``.
+
+        *cls* is ``None`` when *expr* constrains values that are not instances of
+        a class, which have no slots for a condition to constrain.
+        """
         unknown = self._set_operator_fields(expr) - self._CLASS_EXPRESSION_FIELDS
         if unknown:
             return f"'{sorted(unknown)[0]}'"
-        if expr.is_a is not None and expr.is_a not in sv.all_classes():
-            return f"is_a '{expr.is_a}', which is not a class"
+        if expr.is_a is not None and not self._is_known_range(expr.is_a):
+            return f"is_a '{expr.is_a}', which is not a known class, type or enum"
         for slot_name, condition in expr.slot_conditions.items():
             unknown = self._set_operator_fields(condition) - self._SLOT_CONDITION_FIELDS
             if unknown:
                 return f"'{sorted(unknown)[0]}' in the condition on slot '{slot_name}'"
+            if cls is None:
+                return f"a condition on slot '{slot_name}' of values that are not class instances"
             slot = self._condition_slot(cls, slot_name)
             if slot is None:
                 return f"a condition on '{slot_name}', which is not a slot"
@@ -778,6 +783,10 @@ class ShaclGenerator(Generator):
             if condition.range is not None and not self._is_known_range(condition.range):
                 return f"the unknown range '{condition.range}' in the condition on slot '{slot_name}'"
             value_range = condition.range or slot.range
+            if condition.range_expression is not None:
+                reason = self._untranslatable(self._value_class(value_range), condition.range_expression)
+                if reason is not None:
+                    return reason
             if (condition.equals_string is not None or condition.equals_string_in) and not self._is_string_range(
                 value_range
             ):
@@ -788,6 +797,58 @@ class ShaclGenerator(Generator):
                 if reason is not None:
                     return reason
         return None
+
+    def _value_class(self, value_range: ElementName | None) -> ClassDefinition | None:
+        """The class whose instances a range *value_range* holds, or ``None`` for any other range."""
+        sv = self.schemaview
+        return sv.get_class(value_range) if value_range in sv.all_classes() else None
+
+    def _range_expression_shape(
+        self, g: Graph, value_range: ElementName | None, expression: AnonymousClassExpression, definite: bool
+    ) -> BNode:
+        """Build the node shape a value of range *value_range* must conform to under *expression*.
+
+        A ``range_expression`` constrains each value as a class-level expression
+        constrains an instance: its conditions constrain the slots of the value
+        as induced for the class *value_range*, and *definite* selects the form,
+        as in :meth:`_class_expression_shape`.  ``sh:node`` (SHACL §4.7.1)
+        applies the shape to each value alongside the range's own constraint,
+        and only to the values of this slot.
+        """
+        return self._class_expression_shape(g, self._value_class(value_range), expression, definite)
+
+    def _add_range_expression(
+        self,
+        g: Graph,
+        prop_pv: Callable,
+        cls: ClassDefinition,
+        slot: SlotDefinition,
+        value_range: ElementName | None,
+        expression: AnonymousClassExpression,
+    ) -> None:
+        """Constrain each value of range *value_range* of *slot*, in the shape of *cls*, by *expression*.
+
+        The expression is read in its "not false" form.  One that cannot be
+        translated is skipped with a warning, as a class-level expression is.
+        """
+        reason = self._untranslatable(self._value_class(value_range), expression)
+        if reason is not None:
+            classes = self._range_expression_problems.setdefault((slot.name, reason), [])
+            if cls.name not in classes:
+                classes.append(cls.name)
+            return
+        prop_pv(SH.node, self._range_expression_shape(g, value_range, expression, definite=False))
+
+    def _report_range_expression_problems(self) -> None:
+        """Warn once about each ``range_expression`` of a slot that is not translated,
+        naming the class shapes it is missing from."""
+        for (slot_name, reason), classes in self._range_expression_problems.items():
+            logger.warning(
+                "Slot %r: range_expression is not translated to SHACL, because it uses %s (in the shapes of %s).",
+                slot_name,
+                reason,
+                ", ".join(map(repr, classes)),
+            )
 
     def _is_known_range(self, r: ElementName) -> bool:
         """Whether *r* names a class, type or enum of the schema, or a built-in type."""

@@ -4333,7 +4333,7 @@ _UNTRANSLATABLE_MEMBERS = {
             required: true""",
     ),
     "is_a-not-a-class": (
-        "not a class",
+        "not a known class, type or enum",
         """
       - is_a: Undefined
       - slot_conditions:
