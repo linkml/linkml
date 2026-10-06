@@ -1,4 +1,5 @@
 import logging
+import math
 import os
 import re
 import string
@@ -68,6 +69,11 @@ def _validate_message_template(template: str) -> None:
                 f"Invalid placeholder '{{{field_name}}}' in --message-template: "
                 f"conversions and format specs are not supported. {hint}"
             )
+
+
+_PRESENT = PresenceEnum(PresenceEnum.PRESENT)
+_ABSENT = PresenceEnum(PresenceEnum.ABSENT)
+_UNCOMMITTED = PresenceEnum(PresenceEnum.UNCOMMITTED)
 
 
 @dataclass
@@ -177,9 +183,9 @@ class ShaclGenerator(Generator):
     emit_rules: bool = True
     """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
 
-    When ``True`` (default), recognised rule patterns are translated into
-    SHACL-SPARQL constraints (``sh:SPARQLConstraint``) on the corresponding
-    ``sh:NodeShape``.  Currently two patterns are recognised:
+    When ``True`` (default), rules are translated into SHACL-SPARQL
+    constraints (``sh:SPARQLConstraint``) on the corresponding
+    ``sh:NodeShape``.  Two patterns are recognised first:
 
     * *Presence implies value* — a precondition with ``value_presence: PRESENT``
       on a guard slot and a postcondition with ``equals_string`` or
@@ -190,8 +196,11 @@ class ShaclGenerator(Generator):
       (or a bare ``equals_string: V``) on a slot and a postcondition with
       ``maximum_cardinality`` on the *same* slot.
 
-    A rule that cannot be translated exactly is skipped with a warning.  A
-    class shape carries the rules of the class's ancestors and mixins too.
+    Any other rule with one postcondition slot is composed from the operators
+    its conditions use (presence, value comparisons, numeric bounds,
+    ``range_expression``, ``has_member``).  A rule that cannot be translated
+    exactly is skipped with a warning.  A class shape carries the rules of the
+    class's ancestors and mixins too.
 
     See `W3C SHACL §5 <https://www.w3.org/TR/shacl/#sparql-constraints>`_
     and `linkml/linkml#2464 <https://github.com/linkml/linkml/issues/2464>`_.
@@ -482,11 +491,17 @@ class ShaclGenerator(Generator):
           specification applies ``equals_string`` to all members of a
           collection.
 
+        * **Composed** — any other rule with one postcondition slot is
+          composed from the operators its conditions use: presence,
+          ``equals_string(_in)`` and numeric bounds on each value, a
+          ``range_expression`` on the slot's class, and ``has_member`` (see
+          :meth:`_compose_rule_sparql`).
+
         Apart from that reading, every emitted constraint translates its rule
         exactly.  A rule that cannot be translated exactly is skipped with a
-        warning naming the reason: an operator combination outside these
-        patterns, a condition on an unknown or identifier slot, a value the
-        target's range cannot hold (see :meth:`_value_terms`), or
+        warning naming the reason: an operator the translations do not
+        support, a condition on an unknown or identifier slot, a value the
+        slot's range cannot hold (see :meth:`_value_terms`), or
         ``bidirectional``.  Of a rule with ``elseconditions`` the forward
         (if/then) direction is emitted, exactly, and a warning reports the
         else branch as not enforced.
@@ -562,7 +577,17 @@ class ShaclGenerator(Generator):
             logger.warning("%s: %s%s.", rule, problem, shapes)
 
     def _skip_rule(self, site: _RuleSite, reason: str) -> None:
-        """Log that the rule at *site* is not translated, and why."""
+        """Log that the rule at *site* is not translated, and why.
+
+        This replaces the problems recorded so far while translating the rule
+        for the shape of ``site.cls``, which describe a constraint that is not
+        emitted.
+        """
+        for key, (_, classes) in list(self._rule_problems.items()):
+            if key[:2] == (site.owner, site.index) and site.cls.name in classes:
+                classes.remove(site.cls.name)
+                if not classes:
+                    del self._rule_problems[key]
         self._warn_rule(site, f"skipped, because {reason}")
 
     # Fields on a slot condition / class expression that carry no constraint
@@ -583,7 +608,12 @@ class ShaclGenerator(Generator):
     # as SPARQL boolean literals.
     _XSD_BOOLEAN_LEXICAL = {"true": "true", "1": "true", "false": "false", "0": "false"}
 
-    _NO_PATTERN = "its conditions match none of the translated patterns (presence implies value, exclusive value)"
+    # Prefixes the reason a rule is skipped when it uses an operator, or a
+    # combination of conditions, that no translation supports.
+    _NO_PATTERN = (
+        "its conditions match none of the translated patterns (presence implies value, exclusive value, "
+        "and the compositional translation)"
+    )
 
     @classmethod
     def _set_operator_fields(
@@ -633,9 +663,11 @@ class ShaclGenerator(Generator):
             if untranslated:
                 self._skip_rule(site, f"its {side} use {', '.join(sorted(untranslated))}")
                 return None
+            if not expression.slot_conditions:
+                self._skip_rule(site, f"its {side} constrain no slot")
+                return None
         if len(pre.slot_conditions) != 1 or len(post.slot_conditions) != 1:
-            self._skip_rule(site, self._NO_PATTERN)
-            return None
+            return self._compose_rule_sparql(site, pre.slot_conditions, post.slot_conditions)
 
         ((pre_name, pre_cond),) = pre.slot_conditions.items()
         ((post_name, post_cond),) = post.slot_conditions.items()
@@ -651,7 +683,7 @@ class ShaclGenerator(Generator):
         # the case `equals_string: "true"` on a boolean flag.
         if (
             pre_ops == {"value_presence"}
-            and pre_cond.value_presence == PresenceEnum(PresenceEnum.PRESENT)
+            and pre_cond.value_presence == _PRESENT
             and post_ops in ({"equals_string"}, {"equals_string_in"})
         ):
             values = [post_cond.equals_string] if post_ops == {"equals_string"} else list(post_cond.equals_string_in)
@@ -670,8 +702,7 @@ class ShaclGenerator(Generator):
                     return None
                 return self._build_exclusive_value_sparql(pre_slot, terms[0], int(post_cond.maximum_cardinality))
 
-        self._skip_rule(site, self._NO_PATTERN)
-        return None
+        return self._compose_rule_sparql(site, pre.slot_conditions, post.slot_conditions)
 
     def _exclusive_value(
         self, site: _RuleSite, slot: SlotDefinition, condition: SlotDefinition, operators: set[str]
@@ -684,6 +715,7 @@ class ShaclGenerator(Generator):
         the same way, as the pattern always has, with a warning: the
         specification applies a slot constraint to all members of a collection
         (``05validation.md``), under which the rule would mean something else.
+        Every other rule reads it that way (:meth:`_compose_rule_sparql`).
         """
         if operators == {"has_member"} and self._set_operator_fields(condition.has_member) == {"equals_string"}:
             return condition.has_member.equals_string
@@ -697,6 +729,340 @@ class ShaclGenerator(Generator):
                 )
             return condition.equals_string
         return None
+
+    # Operators the compositional translation supports on a condition: those a
+    # value is tested against, and those stating whether the slot is present or
+    # some value satisfies a condition.
+    _VALUE_OPERATORS = frozenset(
+        {"equals_string", "equals_string_in", "minimum_value", "maximum_value", "range_expression"}
+    )
+    _CONDITION_OPERATORS = _VALUE_OPERATORS | {"required", "value_presence", "has_member"}
+
+    # The datatypes SPARQL compares numerically: the numeric types and the types
+    # derived from them (SPARQL 1.1 §17.1,
+    # <https://www.w3.org/TR/sparql11-query/#operandDataTypes>).
+    _SPARQL_NUMERIC_DATATYPES = frozenset(
+        str(XSD[name])
+        for name in (
+            "integer",
+            "decimal",
+            "float",
+            "double",
+            "nonPositiveInteger",
+            "negativeInteger",
+            "long",
+            "int",
+            "short",
+            "byte",
+            "nonNegativeInteger",
+            "unsignedLong",
+            "unsignedInt",
+            "unsignedShort",
+            "unsignedByte",
+            "positiveInteger",
+        )
+    )
+
+    def _compose_rule_sparql(
+        self, site: _RuleSite, pre: dict[str, SlotDefinition], post: dict[str, SlotDefinition]
+    ) -> str | None:
+        """Compose the query of a rule no named pattern matches from its slot conditions *pre* and *post*.
+
+        The caller passes them after checking that the pre- and postconditions
+        set nothing else (:meth:`_rule_to_sparql`).  Each precondition becomes
+        filters on ``$this``, and the single postcondition the union of the
+        ways to violate it, so the query selects the focus nodes that satisfy
+        every precondition and violate the postcondition (`SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_), with
+        the offending value where there is one (`SHACL §5.3.2
+        <https://www.w3.org/TR/shacl/#sparql-constraints-variables>`_).
+
+        Whether a condition requires its slot is decided by :meth:`_presence`.
+        Its value operators and ``range_expression`` apply to every value of
+        the slot: a slot constraint applies to all members of a collection
+        (``05validation.md``), as the JSON Schema generator applies it through
+        ``items``.  ``has_member`` requires some value to satisfy its
+        condition.  A condition may use :data:`_CONDITION_OPERATORS`; any other
+        operator skips the rule, as does an untranslatable value.
+        """
+        if len(post) != 1:
+            self._skip_rule(site, f"{self._NO_PATTERN}, and its postconditions constrain more than one slot")
+            return None
+        lines: list[str] = []
+        for index, (slot_name, condition) in enumerate(pre.items()):
+            slot = self._rule_condition_slot(site, slot_name)
+            if slot is None:
+                return None
+            filters = self._precondition_filters(site, slot, condition, f"?pre{index}")
+            if filters is None:
+                return None
+            lines.extend(filters)
+        ((post_name, post_cond),) = post.items()
+        post_slot = self._rule_condition_slot(site, post_name)
+        if post_slot is None:
+            return None
+        violations = self._postcondition_violations(site, post_slot, post_cond, bool(site.rule.open_world))
+        if violations is None:
+            return None
+        if len(violations) == 1:
+            lines.extend(violations)
+        else:
+            lines.append(f"{{ {violations[0]} }}")
+            lines.extend(f"UNION {{ {violation} }}" for violation in violations[1:])
+        body = "\n".join(f"    {line}" for line in lines)
+        return f"SELECT DISTINCT $this (<{self._slot_iri(post_slot)}> AS ?path) ?value WHERE {{\n{body}\n}}"
+
+    @staticmethod
+    def _presence(condition: SlotDefinition, default: PresenceEnum) -> PresenceEnum:
+        """Whether the rule *condition* requires its slot to be ``PRESENT``, ``ABSENT``, or neither (``UNCOMMITTED``).
+
+        ``value_presence`` decides, then ``required``, then *default*, as the
+        JSON Schema generator decides whether a rule condition requires its
+        property: by default a precondition does, a postcondition unless the
+        rule is ``open_world`` ("the postconditions may be omitted in instance
+        data", metamodel), and an inner condition of a nested expression never.
+        """
+        if condition.value_presence is not None:
+            return PresenceEnum(condition.value_presence)
+        if condition.required is not None:
+            return _PRESENT if condition.required else _UNCOMMITTED
+        return default
+
+    def _precondition_filters(
+        self, site: _RuleSite, slot: SlotDefinition, condition: SlotDefinition, var: str
+    ) -> list[str] | None:
+        """The SPARQL filters that hold when *slot* of ``$this`` satisfies the precondition *condition*:
+        the slot is present (by default) or absent as :meth:`_presence` decides, and nothing violates it."""
+        checked = self._condition_violations(site, slot, condition, "$this", var, _PRESENT, "precondition")
+        if checked is None:
+            return None
+        presence, violations = checked
+        value = f"$this <{self._slot_iri(slot)}> {var} ."
+        filters: list[str] = []
+        if presence == _PRESENT:
+            filters.append(f"FILTER EXISTS {{ {value} }}")
+        elif presence == _ABSENT:
+            filters.append(f"FILTER NOT EXISTS {{ {value} }}")
+        return filters + [f"FILTER NOT EXISTS {{ {violation} }}" for violation in violations]
+
+    def _postcondition_violations(
+        self, site: _RuleSite, slot: SlotDefinition, condition: SlotDefinition, open_world: bool
+    ) -> list[str] | None:
+        """The patterns by which ``$this`` violates the postcondition *condition* on *slot*.
+
+        A pattern matching an offending value binds it to ``?value``.  With
+        *open_world* "the postconditions may be omitted in instance data"
+        (metamodel ``open_world``), so the slot is not required by default.
+        """
+        default = _UNCOMMITTED if open_world else _PRESENT
+        checked = self._condition_violations(site, slot, condition, "$this", "?value", default, "postcondition")
+        if checked is None:
+            return None
+        presence, violations = checked
+        presence_violation = self._presence_violation("$this", slot, "?value", presence)
+        violations = [presence_violation, *violations] if presence_violation else violations
+        if not violations:
+            self._skip_rule(site, f"its postcondition on slot {slot.name!r} constrains nothing")
+            return None
+        return violations
+
+    def _presence_violation(self, subject: str, slot: SlotDefinition, var: str, presence: PresenceEnum) -> str | None:
+        """The pattern matching *subject* when its *slot* violates *presence*, binding *var* to a value that must
+        be absent; ``None`` when *presence* is ``UNCOMMITTED``."""
+        value = f"{subject} <{self._slot_iri(slot)}> {var} ."
+        if presence == _PRESENT:
+            return f"FILTER NOT EXISTS {{ {value} }}"
+        if presence == _ABSENT:
+            return value
+        return None
+
+    def _condition_violations(
+        self,
+        site: _RuleSite,
+        slot: SlotDefinition,
+        condition: SlotDefinition,
+        subject: str,
+        var: str,
+        default: PresenceEnum,
+        role: str,
+    ) -> tuple[PresenceEnum, list[str]] | None:
+        """The presence the *role* *condition* on *slot* of *subject* requires, and its other violations.
+
+        A value bound to *var* violates the value operators or the
+        ``range_expression`` (:meth:`_value_violations`); ``has_member`` is
+        violated when the slot has values and none satisfies the member
+        condition.
+        """
+        operators = self._set_operator_fields(condition)
+        if not operators <= self._CONDITION_OPERATORS:
+            self._skip_rule(site, self._unsupported(slot, operators, self._CONDITION_OPERATORS, role))
+            return None
+        violations = self._value_violations(site, slot, condition, subject, var)
+        if violations is None:
+            return None
+        member_condition = condition.has_member
+        if member_condition is not None:
+            member_operators = self._set_operator_fields(member_condition)
+            if not member_operators or not member_operators <= self._VALUE_OPERATORS:
+                self._skip_rule(site, self._unsupported(slot, member_operators, self._VALUE_OPERATORS, "has_member"))
+                return None
+            member = f"{var}_member"
+            member_violations = self._value_violations(site, slot, member_condition, subject, member)
+            if member_violations is None:
+                return None
+            iri = self._slot_iri(slot)
+            satisfied = "".join(f" FILTER NOT EXISTS {{ {violation} }}" for violation in member_violations)
+            violations.append(
+                f"FILTER EXISTS {{ {subject} <{iri}> {var}_any . }} "
+                f"FILTER NOT EXISTS {{ {subject} <{iri}> {member} .{satisfied} }}"
+            )
+        return self._presence(condition, default), violations
+
+    def _value_violations(
+        self, site: _RuleSite, slot: SlotDefinition, condition: SlotDefinition, subject: str, var: str
+    ) -> list[str] | None:
+        """The patterns matching a value *var* of *slot* of *subject* that violates a value operator of *condition*.
+
+        The value operators are tested on the value itself, a
+        ``range_expression`` on the value's own slots
+        (:meth:`_nested_violations`).
+        """
+        value = f"{subject} <{self._slot_iri(slot)}> {var} ."
+        violations: list[str] = []
+        if condition.range_expression is not None:
+            nested = self._nested_violations(site, slot, condition.range_expression, var)
+            if nested is None:
+                return None
+            violations.extend(f"{value} {violation}" for violation in nested)
+        test = self._value_test(site, slot, condition, var)
+        if test is None:
+            return None
+        if test:
+            violations.append(f"{value} FILTER ( !( {test} ) )")
+        return violations
+
+    def _nested_violations(
+        self, site: _RuleSite, slot: SlotDefinition, expression: AnonymousClassExpression, node: str
+    ) -> list[str] | None:
+        """The patterns by which an object *node*, a value of *slot*, violates the class expression *expression*.
+
+        *expression* must consist of slot conditions on the slot's range class,
+        resolved in that class's induced context.  Each one holds for an absent
+        inner slot unless it requires the slot (:meth:`_presence`), as a slot
+        constraint applies to the values present and as the JSON Schema
+        generator reads a nested expression.  On a reference that is not
+        inlined, the conditions apply to the referenced node's triples in the
+        data graph.
+        """
+        sv = self.schemaview
+        operators = self._set_operator_fields(expression)
+        if operators != {"slot_conditions"}:
+            self._skip_rule(
+                site, self._unsupported(slot, operators, frozenset({"slot_conditions"}), "range_expression")
+            )
+            return None
+        range_name = self._slot_range(slot)
+        if range_name not in sv.all_classes():
+            self._skip_rule(site, f"its range_expression is on slot {slot.name!r}, whose range is not a class")
+            return None
+        range_class = sv.get_class(range_name)
+        violations: list[str] = []
+        for index, (inner_name, condition) in enumerate(expression.slot_conditions.items()):
+            inner = self._rule_condition_slot(site, inner_name, range_class)
+            if inner is None:
+                return None
+            var = f"{node}_{index}"
+            checked = self._condition_violations(site, inner, condition, node, var, _UNCOMMITTED, "inner condition")
+            if checked is None:
+                return None
+            presence, inner_violations = checked
+            presence_violation = self._presence_violation(node, inner, var, presence)
+            if presence_violation:
+                violations.append(presence_violation)
+            violations.extend(inner_violations)
+        return violations
+
+    def _value_test(self, site: _RuleSite, slot: SlotDefinition, condition: SlotDefinition, var: str) -> str | None:
+        """The SPARQL test that a value *var* of *slot* satisfies the value operators of *condition*.
+
+        Returns ``""`` when *condition* sets no value operator, and ``None``
+        (rule skipped) when a value cannot be translated.  ``equals_string``
+        and ``equals_string_in`` compare as :meth:`_value_terms` renders them.
+        ``minimum_value`` / ``maximum_value`` are inclusive bounds (metamodel),
+        compared numerically, so the slot's datatype must be one SPARQL
+        compares as a number (:data:`_SPARQL_NUMERIC_DATATYPES`).  Comparing a
+        value of another type with a number is a type error (`SPARQL 1.1 §17.3
+        <https://www.w3.org/TR/sparql11-query/#OperatorMapping>`_), which some
+        engines resolve as an ordering anyway, so `isNumeric
+        <https://www.w3.org/TR/sparql11-query/#func-isNumeric>`_ guards the
+        comparison; an engine that takes an ill-typed literal such as
+        ``"abc"^^xsd:integer`` for a number still compares it.  Every part is
+        false, rather than an error, for a value it cannot compare (see
+        :meth:`_sparql_is_one_of`).
+        """
+        parts: list[str] = []
+        for values in (
+            [condition.equals_string] if condition.equals_string is not None else None,
+            list(condition.equals_string_in) if condition.equals_string_in else None,
+        ):
+            if values is None:
+                continue
+            terms = self._value_terms(site, slot, values)
+            if terms is None:
+                return None
+            parts.append(self._sparql_is_one_of(var, terms))
+        bounds = {
+            name: (bound, operator)
+            for name, bound, operator in (
+                ("minimum_value", condition.minimum_value, ">="),
+                ("maximum_value", condition.maximum_value, "<="),
+            )
+            if bound is not None
+        }
+        r = self._slot_range(slot)
+        if bounds and self._type_uri(r) not in self._SPARQL_NUMERIC_DATATYPES:
+            self._skip_rule(
+                site,
+                f"its {' and '.join(bounds)} on slot {slot.name!r} {'need' if len(bounds) > 1 else 'needs'} a type "
+                "with a numeric datatype, and " + (f"the slot's range is {r!r}" if r else "the slot has no range"),
+            )
+            return None
+        comparisons: list[str] = []
+        for bound, operator in bounds.values():
+            number = self._sparql_number(bound)
+            if number is None:
+                self._skip_rule(site, f"its bound {bound!r} on slot {slot.name!r} is not a finite number")
+                return None
+            comparisons.append(f"{var} {operator} {number}")
+        if comparisons:
+            parts.append(f"COALESCE( {' && '.join([f'isNumeric( {var} )', *comparisons])}, false )")
+        return " && ".join(parts)
+
+    @staticmethod
+    def _sparql_number(value: object) -> str | None:
+        """Render a ``minimum_value`` / ``maximum_value`` bound as a SPARQL numeric literal, or ``None``.
+
+        The metamodel range of both is ``Anything``, so strings, dates,
+        booleans and ``.nan`` / ``.inf`` reach the generator unchanged.
+        Interpolated raw, ``"abc"`` makes the query unparsable and a date such
+        as ``2020-01-01`` parses as arithmetic; only ``int`` and finite
+        ``float`` values are rendered, and their ``str`` is a plain numeric
+        token that SPARQL compares with numeric type promotion.
+        """
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            return None
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        return str(value)
+
+    @classmethod
+    def _unsupported(cls, slot: SlotDefinition, operators: set[str], supported: frozenset[str], role: str) -> str:
+        """The reason a condition with *operators* in *role* on *slot* is not translated."""
+        used = ", ".join(sorted(operators)) or "no operator"
+        return (
+            f"{cls._NO_PATTERN}; its {role} on slot {slot.name!r} uses {used}, where the compositional "
+            f"translation supports only {', '.join(sorted(supported))}"
+        )
 
     def _rule_slot(self, cls: ClassDefinition, slot_name: str) -> SlotDefinition | None:
         """Resolve a rule condition's slot key to the slot it names, or ``None``
@@ -717,15 +1083,20 @@ class ShaclGenerator(Generator):
             return sv.induced_slot(canonical, cls.name)
         return sv.get_slot(slot_name)
 
-    def _rule_condition_slot(self, site: _RuleSite, slot_name: str) -> SlotDefinition | None:
+    def _rule_condition_slot(
+        self, site: _RuleSite, slot_name: str, cls: ClassDefinition | None = None
+    ) -> SlotDefinition | None:
         """The slot a condition of the rule at *site* names, or ``None`` (rule skipped) when it cannot be queried.
+
+        The slot is resolved in the context of ``site.cls``, or of *cls* for an
+        inner condition on the range class of a nested expression.
 
         An unknown name would make the query use a predicate no shape or data
         uses.  An identifier slot is the node's IRI, not a property arc (the
         main slot loop does not require it either), so a condition on it can
         never match.
         """
-        slot = self._rule_slot(site.cls, slot_name)
+        slot = self._rule_slot(cls if cls is not None else site.cls, slot_name)
         if slot is None:
             self._skip_rule(site, f"its condition names {slot_name!r}, which is not a slot")
             return None

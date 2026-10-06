@@ -3391,17 +3391,24 @@ def test_rule_equals_string_agrees_with_json_schema(
 @pytest.mark.parametrize("instance,valid_closed_world,valid_open_world", _RULE_INSTANCES)
 @pytest.mark.parametrize("target_class", ["Thing", "Sub"])
 @pytest.mark.parametrize("open_world", [False, True])
+@pytest.mark.parametrize(
+    "guard_extra", [None, {"required": True}], ids=["presence-implies-value", "composed-equivalent"]
+)
 def test_rule_inheritance_and_open_world_agree_with_json_schema(
-    target_range, value, other, instance, valid_closed_world, valid_open_world, target_class, open_world
+    target_range, value, other, instance, valid_closed_world, valid_open_world, target_class, open_world, guard_extra
 ):
     """A rule binds the instances of subclasses of its class, and ``open_world``
     lets the postcondition be omitted, in SHACL as in JSON Schema.
 
     The metamodel defines ``open_world`` as "the postconditions may be omitted
-    in instance data", so an absent target satisfies an open-world rule.
+    in instance data", so an absent target satisfies an open-world rule.  A
+    guard that also states ``required: true`` means the same and is composed
+    rather than matched by the named pattern, with the same verdicts.
     """
     obj = {key: text.format(value=value, other=other) for key, text in instance.items()}
-    schema = _rule_target_schema(target_range, value, open_world=open_world)
+    schema = _rule_target_schema(target_range, value, open_world=open_world, guard_extra=guard_extra)
+    (query,) = _sparql_queries(_parse_shacl(schema), EX_RTR[target_class])
+    assert ("?pre0" in query) == (guard_extra is not None), query  # the composed form filters on ?pre0
     valid = valid_open_world if open_world else valid_closed_world
     assert _json_schema_and_shacl_verdicts(schema, target_class, obj) == (valid, valid)
 
@@ -4443,36 +4450,75 @@ def test_rule_equals_string_special_chars_escaped():
 
 
 @pytest.mark.parametrize(
-    "extra",
+    "extra,reason",
     [
-        pytest.param({"pattern": "^x"}, id="pattern"),
-        pytest.param({"minimum_value": 0}, id="minimum_value"),
-        pytest.param({"maximum_value": 5}, id="maximum_value"),
-        pytest.param({"required": True}, id="required"),
-        pytest.param({"recommended": True}, id="recommended"),
-        pytest.param({"minimum_cardinality": 1}, id="minimum_cardinality"),
-        pytest.param({"exact_cardinality": 1}, id="exact_cardinality"),
-        pytest.param({"equals_number": 3}, id="equals_number"),
-        pytest.param({"has_member": {"equals_string": "x"}}, id="has_member"),
-        pytest.param({"any_of": [{"equals_string": "x"}]}, id="slot-any_of"),
+        pytest.param({"pattern": "^x"}, "pattern", id="pattern"),
+        pytest.param({"minimum_value": 0}, "needs a type with a numeric datatype", id="minimum_value"),
+        pytest.param({"maximum_value": 5}, "needs a type with a numeric datatype", id="maximum_value"),
+        pytest.param({"recommended": True}, "recommended", id="recommended"),
+        pytest.param({"minimum_cardinality": 1}, "minimum_cardinality", id="minimum_cardinality"),
+        pytest.param({"exact_cardinality": 1}, "exact_cardinality", id="exact_cardinality"),
+        pytest.param({"equals_number": 3}, "equals_number", id="equals_number"),
+        pytest.param({"any_of": [{"equals_string": "x"}]}, "any_of", id="slot-any_of"),
     ],
 )
 @pytest.mark.parametrize("condition", ["guard", "target"])
-def test_rule_extra_condition_operator_skipped(caplog, condition, extra):
-    """A guard or target condition that adds any operator to the ones a pattern
-    translates makes the rule untranslatable."""
+def test_rule_extra_condition_operator_skipped(caplog, condition, extra, reason):
+    """A guard or target condition that adds an operator no translation
+    supports, or a bound on a string slot, makes the rule untranslatable:
+    dropping it would widen or weaken the rule."""
     guard = {"value_presence": "PRESENT", **(extra if condition == "guard" else {})}
     target = {"equals_string": "x", **(extra if condition == "target" else {})}
     schema = _single_rule_schema(_rule({"guard": guard}, {"target": target}))
-    _assert_skipped(caplog, schema, "match none of the translated patterns")
+    _assert_skipped(caplog, schema, reason)
 
 
-@pytest.mark.parametrize("presence", ["ABSENT", "UNCOMMITTED"])
-def test_rule_guard_presence_other_than_present_skipped(caplog, presence):
-    """Only ``value_presence: PRESENT`` is a guard: reading ``ABSENT`` as a
-    guard would invert the trigger."""
-    schema = _single_rule_schema(_rule({"guard": {"value_presence": presence}}, {"target": {"equals_string": "x"}}))
-    _assert_skipped(caplog, schema, "match none of the translated patterns")
+@pytest.mark.parametrize(
+    "guard_extra,target_extra",
+    [
+        pytest.param({"required": True}, None, id="guard-required"),
+        pytest.param(None, {"required": True}, id="target-required"),
+    ],
+)
+@pytest.mark.parametrize("open_world", [False, True])
+@pytest.mark.parametrize("instance,valid_closed_world,valid_open_world", _RULE_INSTANCES)
+def test_rule_extra_operator_translated_exactly(
+    guard_extra, target_extra, open_world, instance, valid_closed_world, valid_open_world
+):
+    """An extra operator the composed translation supports is translated, not
+    dropped: a redundant ``required: true`` on the guard changes nothing, and on
+    the target it requires the target even in an open world."""
+    obj = {key: text.format(value="x", other="y") for key, text in instance.items()}
+    schema = _rule_target_schema(
+        "string", "x", open_world=open_world, guard_extra=guard_extra, target_extra=target_extra
+    )
+    target_required = bool(target_extra and target_extra.get("required"))
+    valid = valid_closed_world if target_required or not open_world else valid_open_world
+    assert len(_sparql_queries(_parse_shacl(schema), EX_RTR.Thing)) == 1
+    assert _json_schema_and_shacl_verdicts(schema, "Thing", obj) == (valid, valid)
+
+
+@pytest.mark.parametrize(
+    "presence,instance,valid",
+    [
+        pytest.param("ABSENT", {"guard": "g", "target": "y"}, True, id="absent-guard-present"),
+        pytest.param("ABSENT", {"target": "y"}, False, id="absent-other"),
+        pytest.param("ABSENT", {"target": "x"}, True, id="absent-allowed"),
+        pytest.param("ABSENT", {}, False, id="absent-target-absent"),
+        pytest.param("UNCOMMITTED", {"guard": "g", "target": "y"}, False, id="uncommitted-other"),
+        pytest.param("UNCOMMITTED", {"target": "x"}, True, id="uncommitted-allowed"),
+        pytest.param("UNCOMMITTED", {}, False, id="uncommitted-target-absent"),
+    ],
+)
+def test_rule_guard_presence_other_than_present_composed(presence, instance, valid):
+    """A guard with ``value_presence: ABSENT`` triggers the rule when the guard
+    is absent, one with ``UNCOMMITTED`` always; the named pattern, which reads
+    ``PRESENT``, does not match them, and the composed translation does, as in
+    JSON Schema."""
+    schema = _rule_target_schema("string", "x", guard_extra={"value_presence": presence})
+    (query,) = _sparql_queries(_parse_shacl(schema), EX_RTR.Thing)
+    assert "?guard" not in query, query  # composed, not the named pattern
+    assert _json_schema_and_shacl_verdicts(schema, "Thing", instance) == (valid, valid)
 
 
 @pytest.mark.parametrize("operator", ["any_of", "all_of", "exactly_one_of", "none_of"])
@@ -4485,11 +4531,21 @@ def test_rule_expression_level_operator_skipped(caplog, side, operator):
     _assert_skipped(caplog, _single_rule_schema(rule), f"its {side} use {operator}")
 
 
-def test_rule_post_with_both_equals_forms_skipped(caplog):
-    """equals_string and equals_string_in set together is ambiguous — skip,
-    do not let one form silently win."""
-    schema = _single_rule_schema(_rule(_GUARD_PRESENT, {"target": {"equals_string": "a", "equals_string_in": ["b"]}}))
-    _assert_skipped(caplog, schema, "match none of the translated patterns")
+@pytest.mark.parametrize(
+    "allowed,target,valid",
+    [
+        pytest.param(["x", "y"], "x", True, id="in-both"),
+        pytest.param(["x", "y"], "y", False, id="in-one"),
+        pytest.param(["y"], "x", False, id="contradictory"),
+        pytest.param(["y"], "y", False, id="contradictory-other"),
+    ],
+)
+def test_rule_post_with_both_equals_forms_is_a_conjunction(allowed, target, valid):
+    """equals_string and equals_string_in set together must both hold, as in
+    JSON Schema (``const`` and ``enum``); neither form silently wins."""
+    schema = _rule_target_schema("string", "x", target_extra={"equals_string_in": allowed})
+    assert len(_sparql_queries(_parse_shacl(schema), EX_RTR.Thing)) == 1
+    assert _json_schema_and_shacl_verdicts(schema, "Thing", {"guard": "g", "target": target}) == (valid, valid)
 
 
 def test_rule_exclusive_value_extra_operator_skipped(caplog):
@@ -4560,3 +4616,929 @@ def test_rule_equals_true_on_string_slot_pyshacl_end_to_end(status, violates):
     )
     _, focus_nodes = _validate_rules(_STRING_TRUE_SCHEMA_YAML, data)
     assert focus_nodes == ({URIRef("https://example.org/string-true/x")} if violates else set())
+
+
+# ===========================================================================
+# Compositional fallback
+#
+# A rule no named pattern matches is composed from its operators.  Whether a
+# condition requires its slot follows the JSON Schema generator: value_presence,
+# then required, then a default (preconditions do, postconditions unless
+# open_world, inner conditions of a nested expression do not).  Each value of a
+# slot must satisfy the condition: a slot constraint applies to all members of
+# a collection (05validation.md), as the JSON Schema generator's `items` reads
+# it; has_member requires some value to satisfy its condition.
+# ===========================================================================
+
+EX_COMP = rdflib.Namespace("https://example.org/compose/")
+_COMP_PREFIXES = "@prefix ex: <https://example.org/compose/> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"
+
+
+def _compose_schema(
+    rule: dict,
+    *,
+    part_usage: dict | None = None,
+    thing_usage: dict | None = None,
+    slots: list[str] | None = None,
+    subclass: bool = False,
+) -> str:
+    """A schema whose class ``Thing`` has the slots used by the compositional tests and the one *rule*.
+
+    ``Part`` is the inlined class of ``part`` / ``parts`` and of its own
+    ``sub``; ``SpecialPart`` narrows its ``kind``.  ``site`` references a
+    ``Site`` by its identifier.  *part_usage* and
+    *thing_usage* add ``slot_usage``, *slots* adds schema slots to ``Thing``,
+    and *subclass* adds ``SubThing``, which inherits the rule.
+    """
+    schema = {
+        "id": "https://example.org/compose",
+        "name": "compose",
+        "prefixes": {"linkml": "https://w3id.org/linkml/", "ex": str(EX_COMP), "xsd": str(XSD)},
+        "imports": ["linkml:types"],
+        "default_prefix": "ex",
+        "default_range": "string",
+        "enums": {
+            "Kind": {"permissible_values": {"Plain": {}, "Special": {"meaning": "ex:Special"}}},
+            "SpecialKind": {"permissible_values": {"Special": {"meaning": "ex:VerySpecial"}}},
+        },
+        "slots": {"kind": {"range": "Kind"}},
+        "classes": {
+            "Part": {
+                "class_uri": "ex:Part",
+                "slots": ["kind"],
+                "attributes": {
+                    "depth": {"range": "integer"},
+                    "label": {},
+                    "marks": {"range": "integer", "multivalued": True},
+                    "sub": {"range": "Part", "inlined": True},
+                },
+                "slot_usage": part_usage or {},
+            },
+            "SpecialPart": {
+                "is_a": "Part",
+                "class_uri": "ex:SpecialPart",
+                "slot_usage": {"kind": {"range": "SpecialKind"}},
+            },
+            "Site": {
+                "class_uri": "ex:Site",
+                "attributes": {"id": {"identifier": True, "range": "uriorcurie"}, "depth": {"range": "integer"}},
+            },
+            "Thing": {
+                "class_uri": "ex:Thing",
+                "slots": slots or [],
+                "attributes": {
+                    "mode": {},
+                    "flag": {"range": "boolean"},
+                    "level": {"range": "integer"},
+                    "levels": {"range": "integer", "multivalued": True},
+                    "note": {},
+                    "part": {"range": "Part", "inlined": True},
+                    "parts": {"range": "Part", "inlined": True, "multivalued": True, "inlined_as_list": True},
+                    "site": {"range": "Site"},
+                },
+                "slot_usage": thing_usage or {},
+                "rules": [rule],
+            },
+        },
+    }
+    if subclass:
+        schema["classes"]["SubThing"] = {"is_a": "Thing", "class_uri": "ex:SubThing"}
+    return json.dumps(schema)
+
+
+_REQUIRE_NOTE = {"note": {"required": True}}
+_DEPTH_AT_MOST_ZERO = {"range_expression": {"slot_conditions": {"depth": {"maximum_value": 0}}}}
+_IF_MODE_M = {"mode": {"equals_string": "m"}}
+_LEVEL_10_TO_20 = {"level": {"minimum_value": 10, "maximum_value": 20}}
+
+
+def _inner(**conditions: dict) -> dict:
+    """A ``range_expression`` with the slot *conditions* on the slot's class."""
+    return {"range_expression": {"slot_conditions": conditions}}
+
+
+@pytest.mark.parametrize("target_class", ["Thing", "SubThing"])
+@pytest.mark.parametrize(
+    "pre,post,instance,valid",
+    [
+        # equals_string, and presence in the postcondition
+        pytest.param(_IF_MODE_M, _REQUIRE_NOTE, {"mode": "m"}, False, id="equals-required"),
+        pytest.param(_IF_MODE_M, _REQUIRE_NOTE, {"mode": "m", "note": "n"}, True, id="equals-met"),
+        pytest.param(_IF_MODE_M, _REQUIRE_NOTE, {"mode": "x"}, True, id="equals-not-triggered"),
+        pytest.param(_IF_MODE_M, _REQUIRE_NOTE, {}, True, id="precondition-slot-absent"),
+        pytest.param(_IF_MODE_M, {"note": {"value_presence": "PRESENT"}}, {"mode": "m"}, False, id="presence-post"),
+        pytest.param(_IF_MODE_M, {"note": {}}, {"mode": "m"}, False, id="empty-post-required-by-default"),
+        pytest.param(
+            _IF_MODE_M, {"note": {"value_presence": "ABSENT"}}, {"mode": "m", "note": "n"}, False, id="absent-post"
+        ),
+        pytest.param(_IF_MODE_M, {"note": {"value_presence": "ABSENT"}}, {"mode": "m"}, True, id="absent-met"),
+        # numeric bounds are inclusive
+        pytest.param(_LEVEL_10_TO_20, _REQUIRE_NOTE, {"level": 15}, False, id="bounds-inside"),
+        pytest.param(_LEVEL_10_TO_20, _REQUIRE_NOTE, {"level": 10}, False, id="bounds-at-minimum"),
+        pytest.param(_LEVEL_10_TO_20, _REQUIRE_NOTE, {"level": 20}, False, id="bounds-at-maximum"),
+        pytest.param(_LEVEL_10_TO_20, _REQUIRE_NOTE, {"level": 25}, True, id="bounds-above"),
+        pytest.param(_LEVEL_10_TO_20, _REQUIRE_NOTE, {"level": 5}, True, id="bounds-below"),
+        # presence in the precondition
+        pytest.param({"level": {"value_presence": "PRESENT"}}, _REQUIRE_NOTE, {"level": 1}, False, id="presence-pre"),
+        pytest.param({"mode": {"required": True}}, _REQUIRE_NOTE, {"mode": "m"}, False, id="required-pre"),
+        pytest.param({"mode": {"required": True}}, _REQUIRE_NOTE, {}, True, id="required-pre-absent"),
+        pytest.param({"mode": {}}, _REQUIRE_NOTE, {"mode": "x"}, False, id="empty-pre-requires-presence"),
+        pytest.param({"mode": {}}, _REQUIRE_NOTE, {}, True, id="empty-pre-absent"),
+        pytest.param({"mode": {"value_presence": "ABSENT"}}, _REQUIRE_NOTE, {}, False, id="absent-pre"),
+        pytest.param(
+            {"mode": {"value_presence": "ABSENT"}}, _REQUIRE_NOTE, {"mode": "m"}, True, id="absent-pre-present"
+        ),
+        pytest.param(
+            {"mode": {"required": False, "equals_string": "m"}}, _REQUIRE_NOTE, {}, False, id="optional-pre-absent"
+        ),
+        pytest.param(
+            {"mode": {"required": False, "equals_string": "m"}}, _REQUIRE_NOTE, {"mode": "x"}, True, id="optional-pre"
+        ),
+        pytest.param(
+            {"mode": {"value_presence": "UNCOMMITTED", "equals_string": "m"}},
+            _REQUIRE_NOTE,
+            {},
+            False,
+            id="uncommitted-pre-absent",
+        ),
+        pytest.param(
+            {"mode": {"value_presence": "UNCOMMITTED", "required": True, "equals_string": "m"}},
+            _REQUIRE_NOTE,
+            {},
+            False,
+            id="value-presence-overrides-required",
+        ),
+        pytest.param(
+            {"level": {"value_presence": "PRESENT", "minimum_value": 3}},
+            _REQUIRE_NOTE,
+            {},
+            True,
+            id="presence-bound-absent",
+        ),
+        pytest.param(
+            {"level": {"value_presence": "PRESENT", "minimum_value": 3}},
+            _REQUIRE_NOTE,
+            {"level": 1},
+            True,
+            id="presence-bound-fails",
+        ),
+        pytest.param(
+            {"level": {"value_presence": "PRESENT", "minimum_value": 3}},
+            _REQUIRE_NOTE,
+            {"level": 5},
+            False,
+            id="presence-bound-holds",
+        ),
+        # every value of a multivalued slot
+        pytest.param(
+            {"levels": {"minimum_value": 10}}, _REQUIRE_NOTE, {"levels": [12, 15]}, False, id="every-value-holds"
+        ),
+        pytest.param({"levels": {"minimum_value": 10}}, _REQUIRE_NOTE, {"levels": [12, 3]}, True, id="one-value-fails"),
+        # a nested range_expression, whose inner conditions hold for an absent inner slot
+        pytest.param({"part": _DEPTH_AT_MOST_ZERO}, _REQUIRE_NOTE, {"part": {"depth": -1}}, False, id="nested-holds"),
+        pytest.param({"part": _DEPTH_AT_MOST_ZERO}, _REQUIRE_NOTE, {"part": {"depth": 5}}, True, id="nested-fails"),
+        pytest.param({"part": _DEPTH_AT_MOST_ZERO}, _REQUIRE_NOTE, {"part": {}}, False, id="nested-inner-absent"),
+        pytest.param({"part": _DEPTH_AT_MOST_ZERO}, _REQUIRE_NOTE, {}, True, id="nested-container-absent"),
+        pytest.param(
+            {"part": {"required": False, **_DEPTH_AT_MOST_ZERO}}, _REQUIRE_NOTE, {}, False, id="optional-container"
+        ),
+        pytest.param(
+            {"part": _inner(depth={"maximum_value": 0, "required": True})},
+            _REQUIRE_NOTE,
+            {"part": {}},
+            True,
+            id="nested-inner-required-absent",
+        ),
+        pytest.param(
+            {"part": _inner(depth={"value_presence": "PRESENT"})},
+            _REQUIRE_NOTE,
+            {"part": {}},
+            True,
+            id="nested-inner-present-absent",
+        ),
+        pytest.param(
+            {"part": _inner(depth={"value_presence": "PRESENT"})},
+            _REQUIRE_NOTE,
+            {"part": {"depth": 1}},
+            False,
+            id="nested-inner-present",
+        ),
+        pytest.param(
+            {"part": _inner(depth={"value_presence": "ABSENT"})},
+            _REQUIRE_NOTE,
+            {"part": {}},
+            False,
+            id="nested-inner-absent-holds",
+        ),
+        pytest.param(
+            {"part": _inner(depth={"value_presence": "ABSENT"})},
+            _REQUIRE_NOTE,
+            {"part": {"depth": 1}},
+            True,
+            id="nested-inner-absent-fails",
+        ),
+        pytest.param(
+            {"part": _inner(depth={"minimum_value": -5, "maximum_value": 0})},
+            _REQUIRE_NOTE,
+            {"part": {"depth": 3}},
+            True,
+            id="nested-bounds-above",
+        ),
+        pytest.param(
+            {"part": _inner(sub=_DEPTH_AT_MOST_ZERO)},
+            _REQUIRE_NOTE,
+            {"part": {"sub": {"depth": -1}}},
+            False,
+            id="two-hops",
+        ),
+        pytest.param(
+            {"part": _inner(sub=_DEPTH_AT_MOST_ZERO)},
+            _REQUIRE_NOTE,
+            {"part": {"sub": {"depth": 5}}},
+            True,
+            id="two-hops-fails",
+        ),
+        pytest.param(
+            {"parts": _DEPTH_AT_MOST_ZERO},
+            _REQUIRE_NOTE,
+            {"parts": [{"depth": -1}, {"depth": -2}]},
+            False,
+            id="every-member",
+        ),
+        pytest.param(
+            {"parts": _DEPTH_AT_MOST_ZERO},
+            _REQUIRE_NOTE,
+            {"parts": [{"depth": -1}, {"depth": 5}]},
+            True,
+            id="one-member-fails",
+        ),
+        # value operators in a postcondition apply to every value of the slot, which is required
+        pytest.param(
+            _IF_MODE_M, {"note": {"equals_string": "n"}}, {"mode": "m", "note": "n"}, True, id="post-equals-met"
+        ),
+        pytest.param(
+            _IF_MODE_M, {"note": {"equals_string": "n"}}, {"mode": "m", "note": "x"}, False, id="post-equals-other"
+        ),
+        pytest.param(_IF_MODE_M, {"note": {"equals_string": "n"}}, {"mode": "m"}, False, id="post-equals-absent"),
+        pytest.param(
+            _IF_MODE_M, {"note": {"equals_string_in": ["n", "o"]}}, {"mode": "m", "note": "o"}, True, id="post-in-met"
+        ),
+        pytest.param(
+            _IF_MODE_M,
+            {"note": {"equals_string_in": ["n", "o"]}},
+            {"mode": "m", "note": "x"},
+            False,
+            id="post-in-other",
+        ),
+        pytest.param(_IF_MODE_M, {"level": {"minimum_value": 3}}, {"mode": "m", "level": 3}, True, id="post-bound-met"),
+        pytest.param(
+            _IF_MODE_M, {"level": {"minimum_value": 3}}, {"mode": "m", "level": 2}, False, id="post-bound-fails"
+        ),
+        pytest.param(
+            _IF_MODE_M, {"levels": {"maximum_value": 5}}, {"mode": "m", "levels": [1, 5]}, True, id="post-every-value"
+        ),
+        pytest.param(
+            _IF_MODE_M, {"levels": {"maximum_value": 5}}, {"mode": "m", "levels": [1, 9]}, False, id="post-one-fails"
+        ),
+        pytest.param(
+            _IF_MODE_M, {"part": _DEPTH_AT_MOST_ZERO}, {"mode": "m", "part": {"depth": 0}}, True, id="post-nested-met"
+        ),
+        pytest.param(
+            _IF_MODE_M,
+            {"part": _DEPTH_AT_MOST_ZERO},
+            {"mode": "m", "part": {"depth": 1}},
+            False,
+            id="post-nested-fails",
+        ),
+        pytest.param(_IF_MODE_M, {"part": _DEPTH_AT_MOST_ZERO}, {"mode": "m"}, False, id="post-nested-absent"),
+        # equals_string_in in a precondition and an inner condition
+        pytest.param({"mode": {"equals_string_in": ["m", "n"]}}, _REQUIRE_NOTE, {"mode": "n"}, False, id="pre-in"),
+        pytest.param({"mode": {"equals_string_in": ["m", "n"]}}, _REQUIRE_NOTE, {"mode": "x"}, True, id="pre-in-other"),
+        pytest.param(
+            {"part": _inner(label={"equals_string_in": ["a", "b"]})},
+            _REQUIRE_NOTE,
+            {"part": {"label": "b"}},
+            False,
+            id="inner-in",
+        ),
+        # several preconditions are a conjunction
+        pytest.param(
+            {**_IF_MODE_M, "level": {"minimum_value": 10}},
+            _REQUIRE_NOTE,
+            {"mode": "m", "level": 12},
+            False,
+            id="two-preconditions",
+        ),
+        pytest.param(
+            {**_IF_MODE_M, "level": {"minimum_value": 10}},
+            _REQUIRE_NOTE,
+            {"mode": "m", "level": 3},
+            True,
+            id="two-preconditions-one-fails",
+        ),
+    ],
+)
+def test_compose_agrees_with_json_schema(pre, post, instance, valid, target_class):
+    """A composed rule decides each instance as the JSON Schema generator's
+    if/then does, in the class declaring it and in a subclass."""
+    schema = _compose_schema(_rule(pre, post), subclass=True)
+    assert len(_sparql_queries(_parse_shacl(schema), EX_COMP[target_class])) == 1
+    assert _json_schema_and_shacl_verdicts(schema, target_class, instance) == (valid, valid)
+
+
+@pytest.mark.parametrize(
+    "post,instance,valid",
+    [
+        pytest.param(_REQUIRE_NOTE, {"mode": "m"}, False, id="required-absent"),
+        pytest.param(_REQUIRE_NOTE, {"mode": "m", "note": "n"}, True, id="required-met"),
+        pytest.param({"note": {"value_presence": "PRESENT"}}, {"mode": "m"}, False, id="present-absent"),
+        pytest.param({"note": {"value_presence": "PRESENT"}}, {"mode": "m", "note": "n"}, True, id="present-met"),
+        pytest.param({"note": {"value_presence": "ABSENT"}}, {"mode": "m", "note": "n"}, False, id="absent-present"),
+        pytest.param({"note": {"value_presence": "ABSENT"}}, {"mode": "m"}, True, id="absent-met"),
+        pytest.param({"note": {"equals_string": "n"}}, {"mode": "m"}, True, id="value-omitted"),
+        pytest.param({"note": {"equals_string": "n"}}, {"mode": "m", "note": "x"}, False, id="value-other"),
+    ],
+)
+@pytest.mark.parametrize("target_class", ["Thing", "SubThing"])
+def test_compose_open_world(post, instance, valid, target_class):
+    """With ``open_world`` a postcondition slot may be omitted unless the
+    postcondition states its presence, as in JSON Schema; a value present must
+    still satisfy it."""
+    schema = _compose_schema(_rule(_IF_MODE_M, post, open_world=True), subclass=True)
+    assert _json_schema_and_shacl_verdicts(schema, target_class, instance) == (valid, valid)
+
+
+_SPECIAL_KIND = {"kind": {"equals_string": "Special"}}
+
+
+@pytest.mark.parametrize(
+    "member,post_presence,open_world,members,violates",
+    [
+        pytest.param(_SPECIAL_KIND, {}, False, "ex:p1 . ex:p1 ex:kind ex:Special", False, id="matching-member"),
+        pytest.param(_SPECIAL_KIND, {}, False, 'ex:p1 . ex:p1 ex:kind "Plain"', True, id="no-matching-member"),
+        pytest.param(
+            _SPECIAL_KIND,
+            {},
+            False,
+            'ex:p1, ex:p2 . ex:p1 ex:kind "Plain" . ex:p2 ex:kind ex:Special',
+            False,
+            id="one-matching",
+        ),
+        pytest.param(_SPECIAL_KIND, {}, False, 'ex:p1 . ex:p1 ex:label "l"', False, id="member-without-kind"),
+        pytest.param(
+            {"kind": {"equals_string": "Special", "required": True}},
+            {},
+            False,
+            'ex:p1 . ex:p1 ex:label "l"',
+            True,
+            id="member-without-required-kind",
+        ),
+        pytest.param(
+            {"kind": {"value_presence": "ABSENT"}},
+            {},
+            False,
+            "ex:p1 . ex:p1 ex:kind ex:Special",
+            True,
+            id="inner-absent",
+        ),
+        pytest.param(
+            {"kind": {"value_presence": "ABSENT"}},
+            {},
+            False,
+            'ex:p1 . ex:p1 ex:label "l"',
+            False,
+            id="inner-absent-met",
+        ),
+        pytest.param(
+            {**_SPECIAL_KIND, "label": {"equals_string": "l"}},
+            {},
+            False,
+            'ex:p1 . ex:p1 ex:kind ex:Special ; ex:label "x"',
+            True,
+            id="two-inner-conditions-one-fails",
+        ),
+        pytest.param(
+            {**_SPECIAL_KIND, "label": {"equals_string": "l"}},
+            {},
+            False,
+            'ex:p1 . ex:p1 ex:kind ex:Special ; ex:label "l"',
+            False,
+            id="two-inner-conditions-hold",
+        ),
+        pytest.param(_SPECIAL_KIND, {}, False, None, True, id="no-members"),
+        pytest.param(_SPECIAL_KIND, {}, True, None, False, id="no-members-open-world"),
+        pytest.param(_SPECIAL_KIND, {"required": True}, True, None, True, id="no-members-open-world-required"),
+        pytest.param(_SPECIAL_KIND, {"required": False}, False, None, False, id="no-members-not-required"),
+        pytest.param(
+            _SPECIAL_KIND,
+            {"value_presence": "UNCOMMITTED", "required": True},
+            False,
+            None,
+            False,
+            id="value-presence-overrides-required",
+        ),
+        pytest.param(_SPECIAL_KIND, {"value_presence": "ABSENT"}, False, None, False, id="absent-slot"),
+        pytest.param(
+            _SPECIAL_KIND,
+            {"value_presence": "ABSENT"},
+            False,
+            "ex:p1 . ex:p1 ex:kind ex:Special",
+            True,
+            id="absent-slot-present",
+        ),
+        pytest.param(
+            {"sub": _DEPTH_AT_MOST_ZERO},
+            {},
+            False,
+            "ex:p1 . ex:p1 ex:sub ex:s1 . ex:s1 ex:depth 0",
+            False,
+            id="two-hops",
+        ),
+        pytest.param(
+            {"sub": _DEPTH_AT_MOST_ZERO},
+            {},
+            False,
+            "ex:p1 . ex:p1 ex:sub ex:s1 . ex:s1 ex:depth 5",
+            True,
+            id="two-hops-fails",
+        ),
+        pytest.param(
+            _SPECIAL_KIND, {}, True, 'ex:p1 . ex:p1 ex:kind "Plain"', True, id="no-matching-member-open-world"
+        ),
+    ],
+)
+@pytest.mark.parametrize("target_class", ["Thing", "SubThing"])
+def test_compose_has_member(member, post_presence, open_world, members, violates, target_class):
+    """``has_member`` is violated when no member satisfies the member condition.
+
+    A member condition holds for an absent inner slot unless it requires the
+    slot.  Whether ``parts`` must be present is decided as for any
+    postcondition (``open_world``, ``required``, ``value_presence``).  The JSON
+    Schema generator drops ``has_member`` inside rule conditions, so the
+    verdicts are checked against explicit expectations.
+    """
+    post = {"parts": {"has_member": _inner(**member), **post_presence}}
+    schema = _compose_schema(_rule({"mode": {"value_presence": "PRESENT"}}, post, open_world=open_world), subclass=True)
+    body = f'ex:x a ex:{target_class} ; ex:mode "m"' + ("" if members is None else f" ; ex:parts {members}")
+    _, focus_nodes = _validate_rules(schema, f"{_COMP_PREFIXES}{body} .")
+    assert focus_nodes == ({EX_COMP.x} if violates else set())
+
+
+_SOME_LEVEL_10 = {"levels": {"has_member": {"minimum_value": 10}}}
+_SOME_LEVEL_10_ALL_20 = {"levels": {"has_member": {"minimum_value": 10}, "maximum_value": 20}}
+_PART_WITH_SOME_MARK_10 = {"part": _inner(marks={"has_member": {"minimum_value": 10}})}
+
+
+@pytest.mark.parametrize(
+    "pre,post,data,violates",
+    [
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10, " ; ex:levels 3, 12", False, id="post-some"),
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10, " ; ex:levels 3, 4", True, id="post-none"),
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10, "", True, id="post-absent"),
+        pytest.param(_SOME_LEVEL_10, _REQUIRE_NOTE, " ; ex:levels 3, 12", True, id="pre-some"),
+        pytest.param(_SOME_LEVEL_10, _REQUIRE_NOTE, " ; ex:levels 3, 4", False, id="pre-none"),
+        pytest.param(_SOME_LEVEL_10, _REQUIRE_NOTE, "", False, id="pre-absent"),
+        # with value operators on the same slot, which every value must satisfy
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10_ALL_20, " ; ex:levels 12, 15", False, id="post-some-and-all"),
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10_ALL_20, " ; ex:levels 12, 25", True, id="post-some-not-all"),
+        pytest.param(_IF_MODE_M, _SOME_LEVEL_10_ALL_20, " ; ex:levels 3, 4", True, id="post-all-not-some"),
+        # inside a nested condition, on the values of the inner slot
+        pytest.param(
+            _PART_WITH_SOME_MARK_10, _REQUIRE_NOTE, " ; ex:part ex:p1 . ex:p1 ex:marks 3, 12", True, id="inner-some"
+        ),
+        pytest.param(
+            _PART_WITH_SOME_MARK_10, _REQUIRE_NOTE, " ; ex:part ex:p1 . ex:p1 ex:marks 3, 4", False, id="inner-none"
+        ),
+        pytest.param(
+            _PART_WITH_SOME_MARK_10, _REQUIRE_NOTE, ' ; ex:part ex:p1 . ex:p1 ex:label "l"', True, id="inner-absent"
+        ),
+        pytest.param(
+            {**_PART_WITH_SOME_MARK_10, "levels": {"minimum_value": 0}},
+            _REQUIRE_NOTE,
+            " ; ex:levels 1 ; ex:part ex:p1 . ex:p1 ex:marks 4 . ex:y a ex:Thing ; ex:part ex:p2 . ex:p2 ex:marks 12",
+            False,
+            id="inner-member-of-another-subject",
+        ),
+    ],
+)
+def test_compose_has_member_with_value_operators(pre, post, data, violates):
+    """``has_member`` holds when some value satisfies its value operators, in a
+    postcondition, a precondition and a nested condition alike, next to value
+    operators that every value must satisfy.  An absent slot fails a
+    precondition, which requires its slot, violates a closed-world
+    postcondition, and satisfies a nested condition, which does not."""
+    schema = _compose_schema(_rule(pre, post))
+    _, focus_nodes = _validate_rules(schema, f'{_COMP_PREFIXES}ex:x a ex:Thing ; ex:mode "m"{data} .')
+    assert EX_COMP.x in focus_nodes if violates else EX_COMP.x not in focus_nodes
+
+
+@pytest.mark.parametrize(
+    "rule,data,expected",
+    [
+        pytest.param(
+            _rule(_IF_MODE_M, _REQUIRE_NOTE),
+            'ex:x a ex:Thing ; ex:mode "m" .',
+            [(EX_COMP.x, EX_COMP.note, EX_COMP.x)],
+            id="required",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {"value_presence": "ABSENT"}}),
+            'ex:x a ex:Thing ; ex:mode "m" ; ex:note "n" .',
+            [(EX_COMP.x, EX_COMP.note, Literal("n"))],
+            id="absent",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {"equals_string": "n"}}),
+            'ex:x a ex:Thing ; ex:mode "m" ; ex:note "a", "n", "b" .',
+            [(EX_COMP.x, EX_COMP.note, Literal("a")), (EX_COMP.x, EX_COMP.note, Literal("b"))],
+            id="each-offending-value",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"parts": _inner(label={"equals_string": "l"}, depth={"maximum_value": 0})}),
+            'ex:x a ex:Thing ; ex:mode "m" ; ex:parts ex:p1 . ex:p1 ex:label "x" ; ex:depth 5 .',
+            [(EX_COMP.x, EX_COMP.parts, EX_COMP.p1)],
+            id="value-violating-twice-reported-once",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, _SOME_LEVEL_10),
+            'ex:x a ex:Thing ; ex:mode "m" ; ex:levels 3, 4 .',
+            [(EX_COMP.x, EX_COMP.levels, EX_COMP.x)],
+            id="no-member-satisfies",
+        ),
+    ],
+)
+def test_compose_result_names_path_and_value(rule, data, expected):
+    """A composed result names the postcondition's property and the offending
+    value, once per value, or the focus node when a value is missing (SHACL
+    §5.3.2)."""
+    _, results = _rule_results(_compose_schema(rule), _COMP_PREFIXES + data)
+    assert sorted(results) == sorted(expected)
+
+
+def test_compose_query_yields_one_solution_per_offending_value():
+    """A value that violates two parts of the postcondition is one solution,
+    so a processor that maps every solution to a result (SHACL §5.3.2) reports
+    it once."""
+    rule = _rule(_IF_MODE_M, {"parts": _inner(label={"equals_string": "l"}, depth={"maximum_value": 0})})
+    (query,) = _sparql_queries(_parse_shacl(_compose_schema(rule)), EX_COMP.Thing)
+    data = rdflib.Graph().parse(
+        data=_COMP_PREFIXES + 'ex:x a ex:Thing ; ex:mode "m" ; ex:parts ex:p1 . ex:p1 ex:label "x" ; ex:depth 5 .',
+        format="turtle",
+    )
+    solutions = [(row.path, row.value) for row in data.query(query, initBindings={"this": EX_COMP.x})]
+    assert solutions == [(EX_COMP.parts, EX_COMP.p1)]
+
+
+@pytest.mark.parametrize(
+    "flag,violates",
+    [
+        pytest.param(Literal("true", datatype=XSD.boolean, normalize=False), True, id="true"),
+        pytest.param(Literal("1", datatype=XSD.boolean, normalize=False), True, id="lexical-1"),
+        pytest.param(Literal("false", datatype=XSD.boolean, normalize=False), False, id="false"),
+        pytest.param(Literal("true"), False, id="string-true"),
+    ],
+)
+def test_compose_boolean_precondition_compared_by_value(flag, violates):
+    """``equals_string`` on a boolean precondition slot compares the boolean it denotes, as in the named patterns."""
+    schema = _compose_schema(_rule({"flag": {"equals_string": "true"}}, _REQUIRE_NOTE))
+    data = rdflib.Graph()
+    data.add((EX_COMP.x, RDF.type, EX_COMP.Thing))
+    data.add((EX_COMP.x, EX_COMP.flag, flag))
+    _, focus_nodes = _validate_rules(schema, data)
+    assert focus_nodes == ({EX_COMP.x} if violates else set())
+
+
+# The numeric datatypes of SPARQL 1.1 §17.1, <https://www.w3.org/TR/sparql11-query/#operandDataTypes>.
+_SPARQL_NUMERIC_DATATYPES = [
+    *("integer", "decimal", "float", "double"),
+    *("nonPositiveInteger", "negativeInteger", "long", "int", "short", "byte"),
+    *("nonNegativeInteger", "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "positiveInteger"),
+]
+
+
+@pytest.mark.parametrize("datatype", _SPARQL_NUMERIC_DATATYPES)
+def test_compose_bounds_on_every_sparql_numeric_datatype(datatype):
+    """Bounds are translated on a type with any numeric datatype of SPARQL 1.1
+    §17.1 and compare its values numerically."""
+    schema = json.loads(_compose_schema(_rule({"amount": {"minimum_value": -10, "maximum_value": 10}}, _REQUIRE_NOTE)))
+    base = datatype if datatype in ("decimal", "float", "double") else "integer"
+    schema["types"] = {"Amount": {"typeof": base, "uri": f"xsd:{datatype}"}}
+    schema["classes"]["Thing"]["attributes"]["amount"] = {"range": "Amount"}
+    sign = -1 if datatype in ("nonPositiveInteger", "negativeInteger") else 1
+    for value, violates in ((5 * sign, True), (50 * sign, False)):
+        data = rdflib.Graph()
+        data.add((EX_COMP.x, RDF.type, EX_COMP.Thing))
+        data.add((EX_COMP.x, EX_COMP.amount, Literal(str(value), datatype=XSD[datatype])))
+        _, focus_nodes = _validate_rules(json.dumps(schema), data)
+        assert focus_nodes == ({EX_COMP.x} if violates else set()), value
+
+
+@pytest.mark.parametrize(
+    "slot_range,translated",
+    [
+        *(pytest.param(r, True, id=r) for r in ("integer", "decimal", "float", "double")),
+        pytest.param("Count", True, id="custom-nonNegativeInteger"),
+        *(
+            pytest.param(r, False, id=r)
+            for r in ("string", "date", "datetime", "time", "boolean", "uriorcurie", "Kind", "Part")
+        ),
+        pytest.param("Year", False, id="custom-gYear"),
+        pytest.param("Span", False, id="custom-duration"),
+    ],
+)
+def test_compose_bounds_only_on_numeric_ranges(caplog, slot_range, translated):
+    """Bounds compare numerically, so they are translated on a type with a
+    numeric datatype and skip the rule on any other range: SPARQL orders no
+    string, date, duration, boolean, IRI or node against a number (§17.3)."""
+    schema = json.loads(_compose_schema(_rule({"amount": {"minimum_value": 1}}, _REQUIRE_NOTE)))
+    schema["types"] = {
+        "Count": {"typeof": "integer", "uri": "xsd:nonNegativeInteger"},
+        "Year": {"typeof": "string", "uri": "xsd:gYear"},
+        "Span": {"typeof": "string", "uri": "xsd:duration"},
+    }
+    schema["classes"]["Thing"]["attributes"]["amount"] = {"range": slot_range}
+    with caplog.at_level(logging.WARNING):
+        g = _parse_shacl(json.dumps(schema))
+    assert len(_sparql_queries(g, EX_COMP.Thing)) == (1 if translated else 0)
+    skipped = "its minimum_value on slot 'amount' needs a type with a numeric datatype, and the slot's range is "
+    skipped += repr(slot_range)
+    assert any(skipped in rec.message for rec in caplog.records) != translated, caplog.text
+
+
+@pytest.mark.parametrize(
+    "level,violates",
+    [
+        pytest.param(Literal(15), True, id="integer"),
+        pytest.param(Literal("15"), False, id="string"),
+        pytest.param(EX_COMP.fifteen, False, id="iri"),
+    ],
+)
+def test_compose_bound_fails_on_a_value_that_is_not_a_number(level, violates):
+    """A value that is not a number fails a numeric bound, since comparing it
+    is a type error (SPARQL 1.1 §17.3); its datatype violation is reported
+    by the property shape, not by the rule."""
+    schema = _compose_schema(_rule({"level": {"minimum_value": 10}}, _REQUIRE_NOTE))
+    data = rdflib.Graph()
+    data.add((EX_COMP.x, RDF.type, EX_COMP.Thing))
+    data.add((EX_COMP.x, EX_COMP.level, level))
+    _, focus_nodes = _validate_rules(schema, data)
+    assert focus_nodes == ({EX_COMP.x} if violates else set())
+
+
+@pytest.mark.parametrize(
+    "rule,reason",
+    [
+        pytest.param(
+            _rule({"level": {"equals_string": "3"}}, _REQUIRE_NOTE),
+            "whose range 'integer' is neither an enum nor a type with datatype xsd:string or xsd:boolean",
+            id="equals-string-on-integer",
+        ),
+        pytest.param(
+            _rule({"part": _inner(label={"maximum_value": 3})}, _REQUIRE_NOTE),
+            "its maximum_value on slot 'label' needs a type with a numeric datatype, and the slot's range is 'string'",
+            id="inner-bound-on-string",
+        ),
+        pytest.param(
+            _rule({"mode": {"pattern": "^m"}}, _REQUIRE_NOTE),
+            "its precondition on slot 'mode' uses pattern",
+            id="pre-op",
+        ),
+        pytest.param(
+            {"preconditions": {"slot_conditions": {}}, "postconditions": {"slot_conditions": _REQUIRE_NOTE}},
+            "its preconditions constrain no slot",
+            id="empty-preconditions",
+        ),
+        pytest.param(
+            {"preconditions": {"slot_conditions": _IF_MODE_M}, "postconditions": {}},
+            "its postconditions constrain no slot",
+            id="empty-postconditions",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {"required": True, "pattern": "^n"}}),
+            "its postcondition on slot 'note' uses pattern, required",
+            id="post-op",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {"required": False}}),
+            "its postcondition on slot 'note' constrains nothing",
+            id="post-not-required",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {}}, open_world=True),
+            "its postcondition on slot 'note' constrains nothing",
+            id="post-open-world-empty",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"note": {"value_presence": "UNCOMMITTED", "required": True}}),
+            "its postcondition on slot 'note' constrains nothing",
+            id="post-value-presence-overrides-required",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {**_REQUIRE_NOTE, "level": {"required": True}}),
+            "its postconditions constrain more than one slot",
+            id="two-postconditions",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"parts": {"has_member": {"equals_string": "x"}}}),
+            "equals_string(_in) on slot 'parts', whose range 'Part' is neither an enum",
+            id="has-member-value-on-class-range",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"levels": {"has_member": {"pattern": "^1"}}}),
+            "its has_member on slot 'levels' uses pattern",
+            id="has-member-op",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"levels": {"has_member": {"required": True}}}),
+            "its has_member on slot 'levels' uses required",
+            id="has-member-presence",
+        ),
+        pytest.param(
+            _rule(_IF_MODE_M, {"levels": {"has_member": {}}}),
+            "its has_member on slot 'levels' uses no operator",
+            id="has-member-empty",
+        ),
+        pytest.param(
+            _rule({"level": _DEPTH_AT_MOST_ZERO}, _REQUIRE_NOTE),
+            "its range_expression is on slot 'level', whose range is not a class",
+            id="range-expression-on-non-class",
+        ),
+        pytest.param(
+            _rule(
+                {"part": {"range_expression": {"any_of": [{"slot_conditions": {"depth": {"maximum_value": 0}}}]}}},
+                _REQUIRE_NOTE,
+            ),
+            "its range_expression on slot 'part' uses any_of,",
+            id="range-expression-any-of",
+        ),
+        pytest.param(
+            _rule(
+                {
+                    "part": {
+                        "range_expression": {
+                            **_DEPTH_AT_MOST_ZERO["range_expression"],
+                            "none_of": [{"slot_conditions": {"label": {"equals_string": "x"}}}],
+                        }
+                    }
+                },
+                _REQUIRE_NOTE,
+            ),
+            "its range_expression on slot 'part' uses none_of, slot_conditions",
+            id="range-expression-slot-conditions-and-none-of",
+        ),
+        pytest.param(
+            _rule({"part": {"range_expression": {"slot_conditions": {}}}}, _REQUIRE_NOTE),
+            "its range_expression on slot 'part' uses no operator",
+            id="range-expression-empty",
+        ),
+        pytest.param(
+            _rule({"part": _inner(depth={"pattern": "^1"})}, _REQUIRE_NOTE),
+            "its inner condition on slot 'depth' uses pattern",
+            id="inner-op",
+        ),
+        pytest.param(
+            _rule({"part": _inner(nope={"maximum_value": 0})}, _REQUIRE_NOTE),
+            "'nope', which is not a slot",
+            id="inner-unknown-slot",
+        ),
+    ],
+)
+def test_compose_untranslatable_rule_skipped(caplog, rule, reason):
+    """The compositional fallback is exact too: any operator it does not translate skips the rule, with the reason."""
+    with caplog.at_level(logging.WARNING):
+        g = _parse_shacl(_compose_schema(rule))
+    assert _sparql_queries(g, EX_COMP.Thing) == []
+    messages = [rec.message for rec in caplog.records if "Rule 1 of class 'Thing'" in rec.message]
+    assert len(messages) == 1 and "skipped, because" in messages[0] and reason in messages[0], caplog.text
+    assert "in the shapes of" not in messages[0], "a problem with an inner slot belongs to the outer rule"
+
+
+@pytest.mark.parametrize("bound", ['"abc"', "2020-01-01", "true", ".nan", ".inf", "1e20"])
+def test_compose_non_numeric_bound_skipped(caplog, bound):
+    """A ``minimum_value`` that is not a finite number (its metamodel range is
+    ``Anything``) skips the rule: interpolated, it would make the query
+    unparsable or compare as arithmetic.  YAML 1.1 reads ``1e20``, which has
+    no dot, as a string."""
+    marker = "__BOUND__"
+    schema = _compose_schema(_rule({"level": {"minimum_value": marker}}, _REQUIRE_NOTE))
+    schema = schema.replace(f'"{marker}"', bound)  # a raw YAML scalar
+    with caplog.at_level(logging.WARNING):
+        g = _parse_shacl(schema)
+    assert _sparql_queries(g, EX_COMP.Thing) == []
+    assert any("is not a finite number" in rec.message for rec in caplog.records), caplog.text
+
+
+@pytest.mark.parametrize(
+    "schema,reason",
+    [
+        pytest.param(
+            _compose_schema(
+                _rule({"part": _inner(kind={"equals_string": "Bogus"}), "mode": {"pattern": "^m"}}, _REQUIRE_NOTE)
+            ),
+            "its precondition on slot 'mode' uses pattern",
+            id="composed",
+        ),
+        pytest.param(
+            _single_rule_schema(
+                _rule({"levels": {"equals_string": "3"}}, {"levels": {"maximum_cardinality": 1}}),
+                {"levels": {"range": "integer", "multivalued": True}},
+            ),
+            "whose range 'integer' is neither an enum",
+            id="exclusive-value",
+        ),
+    ],
+)
+def test_rule_skip_replaces_problems_noted_while_translating(caplog, schema, reason):
+    """A rule skipped part-way through its translation reports only why it was
+    skipped: a problem noted earlier (a value no enum permits, the reading of a
+    bare equals_string) describes a constraint that is not emitted."""
+    with caplog.at_level(logging.WARNING):
+        _parse_shacl(schema)
+    messages = [rec.message for rec in caplog.records if "Rule 1 of class 'Thing'" in rec.message]
+    assert len(messages) == 1 and "skipped, because" in messages[0] and reason in messages[0], messages
+
+
+def test_rule_skip_in_a_subclass_keeps_the_problems_of_other_shapes(caplog):
+    """A rule skipped for a subclass, whose ``slot_usage`` changes a slot, keeps
+    the problems noted where it is translated."""
+    schema = json.loads(
+        _compose_schema(_rule({"kind": {"equals_string": "Bogus"}}, _REQUIRE_NOTE), slots=["kind"], subclass=True)
+    )
+    schema["classes"]["SubThing"]["slot_usage"] = {"kind": {"range": "integer"}}
+    with caplog.at_level(logging.WARNING):
+        g = _parse_shacl(json.dumps(schema))
+    assert len(_sparql_queries(g, EX_COMP.Thing)) == 1 and _sparql_queries(g, EX_COMP.SubThing) == []
+    messages = [rec.message for rec in caplog.records if "Rule 1 of class 'Thing'" in rec.message]
+    assert len(messages) == 2, messages
+    assert any("'Bogus', which is not a permissible value" in m and "in the shapes of" not in m for m in messages)
+    assert any("skipped, because" in m and "(in the shapes of 'SubThing')" in m for m in messages)
+
+
+@pytest.mark.parametrize(
+    "part_usage,thing_usage,expected_iris,unexpected_iris",
+    [
+        pytest.param(
+            {"kind": {"slot_uri": "ex:partKind"}}, {}, [EX_COMP.partKind], [EX_COMP.kind], id="inner-slot-uri-override"
+        ),
+        pytest.param(
+            {"kind": {"slot_uri": "ex:partKind"}},
+            {"kind": {"slot_uri": "ex:thingKind"}},
+            [EX_COMP.partKind],
+            [EX_COMP.thingKind],
+            id="inner-slot-not-shadowed-by-outer",
+        ),
+        pytest.param(
+            {}, {"part": {"range": "SpecialPart"}}, [EX_COMP.VerySpecial], [EX_COMP.Special], id="container-narrowed"
+        ),
+    ],
+)
+def test_compose_inner_slot_resolved_on_range_class(part_usage, thing_usage, expected_iris, unexpected_iris):
+    """Inner slots of a nested expression resolve in the induced context of the
+    container slot's range class: their IRI and their enum values come from it."""
+    rule = _rule({"part": _inner(kind={"equals_string": "Special"})}, _REQUIRE_NOTE)
+    schema = _compose_schema(
+        rule, part_usage=part_usage, thing_usage=thing_usage, slots=["kind"] if "kind" in thing_usage else None
+    )
+    (query,) = _sparql_queries(_parse_shacl(schema), EX_COMP.Thing)
+    for iri in expected_iris:
+        assert f"<{iri}>" in query, query
+    for iri in unexpected_iris:
+        assert f"<{iri}>" not in query, query
+
+
+@pytest.mark.parametrize(
+    "values,violates",
+    [
+        pytest.param("", True, id="both-absent"),
+        pytest.param(' ; ex:mode "m"', False, id="one-present"),
+        pytest.param(' ; ex:mode "m" ; ex:level 1', False, id="both-present"),
+    ],
+)
+def test_compose_several_absent_preconditions_each_hold(values, violates):
+    """Preconditions are a conjunction, so ``value_presence: ABSENT`` on two
+    slots requires both to be absent.  The JSON Schema generator merges them
+    into one ``not: {required: [...]}``, "not all present", so the
+    expectations are explicit."""
+    rule = _rule({"mode": {"value_presence": "ABSENT"}, "level": {"value_presence": "ABSENT"}}, _REQUIRE_NOTE)
+    _, focus_nodes = _validate_rules(_compose_schema(rule), f"{_COMP_PREFIXES}ex:x a ex:Thing{values} .")
+    assert focus_nodes == ({EX_COMP.x} if violates else set())
+
+
+@pytest.mark.parametrize(
+    "inner,site,violates",
+    [
+        pytest.param({"maximum_value": 0}, "ex:s1 ex:depth -1 .", True, id="referenced-node-satisfies"),
+        pytest.param({"maximum_value": 0}, "ex:s1 ex:depth 5 .", False, id="referenced-node-fails"),
+        pytest.param({"maximum_value": 0}, "", True, id="referenced-node-not-described"),
+        pytest.param({"maximum_value": 0, "required": True}, "", False, id="required-on-undescribed-node"),
+    ],
+)
+def test_compose_range_expression_on_a_reference(inner, site, violates):
+    """On a slot that references a node instead of inlining it, a nested
+    condition applies to the referenced node's triples in the data graph; a
+    node the graph does not describe has none.  JSON has only the identifier
+    there, so the expectations are explicit."""
+    rule = _rule({"site": _inner(depth=inner)}, _REQUIRE_NOTE)
+    data = f"{_COMP_PREFIXES}ex:x a ex:Thing ; ex:site ex:s1 . {site}"
+    _, focus_nodes = _validate_rules(_compose_schema(rule), data)
+    assert focus_nodes == ({EX_COMP.x} if violates else set())
