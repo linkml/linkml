@@ -82,7 +82,7 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "duckdb>=1.5.5",
+  "duckdb>=1.5.6",
   "sqlalchemy-bigquery>=1.17.2",
   "tomli-w>=1.2.0",
 ]
