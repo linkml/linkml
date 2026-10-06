@@ -129,7 +129,7 @@ classes:
         description: USA and territories must have a specific regex pattern for postal codes and phone numbers
 ```
 
-See above for implementation status
+The [JSON Schema generator](../generators/json-schema) translates rules into `if` / `then` subschemas, and the [SHACL generator](../generators/shacl) into SHACL-SPARQL constraints.
 
 ## Defining slots
 
