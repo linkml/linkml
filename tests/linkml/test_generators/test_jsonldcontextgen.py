@@ -1669,3 +1669,101 @@ def test_kitchen_sink_employment_event_type_falls_back(kitchen_sink_path):
         slot_def = ctx["employed_at"]
         if isinstance(slot_def, dict) and "@context" in slot_def:
             assert "@vocab" not in slot_def.get("@context", {})
+
+
+@pytest.mark.parametrize(
+    "use_curies",
+    [
+        pytest.param(
+            True,
+            marks=pytest.mark.xfail(reason="Issue #4056: @id term is keyed by CURIE", strict=True),
+        )
+    ],
+)
+def test_identifier_slot_aliases_id(tmp_path, use_curies):
+    """Identifier slots without slot_uri must alias @id.
+
+    The context key must be the slot name (term used in instance data), NOT a
+    CURIE, even with --use-curies enabled. An identifier slot's value is the
+    node's subject IRI and does not produce a predicate triple.
+
+    This is a regression test for issue #4056.
+    """
+    schema_file = tmp_path / "identifier_test.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """            id: https://example.org/identifier-test
+            name: identifier-test
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/identifier-test/
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  id:
+                    identifier: true
+                    range: string
+                    required: true
+            """
+        )
+    )
+    generator = ContextGenerator(str(schema_file), mergeimports=True, use_curies=use_curies)
+    ctx = json.loads(generator.serialize())["@context"]
+    assert ctx.get("id") == "@id"
+    # no CURIE alias should be emitted for the identifier
+    assert not any(k.endswith(":id") for k in ctx)
+
+
+@pytest.mark.parametrize(
+    "use_curies",
+    [
+        pytest.param(
+            True,
+            marks=pytest.mark.xfail(reason="Issue #4056: identifier slot_uri is emitted as a CURIE key", strict=True),
+        )
+    ],
+)
+def test_identifier_slot_with_slot_uri_aliases_id(tmp_path, use_curies):
+    """Identifier slots with slot_uri must still alias @id (slot_uri is ignored).
+
+    Even when a slot_uri is declared on an identifier slot, the context must
+    still map the slot name to @id and NOT emit the slot_uri as an alias.
+    This is consistent with LinkML's RDF semantics: identifier values become
+    the node subject IRI only; no predicate triple is emitted.
+    """
+    schema_file = tmp_path / "identifier_slot_uri_test.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """            id: https://example.org/identifier-slot-uri-test
+            name: identifier-slot-uri-test
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/identifier-slot-uri-test/
+              sh: http://www.w3.org/ns/shacl#
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  id:
+                    identifier: true
+                    range: string
+                    required: true
+                    slot_uri: sh:focusNode
+            """
+        )
+    )
+    generator = ContextGenerator(str(schema_file), mergeimports=True, use_curies=use_curies)
+    ctx = json.loads(generator.serialize())["@context"]
+    assert ctx.get("id") == "@id"
+    # no slot_uri key should appear, even with use_curies
+    assert "sh:focusNode" not in ctx
+    assert "focusNode" not in ctx
+    # no CURIE alias should be emitted for the identifier
+    assert not any(k.endswith(":id") for k in ctx)
