@@ -6,6 +6,7 @@ import click
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OODocument
+from linkml.utils.generator import apply_config_defaults, read_generator_config
 
 from .dataframe_generator import DataframeGenerator
 from .pandera.pandera_dataframe_generator import PanderaDataframeGenerator
@@ -137,6 +138,15 @@ DATAFRAME_GROUP = [
 
 
 @click.option("--package", help="Package name where relevant for generated class files")
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {pandera: {package: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
 @click.option("--template-path", help="Optional jinja2 template directory within module (not used with --package)")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation (not used with --package)")
 @click.option(
@@ -147,15 +157,16 @@ DATAFRAME_GROUP = [
 @click.version_option(__version__, "-V", "--version")
 @click.argument("yamlfile")
 @click.command(name="gen-pandera")
-def cli(
-    yamlfile,
-    package=None,
-    template_path=None,
-    template_file=None,
-    generator_class=None,
-    **args,
-):
+@click.pass_context
+def cli(ctx: click.Context, yamlfile, config_file=None, **args):
     """Generate Pandera classes to represent a LinkML model"""
+    config = read_generator_config(config_file, DataframeGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    DataframeGenerator.validate_generator_args(args)
+    package = args.pop("package")
+    template_path = args.pop("template_path")
+    template_file = args.pop("template_file")
+    generator_class = args.pop("generator_class")
 
     if package is not None and (
         template_path is not None or template_file is not None or generator_class != "PanderaDataframeGenerator"
