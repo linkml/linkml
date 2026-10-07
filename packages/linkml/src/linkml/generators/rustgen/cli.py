@@ -17,7 +17,6 @@ from linkml.utils.generator import apply_config_defaults, read_generator_config,
     help="Generation mode: 'crate' (Cargo package) or 'file' (single .rs)",
 )
 @click.option(
-    "-f",
     "--force",
     is_flag=True,
     help="Overwrite output if it already exists",

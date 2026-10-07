@@ -7,7 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from linkml.generators.cppgen import CppGenerator, cli
-from linkml.generators.cppgen.cppgen import _is_valid_cpp_namespace
+from linkml.generators.cppgen.cppgen import _derive_cpp_namespace, _is_valid_cpp_namespace
 
 # ---------------------------------------------------------------------------
 # Shared inline schemas
@@ -877,10 +877,37 @@ def test_cli_nonexistent_template_dir(tmp_path):
         ("a:b", False),
         ("a::class", False),
         ("namespace", False),
+        ("a__b", False),
+        ("_Reserved", False),
+        ("ns::_Priv", False),
     ],
 )
 def test_is_valid_cpp_namespace(namespace, valid):
     assert _is_valid_cpp_namespace(namespace) is valid
+
+
+@pytest.mark.parametrize(
+    "schema_name,expected",
+    [
+        ("simple_test", "simple_test"),
+        ("My-Schema", "my_schema"),
+        ("my.schema", "my_schema"),
+        ("my--schema", "my_schema"),
+        ("template", "template_"),
+        ("1abc", "example"),
+        ("", "example"),
+    ],
+)
+def test_derive_cpp_namespace(schema_name, expected):
+    assert _derive_cpp_namespace(schema_name) == expected
+
+
+@pytest.mark.parametrize("schema_name,expected", [("my--schema", "my_schema"), ("template", "template_")])
+def test_derived_namespace_is_always_valid(schema_name, expected):
+    """A schema name deriving to a reserved identifier or a keyword is escaped rather than
+    emitting a header no compiler accepts."""
+    schema = SIMPLE_SCHEMA.replace("name: simple_test", f"name: {schema_name}")
+    assert f"namespace {expected} {{" in CppGenerator(schema=schema).serialize()
 
 
 @pytest.mark.parametrize("namespace", ["my-schema", "a::class", 123])

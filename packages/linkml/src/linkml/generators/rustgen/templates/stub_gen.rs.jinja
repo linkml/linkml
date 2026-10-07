@@ -4,7 +4,7 @@ use {{ crate_module }}::stub_utils;
 #[cfg(feature = "stubgen")]
 fn main() -> pyo3_stub_gen::Result<()> {
     let check_only = std::env::args().skip(1).any(|arg| arg == "--check");
-    let stub = {{ crate_name }}::stub_info()?;
+    let stub = {{ crate_module }}::stub_info()?;
 
     if check_only {
         check_stubs(&stub)
