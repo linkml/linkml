@@ -24,6 +24,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator, cli
 from linkml_runtime import SchemaView
+from tests.linkml.utils import generator_agreement
 
 EX = Namespace("https://example.org/context/")
 PREFIX = f"@prefix ex: <{EX}> . "
@@ -66,45 +67,9 @@ enums:
 """)
 
 
-def _as_json_ld(sv: SchemaView, obj: dict[str, Any], class_name: str) -> dict[str, Any]:
-    """*obj* with an ``@type`` on it and on each inlined object: the range of its slot, unless it states one.
-
-    A reference, which is an identifier, stays as it is."""
-    class_name = obj.get("@type", class_name)
-    typed = {**obj, "@type": class_name}
-    for slot in sv.class_induced_slots(class_name):
-        value = obj.get(slot.name)
-        if slot.range in sv.all_classes() and value is not None:
-            values = [
-                _as_json_ld(sv, v, slot.range) if isinstance(v, dict) else v
-                for v in (value if isinstance(value, list) else [value])
-            ]
-            typed[slot.name] = values if isinstance(value, list) else values[0]
-    return typed
-
-
-def _without_types(obj: Any) -> Any:
-    """*obj* without its ``@type`` keys."""
-    if isinstance(obj, dict):
-        return {k: _without_types(v) for k, v in obj.items() if k != "@type"}
-    if isinstance(obj, list):
-        return [_without_types(v) for v in obj]
-    return obj
-
-
 def verdicts(schema: dict[str, Any], instance: dict[str, Any], target: str = "Document") -> tuple[bool, bool]:
     """Whether the JSON Schema and the SHACL shapes generated for *schema* accept *instance* of *target*."""
-    text = yaml.safe_dump(schema)
-    json_schema = json.loads(JsonSchemaGenerator(text, top_class=target).serialize())
-    context = json.loads(ContextGenerator(text).serialize())["@context"]
-    data = {"@context": context, **_as_json_ld(SchemaView(text), instance, target)}
-    shapes = ShaclGenerator(text, closed=False).serialize()
-    conforms, _, _ = validate(
-        Graph().parse(data=json.dumps(data), format="json-ld"),
-        shacl_graph=Graph().parse(data=shapes, format="turtle"),
-        meta_shacl=True,
-    )
-    return Draft201909Validator(json_schema).is_valid(_without_types(instance)), conforms
+    return generator_agreement.verdicts(schema, instance, target)
 
 
 def conforms(schema: dict[str, Any], data: str, **options: Any) -> bool:
@@ -417,8 +382,11 @@ def reference_verdicts(
     json_schema = json.loads(JsonSchemaGenerator(text, top_class="Document").serialize())
     context = json.loads(ContextGenerator(text).serialize())["@context"]
     sv = SchemaView(text)
-    graph = [_as_json_ld(sv, instance, "Document")]
-    graph += [_as_json_ld(sv, {"id": id_, **resource}, resource["@type"]) for id_, resource in resources.items()]
+    graph = [generator_agreement.as_json_ld(sv, instance, "Document")]
+    graph += [
+        generator_agreement.as_json_ld(sv, {"id": id_, **resource}, resource["@type"])
+        for id_, resource in resources.items()
+    ]
     shapes = ShaclGenerator(text, closed=False).serialize()
     conforms, _, _ = validate(
         Graph().parse(data=json.dumps({"@context": context, "@graph": graph}), format="json-ld"),

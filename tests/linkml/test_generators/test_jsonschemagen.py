@@ -490,6 +490,12 @@ def test_multivalued_element_constraints(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_multivalued_element_constraints.yaml"))
 
 
+def test_multivalued_has_member(subtests, input_path):
+    """Tests that has_member asks for a value satisfying its expression, which an empty or absent list lacks."""
+
+    external_file_test(subtests, input_path("jsonschema_multivalued_has_member.yaml"))
+
+
 def test_collection_forms(subtests, input_path):
     """Tests that expanded, compact, and simple dicts can be validated"""
 

@@ -70,7 +70,7 @@ At the class level, each member of `any_of`, `all_of`, `exactly_one_of` and `non
 
 A slot condition needs a meaning when its slot is absent. The JSON Schema and SHACL generators read it as an SQL `CHECK` constraint reads a condition on a null value: an instance is invalid only when an expression is definitely false.
 
-- A condition that decides whether its slot may be absent is true or false as usual. Such a condition sets `value_presence: PRESENT` or `ABSENT`, `required: true`, a minimum or exact cardinality of at least 1, or a maximum or exact cardinality of 0.
+- A condition that decides whether its slot may be absent is true or false as usual. Such a condition sets `value_presence: PRESENT` or `ABSENT`, `required: true`, a minimum or exact cardinality of at least 1, `has_member`, or a maximum or exact cardinality of 0.
 - Any other condition is *unknown* when its slot is absent.
 - `any_of`, `all_of` and `none_of` combine these as "or", "and" and "not". An unknown member doesn't make `any_of` true, nor `none_of` false.
 - `exactly_one_of` holds when exactly one member is definitely true.
@@ -93,6 +93,8 @@ A `Sample` without `status` is valid: the condition is unknown, so `none_of` isn
 | `exactly_one_of: [label = A, note = B]` | invalid | valid | invalid |
 
 A slot's [range_expression](https://w3id.org/linkml/range_expression) constrains each value of the slot in the same way: its conditions constrain the slots of the value, as induced for the slot's range class. In a slot condition, a `range_expression` is part of the condition, so under `none_of` it must hold definitely.
+
+A slot's [has_member](https://w3id.org/linkml/has_member) asks for at least one value satisfying its expression. A slot without a value, absent or empty, has no member, so it fails `has_member`.
 
 [Rules](#rules) are read differently: their preconditions require their slots, and so do their postconditions unless the rule is `open_world`.
 

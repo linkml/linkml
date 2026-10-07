@@ -188,6 +188,9 @@ expression can't reach.
 A value that is a reference is just an identifier, whose slots JSON Schema can't
 see, and a value of a type or an enum has no slots. A condition on the slots of
 such a value is unknown, so the value is accepted, also under ``none_of``.
+A multivalued slot's `has_member <https://w3id.org/linkml/has_member>`_ becomes
+``contains``, and the slot is required, because a slot without a value has no
+member; on a slot that isn't multivalued it is ignored, with a warning.
 The SHACL generator reads them the same way, but checks a reference against its
 description in the data graph.
 
