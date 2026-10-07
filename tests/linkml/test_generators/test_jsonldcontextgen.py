@@ -57,6 +57,72 @@ def test_expected_rdf(input_path, schema):
     rdf_expects.check_expectations()
 
 
+@pytest.mark.parametrize("fix_multivalue_containers", [True, False])
+@pytest.mark.xfail(reason="Issue #4057: rdf:type slots are not mapped to the JSON-LD @type keyword", strict=True)
+def test_multivalued_rdf_type_slot_preserves_rdf_triples(tmp_path, fix_multivalue_containers):
+    """A multivalued rdf:type slot should expand to the same RDF types with either container policy.
+    This is a regression test for issue #4057."""
+    from rdflib import RDF, Graph, URIRef
+
+    schema_file = tmp_path / "rdf_type_roundtrip.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """\
+            id: https://example.org/rdf-type-roundtrip
+            name: rdf-type-roundtrip
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/rdf-type-roundtrip/
+              rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  type_field:
+                    range: uriorcurie
+                    multivalued: true
+                    slot_uri: rdf:type
+            """
+        ),
+        encoding="utf-8",
+    )
+    context = json.loads(
+        ContextGenerator(
+            str(schema_file),
+            mergeimports=True,
+            fix_multivalue_containers=fix_multivalue_containers,
+        ).serialize()
+    )["@context"]
+    expected_context_entry = {"@id": "@type"}
+    if fix_multivalue_containers:
+        expected_context_entry["@container"] = "@set"
+    assert context["type_field"] == expected_context_entry
+
+    subject = URIRef("https://example.org/instance")
+    expected_types = {
+        URIRef("https://example.org/Person"),
+        URIRef("https://example.org/Agent"),
+    }
+    document = {
+        "@context": context,
+        "@id": str(subject),
+        "type_field": [str(type_iri) for type_iri in expected_types],
+    }
+
+    graph = Graph().parse(data=json.dumps(document), format="json-ld")
+
+    # The @type alias must emit one rdf:type triple per value, regardless of
+    # whether the context opts into @container: @set.
+    assert set(graph.objects(subject, RDF.type)) == expected_types
+
+    # Verify the RDF graph survives serialization and parsing unchanged.
+    round_tripped_graph = Graph().parse(data=graph.serialize(format="turtle"), format="turtle")
+    assert graph.isomorphic(round_tripped_graph)
+
+
 def test_emit_frame_inline_rules(tmp_path):
     schema = tmp_path / "mini_inline.yaml"
     schema.write_text(
