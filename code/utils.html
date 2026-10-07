@@ -697,6 +697,12 @@ return a dictionary closure.</p>
 if the name isn’t valid</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.config_section_name">
+<span class="sig-name descname"><span class="pre">config_section_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.config_section_name" title="Link to this definition">¶</a></dt>
+<dd><p>Section this generator reads from a <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> (<code class="docutils literal notranslate"><span class="pre">generator_args.&lt;name&gt;</span></code>).</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.default_prefix">
 <span class="sig-name descname"><span class="pre">default_prefix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.default_prefix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.default_prefix" title="Link to this definition">¶</a></dt>
@@ -1171,6 +1177,32 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.generator.apply_config_defaults">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">apply_config_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#apply_config_defaults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.apply_config_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>Overlay <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> values onto CLI args the user did not set.</p>
+<p>Precedence is command line/env over config over option defaults: a value is
+taken from <code class="docutils literal notranslate"><span class="pre">config</span></code> only when its option was left at the default. Values are
+converted by their option’s click type, so a config file and a command line
+reach the generator identically. Keys that are not options of this command are
+reported per-key (a typo in the config file) rather than silently dropped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> – The active click context, used to tell which options the user set.</p></li>
+<li><p><strong>config</strong> – One generator’s settings, e.g. from <a class="reference internal" href="#linkml.utils.generator.read_generator_config" title="linkml.utils.generator.read_generator_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_generator_config()</span></code></a>.</p></li>
+<li><p><strong>args</strong> – The keyword args forwarded to the generator; updated in place.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">args</span></code>, updated in place.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>click.BadParameter</strong> – If a value is not valid for its option’s type.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2094,6 +2126,7 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.class_identifier_path"><code class="docutils literal notranslate"><span class="pre">Generator.class_identifier_path()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.class_or_type_for"><code class="docutils literal notranslate"><span class="pre">Generator.class_or_type_for()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.class_or_type_name"><code class="docutils literal notranslate"><span class="pre">Generator.class_or_type_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.config_section_name"><code class="docutils literal notranslate"><span class="pre">Generator.config_section_name</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.default_prefix"><code class="docutils literal notranslate"><span class="pre">Generator.default_prefix()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.directory_output"><code class="docutils literal notranslate"><span class="pre">Generator.directory_output</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.domain_slots"><code class="docutils literal notranslate"><span class="pre">Generator.domain_slots()</span></code></a></li>
@@ -2154,6 +2187,7 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#linkml.utils.generator.Generator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">Generator.visits_are_sorted</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#linkml.utils.generator.apply_config_defaults"><code class="docutils literal notranslate"><span class="pre">apply_config_defaults()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.config_mapping"><code class="docutils literal notranslate"><span class="pre">config_mapping()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.parse_config_yaml"><code class="docutils literal notranslate"><span class="pre">parse_config_yaml()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.generator.read_generator_config"><code class="docutils literal notranslate"><span class="pre">read_generator_config()</span></code></a></li>
