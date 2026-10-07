@@ -123,7 +123,9 @@ Each entry of ``slot_conditions`` gives an
   ``meaning`` where they have one;
 * ``range`` gives the same class, type or enum constraint as a slot's range;
 * ``range_expression`` gives an ``sh:node``, as described under
-  `Range Expressions`_.
+  `Range Expressions`_;
+* ``has_member`` gives an ``sh:qualifiedValueShape``, as described under
+  `Members`_.
 
 A shape may have at most one value of ``sh:minInclusive``, ``sh:maxInclusive``
 or ``sh:in``, and of ``sh:pattern``, whose component also takes ``sh:flags``
@@ -173,7 +175,7 @@ slot's range.
 
 An operator whose members use anything else is skipped as a whole and logged as
 a warning, because leaving out one member would change what the operator
-admits. That covers, for example, ``has_member``, ``equals_expression`` or a
+admits. That covers, for example, ``all_members``, ``equals_expression`` or a
 slot-level ``any_of`` inside a slot condition, a condition on a name that is not a slot, a condition
 on the identifier slot (the node's IRI rather than a property), and
 ``equals_string`` on a slot whose range does not hold strings.
@@ -235,6 +237,35 @@ logged as a warning.
 A value that is a reference is checked against its description in the data
 graph, as ``sh:class`` is. The JSON Schema generator can't check it, because
 there the value is just an identifier.
+
+
+Members
+^^^^^^^
+
+A multivalued slot's `has_member <https://w3id.org/linkml/has_member>`__ asks
+for at least one value that satisfies an expression. It becomes an
+``sh:qualifiedValueShape`` with ``sh:qualifiedMinCount 1`` (`SHACL §4.7.3
+<https://www.w3.org/TR/shacl/#QualifiedValueShapeConstraintComponent>`__), so
+the other values need only satisfy the slot's own constraints. The member
+expression constrains one value: its value operators, ``range`` and
+``range_expression`` apply.
+
+.. code-block:: yaml
+
+   slots:
+     tags:
+       range: string
+       multivalued: true
+       has_member:
+         equals_string: reviewed
+
+This accepts ``[reviewed, pending]`` and rejects ``[pending]``. A slot without a
+value, absent or empty, has no member, so it fails ``has_member``, as the JSON
+Schema generator also reads it. In a slot condition of a class-level expression,
+``has_member`` therefore decides whether the slot may be absent, and the member
+takes the form of the condition. Several conditions with ``has_member`` may be
+satisfied by the same value. A ``has_member`` on a slot that isn't multivalued,
+or one that uses anything else, is skipped and logged as a warning.
 
 
 Command Line

@@ -224,7 +224,7 @@ class ShaclGenerator(Generator):
 
         self._class_expressions_added: set[tuple[URIRef, str, str]] = set()
         self._class_expression_problems: dict[tuple[str, str, str], list[str]] = {}
-        self._range_expression_problems: dict[tuple[str, str], list[str]] = {}
+        self._slot_expression_problems: dict[tuple[str, str, str], list[str]] = {}
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
             def shape_pv(p, v):
@@ -409,6 +409,8 @@ class ShaclGenerator(Generator):
                     prop_pv(SH.pattern, Literal(s.pattern))
                 if s.range_expression is not None:
                     self._add_range_expression(g, prop_pv, c, s, s.range, s.range_expression)
+                if s.has_member is not None:
+                    self._add_member(g, prop_pv, c, s)
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -423,7 +425,7 @@ class ShaclGenerator(Generator):
                 self._add_rules(g, class_uri_with_suffix, c)
 
         self._report_class_expression_problems()
-        self._report_range_expression_problems()
+        self._report_slot_expression_problems()
         return g
 
     LINKML_ANY_URI = "https://w3id.org/linkml/Any"
@@ -458,7 +460,9 @@ class ShaclGenerator(Generator):
             "range_expression",
         }
     )
-    _SLOT_CONDITION_FIELDS = _SLOT_CONDITION_PRESENCE_FIELDS | _SLOT_CONDITION_VALUE_FIELDS
+    # has_member, which asks for at least one value satisfying a value expression,
+    # does both.
+    _SLOT_CONDITION_FIELDS = _SLOT_CONDITION_PRESENCE_FIELDS | _SLOT_CONDITION_VALUE_FIELDS | {"has_member"}
 
     # Parameters a shape may have at most one value of: sh:minInclusive and
     # sh:maxInclusive (SHACL §4.3), sh:in (§4.8.3), sh:datatype and sh:nodeKind
@@ -646,15 +650,7 @@ class ShaclGenerator(Generator):
         "definitely true" form with *definite*, otherwise its "not false" form."""
         slot = self._condition_slot(cls, slot_name)
         pnode = BNode()
-        repeated = []
-
-        def prop_pv(p, v):
-            if v is None:
-                return
-            if p in self._SINGLE_VALUE_PARAMETERS and (pnode, p, None) in g:
-                repeated.append((p, v))
-            else:
-                g.add((pnode, p, v))
+        prop_pv, finish = self._shape_parameters(g, pnode)
 
         prop_pv(SH.path, URIRef(self._slot_iri(slot)))
         if condition.title is not None:
@@ -668,13 +664,62 @@ class ShaclGenerator(Generator):
         if upper is not None:
             prop_pv(SH.maxCount, Literal(upper))
 
+        self._add_value_constraints(g, prop_pv, condition, condition.range or slot.range, definite)
+        if condition.has_member is not None:
+            prop_pv(SH.qualifiedValueShape, self._member_shape(g, slot, condition.has_member, definite))
+            prop_pv(SH.qualifiedMinCount, Literal(1))
+        finish()
+        return pnode
+
+    def _shape_parameters(self, g: Graph, node: BNode) -> tuple[Callable, Callable[[], None]]:
+        """A function adding a parameter to the shape *node*, and one to call once all are added.
+
+        A shape may have at most one value of each of :attr:`_SINGLE_VALUE_PARAMETERS`.
+        A further value goes into an ``sh:and`` member shape of its own, where it
+        applies to the same values, as it would on *node* itself.
+        """
+        repeated = []
+
+        def add(p, v):
+            if v is None:
+                return
+            if p in self._SINGLE_VALUE_PARAMETERS and (node, p, None) in g:
+                repeated.append((p, v))
+            else:
+                g.add((node, p, v))
+
+        def finish():
+            if repeated:
+                members = []
+                for p, v in repeated:
+                    member = BNode()
+                    g.add((member, p, v))
+                    members.append(member)
+                and_node = BNode()
+                Collection(g, and_node, members)
+                g.add((node, SH["and"], and_node))
+
+        return add, finish
+
+    def _add_value_constraints(
+        self,
+        g: Graph,
+        pv: Callable,
+        condition: SlotDefinition | AnonymousSlotExpression,
+        value_range: ElementName | None,
+        definite: bool,
+    ) -> None:
+        """Add the constraints that *condition* places on each value of range *value_range*.
+
+        These are the value operators, ``range`` and ``range_expression``, the
+        latter in its "definitely true" form with *definite*.
+        """
         if condition.minimum_value is not None:
-            prop_pv(SH.minInclusive, Literal(condition.minimum_value))
+            pv(SH.minInclusive, Literal(condition.minimum_value))
         if condition.maximum_value is not None:
-            prop_pv(SH.maxInclusive, Literal(condition.maximum_value))
+            pv(SH.maxInclusive, Literal(condition.maximum_value))
         if condition.pattern is not None:
-            prop_pv(SH.pattern, Literal(condition.pattern))
-        value_range = condition.range or slot.range
+            pv(SH.pattern, Literal(condition.pattern))
         for values in (
             [condition.equals_string] if condition.equals_string is not None else [],
             condition.equals_string_in,
@@ -682,29 +727,31 @@ class ShaclGenerator(Generator):
             if values:
                 in_node = BNode()
                 Collection(g, in_node, self._string_value_terms(value_range, values))
-                prop_pv(SH["in"], in_node)
+                pv(SH["in"], in_node)
         if condition.equals_number is not None:
             # A value comparison, unlike the slot loop's sh:hasValue: 5 matches 5.0,
             # and like every other value constraint in a condition it holds when the
             # slot is absent.
-            prop_pv(SH.minInclusive, Literal(condition.equals_number))
-            prop_pv(SH.maxInclusive, Literal(condition.equals_number))
+            pv(SH.minInclusive, Literal(condition.equals_number))
+            pv(SH.maxInclusive, Literal(condition.equals_number))
         if condition.range is not None:
-            self._add_range(g, prop_pv, condition.range)
+            self._add_range(g, pv, condition.range)
         if condition.range_expression is not None:
-            prop_pv(SH.node, self._range_expression_shape(g, value_range, condition.range_expression, definite))
-        if repeated:
-            # Each repeated parameter in a member shape of its own: all of them hold
-            # for every value, as they would on the property shape itself.
-            members = []
-            for p, v in repeated:
-                member = BNode()
-                g.add((member, p, v))
-                members.append(member)
-            and_node = BNode()
-            Collection(g, and_node, members)
-            g.add((pnode, SH["and"], and_node))
-        return pnode
+            pv(SH.node, self._range_expression_shape(g, value_range, condition.range_expression, definite))
+
+    def _member_shape(self, g: Graph, slot: SlotDefinition, member: AnonymousSlotExpression, definite: bool) -> BNode:
+        """Build the node shape a value of *slot* must conform to as a member of its ``has_member``.
+
+        ``sh:qualifiedValueShape`` with ``sh:qualifiedMinCount 1`` (SHACL §4.7.3)
+        then asks for at least one such value, while the other values need only
+        satisfy the slot's own constraints.  *definite* selects the form of a
+        ``range_expression`` of *member*.
+        """
+        node = BNode()
+        pv, finish = self._shape_parameters(g, node)
+        self._add_value_constraints(g, pv, member, member.range or slot.range, definite)
+        finish()
+        return node
 
     def _string_value_terms(self, r: ElementName | None, values: list[str]) -> list[URIRef | Literal]:
         """The RDF terms of the ``equals_string`` / ``equals_string_in`` *values* of a slot with range *r*.
@@ -780,23 +827,51 @@ class ShaclGenerator(Generator):
             if slot.identifier:
                 # An identifier is the node's IRI, not a property arc.
                 return f"a condition on the identifier slot '{slot_name}'"
-            if condition.range is not None and not self._is_known_range(condition.range):
-                return f"the unknown range '{condition.range}' in the condition on slot '{slot_name}'"
-            value_range = condition.range or slot.range
-            if condition.range_expression is not None:
-                reason = self._untranslatable(self._value_class(value_range), condition.range_expression)
+            reason = self._value_untranslatable(condition, slot, f"the condition on slot '{slot_name}'")
+            if reason is not None:
+                return reason
+            if condition.has_member is not None:
+                reason = self._member_untranslatable(slot, condition.has_member)
                 if reason is not None:
                     return reason
-            if (condition.equals_string is not None or condition.equals_string_in) and not self._is_string_range(
-                value_range
-            ):
-                return f"equals_string on slot '{slot_name}', whose range '{value_range}' does not hold strings"
         for operator in self._CLASS_EXPRESSION_OPERATORS:
             for member in getattr(expr, operator) or []:
                 reason = self._untranslatable(cls, member)
                 if reason is not None:
                     return reason
         return None
+
+    def _value_untranslatable(
+        self, condition: SlotDefinition | AnonymousSlotExpression, slot: SlotDefinition, where: str
+    ) -> str | None:
+        """Return what in the value constraints of *condition* on *slot* cannot be translated, or ``None``.
+
+        *where* names *condition* in the explanation.
+        """
+        if condition.range is not None and not self._is_known_range(condition.range):
+            return f"the unknown range '{condition.range}' in {where}"
+        value_range = condition.range or slot.range
+        if condition.range_expression is not None:
+            reason = self._untranslatable(self._value_class(value_range), condition.range_expression)
+            if reason is not None:
+                return reason
+        if (condition.equals_string is not None or condition.equals_string_in) and not self._is_string_range(
+            value_range
+        ):
+            return f"equals_string in {where}, whose range '{value_range}' does not hold strings"
+        return None
+
+    def _member_untranslatable(self, slot: SlotDefinition, member: AnonymousSlotExpression) -> str | None:
+        """Return what in the ``has_member`` *member* of *slot* cannot be translated, or ``None``.
+
+        A member is one value, so only value constraints apply to it.
+        """
+        if not slot.multivalued:
+            return f"has_member on slot '{slot.name}', which is not multivalued"
+        unknown = self._set_operator_fields(member) - self._SLOT_CONDITION_VALUE_FIELDS
+        if unknown:
+            return f"'{sorted(unknown)[0]}' in the has_member of slot '{slot.name}'"
+        return self._value_untranslatable(member, slot, f"the has_member of slot '{slot.name}'")
 
     def _value_class(self, value_range: ElementName | None) -> ClassDefinition | None:
         """The class whose instances a range *value_range* holds, or ``None`` for any other range."""
@@ -833,19 +908,37 @@ class ShaclGenerator(Generator):
         """
         reason = self._untranslatable(self._value_class(value_range), expression)
         if reason is not None:
-            classes = self._range_expression_problems.setdefault((slot.name, reason), [])
-            if cls.name not in classes:
-                classes.append(cls.name)
+            self._slot_expression_problem(cls, slot, "range_expression", reason)
             return
         prop_pv(SH.node, self._range_expression_shape(g, value_range, expression, definite=False))
 
-    def _report_range_expression_problems(self) -> None:
-        """Warn once about each ``range_expression`` of a slot that is not translated,
-        naming the class shapes it is missing from."""
-        for (slot_name, reason), classes in self._range_expression_problems.items():
+    def _add_member(self, g: Graph, prop_pv: Callable, cls: ClassDefinition, slot: SlotDefinition) -> None:
+        """Ask for at least one value of *slot*, in the shape of *cls*, satisfying its ``has_member``.
+
+        Having no value, an absent slot fails it.  A ``has_member`` that cannot be
+        translated is skipped with a warning.
+        """
+        reason = self._member_untranslatable(slot, slot.has_member)
+        if reason is not None:
+            self._slot_expression_problem(cls, slot, "has_member", reason)
+            return
+        prop_pv(SH.qualifiedValueShape, self._member_shape(g, slot, slot.has_member, definite=False))
+        prop_pv(SH.qualifiedMinCount, Literal(1))
+
+    def _slot_expression_problem(self, cls: ClassDefinition, slot: SlotDefinition, field: str, reason: str) -> None:
+        """Record that *field* of *slot* is left out of the shape of *cls* because of *reason*."""
+        classes = self._slot_expression_problems.setdefault((slot.name, field, reason), [])
+        if cls.name not in classes:
+            classes.append(cls.name)
+
+    def _report_slot_expression_problems(self) -> None:
+        """Warn once about each ``range_expression`` or ``has_member`` of a slot that is
+        not translated, naming the class shapes it is missing from."""
+        for (slot_name, field, reason), classes in self._slot_expression_problems.items():
             logger.warning(
-                "Slot %r: range_expression is not translated to SHACL, because it uses %s (in the shapes of %s).",
+                "Slot %r: %s is not translated to SHACL, because it uses %s (in the shapes of %s).",
                 slot_name,
+                field,
                 reason,
                 ", ".join(map(repr, classes)),
             )
