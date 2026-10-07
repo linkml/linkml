@@ -1,5 +1,5 @@
 """
-Base class for all generators
+Base class for all generators implemented in Python
 
 Developer Notes
 ---------------
@@ -35,6 +35,7 @@ from click import Argument, Command, Option
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
+from linkml.utils.generator_base import GeneratorBase
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -81,9 +82,9 @@ def _resolved_metamodel(mergeimports):
 
 
 @dataclass
-class Generator(metaclass=abc.ABCMeta):
+class Generator(GeneratorBase, metaclass=abc.ABCMeta):
     """
-    Base class for generators
+    Base class for generators implemented in Python
 
     For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
@@ -93,11 +94,7 @@ class Generator(metaclass=abc.ABCMeta):
         open file or a pre-parsed schema"""
 
     # ClassVars
-    generatorname: ClassVar[str] = None
-    """ Name of the generator. Override with os.path.basename(__file__)"""
-
-    generatorversion: ClassVar[str] = None  # Generator version identifier
-    """Version of the generator. Consider deprecating and instead use overall linkml version"""
+    # generatorname, generatorversion, valid_formats and file_extension come from GeneratorBase.
 
     uses_schemaloader: ClassVar[bool] = True
     """Old-style generator that uses the SchemaLoader and visitor pattern"""
@@ -107,9 +104,6 @@ class Generator(metaclass=abc.ABCMeta):
 
     requires_metamodel: ClassVar[bool] = True
     """Generator queries an instance of the metamodel"""
-
-    valid_formats: ClassVar[list[str]] = []
-    """Allowed formats - first format is default"""
 
     visit_all_class_slots: ClassVar[bool] = False
     """Visitor ClassVar: False means only visit own slots, True means visit all slots"""
@@ -126,8 +120,6 @@ class Generator(metaclass=abc.ABCMeta):
 
     format: str | None = None
     """expected output format"""
-
-    file_extension: ClassVar[str] = None
 
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
@@ -259,17 +251,9 @@ class Generator(metaclass=abc.ABCMeta):
             self._namespaces = None
         if not self.logger:
             self.logger = logger
-        if self.log_level is not None:
-            self.logger.setLevel(self.log_level)
-        if self.format is None:
-            self.format = self.valid_formats[0]
-        if self.format not in self.valid_formats:
-            raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
+        self._init_common()
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
-        if not self.metadata:
-            self.source_file_date = None
-            self.source_file_size = None
         if self.requires_metamodel:
             self.metamodel = _resolved_metamodel(self.mergeimports)
 
@@ -1013,7 +997,7 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+def shared_arguments(g: type[GeneratorBase], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
     """Get command-line arguments common to all generators.
 
     Use this decorator on the Click entry point for a generator to automatically

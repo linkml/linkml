@@ -1,0 +1,45 @@
+id: https://example.org/rdfsvocab
+name: rdfsvocab
+description: Test schema for the RDFS generator.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  rv: https://example.org/rdfsvocab/
+  schema: http://schema.org/
+default_prefix: rv
+default_range: string
+emit_prefixes:
+  - rv
+  - schema
+imports:
+  - linkml:types
+  # Any schema with a class of its own will do.
+  # Used to test if --exclude-imports is working.
+  - core
+
+classes:
+  HasAliases:
+    mixin: true
+    slots:
+      - aliases
+
+  Person:
+    description: A human being
+    mixins:
+      - HasAliases
+    slots:
+      - vital_status
+
+  Organization:
+    class_uri: schema:Organization
+
+slots:
+  aliases:
+    multivalued: true
+  vital_status:
+    range: VitalStatus
+
+enums:
+  VitalStatus:
+    permissible_values:
+      ALIVE:
+      DEAD:
