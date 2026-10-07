@@ -111,6 +111,12 @@ RUST_KEYWORDS = frozenset(
 
 _RUST_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
+# Names `cargo new` refuses or warns about because they conflict with Rust's own libraries.
+# https://github.com/rust-lang/cargo/blob/master/src/cargo/ops/cargo_new.rs
+CARGO_RESERVED_NAMES = frozenset({"alloc", "core", "proc_macro", "std", "test"})
+
+DEFAULT_CRATE_NAME = "example"
+
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
     "NaiveDate": Import(
@@ -371,10 +377,11 @@ def get_rust_range_info(
 def _is_valid_rust_ident(crate_name: str) -> bool:
     """Return True if ``crate_name`` can name the generated crate.
 
-    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml and used as a
-    path in generated code (``crate_name::stub_info()``), so it must be an ASCII Rust
-    identifier that is not a keyword. A hyphen is fine in a cargo package name but not
-    in a ``[lib]`` name or a path, so it is rejected here; use an underscore instead.
+    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml and names the
+    ``#[pymodule]`` function, so it must be an ASCII Rust identifier that is neither a
+    keyword nor a name cargo reserves for Rust's own libraries. A hyphen is fine in a
+    cargo package name but not in a ``[lib]`` name or an identifier, so it is rejected
+    here; use an underscore instead.
 
         >>> _is_valid_rust_ident("my_schema")
         True
@@ -382,10 +389,39 @@ def _is_valid_rust_ident(crate_name: str) -> bool:
         False
         >>> _is_valid_rust_ident("fn")
         False
+        >>> _is_valid_rust_ident("test")
+        False
         >>> _is_valid_rust_ident("_")
         False
     """
-    return crate_name != "_" and crate_name not in RUST_KEYWORDS and _RUST_IDENT.fullmatch(crate_name) is not None
+    return (
+        crate_name != "_"
+        and crate_name not in RUST_KEYWORDS
+        and crate_name not in CARGO_RESERVED_NAMES
+        and _RUST_IDENT.fullmatch(crate_name) is not None
+    )
+
+
+def _derive_crate_name(schema_name: str) -> str:
+    """Derive a legal crate name from a schema name.
+
+    Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
+    characters cargo refuses in a ``[lib]`` name (a hyphen or dot, both legal in a
+    schema name) become underscores, a keyword or a name cargo reserves is suffixed
+    with ``_``, the same escape :func:`protect_name` applies, and anything still
+    unusable falls back to :data:`DEFAULT_CRATE_NAME`.
+
+        >>> _derive_crate_name("person-schema")
+        'person_schema'
+        >>> _derive_crate_name("test")
+        'test_'
+        >>> _derive_crate_name("1abc")
+        'example'
+    """
+    candidate = re.sub(r"[^A-Za-z0-9_]", "_", schema_name)
+    if candidate in RUST_KEYWORDS or candidate in CARGO_RESERVED_NAMES:
+        candidate += "_"
+    return candidate if _is_valid_rust_ident(candidate) else DEFAULT_CRATE_NAME
 
 
 def protect_name(v: str) -> str:
@@ -424,7 +460,7 @@ class RustGenerator(Generator, LifecycleMixin):
     uses_schemaloader = False
     config_section_name = "rust"
     crate_name: str | None = None
-    """Name of the generated crate. If None, the schema name is used."""
+    """Name of the generated crate and its ``#[pymodule]``. If None, derived from the schema name."""
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -455,8 +491,10 @@ class RustGenerator(Generator, LifecycleMixin):
     def __post_init__(self):
         self._subproperty_enums = {}  # Cache for generated subproperty enums
         super().__post_init__()
+        if self.crate_name is None:
+            self.crate_name = _derive_crate_name(self.schemaview.schema.name)
         # str() guards against a non-string value, e.g. an unquoted number in config.yaml
-        if self.crate_name is not None and not _is_valid_rust_ident(str(self.crate_name)):
+        elif not _is_valid_rust_ident(str(self.crate_name)):
             raise ValueError(f"{self.crate_name!r} is not a valid Rust crate name")
 
     @classmethod
@@ -765,7 +803,7 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustCargo(
-            name=self.crate_name if self.crate_name is not None else self.schemaview.schema.name,
+            name=self.crate_name,
             version=version,
             imports=imports,
             pyo3_version=self.pyo3_version,
@@ -975,7 +1013,7 @@ class RustGenerator(Generator, LifecycleMixin):
         all_enums = [e.enum for e in enums] + subproperty_enums
 
         file = RustFile(
-            name=sv.schema.name,
+            name=self.crate_name,
             imports=imports,
             slots=[t.slot for t in slots],
             types=[t.type_ for t in types],

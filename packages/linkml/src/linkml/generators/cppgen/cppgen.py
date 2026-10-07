@@ -102,12 +102,22 @@ CPP_KEYWORDS = frozenset(
 
 _CPP_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
+# "Identifiers that contain a double underscore or begin with an underscore followed
+# by an uppercase letter" are reserved in any scope. A bare leading underscore is
+# left alone because it's reserved only at global scope and in wide use.
+# https://en.cppreference.com/w/cpp/language/identifiers
+_CPP_RESERVED_IDENT = re.compile(r"__|^_[A-Z]")
+
+# https://en.cppreference.com/w/cpp/language/namespace
+DEFAULT_CPP_NAMESPACE = "example"
+
 
 def _is_valid_cpp_namespace(namespace: str) -> bool:
     """Return True if ``namespace`` is a ``::``-separated list of legal C++ identifiers.
 
-    The generated header opens it with a C++17 nested namespace definition
-    (``namespace a::b {``), so each segment must be an identifier and not a keyword.
+    The generated header opens it with a (since C++17) nested namespace definition
+    (``namespace a::b {``), so each segment must be an identifier that is not a
+    keyword or reserved to the implementations. See comment in next section.
 
         >>> _is_valid_cpp_namespace("game::ontology")
         True
@@ -115,12 +125,39 @@ def _is_valid_cpp_namespace(namespace: str) -> bool:
         False
         >>> _is_valid_cpp_namespace("a::class")
         False
+        >>> _is_valid_cpp_namespace("a__b")
+        False
         >>> _is_valid_cpp_namespace("::a")
         False
     """
     return all(
-        _CPP_IDENT.fullmatch(segment) is not None and segment not in CPP_KEYWORDS for segment in namespace.split("::")
+        _CPP_IDENT.fullmatch(segment) is not None
+        and _CPP_RESERVED_IDENT.search(segment) is None
+        and segment not in CPP_KEYWORDS
+        for segment in namespace.split("::")
     )
+
+
+def _derive_cpp_namespace(schema_name: str) -> str:
+    """Derive a legal C++ namespace from a schema name.
+
+    Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
+    the name is lowercased, characters illegal in an identifier (a hyphen or dot,
+    both legal in a schema name) become underscores, runs of underscores collapse
+    so no reserved ``__`` is produced, a keyword is suffixed with ``_``, and
+    anything still unusable falls back to :data:`DEFAULT_CPP_NAMESPACE`.
+
+        >>> _derive_cpp_namespace("My-Schema")
+        'my_schema'
+        >>> _derive_cpp_namespace("template")
+        'template_'
+        >>> _derive_cpp_namespace("1abc")
+        'example'
+    """
+    candidate = re.sub(r"_+", "_", re.sub(r"[^a-z0-9_]", "_", schema_name.lower()))
+    if candidate in CPP_KEYWORDS:
+        candidate += "_"
+    return candidate if _is_valid_cpp_namespace(candidate) else DEFAULT_CPP_NAMESPACE
 
 
 def _to_upper_snake(name: str) -> str:
@@ -439,11 +476,7 @@ class CppGenerator(OOCodeGenerator):
         self._type_defs = {}
         self._needed_includes = set()
 
-        # Determine namespace
-        namespace = self.namespace
-        if namespace is None:
-            schema_name = sv.schema.name
-            namespace = re.sub(r"[^a-z0-9_]", "_", schema_name.lower())
+        namespace = self.namespace if self.namespace is not None else _derive_cpp_namespace(sv.schema.name)
 
         # Generate enums
         enums: dict[str, CppEnum] = {}
