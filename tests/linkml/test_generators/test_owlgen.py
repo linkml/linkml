@@ -1232,3 +1232,38 @@ def test_complement_of_union_of_mixed_none_filters_silently():
     # Should succeed and return a BNode (the complement expression).
     assert result is not None
     assert isinstance(result, BNode)
+
+
+@pytest.mark.parametrize("mixins_as_expressions", [False, True])
+def test_permissible_value_mixin_attaches_to_permissible_value(mixins_as_expressions: bool) -> None:
+    """A permissible value's mixin becomes a parent of that permissible value, never of the enum.
+
+    See https://github.com/linkml/linkml/issues/3682
+    """
+    sb = SchemaBuilder()
+    sb.add_enum(
+        "ColorEnum",
+        permissible_values=[
+            PermissibleValue(text="warm"),
+            PermissibleValue(text="red", mixins=["warm"]),
+        ],
+    )
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        mixins_as_expressions=mixins_as_expressions,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    pv_nodes = {str(label): node for node, label in g.subject_objects(RDFS.label) if str(label) in ("warm", "red")}
+    red, warm = pv_nodes["red"], pv_nodes["warm"]
+
+    assert list(g.objects(EX.ColorEnum, RDFS.subClassOf)) == [], "the enum must not get the mixin as a parent"
+    if mixins_as_expressions:
+        fillers = [g.value(parent, OWL.someValuesFrom) for parent in g.objects(red, RDFS.subClassOf)]
+        assert warm in fillers
+    else:
+        assert (red, RDFS.subClassOf, warm) in g
