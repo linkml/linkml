@@ -187,9 +187,12 @@ class JSONLDGenerator(Generator):
             context_kwargs["metadata"] = False
             # Forward importmap/base_dir so the spawned ContextGenerator can
             # re-resolve any URI-style imports in ``self.original_schema``
-            # through the same ``--importmap`` the caller supplied.
+            # through the same ``--importmap`` the caller supplied. A path
+            # carries its own location; forwarding base_dir alongside a
+            # relative path would resolve it against its own directory twice.
             context_kwargs.setdefault("importmap", self.importmap)
-            context_kwargs.setdefault("base_dir", self.base_dir)
+            if not isinstance(self.original_schema, (str, os.PathLike)):
+                context_kwargs.setdefault("base_dir", self.base_dir)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI

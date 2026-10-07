@@ -2,10 +2,12 @@ import json
 import logging
 
 import pytest
+from click.testing import CliRunner
 from rdflib import Graph, term
 from yaml import safe_load
 
 from linkml.generators import JSONLDGenerator, RDFGenerator
+from linkml.generators.jsonldgen import cli as jsonld_cli
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
@@ -96,3 +98,39 @@ def test_class_uri(input_path):
         ) or schema_view.expand_curie(class_info["class_uri"]) in schema_view.expand_curie(
             class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
         )
+
+
+def test_relative_schema_path_from_parent_dir(tmp_path, monkeypatch):
+    """`gen-jsonld` accepts a relative path with directory parts, as it did in 1.11.1.
+
+    Regression test: the nested ContextGenerator was handed the relative path together
+    with the schema's directory as ``base_dir``, so it looked for ``dist/dist/tiny.yaml``.
+    """
+    schema_dir = tmp_path / "dist"
+    schema_dir.mkdir()
+    (schema_dir / "tiny.yaml").write_text(
+        """
+id: https://example.org/tiny
+name: tiny
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/tiny/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+classes:
+  Thing:
+    attributes:
+      name: {}
+"""
+    )
+    monkeypatch.chdir(tmp_path)
+
+    relative = CliRunner().invoke(jsonld_cli, ["--no-metadata", "dist/tiny.yaml"])
+    absolute = CliRunner().invoke(jsonld_cli, ["--no-metadata", str(schema_dir / "tiny.yaml")])
+
+    assert relative.exit_code == 0, relative.output
+    assert relative.output == absolute.output
+    # The Python API passes a str rather than the CLI's Path
+    assert JSONLDGenerator("dist/tiny.yaml", metadata=False).serialize().rstrip() == absolute.output.rstrip()
