@@ -1,14 +1,17 @@
 import importlib
+import keyword
 import logging
 import os
 import re
 import sys
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from dataclasses import dataclass
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 from types import ModuleType
-from typing import ClassVar
+from typing import Any, ClassVar
 
+import click
 from jinja2 import Environment, PackageLoader
 
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
@@ -27,6 +30,24 @@ logger = logging.getLogger(__name__)
 _DATAFRAME_GENERATOR_VERSION = "0.2.0"
 
 
+def _is_valid_python_package(package: str) -> bool:
+    """Return True if the directory ``package`` names can be imported as a Python package.
+
+    ``gen-pandera --package`` is the directory the package is written to, and the
+    generated modules import each other relatively, so its last path component must
+    be a Python identifier that is not a keyword.
+
+        >>> _is_valid_python_package("out/my_models")
+        True
+        >>> _is_valid_python_package("my-models")
+        False
+        >>> _is_valid_python_package("class")
+        False
+    """
+    name = Path(package).name
+    return name.isidentifier() and not keyword.iskeyword(name)
+
+
 @dataclass
 class DataframeGenerator(OOCodeGenerator, ABC):
     """
@@ -39,6 +60,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     generatorversion = _DATAFRAME_GENERATOR_VERSION
     valid_formats = ["python"]
     file_extension = "py"
+    config_section_name = "pandera"
     java_style = False
     TYPE_MAP: dict = None
     environments: ClassVar[dict[str, Environment]] = {}
@@ -64,6 +86,12 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         self.class_handler = ClassHandlerBase(self)
         self.enum_handler = EnumHandlerBase(self)
         # Slot handler will be set by subclasses
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        package = args.get("package")
+        if package is not None and not _is_valid_python_package(str(package)):
+            raise click.UsageError(f"{package!r} is not a valid Python package directory")
 
     @abstractmethod
     def _default_type_map(self) -> dict:

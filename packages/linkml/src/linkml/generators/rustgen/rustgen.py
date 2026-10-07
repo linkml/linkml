@@ -1,8 +1,11 @@
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Literal, overload
+from typing import Any, Literal, overload
 
+import click
 from jinja2 import Environment
 
 from linkml.generators.common.lifecycle import LifecycleMixin
@@ -92,6 +95,21 @@ Mapping from python types to rust types.
 """
 
 PROTECTED_NAMES = ("type", "typeof", "abstract")
+
+# Strict and reserved Rust keywords up to the 2021 edition the generated Cargo.toml
+# declares (so not `gen`, reserved only from 2024); none can name a crate.
+# https://doc.rust-lang.org/reference/keywords.html
+RUST_KEYWORDS = frozenset(
+    {
+        "as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum",
+        "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod",
+        "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super", "trait",
+        "true", "try", "type", "unsafe", "use", "where", "while", "abstract", "become", "box", "do",
+        "final", "macro", "override", "priv", "typeof", "unsized", "virtual", "yield",
+    }
+)  # fmt: skip
+
+_RUST_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
@@ -350,6 +368,26 @@ def get_rust_range_info(
     return res
 
 
+def _is_valid_rust_ident(crate_name: str) -> bool:
+    """Return True if ``crate_name`` can name the generated crate.
+
+    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml and used as a
+    path in generated code (``crate_name::stub_info()``), so it must be an ASCII Rust
+    identifier that is not a keyword. A hyphen is fine in a cargo package name but not
+    in a ``[lib]`` name or a path, so it is rejected here; use an underscore instead.
+
+        >>> _is_valid_rust_ident("my_schema")
+        True
+        >>> _is_valid_rust_ident("my-schema")
+        False
+        >>> _is_valid_rust_ident("fn")
+        False
+        >>> _is_valid_rust_ident("_")
+        False
+    """
+    return crate_name != "_" and crate_name not in RUST_KEYWORDS and _RUST_IDENT.fullmatch(crate_name) is not None
+
+
 def protect_name(v: str) -> str:
     """
     append an underscore to a protected name
@@ -384,7 +422,9 @@ class RustGenerator(Generator, LifecycleMixin):
     valid_formats = ["rust"]
     file_extension = "rs"
     uses_schemaloader = False
+    config_section_name = "rust"
     crate_name: str | None = None
+    """Name of the generated crate. If None, the schema name is used."""
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -415,6 +455,15 @@ class RustGenerator(Generator, LifecycleMixin):
     def __post_init__(self):
         self._subproperty_enums = {}  # Cache for generated subproperty enums
         super().__post_init__()
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        if self.crate_name is not None and not _is_valid_rust_ident(str(self.crate_name)):
+            raise ValueError(f"{self.crate_name!r} is not a valid Rust crate name")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        crate_name = args.get("crate_name")
+        if crate_name is not None and not _is_valid_rust_ident(str(crate_name)):
+            raise click.UsageError(f"{crate_name!r} is not a valid Rust crate name")
 
     def _select_root_class(self, class_defs: list[ClassDefinition]) -> ClassDefinition | None:
         """Return the schema-local class marked ``tree_root`` if present."""

@@ -7,6 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from linkml.generators.cppgen import CppGenerator, cli
+from linkml.generators.cppgen.cppgen import _is_valid_cpp_namespace
 
 # ---------------------------------------------------------------------------
 # Shared inline schemas
@@ -851,3 +852,80 @@ def test_cli_nonexistent_template_dir(tmp_path):
     result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
 
     assert result.exit_code != 0
+
+
+# ---------------------------------------------------------------------------
+# Tests: namespace validation and --config-file
+#
+# The --config-file tests follow the javagen/golanggen ones (test_cli_config_file_sets_package,
+# test_cli_package_overrides_config_file, test_cli_invalid_config_package_errors), with
+# --namespace in place of --package.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "namespace,valid",
+    [
+        ("simple", True),
+        ("game::ontology", True),
+        ("_ns::v2", True),
+        ("", False),
+        ("my-schema", False),
+        ("1abc", False),
+        ("::a", False),
+        ("a::", False),
+        ("a:b", False),
+        ("a::class", False),
+        ("namespace", False),
+    ],
+)
+def test_is_valid_cpp_namespace(namespace, valid):
+    assert _is_valid_cpp_namespace(namespace) is valid
+
+
+@pytest.mark.parametrize("namespace", ["my-schema", "a::class", 123])
+def test_constructor_invalid_namespace_errors(namespace):
+    """An explicit namespace that cannot open a C++ namespace block is rejected, including
+    a non-string one such as an unquoted number from a config file."""
+    with pytest.raises(ValueError, match="not a valid C\\+\\+ namespace"):
+        CppGenerator(schema=SIMPLE_SCHEMA, namespace=namespace)
+
+
+def _cpp_config(tmp_path, body: str):
+    """Write the schema and a config file with a `generator_args.cpp` section."""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text("generator_args:\n  cpp:\n" + body)
+    return schema_file, config_file
+
+
+def test_cli_config_file_sets_options(tmp_path):
+    """--config-file supplies options the command line leaves at their defaults."""
+    schema_file, config_file = _cpp_config(tmp_path, "    namespace: from::config\n    use_optional: false\n")
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--config-file", str(config_file)])
+
+    assert result.exit_code == 0, result.output
+    assert "namespace from::config" in result.output
+    assert "std::optional" not in result.output
+
+
+def test_cli_namespace_overrides_config_file(tmp_path):
+    schema_file, config_file = _cpp_config(tmp_path, "    namespace: from::config\n")
+
+    result = CliRunner().invoke(cli, [str(schema_file), "-C", str(config_file), "--namespace", "from::cli"])
+
+    assert result.exit_code == 0, result.output
+    assert "namespace from::cli" in result.output
+
+
+@pytest.mark.parametrize("namespace", ["my-schema", "123"])
+def test_cli_invalid_config_namespace_errors(tmp_path, namespace):
+    """A bad namespace is a usage error raised before the schema is loaded."""
+    schema_file, config_file = _cpp_config(tmp_path, f"    namespace: {namespace}\n")
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--config-file", str(config_file)])
+
+    assert result.exit_code == 2
+    assert "not a valid C++ namespace" in result.output
