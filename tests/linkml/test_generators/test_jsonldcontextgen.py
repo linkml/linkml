@@ -4,6 +4,7 @@ import textwrap
 
 import pytest
 from click.testing import CliRunner
+from rdflib import Graph, Literal, URIRef
 
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
@@ -1751,3 +1752,41 @@ def test_identifier_slot_with_slot_uri_aliases_id(tmp_path, use_curies):
     assert "focusNode" not in ctx
     # no CURIE alias should be emitted for the identifier
     assert not any(k.endswith(":id") for k in ctx)
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_identifier_context_round_trips_to_rdf(tmp_path, use_curies):
+    """Data keyed per the generated context yields triples with the identifier as subject.
+
+    Regression test for https://github.com/linkml/linkml/issues/4056: a CURIE-keyed
+    ``@id`` alias is invalid JSON-LD 1.1, and rdflib silently produced no triples.
+    """
+    schema_file = tmp_path / "identifier_test.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """            id: https://example.org/identifier-test
+            name: identifier-test
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/identifier-test/
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  id:
+                    identifier: true
+                  name: {}
+            """
+        )
+    )
+    ctx = json.loads(ContextGenerator(str(schema_file), mergeimports=True, use_curies=use_curies).serialize())
+    name_key = "ex:name" if use_curies else "name"
+    doc = {**ctx, "id": "ex:thing1", name_key: "n"}
+
+    graph = Graph().parse(data=json.dumps(doc), format="json-ld")
+
+    ex = "https://example.org/identifier-test/"
+    assert set(graph) == {(URIRef(ex + "thing1"), URIRef(ex + "name"), Literal("n"))}

@@ -485,7 +485,7 @@ class ContextGenerator(Generator):
             self._build_element_id(entry, global_slot.slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
-            if self.use_curies:
+            if self.use_curies and not global_slot.identifier:
                 scoped[self._curie(global_slot)] = entry
             else:
                 scoped[underscore(slot_name)] = entry
