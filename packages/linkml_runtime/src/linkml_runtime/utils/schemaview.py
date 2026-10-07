@@ -2036,7 +2036,7 @@ class SchemaView:
         :param imports:
         :return: induced class
         """
-        c = deepcopy(self.get_class(class_name))
+        c = deepcopy(self.get_class(class_name, strict=True))
         attrs = self.class_induced_slots(c.name)
         for a in attrs:
             c.attributes[a.name] = a

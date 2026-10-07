@@ -1876,6 +1876,15 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     assert aliases_slot.alias is None  # Not set because underscore("aliases") == "aliases"
 
 
+def test_induced_class_unknown_name_raises(schema_view_no_imports: SchemaView) -> None:
+    """An unknown class name raises a ValueError that names the class.
+
+    See https://github.com/linkml/linkml/issues/3816
+    """
+    with pytest.raises(ValueError, match='No such class: "NoSuchClass"'):
+        schema_view_no_imports.induced_class("NoSuchClass")
+
+
 def test_induced_slot_underscored_name(schema_view_no_imports: SchemaView) -> None:
     """induced_slot must accept the underscore-normalised form of a slot name."""
     view = schema_view_no_imports
