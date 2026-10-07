@@ -63,7 +63,7 @@ linkml:annotations dcterms:license "https://creativecommons.org/publicdomain/zer
 	linkml:imports "linkml:extensions"^^xsd:anyURI , "linkml:types"^^xsd:anyURI ;
 	linkml:inlined true ;
 	linkml:is_a linkml:extensions ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:multivalued true ;
 	linkml:owner linkml:Annotation ;
 	linkml:range linkml:Annotation ;

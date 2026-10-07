@@ -1,5 +1,4 @@
 # Auto generated from array.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-08-12T09:42:08
 # Schema: arrays
 #
 # id: https://w3id.org/linkml/lib/arrays
@@ -8,24 +7,60 @@
 #   Note that this model is not intended to be imported directly. Instead, use `implements` to denote conformance.
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from jsonasobj2 import as_dict
-from rdflib import URIRef
-
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from .types import Integer, String
 
 metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
-GITHUB = CurieNamespace("github", "https://github.com/")
-GOM = CurieNamespace("gom", "https://w3id.org/gom#")
-LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+GITHUB = CurieNamespace('github', 'https://github.com/')
+GOM = CurieNamespace('gom', 'https://w3id.org/gom#')
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 DEFAULT_ = LINKML
 
 
@@ -34,8 +69,8 @@ DEFAULT_ = LINKML
 # Class references
 
 
-Any = Any
 
+Any = Any
 
 class DataStructure(YAMLRoot):
     _inherited_slots: ClassVar[list[str]] = []
@@ -51,7 +86,6 @@ class NDArray(DataStructure):
     """
     a data structure consisting of a collection of *elements*, each identified by at least one array index tuple.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["NDArray"]
@@ -61,15 +95,13 @@ class NDArray(DataStructure):
 
     elements: Union[Union[dict, Any], list[Union[dict, Any]]] = None
     dimensions: Optional[int] = None
-    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = "ROW_MAJOR_ARRAY_ORDER"
+    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = 'ROW_MAJOR_ARRAY_ORDER'
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.dimensions is not None and not isinstance(self.dimensions, int):
             self.dimensions = int(self.dimensions)
 
-        if self.array_linearization_order is not None and not isinstance(
-            self.array_linearization_order, ArrayLinearizationOrderOptions
-        ):
+        if self.array_linearization_order is not None and not isinstance(self.array_linearization_order, ArrayLinearizationOrderOptions):
             self.array_linearization_order = ArrayLinearizationOrderOptions(self.array_linearization_order)
 
         super().__post_init__(**kwargs)
@@ -80,7 +112,6 @@ class OneDimensionalSeries(NDArray):
     """
     an NDArray whose dimensionality is constrained to 1
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["OneDimensionalSeries"]
@@ -104,7 +135,6 @@ class DataArray(DataStructure):
     a data structure containing an NDArray and a set of one-dimensional series that are used to label the elements of
     the array
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["DataArray"]
@@ -134,7 +164,6 @@ class GroupingByArrayOrder(YAMLRoot):
     A mixin that describes an array whose elements are mapped from a linear sequence to an array index via a specified
     mapping
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["GroupingByArrayOrder"]
@@ -148,7 +177,6 @@ class ColumnOrderedArray(GroupingByArrayOrder):
     """
     An array ordering that is column-order
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["ColumnOrderedArray"]
@@ -156,12 +184,10 @@ class ColumnOrderedArray(GroupingByArrayOrder):
     class_name: ClassVar[str] = "ColumnOrderedArray"
     class_model_uri: ClassVar[URIRef] = LINKML.ColumnOrderedArray
 
-    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = "COLUMN_MAJOR_ARRAY_ORDER"
+    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = 'COLUMN_MAJOR_ARRAY_ORDER'
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.array_linearization_order is not None and not isinstance(
-            self.array_linearization_order, ArrayLinearizationOrderOptions
-        ):
+        if self.array_linearization_order is not None and not isinstance(self.array_linearization_order, ArrayLinearizationOrderOptions):
             self.array_linearization_order = ArrayLinearizationOrderOptions(self.array_linearization_order)
 
         super().__post_init__(**kwargs)
@@ -172,7 +198,6 @@ class RowOrderedArray(GroupingByArrayOrder):
     """
     An array ordering that is row-order or generalizations thereof
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINKML["RowOrderedArray"]
@@ -180,12 +205,10 @@ class RowOrderedArray(GroupingByArrayOrder):
     class_name: ClassVar[str] = "RowOrderedArray"
     class_model_uri: ClassVar[URIRef] = LINKML.RowOrderedArray
 
-    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = "ROW_MAJOR_ARRAY_ORDER"
+    array_linearization_order: Optional[Union[str, "ArrayLinearizationOrderOptions"]] = 'ROW_MAJOR_ARRAY_ORDER'
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.array_linearization_order is not None and not isinstance(
-            self.array_linearization_order, ArrayLinearizationOrderOptions
-        ):
+        if self.array_linearization_order is not None and not isinstance(self.array_linearization_order, ArrayLinearizationOrderOptions):
             self.array_linearization_order = ArrayLinearizationOrderOptions(self.array_linearization_order)
 
         super().__post_init__(**kwargs)
@@ -196,160 +219,66 @@ class ArrayLinearizationOrderOptions(EnumDefinitionImpl):
     """
     Determines how a linear contiguous representation of the elements of an array map to array indices
     """
-
     COLUMN_MAJOR_ARRAY_ORDER = PermissibleValue(
         text="COLUMN_MAJOR_ARRAY_ORDER",
         description="""An array layout option in which the elements in each column is stored in consecutive positions, or any generalization thereof to dimensionality greater than 2""",
-        meaning=GOM["columnMajorArray"],
-    )
+        meaning=GOM["columnMajorArray"])
     ROW_MAJOR_ARRAY_ORDER = PermissibleValue(
         text="ROW_MAJOR_ARRAY_ORDER",
         description="""An array layout option in which the elements in each row is stored in consecutive positions, or any generalization thereof to dimensionality greater than 2""",
-        meaning=GOM["rowMajorArray"],
-    )
+        meaning=GOM["rowMajorArray"])
 
     _defn = EnumDefinition(
         name="ArrayLinearizationOrderOptions",
         description="Determines how a linear contiguous representation of the elements of an array map to array indices",
     )
 
-
 # Slots
 class slots:
     pass
 
+slots.dimensions = Slot(uri=LINKML.dimensions, name="dimensions", curie=LINKML.curie('dimensions'),
+                   model_uri=LINKML.dimensions, domain=None, range=Optional[int])
 
-slots.dimensions = Slot(
-    uri=LINKML.dimensions,
-    name="dimensions",
-    curie=LINKML.curie("dimensions"),
-    model_uri=LINKML.dimensions,
-    domain=None,
-    range=Optional[int],
-)
+slots.axis = Slot(uri=LINKML.axis, name="axis", curie=LINKML.curie('axis'),
+                   model_uri=LINKML.axis, domain=None, range=Union[dict, OneDimensionalSeries])
 
-slots.axis = Slot(
-    uri=LINKML.axis,
-    name="axis",
-    curie=LINKML.curie("axis"),
-    model_uri=LINKML.axis,
-    domain=None,
-    range=Union[dict, OneDimensionalSeries],
-)
+slots.axis_index = Slot(uri=LINKML.axis_index, name="axis_index", curie=LINKML.curie('axis_index'),
+                   model_uri=LINKML.axis_index, domain=None, range=Optional[int])
 
-slots.axis_index = Slot(
-    uri=LINKML.axis_index,
-    name="axis_index",
-    curie=LINKML.curie("axis_index"),
-    model_uri=LINKML.axis_index,
-    domain=None,
-    range=Optional[int],
-)
+slots.array = Slot(uri=LINKML.array, name="array", curie=LINKML.curie('array'),
+                   model_uri=LINKML.array, domain=None, range=Union[dict, NDArray])
 
-slots.array = Slot(
-    uri=LINKML.array,
-    name="array",
-    curie=LINKML.curie("array"),
-    model_uri=LINKML.array,
-    domain=None,
-    range=Union[dict, NDArray],
-)
+slots.elements = Slot(uri=LINKML.elements, name="elements", curie=LINKML.curie('elements'),
+                   model_uri=LINKML.elements, domain=None, range=Union[Union[dict, Any], list[Union[dict, Any]]])
 
-slots.elements = Slot(
-    uri=LINKML.elements,
-    name="elements",
-    curie=LINKML.curie("elements"),
-    model_uri=LINKML.elements,
-    domain=None,
-    range=Union[Union[dict, Any], list[Union[dict, Any]]],
-)
+slots.series_label = Slot(uri=LINKML.series_label, name="series_label", curie=LINKML.curie('series_label'),
+                   model_uri=LINKML.series_label, domain=None, range=URIRef)
 
-slots.series_label = Slot(
-    uri=LINKML.series_label,
-    name="series_label",
-    curie=LINKML.curie("series_label"),
-    model_uri=LINKML.series_label,
-    domain=None,
-    range=URIRef,
-)
+slots.length = Slot(uri=LINKML.length, name="length", curie=LINKML.curie('length'),
+                   model_uri=LINKML.length, domain=None, range=Optional[int])
 
-slots.length = Slot(
-    uri=LINKML.length,
-    name="length",
-    curie=LINKML.curie("length"),
-    model_uri=LINKML.length,
-    domain=None,
-    range=Optional[int],
-)
+slots.array_linearization_order = Slot(uri=LINKML.array_linearization_order, name="array_linearization_order", curie=LINKML.curie('array_linearization_order'),
+                   model_uri=LINKML.array_linearization_order, domain=None, range=Optional[Union[str, "ArrayLinearizationOrderOptions"]])
 
-slots.array_linearization_order = Slot(
-    uri=LINKML.array_linearization_order,
-    name="array_linearization_order",
-    curie=LINKML.curie("array_linearization_order"),
-    model_uri=LINKML.array_linearization_order,
-    domain=None,
-    range=Optional[Union[str, "ArrayLinearizationOrderOptions"]],
-)
+slots.specified_input = Slot(uri=LINKML.specified_input, name="specified_input", curie=LINKML.curie('specified_input'),
+                   model_uri=LINKML.specified_input, domain=None, range=Optional[Union[Union[dict, DataStructure], list[Union[dict, DataStructure]]]])
 
-slots.specified_input = Slot(
-    uri=LINKML.specified_input,
-    name="specified_input",
-    curie=LINKML.curie("specified_input"),
-    model_uri=LINKML.specified_input,
-    domain=None,
-    range=Optional[Union[Union[dict, DataStructure], list[Union[dict, DataStructure]]]],
-)
+slots.specified_output = Slot(uri=LINKML.specified_output, name="specified_output", curie=LINKML.curie('specified_output'),
+                   model_uri=LINKML.specified_output, domain=None, range=Optional[Union[Union[dict, DataStructure], list[Union[dict, DataStructure]]]])
 
-slots.specified_output = Slot(
-    uri=LINKML.specified_output,
-    name="specified_output",
-    curie=LINKML.curie("specified_output"),
-    model_uri=LINKML.specified_output,
-    domain=None,
-    range=Optional[Union[Union[dict, DataStructure], list[Union[dict, DataStructure]]]],
-)
+slots.operation_parameters = Slot(uri=LINKML.operation_parameters, name="operation_parameters", curie=LINKML.curie('operation_parameters'),
+                   model_uri=LINKML.operation_parameters, domain=None, range=Optional[Union[Union[dict, Any], list[Union[dict, Any]]]])
 
-slots.operation_parameters = Slot(
-    uri=LINKML.operation_parameters,
-    name="operation_parameters",
-    curie=LINKML.curie("operation_parameters"),
-    model_uri=LINKML.operation_parameters,
-    domain=None,
-    range=Optional[Union[Union[dict, Any], list[Union[dict, Any]]]],
-)
+slots.NDArray_elements = Slot(uri=LINKML.elements, name="NDArray_elements", curie=LINKML.curie('elements'),
+                   model_uri=LINKML.NDArray_elements, domain=NDArray, range=Union[Union[dict, Any], list[Union[dict, Any]]])
 
-slots.NDArray_elements = Slot(
-    uri=LINKML.elements,
-    name="NDArray_elements",
-    curie=LINKML.curie("elements"),
-    model_uri=LINKML.NDArray_elements,
-    domain=NDArray,
-    range=Union[Union[dict, Any], list[Union[dict, Any]]],
-)
+slots.OneDimensionalSeries_dimensions = Slot(uri=LINKML.dimensions, name="OneDimensionalSeries_dimensions", curie=LINKML.curie('dimensions'),
+                   model_uri=LINKML.OneDimensionalSeries_dimensions, domain=OneDimensionalSeries, range=Optional[int])
 
-slots.OneDimensionalSeries_dimensions = Slot(
-    uri=LINKML.dimensions,
-    name="OneDimensionalSeries_dimensions",
-    curie=LINKML.curie("dimensions"),
-    model_uri=LINKML.OneDimensionalSeries_dimensions,
-    domain=OneDimensionalSeries,
-    range=Optional[int],
-)
+slots.ColumnOrderedArray_array_linearization_order = Slot(uri=LINKML.array_linearization_order, name="ColumnOrderedArray_array_linearization_order", curie=LINKML.curie('array_linearization_order'),
+                   model_uri=LINKML.ColumnOrderedArray_array_linearization_order, domain=None, range=Optional[Union[str, "ArrayLinearizationOrderOptions"]])
 
-slots.ColumnOrderedArray_array_linearization_order = Slot(
-    uri=LINKML.array_linearization_order,
-    name="ColumnOrderedArray_array_linearization_order",
-    curie=LINKML.curie("array_linearization_order"),
-    model_uri=LINKML.ColumnOrderedArray_array_linearization_order,
-    domain=None,
-    range=Optional[Union[str, "ArrayLinearizationOrderOptions"]],
-)
+slots.RowOrderedArray_array_linearization_order = Slot(uri=LINKML.array_linearization_order, name="RowOrderedArray_array_linearization_order", curie=LINKML.curie('array_linearization_order'),
+                   model_uri=LINKML.RowOrderedArray_array_linearization_order, domain=None, range=Optional[Union[str, "ArrayLinearizationOrderOptions"]])
 
-slots.RowOrderedArray_array_linearization_order = Slot(
-    uri=LINKML.array_linearization_order,
-    name="RowOrderedArray_array_linearization_order",
-    curie=LINKML.curie("array_linearization_order"),
-    model_uri=LINKML.RowOrderedArray_array_linearization_order,
-    domain=None,
-    range=Optional[Union[str, "ArrayLinearizationOrderOptions"]],
-)
