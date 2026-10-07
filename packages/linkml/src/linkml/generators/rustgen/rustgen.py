@@ -231,6 +231,22 @@ def class_real_descendants(sv: SchemaView, class_name: str) -> list[str]:
     return [d for d in descs if d != class_name]
 
 
+def class_subtype_variants(sv: SchemaView, class_name: str) -> list[str]:
+    """Return the classes an ``<Class>OrSubtype`` enum has a variant for.
+
+    That is every real descendant, plus the class itself when it can be instantiated
+    (neither abstract nor a mixin), so a slot ranged on the class can hold a plain
+    instance of it. The class goes last because untagged serde, and the PyO3 and
+    ``InlinedPair`` extractors, try variants in order, and the base struct would
+    otherwise accept a subtype's data and drop its extra fields.
+    """
+    variants = class_real_descendants(sv, class_name)
+    cls = sv.get_class(class_name)
+    if not cls.abstract and not cls.mixin:
+        variants.append(class_name)
+    return variants
+
+
 def has_real_subtypes(sv: SchemaView, class_name: str) -> bool:
     """True when the class has at least one real subtype (excluding itself)."""
     return len(class_real_descendants(sv, class_name)) > 0
@@ -645,28 +661,28 @@ class RustGenerator(Generator, LifecycleMixin):
         return res
 
     def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> RustStructOrSubtypeEnum | None:
-        descendants = class_real_descendants(self.schemaview, cls.name)
+        if not has_real_subtypes(self.schemaview, cls.name):
+            return None
+        variants = class_subtype_variants(self.schemaview, cls.name)
         td = self.schemaview.get_type_designator_slot(cls.name)
         td_mapping = {}
         if td is not None:
-            for d in descendants:
+            for d in variants:
                 d_class = self.schemaview.get_class(d)
                 values = get_accepted_type_designator_values(self.schemaview, td, d_class)
-                td_mapping[d] = values
-        if len(descendants) > 0:
-            key_type = "String"
-            key_slot = get_key_or_identifier_slot(cls, self.schemaview)
-            if key_slot is not None:
-                key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
-            return RustStructOrSubtypeEnum(
-                enum_name=get_name(cls) + "OrSubtype",
-                struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
-                type_designator_field=get_name(td) if td else None,
-                as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
-                type_designators=td_mapping,
-                key_property_type=key_type,
-            )
-        return None
+                td_mapping[get_name(d_class)] = values
+        key_type = "String"
+        key_slot = get_key_or_identifier_slot(cls, self.schemaview)
+        if key_slot is not None:
+            key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
+        return RustStructOrSubtypeEnum(
+            enum_name=get_name(cls) + "OrSubtype",
+            struct_names=[get_name(self.schemaview.get_class(d)) for d in variants],
+            type_designator_field=get_name(td) if td else None,
+            as_key_value=key_slot is not None,
+            type_designators=td_mapping,
+            key_property_type=key_type,
+        )
 
     def generate_class_as_key_value(self, cls: ClassDefinition) -> AsKeyValue | None:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
@@ -1101,7 +1117,7 @@ class RustGenerator(Generator, LifecycleMixin):
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
             has_subtypes = has_real_subtypes(self.schemaview, sc)
             if has_subtypes:
-                cases = [get_name(self.schemaview.get_class(x)) for x in class_real_descendants(self.schemaview, sc)]
+                cases = [get_name(self.schemaview.get_class(x)) for x in class_subtype_variants(self.schemaview, sc)]
                 matches = [
                     PolyTraitPropertyMatch(
                         name=get_name(a),

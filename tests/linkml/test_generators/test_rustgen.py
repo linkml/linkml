@@ -2,6 +2,7 @@ import ast
 import importlib
 import os
 import re
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -1454,3 +1455,42 @@ def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
             "cargo test failed, likely due to a missing Rust toolchain:\n"
             f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
         )
+
+
+def test_rustgen_type_designator_tagged_roundtrip_of_base_class(temp_dir):
+    """A plain instance of a concrete base class is its own ``*OrSubtype`` variant,
+    decoded by its designator value and round-tripped, not lost or mistaken for a subtype."""
+    assert shutil.which("cargo"), "cargo is required for --with-rustgen tests"
+    schema_path = Path(temp_dir) / "rustgen_type_designator_base.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "type_designator_base_crate")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "base_variant.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn base_class_is_its_own_variant() {\n"
+            "    use rustgen_type_designator::EventOrSubtype;\n"
+            '    let yaml = "category: Event\\nname: x\\n";\n'
+            '    let value: EventOrSubtype = serde_yml::from_str(yaml).expect("decode tagged");\n'
+            "    match value {\n"
+            "        EventOrSubtype::Event(_) => {}\n"
+            '        _ => panic!("expected Event variant"),\n'
+            "    }\n"
+            '    let out = serde_yml::to_string(&value).expect("encode");\n'
+            '    assert!(out.contains("category: Event"), "designator tag not round-tripped: {out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "base_variant"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}"
