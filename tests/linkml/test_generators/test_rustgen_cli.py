@@ -1,9 +1,11 @@
-"""Tests for gen-rust crate-name validation and --config-file.
+"""Tests for gen-rust output that only render the crate: crate-name validation,
+--config-file and the ``<Class>OrSubtype`` enums.
 
-These only render the crate, so unlike ``test_rustgen.py`` they need no Rust
-toolchain and are not gated behind ``--with-rustgen``.
+Unlike ``test_rustgen.py`` these need no Rust toolchain and are not gated behind
+``--with-rustgen``.
 """
 
+import re
 import warnings
 
 import click
@@ -213,3 +215,77 @@ def test_cli_short_f_is_the_shared_format_option(tmp_path):
 
     assert result.exit_code == 0, result.output
     assert not [w for w in caught if "used more than once" in str(w.message)]
+
+
+# ---------------------------------------------------------------------------
+# <Class>OrSubtype enum variants
+# ---------------------------------------------------------------------------
+
+SUBTYPE_SCHEMA = """
+id: https://example.org/events
+name: events
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Event:
+    attributes:
+      name:
+  MedicalEvent:
+    is_a: Event
+    attributes:
+      diagnosis:
+  NewsEvent:
+    is_a: Event
+    attributes:
+      headline:
+  Shape:
+    abstract: true
+    attributes:
+      label:
+  Circle:
+    is_a: Shape
+    attributes:
+      radius:
+"""
+
+
+def _render_file(tmp_path) -> str:
+    """Render ``SUBTYPE_SCHEMA`` in single-file mode and return the code."""
+    out_file = tmp_path / "events.rs"
+    RustGenerator(SUBTYPE_SCHEMA, mode="file", output=str(out_file)).serialize()
+    return out_file.read_text()
+
+
+def _subtype_enum_variants(code: str, enum_name: str) -> list[str]:
+    """The variant names of ``enum_name`` in declaration order."""
+    body = re.search(rf"pub enum {enum_name} \{{(.*?)\}}", code, re.S).group(1)
+    return re.findall(r"(\w+)\(\w+\)", body)
+
+
+def test_subtype_enum_includes_a_concrete_base_class_last(tmp_path):
+    """A slot ranged on a concrete class must be able to hold a plain instance of it, so
+    the base gets a variant; it goes last so untagged serde tries the subtypes first."""
+    code = _render_file(tmp_path)
+
+    assert _subtype_enum_variants(code, "EventOrSubtype") == ["MedicalEvent", "NewsEvent", "Event"]
+    assert "impl From<Event>   for EventOrSubtype" in code
+
+
+def test_subtype_enum_excludes_an_abstract_base_class(tmp_path):
+    code = _render_file(tmp_path)
+
+    assert _subtype_enum_variants(code, "ShapeOrSubtype") == ["Circle"]
+
+
+def test_subtype_trait_impl_matches_every_variant(tmp_path):
+    """The trait impl on the enum must match the base variant too, or it doesn't compile."""
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+    RustGenerator(SUBTYPE_SCHEMA, output=str(out_dir)).serialize()
+
+    poly = (out_dir / "src" / "poly.rs").read_text()
+    assert "EventOrSubtype::Event(val) => val.name()" in poly
+    assert "ShapeOrSubtype::Shape(" not in poly
