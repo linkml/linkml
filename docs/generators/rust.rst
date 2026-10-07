@@ -93,31 +93,39 @@ runs.
 
 .. _rust-crate-name:
 
-Crate Name
-----------
+Crate Name Configuration
+------------------------
 
-The crate name is written to ``[package]`` and ``[lib]`` in ``Cargo.toml``, and names the Python module. It is chosen
-by the following precedence:
+The generated crate name -- written to ``[package]`` and ``[lib]`` in ``Cargo.toml``,
+and naming the Python module -- is driven by the following precedence:
 
-1. ``--crate-name`` command-line option (or ``crate_name=...`` when using ``RustGenerator`` programmatically)
-2. ``generator_args.rust.crate_name`` set via ``--config-file``/``-C`` (see :ref:`rust-configuration-file` below)
-3. Derived from the schema name. A hyphen or dot becomes an underscore (``person-info`` gives ``person_info``), a Rust
-   keyword or a name cargo reserves gets a trailing underscore (``test`` gives ``test_``), and a name that still isn't
-   usable falls back to ``example``.
+1. ``--crate-name`` command-line option, or ``crate_name=...`` when using
+   ``RustGenerator`` programmatically
+2. ``generator_args.rust.crate_name`` set via ``--config-file``/``-C`` (see
+   :ref:`rust-configuration-file` below)
+3. Fallback: derived from the schema name, with any character outside
+   ``[A-Za-z0-9_]`` replaced by an underscore (e.g. a schema named ``person-info``
+   yields ``person_info``)
 
-A name you give explicitly is validated not adjusted. It must be an ASCII Rust identifier: letters, digits and
-underscores, not starting with a digit. It can't be a Rust keyword of the 2021 edition the crate declares, or one of the
-names cargo reserves (``alloc``, ``core``, ``proc_macro``, ``std``, ``test``). Cargo accepts a hyphen in a package
-name, but not in a ``[lib]`` name, so ``my-crate`` is rejected; use ``my_crate``.
+The derived fallback is always a legal crate name: a name that collides with a Rust
+keyword, or with a name cargo reserves (``alloc``, ``core``, ``proc_macro``, ``std``,
+``test``), is suffixed with an underscore (``test`` produces ``test_``), and one that
+is still unusable -- for example, a schema name starting with a digit -- falls back to
+``example``. A ``--crate-name`` or config-file value, by contrast, is never rewritten:
+an invalid one (``my-crate``, ``fn``, ``std``) is reported as an error rather than
+silently corrected. Cargo accepts a hyphen in a package name, but not in a ``[lib]``
+name, so use ``my_crate``.
 
 .. _rust-configuration-file:
 
 Configuration File
 ------------------
 
-``gen-rust`` accepts a ``--config-file``/``-C`` YAML file in the same format as ``gen-project``'s ``--config-file``
-(see :doc:`project-generator`), so one project-wide ``config.yaml`` can hold every generator's settings. ``gen-rust``
-reads only the ``generator_args.rust`` section:
+As an alternative to ``--crate-name``, ``gen-rust`` accepts a ``--config-file``/``-C``
+YAML file -- the **same format** used by ``gen-project``'s own ``--config-file``
+(see :doc:`project-generator`) and by ``gen-java`` (see :doc:`java`), so a single
+project-wide ``config.yaml`` can be shared between them. ``crate_name`` lives under
+``generator_args.rust``:
 
 .. code-block:: yaml
 
@@ -128,13 +136,10 @@ reads only the ``generator_args.rust`` section:
         pyo3: true
         serde: true
 
-.. code-block:: bash
-
-    linkml generate rust -C config.yaml --output personinfo_rust examples/PersonSchema/personinfo.yaml
-
-Keys are the command's own option names with dashes as underscores, so any ``gen-rust`` option can be set this way.
-Options given on the command line always take precedence over the file. An unknown key is reported as a warning and
-ignored, and an invalid value, such as a bad ``crate_name``, is an error raised before anything is generated.
+``gen-rust`` reads only the ``generator_args.rust`` section of this file, so a full
+multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-rust`` option
+can be set there, keyed by its name with dashes as underscores; command-line options
+take precedence, and a key that is not an option is reported as a warning and ignored.
 
 Feature Compliance
 ------------------

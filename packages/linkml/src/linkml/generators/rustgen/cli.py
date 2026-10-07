@@ -47,6 +47,18 @@ from linkml.utils.generator import apply_config_defaults, read_generator_config,
         "The shim is only created on first run and left untouched on subsequent regenerations."
     ),
 )
+@click.option(
+    "--stubgen/--no-stubgen",
+    default=True,
+    show_default=True,
+    help="Emit the pyo3-stub-gen binary (src/bin/stub_gen.rs) behind a 'stubgen' Cargo feature.",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="Emit a Rust enum of the descendant slots for a slot with 'subproperty_of'; otherwise a plain String.",
+)
 @click.option("-n", "--crate-name", type=str, default=None, help="Name of the generated crate/module")
 @click.option(
     "--config-file",
@@ -61,6 +73,7 @@ from linkml.utils.generator import apply_config_defaults, read_generator_config,
     "-o",
     "--output",
     type=click.Path(dir_okay=True),
+    required=True,
     help="Output directory (crate mode) or .rs file (file mode)",
 )
 @click.version_option(__version__, "-V", "--version")
@@ -73,7 +86,4 @@ def cli(ctx: click.Context, yamlfile: Path, config_file=None, **kwargs):
     RustGenerator.validate_generator_args(kwargs)
     # every option but --force is a constructor argument; --force is a serialize() one
     force = kwargs.pop("force")
-    gen = RustGenerator(yamlfile, **kwargs)
-    serialized = gen.serialize(force=force)
-    if gen.output is None:
-        print(serialized)
+    RustGenerator(yamlfile, **kwargs).serialize(force=force)
