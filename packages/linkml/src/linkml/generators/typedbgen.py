@@ -29,6 +29,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass
+from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal, InvalidOperation
 
 import click
 
@@ -256,10 +257,33 @@ def _card(lo: object, hi: object) -> str:
     return f"@card({lo})" if str(lo) == str(hi) else f"@card({lo}..{hi})"
 
 
-def _build_range_annotation(induced: SlotDefinition) -> str | None:
+def _range_bound_literal(value: object, value_type: str | None, is_lower: bool) -> str:
+    """Return a ``@range`` bound as a TypeQL literal of the attribute's value type.
+
+    TypeDB rejects a bound whose literal doesn't fit the value type (``[SVL32]``): a decimal
+    bound needs the ``dec`` suffix (``0.1dec``; plain ``0.1`` is a double), and an integer bound
+    must be whole. A fractional integer bound is rounded inwards, which allows exactly the same
+    integers (``x >= 0.5`` is ``x >= 1``).
+    """
+    if value_type in ("decimal", "integer"):
+        try:
+            number = Decimal(str(value))
+        except (InvalidOperation, ValueError):
+            return str(value)
+        if value_type == "decimal":
+            return f"{number:f}dec"
+        if number != number.to_integral_value():
+            rounding = ROUND_CEILING if is_lower else ROUND_FLOOR
+            number = number.to_integral_value(rounding=rounding)
+        return f"{number:f}"
+    return str(value)
+
+
+def _build_range_annotation(sv: SchemaView, induced: SlotDefinition) -> str | None:
     """Return a ``@range(min..max)`` annotation string, or ``None`` if no range constraints are set.
 
-    Reads ``minimum_value`` and ``maximum_value`` from the induced slot definition.
+    Reads ``minimum_value`` and ``maximum_value`` from the induced slot definition, writing each
+    bound as a literal of the attribute's value type (see ``_range_bound_literal``).
     Supports open-ended ranges (``@range(N..)`` or ``@range(..M)``).
 
     :param induced: the induced SlotDefinition carrying value range metadata
@@ -269,8 +293,9 @@ def _build_range_annotation(induced: SlotDefinition) -> str | None:
     hi = induced.maximum_value
     if lo is None and hi is None:
         return None
-    lo_str = str(lo) if lo is not None else ""
-    hi_str = str(hi) if hi is not None else ""
+    value_type = _resolve_typedb_value_type(sv, induced.range)
+    lo_str = _range_bound_literal(lo, value_type, is_lower=True) if lo is not None else ""
+    hi_str = _range_bound_literal(hi, value_type, is_lower=False) if hi is not None else ""
     return f"@range({lo_str}..{hi_str})"
 
 
@@ -1026,7 +1051,7 @@ class TypeDBGenerator(Generator):
                 continue  # object-ranged slots are roles, handled elsewhere
             inherited = sv.induced_slot(induced.name, parent)
             builders = (
-                _build_range_annotation,
+                lambda s: _build_range_annotation(self.schemaview, s),
                 lambda s: _build_regex_annotation(self.schemaview, s),
                 self._values_annotation,
             )
@@ -1060,7 +1085,7 @@ class TypeDBGenerator(Generator):
         """
         owns = f"owns {slot_tname}"
         for ann in (
-            _build_range_annotation(induced),
+            _build_range_annotation(self.schemaview, induced),
             _build_regex_annotation(self.schemaview, induced),
             self._values_annotation(induced),
         ):
@@ -1093,7 +1118,7 @@ class TypeDBGenerator(Generator):
         elif induced.multivalued:
             owns += " @card(1..)" if induced.required else " @card(0..)"
 
-        range_ann = _build_range_annotation(induced)
+        range_ann = _build_range_annotation(self.schemaview, induced)
         if range_ann:
             owns += f" {range_ann}"
         regex_ann = _build_regex_annotation(self.schemaview, induced)

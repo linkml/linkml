@@ -420,6 +420,43 @@ slots:
     assert f"owns score {expected_range};" in output
 
 
+@pytest.mark.parametrize(
+    "slot_range,slot_extra,expected_range",
+    [
+        # TypeQL reads 0.1 as a double; a decimal bound needs the dec suffix, or TypeDB rejects
+        # the whole schema with [SVL32].
+        ("decimal", "minimum_value: 0.1\n    maximum_value: 99.5", "@range(0.1dec..99.5dec)"),
+        ("decimal", "minimum_value: 0", "@range(0dec..)"),
+        # A fractional integer bound is rounded inwards, which allows exactly the same integers.
+        ("integer", "minimum_value: 0.5\n    maximum_value: 9.5", "@range(1..9)"),
+        ("integer", "minimum_value: -2.5", "@range(-2..)"),
+        ("float", "minimum_value: 0.1", "@range(0.1..)"),
+    ],
+)
+def test_range_bounds_use_value_type_literals(slot_range, slot_extra, expected_range, tmp_path):
+    """Range bounds are written as literals of the attribute's TypeDB value type."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - score
+slots:
+  score:
+    range: {slot_range}
+    {slot_extra}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert f"owns score {expected_range};" in output
+
+
 def test_no_range_annotation_when_unset(tmp_path):
     """No @range annotation when minimum_value and maximum_value are both unset."""
     schema_yaml = """
