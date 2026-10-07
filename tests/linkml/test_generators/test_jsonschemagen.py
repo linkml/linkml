@@ -1785,3 +1785,133 @@ def test_top_class_matches_regardless_of_case(tmp_path):
 
     assert schema["additionalProperties"] is False
     assert "name" in schema["properties"]
+
+
+_CLASS_EXPRESSION_INHERITANCE_SCHEMA = """
+id: https://example.org/class-expressions
+name: class_expressions
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/class-expressions/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  a: {}
+  b: {}
+classes:
+  Marker:
+    mixin: true
+    none_of:
+      - slot_conditions:
+          a:
+            equals_string: forbidden
+  Parent:
+    slots: [a, b]
+    any_of:
+      - slot_conditions:
+          a:
+            required: true
+      - slot_conditions:
+          b:
+            required: true
+  Child:
+    is_a: Parent
+    mixins: [Marker]
+  GrandChild:
+    is_a: Child
+"""
+
+
+@pytest.mark.parametrize("target_class", ["Parent", "Child", "GrandChild"])
+@pytest.mark.parametrize(
+    "instance,valid_for_parent,valid_for_marker_users",
+    [
+        pytest.param({"a": "1"}, True, True, id="a"),
+        pytest.param({"b": "2"}, True, True, id="b"),
+        pytest.param({}, False, False, id="neither"),
+        pytest.param({"a": "forbidden"}, True, False, id="forbidden-by-mixin"),
+    ],
+)
+def test_class_expressions_apply_to_subclasses(target_class, instance, valid_for_parent, valid_for_marker_users):
+    """A class expression constrains every instance of its class, so the
+    definitions of its subclasses, and of the classes using a mixin, carry it."""
+    json_schema = json.loads(
+        JsonSchemaGenerator(_CLASS_EXPRESSION_INHERITANCE_SCHEMA, top_class=target_class).serialize()
+    )
+    expected = valid_for_parent if target_class == "Parent" else valid_for_marker_users
+    assert jsonschema.Draft7Validator(json_schema).is_valid(instance) == expected
+
+
+_TWO_ABSENT_RULE_SCHEMA = """
+id: https://example.org/absent
+name: absent
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    attributes:
+      trigger: {}
+      a: {}
+      b: {}
+    rules:
+      - preconditions:
+          slot_conditions:
+            trigger:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            a:
+              value_presence: ABSENT
+            b:
+              value_presence: ABSENT
+"""
+
+
+@pytest.mark.parametrize(
+    "instance,valid",
+    [
+        pytest.param({"trigger": "t"}, True, id="neither"),
+        pytest.param({"trigger": "t", "a": "x"}, False, id="one"),
+        pytest.param({"trigger": "t", "a": "x", "b": "y"}, False, id="both"),
+        pytest.param({"a": "x", "b": "y"}, True, id="not-triggered"),
+    ],
+)
+def test_several_absent_slots_each_must_be_absent(instance, valid):
+    """value_presence: ABSENT on several slots of one expression requires each
+    to be absent, not merely that they aren't all present."""
+    json_schema = json.loads(JsonSchemaGenerator(_TWO_ABSENT_RULE_SCHEMA, top_class="Thing").serialize())
+    assert jsonschema.Draft7Validator(json_schema).is_valid(instance) == valid
+
+
+@pytest.mark.parametrize("tags,valid", [(["A"], True), (["A", "B"], False), ([], True)])
+def test_class_expression_condition_uses_the_induced_slot(tags, valid):
+    """A condition constrains the slot as induced for the class, so a
+    slot_usage that makes it multivalued applies the condition to every value."""
+    schema = """
+id: https://example.org/induced
+name: induced
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+slots:
+  tags: {}
+classes:
+  Thing:
+    slots: [tags]
+    slot_usage:
+      tags:
+        multivalued: true
+    all_of:
+      - slot_conditions:
+          tags:
+            equals_string: A
+"""
+    json_schema = json.loads(JsonSchemaGenerator(schema, top_class="Thing").serialize())
+    assert jsonschema.Draft7Validator(json_schema).is_valid({"tags": tags}) == valid

@@ -14,6 +14,7 @@ from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.common.build import RangeResult
+from linkml.generators.common.class_expression import value_bounds
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import (
@@ -275,24 +276,12 @@ class JsonSchema(dict):
             self["required"].append(canonical_name)
 
         # JSON Schema does not have a very natural way to express that a property cannot be present.
-        # The apparent best way to do it is to use:
-        # {
-        #   properties: {
-        #     foo: ...
-        #   },
-        #   not: {
-        #     required: ['foo']
-        #   }
-        # }
-        # The {required: [foo]} subschema evaluates to true if the foo property is present with any
-        # value. Wrapping that in a `not` keyword inverts that condition.
+        # The apparent best way to do it is `not: {required: [foo]}`: the {required: [foo]}
+        # subschema evaluates to true if the foo property is present with any value, and `not`
+        # inverts that.  Each absent property gets its own `not`, in `allOf`, since
+        # `not: {required: [foo, bar]}` would only forbid foo and bar together.
         if value_disallowed:
-            if "not" not in self:
-                self["not"] = {}
-            if "required" not in self["not"]:
-                self["not"]["required"] = []
-
-            self["not"]["required"].append(canonical_name)
+            self.setdefault("allOf", []).append({"not": {"required": [canonical_name]}})
 
     def add_keyword(self, keyword: str, value: Any):
         if value is None:
@@ -623,29 +612,20 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 class_subschema["allOf"] = []
             class_subschema["allOf"].extend(rule_subschemas)
 
-        if cls.any_of is not None and len(cls.any_of) > 0:
-            class_subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.any_of]
-
-        if cls.all_of is not None and len(cls.all_of) > 0:
-            if "allOf" not in class_subschema:
-                class_subschema["allOf"] = []
-            class_subschema["allOf"].extend([self.get_subschema_for_anonymous_class(c, False) for c in cls.all_of])
-
-        if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
-            class_subschema["oneOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of]
-
-        if cls.none_of is not None and len(cls.none_of) > 0:
-            # properties_required=True so absent slots make their branch fail; otherwise
-            # properties is vacuously true and `not(anyOf)` rejects instances missing the slot.
-            new_not = {"anyOf": [self.get_subschema_for_anonymous_class(c, True) for c in cls.none_of]}
-            if "not" in class_subschema:
-                existing_not = class_subschema.pop("not")
-                if "allOf" not in class_subschema:
-                    class_subschema["allOf"] = []
-                class_subschema["allOf"].append({"not": existing_not})
-                class_subschema["allOf"].append({"not": new_not})
-            else:
-                class_subschema["not"] = new_not
+        # A class expression constrains every instance of its class, so a class carries the
+        # expressions of its ancestors and mixins, translated in its own context.
+        for owner in self.schemaview.class_ancestors(cls.name):
+            for operator in self.CLASS_EXPRESSION_OPERATORS:
+                members = getattr(self.schemaview.get_class(owner), operator) or []
+                if members:
+                    expression = self.get_subschema_for_class_operator(cls, operator, members, definite=False)
+                    for keyword, value in expression.items():
+                        if keyword == "allOf":
+                            class_subschema.setdefault("allOf", []).extend(value)
+                        elif keyword not in class_subschema:
+                            class_subschema[keyword] = value
+                        else:
+                            class_subschema.setdefault("allOf", []).append({keyword: value})
 
         class_subschema = self.after_generate_class(
             ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
@@ -670,6 +650,93 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 # if, then, etc.
                 if key not in self.top_level_schema:
                     self.top_level_schema[key] = value
+
+    CLASS_EXPRESSION_OPERATORS = ("any_of", "all_of", "exactly_one_of", "none_of")
+    _CLASS_OPERATOR_KEYWORDS = {"any_of": "anyOf", "all_of": "allOf", "exactly_one_of": "oneOf"}
+
+    def get_subschema_for_class_operator(
+        self, cls: ClassDefinition, operator: str, members: list[AnonymousClassExpression], definite: bool
+    ) -> JsonSchema:
+        """The subschema of the class-level boolean expression *operator* over *members*, for *cls*.
+
+        A condition that doesn't state presence is unknown for an absent slot,
+        and an expression is violated only when it is definitely false (see
+        :mod:`linkml.generators.common.class_expression`).  With *definite* the
+        subschema accepts the instances for which the expression is definitely
+        true, otherwise those for which it is not false.  ``none_of`` takes its
+        members in the opposite form, ``exactly_one_of`` counts the members
+        that are definitely true, and ``any_of`` / ``all_of`` keep the form.
+        """
+        if operator == "none_of":
+            return JsonSchema(
+                {"not": {"anyOf": [self.get_subschema_for_class_expression(cls, m, not definite) for m in members]}}
+            )
+        form = True if operator == "exactly_one_of" else definite
+        return JsonSchema(
+            {
+                self._CLASS_OPERATOR_KEYWORDS[operator]: [
+                    self.get_subschema_for_class_expression(cls, m, form) for m in members
+                ]
+            }
+        )
+
+    def get_subschema_for_class_expression(
+        self, cls: ClassDefinition, expr: AnonymousClassExpression, definite: bool
+    ) -> JsonSchema:
+        """The subschema of one member *expr* of a class-level boolean expression of *cls*.
+
+        Each slot condition constrains the slot as induced for *cls*, so
+        ``slot_usage`` applies.  Its values must satisfy its value operators
+        and its ``range``; the number of values must lie within
+        :func:`~linkml.generators.common.class_expression.value_bounds`, where
+        an empty list counts as no value.  *definite* selects the form, as in
+        :meth:`get_subschema_for_class_operator`.
+        """
+        subschema = JsonSchema()
+        conjuncts: list[JsonSchema] = []
+        for slot_name, condition in expr.slot_conditions.items():
+            slot = self._class_expression_slot(cls, slot_name) or condition
+            if self.use_curies:
+                prop_name = self._curie(slot)
+            else:
+                prop_name = self.aliased_slot_name(slot)
+            values = self.get_subschema_for_slot(condition, omit_type=True, include_null=False)
+            if condition.range is not None:
+                typed = self.get_subschema_for_slot(
+                    SlotDefinition(
+                        slot.name, range=condition.range, inlined=slot.inlined, inlined_as_list=slot.inlined_as_list
+                    ),
+                    include_null=False,
+                )
+                values = JsonSchema({"allOf": [values, typed]}) if values else typed
+            lower, upper = value_bounds(condition, definite)
+            if slot.multivalued:
+                prop = JsonSchema.array_of(values, include_null=False, required=False)
+                prop.add_keyword("minItems", lower or None)
+                prop.add_keyword("maxItems", upper)
+                subschema.add_property(prop_name, prop, value_required=lower > 0)
+            else:
+                subschema.add_property(prop_name, values, value_required=lower > 0, value_disallowed=upper == 0)
+                if lower > 1:
+                    # a single-valued slot holds at most one value
+                    conjuncts.append(JsonSchema({"not": {}}))
+        for operator in self.CLASS_EXPRESSION_OPERATORS:
+            members = getattr(expr, operator) or []
+            if members:
+                conjuncts.append(self.get_subschema_for_class_operator(cls, operator, members, definite))
+        if expr.is_a is not None:
+            # `is_a: <C>` in a class expression requires instances of the expression to be instances of <C>.
+            conjuncts.append(self.get_subschema_for_slot(AnonymousSlotExpression(range=expr.is_a)))
+        if conjuncts:
+            subschema.setdefault("allOf", []).extend(conjuncts)
+        return subschema
+
+    def _class_expression_slot(self, cls: ClassDefinition, slot_name: str) -> SlotDefinition | None:
+        """The slot a condition of a class expression of *cls* names, as induced for *cls*, if any."""
+        sv = self.schemaview
+        if slot_name in sv.class_slots(cls.name):
+            return sv.induced_slot(slot_name, cls.name)
+        return sv.get_slot(slot_name)
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
