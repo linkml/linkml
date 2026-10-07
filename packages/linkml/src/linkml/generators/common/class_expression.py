@@ -43,10 +43,10 @@ def states_presence(condition: SlotDefinition) -> bool:
     Such a condition is definitely true or false for an absent slot:
     ``value_presence: PRESENT`` or ``ABSENT``; ``required: true``, unless
     ``value_presence`` overrides it; a minimum or exact cardinality of at least
-    1, which an absent slot fails; and a maximum or exact cardinality of 0,
-    which it satisfies.  Other bounds, ``required: false`` and ``UNCOMMITTED``
-    leave absence open, so adding one never changes the verdict on an absent
-    slot.
+    1, and ``has_member``, which asks for at least one value, all of which an
+    absent slot fails; and a maximum or exact cardinality of 0, which it
+    satisfies.  Other bounds, ``required: false`` and ``UNCOMMITTED`` leave
+    absence open, so adding one never changes the verdict on an absent slot.
 
     >>> states_presence(SlotDefinition("label", equals_string="A"))
     False
@@ -58,11 +58,15 @@ def states_presence(condition: SlotDefinition) -> bool:
     True
     >>> states_presence(SlotDefinition("tags", minimum_cardinality=1))
     True
+    >>> states_presence(SlotDefinition("tags", has_member={"equals_string": "A"}))
+    True
     """
     if condition.value_presence is not None:
         if condition.value_presence in (_PRESENT, _ABSENT):
             return True
     elif condition.required:
+        return True
+    if condition.has_member is not None:
         return True
     lower = (condition.minimum_cardinality, condition.exact_cardinality)
     upper = (condition.maximum_cardinality, condition.exact_cardinality)
@@ -72,9 +76,13 @@ def states_presence(condition: SlotDefinition) -> bool:
 def value_bounds(condition: SlotDefinition, definite: bool) -> tuple[int, int | None]:
     """The least and the greatest number of values *condition* allows its slot.
 
-    ``value_presence`` takes precedence over ``required``.  In the "definitely
-    true" form (*definite*), a condition that doesn't state presence also
-    requires the slot.  The greatest number is ``None`` when unbounded.
+    ``value_presence`` takes precedence over ``required``, and ``has_member``
+    asks for at least one value.  In the "definitely true" form (*definite*), a
+    condition that doesn't state presence also requires the slot.  The greatest
+    number is ``None`` when unbounded.
+
+    >>> value_bounds(SlotDefinition("tags", has_member={"equals_string": "A"}), definite=False)
+    (1, None)
     """
     lower, upper = [0], []
     if condition.value_presence is not None:
@@ -83,6 +91,8 @@ def value_bounds(condition: SlotDefinition, definite: bool) -> tuple[int, int | 
         elif condition.value_presence == _ABSENT:
             upper.append(0)
     elif condition.required:
+        lower.append(1)
+    if condition.has_member is not None:
         lower.append(1)
     if definite and not states_presence(condition):
         lower.append(1)

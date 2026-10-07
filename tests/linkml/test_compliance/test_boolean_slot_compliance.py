@@ -2823,6 +2823,9 @@ def test_membership(framework, name, quantification, expression, instance, is_va
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework in [SHACL, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == SHACL and quantification == "has_member" and s1_range != CLASS_D:
+        # sh:qualifiedValueShape; equals_string on a reference is not translated
+        expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework == OWL and name == "all_obj_members_equals_string" and not is_valid:
         # This test case relies on punning, as s1 is used as both an OP and DP,
         # so we do not expect a DL-reasoner to be able to handle it

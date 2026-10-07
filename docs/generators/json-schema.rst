@@ -185,6 +185,9 @@ constrains each of its values in the same way, with its conditions on the slots
 of the value. For a slot inlined as a dict these are the values of the dict,
 except in its compact forms ``{id: value}`` and ``{id: null}``, which the
 expression can't reach.
+A multivalued slot's `has_member <https://w3id.org/linkml/has_member>`_ becomes
+``contains``, and the slot is required, because a slot without a value has no
+member; on a slot that isn't multivalued it is ignored, with a warning.
 The SHACL generator reads them the same way.
 
 Inlining

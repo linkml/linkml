@@ -691,7 +691,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         Each slot condition constrains the slot as induced for *cls*, so
         ``slot_usage`` applies.  Its values must satisfy its value operators,
         its ``range`` and its ``range_expression``, the latter in the form of
-        *expr*; the number of values must lie within
+        *expr*, and one of them its ``has_member``; the number of values must
+        lie within
         :func:`~linkml.generators.common.class_expression.value_bounds`, where
         an empty list or dict counts as no value.  *definite* selects the form, as in
         :meth:`get_subschema_for_class_operator`.  *cls* is ``None`` for values
@@ -705,27 +706,26 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 prop_name = self._curie(slot)
             else:
                 prop_name = self.aliased_slot_name(slot)
-            value_condition = condition
-            if condition.range_expression is not None:
-                # translated below, in the form of *expr*
-                value_condition = copy(condition)
-                value_condition.range_expression = None
-            values = self.get_subschema_for_slot(value_condition, omit_type=True, include_null=False)
-            if condition.range_expression is not None:
-                expression = self.get_subschema_for_range_expression(
-                    condition.range or slot.range, condition.range_expression, definite
-                )
-                values = JsonSchema({"allOf": [values, expression]}) if values else expression
+            values = self._value_subschema(slot, condition, definite)
             lower, upper = value_bounds(condition, definite)
+            member = None
+            if condition.has_member is not None:
+                if slot.multivalued:
+                    member = self.get_subschema_for_member(slot, condition.has_member, definite)
+                else:
+                    self._warn_has_member_on_single_valued(slot)
             if slot.multivalued and self._inlined_as_dict(slot):
                 # the values of a slot inlined as a dict are the values of the dict
                 prop = JsonSchema({"type": "object", "additionalProperties": values})
                 prop.add_keyword("minProperties", lower or None)
                 prop.add_keyword("maxProperties", upper)
+                if member is not None:
+                    prop.setdefault("allOf", []).append(self._some_dict_value(member))
             elif slot.multivalued:
                 prop = JsonSchema.array_of(values, include_null=False, required=False)
                 prop.add_keyword("minItems", lower or None)
                 prop.add_keyword("maxItems", upper)
+                prop.add_keyword("contains", member)
             else:
                 prop = values
             if condition.range is not None:
@@ -778,6 +778,69 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             and not slot.inlined_as_list
             and get_range_associated_slots(self.schemaview, slot.range)[0] is not None
         )
+
+    def _value_subschema(
+        self,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        condition: SlotDefinition | AnonymousSlotExpression,
+        definite: bool,
+    ) -> JsonSchema:
+        """The subschema each value of *slot* must satisfy under the value operators of *condition*.
+
+        These include its ``range_expression``, in the form *definite*, but not
+        its ``range``, which depends on how the values of *slot* are represented.
+        """
+        value_condition = condition
+        if condition.range_expression is not None:
+            # translated below, in the form *definite*
+            value_condition = copy(condition)
+            value_condition.range_expression = None
+        values = self.get_subschema_for_slot(value_condition, omit_type=True, include_null=False)
+        if condition.range_expression is not None:
+            expression = self.get_subschema_for_range_expression(
+                condition.range or slot.range, condition.range_expression, definite
+            )
+            values = JsonSchema({"allOf": [values, expression]}) if values else expression
+        return values
+
+    def get_subschema_for_member(
+        self, slot: SlotDefinition | AnonymousSlotExpression, member: AnonymousSlotExpression, definite: bool
+    ) -> JsonSchema:
+        """The subschema a value of multivalued *slot* satisfies as a member of its ``has_member`` *member*.
+
+        A member is one value, which must satisfy the value operators, the
+        ``range`` and the ``range_expression`` of *member*, the latter in the
+        form *definite*.
+        """
+        conjuncts = [self._value_subschema(slot, member, definite)]
+        if member.range is not None:
+            conjuncts.append(self._value_type_subschema(slot, member.range))
+        conjuncts = [conjunct for conjunct in conjuncts if conjunct]
+        if len(conjuncts) == 1:
+            return conjuncts[0]
+        return JsonSchema({"allOf": conjuncts} if conjuncts else {})
+
+    def _value_type_subschema(self, slot: SlotDefinition | AnonymousSlotExpression, value_range: str) -> JsonSchema:
+        """The subschema of one value of range *value_range* as multivalued *slot* represents its values."""
+        collection = self.get_subschema_for_slot(
+            AnonymousSlotExpression(
+                range=value_range, multivalued=True, inlined=slot.inlined, inlined_as_list=slot.inlined_as_list
+            ),
+            include_null=False,
+        )
+        return collection["additionalProperties"] if collection.is_object else collection["items"]
+
+    @staticmethod
+    def _warn_has_member_on_single_valued(slot: SlotDefinition | AnonymousSlotExpression) -> None:
+        """Warn that the ``has_member`` of *slot* is ignored: a member is a value of a multivalued slot."""
+        logger.warning(
+            "Slot %r: has_member is not translated to JSON Schema, because the slot is not multivalued.", slot.name
+        )
+
+    @staticmethod
+    def _some_dict_value(member: JsonSchema) -> JsonSchema:
+        """The subschema of a dict with a value satisfying *member*: not every value fails it."""
+        return JsonSchema({"not": {"additionalProperties": {"not": member}}})
 
     def _class_expression_slot(self, cls: ClassDefinition | None, slot_name: str) -> SlotDefinition | None:
         """The slot a condition of a class expression of *cls* names, as induced for *cls*, if any."""
@@ -1105,19 +1168,26 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if prop.is_array:
             all_element_constraints = self.get_value_constraints_for_slot(slot.all_members)
-            any_element_constraints = self.get_value_constraints_for_slot(slot.has_member)
             prop.add_keyword("minItems", slot.minimum_cardinality)
             prop.add_keyword("maxItems", slot.maximum_cardinality)
             prop["items"].update(own_constraints)
             prop["items"].update(all_element_constraints)
-            if any_element_constraints:
-                prop["contains"] = any_element_constraints
+            if slot.has_member is not None:
+                # At least one value, so not null.
+                prop["type"] = "array"
+                prop["contains"] = self.get_subschema_for_member(slot, slot.has_member, definite=False)
         elif inlined_as_dict:
             # The values of the slot are the values of the dict.
             if own_constraints:
                 prop["additionalProperties"] = JsonSchema({"allOf": [prop["additionalProperties"], own_constraints]})
+            if slot.has_member is not None:
+                member = self.get_subschema_for_member(slot, slot.has_member, definite=False)
+                prop.setdefault("allOf", []).append(self._some_dict_value(member))
         else:
             prop.update(own_constraints)
+            if slot.has_member is not None and not omit_type:
+                # with omit_type, the caller translates has_member for the slot the condition names
+                self._warn_has_member_on_single_valued(slot)
 
         if prop.is_object:
             prop.add_keyword("minProperties", slot.minimum_cardinality)
@@ -1177,7 +1247,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot = self.before_generate_class_slot(slot, cls, self.schemaview)
         class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
         value_required = (
-            slot.required or slot == class_id_slot or slot.value_presence == PresenceEnum(PresenceEnum.PRESENT)
+            slot.required
+            or slot == class_id_slot
+            or slot.value_presence == PresenceEnum(PresenceEnum.PRESENT)
+            # a member is a value
+            or (slot.multivalued and slot.has_member is not None)
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
