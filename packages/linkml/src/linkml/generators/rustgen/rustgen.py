@@ -518,6 +518,9 @@ class RustGenerator(Generator, LifecycleMixin):
         crate_name = args.get("crate_name")
         if crate_name is not None and not _is_valid_rust_ident(str(crate_name)):
             raise click.UsageError(f"{crate_name!r} is not a valid Rust crate name")
+        output = args.get("output")
+        if args.get("mode") == "file" and output is not None and Path(output).suffix != ".rs":
+            raise click.UsageError(f"--output must be a .rs file in file mode, got {str(output)!r}")
 
     def _select_root_class(self, class_defs: list[ClassDefinition]) -> ClassDefinition | None:
         """Return the schema-local class marked ``tree_root`` if present."""

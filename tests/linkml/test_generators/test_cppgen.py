@@ -851,7 +851,8 @@ def test_cli_nonexistent_template_dir(tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
 
-    assert result.exit_code != 0
+    assert result.exit_code == 2
+    assert "does not exist" in result.output
 
 
 # ---------------------------------------------------------------------------

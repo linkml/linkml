@@ -590,7 +590,7 @@ _TEMPLATE_NAMES = [
 )
 @click.option(
     "--template-dir",
-    type=click.Path(),
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="""
 Optional jinja2 template directory to use for C++ header generation.
 
@@ -617,11 +617,6 @@ def cli(ctx: click.Context, yamlfile, config_file=None, **args):
     config = read_generator_config(config_file, CppGenerator.config_section_name)
     apply_config_defaults(ctx, config, args)
     CppGenerator.validate_generator_args(args)
-    template_dir = args.get("template_dir")
-    if template_dir is not None:
-        if not Path(template_dir).exists():
-            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
-
     gen = CppGenerator(yamlfile, **args)
     print(gen.serialize())
 

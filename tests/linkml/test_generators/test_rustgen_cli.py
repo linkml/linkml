@@ -289,3 +289,85 @@ def test_subtype_trait_impl_matches_every_variant(tmp_path):
     poly = (out_dir / "src" / "poly.rs").read_text()
     assert "EventOrSubtype::Event(val) => val.name()" in poly
     assert "ShapeOrSubtype::Shape(" not in poly
+
+
+# ---------------------------------------------------------------------------
+# --output checks, --stubgen and --expand-subproperty-of
+# ---------------------------------------------------------------------------
+
+SUBPROPERTY_SCHEMA = """
+id: https://example.org/assoc
+name: assoc
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+
+
+def test_cli_output_is_required(tmp_path):
+    """serialize() needs an output in both modes; asking for it up front gives a usage
+    error instead of a ValueError traceback."""
+    schema_file, _ = _write_schema(tmp_path)
+
+    result = CliRunner().invoke(cli, [str(schema_file)])
+
+    assert result.exit_code == 2
+    assert "Missing option" in result.output
+    assert "--output" in result.output
+
+
+def test_cli_file_mode_output_must_be_rs(tmp_path):
+    schema_file, out_dir = _write_schema(tmp_path)
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--mode", "file", "-o", str(out_dir / "out.txt")])
+
+    assert result.exit_code == 2
+    assert "must be a .rs file" in result.output
+
+
+def test_cli_no_stubgen_omits_the_stub_binary(tmp_path):
+    schema_file, out_dir = _write_schema(tmp_path)
+
+    result = CliRunner().invoke(cli, [str(schema_file), "-o", str(out_dir), "--pyo3", "--no-stubgen"])
+
+    assert result.exit_code == 0, result.output
+    assert not (out_dir / "src" / "bin" / "stub_gen.rs").exists()
+
+
+def test_cli_config_file_disables_stubgen(tmp_path):
+    """A boolean flag is overlaid from the config file like any other option."""
+    schema_file, config_file, out_dir = _rust_config(tmp_path, "    stubgen: false\n")
+
+    result = CliRunner().invoke(cli, [str(schema_file), "-C", str(config_file), "-o", str(out_dir), "--pyo3"])
+
+    assert result.exit_code == 0, result.output
+    assert not (out_dir / "src" / "bin" / "stub_gen.rs").exists()
+
+
+@pytest.mark.parametrize("flag,expanded", [("--expand-subproperty-of", True), ("--no-expand-subproperty-of", False)])
+def test_cli_expand_subproperty_of(tmp_path, flag, expanded):
+    """With the flag on, a `subproperty_of` slot becomes an enum of its descendants;
+    off, it stays a plain String."""
+    schema_file, out_dir = _write_schema(tmp_path, SUBPROPERTY_SCHEMA)
+    out_file = out_dir / "assoc.rs"
+
+    result = CliRunner().invoke(cli, [str(schema_file), "--mode", "file", "-o", str(out_file), flag])
+
+    assert result.exit_code == 0, result.output
+    assert ("PredicateEnum" in out_file.read_text()) is expanded
