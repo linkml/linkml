@@ -38400,7 +38400,7 @@
         "@id": "treats_or_applied_or_studied_to_treat"
       },
       "type": {
-        "@id": "rdf:type"
+        "@id": "@type"
       },
       "update_date": {
         "@type": "xsd:date",
