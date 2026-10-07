@@ -1,5 +1,6 @@
 """Tests for the TypeDB TypeQL generator."""
 
+import logging
 import re
 
 import pytest
@@ -1088,6 +1089,148 @@ slots:
     output = TypeDBGenerator(str(schema_file)).serialize()
     assert re.search(r"entity Widget, sub Thing;", output)
     assert "WARNING: @regex dropped from slot 'code' on 'Widget'" in output
+
+
+def _structured_pattern_output(tmp_path, settings: str, interpolated: bool = True) -> str:
+    """Generate TypeQL for a ``code`` slot whose pattern comes from an interpolated ``structured_pattern``."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+{settings}
+classes:
+  Thing:
+    slots:
+      - code
+slots:
+  code:
+    range: string
+    structured_pattern:
+      syntax: "^{{PREFIX}}-[0-9]{{3}}$"
+      interpolated: {str(interpolated).lower()}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    return TypeDBGenerator(str(schema_file)).serialize()
+
+
+def test_structured_pattern_filled_from_settings_becomes_regex(tmp_path):
+    """A structured_pattern whose placeholders are filled from settings becomes @regex; the
+    {3} quantifier is not mistaken for a placeholder."""
+    output = _structured_pattern_output(tmp_path, 'settings:\n  PREFIX: "[A-Z]{2}"')
+    assert r'owns code @regex("^(?:^[A-Z]{2}-[0-9]{3}$)$")' in output
+    assert "WARNING" not in output
+
+
+def test_structured_pattern_with_unfilled_placeholder_is_dropped_with_warning(tmp_path):
+    """A placeholder with no settings entry would reach TypeDB as an invalid regex ([SVL31])
+    and fail the whole schema (nmdc-schema's source files hit this), so @regex is dropped."""
+    output = _structured_pattern_output(tmp_path, "")
+    assert "@regex(" not in output
+    assert "owns code" in output
+    assert "WARNING: @regex dropped from slot 'code': its structured_pattern placeholders {PREFIX}" in output
+
+
+def test_dropped_narrowing_regex_falls_back_to_parent_constraint(tmp_path):
+    """If a subclass's own @regex is dropped, it has nothing to add, so it must not redeclare
+    ``owns`` ([SVL42]); the parent's @regex still applies through inheritance."""
+    schema_yaml = r"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots: [code]
+  Widget:
+    is_a: Thing
+    slot_usage:
+      code:
+        structured_pattern:
+          syntax: "^{PREFIX}:w-[0-9]+$"
+          interpolated: true
+slots:
+  code:
+    range: string
+    pattern: "^[a-z]+:[a-z0-9-]+$"
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert 'owns code @regex("^[a-z]+:[a-z0-9-]+$")' in output
+    assert re.search(r"entity Widget, sub Thing;", output)
+    assert "WARNING: @regex dropped from slot 'code' on 'Widget'" in output
+
+
+def test_warnings_are_also_logged(tmp_path, caplog):
+    """Each '# WARNING' comment in the output is also logged, so it reaches stderr from the CLI."""
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.typedbgen"):
+        output = _pattern_output(tmp_path, r"^(?!x)\w+$")
+    comments = [line.strip()[len("# WARNING:") :].strip() for line in output.splitlines() if "# WARNING:" in line]
+    assert comments
+    assert [r.getMessage() for r in caplog.records if r.levelno == logging.WARNING] == comments
+
+
+def test_required_multivalued_slot_requires_at_least_one_value(tmp_path):
+    """required + multivalued means one or more values: ``@card(1..)``, not ``@card(0..)`` (#3996)."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots: [labels, tags]
+slots:
+  labels:
+    range: string
+    multivalued: true
+    required: true
+  tags:
+    range: string
+    multivalued: true
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert "owns labels @card(1..)" in output
+    assert "owns tags @card(0..)" in output
+
+
+def test_required_multivalued_role_on_relationship_class_requires_at_least_one(tmp_path):
+    """The same rule applies to a relationship class's ``relates`` for a required multivalued slot (#3996)."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots: [id]
+  Group:
+    represents_relationship: true
+    slots: [members]
+slots:
+  id:
+    identifier: true
+  members:
+    range: Thing
+    multivalued: true
+    required: true
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    output = TypeDBGenerator(str(schema_file)).serialize()
+    assert "relates members @card(1..)" in output
 
 
 def test_description_produces_doc_annotation(tmp_path):

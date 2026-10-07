@@ -25,6 +25,7 @@ Mapping summary:
 - ``description`` → ``@doc(...)``
 """
 
+import logging
 import os
 import re
 from dataclasses import dataclass
@@ -35,6 +36,8 @@ from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
+
+logger = logging.getLogger(__name__)
 
 # Maps LinkML / XSD type local-names to TypeDB primitive value types.
 _TYPEDB_PRIMITIVE: dict[str, str] = {
@@ -282,11 +285,26 @@ def _regex_supported(pattern: str) -> bool:
     return not _UNSUPPORTED_REGEX.search(pattern)
 
 
+def _unfilled_placeholders(induced: SlotDefinition) -> list[str]:
+    """Return ``structured_pattern`` placeholders (e.g. ``{id_blade}``) still present in the slot's ``pattern``.
+
+    A placeholder is left behind, verbatim or brace-escaped, when no ``settings`` entry fills it
+    or the pattern isn't marked ``interpolated``. Only names from the slot's own
+    ``structured_pattern`` count, so regex quantifiers such as ``{3}`` are never mistaken for one.
+    """
+    sp = induced.structured_pattern
+    if not sp or not sp.syntax or not induced.pattern:
+        return []
+    names = dict.fromkeys(re.findall(r"\{([A-Za-z_]\w*)\}", sp.syntax))
+    return [n for n in names if re.search(r"\\?\{" + re.escape(n) + r"\\?\}", induced.pattern)]
+
+
 def _regex_drop_reason(sv: SchemaView, induced: SlotDefinition) -> str | None:
     """Return why a slot's ``pattern`` can't become ``@regex``, or ``None`` if it can (or has none).
 
-    Either reason would make TypeDB reject the whole schema. Class-ranged slots have no
-    attribute to annotate, so they return ``None`` too.
+    A non-string attribute or regex syntax TypeDB lacks makes TypeDB reject the whole schema;
+    an unfilled placeholder either does too or yields a regex no real value matches. Class-ranged
+    slots have no attribute to annotate, so they return ``None`` too.
     """
     if not induced.pattern:
         return None
@@ -295,6 +313,10 @@ def _regex_drop_reason(sv: SchemaView, induced: SlotDefinition) -> str | None:
         return None
     if value_type != "string":
         return f"its value type is {value_type}, and TypeDB only allows @regex on string attributes"
+    unfilled = _unfilled_placeholders(induced)
+    if unfilled:
+        names = ", ".join(f"{{{n}}}" for n in unfilled)
+        return f"its structured_pattern placeholders {names} were not filled from the schema's settings"
     if not _regex_supported(induced.pattern):
         return "it uses look-around, backreferences or atomic groups, which TypeDB's regex engine does not support"
     return None
@@ -725,7 +747,7 @@ class TypeDBGenerator(Generator):
                 dropped[slot_name] = (reason, induced.pattern)
         for class_def in sv.all_classes().values():
             for slot_name, usage in (class_def.slot_usage or {}).items():
-                if not (usage.pattern or usage.range):
+                if not (usage.pattern or usage.structured_pattern or usage.range):
                     continue
                 induced = sv.induced_slot(slot_name, class_def.name)
                 reason = _regex_drop_reason(sv, induced)
@@ -769,6 +791,11 @@ class TypeDBGenerator(Generator):
             for rl in relation_lines:
                 lines.append(f"  {rl}")
             lines.append("")
+
+        # Every "# WARNING:" comment in the output marks something dropped; also report it on stderr.
+        for line in lines:
+            if line.lstrip().startswith("# WARNING:"):
+                logger.warning(line.lstrip()[len("# WARNING:") :].strip())
 
         return "\n".join(lines)
 
@@ -981,7 +1008,9 @@ class TypeDBGenerator(Generator):
         """Return inherited slots whose constraints this class tightens via ``slot_usage``.
 
         Range, pattern and enum values are compared. TypeDB accepts a redeclared ``owns``
-        that adds a constraint, but rejects a plain repeat (``[SVL42]``).
+        that adds a constraint, but rejects a plain repeat (``[SVL42]``). Only an annotation the
+        class actually emits counts: one that is absent, e.g. a ``@regex`` dropped with a warning,
+        has nothing to add, and the parent's constraint is inherited anyway.
 
         :return: induced slots on ``class_name`` that constrain an inherited slot further
         """
@@ -996,12 +1025,12 @@ class TypeDBGenerator(Generator):
             if _resolve_typedb_value_type(sv, induced.range) is None:
                 continue  # object-ranged slots are roles, handled elsewhere
             inherited = sv.induced_slot(induced.name, parent)
-            if (
-                _build_range_annotation(induced) != _build_range_annotation(inherited)
-                or _build_regex_annotation(self.schemaview, induced)
-                != _build_regex_annotation(self.schemaview, inherited)
-                or self._values_annotation(induced) != self._values_annotation(inherited)
-            ):
+            builders = (
+                _build_range_annotation,
+                lambda s: _build_regex_annotation(self.schemaview, s),
+                self._values_annotation,
+            )
+            if any(build(induced) and build(induced) != build(inherited) for build in builders):
                 narrowed.append(induced)
         return narrowed
 
@@ -1062,7 +1091,7 @@ class TypeDBGenerator(Generator):
         elif induced.required and not induced.multivalued:
             owns += " @card(1)"
         elif induced.multivalued:
-            owns += " @card(0..)"
+            owns += " @card(1..)" if induced.required else " @card(0..)"
 
         range_ann = _build_range_annotation(induced)
         if range_ann:
@@ -1094,7 +1123,7 @@ class TypeDBGenerator(Generator):
         elif induced.required and not induced.multivalued:
             relates += " @card(1)"
         elif induced.multivalued:
-            relates += " @card(0..)"
+            relates += " @card(1..)" if induced.required else " @card(0..)"
         return relates
 
     def _build_plays_stmt(self, rel_tname: str, role_name: str, induced: SlotDefinition | None = None) -> str:
