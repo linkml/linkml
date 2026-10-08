@@ -1263,18 +1263,20 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             else:
                 keyed = True
             if identifier:
+                # underscored name, as in data and dataclass field (``term id`` -> ``term_id``)
+                key_name = super().slot_name(identifier)
                 if not slot.inlined_as_list:
                     rlines.append(
                         f'self._normalize_inlined_as_dict(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
                 else:
                     rlines.append(
                         f'self._normalize_inlined_as_list(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
             else:
