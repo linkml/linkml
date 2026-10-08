@@ -58,6 +58,9 @@ class JSONLDGenerator(Generator):
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
 
+    original_base_dir: str | None = None
+    """The caller's base_dir, before SchemaLoader replaces it with one derived from the schema path"""
+
     context: Sequence[str] | None = field(default_factory=list)
     """Path to a JSONLD context file"""
 
@@ -66,6 +69,7 @@ class JSONLDGenerator(Generator):
 
     def __post_init__(self) -> None:
         self.original_schema = deepcopy(self.schema)
+        self.original_base_dir = self.base_dir
         super().__post_init__()
 
     def _add_type(self, node: YAMLRoot) -> dict:
@@ -187,12 +191,12 @@ class JSONLDGenerator(Generator):
             context_kwargs["metadata"] = False
             # Forward importmap/base_dir so the spawned ContextGenerator can
             # re-resolve any URI-style imports in ``self.original_schema``
-            # through the same ``--importmap`` the caller supplied. A path
-            # carries its own location; forwarding base_dir alongside a
-            # relative path would resolve it against its own directory twice.
+            # through the same ``--importmap`` the caller supplied. Forward the
+            # caller's base_dir, not the one SchemaLoader derived from the schema
+            # path: the latter would resolve a relative path against its own
+            # directory twice.
             context_kwargs.setdefault("importmap", self.importmap)
-            if not isinstance(self.original_schema, (str, os.PathLike)):
-                context_kwargs.setdefault("base_dir", self.base_dir)
+            context_kwargs.setdefault("base_dir", self.original_base_dir)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI

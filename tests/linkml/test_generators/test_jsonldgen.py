@@ -100,18 +100,9 @@ def test_class_uri(input_path):
         )
 
 
-def test_relative_schema_path_from_parent_dir(tmp_path, monkeypatch):
-    """`gen-jsonld` accepts a relative path with directory parts, as it did in 1.11.1.
-
-    Regression test: the nested ContextGenerator was handed the relative path together
-    with the schema's directory as ``base_dir``, so it looked for ``dist/dist/tiny.yaml``.
-    """
-    schema_dir = tmp_path / "dist"
-    schema_dir.mkdir()
-    (schema_dir / "tiny.yaml").write_text(
-        """
-id: https://example.org/tiny
-name: tiny
+CORE_SCHEMA = """
+id: https://example.org/core
+name: core
 prefixes:
   linkml: https://w3id.org/linkml/
   ex: https://example.org/tiny/
@@ -120,17 +111,67 @@ imports:
 default_prefix: ex
 default_range: string
 classes:
+  Base:
+    attributes:
+      label: {}
+"""
+
+TINY_SCHEMA = """
+id: https://example.org/tiny
+name: tiny
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/tiny/
+imports:
+  - linkml:types
+  - ./core
+default_prefix: ex
+default_range: string
+classes:
   Thing:
+    is_a: Base
     attributes:
       name: {}
 """
-    )
+
+
+@pytest.mark.parametrize(
+    "make_output",
+    [
+        pytest.param(
+            lambda schema_dir: CliRunner().invoke(jsonld_cli, ["--no-metadata", "dist/tiny.yaml"]).output,
+            id="cli-relative-path",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("dist/tiny.yaml", metadata=False).serialize(),
+            id="api-relative-path",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("tiny.yaml", base_dir="dist", metadata=False).serialize(),
+            id="api-relative-base-dir",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("tiny.yaml", base_dir=str(schema_dir), metadata=False).serialize(),
+            id="api-absolute-base-dir",
+        ),
+    ],
+)
+def test_relative_schema_locations(tmp_path, monkeypatch, make_output):
+    """`gen-jsonld` finds the schema and its relative imports however its location is given.
+
+    Regression test: the nested ContextGenerator was handed the schema path together with
+    the base_dir SchemaLoader derived from it, so ``dist/tiny.yaml`` was looked up as
+    ``dist/dist/tiny.yaml``. Forwarding the caller's own base_dir instead must keep an
+    explicit ``base_dir`` and a sibling ``./core`` import working.
+    """
+    schema_dir = tmp_path / "dist"
+    schema_dir.mkdir()
+    (schema_dir / "core.yaml").write_text(CORE_SCHEMA)
+    (schema_dir / "tiny.yaml").write_text(TINY_SCHEMA)
+    expected = JSONLDGenerator(str(schema_dir / "tiny.yaml"), metadata=False).serialize()
     monkeypatch.chdir(tmp_path)
 
-    relative = CliRunner().invoke(jsonld_cli, ["--no-metadata", "dist/tiny.yaml"])
-    absolute = CliRunner().invoke(jsonld_cli, ["--no-metadata", str(schema_dir / "tiny.yaml")])
+    output = make_output(schema_dir)
 
-    assert relative.exit_code == 0, relative.output
-    assert relative.output == absolute.output
-    # The Python API passes a str rather than the CLI's Path
-    assert JSONLDGenerator("dist/tiny.yaml", metadata=False).serialize().rstrip() == absolute.output.rstrip()
+    assert '"name": "Base"' in output
+    assert output.rstrip() == expected.rstrip()
