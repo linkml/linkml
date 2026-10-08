@@ -81,3 +81,16 @@ def test_no_eval_prohibited():
 def test_funcs():
     with pytest.raises(NotImplementedError):
         eval_expr("my_func([1,2,3])")
+
+
+def test_keyword_named_variables():
+    """A {variable} named after a Python keyword is bound like any other."""
+    assert eval_expr("{in} + {out}", **{"in": 1, "out": 2}) == 3
+    # unset or unbound, it makes the expression None, as for any {variable}
+    assert eval_expr("{in} + {out}", **{"in": None, "out": 2}) is None
+    assert eval_expr("{in} + {out}", out=2) is None
+    # {in} is renamed to a name not already bound or used, so it does not pick up _in's value
+    assert eval_expr("{in} + {_in}", **{"in": 1, "_in": 10}) == 11
+    assert eval_expr("{in} + {_in}", **{"in": 1}) is None
+    # text in quoted strings is not a variable
+    assert eval_expr("strlen('{in}')", **{"in": "abc"}) == 4
