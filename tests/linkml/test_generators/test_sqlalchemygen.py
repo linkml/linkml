@@ -189,7 +189,7 @@ classes:
 
 @pytest.mark.parametrize("template", [TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X])
 def test_keyword_named_slots(template):
-    """Keyword-named slots become escaped attributes (from_) on columns that keep the slot name (from)."""
+    """A slot named after a Python keyword, such as from, has the attribute from_. Its column keeps the name from."""
     from datetime import date
 
     from sqlalchemy import inspect
@@ -214,6 +214,35 @@ def test_keyword_named_slots(template):
     assert [s.id for s in term.import_] == ["s1"]
     assert [t.id for t in session.get(mod.Holder, "h1").with_] == ["t1"]
     session.close()
+
+
+def test_keyword_named_slots_imperative():
+    """In the imperative style, the attribute from_ of the Python class is stored in the column from."""
+    from sqlalchemy import text
+
+    engine = create_engine("sqlite://")
+    with engine.connect() as connection:
+        cur = connection.connection.cursor()
+        cur.executescript(SQLTableGenerator(_KEYWORD_SCHEMA).generate_ddl())
+    mod = SQLAlchemyGenerator(_KEYWORD_SCHEMA).compile_sqla(
+        template=TemplateEnum.IMPERATIVE, compile_python_dataclasses=True
+    )
+    session = sessionmaker(bind=engine)()
+    session.add(mod.Term(id="t1", from_="2026-01-01"))
+    session.commit()
+    session.close()
+
+    with engine.connect() as connection:
+        assert connection.execute(text('SELECT "from" FROM "Term"')).scalar_one() == "2026-01-01"
+    engine.dispose()
+
+
+def test_keyword_slot_collision():
+    """A class with the slots from and from_ fails to generate, because both would have the attribute from_."""
+    b = SchemaBuilder()
+    b.add_class("Window", slots=["from", "from_"])
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        SQLAlchemyGenerator(b.schema).generate_sqla()
 
 
 def test_sqla_compile_imperative(schema):
