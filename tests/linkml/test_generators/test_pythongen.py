@@ -5,7 +5,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 import yaml
-from jsonasobj2 import as_json
+from jsonasobj2 import as_json, items, keys
 
 from linkml.generators.pythongen import PythonGenerator
 from linkml.workspaces.example_runner import ExampleRunner
@@ -415,6 +415,98 @@ classes:
     widget = py_module.Thing(**{"class": "Widget", "size": "big"})
     assert isinstance(widget, py_module.Widget)
     assert widget.size == "big"
+
+
+# Keys and identifiers with keyword names: Window's required ``from`` is the key of an inlined list,
+# Term's identifier ``in`` the key of an inlined dict
+_KEYWORD_KEY_SCHEMA = """id: https://example.org/kw-key
+name: kw-key
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/kw-key/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+        required: true
+      to:
+  Booking:
+    attributes:
+      id:
+        identifier: true
+      windows:
+        range: Window
+        multivalued: true
+        inlined_as_list: true
+  Term:
+    attributes:
+      in:
+        identifier: true
+      label:
+  Holder:
+    attributes:
+      id:
+        identifier: true
+      terms:
+        range: Term
+        multivalued: true
+        inlined: true
+"""
+
+
+@pytest.mark.parametrize(
+    "class_name,data,dumped",
+    [
+        (
+            "Booking",
+            {"id": "b1", "windows": [{"from": "x", "to": "y"}]},
+            {"id": "b1", "windows": [{"from": "x", "to": "y"}]},
+        ),
+        ("Booking", {"id": "b1", "windows": {"x": "y"}}, {"id": "b1", "windows": [{"from": "x", "to": "y"}]}),
+        (
+            "Holder",
+            {"id": "h1", "terms": {"ex:t1": {"label": "L"}}},
+            {"id": "h1", "terms": {"ex:t1": {"in": "ex:t1", "label": "L"}}},
+        ),
+    ],
+    ids=["list-keyed", "simpledict-shorthand", "dict-keyed-by-identifier"],
+)
+def test_keyword_named_key_in_inlined_collection(class_name, data, dumped):
+    """An inlined collection keyed by a keyword-named key or identifier loads and dumps under the slot name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    obj = getattr(py_module, class_name)(**data)
+    assert yaml.safe_load(yaml_dumper.dumps(obj)) == dumped
+
+
+def test_keyword_named_slot_item_access():
+    """Item access, keys() and ``in`` agree with items(): all take the slot name, and the field name still works."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    window = py_module.Window(**{"from": "x"})
+
+    assert list(keys(window)) == [k for k, _ in items(window)] == ["from", "to"]
+    assert "from" in window and "from_" in window
+    assert window["from"] == window["from_"] == "x"
+    window["from"] = "z"
+    assert window.from_ == "z"
+
+
+def test_keyword_named_identifier_rdf_dump():
+    """The RDF dumper reads a keyword-named identifier through its slot name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    ttl = rdflib_dumper.dumps(py_module.Term(**{"in": "ex:t1", "label": "L"}), SchemaView(_KEYWORD_KEY_SCHEMA))
+    assert "ex:t1 a ex:Term" in ttl
+
+
+def test_keyword_named_required_slot_reported_by_slot_name():
+    """A missing required slot is reported under the slot name, not the escaped field name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    with pytest.raises(ValueError, match="^from must be supplied"):
+        py_module.Window(to="y")
 
 
 def test_keyword_named_slot_in_example_runner(tmp_path):
