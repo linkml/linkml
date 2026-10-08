@@ -298,3 +298,37 @@ def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class,
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output
+
+
+def test_keyword_named_columns():
+    """Keyword-named columns get escaped attributes with an alias (from_ for from), and keep their checks."""
+    from linkml.generators.panderagen.dataframe_generator import DataframeGenerator
+    from linkml.generators.panderagen.panderagen import PANDERA_GROUP
+
+    schema = """id: https://example.org/keywords
+name: keywords
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      id:
+        identifier: true
+      from:
+      class:
+        range: integer
+        minimum_value: 1
+"""
+    try:
+        modules = DataframeGenerator.compile_package_from_specification(PANDERA_GROUP, "keyword_package", schema)
+        window = modules["panderagen_class_based"].Window
+        df = pl.DataFrame({"id": ["w1"], "from": ["2026-01-01"], "class": [2]})
+        assert window.validate(df).columns == ["id", "from", "class"]
+        with pytest.raises(pandera.errors.SchemaError):
+            window.validate(df.with_columns(pl.lit(0).alias("class")))
+    finally:
+        DataframeGenerator.cleanup_package("keyword_package")

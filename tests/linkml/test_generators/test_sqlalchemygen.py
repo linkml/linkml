@@ -151,6 +151,71 @@ def test_one_to_many_fk_references_mapped_class(template):
     assert parent.children[0] is child
 
 
+# Slots named after Python keywords: a plain column, a many-to-many, a multivalued scalar and a one-to-many
+_KEYWORD_SCHEMA = """id: https://example.org/keywords
+name: keywords
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Source:
+    attributes:
+      id:
+        identifier: true
+  Term:
+    attributes:
+      id:
+        identifier: true
+      from:
+        range: date
+      class:
+        multivalued: true
+      import:
+        range: Source
+        multivalued: true
+  Holder:
+    attributes:
+      id:
+        identifier: true
+      with:
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+"""
+
+
+@pytest.mark.parametrize("template", [TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X])
+def test_keyword_named_slots(template):
+    """Keyword-named slots become escaped attributes (from_) on columns that keep the slot name (from)."""
+    from datetime import date
+
+    from sqlalchemy import inspect
+    from sqlalchemy.orm import clear_mappers
+
+    clear_mappers()
+    mod = SQLAlchemyGenerator(_KEYWORD_SCHEMA).compile_sqla(template=template)
+    engine = create_engine("sqlite://")
+    mod.Base.metadata.create_all(engine)
+    assert "from" in [c["name"] for c in inspect(engine).get_columns("Term")]
+    assert "class" in [c["name"] for c in inspect(engine).get_columns("Term_class")]
+
+    session = sessionmaker(bind=engine)()
+    term = mod.Term(id="t1", from_=date(2026, 1, 1), import_=[mod.Source(id="s1")])
+    term.class_ = ["a", "b"]
+    session.add(mod.Holder(id="h1", with_=[term]))
+    session.commit()
+
+    term = session.get(mod.Term, "t1")
+    assert term.from_ == date(2026, 1, 1)
+    assert sorted(term.class_) == ["a", "b"]
+    assert [s.id for s in term.import_] == ["s1"]
+    assert [t.id for t in session.get(mod.Holder, "h1").with_] == ["t1"]
+    session.close()
+
+
 def test_sqla_compile_imperative(schema):
     """
     tests compilation of generated imperative mappings

@@ -242,6 +242,26 @@ enums:
         )
 
 
+def test_pydantic_keyword_slot_collision():
+    """A class with slots ``from`` and ``from_`` fails to generate rather than silently keeping one field."""
+    schema = """id: https://example.org/keyword-collision
+name: keyword-collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+      from_:
+"""
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        PydanticGenerator(schema).serialize()
+
+
 def test_pydantic_unmasked_keywords(input_path):
     gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
     code = gen.serialize()
