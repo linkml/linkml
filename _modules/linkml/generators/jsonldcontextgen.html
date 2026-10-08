@@ -840,7 +840,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_build_element_id</span><span class="p">(</span><span class="n">slot_def</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot_def</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+                <span class="c1"># Identifier slots map to the JSON-LD @id keyword. The context key</span>
+                <span class="c1"># must be the slot *name* (the term used in instance data), not a</span>
+                <span class="c1"># CURIE — even when --use-curies is enabled.</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
@@ -891,7 +896,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_element_id</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">global_slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">override_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_type</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">global_slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
                 <span class="n">scoped</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">global_slot</span><span class="p">)]</span> <span class="o">=</span> <span class="n">entry</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">scoped</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">entry</span>
