@@ -16,6 +16,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.naming import escape_python_keyword
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
@@ -504,6 +505,16 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             result = result.merge(slot)
 
         slot_results = self.after_generate_slots(slot_results, self.schemaview)
+        names = [slot.attribute.name for slot in slot_results]
+        for slot in slot_results:
+            # A keyword-named slot is escaped (from -> from_) and would silently replace a slot named from_
+            attribute = slot.attribute
+            escaped = attribute.alias is not None and attribute.name == escape_python_keyword(attribute.alias)
+            if escaped and attribute.name != attribute.alias and names.count(attribute.name) > 1:
+                raise ValueError(
+                    f"Class {cls.name}: slots {attribute.alias!r} and {attribute.name!r} "
+                    f"would both be the Python field {attribute.name!r}"
+                )
         attributes = {slot.attribute.name: slot.attribute for slot in slot_results}
 
         result.cls.attributes = attributes
