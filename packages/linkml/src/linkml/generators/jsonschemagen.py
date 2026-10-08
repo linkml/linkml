@@ -679,14 +679,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
-            if self.use_curies:
+            # Anonymous slot expressions don't carry the underlying slot's `identifier` or
+            # `multivalued` flags, so look them up on the schema's slot definition.
+            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            if self.use_curies and not (base_slot is not None and base_slot.identifier):
                 prop_name = self._curie(slot)
             else:
                 prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
-            # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
-            # so look it up on the schema's slot definition and wrap so item-level constraints apply.
-            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Wrap multivalued slots so item-level constraints apply.
             if base_slot is not None and base_slot.multivalued and not prop.is_array:
                 prop = JsonSchema.array_of(prop, include_null=False, required=False)
             value_required = False
@@ -1023,7 +1024,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        if self.use_curies:
+        if self.use_curies and not slot.identifier:
             prop_name = self._curie(slot)
         else:
             prop_name = self.aliased_slot_name(slot)
