@@ -895,7 +895,7 @@ def test_keyword_slots_compile(tmp_path):
     header = tmp_path / "keywords.hpp"
     header.write_text(CppGenerator(schema=KEYWORD_SCHEMA).serialize())
     result = subprocess.run(
-        ["g++", "-std=c++20", "-fsyntax-only", "-x", "c++", str(header)], capture_output=True, text=True
+        ["g++", "-std=c++17", "-fsyntax-only", "-x", "c++", str(header)], capture_output=True, text=True
     )
     assert result.returncode == 0, result.stderr
 
