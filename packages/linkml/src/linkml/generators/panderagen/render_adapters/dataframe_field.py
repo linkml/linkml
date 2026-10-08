@@ -62,7 +62,8 @@ class DataframeField(OOField):
 
     @property
     def python_name(self) -> str:
-        """The class attribute name: the column name, escaped if a Python keyword (``from`` -> ``from_``)"""
+        """The class attribute name. It is the column name, with a trailing underscore if the column name is a
+        Python keyword, so the column ``from`` has the attribute ``from_``."""
         return escape_python_keyword(self.name)
 
     @property

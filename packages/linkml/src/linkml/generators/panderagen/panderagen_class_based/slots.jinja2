@@ -27,7 +27,7 @@
             {{ ']' }}
         {%- endif -%}
         {{ ' =' }} pla.Field(
-            {#- a keyword-named column needs an alias, as its attribute is escaped (from_) -#}
+            {#- A column named after a Python keyword, such as from, has the attribute from_ and keeps its name as the alias -#}
             {%- if field.python_name != field.name -%}alias="{{ field.name }}", {% endif -%}
             {{- constraint_parameters(field) -}}
             {{- enum_macros.enum_parameter(field) -}}

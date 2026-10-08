@@ -25,21 +25,21 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
            {%- if "required" in s.annotations -%}, nullable=False {% endif -%}
            )
     {% if 'foreign_key' in s.annotations and 'original_slot' in s.annotations -%}
-    {{ pyname(s.annotations['original_slot'].value) }} = relationship("{{classname(s.range)}}", uselist=False, foreign_keys=[{{s.alias}}])
+    {{ python_name(s.annotations['original_slot'].value) }} = relationship("{{classname(s.range)}}", uselist=False, foreign_keys=[{{s.alias}}])
     {% endif -%}
     {% endfor %}
 
     {%- for mapping in backrefs[c.name] %}
     {% if mapping.mapping_type == "ManyToMany" %}
     # ManyToMany
-    {{ pyname(mapping.source_slot) }} = relationship( "{{ classname(mapping.target_class) }}", secondary="{{ mapping.join_class }}")
+    {{ python_name(mapping.source_slot) }} = relationship( "{{ classname(mapping.target_class) }}", secondary="{{ mapping.join_class }}")
     {% elif mapping.mapping_type == "MultivaluedScalar" %}
     {{mapping.source_slot}}_rel = relationship( "{{ classname(mapping.join_class) }}" )
-    {{ pyname(mapping.source_slot) }} = association_proxy("{{mapping.source_slot}}_rel", "{{ pyname(mapping.target_slot) }}",
-                                  creator=lambda x_: {{ classname(mapping.join_class) }}({{ pyname(mapping.target_slot) }}=x_))
+    {{ python_name(mapping.source_slot) }} = association_proxy("{{mapping.source_slot}}_rel", "{{ python_name(mapping.target_slot) }}",
+                                  creator=lambda x_: {{ classname(mapping.join_class) }}({{ python_name(mapping.target_slot) }}=x_))
     {% else %}
     # One-To-Many: {{mapping}}
-    {{ pyname(mapping.source_slot) }} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ classname(mapping.target_class) }}.{{ pyname(mapping.target_slot) }}]")
+    {{ python_name(mapping.source_slot) }} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ classname(mapping.target_class) }}.{{ python_name(mapping.target_slot) }}]")
     {% endif -%}
     {%- endfor %}
 
