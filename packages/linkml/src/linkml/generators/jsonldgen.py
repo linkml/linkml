@@ -4,6 +4,7 @@ import os
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 import click
@@ -57,6 +58,9 @@ class JSONLDGenerator(Generator):
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
 
+    original_base_dir: str | None = None
+    """The caller's base_dir, before SchemaLoader replaces it with one derived from the schema path"""
+
     context: Sequence[str] | None = field(default_factory=list)
     """Path to a JSONLD context file"""
 
@@ -65,6 +69,7 @@ class JSONLDGenerator(Generator):
 
     def __post_init__(self) -> None:
         self.original_schema = deepcopy(self.schema)
+        self.original_base_dir = self.base_dir
         super().__post_init__()
 
     def _add_type(self, node: YAMLRoot) -> dict:
@@ -140,8 +145,7 @@ class JSONLDGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self._visit(cls)
-        if hasattr(cls, "class_uri"):
-            delattr(cls, "class_uri")
+        cls.class_uri = self.namespaces.uri_for(cls.class_uri)
         # Slot usage is a construction artifact
         # TODO: Figure out why this is here.  It isn't good form to alter a schema that may be used by other things
         cls.slot_usage = {}
@@ -186,9 +190,12 @@ class JSONLDGenerator(Generator):
             context_kwargs["metadata"] = False
             # Forward importmap/base_dir so the spawned ContextGenerator can
             # re-resolve any URI-style imports in ``self.original_schema``
-            # through the same ``--importmap`` the caller supplied.
+            # through the same ``--importmap`` the caller supplied. Forward the
+            # caller's base_dir, not the one SchemaLoader derived from the schema
+            # path: the latter would resolve a relative path against its own
+            # directory twice.
             context_kwargs.setdefault("importmap", self.importmap)
-            context_kwargs.setdefault("base_dir", self.base_dir)
+            context_kwargs.setdefault("base_dir", self.original_base_dir)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
@@ -203,12 +210,14 @@ class JSONLDGenerator(Generator):
         for imp in list(self.loaded.values())[1:]:
             context_list.append(imp[0] + ".context.jsonld")
 
-        # Absolute file paths have to have a prefix
+        # Absolute local filesystem paths must be pre-expressed as file:// URIs.
+        # ``Path.as_uri`` handles both POSIX (``/x`` -> ``file:///x``) and bare
+        # Windows drive paths (``D:\x`` -> ``file:///D:/x``); URLs (anything
+        # with a ``://``) and relative refs are left untouched.
         for ci in range(0, len(context_list)):
-            if isinstance(context_list[ci], str) and context_list[ci].startswith(
-                "/"
-            ):  # TODO: how do we deal with absolute DOS paths?
-                context_list[ci] = "file://" + context_list[ci]
+            entry = context_list[ci]
+            if isinstance(entry, str) and "://" not in entry and os.path.isabs(entry):
+                context_list[ci] = Path(entry).as_uri()
 
         if self.format == "jsonld":
             self.schema["@context"] = context_list[0] if len(context_list) == 1 and not base_prefix else context_list

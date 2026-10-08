@@ -87,6 +87,24 @@ Loading from and dumping to YAML
 The native YAML representation for LinkML is essentially identical to
 JSON.
 
+Importantly, this means that YAML-specific features, such as the
+automatic typing of untagged nodes into non-numeric scalars (e.g.
+dates) or, conversely, the explicit typing of nodes through tags, are
+not expected to be used and can lead to undefined behaviours.
+
+For example, a date-typed slot MUST be serialised in YAML as a string
+(as it would be in JSON):
+
+.. code-block:: yaml
+
+   epoch: "1970-01-01"
+
+and NOT as a date scalar, even though this is legal in YAML:
+
+.. code-block:: yaml
+
+   epoch: 1970-01-01
+
 In future there may be support for a *direct* translation to YAML that
 utilizes YAML tags to encode typing information.
 

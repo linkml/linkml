@@ -9,6 +9,12 @@ env:
   UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
   UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
 
+concurrency:
+  # Cancel superseded runs on the same PR. github.ref is refs/pull/<n>/merge,
+  # so each PR is its own group and never cancels another's runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches:
@@ -32,7 +38,7 @@ jobs:
 
       # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -50,21 +56,32 @@ jobs:
       #
       # So gate the audit on whether the change actually altered dependencies,
       # relative to each event's natural base:
-      #   * pull_request -> the PR base
+      #   * pull_request -> the base the checked-out merge commit was built on
+      #     (HEAD^1). Not github.event.pull_request.base.sha: that can be an
+      #     older main commit, so the diff would include main's own uv.lock
+      #     bumps and audit a PR that changed no dependencies.
       #   * push (main)  -> the commit before the push (github.event.before)
       #   * merge_group  -> the queue base
       #   * otherwise (workflow_dispatch, first/force push) -> audit
       #
-      # A pyproject.toml change is always a real dependency change. uv.lock is
-      # regenerated non-deterministically, so a textual change there is only
-      # treated as real if the resolved (name, version) set actually differs.
+      # uv.lock is the source of truth: `uv audit` reads it, so if the resolved
+      # (name, version) set is unchanged the audit result cannot differ. It is
+      # also regenerated non-deterministically, so a textual change there is only
+      # treated as real if that set actually differs.
+      #
+      # pyproject.toml is deliberately not checked on its own. A dependency
+      # change there must also change uv.lock -- `uv lock --check` in main.yaml
+      # fails the PR otherwise -- so matching on the path only added false
+      # positives, running the full CVE audit for edits that touch no
+      # dependencies at all (ruff config, build settings, metadata). Those PRs
+      # then inherited whatever advisories happened to be open that day.
       - name: Detect dependency changes
         id: deps
         shell: bash
         run: |
           set -euo pipefail
           case "${{ github.event_name }}" in
-            pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
+            pull_request) base="$(git rev-parse HEAD^1)" ;;
             merge_group)  base="${{ github.event.merge_group.base_sha }}" ;;
             push)         base="${{ github.event.before }}" ;;
             *)            base="" ;;
@@ -79,10 +96,7 @@ jobs:
 
           changed_files="$(git diff --name-only "$base...HEAD")"
 
-          if grep -qE '(^|/)pyproject\.toml$' <<<"$changed_files"; then
-            echo "pyproject.toml changed; auditing."
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          elif grep -qE '(^|/)uv\.lock$' <<<"$changed_files"; then
+          if grep -qE '(^|/)uv\.lock$' <<<"$changed_files"; then
             changed="$(python3 .github/scripts/uv_lock_deps_changed.py "$base")"
             if [ "$changed" = "true" ]; then
               echo "uv.lock resolved dependency set changed; auditing."

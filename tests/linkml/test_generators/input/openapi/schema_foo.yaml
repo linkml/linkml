@@ -1,0 +1,17 @@
+# LinkML schema used for different templates
+id: https://example.org/foo
+name: foo
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Foo:
+    attributes:
+      name:
+        range: string
+
+  Bar:
+    attributes:
+      name:
+        range: string

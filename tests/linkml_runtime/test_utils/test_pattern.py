@@ -25,3 +25,4 @@ def test_pattern_resolver():
 
     assert resolver.resolve("{float} {unit.length}") == "\\d+[\\.\\d+] (centimeter|meter|inch)"
     assert resolver.resolve("{float} {unit.weight}") == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert resolver.escape_uninterpolated(r"\d{3}{float}") == r"\d{3}\{float\}"
