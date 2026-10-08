@@ -88,6 +88,22 @@ A convenient way to build pip packages for multiple python versions and libc alt
 When repeating the process, pass ``--force`` (as above) or delete the output directory to avoid collisions with previous
 runs.
 
+Slots named after Rust keywords
+-------------------------------
+
+A slot named after a Rust keyword, such as ``in`` or ``type``, cannot be a Rust field name, so its field gets a
+trailing underscore. With the ``serde`` feature, the data keeps the slot name:
+
+.. code:: rust
+
+    #[cfg_attr(feature = "serde", serde(rename = "in"))]
+    pub in_: Option<String>,
+
+The key of an inlined dictionary and a type designator also keep the slot name.
+
+A class cannot have both a slot named after a keyword and a slot named like its field, such as ``in`` and ``in_``. The
+generator reports an error for it.
+
 
 Feature Compliance
 ------------------
