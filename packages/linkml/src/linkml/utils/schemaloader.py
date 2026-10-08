@@ -299,7 +299,6 @@ class SchemaLoader:
                     self.schema_defaults.get(cls.from_schema, suffixed_cls_schema),
                     camelcase(cls.name),
                 )
-                cls.exact_mappings.insert(0, cls.class_uri)
 
         # Get the inverse ducks all in a row before we start filling other stuff in
         for slot in self.schema.slots.values():
