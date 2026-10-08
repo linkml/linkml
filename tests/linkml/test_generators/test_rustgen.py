@@ -1599,3 +1599,82 @@ def test_rustgen_keyword_slot_collision(name, classes):
     with pytest.raises(ValueError, match=f"Slots '{name}' and '{name}_' would both be named '{name}_' in Rust"):
         RustGenerator(yaml.safe_dump(schema, sort_keys=False), mode="file").render()
 
+
+def test_rustgen_crate_creates_output_dir(temp_dir):
+    """Crate mode creates a missing output directory, and still refuses to overwrite one that is not empty."""
+    out_dir = Path(temp_dir) / "new" / "crate"
+    RustGenerator(_KEYWORD_SCHEMA, mode="crate", output=str(out_dir)).serialize()
+    assert (out_dir / "Cargo.toml").exists()
+
+    with pytest.raises(FileExistsError):
+        RustGenerator(_KEYWORD_SCHEMA, mode="crate", output=str(out_dir)).serialize()
+
+
+_SERDE_OFF_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/serde_off
+    name: rustgen_serde_off
+    prefixes:
+      linkml: https://w3id.org/linkml/
+    imports:
+      - linkml:types
+    default_range: string
+    enums:
+      Relation:
+        permissible_values:
+          SIBLING_OF:
+    classes:
+      Event:
+        attributes:
+          category:
+            designates_type: true
+          relation:
+            range: Relation
+      Meeting:
+        is_a: Event
+    """
+)
+
+
+def test_rustgen_serde_attributes_without_serde_flag(temp_dir):
+    """A crate generated without ``serde`` compiles without the feature and keeps the schema text with it.
+
+    The variants of a type designator enum used to have a ``serde`` attribute outside ``cfg_attr``, so the
+    crate did not compile without the feature. An enum value used to have no ``serde(rename)``, so a crate
+    built with the feature wrote the Rust variant name instead of the schema text.
+    """
+    schema_path = Path(temp_dir) / "rustgen_serde_off.yaml"
+    schema_path.write_text(_SERDE_OFF_SCHEMA, encoding="utf-8")
+    out_dir = Path(temp_dir) / "serde_off_crate"
+    out_dir.mkdir()
+    RustGenerator(str(schema_path), mode="crate", pyo3=False, serde=False, output=str(out_dir)).serialize()
+
+    result = _cargo_check(out_dir)
+    assert result.returncode == 0, f"cargo check failed without serde.\nstderr:\n{result.stderr}\n"
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_ident = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE).group(1).replace("-", "_")
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "serde_off.rs").write_text(
+        (
+            "#[test]\n"
+            "fn enum_value_keeps_its_text() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let yaml = "category: Meeting\\nrelation: SIBLING_OF\\n";\n'
+            '    let event: EventOrSubtype = serde_yml::from_str(yaml).expect("decode");\n'
+            '    let out = serde_yml::to_string(&event).expect("encode");\n'
+            '    assert!(out.contains("relation: SIBLING_OF"), "{out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "serde_off"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, (
+        f"cargo test failed with serde.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+    )

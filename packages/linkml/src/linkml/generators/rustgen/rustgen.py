@@ -1345,7 +1345,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 raise FileExistsError(f"{output} already exists and force is False! pass force=True to overwrite")
             output.parent.mkdir(exist_ok=True, parents=True)
         elif mode == "crate":
-            if not force and len([d for d in output.iterdir()]) != 0:
+            if not force and output.exists() and any(output.iterdir()):
                 raise FileExistsError(
                     f"{output} already exists, is not empty,  and force is False! pass force=True to overwrite"
                 )
