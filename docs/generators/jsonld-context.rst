@@ -47,6 +47,46 @@ declarations and
 Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.
 
+CURIE usage
+^^^^^^^^^^^
+
+By default, JSON-LD context keys use the generator's normal slot-name alias. With
+``--use-curies``, non-identifier slots use their CURIEs (for example, ``demo_id`` with
+``slot_uri: demo:id`` becomes ``demo:id``). Identifier slots marked ``identifier: true``
+are an exception: their slot-name key (``id`` in the example) maps to ``@id`` and is
+never replaced by a CURIE, even if the slot declares a ``slot_uri``. Class context keys
+are CURIE-keyed as well.
+
+The CURIE mode is opt-in. CURIEs are resolved with ``SchemaView.get_curie`` using the
+schema's prefixes and default prefix.
+
+Example (``ex`` is the schema's ``default_prefix``):
+
+.. code-block:: yaml
+
+    prefixes:
+      ex: https://example.org/
+      demo: https://example.org/demo/
+    default_prefix: ex
+
+    classes:
+      Entity:
+        slots:
+          - id
+          - demo_id
+
+    slots:
+      id:
+        range: string
+        required: true
+        identifier: true
+      demo_id:
+        range: string
+        slot_uri: demo:id
+
+With ``gen-jsonld-context --use-curies``, ``id`` remains the context key and maps to
+``@id``; ``demo_id`` is keyed as ``demo:id``.
+
 Treatment of OBO prefixes
 -------------------------
 

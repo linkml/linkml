@@ -77,7 +77,9 @@ class ContextGenerator(Generator):
     _external_classes: set | None = field(default=None, repr=False)
     _external_slots: set | None = field(default=None, repr=False)
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs as context keys instead of element names."""
+    """If true, use class_uri/slot_uri CURIEs as class and non-identifier slot
+    context keys. Identifier slots retain their slot-name key and map to ``@id``.
+    """
 
     xsd_anyuri_as_iri: bool = False
     """Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.
@@ -611,7 +613,8 @@ class ContextGenerator(Generator):
     "--use-curies/--not-use-curies",
     default=False,
     show_default=True,
-    help="Use class_uri/slot_uri CURIEs as context keys instead of element names.",
+    help="Use class_uri/slot_uri CURIEs as class and non-identifier slot context keys; identifier slots retain their "
+    + "slot-name key and map to @id.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
