@@ -54,7 +54,7 @@ from rdflib import (
 
 from .types import Integer, String
 
-metamodel_version = "1.11.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces
