@@ -395,6 +395,31 @@ def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAM
     return decorate
 
 
+def slot_name_for(obj: Any, field_name: str) -> str:
+    """Return the slot name behind a Python field name: ``from`` for ``from_``, otherwise the name unchanged.
+
+    The map is read from ``obj.__class__``, not from ``obj``. An ObjectIndex proxy passes ``__class__``
+    through to the object it wraps, but treats any other attribute name as a slot.
+
+    >>> @slot_aliases({"from_": "from"})
+    ... @dataclasses.dataclass
+    ... class Window(YAMLRoot):
+    ...     from_: str | None = None
+    ...     to: str | None = None
+    >>> slot_name_for(Window(), "from_"), slot_name_for(Window(), "to")
+    ('from', 'to')
+    """
+    return getattr(obj.__class__, "_slot_aliases", {}).get(field_name, field_name)
+
+
+def field_name_for(obj: Any, slot_name: str) -> str:
+    """Return the Python field behind a slot name: ``from_`` for ``from``, otherwise the name unchanged.
+
+    Like :func:`slot_name_for`, this reads the map from ``obj.__class__``, so an ObjectIndex proxy works too.
+    """
+    return getattr(obj.__class__, "_field_names", {}).get(slot_name, slot_name)
+
+
 def _pformat(fields: dict, cls_name: str, indent: str = "  ") -> str:
     """
     pretty format the fields of the items of a ``YAMLRoot`` object without the wonky indentation of pformat.

@@ -146,6 +146,8 @@ decorator that maps between the two:
 * The constructor and the loaders accept ``from`` as well as ``from_``. Passing both is an error.
 * Attribute access uses the field name, ``window.from_``. Item access takes either name, ``window["from"]``.
 * ``items()``, ``keys()`` and the YAML, JSON and RDF dumpers write ``from``.
+* ``string_serialization`` and ``equals_expression`` refer to the slot by its own name,
+  as in ``{from}``. So do inference and ``ObjectIndex.eval_expr``.
 * A class cannot have both a keyword-named slot and a slot named like its field, such as
   ``from`` and ``from_``. ``gen-python`` raises an error for it.
 
