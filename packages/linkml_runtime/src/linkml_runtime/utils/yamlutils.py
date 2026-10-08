@@ -39,8 +39,9 @@ class YAMLRoot(JsonObj):
     The root object for all python YAML representations
     """
 
-    # Python field name -> slot name, for slots whose name is a Python keyword (see slot_aliases)
+    # Python field name <-> slot name, for slots whose name is a Python keyword (see slot_aliases)
     _slot_aliases: ClassVar[dict[str, str]] = {}
+    _field_names: ClassVar[dict[str, str]] = {}
 
     def __post_init__(self, *args: list[str], **kwargs):
         if args or kwargs:
@@ -79,6 +80,7 @@ class YAMLRoot(JsonObj):
                 ):
                     from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 
+                    k = obj._slot_aliases.get(k, k)
                     if isinstance(v, dict):
                         itemslist = []
                         for vk, vv in v.items():
@@ -88,13 +90,13 @@ class YAMLRoot(JsonObj):
                             #     if k != 'slot_usage':
                             #         vv['@id'] = underscore(vk)
                             itemslist.append(vv)
-                        rval[obj._slot_aliases.get(k, k)] = itemslist
+                        rval[k] = itemslist
                     # TODO: Figure out how to make EnumDefinitionImpl a subclass of EnumDefinition
                     # elif isinstance(v, EnumDefinition):
                     elif isinstance(v, EnumDefinitionImpl):
-                        rval[obj._slot_aliases.get(k, k)] = v._as_value()
+                        rval[k] = v._as_value()
                     else:
-                        rval[obj._slot_aliases.get(k, k)] = v
+                        rval[k] = v
             return rval
         else:
             return (
@@ -133,10 +135,13 @@ class YAMLRoot(JsonObj):
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
 
+        # key_name is the slot name data uses; dataclass fields use the Python field name
+        key_field = getattr(slot_type, "_field_names", {}).get(key_name, key_name)
+
         # For SimpleDict patterns (key:value shorthand), find the first
         # non-key field so we can use kwargs instead of positional args.
         try:
-            _value_field = next((f.name for f in dataclasses.fields(slot_type) if f.name != key_name), None)
+            _value_field = next((f.name for f in dataclasses.fields(slot_type) if f.name != key_field), None)
         except TypeError:
             _value_field = None
 
@@ -207,7 +212,7 @@ class YAMLRoot(JsonObj):
                         order_up(cooked_obj[key_name], cooked_obj)
                 elif isinstance(list_entry, list):
                     # First element is the key; remaining map to non-key fields in order
-                    non_key_fields = [f.name for f in dataclasses.fields(slot_type) if f.name != key_name]
+                    non_key_fields = [f.name for f in dataclasses.fields(slot_type) if f.name != key_field]
                     kwargs = {key_name: list_entry[0]}
                     for fname, val in zip(non_key_fields, list_entry[1:]):
                         kwargs[fname] = val
@@ -304,6 +309,21 @@ class YAMLRoot(JsonObj):
         for k, v in super()._items():
             yield self._slot_aliases.get(k, k), v
 
+    def _keys(self) -> Iterator[str]:
+        """Return the non-hidden keys as slot names rather than Python field names"""
+        for k in super()._keys():
+            yield self._slot_aliases.get(k, k)
+
+    # Item access takes the slot name as well as the Python field name
+    def __getitem__(self, item: Any) -> Any:
+        return super().__getitem__(self._field_names.get(item, item) if self._field_names else item)
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        super().__setitem__(self._field_names.get(key, key) if self._field_names else key, value)
+
+    def __contains__(self, key: Any) -> bool:
+        return super().__contains__(self._field_names.get(key, key) if self._field_names else key)
+
     # ==================
     # Error intercepts
     # ==================
@@ -322,7 +342,8 @@ def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAM
     """Class decorator that lets a generated class take and give its slots' own names.
 
     The Python generator escapes a slot named after a Python keyword: ``from`` becomes the field ``from_``.
-    The decorated class accepts ``from`` as a keyword argument, and ``items()`` and the dumpers report ``from``.
+    The decorated class accepts ``from`` as a keyword argument and as an item key (``obj["from"]``),
+    and ``items()``, ``keys()`` and the dumpers report ``from``.
 
     :param aliases: Python field name -> slot name, covering inherited fields as well as the class's own
     :return: the decorator
@@ -332,8 +353,8 @@ def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAM
     ... class Window(YAMLRoot):
     ...     from_: str | None = None
     >>> w = Window(**{"from": "2026-01-01"})
-    >>> w.from_
-    '2026-01-01'
+    >>> w.from_, w["from"]
+    ('2026-01-01', '2026-01-01')
     >>> dict(items(w))
     {'from': '2026-01-01'}
     """
@@ -368,6 +389,7 @@ def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAM
 
             cls.__new__ = staticmethod(new_with_slot_names)
         cls._slot_aliases = dict(aliases)
+        cls._field_names = dict(to_field)
         return cls
 
     return decorate
@@ -422,12 +444,11 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
 
     if isinstance(data, EnumDefinitionImpl):
         return dumper.represent_str(data._as_value())
-    # Also registered for plain JsonObjs, which have no slot aliases
-    aliases = data._slot_aliases if isinstance(data, YAMLRoot) else {}
+    # Also registered for plain JsonObjs, whose _items fail on a list root
     rval = dict()
-    for k, v in data.__dict__.items():
+    for k, v in data._items() if isinstance(data, YAMLRoot) else data.__dict__.items():
         if not k.startswith("_") and v is not None and (not isinstance(v, dict | list) or v):
-            rval[aliases.get(k, k)] = v
+            rval[k] = v
     return dumper.represent_data(rval)
 
 

@@ -81,6 +81,7 @@ class PythonGenerator(Generator):
         # to HTTP on the first lazy access via ``PythonIfAbsentProcessor``.
         self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
         self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
+        self._slot_aliases_cache: dict[str, dict[str, str]] = {}  # class name -> slot_aliases_for(cls)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -96,32 +97,38 @@ class PythonGenerator(Generator):
         original slot name is preserved on the runtime ``Slot(name=...)``
         argument, so schema lookups and URI resolution are unaffected.
         """
-        pyname = super().slot_name(name)
-        if keyword.iskeyword(pyname):
-            pyname += "_"
-        return pyname
+        return self._escape_keyword(super().slot_name(name))
+
+    @staticmethod
+    def _escape_keyword(name: str) -> str:
+        """Append a trailing underscore (PEP 8) to a name that is a Python reserved keyword"""
+        return name + "_" if keyword.iskeyword(name) else name
 
     def slot_aliases_for(self, cls: ClassDefinition) -> dict[str, str]:
         """
         Map each escaped Python field of cls, inherited ones included, to the slot name data uses, so that
         the generated class loads and dumps ``from`` rather than the field name ``from_``.
+        The result is cached per class, as both the imports and the class definition need it.
 
         :param cls: class whose dataclass fields are checked
         :return: Python field name -> slot name, empty if no field is escaped
         :raises ValueError: if an escaped name is also the name of another slot of cls, e.g. ``from`` and ``from_``
         """
-        aliases = {}
-        names = {super().slot_name(slot.name) for slot in self.all_slots(cls)}
-        for slot in self.all_slots(cls):
-            pyname = self.slot_name(slot.name)
-            name = super().slot_name(slot.name)
-            if pyname != name:
-                if pyname in names:
-                    raise ValueError(
-                        f"Class {cls.name}: slots {name!r} and {pyname!r} would both be the Python field {pyname!r}"
-                    )
-                aliases[pyname] = name
-        return aliases
+        if cls.name not in self._slot_aliases_cache:
+            names = []
+            for slot in self.all_slots(cls):
+                names.append(super().slot_name(slot.name))
+            aliases = {}
+            for name in names:
+                pyname = self._escape_keyword(name)
+                if pyname != name:
+                    if pyname in names:
+                        raise ValueError(
+                            f"Class {cls.name}: slots {name!r} and {pyname!r} would both be the Python field {pyname!r}"
+                        )
+                    aliases[pyname] = name
+            self._slot_aliases_cache[cls.name] = aliases
+        return self._slot_aliases_cache[cls.name]
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -1121,7 +1128,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
         if slot.required:
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
-            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+            rlines.append(f'\tself.MissingRequiredField("{super().slot_name(slot.name)}")')
 
         # Resolve each branch's runtime (unquoted) type name via the same single-range
         # call class_reference_type already makes for a plain slot, then de-dup by that
@@ -1238,7 +1245,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         # You can't have required elements after optional elements in the parent class
         if slot.required:
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
-            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+            rlines.append(f'\tself.MissingRequiredField("{super().slot_name(slot.name)}")')
 
         # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
