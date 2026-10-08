@@ -128,6 +128,33 @@ Code
 Additional Notes
 ----------------
 
+Slots named after Python keywords
+---------------------------------
+
+A slot whose name is a Python keyword, such as ``from`` or ``class``, cannot be a Python
+identifier, so its field gets a trailing underscore (PEP 8): ``from`` becomes ``from_``.
+Data still uses the slot's own name. The generated class carries a ``slot_aliases``
+decorator that maps between the two:
+
+.. code:: python
+
+   @slot_aliases({"from_": "from"})
+   @dataclass(repr=False)
+   class Window(YAMLRoot):
+       from_: Optional[Union[str, XSDDate]] = None
+
+* The constructor and the loaders accept ``from`` as well as ``from_``. Passing both is an error.
+* Attribute access uses the field name, ``window.from_``. Item access takes either name, ``window["from"]``.
+* ``items()``, ``keys()`` and the YAML, JSON and RDF dumpers write ``from``.
+* ``string_serialization`` and ``equals_expression`` refer to the slot by its own name,
+  as in ``{from}``. So do inference and ``ObjectIndex.eval_expr``.
+* A class cannot have both a keyword-named slot and a slot named like its field, such as
+  ``from`` and ``from_``. ``gen-python`` raises an error for it.
+
+The generated module imports ``slot_aliases`` from ``linkml_runtime.utils.yamlutils``, so it
+needs a linkml-runtime release that provides it. Schemas without keyword-named slots do not
+import it.
+
 Code generation for LinkML slots
 --------------------------------
 

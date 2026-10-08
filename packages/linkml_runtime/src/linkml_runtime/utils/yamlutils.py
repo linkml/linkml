@@ -1,11 +1,12 @@
 import dataclasses
+import functools
 import re
 import textwrap
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from copy import copy
 from json import JSONDecoder
 from pprint import pformat
-from typing import Any, Union
+from typing import Any, ClassVar, Union
 
 import yaml
 from deprecated.classic import deprecated
@@ -37,6 +38,10 @@ class YAMLRoot(JsonObj):
     """
     The root object for all python YAML representations
     """
+
+    # Python field name <-> slot name, for slots whose name is a Python keyword (see slot_aliases)
+    _slot_aliases: ClassVar[dict[str, str]] = {}
+    _field_names: ClassVar[dict[str, str]] = {}
 
     def __post_init__(self, *args: list[str], **kwargs):
         if args or kwargs:
@@ -75,6 +80,7 @@ class YAMLRoot(JsonObj):
                 ):
                     from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 
+                    k = obj._slot_aliases.get(k, k)
                     if isinstance(v, dict):
                         itemslist = []
                         for vk, vv in v.items():
@@ -129,10 +135,13 @@ class YAMLRoot(JsonObj):
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
 
+        # key_name is the slot name data uses; dataclass fields use the Python field name
+        key_field = getattr(slot_type, "_field_names", {}).get(key_name, key_name)
+
         # For SimpleDict patterns (key:value shorthand), find the first
         # non-key field so we can use kwargs instead of positional args.
         try:
-            _value_field = next((f.name for f in dataclasses.fields(slot_type) if f.name != key_name), None)
+            _value_field = next((f.name for f in dataclasses.fields(slot_type) if f.name != key_field), None)
         except TypeError:
             _value_field = None
 
@@ -203,7 +212,7 @@ class YAMLRoot(JsonObj):
                         order_up(cooked_obj[key_name], cooked_obj)
                 elif isinstance(list_entry, list):
                     # First element is the key; remaining map to non-key fields in order
-                    non_key_fields = [f.name for f in dataclasses.fields(slot_type) if f.name != key_name]
+                    non_key_fields = [f.name for f in dataclasses.fields(slot_type) if f.name != key_field]
                     kwargs = {key_name: list_entry[0]}
                     for fname, val in zip(non_key_fields, list_entry[1:]):
                         kwargs[fname] = val
@@ -295,6 +304,26 @@ class YAMLRoot(JsonObj):
     def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> type["YAMLRoot"] | None:
         return cls._class_for("class_class_curie", curie)
 
+    def _items(self) -> Iterator[tuple[str, Any]]:
+        """Return the non-hidden items, keyed by slot name rather than Python field name"""
+        for k, v in super()._items():
+            yield self._slot_aliases.get(k, k), v
+
+    def _keys(self) -> Iterator[str]:
+        """Return the non-hidden keys as slot names rather than Python field names"""
+        for k in super()._keys():
+            yield self._slot_aliases.get(k, k)
+
+    # Item access takes the slot name as well as the Python field name
+    def __getitem__(self, item: Any) -> Any:
+        return super().__getitem__(self._field_names.get(item, item) if self._field_names else item)
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        super().__setitem__(self._field_names.get(key, key) if self._field_names else key, value)
+
+    def __contains__(self, key: Any) -> bool:
+        return super().__contains__(self._field_names.get(key, key) if self._field_names else key)
+
     # ==================
     # Error intercepts
     # ==================
@@ -307,6 +336,88 @@ class YAMLRoot(JsonObj):
 
     def __str__(self):
         return repr(self)
+
+
+def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAMLRoot]]:
+    """Class decorator that lets a generated class take and give its slots' own names.
+
+    The Python generator escapes a slot named after a Python keyword: ``from`` becomes the field ``from_``.
+    The decorated class accepts ``from`` as a keyword argument and as an item key (``obj["from"]``),
+    and ``items()``, ``keys()`` and the dumpers report ``from``.
+
+    :param aliases: Python field name -> slot name, covering inherited fields as well as the class's own
+    :return: the decorator
+
+    >>> @slot_aliases({"from_": "from"})
+    ... @dataclasses.dataclass
+    ... class Window(YAMLRoot):
+    ...     from_: str | None = None
+    >>> w = Window(**{"from": "2026-01-01"})
+    >>> w.from_, w["from"]
+    ('2026-01-01', '2026-01-01')
+    >>> dict(items(w))
+    {'from': '2026-01-01'}
+    """
+    to_field = {alias: field for field, alias in aliases.items()}
+
+    def rename(cls_name: str, kwargs: dict[str, Any]) -> dict[str, Any]:
+        for alias, field in to_field.items():
+            if alias in kwargs:
+                if field in kwargs:
+                    raise TypeError(f"{cls_name}() got both {alias!r} and {field!r} for the same slot")
+                kwargs[field] = kwargs.pop(alias)
+        return kwargs
+
+    def decorate(cls: type[YAMLRoot]) -> type[YAMLRoot]:
+        # A subclass that defines neither inherits its parent's wrapped methods
+        own = vars(cls)
+        if "__init__" in own:
+            init = own["__init__"]
+
+            @functools.wraps(init)
+            def init_with_slot_names(self, *args: Any, **kwargs: Any) -> None:
+                init(self, *args, **rename(type(self).__name__, kwargs))
+
+            cls.__init__ = init_with_slot_names
+        if "__new__" in own:
+            # A type designator's __new__ sees the arguments before __init__ does
+            new = own["__new__"].__func__
+
+            @functools.wraps(new)
+            def new_with_slot_names(cls_: type[YAMLRoot], *args: Any, **kwargs: Any) -> YAMLRoot:
+                return new(cls_, *args, **rename(cls_.__name__, kwargs))
+
+            cls.__new__ = staticmethod(new_with_slot_names)
+        cls._slot_aliases = dict(aliases)
+        cls._field_names = dict(to_field)
+        return cls
+
+    return decorate
+
+
+def slot_name_for(obj: Any, field_name: str) -> str:
+    """Return the slot name behind a Python field name: ``from`` for ``from_``, otherwise the name unchanged.
+
+    The map is read from ``obj.__class__``, not from ``obj``. An ObjectIndex proxy passes ``__class__``
+    through to the object it wraps, but treats any other attribute name as a slot.
+
+    >>> @slot_aliases({"from_": "from"})
+    ... @dataclasses.dataclass
+    ... class Window(YAMLRoot):
+    ...     from_: str | None = None
+    ...     to: str | None = None
+    >>> slot_name_for(Window(), "from_"), slot_name_for(Window(), "to")
+    ('from', 'to')
+    """
+    return getattr(obj.__class__, "_slot_aliases", {}).get(field_name, field_name)
+
+
+def field_name_for(obj: Any, slot_name: str) -> str:
+    """Return the Python field behind a slot name: ``from_`` for ``from``, otherwise the name unchanged.
+
+    Like :func:`slot_name_for`, this reads the map from ``obj.__class__``, so an ObjectIndex proxy works too.
+    """
+    return getattr(obj.__class__, "_field_names", {}).get(slot_name, slot_name)
 
 
 def _pformat(fields: dict, cls_name: str, indent: str = "  ") -> str:
@@ -358,8 +469,9 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
 
     if isinstance(data, EnumDefinitionImpl):
         return dumper.represent_str(data._as_value())
+    # Also registered for plain JsonObjs, whose _items fail on a list root
     rval = dict()
-    for k, v in data.__dict__.items():
+    for k, v in data._items() if isinstance(data, YAMLRoot) else data.__dict__.items():
         if not k.startswith("_") and v is not None and (not isinstance(v, dict | list) or v):
             rval[k] = v
     return dumper.represent_data(rval)

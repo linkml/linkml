@@ -1,0 +1,61 @@
+id: https://w3id.org/linkml/examples/slot-names
+name: slot-names
+description: >-
+  Slots whose names differ from their Python field names: Python keywords
+  (from -> from_) and names with spaces (term id -> term_id).
+  Generated model: ../model/slot_names_example.py
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/slot-names/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Window:
+    description: Keyword-named slots and no inference rules
+    attributes:
+      from:
+      to:
+  Span:
+    description: A string_serialization that reads and writes keyword-named slots
+    attributes:
+      from:
+      to:
+      as:
+        string_serialization: "{from}-{to}"
+  Sum:
+    description: An equals_expression over keyword-named slots
+    attributes:
+      in:
+        range: integer
+      out:
+        range: integer
+      total:
+        range: integer
+        equals_expression: "{in} + {out}"
+  Term:
+    description: A keyword-named identifier
+    attributes:
+      in:
+        identifier: true
+      from:
+      label:
+  Named:
+    description: An identifier with a space in its name
+    attributes:
+      term id:
+        identifier: true
+      start date:
+  Container:
+    tree_root: true
+    attributes:
+      terms:
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+      named:
+        range: Named
+        inlined: true
