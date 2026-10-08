@@ -744,10 +744,11 @@ since that file is structured to configure every generator at once:</p>
 <span class="w">    </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.example.model</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gen-java</span></code> only ever reads <code class="docutils literal notranslate"><span class="pre">generator_args.java.package</span></code> out of this file –
-every other key (<code class="docutils literal notranslate"><span class="pre">directory</span></code>, <code class="docutils literal notranslate"><span class="pre">excludes</span></code>, other generators’ <code class="docutils literal notranslate"><span class="pre">generator_args</span></code>
-entries, etc.) is ignored, so a full multi-generator project <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be
-passed as-is without modification.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gen-java</span></code> reads only the <code class="docutils literal notranslate"><span class="pre">generator_args.java</span></code> section of this file (<code class="docutils literal notranslate"><span class="pre">directory</span></code>,
+<code class="docutils literal notranslate"><span class="pre">excludes</span></code>, other generators’ <code class="docutils literal notranslate"><span class="pre">generator_args</span></code> entries, etc. are ignored), so a full
+multi-generator project <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can be passed as-is. Any <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> option can
+be set there, keyed by its name with dashes as underscores; command-line options take
+precedence, and a key that is not an option is reported as a warning and ignored.</p>
 <p>An explicit <code class="docutils literal notranslate"><span class="pre">--package</span></code> command-line option always overrides a value set via
 <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>.</p>
 <p>The same configuration-file mechanism is supported by <code class="docutils literal notranslate"><span class="pre">gen-golang</span></code> (see
