@@ -62,8 +62,8 @@ class PanderaDataframeGenerator(DataframeGenerator):
 
     def append_slots(self, schemaview_class: ClassDefinition, ooclass: DataframeClass) -> None:
         """
-        Append slots to the class. A class cannot have both a column named after a Python keyword, such as from,
-        and a column from_, because the class-based model gives both the attribute from_.
+        Append slots to the class. A class cannot have both a column named after a Python keyword, such as
+        ``from``, and a column ``from_``, because the class-based model gives both the attribute ``from_``.
         """
         super().append_slots(schemaview_class, ooclass)
         check_keyword_collisions(schemaview_class.name, [field.name for field in ooclass.all_fields])
