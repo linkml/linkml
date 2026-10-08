@@ -398,6 +398,7 @@
         "linkml:Any"
       ],
       "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -405,15 +406,13 @@
       "definition_uri": "https://w3id.org/linkml/Extension",
       "description": "a tag/value pair used to add non-model information to an entry",
       "from_schema": "https://w3id.org/linkml/extensions",
-      "exact_mappings": [
-        "linkml:Extension"
-      ],
       "slots": [
         "extension_tag",
         "extension_value",
         "extensions"
       ],
       "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
     {
@@ -421,18 +420,16 @@
       "definition_uri": "https://w3id.org/linkml/Extensible",
       "description": "mixin for classes that support extension",
       "from_schema": "https://w3id.org/linkml/extensions",
-      "exact_mappings": [
-        "linkml:Extensible"
-      ],
       "mixin": true,
       "slots": [
         "extensions"
       ],
       "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.11.0",
+  "metamodel_version": "1.12.0",
   "source_file": "extensions.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,
