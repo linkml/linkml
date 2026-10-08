@@ -91,7 +91,18 @@ Mapping from python types to rust types.
 
 """
 
-PROTECTED_NAMES = ("type", "typeof", "abstract")
+# Strict and reserved Rust keywords up to the 2021 edition the generated Cargo.toml
+# declares (so not `gen`, reserved only from 2024); none can name a crate.
+# https://doc.rust-lang.org/reference/keywords.html
+RUST_KEYWORDS = frozenset(
+    {
+        "as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum",
+        "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod",
+        "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super", "trait",
+        "true", "try", "type", "unsafe", "use", "where", "while", "abstract", "become", "box", "do",
+        "final", "macro", "override", "priv", "typeof", "unsized", "virtual", "yield",
+    }
+)  # fmt: skip
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
@@ -352,11 +363,19 @@ def get_rust_range_info(
 
 def protect_name(v: str) -> str:
     """
-    append an underscore to a protected name
+    Append an underscore to a name that is a Rust keyword.
     """
-    if v in PROTECTED_NAMES:
+    if v in RUST_KEYWORDS:
         v = f"{v}_"
     return v
+
+
+def get_serde_name(s: SlotDefinition) -> str:
+    """
+    The key that serde reads and writes for a slot. A slot named after a Rust keyword, such as ``type``,
+    has the field ``type_``, but its data still uses the key ``type``.
+    """
+    return underscore(s.name)
 
 
 def get_name(e: ClassDefinition | SlotDefinition | EnumDefinition | PermissibleValue | TypeDefinition) -> str:
@@ -501,6 +520,16 @@ class RustGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
+        # A slot named after a Rust keyword, such as in, has the field in_, so it cannot share a class
+        # with a slot that is already named in_.
+        serde_names = {}
+        for a in induced_attrs:
+            other = serde_names.setdefault(get_name(a), get_serde_name(a))
+            if other != get_serde_name(a):
+                raise ValueError(
+                    f"Class {cls.name}: slots {other!r} and {get_serde_name(a)!r} "
+                    f"would both be the Rust field {get_name(a)!r}"
+                )
         slot_range_unions = []
         for a in induced_attrs:
             # Promote union across descendants for canonical union enum in base module
@@ -574,7 +603,7 @@ class RustGenerator(Generator, LifecycleMixin):
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
-                type_designator_field=get_name(td) if td else None,
+                type_designator_field=get_serde_name(td) if td else None,
                 as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
                 type_designators=td_mapping,
                 key_property_type=key_type,
@@ -645,9 +674,11 @@ class RustGenerator(Generator, LifecycleMixin):
             return AsKeyValue(
                 name=get_name(cls),
                 key_property_name=key_property_name,
+                key_property_serde_name=get_serde_name(key_attr),
                 key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
                 key_property_aliases=key_property_aliases,
                 value_property_name=get_name(value_attr),
+                value_property_serde_name=get_serde_name(value_attr),
                 value_property_type=get_rust_type(value_attr.range, self.schemaview, self.pyo3),
                 can_convert_from_primitive=simple_dict_possible,
                 can_convert_from_empty=len(value_args_no_default) == 0,
@@ -693,6 +724,7 @@ class RustGenerator(Generator, LifecycleMixin):
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
                 alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
+                rename=get_serde_name(attr) if get_serde_name(attr) != get_name(attr) else None,
                 generate_merge=MERGE_ANNOTATION in cls.annotations,
                 container_mode=container_mode.value,
                 type_=range_info,
