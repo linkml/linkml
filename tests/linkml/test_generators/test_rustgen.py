@@ -1486,6 +1486,8 @@ _KEYWORD_SCHEMA = textwrap.dedent(
           fn:
           match:
           type:
+          from:
+          class:
       Event:
         attributes:
           type:
@@ -1498,7 +1500,8 @@ _KEYWORD_SCHEMA = textwrap.dedent(
 
 
 def test_rustgen_keyword_slots_roundtrip(temp_dir):
-    """Slots named after Rust keywords, such as ``in`` and ``type``, compile and keep their names in serde data.
+    """Slots named after Rust or Python keywords, such as ``in`` and ``from``, compile and keep their names in
+    serde data.
 
     Each of these slots has a field with a trailing underscore, such as ``in_``. The data still uses the slot
     name, including the key of an inlined dictionary and the type designator.
@@ -1513,6 +1516,8 @@ def test_rustgen_keyword_slots_roundtrip(temp_dir):
     generated_rs = (out_dir / "src" / "lib.rs").read_text(encoding="utf-8")
     assert "pub in_: String" in generated_rs
     assert 'serde(rename = "in")' in generated_rs
+    assert "pub from_: Option<String>" in generated_rs
+    assert 'serde(rename = "from")' in generated_rs
     assert 'serde(tag = "type")' in generated_rs
 
     cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
@@ -1524,16 +1529,18 @@ def test_rustgen_keyword_slots_roundtrip(temp_dir):
             "#[test]\n"
             "fn keyword_slots_keep_their_names() {\n"
             f"    use {crate_ident}::{{EventOrSubtype, Root}};\n"
-            '    let yaml = concat!("windows:\\n  w1:\\n    fn: f\\n    type: t\\n",\n'
+            '    let yaml = concat!("windows:\\n  w1:\\n    fn: f\\n    type: t\\n    from: a\\n    class: c\\n",\n'
             '        "events:\\n  - type: Meeting\\n    name: m\\n");\n'
             '    let root: Root = serde_yml::from_str(yaml).expect("decode");\n'
             '    let window = root.windows.as_ref().and_then(|w| w.get("w1")).expect("w1 entry");\n'
             '    assert_eq!(window.in_, "w1");\n'
             '    assert_eq!(window.fn_.as_deref(), Some("f"));\n'
             '    assert_eq!(window.type_.as_deref(), Some("t"));\n'
+            '    assert_eq!(window.from_.as_deref(), Some("a"));\n'
+            '    assert_eq!(window.class_.as_deref(), Some("c"));\n'
             "    assert!(matches!(root.events.as_deref(), Some([EventOrSubtype::Meeting(_)])));\n"
             '    let out = serde_yml::to_string(&root).expect("encode");\n'
-            '    assert!(out.contains("fn: f") && out.contains("type: t"), "{out}");\n'
+            '    assert!(out.contains("fn: f") && out.contains("type: t") && out.contains("from: a"), "{out}");\n'
             "}\n"
         ),
         encoding="utf-8",
@@ -1549,23 +1556,46 @@ def test_rustgen_keyword_slots_roundtrip(temp_dir):
         pytest.fail(f"cargo test failed for keyword schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n")
 
 
-def test_rustgen_keyword_slot_collision():
-    """A class cannot have both a slot named after a Rust keyword, such as ``in``, and a slot ``in_``."""
-    schema = textwrap.dedent(
-        """
-        id: https://example.org/rustgen/collision
-        name: rustgen_collision
-        prefixes:
-          linkml: https://w3id.org/linkml/
-        imports:
-          - linkml:types
-        default_range: string
-        classes:
-          Window:
-            attributes:
-              in:
-              in_:
-        """
-    )
-    with pytest.raises(ValueError, match="slots 'in' and 'in_' would both be the Rust field 'in_'"):
-        RustGenerator(schema, mode="file", serde=True).render()
+def test_rustgen_python_keyword_slots_stub(temp_dir):
+    """The Python stub for slots named after Python keywords, such as ``from`` and ``class``, is valid Python.
+
+    The Python bindings use the field names, so these slots have the fields ``from_`` and ``class_``.
+    """
+    schema_path = Path(temp_dir) / "rustgen_keywords.yaml"
+    schema_path.write_text(_KEYWORD_SCHEMA, encoding="utf-8")
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "keywords_stubgen")
+
+    _run_stubgen_binary(out_dir, context="keyword schema stub generation")
+
+    stubs = [stub.read_text(encoding="utf-8") for stub in out_dir.rglob("*.pyi")]
+    assert stubs, "stub_gen did not write any .pyi files"
+    for stub in stubs:
+        ast.parse(stub)
+    assert any("def from_(self)" in stub and "def class_(self)" in stub for stub in stubs)
+
+
+@pytest.mark.parametrize(
+    "name,classes",
+    [
+        ("in", {"Window": {"attributes": {"in": None, "in_": None}}}),
+        ("in", {"Window": {"attributes": {"in": None}}, "Door": {"attributes": {"in_": None}}}),
+        ("from", {"Window": {"attributes": {"from": None, "from_": None}}}),
+    ],
+    ids=["rust-keyword", "different-classes", "python-keyword"],
+)
+def test_rustgen_keyword_slot_collision(name, classes):
+    """A schema cannot have both a slot named after a keyword, such as ``in``, and a slot ``in_``.
+
+    Every slot also gets a type alias named after it, so the two slots collide even in different classes.
+    """
+    schema = {
+        "id": "https://example.org/rustgen/collision",
+        "name": "rustgen_collision",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "default_range": "string",
+        "classes": classes,
+    }
+    with pytest.raises(ValueError, match=f"Slots '{name}' and '{name}_' would both be named '{name}_' in Rust"):
+        RustGenerator(yaml.safe_dump(schema, sort_keys=False), mode="file").render()
+

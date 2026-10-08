@@ -1,3 +1,4 @@
+import keyword
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -372,8 +373,8 @@ def protect_name(v: str) -> str:
 
 def get_serde_name(s: SlotDefinition) -> str:
     """
-    The key that serde reads and writes for a slot. A slot named after a Rust keyword, such as ``type``,
-    has the field ``type_``, but its data still uses the key ``type``.
+    The key that serde reads and writes for a slot. A slot named after a Rust or Python keyword, such as
+    ``type`` or ``from``, has a field with a trailing underscore, but its data still uses the slot name.
     """
     return underscore(s.name)
 
@@ -383,7 +384,13 @@ def get_name(e: ClassDefinition | SlotDefinition | EnumDefinition | PermissibleV
         name = camelcase(e.name)
     elif isinstance(e, PermissibleValue):
         name = camelcase(e.text)
-    elif isinstance(e, SlotDefinition | TypeDefinition):
+    elif isinstance(e, SlotDefinition):
+        name = underscore(e.name)
+        # The Python bindings use the field name, so a slot named after a Python keyword, such as from,
+        # gets a trailing underscore as well.
+        if keyword.iskeyword(name):
+            name = f"{name}_"
+    elif isinstance(e, TypeDefinition):
         name = underscore(e.name)
     else:
         raise ValueError("Can only get the name from a slot or class!")
@@ -520,16 +527,6 @@ class RustGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         induced_attrs = self.before_generate_slots(induced_attrs, self.schemaview)
-        # A slot named after a Rust keyword, such as in, has the field in_, so it cannot share a class
-        # with a slot that is already named in_.
-        serde_names = {}
-        for a in induced_attrs:
-            other = serde_names.setdefault(get_name(a), get_serde_name(a))
-            if other != get_serde_name(a):
-                raise ValueError(
-                    f"Class {cls.name}: slots {other!r} and {get_serde_name(a)!r} "
-                    f"would both be the Rust field {get_name(a)!r}"
-                )
         slot_range_unions = []
         for a in induced_attrs:
             # Promote union across descendants for canonical union enum in base module
@@ -718,13 +715,14 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             range_info = get_rust_range_info(cls, attr, self.schemaview)
 
+        serde_name = get_serde_name(attr)
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
                 name=get_name(attr),
                 inline_mode=inline_mode.value,
                 alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
-                rename=get_serde_name(attr) if get_serde_name(attr) != get_name(attr) else None,
+                rename=serde_name if serde_name != get_name(attr) else None,
                 generate_merge=MERGE_ANNOTATION in cls.annotations,
                 container_mode=container_mode.value,
                 type_=range_info,
@@ -922,6 +920,13 @@ class RustGenerator(Generator, LifecycleMixin):
 
         slots = list(sv.induced_slot(s) for s in sv.all_slots())
         slots = self.before_generate_slots(slots, sv)
+        # Every slot gets a type alias named after it, so no two slots can have the same Rust name. A slot
+        # named after a keyword, such as in, has the name in_, so a schema cannot also have a slot in_.
+        rust_names = {}
+        for s in slots:
+            other = rust_names.setdefault(get_name(s), s.name)
+            if other != s.name:
+                raise ValueError(f"Slots {other!r} and {s.name!r} would both be named {get_name(s)!r} in Rust")
         slots = [self.generate_slot(s) for s in slots]
         slots = self.after_generate_slots(slots, sv)
 
