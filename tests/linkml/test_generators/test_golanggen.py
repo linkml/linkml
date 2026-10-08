@@ -777,8 +777,8 @@ def test_template_dir_nonexistent_raises(tmp_path):
 
     runner = CliRunner()
     result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
-    assert result.exit_code != 0
-    assert "does not exist" in str(result.exception)
+    assert result.exit_code == 2
+    assert "does not exist" in result.output
 
 
 def test_template_dir_jsonld_wrapper(tmp_path):

@@ -8,8 +8,10 @@ Based on the GolangGenerator architecture.
 import logging
 import os
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
@@ -26,7 +28,7 @@ from linkml.generators.cppgen.template import (
     Includes,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -79,6 +81,85 @@ TYPE_DEFAULTS: dict[str, str] = {
 }
 
 
+# C++ keywords "not available for re-definition or overloading. As an exception, they
+# are not considered reserved in attributes (excluding attribute argument lists)".
+# https://en.cppreference.com/w/cpp/keyword
+CPP_KEYWORDS = frozenset(
+    {
+        "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break",
+        "case", "catch", "char", "char8_t", "char16_t", "char32_t", "class", "compl", "concept",
+        "const", "consteval", "constexpr", "constinit", "const_cast", "continue", "co_await",
+        "co_return", "co_yield", "decltype", "default", "delete", "do", "double", "dynamic_cast",
+        "else", "enum", "explicit", "export", "extern", "false", "float", "for", "friend", "goto",
+        "if", "inline", "int", "long", "mutable", "namespace", "new", "noexcept", "not", "not_eq",
+        "nullptr", "operator", "or", "or_eq", "private", "protected", "public", "register",
+        "reinterpret_cast", "requires", "return", "short", "signed", "sizeof", "static",
+        "static_assert", "static_cast", "struct", "switch", "template", "this", "thread_local",
+        "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned", "using",
+        "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq",
+    }
+)  # fmt: skip
+
+_CPP_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
+# "Identifiers that contain a double underscore or begin with an underscore followed
+# by an uppercase letter" are reserved in any scope. A bare leading underscore is
+# left alone because it's reserved only at global scope and in wide use.
+# https://en.cppreference.com/w/cpp/language/identifiers
+_CPP_RESERVED_IDENT = re.compile(r"__|^_[A-Z]")
+
+# https://en.cppreference.com/w/cpp/language/namespace
+DEFAULT_CPP_NAMESPACE = "example"
+
+
+def _is_valid_cpp_namespace(namespace: str) -> bool:
+    """Return True if ``namespace`` is a ``::``-separated list of legal C++ identifiers.
+
+    The generated header opens it with a (since C++17) nested namespace definition
+    (``namespace a::b {``), so each segment must be an identifier that is not a
+    keyword or reserved to the implementations. See comment in next section.
+
+        >>> _is_valid_cpp_namespace("game::ontology")
+        True
+        >>> _is_valid_cpp_namespace("my-schema")
+        False
+        >>> _is_valid_cpp_namespace("a::class")
+        False
+        >>> _is_valid_cpp_namespace("a__b")
+        False
+        >>> _is_valid_cpp_namespace("::a")
+        False
+    """
+    return all(
+        _CPP_IDENT.fullmatch(segment) is not None
+        and _CPP_RESERVED_IDENT.search(segment) is None
+        and segment not in CPP_KEYWORDS
+        for segment in namespace.split("::")
+    )
+
+
+def _derive_cpp_namespace(schema_name: str) -> str:
+    """Derive a legal C++ namespace from a schema name.
+
+    Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
+    the name is lowercased, characters illegal in an identifier (a hyphen or dot,
+    both legal in a schema name) become underscores, runs of underscores collapse
+    so no reserved ``__`` is produced, a keyword is suffixed with ``_``, and
+    anything still unusable falls back to :data:`DEFAULT_CPP_NAMESPACE`.
+
+        >>> _derive_cpp_namespace("My-Schema")
+        'my_schema'
+        >>> _derive_cpp_namespace("template")
+        'template_'
+        >>> _derive_cpp_namespace("1abc")
+        'example'
+    """
+    candidate = re.sub(r"_+", "_", re.sub(r"[^a-z0-9_]", "_", schema_name.lower()))
+    if candidate in CPP_KEYWORDS:
+        candidate += "_"
+    return candidate if _is_valid_cpp_namespace(candidate) else DEFAULT_CPP_NAMESPACE
+
+
 def _to_upper_snake(name: str) -> str:
     """Convert a name to UPPER_SNAKE_CASE.
 
@@ -115,6 +196,7 @@ class CppGenerator(OOCodeGenerator):
     generatorversion = "0.1.0"
     valid_formats = ["h", "hpp", "header"]
     file_extension = "h"
+    config_section_name = "cpp"
 
     # ObjectVars
     namespace: str | None = None
@@ -141,6 +223,15 @@ class CppGenerator(OOCodeGenerator):
 
     def __post_init__(self):
         super().__post_init__()
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        if self.namespace is not None and not _is_valid_cpp_namespace(str(self.namespace)):
+            raise ValueError(f"{self.namespace!r} is not a valid C++ namespace")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        namespace = args.get("namespace")
+        if namespace is not None and not _is_valid_cpp_namespace(str(namespace)):
+            raise click.UsageError(f"{namespace!r} is not a valid C++ namespace")
 
     def default_value_for_type(self, typ: str) -> str:
         """Return the C++ default value for a given type.
@@ -385,11 +476,7 @@ class CppGenerator(OOCodeGenerator):
         self._type_defs = {}
         self._needed_includes = set()
 
-        # Determine namespace
-        namespace = self.namespace
-        if namespace is None:
-            schema_name = sv.schema.name
-            namespace = re.sub(r"[^a-z0-9_]", "_", schema_name.lower())
+        namespace = self.namespace if self.namespace is not None else _derive_cpp_namespace(sv.schema.name)
 
         # Generate enums
         enums: dict[str, CppEnum] = {}
@@ -475,6 +562,15 @@ _TEMPLATE_NAMES = [
     help="Override the C++ namespace (default: derived from schema name)",
 )
 @click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {cpp: {namespace: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
+@click.option(
     "--alphabetical-sort/--no-alphabetical-sort",
     default=False,
     show_default=True,
@@ -494,7 +590,7 @@ _TEMPLATE_NAMES = [
 )
 @click.option(
     "--template-dir",
-    type=click.Path(),
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="""
 Optional jinja2 template directory to use for C++ header generation.
 
@@ -508,15 +604,8 @@ Available templates to override:
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="gen-cpp-header")
-def cli(
-    yamlfile,
-    namespace: str | None = None,
-    alphabetical_sort: bool = False,
-    use_optional: bool = True,
-    gen_string_conversions: bool = True,
-    template_dir: str | None = None,
-    **args,
-):
+@click.pass_context
+def cli(ctx: click.Context, yamlfile, config_file=None, **args):
     """Generate C++ header files from a LinkML schema.
 
     This generator produces idiomatic C++17 headers with:
@@ -525,19 +614,10 @@ def cli(
     - std::optional<T> for optional fields
     - std::vector<T> for multivalued fields
     """
-    if template_dir is not None:
-        if not Path(template_dir).exists():
-            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
-
-    gen = CppGenerator(
-        yamlfile,
-        namespace=namespace,
-        alphabetical_sort=alphabetical_sort,
-        use_optional=use_optional,
-        gen_string_conversions=gen_string_conversions,
-        template_dir=template_dir,
-        **args,
-    )
+    config = read_generator_config(config_file, CppGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    CppGenerator.validate_generator_args(args)
+    gen = CppGenerator(yamlfile, **args)
     print(gen.serialize())
 
 

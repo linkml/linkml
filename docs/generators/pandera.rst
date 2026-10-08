@@ -252,6 +252,45 @@ No exceptions are raised because the data matches the model.
     personinfo_pa.Person.validate(dataframe)
 
 
+Package Configuration
+---------------------
+
+``--package`` names the directory ``gen-pandera`` writes a package of generated
+modules into, instead of printing a single module to standard output. It is driven by
+the following precedence:
+
+1. ``--package`` command-line option
+2. ``generator_args.pandera.package`` set via ``--config-file``/``-C`` (see below)
+3. Fallback: no package -- one module is printed to standard output
+
+The last path component becomes the Python package name, and the generated modules
+import each other relatively, so it must be a valid Python identifier that is not a
+keyword (``out/my_models`` is accepted; ``out/my-models`` and ``out/class`` are not).
+The value is never rewritten: an invalid one is reported as an error before anything
+is written.
+
+Configuration File
+------------------
+
+As an alternative to ``--package``, ``gen-pandera`` accepts a ``--config-file``/``-C``
+YAML file -- the **same format** used by ``gen-project``'s own ``--config-file``
+(see :doc:`project-generator`) and by ``gen-java`` (see :doc:`java`), so a single
+project-wide ``config.yaml`` can be shared between them. ``package`` lives under
+``generator_args.pandera``:
+
+.. code-block:: yaml
+
+    # config.yaml
+    generator_args:
+      pandera:
+        package: out/my_models
+
+``gen-pandera`` reads only the ``generator_args.pandera`` section of this file, so a
+full multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-pandera``
+option can be set there, keyed by its name with dashes as underscores; command-line
+options take precedence, and a key that is not an option is reported as a warning and
+ignored.
+
 Generator
 ---------
 

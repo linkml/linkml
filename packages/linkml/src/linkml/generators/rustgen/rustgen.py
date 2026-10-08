@@ -1,8 +1,11 @@
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Literal, overload
+from typing import Any, Literal, overload
 
+import click
 from jinja2 import Environment
 
 from linkml.generators.common.lifecycle import LifecycleMixin
@@ -92,6 +95,27 @@ Mapping from python types to rust types.
 """
 
 PROTECTED_NAMES = ("type", "typeof", "abstract")
+
+# Strict and reserved Rust keywords up to the 2021 edition the generated Cargo.toml
+# declares (so not `gen`, reserved only from 2024); none can name a crate.
+# https://doc.rust-lang.org/reference/keywords.html
+RUST_KEYWORDS = frozenset(
+    {
+        "as", "async", "await", "break", "const", "continue", "crate", "dyn", "else", "enum",
+        "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod",
+        "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super", "trait",
+        "true", "try", "type", "unsafe", "use", "where", "while", "abstract", "become", "box", "do",
+        "final", "macro", "override", "priv", "typeof", "unsized", "virtual", "yield",
+    }
+)  # fmt: skip
+
+_RUST_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
+# Names `cargo new` refuses or warns about because they conflict with Rust's own libraries.
+# https://github.com/rust-lang/cargo/blob/master/src/cargo/ops/cargo_new.rs
+CARGO_RESERVED_NAMES = frozenset({"alloc", "core", "proc_macro", "std", "test"})
+
+DEFAULT_CRATE_NAME = "example"
 
 RUST_IMPORTS = {
     "dec": Import(module="rust_decimal", version="1.36", objects=[ObjectImport(name="dec")]),
@@ -205,6 +229,22 @@ def class_real_descendants(sv: SchemaView, class_name: str) -> list[str]:
     except Exception:
         descs = []
     return [d for d in descs if d != class_name]
+
+
+def class_subtype_variants(sv: SchemaView, class_name: str) -> list[str]:
+    """Return the classes an ``<Class>OrSubtype`` enum has a variant for.
+
+    That is every real descendant, plus the class itself when it can be instantiated
+    (neither abstract nor a mixin), so a slot ranged on the class can hold a plain
+    instance of it. The class goes last because untagged serde, and the PyO3 and
+    ``InlinedPair`` extractors, try variants in order, and the base struct would
+    otherwise accept a subtype's data and drop its extra fields.
+    """
+    variants = class_real_descendants(sv, class_name)
+    cls = sv.get_class(class_name)
+    if not cls.abstract and not cls.mixin:
+        variants.append(class_name)
+    return variants
 
 
 def has_real_subtypes(sv: SchemaView, class_name: str) -> bool:
@@ -350,6 +390,56 @@ def get_rust_range_info(
     return res
 
 
+def _is_valid_rust_ident(crate_name: str) -> bool:
+    """Return True if ``crate_name`` can name the generated crate.
+
+    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml and names the
+    ``#[pymodule]`` function, so it must be an ASCII Rust identifier that is neither a
+    keyword nor a name cargo reserves for Rust's own libraries. A hyphen is fine in a
+    cargo package name but not in a ``[lib]`` name or an identifier, so it is rejected
+    here; use an underscore instead.
+
+        >>> _is_valid_rust_ident("my_schema")
+        True
+        >>> _is_valid_rust_ident("my-schema")
+        False
+        >>> _is_valid_rust_ident("fn")
+        False
+        >>> _is_valid_rust_ident("test")
+        False
+        >>> _is_valid_rust_ident("_")
+        False
+    """
+    return (
+        crate_name != "_"
+        and crate_name not in RUST_KEYWORDS
+        and crate_name not in CARGO_RESERVED_NAMES
+        and _RUST_IDENT.fullmatch(crate_name) is not None
+    )
+
+
+def _derive_crate_name(schema_name: str) -> str:
+    """Derive a legal crate name from a schema name.
+
+    Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
+    characters cargo refuses in a ``[lib]`` name (a hyphen or dot, both legal in a
+    schema name) become underscores, a keyword or a name cargo reserves is suffixed
+    with ``_``, the same escape :func:`protect_name` applies, and anything still
+    unusable falls back to :data:`DEFAULT_CRATE_NAME`.
+
+        >>> _derive_crate_name("person-schema")
+        'person_schema'
+        >>> _derive_crate_name("test")
+        'test_'
+        >>> _derive_crate_name("1abc")
+        'example'
+    """
+    candidate = re.sub(r"[^A-Za-z0-9_]", "_", schema_name)
+    if candidate in RUST_KEYWORDS or candidate in CARGO_RESERVED_NAMES:
+        candidate += "_"
+    return candidate if _is_valid_rust_ident(candidate) else DEFAULT_CRATE_NAME
+
+
 def protect_name(v: str) -> str:
     """
     append an underscore to a protected name
@@ -384,7 +474,9 @@ class RustGenerator(Generator, LifecycleMixin):
     valid_formats = ["rust"]
     file_extension = "rs"
     uses_schemaloader = False
+    config_section_name = "rust"
     crate_name: str | None = None
+    """Name of the generated crate and its ``#[pymodule]``. If None, derived from the schema name."""
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -415,6 +507,20 @@ class RustGenerator(Generator, LifecycleMixin):
     def __post_init__(self):
         self._subproperty_enums = {}  # Cache for generated subproperty enums
         super().__post_init__()
+        if self.crate_name is None:
+            self.crate_name = _derive_crate_name(self.schemaview.schema.name)
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        elif not _is_valid_rust_ident(str(self.crate_name)):
+            raise ValueError(f"{self.crate_name!r} is not a valid Rust crate name")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        crate_name = args.get("crate_name")
+        if crate_name is not None and not _is_valid_rust_ident(str(crate_name)):
+            raise click.UsageError(f"{crate_name!r} is not a valid Rust crate name")
+        output = args.get("output")
+        if args.get("mode") == "file" and output is not None and Path(output).suffix != ".rs":
+            raise click.UsageError(f"--output must be a .rs file in file mode, got {str(output)!r}")
 
     def _select_root_class(self, class_defs: list[ClassDefinition]) -> ClassDefinition | None:
         """Return the schema-local class marked ``tree_root`` if present."""
@@ -558,28 +664,28 @@ class RustGenerator(Generator, LifecycleMixin):
         return res
 
     def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> RustStructOrSubtypeEnum | None:
-        descendants = class_real_descendants(self.schemaview, cls.name)
+        if not has_real_subtypes(self.schemaview, cls.name):
+            return None
+        variants = class_subtype_variants(self.schemaview, cls.name)
         td = self.schemaview.get_type_designator_slot(cls.name)
         td_mapping = {}
         if td is not None:
-            for d in descendants:
+            for d in variants:
                 d_class = self.schemaview.get_class(d)
                 values = get_accepted_type_designator_values(self.schemaview, td, d_class)
-                td_mapping[d] = values
-        if len(descendants) > 0:
-            key_type = "String"
-            key_slot = get_key_or_identifier_slot(cls, self.schemaview)
-            if key_slot is not None:
-                key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
-            return RustStructOrSubtypeEnum(
-                enum_name=get_name(cls) + "OrSubtype",
-                struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
-                type_designator_field=get_name(td) if td else None,
-                as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
-                type_designators=td_mapping,
-                key_property_type=key_type,
-            )
-        return None
+                td_mapping[get_name(d_class)] = values
+        key_type = "String"
+        key_slot = get_key_or_identifier_slot(cls, self.schemaview)
+        if key_slot is not None:
+            key_type = get_rust_type(key_slot.range, self.schemaview, self.pyo3)
+        return RustStructOrSubtypeEnum(
+            enum_name=get_name(cls) + "OrSubtype",
+            struct_names=[get_name(self.schemaview.get_class(d)) for d in variants],
+            type_designator_field=get_name(td) if td else None,
+            as_key_value=key_slot is not None,
+            type_designators=td_mapping,
+            key_property_type=key_type,
+        )
 
     def generate_class_as_key_value(self, cls: ClassDefinition) -> AsKeyValue | None:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
@@ -716,7 +822,7 @@ class RustGenerator(Generator, LifecycleMixin):
         """
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustCargo(
-            name=self.crate_name if self.crate_name is not None else self.schemaview.schema.name,
+            name=self.crate_name,
             version=version,
             imports=imports,
             pyo3_version=self.pyo3_version,
@@ -926,7 +1032,7 @@ class RustGenerator(Generator, LifecycleMixin):
         all_enums = [e.enum for e in enums] + subproperty_enums
 
         file = RustFile(
-            name=sv.schema.name,
+            name=self.crate_name,
             imports=imports,
             slots=[t.slot for t in slots],
             types=[t.type_ for t in types],
@@ -1014,7 +1120,7 @@ class RustGenerator(Generator, LifecycleMixin):
             impls.append(PolyTraitImpl(name=class_name, struct_name=get_name(sco), attrs=ptis))
             has_subtypes = has_real_subtypes(self.schemaview, sc)
             if has_subtypes:
-                cases = [get_name(self.schemaview.get_class(x)) for x in class_real_descendants(self.schemaview, sc)]
+                cases = [get_name(self.schemaview.get_class(x)) for x in class_subtype_variants(self.schemaview, sc)]
                 matches = [
                     PolyTraitPropertyMatch(
                         name=get_name(a),
