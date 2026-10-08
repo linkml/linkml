@@ -18,7 +18,7 @@
 {%- endmacro -%}
 
 {%- macro render_slot(field) %}
-    {{ field.name }}:{{ ' ' }}
+    {{ field.python_name }}:{{ ' ' }}
         {%- if (field.required() is none or field.required() is false) and (field.identifier() is not true) -%}
             Optional[
         {%- endif -%}
@@ -27,6 +27,8 @@
             {{ ']' }}
         {%- endif -%}
         {{ ' =' }} pla.Field(
+            {#- a keyword-named column needs an alias, as its attribute is escaped (from_) -#}
+            {%- if field.python_name != field.name -%}alias="{{ field.name }}", {% endif -%}
             {{- constraint_parameters(field) -}}
             {{- enum_macros.enum_parameter(field) -}}
         )

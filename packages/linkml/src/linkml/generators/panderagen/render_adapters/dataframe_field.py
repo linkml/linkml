@@ -1,3 +1,4 @@
+from linkml.generators.common.naming import escape_python_keyword
 from linkml.generators.oocodegen import OOField
 
 
@@ -58,6 +59,11 @@ class DataframeField(OOField):
         self.reference_class = reference_class
         self.inline_form = inline_form
         self._permissible_values = permissible_values
+
+    @property
+    def python_name(self) -> str:
+        """The class attribute name: the column name, escaped if a Python keyword (``from`` -> ``from_``)"""
+        return escape_python_keyword(self.name)
 
     @property
     def permissible_values(self):

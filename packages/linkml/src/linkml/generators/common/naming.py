@@ -1,7 +1,17 @@
+import keyword
 import logging
 import re
 import unicodedata
 from enum import Enum
+
+
+def escape_python_keyword(name: str) -> str:
+    """Append an underscore (PEP 8) to a name that is a Python keyword, so it can be an identifier.
+
+    >>> escape_python_keyword("from"), escape_python_keyword("to")
+    ('from_', 'to')
+    """
+    return name + "_" if keyword.iskeyword(name) else name
 
 
 class NamingProfiles(str, Enum):
