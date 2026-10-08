@@ -81,6 +81,7 @@ class PythonGenerator(Generator):
         # to HTTP on the first lazy access via ``PythonIfAbsentProcessor``.
         self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
         self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
+        self._slot_aliases_cache: dict[str, dict[str, str]] = {}  # class name -> slot_aliases_for(cls)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -96,10 +97,38 @@ class PythonGenerator(Generator):
         original slot name is preserved on the runtime ``Slot(name=...)``
         argument, so schema lookups and URI resolution are unaffected.
         """
-        pyname = super().slot_name(name)
-        if keyword.iskeyword(pyname):
-            pyname += "_"
-        return pyname
+        return self._escape_keyword(super().slot_name(name))
+
+    @staticmethod
+    def _escape_keyword(name: str) -> str:
+        """Append a trailing underscore (PEP 8) to a name that is a Python reserved keyword"""
+        return name + "_" if keyword.iskeyword(name) else name
+
+    def slot_aliases_for(self, cls: ClassDefinition) -> dict[str, str]:
+        """
+        Map each escaped Python field of cls, inherited ones included, to the slot name data uses, so that
+        the generated class loads and dumps ``from`` rather than the field name ``from_``.
+        The result is cached per class, as both the imports and the class definition need it.
+
+        :param cls: class whose dataclass fields are checked
+        :return: Python field name -> slot name, empty if no field is escaped
+        :raises ValueError: if an escaped name is also the name of another slot of cls, e.g. ``from`` and ``from_``
+        """
+        if cls.name not in self._slot_aliases_cache:
+            names = []
+            for slot in self.all_slots(cls):
+                names.append(super().slot_name(slot.name))
+            aliases = {}
+            for name in names:
+                pyname = self._escape_keyword(name)
+                if pyname != name:
+                    if pyname in names:
+                        raise ValueError(
+                            f"Class {cls.name}: slots {name!r} and {pyname!r} would both be the Python field {pyname!r}"
+                        )
+                    aliases[pyname] = name
+            self._slot_aliases_cache[cls.name] = aliases
+        return self._slot_aliases_cache[cls.name]
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -237,6 +266,11 @@ class PythonGenerator(Generator):
         all_imports = all_imports + Import(
             module="linkml_runtime.utils.enumerations", objects=[ObjectImport(name="EnumDefinitionImpl")]
         )
+        # Only schemas with a keyword-named slot need slot_aliases, so other output still runs on older runtimes
+        if any(self.slot_aliases_for(c) for c in self.schema.classes.values() if not c.imported_from):
+            all_imports = all_imports + Import(
+                module="linkml_runtime.utils.yamlutils", objects=[ObjectImport(name="slot_aliases")]
+            )
         # other imports
         all_imports = (
             all_imports
@@ -573,8 +607,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
+        aliases_str = ", ".join([f'"{k}": "{v}"' for k, v in self.slot_aliases_for(cls).items()])
         cd_str = (
-            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
+            (f"\n@slot_aliases({{{aliases_str}}})" if aliases_str else "")
+            + (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"
@@ -1092,7 +1128,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
         if slot.required:
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
-            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+            rlines.append(f'\tself.MissingRequiredField("{super().slot_name(slot.name)}")')
 
         # Resolve each branch's runtime (unquoted) type name via the same single-range
         # call class_reference_type already makes for a plain slot, then de-dup by that
@@ -1209,7 +1245,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         # You can't have required elements after optional elements in the parent class
         if slot.required:
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
-            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+            rlines.append(f'\tself.MissingRequiredField("{super().slot_name(slot.name)}")')
 
         # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
