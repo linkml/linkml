@@ -1,11 +1,12 @@
 import dataclasses
+import functools
 import re
 import textwrap
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from copy import copy
 from json import JSONDecoder
 from pprint import pformat
-from typing import Any, Union
+from typing import Any, ClassVar, Union
 
 import yaml
 from deprecated.classic import deprecated
@@ -37,6 +38,9 @@ class YAMLRoot(JsonObj):
     """
     The root object for all python YAML representations
     """
+
+    # Python field name -> slot name, for slots whose name is a Python keyword (see slot_aliases)
+    _slot_aliases: ClassVar[dict[str, str]] = {}
 
     def __post_init__(self, *args: list[str], **kwargs):
         if args or kwargs:
@@ -84,13 +88,13 @@ class YAMLRoot(JsonObj):
                             #     if k != 'slot_usage':
                             #         vv['@id'] = underscore(vk)
                             itemslist.append(vv)
-                        rval[k] = itemslist
+                        rval[obj._slot_aliases.get(k, k)] = itemslist
                     # TODO: Figure out how to make EnumDefinitionImpl a subclass of EnumDefinition
                     # elif isinstance(v, EnumDefinition):
                     elif isinstance(v, EnumDefinitionImpl):
-                        rval[k] = v._as_value()
+                        rval[obj._slot_aliases.get(k, k)] = v._as_value()
                     else:
-                        rval[k] = v
+                        rval[obj._slot_aliases.get(k, k)] = v
             return rval
         else:
             return (
@@ -295,6 +299,11 @@ class YAMLRoot(JsonObj):
     def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> type["YAMLRoot"] | None:
         return cls._class_for("class_class_curie", curie)
 
+    def _items(self) -> Iterator[tuple[str, Any]]:
+        """Return the non-hidden items, keyed by slot name rather than Python field name"""
+        for k, v in super()._items():
+            yield self._slot_aliases.get(k, k), v
+
     # ==================
     # Error intercepts
     # ==================
@@ -307,6 +316,61 @@ class YAMLRoot(JsonObj):
 
     def __str__(self):
         return repr(self)
+
+
+def slot_aliases(aliases: dict[str, str]) -> Callable[[type[YAMLRoot]], type[YAMLRoot]]:
+    """Class decorator that lets a generated class take and give its slots' own names.
+
+    The Python generator escapes a slot named after a Python keyword: ``from`` becomes the field ``from_``.
+    The decorated class accepts ``from`` as a keyword argument, and ``items()`` and the dumpers report ``from``.
+
+    :param aliases: Python field name -> slot name, covering inherited fields as well as the class's own
+    :return: the decorator
+
+    >>> @slot_aliases({"from_": "from"})
+    ... @dataclasses.dataclass
+    ... class Window(YAMLRoot):
+    ...     from_: str | None = None
+    >>> w = Window(**{"from": "2026-01-01"})
+    >>> w.from_
+    '2026-01-01'
+    >>> dict(items(w))
+    {'from': '2026-01-01'}
+    """
+    to_field = {alias: field for field, alias in aliases.items()}
+
+    def rename(cls_name: str, kwargs: dict[str, Any]) -> dict[str, Any]:
+        for alias, field in to_field.items():
+            if alias in kwargs:
+                if field in kwargs:
+                    raise TypeError(f"{cls_name}() got both {alias!r} and {field!r} for the same slot")
+                kwargs[field] = kwargs.pop(alias)
+        return kwargs
+
+    def decorate(cls: type[YAMLRoot]) -> type[YAMLRoot]:
+        # A subclass that defines neither inherits its parent's wrapped methods
+        own = vars(cls)
+        if "__init__" in own:
+            init = own["__init__"]
+
+            @functools.wraps(init)
+            def init_with_slot_names(self, *args: Any, **kwargs: Any) -> None:
+                init(self, *args, **rename(type(self).__name__, kwargs))
+
+            cls.__init__ = init_with_slot_names
+        if "__new__" in own:
+            # A type designator's __new__ sees the arguments before __init__ does
+            new = own["__new__"].__func__
+
+            @functools.wraps(new)
+            def new_with_slot_names(cls_: type[YAMLRoot], *args: Any, **kwargs: Any) -> YAMLRoot:
+                return new(cls_, *args, **rename(cls_.__name__, kwargs))
+
+            cls.__new__ = staticmethod(new_with_slot_names)
+        cls._slot_aliases = dict(aliases)
+        return cls
+
+    return decorate
 
 
 def _pformat(fields: dict, cls_name: str, indent: str = "  ") -> str:
@@ -358,10 +422,12 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
 
     if isinstance(data, EnumDefinitionImpl):
         return dumper.represent_str(data._as_value())
+    # Also registered for plain JsonObjs, which have no slot aliases
+    aliases = data._slot_aliases if isinstance(data, YAMLRoot) else {}
     rval = dict()
     for k, v in data.__dict__.items():
         if not k.startswith("_") and v is not None and (not isinstance(v, dict | list) or v):
-            rval[k] = v
+            rval[aliases.get(k, k)] = v
     return dumper.represent_data(rval)
 
 

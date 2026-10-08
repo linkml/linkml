@@ -101,6 +101,28 @@ class PythonGenerator(Generator):
             pyname += "_"
         return pyname
 
+    def slot_aliases_for(self, cls: ClassDefinition) -> dict[str, str]:
+        """
+        Map each escaped Python field of cls, inherited ones included, to the slot name data uses, so that
+        the generated class loads and dumps ``from`` rather than the field name ``from_``.
+
+        :param cls: class whose dataclass fields are checked
+        :return: Python field name -> slot name, empty if no field is escaped
+        :raises ValueError: if an escaped name is also the name of another slot of cls, e.g. ``from`` and ``from_``
+        """
+        aliases = {}
+        names = {super().slot_name(slot.name) for slot in self.all_slots(cls)}
+        for slot in self.all_slots(cls):
+            pyname = self.slot_name(slot.name)
+            name = super().slot_name(slot.name)
+            if pyname != name:
+                if pyname in names:
+                    raise ValueError(
+                        f"Class {cls.name}: slots {name!r} and {pyname!r} would both be the Python field {pyname!r}"
+                    )
+                aliases[pyname] = name
+        return aliases
+
     def compile_module(self, **kwargs) -> ModuleType:
         """
         Compiles generated python code to a module
@@ -237,6 +259,11 @@ class PythonGenerator(Generator):
         all_imports = all_imports + Import(
             module="linkml_runtime.utils.enumerations", objects=[ObjectImport(name="EnumDefinitionImpl")]
         )
+        # Only schemas with a keyword-named slot need slot_aliases, so other output still runs on older runtimes
+        if any(self.slot_aliases_for(c) for c in self.schema.classes.values() if not c.imported_from):
+            all_imports = all_imports + Import(
+                module="linkml_runtime.utils.yamlutils", objects=[ObjectImport(name="slot_aliases")]
+            )
         # other imports
         all_imports = (
             all_imports
@@ -573,8 +600,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
+        aliases_str = ", ".join([f'"{k}": "{v}"' for k, v in self.slot_aliases_for(cls).items()])
         cd_str = (
-            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
+            (f"\n@slot_aliases({{{aliases_str}}})" if aliases_str else "")
+            + (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"

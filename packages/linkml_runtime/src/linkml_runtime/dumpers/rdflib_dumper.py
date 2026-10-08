@@ -115,7 +115,8 @@ class RDFLibDumper(Dumper):
             else:
                 logger.warning(f"No datatype specified for : {t.name}, using plain Literal")
                 return Literal(element)
-        element_vars = {k: v for k, v in vars(element).items() if not k.startswith("_")}
+        aliases = getattr(element, "_slot_aliases", {})
+        element_vars = {aliases.get(k, k): v for k, v in vars(element).items() if not k.startswith("_")}
         if len(element_vars) == 0:
             id_slot = schemaview.get_identifier_slot(target_type)
             return self._as_uri(element, id_slot, schemaview)
