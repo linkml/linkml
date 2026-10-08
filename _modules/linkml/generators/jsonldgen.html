@@ -469,6 +469,9 @@
     <span class="n">original_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See https://github.com/linkml/linkml/issues/871&quot;&quot;&quot;</span>
 
+    <span class="n">original_base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The caller&#39;s base_dir, before SchemaLoader replaces it with one derived from the schema path&quot;&quot;&quot;</span>
+
     <span class="n">context</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to a JSONLD context file&quot;&quot;&quot;</span>
 
@@ -477,6 +480,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -614,9 +618,12 @@
             <span class="n">context_kwargs</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># Forward importmap/base_dir so the spawned ContextGenerator can</span>
             <span class="c1"># re-resolve any URI-style imports in ``self.original_schema``</span>
-            <span class="c1"># through the same ``--importmap`` the caller supplied.</span>
+            <span class="c1"># through the same ``--importmap`` the caller supplied. Forward the</span>
+            <span class="c1"># caller&#39;s base_dir, not the one SchemaLoader derived from the schema</span>
+            <span class="c1"># path: the latter would resolve a relative path against its own</span>
+            <span class="c1"># directory twice.</span>
             <span class="n">context_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;importmap&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">)</span>
-            <span class="n">context_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;base_dir&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
+            <span class="n">context_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;base_dir&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_base_dir</span><span class="p">)</span>
             <span class="n">add_prefixes</span> <span class="o">=</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="o">**</span><span class="n">context_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">add_prefixes_json</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">add_prefixes</span><span class="p">)</span>
             <span class="n">metamodel_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_context</span> <span class="ow">or</span> <span class="n">METAMODEL_CONTEXT_URI</span>
