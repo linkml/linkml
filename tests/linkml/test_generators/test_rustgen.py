@@ -1454,3 +1454,118 @@ def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
             "cargo test failed, likely due to a missing Rust toolchain:\n"
             f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
         )
+
+
+_KEYWORD_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/keywords
+    name: rustgen_keywords
+    prefixes:
+      linkml: https://w3id.org/linkml/
+    imports:
+      - linkml:types
+    default_range: string
+    classes:
+      Root:
+        tree_root: true
+        attributes:
+          windows:
+            range: Window
+            multivalued: true
+            inlined: true
+            inlined_as_list: false
+          events:
+            range: Event
+            multivalued: true
+            inlined: true
+            inlined_as_list: true
+      Window:
+        attributes:
+          in:
+            key: true
+          fn:
+          match:
+          type:
+      Event:
+        attributes:
+          type:
+            designates_type: true
+          name:
+      Meeting:
+        is_a: Event
+    """
+)
+
+
+def test_rustgen_keyword_slots_roundtrip(temp_dir):
+    """Slots named after Rust keywords, such as ``in`` and ``type``, compile and keep their names in serde data.
+
+    Each of these slots has a field with a trailing underscore, such as ``in_``. The data still uses the slot
+    name, including the key of an inlined dictionary and the type designator.
+    """
+    schema_path = Path(temp_dir) / "rustgen_keywords.yaml"
+    schema_path.write_text(_KEYWORD_SCHEMA, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "keywords_crate"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    RustGenerator(str(schema_path), mode="crate", pyo3=False, serde=True, output=str(out_dir)).serialize(force=True)
+
+    generated_rs = (out_dir / "src" / "lib.rs").read_text(encoding="utf-8")
+    assert "pub in_: String" in generated_rs
+    assert 'serde(rename = "in")' in generated_rs
+    assert 'serde(tag = "type")' in generated_rs
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_ident = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE).group(1).replace("-", "_")
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "keywords.rs").write_text(
+        (
+            "#[test]\n"
+            "fn keyword_slots_keep_their_names() {\n"
+            f"    use {crate_ident}::{{EventOrSubtype, Root}};\n"
+            '    let yaml = concat!("windows:\\n  w1:\\n    fn: f\\n    type: t\\n",\n'
+            '        "events:\\n  - type: Meeting\\n    name: m\\n");\n'
+            '    let root: Root = serde_yml::from_str(yaml).expect("decode");\n'
+            '    let window = root.windows.as_ref().and_then(|w| w.get("w1")).expect("w1 entry");\n'
+            '    assert_eq!(window.in_, "w1");\n'
+            '    assert_eq!(window.fn_.as_deref(), Some("f"));\n'
+            '    assert_eq!(window.type_.as_deref(), Some("t"));\n'
+            "    assert!(matches!(root.events.as_deref(), Some([EventOrSubtype::Meeting(_)])));\n"
+            '    let out = serde_yml::to_string(&root).expect("encode");\n'
+            '    assert!(out.contains("fn: f") && out.contains("type: t"), "{out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "keywords"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        pytest.fail(f"cargo test failed for keyword schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n")
+
+
+def test_rustgen_keyword_slot_collision():
+    """A class cannot have both a slot named after a Rust keyword, such as ``in``, and a slot ``in_``."""
+    schema = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/collision
+        name: rustgen_collision
+        prefixes:
+          linkml: https://w3id.org/linkml/
+        imports:
+          - linkml:types
+        default_range: string
+        classes:
+          Window:
+            attributes:
+              in:
+              in_:
+        """
+    )
+    with pytest.raises(ValueError, match="slots 'in' and 'in_' would both be the Rust field 'in_'"):
+        RustGenerator(schema, mode="file", serde=True).render()

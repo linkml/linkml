@@ -3,6 +3,9 @@
 Schemas are defined inline to keep tests self-contained.
 """
 
+import shutil
+import subprocess
+
 import pytest
 from click.testing import CliRunner
 
@@ -851,3 +854,54 @@ def test_cli_nonexistent_template_dir(tmp_path):
     result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
 
     assert result.exit_code != 0
+
+
+# ---------------------------------------------------------------------------
+# Tests: slots named after C++ keywords
+# ---------------------------------------------------------------------------
+
+KEYWORD_SCHEMA = """
+id: https://example.org/keywords
+name: keywords_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Window:
+    attributes:
+      id:
+        identifier: true
+      class:
+      new:
+      not:
+      template:
+"""
+
+
+def test_keyword_slots_get_trailing_underscore():
+    """A slot named after a C++ keyword or alternative token, such as ``class`` or ``not``, gets a trailing
+    underscore."""
+    fields = CppGenerator(schema=KEYWORD_SCHEMA).render().structs["Window"].fields
+    assert list(fields) == ["id", "class_", "new_", "not_", "template_"]
+
+
+@pytest.mark.skipif(shutil.which("g++") is None, reason="g++ is not installed")
+def test_keyword_slots_compile(tmp_path):
+    """The header for a schema whose slots are C++ keywords compiles."""
+    header = tmp_path / "keywords.hpp"
+    header.write_text(CppGenerator(schema=KEYWORD_SCHEMA).serialize())
+    result = subprocess.run(
+        ["g++", "-std=c++20", "-fsyntax-only", "-x", "c++", str(header)], capture_output=True, text=True
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_keyword_slot_collision():
+    """A class cannot have both a slot named after a C++ keyword, such as ``class``, and a slot ``class_``."""
+    schema = KEYWORD_SCHEMA.replace("      new:\n", "      class_:\n")
+    with pytest.raises(ValueError, match="slots 'class' and 'class_' would both be the C\\+\\+ field 'class_'"):
+        CppGenerator(schema=schema).render()
