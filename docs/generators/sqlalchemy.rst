@@ -103,6 +103,22 @@ section of the SQLA docs.
 
 Note that class slots are "rolled down".
 
+Slots named after Python keywords
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A slot named after a Python keyword, such as ``from`` or ``class``, cannot be a Python
+attribute name, so its attribute gets a trailing underscore. The column keeps the slot name:
+
+.. code:: python
+
+    from_ = Column('from', Date())
+
+Relationships follow the same rule. In the imperative style, the attribute ``from_`` of the
+class from the Python generator is mapped to the column ``from``.
+
+A class cannot have both a slot named after a keyword and a slot named like its attribute,
+such as ``from`` and ``from_``. The generator reports an error for it.
+
 Docs
 ----
 
