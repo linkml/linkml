@@ -57,6 +57,71 @@ def test_expected_rdf(input_path, schema):
     rdf_expects.check_expectations()
 
 
+@pytest.mark.parametrize("fix_multivalue_containers", [True, False])
+def test_multivalued_rdf_type_slot_preserves_rdf_triples(tmp_path, fix_multivalue_containers):
+    """A multivalued rdf:type slot should expand to the same RDF types with either container policy.
+    This is a regression test for issue #4057."""
+    from rdflib import RDF, Graph, URIRef
+
+    schema_file = tmp_path / "rdf_type_roundtrip.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """\
+            id: https://example.org/rdf-type-roundtrip
+            name: rdf-type-roundtrip
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/rdf-type-roundtrip/
+              rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  type_field:
+                    range: uriorcurie
+                    multivalued: true
+                    slot_uri: rdf:type
+            """
+        ),
+        encoding="utf-8",
+    )
+    context = json.loads(
+        ContextGenerator(
+            str(schema_file),
+            mergeimports=True,
+            fix_multivalue_containers=fix_multivalue_containers,
+        ).serialize()
+    )["@context"]
+    expected_context_entry = {"@id": "@type"}
+    if fix_multivalue_containers:
+        expected_context_entry["@container"] = "@set"
+    assert context["type_field"] == expected_context_entry
+
+    subject = URIRef("https://example.org/instance")
+    expected_types = {
+        URIRef("https://example.org/Person"),
+        URIRef("https://example.org/Agent"),
+    }
+    document = {
+        "@context": context,
+        "@id": str(subject),
+        "type_field": [str(type_iri) for type_iri in expected_types],
+    }
+
+    graph = Graph().parse(data=json.dumps(document), format="json-ld")
+
+    # The @type alias must emit one rdf:type triple per value, regardless of
+    # whether the context opts into @container: @set.
+    assert set(graph.objects(subject, RDF.type)) == expected_types
+
+    # Verify the RDF graph survives serialization and parsing unchanged.
+    round_tripped_graph = Graph().parse(data=graph.serialize(format="turtle"), format="turtle")
+    assert graph.isomorphic(round_tripped_graph)
+
+
 def test_emit_frame_inline_rules(tmp_path):
     schema = tmp_path / "mini_inline.yaml"
     schema.write_text(
@@ -1790,3 +1855,142 @@ def test_identifier_context_round_trips_to_rdf(tmp_path, use_curies):
 
     ex = "https://example.org/identifier-test/"
     assert set(graph) == {(URIRef(ex + "thing1"), URIRef(ex + "name"), Literal("n"))}
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+@pytest.mark.parametrize("fix_multivalue_containers", [True, False])
+def test_any_slot_with_rdf_type_uri_aliases_type(tmp_path, use_curies, fix_multivalue_containers):
+    """Any slot with slot_uri=rdf:type should map to @type keyword.
+
+    RDF Semantics (rdflib_dumper.py:154-161):
+      The predicate used in RDF triples is always the slot's slot_uri.
+      The designates_type flag only controls whether the automatic fallback
+      rdf:type (when no slot emits a type triple) is added. It does NOT
+      change which predicate is used in the triple.
+
+      Therefore, if slot_uri=rdf:type, the slot will emit rdf:type triples,
+      regardless of whether designates_type is true or false.
+
+    JSON-LD Consequence:
+      To preserve round-trip semantics, we should map ANY slot whose
+      slot_uri=rdf:type to the JSON-LD @type keyword. The slot_uri value
+      (not the designates_type flag) is what matters.
+
+    This test verifies that:
+      1. A regular slot (not a designator) with slot_uri=rdf:type maps to @type
+      2. The mapping applies regardless of the slot's range
+      3. Multivalued slots follow the fix_multivalue_containers option
+      4. Context key uses slot name (not CURIE), preserving keyword semantics
+    """
+    schema_file = tmp_path / "rdf_type_uri.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """            id: https://example.org/rdf-type-uri-test
+            name: rdf-type-uri-test
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/rdf-type-uri-test/
+              rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  id:
+                    identifier: true
+                    range: uriorcurie
+
+                  type_field:
+                    range: uriorcurie
+                    slot_uri: rdf:type
+                    description: "Not a designator, just happens to use rdf:type as its predicate"
+
+                  multi_type_field:
+                    range: uriorcurie
+                    multivalued: true
+                    slot_uri: rdf:type
+                    description: "Multivalued slot with rdf:type URI"
+            """
+        )
+    )
+    generator = ContextGenerator(
+        str(schema_file),
+        mergeimports=True,
+        use_curies=use_curies,
+        fix_multivalue_containers=fix_multivalue_containers,
+    )
+    ctx = json.loads(generator.serialize())["@context"]
+
+    # Single-valued slot with slot_uri=rdf:type should map to @type keyword
+    assert ctx.get("type_field") == {"@id": "@type"}, (
+        "Slot with slot_uri=rdf:type should map to @type keyword (not slot name key)"
+    )
+
+    # Multivalued slots should follow the same container option as other slots.
+    expected_multi_type_field = {"@id": "@type"}
+    if fix_multivalue_containers:
+        expected_multi_type_field["@container"] = "@set"
+    assert ctx.get("multi_type_field") == expected_multi_type_field
+
+    # Verify no CURIE alias is used for these slots (use slot name instead)
+    assert "rdf:type" not in ctx, "Should not emit rdf:type as a context key"
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_slot_with_custom_uri_not_rdf_type(tmp_path, use_curies):
+    """A slot with custom slot_uri (not rdf:type) should NOT map to @type keyword.
+
+    This test verifies that the @type keyword is only used when slot_uri
+    is explicitly rdf:type, not for other URIs.
+    """
+    schema_file = tmp_path / "custom_slot_uri.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """            id: https://example.org/custom-uri-test
+            name: custom-uri-test
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/custom-uri-test/
+              custom: https://example.org/custom/
+            imports:
+              - linkml:types
+            default_prefix: ex
+            default_range: string
+            classes:
+              MyClass:
+                attributes:
+                  id:
+                    identifier: true
+                    range: uriorcurie
+
+                  type_designator:
+                    range: uriorcurie
+                    slot_uri: custom:myTypeSlot
+                    description: "Designator-like slot but with custom slot_uri"
+            """
+        )
+    )
+    generator = ContextGenerator(str(schema_file), mergeimports=True, use_curies=use_curies)
+    ctx = json.loads(generator.serialize())["@context"]
+
+    # Determine the expected key based on use_curies setting
+    if use_curies:
+        expected_key = "custom:myTypeSlot"
+    else:
+        expected_key = "type_designator"
+
+    # Slot with custom slot_uri (not rdf:type) should NOT map to @type keyword
+    entry = ctx.get(expected_key)
+    assert entry is not None, f"Expected key '{expected_key}' not found in context"
+    assert entry != {"@id": "@type"}, "Slot with custom slot_uri should NOT alias to @type keyword"
+
+    # It should map to its actual slot_uri instead
+    assert isinstance(entry, dict), f"Entry should be a dict, got {type(entry)}"
+    assert entry.get("@id") == "custom:myTypeSlot", (
+        f"Should use the actual slot_uri 'custom:myTypeSlot', got {entry.get('@id')}"
+    )
+    assert entry.get("@type") == "xsd:anyURI" or entry.get("@type") == "@id", (
+        f"IRI range should have appropriate @type, got {entry.get('@type')}"
+    )
