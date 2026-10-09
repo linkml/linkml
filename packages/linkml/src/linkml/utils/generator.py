@@ -477,6 +477,21 @@ class Generator(metaclass=abc.ABCMeta):
         """
         return True
 
+    def _add_class_uri_exact_mapping(self, cls: ClassDefinition) -> None:
+        """Add a class's URI as an exact mapping when it differs from its definition URI.
+
+        SchemaLoader deliberately leaves ``exact_mappings`` untouched. Generators
+        that serialize this relationship can opt in here without making loading
+        itself mutate the schema.
+        """
+        class_uri = cls.class_uri
+        expanded_class_uri = self.namespaces.uri_for(class_uri)
+        expanded_definition_uri = self.namespaces.uri_for(cls.definition_uri)
+        if expanded_class_uri != expanded_definition_uri and not any(
+            self.namespaces.uri_for(mapping) == expanded_class_uri for mapping in cls.exact_mappings
+        ):
+            cls.exact_mappings.append(class_uri)
+
     def end_class(self, cls: ClassDefinition) -> str | None:
         """Visited after visit_class_slots (if visit_class returned true)
 
