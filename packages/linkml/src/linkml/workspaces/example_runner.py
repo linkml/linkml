@@ -267,6 +267,17 @@ class ExampleRunner:
             for k, v in dict_obj.items():
                 if v is not None:
                     islot = sv.induced_slot(k, target_class)
+                    if islot.range is None and (islot.exactly_one_of or islot.any_of):
+                        candidate_ranges = sorted(
+                            {expr.range for expr in (*islot.exactly_one_of, *islot.any_of) if expr.range}
+                        )
+                        raise ValueError(
+                            f"Slot '{islot.name}' on class '{target_class}' has no range, only "
+                            f"exactly_one_of/any_of candidates {candidate_ranges}. To construct Python "
+                            "objects for this slot, declare an explicit `range:` on the slot pointing to "
+                            "a class with `class_uri: linkml:Any`, alongside exactly_one_of/any_of "
+                            "(see SchemaView.induced_slot_range strict mode)."
+                        )
                     # if slot is a dictionary, repeat key in dictionary value object
                     if islot.multivalued and islot.inlined and not islot.inlined_as_list:
                         (range_id_slot, range_simple_dict_value_slot, _) = get_range_associated_slots(
