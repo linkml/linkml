@@ -11,6 +11,7 @@ from jinja2 import Environment, Template
 from sqlalchemy import Enum
 
 from linkml._version import __version__
+from linkml.generators.common.naming import check_keyword_collisions, escape_python_keyword
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemy.sqlalchemy_declarative_2x_template import sqlalchemy_declarative_2x_template_str
@@ -25,6 +26,12 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
+
+
+def python_name(name: str) -> str:
+    """Return the Python attribute name for a slot. Spaces become underscores, and a name that is a Python
+    keyword gets a trailing underscore, so the slot ``in`` has the attribute ``in_``."""
+    return escape_python_keyword(underscore(name))
 
 
 class TemplateEnum(Enum):
@@ -66,6 +73,8 @@ class SQLAlchemyGenerator(Generator):
         **kwargs,
     ) -> str:
         template = template or self.template or TemplateEnum.IMPERATIVE
+        for cn in self.schemaview.all_classes():
+            check_keyword_collisions(cn, [underscore(sn) for sn in self.schemaview.class_slots(cn)])
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
@@ -122,6 +131,7 @@ class SQLAlchemyGenerator(Generator):
             is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
             python_type=lambda sql_repr: SQL_TYPE_TO_PYTHON_TYPE.get(sql_repr, "str"),
+            python_name=python_name,
         )
         logger.debug(f"# Generated code:\n{code}")
         return code
@@ -176,7 +186,12 @@ class SQLAlchemyGenerator(Generator):
     def add_safe_aliases(schema: SchemaDefinition) -> None:
         for c in schema.classes.values():
             for a in c.attributes.values():
-                a.alias = underscore(a.name)
+                a.alias = python_name(a.name)
+                if a.alias != underscore(a.name):
+                    # The attribute for a slot named after a Python keyword, such as from, is from_,
+                    # so the column needs its name set to keep the slot name
+                    ann = Annotation("column_name", underscore(a.name))
+                    a.annotations[ann.tag] = ann
 
     @staticmethod
     def skip(cls: ClassDefinition) -> bool:

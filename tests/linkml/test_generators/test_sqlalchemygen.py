@@ -151,6 +151,100 @@ def test_one_to_many_fk_references_mapped_class(template):
     assert parent.children[0] is child
 
 
+# Slots named after Python keywords: a plain column, a many-to-many, a multivalued scalar and a one-to-many
+_KEYWORD_SCHEMA = """id: https://example.org/keywords
+name: keywords
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Source:
+    attributes:
+      id:
+        identifier: true
+  Term:
+    attributes:
+      id:
+        identifier: true
+      from:
+        range: date
+      class:
+        multivalued: true
+      import:
+        range: Source
+        multivalued: true
+  Holder:
+    attributes:
+      id:
+        identifier: true
+      with:
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+"""
+
+
+@pytest.mark.parametrize("template", [TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X])
+def test_keyword_named_slots(template):
+    """A slot named after a Python keyword, such as from, has the attribute from_. Its column keeps the name from."""
+    from datetime import date
+
+    from sqlalchemy import inspect
+    from sqlalchemy.orm import clear_mappers
+
+    clear_mappers()
+    mod = SQLAlchemyGenerator(_KEYWORD_SCHEMA).compile_sqla(template=template)
+    engine = create_engine("sqlite://")
+    mod.Base.metadata.create_all(engine)
+    assert "from" in [c["name"] for c in inspect(engine).get_columns("Term")]
+    assert "class" in [c["name"] for c in inspect(engine).get_columns("Term_class")]
+
+    session = sessionmaker(bind=engine)()
+    term = mod.Term(id="t1", from_=date(2026, 1, 1), import_=[mod.Source(id="s1")])
+    term.class_ = ["a", "b"]
+    session.add(mod.Holder(id="h1", with_=[term]))
+    session.commit()
+
+    term = session.get(mod.Term, "t1")
+    assert term.from_ == date(2026, 1, 1)
+    assert sorted(term.class_) == ["a", "b"]
+    assert [s.id for s in term.import_] == ["s1"]
+    assert [t.id for t in session.get(mod.Holder, "h1").with_] == ["t1"]
+    session.close()
+
+
+def test_keyword_named_slots_imperative():
+    """In the imperative style, the attribute from_ of the Python class is stored in the column from."""
+    from sqlalchemy import text
+
+    engine = create_engine("sqlite://")
+    with engine.connect() as connection:
+        cur = connection.connection.cursor()
+        cur.executescript(SQLTableGenerator(_KEYWORD_SCHEMA).generate_ddl())
+    mod = SQLAlchemyGenerator(_KEYWORD_SCHEMA).compile_sqla(
+        template=TemplateEnum.IMPERATIVE, compile_python_dataclasses=True
+    )
+    session = sessionmaker(bind=engine)()
+    session.add(mod.Term(id="t1", from_="2026-01-01"))
+    session.commit()
+    session.close()
+
+    with engine.connect() as connection:
+        assert connection.execute(text('SELECT "from" FROM "Term"')).scalar_one() == "2026-01-01"
+    engine.dispose()
+
+
+def test_keyword_slot_collision():
+    """A class with the slots from and from_ fails to generate, because both would have the attribute from_."""
+    b = SchemaBuilder()
+    b.add_class("Window", slots=["from", "from_"])
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        SQLAlchemyGenerator(b.schema).generate_sqla()
+
+
 def test_sqla_compile_imperative(schema):
     """
     tests compilation of generated imperative mappings
