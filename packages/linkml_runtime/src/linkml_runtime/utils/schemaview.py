@@ -723,7 +723,7 @@ class SchemaView:
         """
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
-            for c in self.all_classes().values():
+            for c in self.all_classes(imports=imports).values():
                 for aname, a in c.attributes.items():
                     if aname not in slots:
                         slots[aname] = a
