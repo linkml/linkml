@@ -1271,8 +1271,8 @@ def test_inline_enums_preserves_slot_description(tmp_path, oas_version):
 def test_enum_without_values_is_a_string(tmp_path, oas_version):
     """Test that an enum listing no permissible values becomes a string schema.
 
-    PydanticGenerator renders such an enum as a plain ``str`` subclass, and pydantic
-    cannot generate JSON Schema for it. Both versions must emit ``type: string`` for the
+    The v3.1.0 path builds its schemas from PydanticGenerator models, so it needs a JSON
+    Schema for such an enum from them. Both versions must emit ``type: string`` for the
     enum and keep the ``$ref`` from each slot ranged to it.
     """
     schema_path = load_schema(SCHEMA_OPEN_ENUM)
