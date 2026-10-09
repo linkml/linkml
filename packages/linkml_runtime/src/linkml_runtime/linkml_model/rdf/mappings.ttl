@@ -168,13 +168,13 @@ linkml:mappings dcterms:license "https://creativecommons.org/publicdomain/zero/1
 	linkml:emit_prefixes "IAO" , "OIO" , "linkml" , "rdf" , "rdfs" , "skos" , "xsd" ;
 	linkml:id "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
 	linkml:imports "linkml:types"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:multivalued true ;
 	linkml:range linkml:uriorcurie ;
 	linkml:slot_uri "http://www.w3.org/2004/02/skos/core#mappingRelation"^^xsd:anyURI ;
 	linkml:slots linkml:broad_mappings , linkml:close_mappings , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:exact_mappings , linkml:mappings , linkml:narrow_mappings , linkml:related_mappings ;
 	linkml:source_file "mappings.yaml" ;
-	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
 	linkml:source_file_size 2753 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:narrow_mappings a linkml:SlotDefinition ;
