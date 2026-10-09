@@ -449,6 +449,41 @@ enums:
     )
 
 
+@pytest.mark.parametrize(
+    "enum",
+    [
+        "description: an open set of codes",
+        "reachable_from: {source_ontology: obo:envo, source_nodes: [ENVO:00000428]}",
+    ],
+    ids=["open", "dynamic"],
+)
+def test_enum_without_values_default_value(enum):
+    """An enum that lists no permissible values takes any ifabsent value as its default."""
+    schema = (
+        base_schema
+        + f"""
+      - name: jurisdiction
+        range: Jurisdiction
+        ifabsent: Jurisdiction(IE)
+
+enums:
+  Jurisdiction:
+    {enum}
+    """
+    )
+    schema_view = SchemaView(schema)
+
+    processor = PythonIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("jurisdiction")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        == "'IE'"
+    )
+
+
 @pytest.mark.parametrize("range", ["uri", "curie", "uriorcurie"])
 @pytest.mark.parametrize(
     "ifabsent,expected",
