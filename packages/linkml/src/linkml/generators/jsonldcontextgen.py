@@ -429,7 +429,12 @@ class ContextGenerator(Generator):
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
-            if self.use_curies:
+            if slot.identifier:
+                # Identifier slots map to the JSON-LD @id keyword. The context key
+                # must be the slot *name* (the term used in instance data), not a
+                # CURIE — even when --use-curies is enabled.
+                key = underscore(aliased_slot_name)
+            elif self.use_curies:
                 key = self._curie(slot)
             else:
                 key = underscore(aliased_slot_name)
@@ -480,7 +485,7 @@ class ContextGenerator(Generator):
             self._build_element_id(entry, global_slot.slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
-            if self.use_curies:
+            if self.use_curies and not global_slot.identifier:
                 scoped[self._curie(global_slot)] = entry
             else:
                 scoped[underscore(slot_name)] = entry

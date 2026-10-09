@@ -6,16 +6,16 @@
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix pav: <http://purl.org/pav/> .
 linkml:Annotatable a linkml:ClassDefinition ;
-	skos:exactMatch "linkml:Annotatable"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support annotations" ;
 	linkml:mixin true ;
 	linkml:slot_usage _:c14n0 ;
 	linkml:slots linkml:annotations .
 linkml:Annotation a linkml:ClassDefinition ;
-	skos:exactMatch "linkml:Annotation"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
 	linkml:is_a linkml:Extension ;
@@ -25,12 +25,13 @@ linkml:Annotation a linkml:ClassDefinition ;
 linkml:AnyValue a linkml:ClassDefinition ;
 	skos:exactMatch "linkml:Any"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:slot_usage _:c14n1 .
 linkml:Extensible a linkml:ClassDefinition ;
-	skos:exactMatch "linkml:Extensible"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support extension" ;
 	linkml:imported_from "linkml:extensions" ;
@@ -38,8 +39,8 @@ linkml:Extensible a linkml:ClassDefinition ;
 	linkml:slot_usage _:c14n5 ;
 	linkml:slots linkml:extensions .
 linkml:Extension a linkml:ClassDefinition ;
-	skos:exactMatch "linkml:Extension"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:description "a tag/value pair used to add non-model information to an entry" ;
 	linkml:imported_from "linkml:extensions" ;
@@ -62,14 +63,14 @@ linkml:annotations dcterms:license "https://creativecommons.org/publicdomain/zer
 	linkml:imports "linkml:extensions"^^xsd:anyURI , "linkml:types"^^xsd:anyURI ;
 	linkml:inlined true ;
 	linkml:is_a linkml:extensions ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:multivalued true ;
 	linkml:owner linkml:Annotation ;
 	linkml:range linkml:Annotation ;
 	linkml:slot_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
 	linkml:slots linkml:annotations , linkml:extension_tag , linkml:extension_value , linkml:extensions ;
 	linkml:source_file "annotations.yaml" ;
-	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
 	linkml:source_file_size 832 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:boolean a linkml:TypeDefinition ;
