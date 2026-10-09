@@ -94,6 +94,7 @@ CHAIN_UNREFERENCED_ID = "https://w3id.org/linkml/tests/chain_unreferenced"
 SHARED_ENUM_ID = "https://w3id.org/linkml/tests/shared_enum"
 ENDPOINT_ENUM_ID = "https://w3id.org/linkml/tests/endpoint_enum"
 ENUM_SLOT_DESCRIPTION_ID = "https://w3id.org/linkml/tests/enum_slot_description"
+OPEN_ENUM_ID = "https://w3id.org/linkml/tests/open_enum"
 UNREFERENCED_WITH_UNRELATED_ID = "https://w3id.org/linkml/tests/unreferenced_with_unrelated"
 WRONG_SCHEMA_ID = "https://w3id.org/linkml/tests/WRONG_SCHEMA_ID"
 FOO_ID = "https://example.org/foo"
@@ -330,6 +331,23 @@ SCHEMA_SHARED_ENUM = linkml_schema(
     """,
 )
 
+SCHEMA_OPEN_ENUM = linkml_schema(
+    "open_enum",
+    """
+    enums:
+      Jurisdiction:
+        description: an open set of codes, listing no permissible values
+    classes:
+      Foo:
+        attributes:
+          jurisdiction:
+            range: Jurisdiction
+          jurisdictions:
+            range: Jurisdiction
+            multivalued: true
+    """,
+)
+
 SCHEMA_CHAIN_UNREFERENCED = linkml_schema("chain_unreferenced", CHAIN_CLASSES)
 
 SCHEMA_UNREFERENCED_WITH_UNRELATED = linkml_schema("unreferenced_with_unrelated", CHAIN_CLASSES + UNRELATED_CLASS)
@@ -366,6 +384,22 @@ def template_enum_slot_description(oas_version: str = DEFAULT_OAS_VERSION) -> st
         "/foo",
         "Foo",
         schema_id=ENUM_SLOT_DESCRIPTION_ID,
+        source="Foo",
+        description="ok",
+        oas_version=oas_version,
+    )
+
+
+def template_open_enum(oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a template whose referenced class has slots ranged to an enum with no values.
+
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    return single_endpoint_template(
+        "Open Enum Test",
+        "/foo",
+        "Foo",
+        schema_id=OPEN_ENUM_ID,
         source="Foo",
         description="ok",
         oas_version=oas_version,
@@ -1232,6 +1266,24 @@ def test_inline_enums_preserves_slot_description(tmp_path, oas_version):
     color = spec["components"]["schemas"]["Foo"]["properties"]["color"]
     assert color["enum"] == ["FOO", "BAR"]
     assert color["description"] == "the color of foo"
+
+
+def test_enum_without_values_is_a_string(tmp_path, oas_version):
+    """Test that an enum listing no permissible values becomes a string schema.
+
+    PydanticGenerator renders such an enum as a plain ``str`` subclass, and pydantic
+    cannot generate JSON Schema for it. Both versions must emit ``type: string`` for the
+    enum and keep the ``$ref`` from each slot ranged to it.
+    """
+    schema_path = load_schema(SCHEMA_OPEN_ENUM)
+    head_path = write_template(tmp_path, template_open_enum(oas_version=oas_version))
+    spec = yaml.safe_load(OpenApiGenerator(schema_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    assert schemas["Jurisdiction"]["type"] == "string"
+    assert "enum" not in schemas["Jurisdiction"]
+    properties = schemas["Foo"]["properties"]
+    assert properties["jurisdiction"] == {"$ref": "#/components/schemas/Jurisdiction"}
+    assert properties["jurisdictions"]["items"] == {"$ref": "#/components/schemas/Jurisdiction"}
 
 
 def test_no_dangling_references_for_valid_schema(openapi_spec):
