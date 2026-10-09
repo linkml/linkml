@@ -219,6 +219,25 @@ class GolangGenerator(OOCodeGenerator):
     the same pointer rules as regular primitives.
     """
 
+    use_curies: bool = False
+    """
+    Use slot CURIEs as JSON struct tags instead of slot names.
+
+    When enabled, each non-identifier field's JSON tag is
+    ``SchemaView.get_curie(slot)`` -- the same resolution used by the JSON-LD
+    context generator and the JSON Schema generator under their ``--use-curies``
+    flags. Identifier fields retain their ordinary name/alias, matching those
+    generators' identifier-key behavior. A slot with a declared
+    ``slot_uri`` is compacted to its CURIE (e.g. ``demo:id``), and one without a
+    declared URI is synthesized as ``<default_prefix>:<name>`` (e.g. ``ex:name``)
+    and compacted.  This keeps generated Go JSON tags aligned with the property names emitted by
+    those generators for non-identifier slots in the same schema.
+
+    Only the JSON tag is affected; Go field identifiers remain valid
+    ``camelcase(slot_alias)`` names.  Off by default, so existing output is
+    unchanged.
+    """
+
     template_dir: str | Path | None = None
     """
     Override templates for each GolangTemplateModel.
@@ -450,7 +469,22 @@ class GolangGenerator(OOCodeGenerator):
         """
         slot_alias = slot.alias if slot.alias else slot.name
         go_name = camelcase(slot_alias)
-        json_name = underscore(slot_alias)
+
+        # JSON tag precedence:
+        # 1. slot CURIE when `use_curies` is enabled, resolved exactly as the
+        #    JSON-LD context and JSON Schema generators do (`get_curie`), so all
+        #    three agree on the key
+        # 2. parity fallback: preserve the original key if snake-casing changed it
+        # 3. default: snake_case of the slot alias (unchanged legacy behavior)
+        default_json_name = underscore(slot_alias)
+        if slot.identifier:
+            json_name = default_json_name
+        elif self.use_curies:
+            json_name = self.schemaview.get_curie(slot)
+        elif slot_alias != default_json_name:
+            json_name = slot_alias
+        else:
+            json_name = default_json_name
 
         go_type = self.generate_go_type(slot, cls)
 
@@ -737,6 +771,12 @@ _TEMPLATE_NAMES = [
     help="Generate named Go types for parent slots with is_a children for type safety.",
 )
 @click.option(
+    "--use-curies/--not-use-curies",
+    default=False,
+    show_default=True,
+    help="Use slot CURIEs as JSON struct tags, matching the JSON-LD and JSON Schema generators.",
+)
+@click.option(
     "--template-dir",
     type=click.Path(),
     help="""
@@ -763,6 +803,7 @@ def cli(
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
     named_slot_types: bool = False,
+    use_curies: bool = False,
     template_dir: str | None = None,
     **args,
 ):
@@ -810,6 +851,7 @@ def cli(
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
         named_slot_types=named_slot_types,
+        use_curies=use_curies,
         template_dir=template_dir,
         **args,
     )
