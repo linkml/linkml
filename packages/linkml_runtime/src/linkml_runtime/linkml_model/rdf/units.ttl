@@ -9,8 +9,8 @@
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix schema1: <http://schema.org/> .
 linkml:Annotatable a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Annotatable ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support annotations" ;
 	linkml:imported_from "linkml:annotations" ;
@@ -18,8 +18,8 @@ linkml:Annotatable a linkml:ClassDefinition ;
 	linkml:slot_usage _:c14n3 ;
 	linkml:slots linkml:annotations .
 linkml:Annotation a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Annotation ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
 	linkml:imported_from "linkml:annotations" ;
@@ -30,12 +30,13 @@ linkml:Annotation a linkml:ClassDefinition ;
 linkml:AnyValue a linkml:ClassDefinition ;
 	skos:exactMatch linkml:Any ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:slot_usage _:c14n4 .
 linkml:Extensible a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Extensible ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support extension" ;
 	linkml:imported_from "linkml:extensions" ;
@@ -43,8 +44,8 @@ linkml:Extensible a linkml:ClassDefinition ;
 	linkml:slot_usage _:c14n10 ;
 	linkml:slots linkml:extensions .
 linkml:Extension a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Extension ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:description "a tag/value pair used to add non-model information to an entry" ;
 	linkml:imported_from "linkml:extensions" ;
@@ -54,6 +55,7 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
 	skos:exactMatch qudt:Unit ;
 	skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
 	linkml:any_of _:c14n0 , _:c14n1 , _:c14n5 , _:c14n7 ;
+	linkml:class_uri "http://qudt.org/schema/qudt/Unit"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure"^^xsd:anyURI ;
 	linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
 	linkml:slot_usage _:c14n2 ;
@@ -456,10 +458,10 @@ linkml:units dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/
 	linkml:emit_prefixes "IAO" , "OIO" , "linkml" , "rdf" , "rdfs" , "skos" , "xsd" ;
 	linkml:id "https://w3id.org/linkml/units"^^xsd:anyURI ;
 	linkml:imports "linkml:annotations"^^xsd:anyURI , "linkml:extensions"^^xsd:anyURI , "linkml:mappings"^^xsd:anyURI , "linkml:types"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:slots linkml:UnitOfMeasure_exact_mappings , linkml:abbreviation , linkml:annotations , linkml:broad_mappings , linkml:close_mappings , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:derivation , linkml:descriptive_name , linkml:exact_mappings , linkml:extension_tag , linkml:extension_value , linkml:extensions , linkml:has_quantity_kind , linkml:iec61360code , linkml:mappings , linkml:narrow_mappings , linkml:related_mappings , linkml:symbol , linkml:ucum_code , linkml:unit ;
 	linkml:source_file "units.yaml" ;
-	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
 	linkml:source_file_size 2847 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:uri dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
