@@ -779,8 +779,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            if schema_type.base:
-                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            # Types without an explicit base have no more specific JSON Schema
+            # representation available, so treat them like other unknown bases.
+            base = schema_type.base.lower() if schema_type.base else ""
+            (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():

@@ -1837,3 +1837,33 @@ def test_identifier_property_keeps_slot_name(tmp_path, use_curies):
 
     instance = {"id": "ex:thing1", name_key: "x"}
     jsonschema.validate(instance, {**generated, "$ref": f"#/$defs/{'ex:MyClass' if use_curies else 'MyClass'}"})
+
+
+def test_type_without_base_defaults_to_string(tmp_path):
+    """A LinkML type without a base still gets a concrete JSON Schema type."""
+    schema = """
+id: https://example.org/no-base-type
+name: no-base-type
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/no-base-type/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+types:
+  custom_type:
+    uri: ex:CustomType
+slots:
+  value:
+    range: custom_type
+classes:
+  MyClass:
+    slots: [value]
+"""
+    schema_file = tmp_path / "no_base_type.yaml"
+    schema_file.write_text(schema)
+
+    generated = json.loads(JsonSchemaGenerator(str(schema_file)).serialize())
+
+    assert generated["$defs"]["MyClass"]["properties"]["value"]["type"] == ["string", "null"]
