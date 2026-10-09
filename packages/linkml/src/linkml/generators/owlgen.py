@@ -1224,7 +1224,7 @@ class OwlSchemaGenerator(Generator):
                         parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
                     else:
                         has_parent = True
-                    self.graph.add((enum_uri, RDFS.subClassOf, parent))
+                    self.graph.add((pv_node, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
                     self._declare_grouping_class(URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name)
