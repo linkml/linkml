@@ -53,7 +53,7 @@ from rdflib import (
 from .types import Nodeidentifier, String
 from linkml_runtime.utils.metamodelcore import NodeIdentifier
 
-metamodel_version = "1.11.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces
