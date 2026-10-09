@@ -184,6 +184,10 @@ class SQLTableGenerator(Generator):
             ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
+        if engine.dialect.name == "mssql":
+            # SQL Server comment DDL (sp_addextendedproperty) needs a schema, but a mock engine never
+            # connects to look up the default one, so use the dialect's default ("dbo")
+            engine.dialect.default_schema_name = engine.dialect.schema_name
         schema_metadata = MetaData()
         # Forward importmap/base_dir; ``self.schema`` may still be a path with
         # URI-style imports resolved via ``--importmap``, which a bare
