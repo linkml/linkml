@@ -1454,3 +1454,227 @@ def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
             "cargo test failed, likely due to a missing Rust toolchain:\n"
             f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
         )
+
+
+_KEYWORD_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/keywords
+    name: rustgen_keywords
+    prefixes:
+      linkml: https://w3id.org/linkml/
+    imports:
+      - linkml:types
+    default_range: string
+    classes:
+      Root:
+        tree_root: true
+        attributes:
+          windows:
+            range: Window
+            multivalued: true
+            inlined: true
+            inlined_as_list: false
+          events:
+            range: Event
+            multivalued: true
+            inlined: true
+            inlined_as_list: true
+      Window:
+        attributes:
+          in:
+            key: true
+          fn:
+          match:
+          type:
+          from:
+          class:
+      Event:
+        attributes:
+          type:
+            designates_type: true
+          name:
+      Meeting:
+        is_a: Event
+    """
+)
+
+
+def test_rustgen_keyword_slots_roundtrip(temp_dir):
+    """Slots named after Rust or Python keywords, such as ``in`` and ``from``, compile and keep their names in
+    serde data.
+
+    Each of these slots has a field with a trailing underscore, such as ``in_``. The data still uses the slot
+    name, including the key of an inlined dictionary and the type designator.
+    """
+    schema_path = Path(temp_dir) / "rustgen_keywords.yaml"
+    schema_path.write_text(_KEYWORD_SCHEMA, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "keywords_crate"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    RustGenerator(str(schema_path), mode="crate", pyo3=False, serde=True, output=str(out_dir)).serialize(force=True)
+
+    generated_rs = (out_dir / "src" / "lib.rs").read_text(encoding="utf-8")
+    assert "pub in_: String" in generated_rs
+    assert 'serde(rename = "in")' in generated_rs
+    assert "pub from_: Option<String>" in generated_rs
+    assert 'serde(rename = "from")' in generated_rs
+    assert 'serde(tag = "type")' in generated_rs
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_ident = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE).group(1).replace("-", "_")
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "keywords.rs").write_text(
+        (
+            "#[test]\n"
+            "fn keyword_slots_keep_their_names() {\n"
+            f"    use {crate_ident}::{{EventOrSubtype, Root}};\n"
+            '    let yaml = concat!("windows:\\n  w1:\\n    fn: f\\n    type: t\\n    from: a\\n    class: c\\n",\n'
+            '        "events:\\n  - type: Meeting\\n    name: m\\n");\n'
+            '    let root: Root = serde_yml::from_str(yaml).expect("decode");\n'
+            '    let window = root.windows.as_ref().and_then(|w| w.get("w1")).expect("w1 entry");\n'
+            '    assert_eq!(window.in_, "w1");\n'
+            '    assert_eq!(window.fn_.as_deref(), Some("f"));\n'
+            '    assert_eq!(window.type_.as_deref(), Some("t"));\n'
+            '    assert_eq!(window.from_.as_deref(), Some("a"));\n'
+            '    assert_eq!(window.class_.as_deref(), Some("c"));\n'
+            "    assert!(matches!(root.events.as_deref(), Some([EventOrSubtype::Meeting(_)])));\n"
+            '    let out = serde_yml::to_string(&root).expect("encode");\n'
+            '    assert!(out.contains("fn: f") && out.contains("type: t") && out.contains("from: a"), "{out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "keywords"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        pytest.fail(f"cargo test failed for keyword schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n")
+
+
+def test_rustgen_python_keyword_slots_stub(temp_dir):
+    """The Python stub for slots named after Python keywords, such as ``from`` and ``class``, is valid Python.
+
+    The Python bindings use the field names, so these slots have the fields ``from_`` and ``class_``.
+    """
+    schema_path = Path(temp_dir) / "rustgen_keywords.yaml"
+    schema_path.write_text(_KEYWORD_SCHEMA, encoding="utf-8")
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "keywords_stubgen")
+
+    _run_stubgen_binary(out_dir, context="keyword schema stub generation")
+
+    stubs = [stub.read_text(encoding="utf-8") for stub in out_dir.rglob("*.pyi")]
+    assert stubs, "stub_gen did not write any .pyi files"
+    for stub in stubs:
+        ast.parse(stub)
+    assert any("def from_(self)" in stub and "def class_(self)" in stub for stub in stubs)
+
+
+@pytest.mark.parametrize(
+    "name,classes",
+    [
+        ("in", {"Window": {"attributes": {"in": None, "in_": None}}}),
+        ("in", {"Window": {"attributes": {"in": None}}, "Door": {"attributes": {"in_": None}}}),
+        ("from", {"Window": {"attributes": {"from": None, "from_": None}}}),
+    ],
+    ids=["rust-keyword", "different-classes", "python-keyword"],
+)
+def test_rustgen_keyword_slot_collision(name, classes):
+    """A schema cannot have both a slot named after a keyword, such as ``in``, and a slot ``in_``.
+
+    Every slot also gets a type alias named after it, so the two slots collide even in different classes.
+    """
+    schema = {
+        "id": "https://example.org/rustgen/collision",
+        "name": "rustgen_collision",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "default_range": "string",
+        "classes": classes,
+    }
+    with pytest.raises(ValueError, match=f"Slots '{name}' and '{name}_' would both be named '{name}_' in Rust"):
+        RustGenerator(yaml.safe_dump(schema, sort_keys=False), mode="file").render()
+
+
+def test_rustgen_crate_creates_output_dir(temp_dir):
+    """Crate mode creates a missing output directory, and still refuses to overwrite one that is not empty."""
+    out_dir = Path(temp_dir) / "new" / "crate"
+    RustGenerator(_KEYWORD_SCHEMA, mode="crate", output=str(out_dir)).serialize()
+    assert (out_dir / "Cargo.toml").exists()
+
+    with pytest.raises(FileExistsError):
+        RustGenerator(_KEYWORD_SCHEMA, mode="crate", output=str(out_dir)).serialize()
+
+
+_SERDE_OFF_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/serde_off
+    name: rustgen_serde_off
+    prefixes:
+      linkml: https://w3id.org/linkml/
+    imports:
+      - linkml:types
+    default_range: string
+    enums:
+      Relation:
+        permissible_values:
+          SIBLING_OF:
+    classes:
+      Event:
+        attributes:
+          category:
+            designates_type: true
+          relation:
+            range: Relation
+      Meeting:
+        is_a: Event
+    """
+)
+
+
+def test_rustgen_serde_attributes_without_serde_flag(temp_dir):
+    """A crate generated without ``serde`` compiles without the feature and keeps the schema text with it.
+
+    The variants of a type designator enum used to have a ``serde`` attribute outside ``cfg_attr``, so the
+    crate did not compile without the feature. An enum value used to have no ``serde(rename)``, so a crate
+    built with the feature wrote the Rust variant name instead of the schema text.
+    """
+    schema_path = Path(temp_dir) / "rustgen_serde_off.yaml"
+    schema_path.write_text(_SERDE_OFF_SCHEMA, encoding="utf-8")
+    out_dir = Path(temp_dir) / "serde_off_crate"
+    out_dir.mkdir()
+    RustGenerator(str(schema_path), mode="crate", pyo3=False, serde=False, output=str(out_dir)).serialize()
+
+    result = _cargo_check(out_dir)
+    assert result.returncode == 0, f"cargo check failed without serde.\nstderr:\n{result.stderr}\n"
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_ident = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE).group(1).replace("-", "_")
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "serde_off.rs").write_text(
+        (
+            "#[test]\n"
+            "fn enum_value_keeps_its_text() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let yaml = "category: Meeting\\nrelation: SIBLING_OF\\n";\n'
+            '    let event: EventOrSubtype = serde_yml::from_str(yaml).expect("decode");\n'
+            '    let out = serde_yml::to_string(&event).expect("encode");\n'
+            '    assert!(out.contains("relation: SIBLING_OF"), "{out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "serde_off"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, (
+        f"cargo test failed with serde.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+    )

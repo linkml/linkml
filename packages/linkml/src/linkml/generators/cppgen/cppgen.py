@@ -78,6 +78,39 @@ TYPE_DEFAULTS: dict[str, str] = {
     "bool": "false",
 }
 
+# C++ keywords "not available for re-definition or overloading. As an exception, they
+# are not considered reserved in attributes (excluding attribute argument lists)".
+# https://en.cppreference.com/w/cpp/keyword
+CPP_KEYWORDS = frozenset(
+    {
+        "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break",
+        "case", "catch", "char", "char8_t", "char16_t", "char32_t", "class", "compl", "concept",
+        "const", "consteval", "constexpr", "constinit", "const_cast", "continue", "co_await",
+        "co_return", "co_yield", "decltype", "default", "delete", "do", "double", "dynamic_cast",
+        "else", "enum", "explicit", "export", "extern", "false", "float", "for", "friend", "goto",
+        "if", "inline", "int", "long", "mutable", "namespace", "new", "noexcept", "not", "not_eq",
+        "nullptr", "operator", "or", "or_eq", "private", "protected", "public", "register",
+        "reinterpret_cast", "requires", "return", "short", "signed", "sizeof", "static",
+        "static_assert", "static_cast", "struct", "switch", "template", "this", "thread_local",
+        "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned", "using",
+        "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq",
+    }
+)  # fmt: skip
+
+
+def _field_name(name: str) -> str:
+    """Convert a slot name to a C++ field name, adding a trailing underscore to a C++ keyword.
+
+    Examples:
+
+        >>> _field_name("start date")
+        'start_date'
+        >>> _field_name("class")
+        'class_'
+    """
+    name = underscore(name)
+    return f"{name}_" if name in CPP_KEYWORDS else name
+
 
 def _to_upper_snake(name: str) -> str:
     """Convert a name to UPPER_SNAKE_CASE.
@@ -250,7 +283,7 @@ class CppGenerator(OOCodeGenerator):
             FieldResult containing the generated field.
         """
         slot_alias = slot.alias if slot.alias else slot.name
-        field_name = underscore(slot_alias)
+        field_name = _field_name(slot_alias)
         cpp_type = self.generate_cpp_type(slot, cls)
 
         # Determine default value
@@ -341,7 +374,19 @@ class CppGenerator(OOCodeGenerator):
                 field_results.append(field_result)
                 result = result.merge(field_result)
 
-            fields = {fr.field.name: fr.field for fr in field_results}
+            # A slot named after a C++ keyword, such as class, has the field class_, so it cannot share a
+            # struct with a slot that is already named class_.
+            fields = {}
+            schema_names = {}
+            for fr in field_results:
+                schema_name = underscore(fr.source.alias or fr.source.name)
+                other = schema_names.setdefault(fr.field.name, schema_name)
+                if other != schema_name:
+                    raise ValueError(
+                        f"Class {cls.name}: slots {other!r} and {schema_name!r} "
+                        f"would both be the C++ field {fr.field.name!r}"
+                    )
+                fields[fr.field.name] = fr.field
             result.struct.fields = fields if fields else None
 
         return result
