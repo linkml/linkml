@@ -2357,6 +2357,31 @@ class SchemaView:
 
         return modifying_classes
 
+    @lru_cache(None)
+    def get_elements_by_subset(self, subset_name: SUBSET_NAME, imports: bool = True) -> list[Element]:
+        """Get all elements that declare membership of a given subset.
+
+        An element is a member when its own ``in_subset`` lists the subset. Classes come
+        first, then slots (attributes included), enums, types and subsets, each in the
+        order the ``all_*`` methods give. Membership asserted only in a class's
+        ``slot_usage``, or on a permissible value, belongs to that class or enum rather
+        than to a schema element, so it is not returned.
+
+        :param subset_name: name of the subset
+        :param imports: include imports closure
+        :return: list of member elements
+        """
+        members = []
+        for elements in (
+            self.all_classes(imports=imports),
+            self.all_slots(imports=imports),
+            self.all_enums(imports=imports),
+            self.all_types(imports=imports),
+            self.all_subsets(imports=imports),
+        ):
+            members.extend(e for e in elements.values() if subset_name in e.in_subset)
+        return members
+
     def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool | None:
         """Return true if slot or its range is has a percent_encoded annotation.
 
