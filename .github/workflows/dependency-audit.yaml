@@ -109,10 +109,21 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Step 1: Run uv audit to check for vulnerabilities (CVEs)
+      # Fails a PR that *adds* a vulnerable version, however new the advisory.
+      # Diff-based, so advisories against what main already has don't block it.
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v5.0.0
+
+      # Advisories against what main already has are Dependabot's to fix (alert,
+      # then a grouped security PR), so ones newer than the grace period are
+      # ignored here rather than racing it. One still unfixed after that means
+      # Dependabot didn't come through, and this fails. Alerts have lagged
+      # advisories by 4-9 days, hence 14 rather than 7. Releases audit with no
+      # grace (pypi-publish.yaml).
       - name: Audit lockfile for CVEs
         if: steps.deps.outputs.changed == 'true'
-        run: uv audit
+        run: python3 .github/scripts/uv_audit_with_grace.py 14
 
       # Step 2: Run a sync. If a package contains known malware,
       # the OSV-lookup triggers an immediate, non-zero failure exit.

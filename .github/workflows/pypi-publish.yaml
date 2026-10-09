@@ -27,6 +27,14 @@ jobs:
       with:
         version: ${{ env.UV_VERSION }}
 
+    # Release-blocking: nothing ships with a known advisory. Unlike the per-PR
+    # audit there is no grace period -- if Dependabot hasn't fixed one yet, bump
+    # it before releasing.
+    - name: Audit lockfile for CVEs
+      env:
+        UV_PREVIEW: "1"
+      run: uv audit
+
     - name: Build source and wheel archives
       run: |
         uv build --all-packages
