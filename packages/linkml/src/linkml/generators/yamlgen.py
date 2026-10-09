@@ -30,6 +30,8 @@ class YAMLGenerator(Generator):
         if validateonly:
             return self.synopsis.summary()
         else:
+            for cls in self.schema.classes.values():
+                self._add_class_uri_exact_mapping(cls)
             return as_yaml(self.schema)
 
 
