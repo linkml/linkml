@@ -163,6 +163,21 @@ class OpenApiGenerator(Generator):
                 if "x-linkml-source" not in schema:
                     raise KeyError(f"Template data schema '{name}' is missing required 'x-linkml-source'")
 
+    @staticmethod
+    def _schema_refs(schema: dict | list | None) -> set[str]:
+        """Return the component schema names a schema object refers to, at any depth.
+
+        A list endpoint wraps its resource as ``type: array`` with the ``$ref`` under
+        ``items``; a polymorphic one puts it under ``oneOf``, ``anyOf`` or ``allOf``.
+        Those references seed generation like a top-level ``$ref`` does. References
+        into other component sections (parameters, responses, ...) are not schemas
+        and are left out.
+        """
+        prefix = "#/components/schemas/"
+        if not schema:
+            return set()
+        return {ref.removeprefix(prefix) for ref in OpenApiGenerator._collect_refs(schema) if ref.startswith(prefix)}
+
     def _find_referenced_schemas(self) -> set[str]:
         """Return the set of resource names referenced by the template's endpoints."""
         result = set()
@@ -170,9 +185,7 @@ class OpenApiGenerator(Generator):
             for req_spec in endp_spec.values():
                 if "requestBody" in req_spec and "content" in req_spec["requestBody"]:
                     for content_spec in req_spec["requestBody"]["content"].values():
-                        if "$ref" in content_spec["schema"]:
-                            resource_name = content_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
-                            result.add(resource_name)
+                        result |= self._schema_refs(content_spec.get("schema"))
                 if "parameters" in req_spec:
                     for param_spec in req_spec["parameters"]:
                         # a $ref parameter directly references a reusable parameter object
@@ -180,16 +193,12 @@ class OpenApiGenerator(Generator):
                         # reference a component schema on its own
                         if "$ref" in param_spec:
                             continue
-                        if param_spec.get("schema", {}).get("$ref"):
-                            resource_name = param_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
-                            result.add(resource_name)
+                        result |= self._schema_refs(param_spec.get("schema"))
                 if "responses" in req_spec:
                     for response in req_spec["responses"].values():
                         if "content" in response:
                             for content_spec in response["content"].values():
-                                if "$ref" in content_spec["schema"]:
-                                    resource_name = content_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
-                                    result.add(resource_name)
+                                result |= self._schema_refs(content_spec.get("schema"))
         return result
 
     def _generate_type_schema(self, type_name: str) -> dict:
