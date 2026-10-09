@@ -159,7 +159,7 @@ linkml:types dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/
 	linkml:description "Shared type definitions for the core LinkML mode and metamodel" ;
 	linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
 	linkml:id "https://w3id.org/linkml/types"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:source_file "types.yaml" ;
 	linkml:source_file_date "2000-01-01T00:00:00"^^xsd:dateTime ;
 	linkml:source_file_size 1 ;

@@ -11,7 +11,7 @@ from jinja2 import Template
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
-from linkml.utils.generator import read_generator_config, shared_arguments
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
@@ -160,14 +160,14 @@ class TemplateCache:
     """
 
     def __init__(self):
-        self.template_files: dict[str, Path] = {}
+        self.files: dict[str, Path] = {}
         self.templates: dict[Path, Template] = {}
 
     def add_directory(self, template_dir: Path) -> None:
         """Adds all templates in the specified directory to the cache."""
 
-        for template in template_dir.glob("*.jinja2"):
-            self.template_files[template.stem] = template
+        for file in [f for f in template_dir.iterdir() if not f.is_dir()]:
+            self.files[file.name] = file
 
     def force_template(self, template_file: Path) -> None:
         """Sets the template to systematically use for all objects.
@@ -177,7 +177,7 @@ class TemplateCache:
         contents of the templates directory.
         """
 
-        self.template_files["__FORCE__"] = template_file
+        self.files["__FORCE__"] = template_file
 
     def get_template(self, name: str, fallback: str = "class", variant: str | None = None) -> Template | None:
         """Finds the template for a given object.
@@ -192,18 +192,9 @@ class TemplateCache:
 
         candidate: Path | None = None
 
-        candidate = self.template_files.get("__FORCE__")
-
-        if candidate is None and variant is not None:
-            candidate = self.template_files.get(name + "-" + variant)
-            if candidate is None:
-                candidate = self.template_files.get(fallback + "-" + variant)
-
+        candidate = self.files.get("__FORCE__")
         if candidate is None:
-            candidate = self.template_files.get(name)
-        if candidate is None:
-            candidate = self.template_files.get(fallback)
-
+            candidate = self._get_file(name, fallback=fallback, variant=variant, suffix=".jinja2")
         if candidate is None:
             return None
 
@@ -211,6 +202,45 @@ class TemplateCache:
             with candidate.open("r") as f:
                 self.templates[candidate] = Template(f.read())
         return self.templates[candidate]
+
+    def get_file(self, name, variant: str | None = None) -> Path | None:
+        """Finds a (non-template) file.
+
+        :param name: The basename of the file to find.
+        :param variant: The name of an optional template variant.
+        :return: The requested file, or None if there is no corresponding file
+            in any of the template directories.
+        """
+        f = Path(name)
+        return self._get_file(f.stem, variant=variant, suffix=f.suffix)
+
+    def _get_file(
+        self, name: str, fallback: str | None = None, variant: str | None = None, suffix: str = ""
+    ) -> Path | None:
+        """Shared logic for the get_template and get_file methods.
+
+        :param name: The basename of the file to find.
+        :param fallback: Another file to look up for if the specified file
+            cannot be found.
+        :param variant: The name of an optional template variant.
+        :param suffix: The suffix of the file to look for (e.g. `.jinja2` for
+            a template file).
+        :return: The path to the requested file, or None if the file (or the
+            fallback) could not be found.
+        """
+        candidate: Path | None = None
+
+        if variant is not None:
+            candidate = self.files.get(name + "-" + variant + suffix)
+            if candidate is None and fallback is not None:
+                candidate = self.files.get(fallback + "-" + variant + suffix)
+
+        if candidate is None:
+            candidate = self.files.get(name + suffix)
+        if candidate is None and fallback is not None:
+            candidate = self.files.get(fallback + suffix)
+
+        return candidate
 
 
 def _find_root_schemas(schema_directory: Path, importmap: str | Mapping[str, str] | None = None) -> list[Path]:
@@ -254,11 +284,13 @@ class JavaGenerator(OOCodeGenerator):
     generatorversion = "0.0.1"
     valid_formats = ["java"]
     file_extension = "java"
+    config_section_name = "java"
 
     # ObjectVars
     template_file: str | None = None
     template_dir: Path | None = None
     template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
+    custom_type_map: dict[str, str] = field(default_factory=lambda: dict())
 
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
@@ -296,13 +328,30 @@ class JavaGenerator(OOCodeGenerator):
         return name
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
-        if t.uri:
+        typ: str | None = None
+
+        # For looking up in the custom type map, we try with the
+        # "native" URI first, and then the "declared" URI. This is
+        # because declared URIs may not be enough to unambiguously
+        # distinguish between types (for example, both linkml:uri and
+        # linkml:uriorcurie have the same declared URI xsd:anyURI;
+        # likewise, linkml:string, linkml:curie, and linkml:ncname all
+        # share the same declared URI xsd:string).
+        uri = self.schemaview.get_uri(t, expand=True, native=True)
+        typ = self.custom_type_map.get(uri)
+        if typ is None:
+            # Try again with the declared URI
+            uri = self.schemaview.get_uri(t, expand=True, native=False)
+            typ = self.custom_type_map.get(uri)
+        if typ is None and t.uri:
+            # Fallback to the static map
+            typ = TYPEMAP.get(t.uri)
+        if typ:
             # We use "boxed" types (Boolean, Integer, Double, Float) by
             # default because we need to represent the case where a
             # value has not explicitly been set. But that requirement no
             # longer holds when required == true, so in that case we can
             # use primitive types (boolean, int, double, float) instead.
-            typ = TYPEMAP.get(t.uri)
             if required and (typ == "Boolean" or typ == "Double" or typ == "Float"):
                 typ = typ.lower()
             elif required and typ == "Integer":
@@ -312,6 +361,39 @@ class JavaGenerator(OOCodeGenerator):
             return self.map_type(self.schemaview.get_type(t.typeof))
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
+
+    def get_custom_type_uri(self, name: str) -> str | None:
+        """Gets the URI of a custom-mapped type.
+
+        :param name: The name of a LinkML element.
+        :return: If the given name is the name of a LinkML type for which a
+            custom mapping to a Java type exists, this returns the URI of the
+            type. Otherwise this returns None.
+        """
+        if name in self.schemaview.all_types():
+            # Same logic as for map_type: we query using the native URI
+            # first, then fallback to the declared URI
+            uri = self.schemaview.get_uri(name, expand=True, native=True)
+            if uri in self.custom_type_map:
+                return uri
+            uri = self.schemaview.get_uri(name, expand=True, native=False)
+            if uri in self.custom_type_map:
+                return uri
+        return None
+
+    def _read_custom_type_map(self, variant: str | None = None) -> None:
+        """Parses the variant-specific type map, if present."""
+        self.custom_type_map.clear()
+        mapfile = self.template_cache.get_file("_types.map", variant=variant)
+        if mapfile is not None and mapfile.exists():
+            with mapfile.open("r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("#"):
+                        continue
+                    items = line.split()
+                    if len(items) == 2:
+                        self.custom_type_map[items[0]] = items[1]
 
     def render(
         self,
@@ -340,6 +422,7 @@ class JavaGenerator(OOCodeGenerator):
         :return: A :class:`JavaBundle` whose ``files`` maps each output filename
             (e.g. ``"Address.java"``) to its rendered source.
         """
+        self._read_custom_type_map(variant=template_variant)
         oodocs = self.create_documents()
         # Create additional documents for additional templates and visitors
         if extra_templates:
@@ -518,8 +601,9 @@ class JavaGenerator(OOCodeGenerator):
     "--config-file",
     "-C",
     type=click.File("rb"),
-    help="Path to a gen-project-style YAML config file setting "
-    "'generator_args: {java: {package: ...}}'. An explicit --package always takes "
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {java: {package: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
     "precedence over the config file.",
 )
 @click.option(
@@ -530,6 +614,7 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--template-variant", help="Use the specified template variant")
 @click.option(
     "--template-file",
+    type=click.Path(exists=True, dir_okay=False),
     help="""Optional jinja2 template to use for class generation
             (takes precedence over --template-dir)""",
 )
@@ -545,10 +630,11 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--use-aliases/--no-use-aliases", default=False, help="Use aliases when available to name fields")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
+@click.pass_context
 def cli(
+    ctx,
     yamlfile,
     output_directory=None,
-    package=None,
     config_file=None,
     template_dir=None,
     template_variant=None,
@@ -564,9 +650,20 @@ def cli(
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
-    if package is None:
-        package = read_generator_config(config_file, "java").get("package")
-    JavaGenerator.validate_generator_args({"package": package})
+    # --package now consumed from **args so config overlay can fill, and it reaches the generator
+    config = read_generator_config(config_file, JavaGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    JavaGenerator.validate_generator_args(args)
+    # rebind named locals so overlaid config values are honored and never collide with **args below
+    output_directory = args.pop("output_directory", output_directory)
+    template_dir = args.pop("template_dir", template_dir)
+    template_variant = args.pop("template_variant", template_variant)
+    template_file = args.pop("template_file", template_file)
+    generate_records = args.pop("generate_records", generate_records)
+    true_enums = args.pop("true_enums", true_enums)
+    use_aliases = args.pop("use_aliases", use_aliases)
+    extra_template = args.pop("extra_template", extra_template)
+    visitor = args.pop("visitor", visitor)
     if generate_records:
         template_variant = "records"
     if template_file is not None:
@@ -585,6 +682,7 @@ def cli(
         args["metadata"] = head
 
     if yamlfile.is_dir():
+        args.pop("package", None)  # inferred per schema from the directory layout
         # Generate code for all root schemas under the specified directory,
         # inferring the package name from the directory hierarchy
         schemas: list[tuple[Path, Path, str]] = []
@@ -618,7 +716,6 @@ def cli(
     # its own traceback rather than being caught and mistaken for one.
     generator = JavaGenerator(
         yamlfile,
-        package=package,
         template_dir=template_dir,
         template_file=template_file,
         true_enums=true_enums,

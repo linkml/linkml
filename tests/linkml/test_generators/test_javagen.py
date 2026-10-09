@@ -5,7 +5,14 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.javagen import JavaBundle, JavaGenerator, _find_root_schemas, cli
+from linkml.generators.javagen import (
+    DEFAULT_TEMPLATE_DIR,
+    JavaBundle,
+    JavaGenerator,
+    TemplateCache,
+    _find_root_schemas,
+    cli,
+)
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -188,6 +195,8 @@ def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
     gen = JavaGenerator(input_path("personinfo.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "NamedThing.java", "private String id")
+    # Also check for the TypeURI annotation
+    assert_file_contains(tmp_path / "NamedThing.java", '@TypeURI("https://w3id.org/linkml/Uriorcurie")')
 
 
 def test_refined_slots(input_path, tmp_path):
@@ -474,10 +483,87 @@ def test_cli_config_file_malformed_section_errors(tmp_path, config_yaml, where):
     assert f"expected a YAML mapping at {where}" in result.output
 
 
+def test_cli_config_file_sets_a_repeatable_option(tmp_path):
+    """A repeatable option (`--visitor`) accepts a YAML scalar as a one-element list.
+    Treated as a bare string it would be iterated per character, generating a visitor
+    per letter instead of the one that was asked for."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n    visitor: Thing\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (out_dir / "IThingVisitor.java").exists()
+    assert [p.name for p in out_dir.glob("I*Visitor.java")] == ["IThingVisitor.java"]
+
+
+def test_cli_config_file_typed_option_is_converted(tmp_path):
+    """A config value for a `click.Path` option arrives as a Path, like it would from the
+    command line; as a raw str it reaches the generator and fails on the first Path call."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    template_dir = tmp_path / "templates"
+    template_dir.mkdir()
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text(f"generator_args:\n  java:\n    package: org.example\n    template_dir: {template_dir}\n")
+    out_dir = tmp_path / "out"
+
+    result = CliRunner().invoke(
+        cli,
+        ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example")
+
+
+@pytest.mark.parametrize("via_config", [False, True])
+def test_cli_missing_template_file_is_a_usage_error(tmp_path, via_config):
+    """A --template-file that doesn't exist is reported like a missing --template-dir: a
+    usage error naming the option, not a FileNotFoundError traceback. A config-file value
+    goes through the same click type, so it is checked the same way."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    missing = tmp_path / "missing.jinja2"
+    if via_config:
+        config_path = tmp_path / "myconfig.yaml"
+        config_path.write_text(f"generator_args:\n  java:\n    template_file: {missing}\n")
+        extra = ["--config-file", str(config_path)]
+    else:
+        extra = ["--template-file", str(missing)]
+
+    result = CliRunner().invoke(cli, [*extra, "--output-directory", str(tmp_path / "out"), str(schema_path)])
+
+    assert result.exit_code == 2
+    assert "--template-file" in result.output
+    assert "does not exist" in result.output
+
+
+def test_cli_config_file_unknown_key_is_warned_not_injected(tmp_path, caplog):
+    """A key click never exposes (`version`, from --version) is a config typo: warn and
+    skip it, rather than passing a kwarg the generator's __init__ would reject."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    config_path = tmp_path / "myconfig.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n    version: '1.2'\n")
+    out_dir = tmp_path / "out"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        result = CliRunner().invoke(
+            cli,
+            ["--config-file", str(config_path), "--output-directory", str(out_dir), str(schema_path)],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert any("version" in rec.getMessage() for rec in caplog.records)
+
+
 def test_cli_config_file_real_project_config_shape(tmp_path):
     """gen-java's --config-file accepts a full, real-world gen-project config.yaml
-    (other generators' sections, excludes/includes, etc.) and only reads
-    generator_args.java.package out of it, ignoring the rest."""
+    (other generators' sections, excludes/includes, etc.), reading only its own
+    generator_args.java section and ignoring the other generators'."""
     schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
@@ -563,3 +649,69 @@ def test_calling_on_directory_abort_on_invalid_package(input_path, tmp_path):
     )
     assert result.exit_code != 0, result.output
     assert not output_directory.exists()
+
+
+def test_lookup_template_specific_files():
+    """TemplateCache allows to find requested files."""
+    tc = TemplateCache()
+    tc.add_directory(DEFAULT_TEMPLATE_DIR)
+
+    # Looking up a standard template
+    std_class_template = tc.get_template("class")
+    assert std_class_template is not None
+
+    # Looking up a class template for a unknown variant should yield
+    # the standard template
+    unknown_var_class_template = tc.get_template("class", variant="no.such.variant")
+    assert unknown_var_class_template == std_class_template
+
+    # Looking up a template for a specific class should yield the
+    # default class template if there is no class-specific template
+    foo_class_template = tc.get_template("foo")
+    assert foo_class_template == std_class_template
+
+    # Looking up the standard class template for an existing variant,
+    # should return that template instead of the standard template
+    incenp_class_template = tc.get_template("class", variant="org.incenp.linkml")
+    assert incenp_class_template is not None
+    assert incenp_class_template != std_class_template
+
+    # Looking up a template for a specific class for a variant,
+    # should return the default class template for that variant
+    foo_class_template = tc.get_template("foo", variant="org.incenp.linkml")
+    assert foo_class_template == incenp_class_template
+
+    # Looking up a template-specific non-template file
+    incenp_typemap = tc.get_file("_types.map", variant="org.incenp.linkml")
+    assert incenp_typemap is not None
+
+
+def test_custom_type_lookup(input_path):
+    """The generator can map LinkML types to template-specficif Java types."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    # We are not interested in the rendered output for this test, we just need
+    # to trigger reading the (possibly template-specific) type map.
+    gen.render()
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "URI"
+
+    # Again, but using a specific template
+    gen.render(template_variant="org.incenp.linkml")
+    assert gen.map_type(gen.schemaview.get_type("uriorcurie")) == "String"
+
+
+def test_get_custom_type_uri(input_path):
+    """get_custom_type_uri returns the URI for a custom-mapped type."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+
+    # Standard template with no custom map, all queries should
+    # return None
+    gen.render()
+    assert gen.get_custom_type_uri("uriorcurie") is None
+    assert gen.get_custom_type_uri("CrossReference") is None
+
+    # Again but with a template that does have a custom map
+    gen.render(template_variant="org.incenp.linkml")
+    # uriorcurie is mapped through its native URI
+    assert gen.get_custom_type_uri("uriorcurie") == "https://w3id.org/linkml/Uriorcurie"
+    # CrossReference is not mapped
+    assert gen.get_custom_type_uri("CrossReference") is None
