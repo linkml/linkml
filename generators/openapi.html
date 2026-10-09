@@ -502,6 +502,37 @@ template name.</p>
 <p>The generated spec will use <code class="docutils literal notranslate"><span class="pre">PersonResource</span></code> rather than <code class="docutils literal notranslate"><span class="pre">Person</span></code>
 throughout <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> and all <code class="docutils literal notranslate"><span class="pre">$ref</span></code> values.</p>
 </section>
+<section id="template-annotations">
+<h2>Template Annotations<a class="headerlink" href="#template-annotations" title="Link to this heading">¶</a></h2>
+<p>A template placeholder is normally read only for <code class="docutils literal notranslate"><span class="pre">x-linkml-schema</span></code> and
+<code class="docutils literal notranslate"><span class="pre">x-linkml-source</span></code>; the schema body is generated from the LinkML element.
+A placeholder may additionally declare annotations, which override the
+generated values for that resource:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">example</span></code>, <code class="docutils literal notranslate"><span class="pre">externalDocs</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code></p></li>
+<li><p>any <code class="docutils literal notranslate"><span class="pre">x-</span></code> vendor extension (<code class="docutils literal notranslate"><span class="pre">x-linkml-*</span></code> keys are never published)</p></li>
+</ul>
+<p>The LinkML-derived value is the default; a key the template declares
+explicitly wins. Structural keys such as <code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">properties</span></code> and
+<code class="docutils literal notranslate"><span class="pre">enum</span></code> are never taken from the template: placeholders conventionally
+carry <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">object</span></code> even for LinkML types and enums, which generate as
+<code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">string</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schemas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">PersonResource</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A person, as exposed by this API.</span>
+<span class="w">      </span><span class="nt">deprecated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">x-linkml-schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/my_schema</span>
+<span class="w">      </span><span class="nt">x-linkml-source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
+</pre></div>
+</div>
+<p>Overrides are applied by template name, so they also reach renamed
+resources (see Name Rewiring above). A placeholder whose schema is pruned
+is ignored. Annotations must have the type OpenAPI requires (for example
+<code class="docutils literal notranslate"><span class="pre">deprecated</span></code> must be a boolean); a wrongly typed value fails template
+validation before generation starts.</p>
+</section>
 <section id="json-schema-transformations">
 <h2>JSON Schema Transformations<a class="headerlink" href="#json-schema-transformations" title="Link to this heading">¶</a></h2>
 <p>The generator applies several compatibility transforms to the JSON Schema
@@ -513,7 +544,7 @@ not support <code class="docutils literal notranslate"><span class="pre">const</
 rewritten as <code class="docutils literal notranslate"><span class="pre">anyOf</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">$ref</span></code> paths are rewritten from <code class="docutils literal notranslate"><span class="pre">#/$defs/</span></code> to <code class="docutils literal notranslate"><span class="pre">#/components/schemas/</span></code>.</p></li>
 <li><p>Class-level <code class="docutils literal notranslate"><span class="pre">title</span></code> fields (redundant with the schema key) are
-stripped.</p></li>
+stripped, unless the template declares a <code class="docutils literal notranslate"><span class="pre">title</span></code> for that resource.</p></li>
 </ul>
 <p>Only classes transitively reachable from the endpoints are included in the
 output — unreferenced schemas are pruned automatically.</p>
@@ -771,6 +802,7 @@ attribute <cite>openapi</cite>.</p>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#openapi-validation">OpenAPI Validation</a></li>
 <li><a class="reference internal" href="#name-rewiring">Name Rewiring</a></li>
+<li><a class="reference internal" href="#template-annotations">Template Annotations</a></li>
 <li><a class="reference internal" href="#json-schema-transformations">JSON Schema Transformations</a></li>
 <li><a class="reference internal" href="#advanced-usage">Advanced Usage</a><ul>
 <li><a class="reference internal" href="#keeping-unreferenced-openapi-schemas">Keeping Unreferenced OpenAPI Schemas</a></li>

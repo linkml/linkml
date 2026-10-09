@@ -409,6 +409,7 @@
           <h1>Source code for linkml.generators.openapigen</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Generate OpenAPI YAML files.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -480,6 +481,24 @@
 <span class="s2">      x-linkml-schema: </span><span class="si">{linkml_schema_id}</span>
 <span class="s2">      x-linkml-source: </span><span class="si">{data_schema}</span>
 <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># OpenAPI Schema Object keys a template placeholder is allowed to override.</span>
+<span class="c1">#</span>
+<span class="c1"># Various annotations can describe a schema without constraining it, so an override can</span>
+<span class="c1"># change what a reader sees but never alter structural aspects of the schema, and never affect</span>
+<span class="c1"># whether a payload is accepted. So any JSON body the generated schema accepted before</span>
+<span class="c1"># an override is still accepted after it, and a body it rejected is still rejected.</span>
+<span class="c1">#</span>
+<span class="c1"># Structural keys (`type`, `properties`, `enum`, `required`, ...) are deliberately left</span>
+<span class="c1"># out. Every placeholder is written `type: object` by convention, but LinkML enums and</span>
+<span class="c1"># types generate as `type: string` -- allowing `type` through would corrupt the output</span>
+<span class="c1"># document, still valid OpenAPI, but clients would fail on it.</span>
+<span class="n">OVERRIDABLE_SCHEMA_KEYS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;example&quot;</span><span class="p">,</span> <span class="s2">&quot;externalDocs&quot;</span><span class="p">,</span> <span class="s2">&quot;deprecated&quot;</span><span class="p">})</span>
+
+<span class="c1"># Prefix of the keys that map a template placeholder onto its LinkML element</span>
+<span class="c1"># (`x-linkml-schema`, `x-linkml-source`, and any future `x-linkml-*` key). They are</span>
+<span class="c1"># meaningless to an API consumer, so they are stripped rather than published.</span>
+<span class="n">LINKML_BOOKKEEPING_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;x-linkml-&quot;</span>
 
 
 <div class="viewcode-block" id="OpenApiGenerator">
@@ -860,6 +879,31 @@
 
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_replace_refs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data_schemas</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">enum_schemas</span><span class="p">}</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_template_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elem_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">openapi_schemas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overlay template-declared annotations onto the generated schemas, in place.</span>
+
+<span class="sd">        The LinkML-derived value is the default; where a template placeholder explicitly</span>
+<span class="sd">        declares an annotation key, that value takes precedence. Only the keys in</span>
+<span class="sd">        :data:`OVERRIDABLE_SCHEMA_KEYS` and ``x-`` vendor extensions are overlaid, so a</span>
+<span class="sd">        placeholder can annotate a resource but never alter its generated structure.</span>
+
+<span class="sd">        Both mappings are keyed by OpenAPI name, so this must run after</span>
+<span class="sd">        :meth:`_sanitize_schemas` has applied any OpenAPI&lt;-&gt;LinkML renames. Template</span>
+<span class="sd">        entries whose schema was pruned are simply absent from ``elem_schemas`` and are</span>
+<span class="sd">        skipped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">elem_schema</span> <span class="ow">in</span> <span class="n">elem_schemas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">template_schema</span> <span class="o">=</span> <span class="n">openapi_schemas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">template_schema</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">template_schema</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">LINKML_BOOKKEEPING_PREFIX</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">OVERRIDABLE_SCHEMA_KEYS</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;x-&quot;</span><span class="p">):</span>
+                    <span class="c1"># copy: a template may share one value between placeholders via a</span>
+                    <span class="c1"># YAML anchor, and yaml.dump would re-emit a shared object as an anchor</span>
+                    <span class="n">elem_schema</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_schemas_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the 0-indexed line number of the ``schemas`` key under ``components``.&quot;&quot;&quot;</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">template_text</span><span class="p">)</span>
@@ -1015,6 +1059,9 @@
 
         <span class="c1"># sanitize schemas not transitively reachable from any endpoint-referenced schema</span>
         <span class="n">sanitized_data_schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_schemas</span><span class="p">(</span><span class="n">name_map</span><span class="p">,</span> <span class="n">all_req_schemas</span><span class="p">,</span> <span class="n">req_linkml_names</span><span class="p">)</span>
+
+        <span class="c1"># template-declared annotations override the LinkML-derived ones, where given</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_template_overrides</span><span class="p">(</span><span class="n">sanitized_data_schemas</span><span class="p">,</span> <span class="n">openapi_schemas</span><span class="p">)</span>
 
         <span class="c1"># instantiate the real OpenAPI YAML replacing the schema placeholders</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">template_text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
