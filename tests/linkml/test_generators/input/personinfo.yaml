@@ -111,6 +111,8 @@ classes:
   NewsEvent:
     is_a: Event
     attributes:
+      id:
+        identifier: true
       headline:
 
   HasNewsEvents:
