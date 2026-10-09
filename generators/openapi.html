@@ -436,7 +436,10 @@ file that defines the API metadata (title, version, servers), paths
 the OpenAPI specification in its top-level attribute <cite>openapi</cite>.</p></li>
 <li><p>The generator fills the <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section with JSON Schema
 definitions generated from the LinkML schema, keeping only those classes
-that are transitively reachable from the endpoints.</p></li>
+that are transitively reachable from the endpoints.
+A reference counts wherever it sits in an endpoint’s schema object, so a
+list endpoint (<code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">array</span></code> with the <code class="docutils literal notranslate"><span class="pre">$ref</span></code> under <code class="docutils literal notranslate"><span class="pre">items</span></code>) and a
+polymorphic one (<code class="docutils literal notranslate"><span class="pre">oneOf</span></code>, <code class="docutils literal notranslate"><span class="pre">anyOf</span></code>, <code class="docutils literal notranslate"><span class="pre">allOf</span></code>) seed generation too.</p></li>
 </ol>
 <p>Both the input template and the final output are automatically validated
 against the corresponding OpenAPI specification version using
