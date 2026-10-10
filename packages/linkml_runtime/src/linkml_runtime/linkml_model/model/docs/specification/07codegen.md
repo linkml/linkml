@@ -42,6 +42,7 @@ Current implementations:
 | Pydantic      | One file per schema |
 | Java          | One file per class  |
 | Typescript    | One file per schema |
+| Scala         | One file per class  |
 
 ### Imports
 
@@ -75,6 +76,7 @@ Current implementations:
 | Pydantic      | underscore      |
 | Java          | CamelCase       |
 | Typescript    | CamelCase       |
+| Scala         | CamelCase       |
 
 ## Mapping of LinkML Classes
 
@@ -87,6 +89,7 @@ appropriate targets for LinkML classes. For example:
 * Scala has traits and sealed traits
 * Rust has structs, traits, and enums
 * Typescript has classes and interfaces
+* Scala has final case classes and abstract classes or traits
 
 The choice should reflect whatever is most idiomatic for the target language.
 The generation MAY allow for different mappings, controlled by either user configuration,
@@ -130,6 +133,7 @@ Current implementations:
 | Pydantic      | none (planned)  |
 | Java          | none (planned)  |
 | Typescript    | none            |
+| Scala         | none            |
 
 ### Inheritance
 

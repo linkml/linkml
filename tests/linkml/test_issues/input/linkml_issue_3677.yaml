@@ -1,0 +1,34 @@
+id: https://example.org/slot-uri-on-attribute
+name: slot-uri-on-attribute
+description: >-
+  This schema illustrates the case of a local, class-specific attribute
+  being assigned a slot_uri.
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+
+  PrefixDeclaration:
+    description: >-
+      A prefix declaration in a prefix map.
+    attributes:
+      name:
+        description: The prefix's name.
+        slot_uri: "http://www.w3.org/ns/shacl#prefix"
+      prefix:
+        description: The associated IRI prefix.
+        range: uri
+        slot_uri: "http://www.w3.org/ns/shacl#namespace"
+
+  AnotherClass:
+    description: >-
+      This class has a local attribute also named `name`.
+    attributes:
+      name:
+        description: >-
+          The mere presence of this attribute confuses the object code
+          generator when it has to produce the URI for the `name`
+          attribute in the `PrefixDeclaration` class.

@@ -488,7 +488,7 @@ Each `c` in *m<sup>D</sup>*`.classes` must conform to the rules below:
 - `c` may have parent ClassDefinitions defined via `c.is_a` and `c.mixins`
     - the value of `c.is_a` must be a ClassDefinitionReference
     - the value of `c.mixins` must be a collection of ClassDefinitonReferences
-   - For any parent `p` of `c`, if `p.mixin` is True, then `c.mixin` SHOULD be True
+    - for any direct `is_a` parent `p` of `c`, if `p.mixin` is True, then `c.mixin` SHOULD be True
 - `c` includes additional rules in `c.rules` and `c.classificiation_rules`
 - `c` may have any number of additional slot-value assignments consistent with the validation rules provided here with the metamodel `MM`
 
@@ -505,7 +505,7 @@ Each `s` in *m<sup>D</sup>*`.slots` must conform to the rules below:
 - `s` may have parent SlotDefinitions defined via `s.is_a` and `s.mixins`
     - the value of `s.is_a` must be a **SlotDefinitionReference**
     - the value of `s.mixins` must be a collection of **SlotDefinitionReference**s
-    - For any parent `p` of `s`, if `p.mixin` is True, then `s.mixin` SHOULD be True
+    - for any direct `is_a` parent `p` of `s`, if `p.mixin` is True, then `s.mixin` SHOULD be True
 - `s` may have any number of additional slot-value assignments consistent with the validation rules provided here with the metamodel `MM`
 
 ### TypeDefinition Structural Conformance Rules

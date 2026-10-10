@@ -1,3 +1,4 @@
+import difflib
 import os
 import re
 import shutil
@@ -12,13 +13,13 @@ from pathlib import Path
 import docker
 import pytest
 import requests_cache
-from _pytest.assertion.util import _diff_text
 
 import tests
 from linkml.utils.deprecation import EMITTED
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
+from tests.offline_network import install as install_offline_network
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
@@ -101,11 +102,12 @@ class SnapshotFile(Snapshot):
         else:
             is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
-                # TODO: probably better to use something other than this pytest
-                # private method. See https://docs.python.org/3/library/difflib.html
-                # highlighter is a no-op function for pytest 8.4+ compatibility
                 self.eq_state = "\n".join(
-                    _diff_text(actual, expected, lambda x, **kwargs: x, verbose=self.config.getoption("verbose"))
+                    line.rstrip("\r\n")
+                    for line in difflib.ndiff(
+                        expected.splitlines(keepends=True),
+                        normalize_line_endings(actual).splitlines(keepends=True),
+                    )
                 )
             return is_eq
 
@@ -244,7 +246,16 @@ def pytest_addoption(parser):
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
-    parser.addoption("--with-network", action="store_true", help="include tests marked network")
+    parser.addoption(
+        "--with-network",
+        action="store_true",
+        help="run tests marked network against the live network instead of local stubs",
+    )
+    parser.addoption(
+        "--with-upstream",
+        action="store_true",
+        help="include tests marked upstream, which check the real outside world (weekly workflow)",
+    )
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
@@ -276,11 +287,15 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("rustgen"):
                 item.add_marker(skip_rustgen)
 
-    if not config.getoption("--with-network"):
-        skip_network = pytest.mark.skip(reason="need --with-network option to run")
+    # Tests marked `network` are NOT skipped: they always run, served from local
+    # stubs by default and live under --with-network. Only `upstream` tests --
+    # whose assertions are about the real outside world -- are gated, because
+    # running them against stubs would be vacuous.
+    if not config.getoption("--with-upstream"):
+        skip_upstream = pytest.mark.skip(reason="need --with-upstream option to run")
         for item in items:
-            if item.get_closest_marker("network"):
-                item.add_marker(skip_network)
+            if item.get_closest_marker("upstream"):
+                item.add_marker(skip_upstream)
 
     # Group compliance tests on a single xdist worker - they share
     # mutable module-level caches in helper.py that are not safe to split.
@@ -344,6 +359,32 @@ def pytest_runtest_setup(item):
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+@pytest.fixture(autouse=True)
+def network_guard(request):
+    """Enforce the network rules; see :mod:`tests.offline_network` for the design.
+
+    - ``upstream``-marked tests run live; they only run at all under
+      ``--with-upstream`` (enforced at collection time).
+    - ``network``-marked tests are served from local stubs, or run live under
+      ``--with-network``.
+    - Everything else must not touch the network, at any layer.
+    """
+    if request.node.get_closest_marker("upstream"):
+        yield
+        return
+    if request.node.get_closest_marker("network"):
+        if request.config.getoption("--with-network"):
+            yield
+            return
+        uninstall = install_offline_network("stub")
+    else:
+        uninstall = install_offline_network("block")
+    try:
+        yield
+    finally:
+        uninstall()
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -9,7 +9,7 @@
     {%- if field.default_value is not none -%}default={{ field.default_value }}, {% endif -%}
     {%- if field.minimum_value() is not none -%}ge={{ field.minimum_value() }}, {% endif -%}
     {%- if field.maximum_value() is not none -%}le={{ field.maximum_value() }}, {% endif -%}
-    {%- if field.pattern() is not none -%}str_matches=r"{{ field.pattern() }}", {% endif -%}
+    {%- if field.pattern() is not none -%}str_contains=r"{{ field.pattern() }}", {% endif -%}
     {%- if (field.required() is none or field.required() is false) and field.identifier() is not true -%}nullable=True, {% endif -%}
 {%- endmacro -%}
 

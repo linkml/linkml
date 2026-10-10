@@ -6,6 +6,7 @@ import pytest
 from hbreader import FileInfo
 
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from tests.linkml_runtime.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
@@ -37,6 +38,129 @@ def context_server():
 
 def test_yaml_loader():
     loader_test("obo_sample.yaml", Package, yaml_loader)
+
+
+# Minimal schema used to exercise ``source_file`` assignment. Small enough to inline both as a
+# file and as a string, so the file/string branches can be compared directly.
+_SOURCE_FILE_SCHEMA = (
+    "id: https://example.org/source_file_test\n"
+    "name: source_file_test\n"
+    "prefixes:\n"
+    "  linkml: https://w3id.org/linkml/\n"
+    "default_range: string\n"
+)
+
+
+def test_yaml_loader_sets_source_file_for_path(tmp_path):
+    """When a schema is loaded from a file, its ``source_file`` attribute is set to that path.
+
+    This is relied on for resolving relative ``imports`` against the schema's location.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    # str path
+    schema = yaml_loader.load(str(schema_path), target_class=SchemaDefinition)
+    assert schema.source_file == str(schema_path)
+
+    # Path object (parent annotation allows Path; loader coerces os.PathLike)
+    schema_from_path = yaml_loader.load(schema_path, target_class=SchemaDefinition)
+    assert schema_from_path.source_file == str(schema_path)
+
+
+def test_yaml_loader_preserves_relative_source_file_path(tmp_path, monkeypatch):
+    """A schema loaded via a relative path (no base_dir) must keep relative path as
+    ``source_file``, not receive machine-absolute prefix from hbread."""
+    monkeypatch.chdir(tmp_path)
+    schema_dir = tmp_path / "schemas"
+    schema_dir.mkdir()
+    (schema_dir / "schema.yaml").write_text(_SOURCE_FILE_SCHEMA)
+
+    rel_path = "schemas/schema.yaml"
+    schema = yaml_loader.load(rel_path, target_class=SchemaDefinition)
+    assert schema.source_file == rel_path
+
+
+def test_yaml_loader_absolutizes_source_file_when_base_dir_given(tmp_path):
+    """When base_dir is supplied the loader resolves the filename against it, so
+    ``source_file`` must be the resulting absolute path, not the bare filename."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    schema = yaml_loader.load("schema.yaml", target_class=SchemaDefinition, base_dir=str(tmp_path))
+    assert schema.source_file == str(schema_path)
+
+
+def test_yaml_loader_sets_source_file_for_url(tmp_path):
+    """A URL source records the resolved URL, and stays splittable by ``os.path.dirname``.
+
+    ``SchemaView.load_import`` derives ``base_dir`` that way, so a mangled URL breaks imports.
+    A ``file://`` URL exercises the real hbread URL path without a network dependency.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+    url = schema_path.as_uri()
+
+    schema = yaml_loader.load(url, target_class=SchemaDefinition)
+    assert schema.source_file == url
+    assert os.path.dirname(schema.source_file) == schema_path.parent.as_uri()
+
+
+def test_yaml_loader_sets_source_file_for_open_file_handle(tmp_path):
+    """An open file handle records the path behind it (hbread reads the handle's ``.name``)."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    with open(schema_path) as fh:
+        schema = yaml_loader.load(fh, target_class=SchemaDefinition)
+    assert schema.source_file == str(schema_path)
+
+
+def test_yaml_loader_leaves_source_file_unset_for_string():
+    """Loading inline schema text leaves ``source_file`` unset (no path to record)."""
+    schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition)
+    assert schema.source_file is None
+
+
+def test_yaml_loader_records_caller_supplied_name_for_string():
+    """Inline text with a caller-supplied ``source_file`` name records that name — never the
+    document itself. ``source`` is a str here too, so a bare isinstance check would stamp the
+    entire YAML text into ``source_file``."""
+    metadata = FileInfo()
+    metadata.source_file = "supplied-name.yaml"
+    schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition, metadata=metadata)
+    assert schema.source_file == "supplied-name.yaml"
+
+
+def test_yaml_loader_overwrites_stale_source_file_in_schema(tmp_path):
+    """The loader-resolved path must win over any ``source_file`` value baked into the
+    YAML file itself.  The metamodel marks the slot ``readonly: supplied by the schema
+    loader``; a stale embedded value (e.g. written by a previous --metadata run) must
+    not silently redirect import resolution or linkml-lint --fix output."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA + "source_file: stale/original.yaml\n")
+
+    schema = yaml_loader.load(str(schema_path), target_class=SchemaDefinition)
+    assert schema.source_file == str(schema_path)
+
+
+def test_yaml_loader_does_not_inject_source_file_into_non_schema_class(tmp_path):
+    """Non-SchemaDefinition classes with a ``source_file`` attribute must not have the loader
+    path injected.  This guards against behaviour that would silently stamp an absolute path
+    onto arbitrary pydantic models or YAMLRoot subclasses."""
+
+    class _ModelWithSourceFile(YAMLRoot):
+        source_file: Optional[str] = None
+
+        def __init__(self, source_file: Optional[str] = None, **kwargs):
+            super().__init__(**kwargs)
+            self.source_file = source_file
+
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("source_file: null\n")
+
+    obj = yaml_loader.load(str(data_path), target_class=_ModelWithSourceFile)
+    assert obj.source_file is None, "YAMLLoader must not set source_file on non-SchemaDefinition objects"
 
 
 def test_json_loader_path():

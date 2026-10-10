@@ -1,35 +1,33 @@
 """
 Tests the generic generator framework
-
-Note: I am skipping any test that overrides ClassVars
-
-As part of this refactor:
-https://github.com/linkml/linkml/pull/924
-
-We are separating class vars and object vars; it is not possible to override ClassVars; see
-
-https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
-
-If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
-
 """
 
 import logging
 import os
+import re
 from dataclasses import dataclass, field
-from io import StringIO
-from typing import TextIO, cast
+from io import BytesIO, StringIO
+from pathlib import Path
+from typing import cast
 
+import click
 import pytest
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.generator import Generator
+from linkml.generators.shaclgen import ShaclGenerator
+from linkml.utils.generator import (
+    Generator,
+    apply_config_defaults,
+    config_mapping,
+    parse_config_yaml,
+    read_generator_config,
+)
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     Element,
     ElementName,
-    SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
     SubsetDefinition,
@@ -49,28 +47,9 @@ class GeneratorTest(Generator):
 
     logstream: StringIO = field(default_factory=lambda: StringIO())
 
-    def __xxxinit__(
-        self,
-        schema: str | TextIO | SchemaDefinition,
-        fmt: str = "txt",
-        metadata: bool = False,
-    ) -> None:
+    def __post_init__(self) -> None:
         self.visited = []
         self.visit_class_return = True
-        # self.visit_all_class_slots: bool = True
-        # self.visits_are_sorted: bool = False
-        # self.sort_class_slots: bool = False
-
-        self.logstream = StringIO()
-        logging.basicConfig()
-        logger = logging.getLogger(self.__class__.__name__)
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-        logger.addHandler(logging.StreamHandler(self.logstream))
-        logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, metadata, logger=logger)
-
-    def __post_init__(self) -> None:
         self.logstream = StringIO()
         logging.basicConfig()
         logger = logging.getLogger(self.__class__.__name__)
@@ -110,6 +89,11 @@ class GeneratorTest(Generator):
 
     def visit_subset(self, subset: SubsetDefinition) -> None:
         self.visited.append(f"subset: {subset.name}")
+
+
+@dataclass
+class SchemaViewGeneratorTest(GeneratorTest):
+    uses_schemaloader = False
 
 
 # visit_all_class_slots = True, visits_are_sorted = False, sort_class_slots = False
@@ -375,7 +359,6 @@ expected5 = [
 ]
 
 
-@pytest.mark.skip("See above")
 def test_visitors(input_path):
     """Test the generator visitor functions"""
     gen = GeneratorTest(str(input_path("generator1.yaml")))
@@ -423,6 +406,85 @@ prefixes:
 
     with pytest.raises(ValueError):
         GeneratorTest(model + "\n\ndefault_prefix: CCCC")
+
+
+def test_schema_view_prefix_namespaces(tmp_path):
+    """SchemaView prefix objects are unwrapped when namespaces are initialized."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """id: https://example.org/test
+name: test
+prefixes:
+  ex: https://example.org/test/
+default_prefix: ex
+classes:
+  Foo:
+"""
+    )
+
+    generator = SchemaViewGeneratorTest(schema_path)
+
+    assert str(generator.namespaces["ex"]) == "https://example.org/test/"
+
+
+def test_namespaces_constructor_kwarg():
+    """The ``namespaces=`` constructor kwarg is accepted for backward compat.
+
+    ``namespaces`` is exposed as a property backed by ``_namespaces``.  Renaming
+    the backing field must not drop the public ``namespaces=`` kwarg that worked
+    before the SchemaLoader/SchemaView split.
+
+    - On the SchemaLoader path the kwarg is accepted (no ``TypeError``) and the
+      map is (re)populated from the resolved schema, as on ``main``.
+    - On the SchemaView path an injected map is honored verbatim.
+    """
+    from linkml_runtime.utils.namespaces import Namespaces
+
+    model = """
+id: http://example.org/test/t1
+name: t1
+default_range: string
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: xsd
+"""
+
+    # SchemaLoader path: kwarg must be accepted (previously raised TypeError).
+    injected = Namespaces()
+    injected["ex"] = "http://example.org/injected/"
+    gen = GeneratorTest(model, namespaces=injected)
+    assert gen.namespaces is not None
+    assert "xsd" in gen.namespaces
+
+    # Omitting the kwarg still yields a populated map on the SchemaLoader path.
+    gen_default = GeneratorTest(model)
+    assert gen_default.namespaces is not None
+    assert "xsd" in gen_default.namespaces
+
+
+def test_namespaces_constructor_kwarg_injection_schemaview(tmp_path):
+    """On the SchemaView path an injected ``namespaces=`` map is honored."""
+    from linkml_runtime.utils.namespaces import Namespaces
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """id: https://example.org/test
+name: test
+prefixes:
+  ex: https://example.org/test/
+default_prefix: ex
+classes:
+  Foo:
+"""
+    )
+
+    injected = Namespaces()
+    injected["custom"] = "http://example.org/custom/"
+    generator = SchemaViewGeneratorTest(schema_path, namespaces=injected)
+
+    with pytest.warns(UserWarning, match="self.namespaces.*SchemaLoader-era"):
+        namespaces = generator.namespaces
+    assert namespaces["custom"] == "http://example.org/custom/"
 
 
 def test_duplicate_names():
@@ -511,7 +573,6 @@ classes:
     assert gen.formatted_element_name(cast(Element, gen)) is None
 
 
-@pytest.mark.skip(reason="See above")
 def test_own_slots(input_path):
     """Test the generator own_slots and all_slots helper functions"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -562,7 +623,6 @@ def test_own_slots(input_path):
     ]
 
 
-@pytest.mark.skip(reason="See above")
 def test_slot_class_paths(input_path):
     """Test for aliased slot name, class identifier path and slot type path"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -726,3 +786,326 @@ def test_meta_neighborhood():
     #                            slotrefs={'is_a', 'apply_to', 'mixins', 'owner'},
     #                            typerefs={'boolean', 'datetime', 'uri', 'string', 'uriorcurie', 'ncname'},
     #                            subsetrefs=set()), neighbor_refs)
+
+
+CONFIG_YAML = b"""
+generator_args:
+  java:
+    package: org.example.model
+    mergeimports: true
+  golang:
+    package: mypackage
+"""
+
+
+@pytest.mark.parametrize(
+    ("generator_name", "expected"),
+    [
+        ("java", {"package": "org.example.model", "mergeimports": True}),
+        ("golang", {"package": "mypackage"}),
+    ],
+)
+def test_read_generator_config_returns_whole_section(generator_name, expected):
+    """Each generator gets its own section out of one shared config file, and gets all of
+    it in a single read - the file is a stream, so a second read would find nothing."""
+    assert read_generator_config(BytesIO(CONFIG_YAML), generator_name) == expected
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "generator_name"),
+    [
+        pytest.param(None, "java", id="no-config-file"),
+        pytest.param(b"", "java", id="empty-file"),
+        pytest.param(CONFIG_YAML, "rust", id="generator-absent"),
+        pytest.param(b"generator_args:\n  java:\n", "java", id="empty-section"),
+        pytest.param(b"generator_args:\n", "java", id="empty-generator-args"),
+        pytest.param(b"excludes:\n  - markdown\n", "java", id="no-generator-args"),
+    ],
+)
+def test_read_generator_config_absent_section_is_empty(config_yaml, generator_name):
+    """A section that is absent, or written but left empty, gives an empty dict."""
+    config_file = None if config_yaml is None else BytesIO(config_yaml)
+
+    assert read_generator_config(config_file, generator_name) == {}
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "where"),
+    [
+        pytest.param(b"- 1\n- 2\n", "the top level", id="top-level-list"),
+        pytest.param(b"justastring\n", "the top level", id="top-level-scalar"),
+        pytest.param(b"generator_args: notamapping\n", "'generator_args'", id="scalar-generator-args"),
+        pytest.param(b"generator_args:\n  java: notamapping\n", "'generator_args.java'", id="scalar-section"),
+    ],
+)
+def test_read_generator_config_rejects_malformed_section(config_yaml, where):
+    """A scalar where a mapping belongs is a usage error naming the offending key -
+    never silently ignored, which would leave the generator on its default."""
+    with pytest.raises(click.UsageError, match=f"expected a YAML mapping at {re.escape(where)}"):
+        read_generator_config(BytesIO(config_yaml), "java")
+
+
+@pytest.mark.parametrize(
+    "config_yaml",
+    [
+        pytest.param(b"generator_args:\n  java:\n   package: [unclosed\n", id="unclosed-bracket"),
+        pytest.param(b"generator_args:\n\tjava:\n\t\tpackage: x\n", id="tab-indent"),
+        # PyYAML raises a bare ValueError for this, not a YAMLError
+        pytest.param(b"generator_args:\n  java:\n    package: 2024-02-30\n", id="impossible-date"),
+    ],
+)
+def test_read_generator_config_rejects_unparsable_yaml(config_yaml):
+    """A file that isn't valid YAML at all is reported as a usage error, like a misshapen
+    one, rather than escaping as a raw parser traceback."""
+    with pytest.raises(click.UsageError, match="--config-file: could not parse as YAML"):
+        read_generator_config(BytesIO(config_yaml), "java")
+
+
+@pytest.mark.parametrize(
+    ("call", "expected"),
+    [
+        pytest.param(
+            lambda: parse_config_yaml("{unclosed", "--generator-arguments"),
+            "--generator-arguments: could not parse as YAML",
+            id="unparsable-yaml",
+        ),
+        pytest.param(
+            lambda: config_mapping("notamapping", "'generator_args'", "--config-file"),
+            "--config-file: expected a YAML mapping at 'generator_args', found str",
+            id="misshapen-mapping",
+        ),
+    ],
+)
+def test_shared_config_checks_raise_value_error_naming_their_source(call, expected):
+    """The shared checks raise ValueError, not click.UsageError, so a caller using them as
+    a library (ProjectGenerator.generate) gets the same checking without click semantics;
+    command-line callers translate at their own boundary. The source is carried through, so
+    the same check can report against --config-file or -A."""
+    with pytest.raises(ValueError) as exc_info:
+        call()
+
+    assert str(exc_info.value).startswith(expected)
+
+
+@pytest.mark.parametrize(
+    ("config_yaml", "expected"),
+    [
+        pytest.param(
+            b"generator_args:\n  java: notamapping\n",
+            "--config-file: expected a YAML mapping at 'generator_args.java', found str",
+            id="misshapen-section",
+        ),
+        pytest.param(
+            b"generator_args:\n  java:\n   package: [unclosed\n",
+            "--config-file: could not parse as YAML",
+            id="unparsable-yaml",
+        ),
+        pytest.param(
+            # the exact wording of the underlying ValueError (from datetime, via PyYAML's
+            # timestamp resolver) differs across Python versions -- only the prefix this
+            # codebase controls is checked
+            b"generator_args:\n  java:\n    package: 2024-02-30\n",
+            "--config-file: could not parse as YAML",
+            id="impossible-date",
+        ),
+    ],
+)
+def test_same_config_mistake_reports_the_same_way_through_every_entry_point(tmp_path, config_yaml, expected):
+    """gen-project and the individual generator CLIs read the same config file format, so
+    one mistake in it must produce one message -- they share the checks rather than each
+    carrying its own copy that can drift."""
+    from click.testing import CliRunner
+
+    from linkml.generators.javagen import cli as javagen_cli
+    from linkml.generators.projectgen import cli as projectgen_cli
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        "id: https://example.org/test\nname: test\nprefixes:\n  linkml: https://w3id.org/linkml/\n"
+        "imports:\n  - linkml:types\ndefault_range: string\nclasses:\n  Thing:\n    slots:\n      - name\n"
+        "slots:\n  name:\n"
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_bytes(config_yaml)
+    common = ["--config-file", str(config_path)]
+
+    project = CliRunner().invoke(projectgen_cli, [*common, "-I", "java", "-d", str(tmp_path / "p"), str(schema_path)])
+    java = CliRunner().invoke(javagen_cli, [*common, "--output-directory", str(tmp_path / "j"), str(schema_path)])
+
+    assert project.exit_code != 0, project.output
+    assert java.exit_code != 0, java.output
+    assert expected in project.output
+    assert expected in java.output
+
+
+def test_validate_generator_args_default_is_a_noop():
+    """The base implementation accepts anything -- generators that have no config value
+    worth checking up front (which is most of them) need not override it."""
+    Generator.validate_generator_args({})
+    Generator.validate_generator_args({"anything": "goes", "even": None})
+
+
+_GENERATION_DATE_SCHEMA = """
+id: https://example.org/mut
+name: mut
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    attributes:
+      id:
+        identifier: true
+"""
+
+
+def test_generation_date_suppression_does_not_mutate_callers_schema():
+    """Constructing a generator must not clear generation_date on the caller's schema.
+
+    ``SchemaView`` keeps a reference to a ``SchemaDefinition`` it is handed, so on the
+    ``uses_schemaloader = False`` path the default generation_date suppression must
+    operate on a generator-owned copy, not reach back into the caller's object.
+    """
+    schema = SchemaView(_GENERATION_DATE_SCHEMA).schema
+    schema.generation_date = "2020-01-01T00:00:00"
+
+    gen = ShaclGenerator(schema)
+
+    assert schema.generation_date == "2020-01-01T00:00:00"
+    assert gen.schema is not schema
+    assert gen.schema.generation_date is None
+
+
+# ------------------------------------------------------------------------------
+# apply_config_defaults: the overlay a CLI runs after read_generator_config so a
+# config file fills only options the user did not set on the command line.
+# Uses a minimal throwaway click command so the tests exercise the real click
+# ParameterSource machinery, not a mock of it.
+# ------------------------------------------------------------------------------
+
+
+def _run_with_config(config, cli_args=()):
+    """Invoke a throwaway click command, returning its resolved kwargs and the click result."""
+    from click.testing import CliRunner
+
+    captured: dict = {}
+
+    @click.command()
+    @click.option("--foo")
+    @click.option("--bar/--no-bar", default=False)
+    @click.option("--baz", multiple=True)
+    @click.option("--path-opt", type=click.Path(path_type=Path))
+    @click.option("--fmt", type=click.Choice(["a", "b"]))
+    @click.option("--verbose", "-v", count=True)
+    @click.version_option("1.0")
+    @click.pass_context
+    def runner_cmd(ctx, **kwargs):
+        apply_config_defaults(ctx, config, kwargs)
+        captured.update(kwargs)
+
+    return captured, CliRunner().invoke(runner_cmd, list(cli_args), standalone_mode=False)
+
+
+def _invoke_with_config(config, cli_args=()):
+    """Invoke the throwaway command, asserting it succeeded, and return its resolved kwargs."""
+    captured, result = _run_with_config(config, cli_args)
+    assert result.exception is None, result.output
+    return captured
+
+
+def test_apply_config_defaults_overlays_when_option_is_at_default():
+    """Config value wins when the user did not pass the option -- the CLI/env/default
+    precedence chain, without which config-file support would do nothing."""
+    kwargs = _invoke_with_config({"foo": "from-config"})
+    assert kwargs["foo"] == "from-config"
+
+
+def test_apply_config_defaults_command_line_beats_config():
+    """A value explicitly passed on the command line is never overwritten by the
+    config; this is the precedence guarantee documented in --config-file's help."""
+    kwargs = _invoke_with_config({"foo": "from-config"}, cli_args=["--foo", "from-cli"])
+    assert kwargs["foo"] == "from-cli"
+
+
+def test_apply_config_defaults_unknown_key_warns_per_key(caplog):
+    """Each unknown key gets its own warning so a config-file typo is individually
+    obvious, rather than being silently dropped or collapsed into a single message."""
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        kwargs = _invoke_with_config({"typo_one": 1, "typo_two": 2, "foo": "ok"})
+    messages = [rec.getMessage() for rec in caplog.records]
+    assert any("typo_one" in m for m in messages)
+    assert any("typo_two" in m for m in messages)
+    assert kwargs["foo"] == "ok"
+
+
+def test_apply_config_defaults_skips_parse_time_callback_options():
+    """--verbose etc. run click callbacks at parse time; a config value would be
+    stored but never trigger the callback, so those options are honored only from
+    the command line to avoid a silently-ineffective config setting."""
+    kwargs = _invoke_with_config({"verbose": 3})
+    assert kwargs["verbose"] == 0
+
+
+def test_apply_config_defaults_empty_config_is_noop():
+    """An empty (or missing) generator section leaves args untouched -- the common
+    case for a shared config file that only names some generators. ``ctx`` is never
+    dereferenced on this path, so passing ``None`` would crash if it were."""
+    args = {"foo": None, "bar": False}
+    assert apply_config_defaults(None, {}, args) is args
+    assert args == {"foo": None, "bar": False}
+
+
+def test_apply_config_defaults_converts_values_with_the_option_type():
+    """A config value is cast by its option's click type, so `path_opt: /tmp` reaches the
+    generator as a Path -- the same object the command line yields, not a raw str that
+    blows up later on the first Path method call."""
+    kwargs = _invoke_with_config({"path_opt": "/tmp"})
+    assert kwargs["path_opt"] == Path("/tmp")
+
+
+def test_apply_config_defaults_rejects_a_value_the_option_type_refuses():
+    """An invalid config value fails as a click usage error, exactly as it would on the
+    command line, instead of reaching the generator and crashing there."""
+    _, result = _run_with_config({"fmt": "nope"})
+    assert isinstance(result.exception, click.BadParameter)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [("one", ("one",)), (["one", "two"], ("one", "two"))],
+)
+def test_apply_config_defaults_wraps_scalars_for_repeatable_options(value, expected):
+    """A repeatable option gets a tuple whether the YAML supplied a scalar or a list.
+    Without the scalar wrap, click iterates the string per character and the generator
+    silently acts on 'o', 'n', 'e' instead of 'one'."""
+    kwargs = _invoke_with_config({"baz": value})
+    assert kwargs["baz"] == expected
+
+
+def test_apply_config_defaults_ignores_options_click_never_passes(caplog):
+    """`--version` is expose_value=False, so click never hands it to the callback; naming
+    it in a config file is a typo like any other, and overlaying it would inject a kwarg
+    the generator's __init__ cannot accept."""
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.generator"):
+        kwargs = _invoke_with_config({"version": "1.2"})
+    assert "version" not in kwargs
+    assert any("version" in rec.getMessage() for rec in caplog.records)
+
+
+def test_apply_config_defaults_returns_the_same_dict():
+    """The helper mutates and returns the same dict, so callers can chain or ignore
+    the return value; the type contract mirrors ``dict.update``."""
+    from click.testing import CliRunner
+
+    @click.command()
+    @click.option("--foo")
+    @click.pass_context
+    def cmd(ctx, **kwargs):
+        args = {}
+        result = apply_config_defaults(ctx, {"foo": "x"}, args)
+        assert result is args
+        assert args == {"foo": "x"}
+
+    assert CliRunner().invoke(cmd, [], standalone_mode=False).exception is None

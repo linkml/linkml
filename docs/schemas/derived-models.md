@@ -21,9 +21,15 @@ Use [gen-linkml](../generators/linkml) to create a derived schema saved as YAML
 
 This can be useful for feeding to basic tools that do not need to implement logic for inheritance
 
+Pattern-aware generators derive regular expressions from `structured_pattern`
+automatically. Explicit pattern materialization options are deprecated.
+
 ## Programmatically inferring models
 
-- Python developers can use SchemaView, see [developers guide](../developers/manipulating-schemas)
+- Python developers can use SchemaView, see [developers guide](../developers/manipulating-schemas).
+  `resolve_pattern()` resolves a particular slot or type definition, while
+  `induced_slot()` and `induced_type()` include pattern inheritance as part of the
+  effective definition.
 - Javascript developers can use the javascript equivalent in [linkml-runtime.js](https://github.com/linkml/linkml-runtime.js)
 
 ## Specification
