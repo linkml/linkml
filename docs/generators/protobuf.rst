@@ -131,6 +131,29 @@ and ``aliases`` is rolled down from the mixin:
     repeated NewsEvent has_news_events = 16;
   }
 
+.. _protobuf-configuration-file:
+
+Configuration File
+------------------
+
+``gen-proto`` accepts a ``--config-file``/``-C`` YAML file in the format that
+``gen-project`` reads (see :doc:`project-generator`), and reads only its
+``generator_args.proto`` section. Any option of the command can be set there,
+keyed by its name with dashes as underscores, such as ``importmap``.
+Options given on the command line take precedence over the
+file, and a key that is not an option is reported as a warning and ignored.
+
+.. code-block:: yaml
+
+    # proto.yaml
+    generator_args:
+      proto:
+        importmap: importmap.json
+
+.. code:: bash
+
+   gen-proto -C proto.yaml personinfo.yaml > personinfo.proto
+
 Docs
 ----
 

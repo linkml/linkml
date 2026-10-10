@@ -22,6 +22,7 @@ and ``// reference to`` comments, field-number order, and ``rank`` checks.
 The snapshot test continues to act as the aggregate regression baseline.
 """
 
+import json
 import logging
 import re
 import subprocess
@@ -29,6 +30,7 @@ import sys
 import textwrap
 
 import pytest
+import yaml
 from click.testing import CliRunner
 
 from linkml.generators.protogen import (
@@ -1129,6 +1131,116 @@ def test_slots_sharing_a_field_name_collapse_to_one_field(tmp_path, caplog):
     assert body.count(" related_to = ") == 1
     assert "  // required\n  // reference to Person\n  string related_to = 2;" in body
     assert "FamilialRelationship: slots related_to and related to both map to proto field related_to" in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# --config-file / -C
+# ---------------------------------------------------------------------------
+
+
+def _write_importing_schema(tmp_path):
+    """Write a schema that imports ``people`` from a ``lib`` directory, and return its path.
+
+    The import resolves only through an import map, so the run succeeds only when one is read.
+    """
+    (tmp_path / "lib").mkdir()
+    (tmp_path / "lib" / "people.yaml").write_text(
+        _schema(
+            name="people",
+            body=textwrap.dedent(
+                """
+                classes:
+                  Person:
+                    attributes:
+                      name:
+                        range: string
+                """
+            ).strip(),
+        )
+    )
+    main = _schema(
+        name="main_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Container:
+                attributes:
+                  label:
+                    range: string
+            """
+        ).strip(),
+    ).replace("  - linkml:types", "  - linkml:types\n  - people")
+    schema_path = tmp_path / "main_schema.yaml"
+    schema_path.write_text(main)
+    return schema_path
+
+
+def _write_importmap(path, target) -> str:
+    """Write an import map that sends ``people`` to *target*, and return its path."""
+    path.write_text(json.dumps({"people": str(target)}))
+    return str(path)
+
+
+def _proto_config_yaml(**settings) -> str:
+    """Return a config file in gen-project's format that holds ``settings`` under ``generator_args.proto``."""
+    return yaml.safe_dump({"generator_args": {"proto": settings}}, sort_keys=False)
+
+
+def test_cli_config_file_sets_option(tmp_path):
+    """``importmap`` in the config file resolves the import, as ``--importmap`` does."""
+    schema_path = _write_importing_schema(tmp_path)
+    importmap = _write_importmap(tmp_path / "importmap.json", tmp_path / "lib" / "people")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(importmap=importmap))
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Container {" in result.output
+    assert "message Person {" in result.output
+
+
+def test_cli_option_overrides_config_file(tmp_path):
+    """An explicit ``--importmap`` takes precedence over the one in the config file."""
+    schema_path = _write_importing_schema(tmp_path)
+    good = _write_importmap(tmp_path / "good.json", tmp_path / "lib" / "people")
+    bad = _write_importmap(tmp_path / "bad.json", tmp_path / "missing" / "people")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(importmap=bad))
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), "--importmap", good, str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Person {" in result.output
+
+
+def test_cli_config_file_without_proto_section_changes_nothing(tmp_path):
+    """A config file without a ``proto`` section gives the same output as no config file."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(MIN_SCHEMA)
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n")
+
+    with_config = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+    without_config = CliRunner().invoke(cli, [str(schema_path)])
+
+    assert with_config.exit_code == 0, with_config.output
+    assert with_config.output == without_config.output
+
+
+def test_cli_config_file_unknown_key_is_ignored_with_warning(tmp_path, caplog):
+    """A key that is not an option of ``gen-proto`` is reported and ignored."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(no_such_option=True))
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(MIN_SCHEMA)
+
+    with caplog.at_level(logging.WARNING):
+        result = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Person {" in result.output
+    assert "ignoring unknown key 'no_such_option'" in caplog.text
 
 
 # ---------------------------------------------------------------------------

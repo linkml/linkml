@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import click
 
 from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
@@ -123,6 +123,7 @@ class ProtoGenerator(Generator):
     valid_formats = ["proto"]
     visit_all_class_slots = True
     uses_schemaloader = True
+    config_section_name = "proto"
 
     # ObjectVars
     # Per-class map of slot name -> proto field number. Populated in visit_class
@@ -492,10 +493,23 @@ class ProtoGenerator(Generator):
 
 
 @shared_arguments(ProtoGenerator)
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {proto: {importmap: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="proto")
-def cli(yamlfile, **args):
+@click.pass_context
+def cli(ctx, yamlfile, config_file=None, **args):
     """Generate proto representation of LinkML model"""
+    config = read_generator_config(config_file, ProtoGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    ProtoGenerator.validate_generator_args(args)
     print(ProtoGenerator(yamlfile, **args).serialize(**args))
 
 
