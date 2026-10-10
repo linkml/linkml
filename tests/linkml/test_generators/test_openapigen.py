@@ -1812,20 +1812,20 @@ PARAMETER_TYPE_CASES = [
 
 
 @pytest.mark.parametrize(("slot", "expected_type"), PARAMETER_TYPE_CASES)
-def test_parameter_type_follows_the_slot_range(exposure_schema_path, slot, expected_type):
+def test_parameter_type_follows_the_slot_range(exposure_schema_path, oas_version, slot, expected_type):
     """Test that a parameter's ``schema.type`` follows the slot's range through its base type.
 
     The ``summary`` subset names classes only, so every induced slot of ``Risk`` becomes a
     parameter and the whole range of types is covered.
     """
-    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
+    template = create_template(exposure_schema_path, oas_version, expose={"subset": "summary"})
     parameters = {p["x-linkml-source"]: p for p in template["paths"]["/risk"]["get"]["parameters"]}
     assert parameters[f"Risk.{slot}"]["schema"] == {"type": expected_type}
 
 
-def test_a_subset_naming_no_slot_leaves_every_induced_slot(exposure_schema_path):
+def test_a_subset_naming_no_slot_leaves_every_induced_slot(exposure_schema_path, oas_version):
     """Test that a subset with no slot members does not narrow the parameters, and rank still orders them."""
-    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
+    template = create_template(exposure_schema_path, oas_version, expose={"subset": "summary"})
     sources = [p["x-linkml-source"] for p in template["paths"]["/risk"]["get"]["parameters"]]
     assert sources[:2] == ["Risk.hazards", "Risk.severity"]
     assert sorted(sources) == sorted(f"Risk.{slot}" for slot, _ in PARAMETER_TYPE_CASES)
@@ -1868,47 +1868,50 @@ def test_explicit_entry_wins_over_derived_defaults(exposure_template):
         assert response_schema == {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}}
 
 
-def test_crud_false_gives_a_placeholder_without_an_endpoint(exposure_schema_path):
+def test_crud_false_gives_a_placeholder_without_an_endpoint(exposure_schema_path, oas_version):
     """Test that ``crud: false`` puts the class in ``components/schemas`` and gives it no path."""
     template = create_template(
-        exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Risk": {"crud": False}, "Action": {}}}
+        exposure_schema_path, oas_version, expose={"classes": {"Risk": {"crud": False}, "Action": {}}}
     )
     assert list(template["components"]["schemas"]) == ["Risk", "Action"]
     assert list(template["paths"]) == ["/action"]
 
 
-def test_without_expose_every_concrete_class_is_exposed(exposure_schema_path):
-    """Test that with neither ``subset`` nor ``classes`` every concrete class gets an endpoint."""
-    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION)
+def test_without_expose_every_concrete_class_is_exposed(exposure_schema_path, oas_version):
+    """Test that with neither ``subset`` nor ``classes`` every class that is neither abstract nor a mixin is exposed."""
+    template = create_template(exposure_schema_path, oas_version)
     assert list(template["paths"]) == ["/risk", "/hazard", "/action", "/note"]
 
 
-def test_exclude_accepts_a_bare_class_name(exposure_schema_path):
+def test_exclude_accepts_a_bare_class_name(exposure_schema_path, oas_version):
     """Test that ``exclude: Hazard`` reads as the one-item list, as the shared config treats a scalar."""
-    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, exclude="Hazard")
+    template = create_template(exposure_schema_path, oas_version, exclude="Hazard")
     assert list(template["paths"]) == ["/risk", "/action", "/note"]
 
 
-def test_a_named_abstract_or_mixin_class_is_kept(exposure_schema_path):
-    """Test that the abstract and mixin filter applies to a subset's members, not to a named class.
+@pytest.mark.parametrize("name", ["Entity", "Taggable"])
+def test_a_named_abstract_or_mixin_class_is_exposed(tmp_path, exposure_schema_path, oas_version, name):
+    """Test that the abstract and mixin filter applies to what a subset contributes, not to a named class.
 
-    Naming a class is a deliberate choice: an API may bind an endpoint to a mixin that several
-    concrete classes share, so ``Taggable`` is exposed when named and left out when the subset
-    sweeps it in.
+    ``Entity`` is abstract and ``Taggable`` a mixin, and the core subset sweeps both in without
+    exposing them. Naming a class is a deliberate choice, so it is exposed as stated: a listing of
+    an abstract class returns the records of its subclasses, and a schema may give a mixin records
+    of its own. The created template instantiates on both versions.
     """
-    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Taggable": {}}})
-    assert list(template["paths"]) == ["/taggable"]
+    text = OpenApiGenerator(exposure_schema_path, expose={"classes": {name: {}}}).create_template(oas_version)
+    assert list(yaml.safe_load(text)["paths"]) == [f"/{name.lower()}"]
+    spec = yaml.safe_load(OpenApiGenerator(exposure_schema_path).serialize(write_template(tmp_path, text)))
+    assert list(spec["components"]["schemas"]) == [name]
 
 
-def test_consumer_keys_in_a_class_entry_pass_through(exposure_schema_path):
+def test_consumer_keys_in_a_class_entry_pass_through(exposure_schema_path, oas_version):
     """Test that a key the generator does not read, such as a server's routing hint, is left alone.
 
-    ai-linkmo keeps ``related: true`` beside ``path`` for its own server, so a key that does not
-    look like a misspelling of one of the generator's keys must not stop the template.
+    A server that reads the same file may keep its own keys beside ``path``, such as a flag that
+    adds filters of its own, so a key that does not look like a misspelling of one of the
+    generator's keys must not stop the template.
     """
-    template = create_template(
-        exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Risk": {"related": True}}}
-    )
+    template = create_template(exposure_schema_path, oas_version, expose={"classes": {"Risk": {"related": True}}})
     assert list(template["paths"]) == ["/risk"]
 
 
