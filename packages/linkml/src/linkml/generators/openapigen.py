@@ -962,14 +962,15 @@ class OpenApiGenerator(Generator):
         """Return the query parameters of the class's list ``GET``, one per slot.
 
         A parameter holds structure only: ``in``, ``name``, ``required``, ``schema.type`` and
-        ``x-linkml-source: <Class>.<slot>``. Descriptions, enum values and defaults are not
-        copied from the schema; they belong to the instantiated document, and the source key
-        says where a later pass finds them.
+        ``x-linkml-source: <Class>.<slot>``. The ``name`` is the slot's ``alias`` when it has
+        one, since the generated schema names the property that way, and the slot name
+        otherwise. Descriptions, enum values and defaults are not copied from the schema; they
+        belong to the instantiated document, and the source key says where a later pass finds them.
         """
         return [
             {
                 "in": "query",
-                "name": str(slot.name),
+                "name": str(slot.alias or slot.name),
                 "required": False,
                 "schema": {"type": self._parameter_type(slot)},
                 "x-linkml-source": f"{exposed.name}.{slot.name}",

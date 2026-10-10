@@ -71,6 +71,7 @@ classes:
       active:
         range: boolean
       noted_on:
+        alias: notedOn
         range: date
 
   Hazard:

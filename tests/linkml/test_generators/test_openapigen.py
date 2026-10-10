@@ -1819,17 +1819,29 @@ def test_parameter_type_follows_the_slot_range(exposure_schema_path, slot, expec
     parameter and the whole range of types is covered.
     """
     template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
-    parameters = {p["name"]: p for p in template["paths"]["/risk"]["get"]["parameters"]}
-    assert parameters[slot]["schema"] == {"type": expected_type}
-    assert parameters[slot]["x-linkml-source"] == f"Risk.{slot}"
+    parameters = {p["x-linkml-source"]: p for p in template["paths"]["/risk"]["get"]["parameters"]}
+    assert parameters[f"Risk.{slot}"]["schema"] == {"type": expected_type}
 
 
 def test_a_subset_naming_no_slot_leaves_every_induced_slot(exposure_schema_path):
     """Test that a subset with no slot members does not narrow the parameters, and rank still orders them."""
     template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
-    names = [p["name"] for p in template["paths"]["/risk"]["get"]["parameters"]]
-    assert names[:2] == ["hazards", "severity"]
-    assert sorted(names) == sorted(slot for slot, _ in PARAMETER_TYPE_CASES)
+    sources = [p["x-linkml-source"] for p in template["paths"]["/risk"]["get"]["parameters"]]
+    assert sources[:2] == ["Risk.hazards", "Risk.severity"]
+    assert sorted(sources) == sorted(f"Risk.{slot}" for slot, _ in PARAMETER_TYPE_CASES)
+
+
+def test_parameter_takes_the_slot_alias(tmp_path, exposure_schema_path, oas_version):
+    """Test that a parameter is named as the payload names the slot, by its ``alias`` when it has one.
+
+    ``noted_on`` has the alias ``notedOn``, which the generated schema uses for the property, so a
+    client filters on the name it reads in a response; ``x-linkml-source`` keeps the slot name.
+    """
+    text = OpenApiGenerator(exposure_schema_path, expose={"subset": "summary"}).create_template(oas_version)
+    parameters = yaml.safe_load(text)["paths"]["/risk"]["get"]["parameters"]
+    assert {p["x-linkml-source"]: p["name"] for p in parameters}["Risk.noted_on"] == "notedOn"
+    spec = yaml.safe_load(OpenApiGenerator(exposure_schema_path).serialize(write_template(tmp_path, text)))
+    assert "notedOn" in spec["components"]["schemas"]["Risk"]["properties"]
 
 
 def test_template_copies_no_linkml_field_values(exposure_schema_path, oas_version):
