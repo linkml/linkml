@@ -211,8 +211,8 @@ reported as a warning and ignored.
 
 The same section carries two settings that are not options, which
 ``--create-template`` reads: ``expose`` and ``exclude`` choose the classes the API
-exposes. The schema itself says nothing about the API, so one schema can serve
-several APIs, each with its own file.
+exposes. The schema says nothing about the API, so one schema can serve several
+APIs, each with its own file.
 
 .. code-block:: yaml
 
@@ -310,9 +310,9 @@ Exposure
        leaving out abstract classes and mixins. When the subset also tags slots,
        the query parameters of every exposed class are narrowed to those slots.
    * - ``expose.classes``
-     - Exposes each class it names, as stated, even an abstract class or a mixin:
-       a listing of an abstract class returns the records of its subclasses, and a
-       schema may give a mixin records of its own.
+     - Exposes each class it names, even when the class is abstract or a mixin,
+       because a person chose it by name. A listing of an abstract class returns the
+       records of its subclasses, and a schema may give a mixin records of its own.
    * - ``exclude``
      - Removes classes from the exposed set. A class cannot be both named under
        ``expose.classes`` and excluded.
@@ -330,11 +330,12 @@ operation. The description has no default, because the class's description in
 the schema would drift once copied into the template.
 
 Query parameters come in the ``rank`` order of their slots, and slots without a
-rank follow in schema order. A parameter is named as the generated schema names the
-property, so by the slot's ``alias`` when it has one. Its type is ``integer``,
-``number`` or ``boolean`` when the slot's range is an integer, a float, double or
-decimal, or a boolean type, and ``string`` for any other type, for an enum, and for
-a reference to a class, which is passed by its identifier.
+rank follow in schema order. A parameter has the name that the generated schema
+gives the property: the slot's ``alias`` when it has one, and the slot name
+otherwise. Its type is ``integer``, ``number`` or ``boolean`` when the slot's range
+is an integer, a float, double or decimal, or a boolean type. Its type is
+``string`` for any other type, for an enum, and for a reference to a class, which
+is passed by its identifier.
 
 The settings are checked before anything is printed. A key directly under
 ``expose`` other than ``subset`` and ``classes`` is an error, and so is a key in a

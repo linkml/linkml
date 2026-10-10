@@ -1759,7 +1759,7 @@ def test_exposed_set_is_subset_plus_named_minus_excluded_abstract_and_mixin(expo
     """Test the exposed set: the subset's concrete classes, plus the named class, minus the excluded one.
 
     ``Entity`` (abstract) and ``Taggable`` (mixin) are in the core subset and must not be
-    exposed; ``Hazard`` is in it and is excluded; ``Note`` is outside it and not named. The
+    exposed. ``Hazard`` is in it and is excluded. ``Note`` is outside it and not named. The
     subset's members come first, then the named classes.
     """
     assert list(exposure_template["components"]["schemas"]) == ["Risk", "Action"]
@@ -1767,9 +1767,9 @@ def test_exposed_set_is_subset_plus_named_minus_excluded_abstract_and_mixin(expo
 
 
 def test_placeholders_hold_structure_only(exposure_template):
-    """Test that a placeholder is ``type: object`` and the two bookkeeping keys, nothing else.
+    """Test that a placeholder holds ``type: object`` and the two bookkeeping keys, and nothing else.
 
-    A description or title copied from the schema would drift from it; both are generated when
+    A description or title copied from the schema would drift from it. Both are generated when
     the template is instantiated.
     """
     for name, placeholder in exposure_template["components"]["schemas"].items():
@@ -1780,7 +1780,7 @@ def test_parameters_narrow_to_the_subset_slots_in_rank_order(exposure_template):
     """Test that a class's parameters are its induced slots in the subset, ordered by ``rank``.
 
     The core subset names ``hazards`` (rank 1), ``severity`` (rank 2) and the inherited ``id``
-    (no rank), so ``count``, ``score``, ``active``, ``noted_on`` and the mixin's ``tag`` stay out.
+    (no rank), so ``count``, ``score``, ``active``, ``noted_on`` and the mixin's ``tag`` are left out.
     Each parameter holds structure only, typed as a string: ``hazards`` is a reference passed as
     an identifier, ``severity`` an enum passed as a value's text, ``id`` an identifier.
     """
@@ -1814,7 +1814,7 @@ def test_parameter_type_follows_the_slot_range(exposure_schema_path, oas_version
     """Test that a parameter's ``schema.type`` follows the slot's range through its base type.
 
     The ``summary`` subset names classes only, so every induced slot of ``Risk`` becomes a
-    parameter and the whole range of types is covered.
+    parameter, and the cases cover each kind of type.
     """
     template = create_template(exposure_schema_path, oas_version, expose={"subset": "summary"})
     parameters = {p["x-linkml-source"]: p for p in template["paths"]["/risk"]["get"]["parameters"]}
@@ -1833,7 +1833,7 @@ def test_parameter_takes_the_slot_alias(tmp_path, exposure_schema_path, oas_vers
     """Test that a parameter is named as the payload names the slot, by its ``alias`` when it has one.
 
     ``noted_on`` has the alias ``notedOn``, which the generated schema uses for the property, so a
-    client filters on the name it reads in a response; ``x-linkml-source`` keeps the slot name.
+    client filters on the name it reads in a response. ``x-linkml-source`` keeps the slot name.
     """
     text = OpenApiGenerator(exposure_schema_path, expose={"subset": "summary"}).create_template(oas_version)
     parameters = yaml.safe_load(text)["paths"]["/risk"]["get"]["parameters"]
@@ -1845,7 +1845,7 @@ def test_parameter_takes_the_slot_alias(tmp_path, exposure_schema_path, oas_vers
 def test_template_copies_no_linkml_field_values(exposure_schema_path, oas_version):
     """Test that no description, enum value or default from the schema reaches the template.
 
-    Those values are generated at instantiation; copied into the template they would drift.
+    Those values are generated at instantiation. Copied into the template, they would drift.
     """
     text = OpenApiGenerator(exposure_schema_path, **EXPOSURE_SETTINGS).create_template(oas_version)
     for linkml_value in ("a risk, the class every test exposes", "the hazards behind the risk", "low", "high"):
@@ -1853,9 +1853,10 @@ def test_template_copies_no_linkml_field_values(exposure_schema_path, oas_versio
 
 
 def test_explicit_entry_wins_over_derived_defaults(exposure_template):
-    """Test the per-class entry over the derived defaults: path, operation id and summary.
+    """Test that a class entry's path, operation id and summary take precedence over the derived defaults.
 
-    ``Risk`` is configured; ``Action`` falls back to ``/action``, ``list_action`` and ``Get Action``.
+    ``Risk`` has an entry that sets all three. ``Action`` has an empty entry, so it gets
+    ``/action``, ``list_action`` and ``Get Action``.
     """
     risk = exposure_template["paths"]["/risks"]["get"]
     assert (risk["operationId"], risk["summary"]) == ("list_risks", "Risks")
@@ -1892,13 +1893,13 @@ def test_crud_false_gives_a_placeholder_without_an_endpoint(exposure_schema_path
 
 
 def test_without_expose_every_concrete_class_is_exposed(exposure_schema_path, oas_version):
-    """Test that with neither ``subset`` nor ``classes`` every class that is neither abstract nor a mixin is exposed."""
+    """Test that without ``subset`` and ``classes``, every class that is neither abstract nor a mixin is exposed."""
     template = create_template(exposure_schema_path, oas_version)
     assert list(template["paths"]) == ["/risk", "/hazard", "/action", "/note"]
 
 
 def test_exclude_accepts_a_bare_class_name(exposure_schema_path, oas_version):
-    """Test that ``exclude: Hazard`` reads as the one-item list, as the shared config treats a scalar."""
+    """Test that ``exclude: Hazard`` counts as a list of one, as the shared config code treats a scalar."""
     template = create_template(exposure_schema_path, oas_version, exclude="Hazard")
     assert list(template["paths"]) == ["/risk", "/action", "/note"]
 
@@ -1907,10 +1908,11 @@ def test_exclude_accepts_a_bare_class_name(exposure_schema_path, oas_version):
 def test_a_named_abstract_or_mixin_class_is_exposed(tmp_path, exposure_schema_path, oas_version, name):
     """Test that the abstract and mixin filter applies to what a subset contributes, not to a named class.
 
-    ``Entity`` is abstract and ``Taggable`` a mixin, and the core subset sweeps both in without
-    exposing them. Naming a class is a deliberate choice, so it is exposed as stated: a listing of
-    an abstract class returns the records of its subclasses, and a schema may give a mixin records
-    of its own. The created template instantiates on both versions.
+    ``Entity`` is abstract and ``Taggable`` is a mixin. The core subset holds both and exposes
+    neither. A class named under ``expose.classes`` is exposed even when it is abstract or a mixin,
+    because a person chose it by name: a listing of an abstract class returns the records of its
+    subclasses, and a schema may give a mixin records of its own. The created template
+    instantiates on both versions.
     """
     text = OpenApiGenerator(exposure_schema_path, expose={"classes": {name: {}}}).create_template(oas_version)
     assert list(yaml.safe_load(text)["paths"]) == [f"/{name.lower()}"]
@@ -1919,11 +1921,11 @@ def test_a_named_abstract_or_mixin_class_is_exposed(tmp_path, exposure_schema_pa
 
 
 def test_consumer_keys_in_a_class_entry_pass_through(exposure_schema_path, oas_version):
-    """Test that a key the generator does not read, such as a server's routing hint, is left alone.
+    """Test that a key the generator does not read, such as a server's routing setting, is left alone.
 
     A server that reads the same file may keep its own keys beside ``path``, such as a flag that
-    adds filters of its own, so a key that does not look like a misspelling of one of the
-    generator's keys must not stop the template.
+    adds filters of its own. A key that does not look like a misspelling of one of the
+    generator's keys must not stop the template from being created.
     """
     template = create_template(exposure_schema_path, oas_version, expose={"classes": {"Risk": {"related": True}}})
     assert list(template["paths"]) == ["/risk"]
@@ -1941,9 +1943,9 @@ def test_info_comes_from_the_schema_metadata(exposure_template):
 def test_created_template_round_trips_with_no_dangling_ref(tmp_path, exposure_schema_path, oas_version):
     """Test the round trip: a created template instantiates into a valid document.
 
-    ``serialize`` raises on a dangling ``$ref``, so returning at all means there is none. The
-    placeholders are replaced by generated schemas, and the enum ``Risk.severity`` reaches
-    is generated with them.
+    ``serialize`` raises an error on a dangling ``$ref``, so a document it returns has none.
+    Generated schemas replace the placeholders, and the enum that ``Risk.severity`` refers to is
+    generated with them.
     """
     template_path = write_template(
         tmp_path, OpenApiGenerator(exposure_schema_path, **EXPOSURE_SETTINGS).create_template(oas_version)
@@ -2001,11 +2003,11 @@ def test_malformed_exposure_settings_are_rejected(exposure_schema_path, settings
 
 
 def test_cli_create_template_reads_the_exposure_from_the_config_file(exposure_schema_path, tmp_path, oas_version):
-    """Test ``--create-template -C``: the section's ``expose`` and ``exclude`` drive the template.
+    """Test that ``--create-template -C`` creates the template from the section's ``expose`` and ``exclude``.
 
-    ``openapi_version`` is an option, so the config file sets it like any other; the nested
-    exposure settings are read by the generator itself. The created template then instantiates
-    through the same command with ``-t``.
+    ``openapi_version`` is an option, so the config file sets it like any other option. The
+    generator reads the exposure settings itself. The created template then instantiates through
+    the same command with ``-t``.
     """
     config_path = tmp_path / "config.yaml"
     config_path.write_text(openapi_config_yaml(openapi_version=oas_version, **EXPOSURE_SETTINGS))
