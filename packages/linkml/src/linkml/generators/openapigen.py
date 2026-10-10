@@ -39,7 +39,7 @@ SUPPORTED_OPENAPI_VERSIONS = ["3.0.3", "3.1.0"]
 # The generator reads these settings of the ``generator_args.openapi`` section itself. They are
 # not options of the command, so :func:`cli` takes them out of the section before
 # :func:`apply_config_defaults` applies the rest to the options.
-EXPOSURE_CONFIG_KEYS = ("expose", "exclude")
+EXPOSURE_CONFIG_KEYS = ("expose", "exclude", "overlay")
 
 # The keys that ``expose`` may hold.
 EXPOSE_KEYS = frozenset({"subset", "classes"})
@@ -253,7 +253,8 @@ class OpenApiGenerator(Generator):
     attribute `openapi`.
 
     A person can write the template by hand, or :meth:`create_template` can create it from
-    the schema. It exposes the classes that the ``expose`` and ``exclude`` settings name.
+    the schema. It exposes the classes that the ``expose`` and ``exclude`` settings name, and
+    merges in the hand-written ``overlay``.
     """
 
     generatorname = os.path.basename(__file__)
@@ -270,6 +271,8 @@ class OpenApiGenerator(Generator):
     """The classes that :meth:`create_template` exposes, as a ``subset`` and per-class ``classes`` entries."""
     exclude: list[str] = field(default_factory=list)
     """Classes :meth:`create_template` leaves out of the exposed set."""
+    overlay: dict[str, Any] = field(default_factory=dict)
+    """OpenAPI that :meth:`create_template` deep-merges, last, into the template it creates."""
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_versions: list[str] = field(
@@ -289,13 +292,14 @@ class OpenApiGenerator(Generator):
 
     @classmethod
     def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
-        """Check the shape of ``expose`` and ``exclude`` before any generator is built from them.
+        """Check the shape of ``expose``, ``exclude`` and ``overlay`` before any generator is built from them.
 
         :param args: The merged ``generator_args.openapi`` settings.
         :raises click.UsageError: if a value has the wrong shape.
         """
         try:
             exposure_settings(args.get("expose"), args.get("exclude"))
+            config_mapping(args.get("overlay"), "'overlay'", EXPOSURE_SOURCE)
         except ValueError as e:
             raise click.UsageError(str(e)) from e
 
@@ -1014,6 +1018,84 @@ class OpenApiGenerator(Generator):
             info["description"] = str(schema.description)
         return info
 
+    @classmethod
+    def _holds_bookkeeping(cls, value: Any) -> bool:
+        """Return whether ``value`` carries an ``x-linkml-*`` key at any depth."""
+        if isinstance(value, dict):
+            return any(
+                str(key).startswith(LINKML_BOOKKEEPING_PREFIX) or cls._holds_bookkeeping(item)
+                for key, item in value.items()
+            )
+        if isinstance(value, list):
+            return any(cls._holds_bookkeeping(item) for item in value)
+        return False
+
+    @classmethod
+    def _deep_merge(cls, base: dict, overlay: Mapping[str, Any], pointer: str) -> None:
+        """Merge ``overlay`` into the generated ``base`` in place, never writing an ``x-linkml-*`` key.
+
+        Two mappings merge key by key. Any other value of the overlay, such as a list or a scalar,
+        replaces the generated value. A key that is new to ``base`` takes the overlay's value
+        whole, as a copy, so that the template never shares an object with the settings.
+        Everything in ``base`` was generated, so the overlay may not write an ``x-linkml-*`` key
+        into it, nor replace a generated value that holds such keys, such as the parameters of a
+        generated operation. A value that the overlay adds whole may carry ``x-linkml-*`` keys of
+        its own, such as the placeholder of a class that a hand-written path returns.
+
+        :param pointer: The JSON Pointer of ``base`` in the template, for the messages.
+        :raises ValueError: if the overlay would write or replace an ``x-linkml-*`` key.
+        """
+        for key, value in overlay.items():
+            here = f"{pointer}/{str(key).replace('~', '~0').replace('/', '~1')}"
+            if str(key).startswith(LINKML_BOOKKEEPING_PREFIX):
+                raise ValueError(f"overlay: {here} is an x-linkml-* key, which only the generator writes")
+            if isinstance(base.get(key), dict) and isinstance(value, Mapping):
+                cls._deep_merge(base[key], value, here)
+            elif cls._holds_bookkeeping(base.get(key)):
+                raise ValueError(f"overlay: {here} holds x-linkml-* keys the generator wrote and cannot be replaced")
+            else:
+                base[key] = copy.deepcopy(value)
+
+    def _merge_overlay(self, document: dict) -> None:
+        """Deep-merge the ``overlay`` into the created template, after everything else.
+
+        The overlay carries what the schema cannot say: hand-written paths, reusable parameters,
+        responses and security schemes, and an ``info`` of the API's own. It may annotate a
+        generated operation, but it may not change a placeholder that the generator wrote, because
+        instantiation generates the placeholder's body from the schema. A placeholder the overlay
+        adds must name a class, enum or type of the schema that the generator does not expose
+        already, because instantiation replaces every placeholder with a generated schema. The
+        version the template declares comes from the ``openapi_version`` option, never from the
+        overlay. :meth:`_deep_merge` says how the generated ``x-linkml-*`` keys are kept.
+
+        :param document: The created template, updated in place.
+        :raises ValueError: if the overlay sets ``openapi``, changes a placeholder the generator
+            wrote, adds a schema that is not a placeholder for an element of the schema, or would
+            write an ``x-linkml-*`` key into what the generator wrote.
+        """
+        overlay = config_mapping(self.overlay, "'overlay'", EXPOSURE_SOURCE)
+        if "openapi" in overlay:
+            raise ValueError("overlay: #/openapi is the version the template declares; set it with --openapi-version")
+        schema_id = str(self.schemaview.schema.id)
+        elements = {*self.schemaview.all_classes(), *self.schemaview.all_enums(), *self.schemaview.all_types()}
+        generated = document["components"]["schemas"]
+        exposed = {placeholder["x-linkml-source"]: name for name, placeholder in generated.items()}
+        components = config_mapping(overlay.get("components"), "'overlay.components'", EXPOSURE_SOURCE)
+        added = config_mapping(components.get("schemas"), "'overlay.components.schemas'", EXPOSURE_SOURCE)
+        for name, placeholder in added.items():
+            here = f"overlay: #/components/schemas/{name}"
+            if name in generated:
+                raise ValueError(f"{here} is a placeholder the generator wrote, whose body comes from the schema")
+            source = placeholder.get("x-linkml-source") if isinstance(placeholder, dict) else None
+            if not isinstance(source, str) or source not in elements or placeholder.get("x-linkml-schema") != schema_id:
+                raise ValueError(
+                    f"{here} must be a placeholder with x-linkml-schema {schema_id} and an x-linkml-source "
+                    "naming a class, enum or type of the schema"
+                )
+            if source in exposed:
+                raise ValueError(f"{here} names {source}, which the generator already exposes as {exposed[source]}")
+        self._deep_merge(document, overlay, "#")
+
     def create_template(self, openapi_version: str = SUPPORTED_OPENAPI_VERSIONS[0]) -> str:
         """Return an OpenAPI template that exposes the classes ``expose`` and ``exclude`` resolve to.
 
@@ -1026,8 +1108,9 @@ class OpenApiGenerator(Generator):
 
         :meth:`serialize` generates the component schemas, with their descriptions, enum values
         and defaults, from the schema when the template is instantiated, so the template cannot
-        drift from the schema. The template is validated before it is returned, so it
-        instantiates without further editing.
+        drift from the schema. The ``overlay`` is merged last, as :meth:`_merge_overlay`
+        describes. The template is validated before it is returned, so it instantiates without
+        further editing.
 
         :param openapi_version: The OpenAPI version the template declares.
         """
@@ -1066,6 +1149,13 @@ class OpenApiGenerator(Generator):
             "paths": paths,
             "components": {"schemas": schemas},
         }
+        self._merge_overlay(document)
+        # Move components to the end of the document, and schemas to the end of components.
+        # serialize() replaces everything from the `schemas:` line to the end of the template with
+        # the generated schemas, so the placeholders must come last, whatever the overlay added.
+        components = document.pop("components")
+        components["schemas"] = components.pop("schemas")
+        document["components"] = components
         self._template = document
         self._validate_oad_template(self._openapi_validators[openapi_version], openapi_version)
         header = f"# OpenAPI template created by gen-openapi --create-template from {schema_id}\n"
@@ -1098,9 +1188,9 @@ class OpenApiGenerator(Generator):
     is_flag=True,
     default=False,
     help="Print an OpenAPI template that exposes the classes named under "
-    "'generator_args: {openapi: {expose: ..., exclude: ...}}' in the config file, instead of "
-    "instantiating a template. Without a config file, every class that is neither abstract nor "
-    "a mixin is exposed. It cannot be given with --template.",
+    "'generator_args: {openapi: {expose: ..., exclude: ...}}' in the config file, with its "
+    "'overlay' merged in, instead of instantiating a template. Without a config file, every "
+    "class that is neither abstract nor a mixin is exposed. It cannot be given with --template.",
 )
 @click.option(
     "--openapi-version",
@@ -1116,8 +1206,8 @@ class OpenApiGenerator(Generator):
     help="Path to a YAML config file supplying defaults under "
     "'generator_args: {openapi: {template: ...}}'. Keys are this command's own option "
     "names with dashes as underscores; explicit command-line options always take "
-    "precedence over the config file. The same section carries the nested 'expose' and "
-    "'exclude' settings that --create-template reads.",
+    "precedence over the config file. The same section carries the nested 'expose', "
+    "'exclude' and 'overlay' settings that --create-template reads.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.pass_context
