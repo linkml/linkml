@@ -36,7 +36,7 @@ prefixes:
   skos: http://www.w3.org/2004/02/skos/core#
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
-  wikidata: http://www.wikidata.org/entity/
+  wd: http://www.wikidata.org/entity/
 default_prefix: ks
 see_also:
   - https://example.org/
@@ -337,6 +337,8 @@ enums:
   FamilialRelationshipType:
     permissible_values:
       SIBLING_OF:
+        close_mappings:
+          - CODE:sibling
       PARENT_OF:
       CHILD_OF:
   DiagnosisType:
@@ -346,9 +348,14 @@ enums:
     permissible_values:
       HIRE:
         meaning: bizcodes:001
+        exact_mappings:
+          - CODE:hire
       FIRE:
         meaning: bizcodes:002
       PROMOTION:
+        title: Promotion
         meaning: bizcodes:003
+        exact_mappings:
+          - CODE:promotion
       TRANSFER:
         meaning: bizcodes:004
