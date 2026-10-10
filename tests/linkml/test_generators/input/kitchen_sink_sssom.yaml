@@ -91,6 +91,8 @@ classes:
     class_uri: schema:Person
     exact_mappings:
       - wd:Q215627
+    mappings:
+      - wd:Q5
 
 
   Organization:

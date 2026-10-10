@@ -1,6 +1,7 @@
 """Generate a SSSOM mapping set from the mappings a LinkML schema declares."""
 
 import os
+import re
 from dataclasses import dataclass
 from datetime import date
 from typing import ClassVar
@@ -71,6 +72,16 @@ SPDX_LICENSE_URLS = {
     "MPL-2.0": "https://spdx.org/licenses/MPL-2.0.html",
 }
 
+
+def tsv_cell(value: str) -> str:
+    r"""A value as one SSSOM/TSV cell: a tab or line break, which would end the cell or the row, becomes a space.
+
+    >>> tsv_cell("A person\twith\na title")
+    'A person with a title'
+    """
+    return re.sub(r"[\t\r\n]+", " ", str(value)).strip()
+
+
 # Columns every output carries, whether or not a row fills them.
 REQUIRED_COLUMNS = ("subject_id", "subject_label", "predicate_id", "object_id", "mapping_justification")
 
@@ -83,7 +94,8 @@ class SSSOMGenerator(Generator):
 
     Each ``exact_mappings``, ``close_mappings``, ``related_mappings``, ``narrow_mappings``
     and ``broad_mappings`` entry on a class, slot or permissible value becomes one row whose
-    predicate is the matching SKOS property. A ``class_uri`` or ``slot_uri`` that differs
+    predicate is the matching SKOS property, and each entry of the generic ``mappings`` slot
+    becomes a ``skos:mappingRelation`` row. A ``class_uri`` or ``slot_uri`` that differs
     from the element's own URI is an exact mapping to it; one that equals it is the element
     itself and produces no row. A permissible value is identified by its enum's URI, a hash
     and its text, which is how gen-owl names a value without a ``meaning``; a ``meaning`` is
@@ -119,6 +131,7 @@ class SSSOMGenerator(Generator):
         "narrow_mappings": "skos:narrowMatch",
         "close_mappings": "skos:closeMatch",
         "exact_mappings": "skos:exactMatch",
+        "mappings": "skos:mappingRelation",
     }
 
     def __post_init__(self):
@@ -130,6 +143,8 @@ class SSSOMGenerator(Generator):
         super().__post_init__()
         self.sourcefile = self.schema
         self.rows: list[dict[str, str]] = []
+        self.written: set[tuple[str, str, str]] = set()
+        self.related: set[tuple[str, str]] = set()
         self.used_prefixes: set[str] = set()
         if self.output:
             self.output_file = self.output
@@ -152,6 +167,21 @@ class SSSOMGenerator(Generator):
             return value
         return str(self.namespaces[prefix]) + local
 
+    def as_curie(self, uri_or_curie: str) -> str:
+        """A full URI as a CURIE when a declared prefix covers it; any other value unchanged.
+
+        SSSOM/TSV writes entity references as CURIEs, while a schema may give a mapping or a
+        ``class_uri`` as a full URI. A URI that is exactly a namespace stays a URI, because a
+        CURIE with an empty local part is not one sssom-py accepts.
+        """
+        value = str(uri_or_curie)
+        if "://" not in value:
+            return value
+        curie = self.namespaces.curie_for(value, default_ok=False)
+        if curie is None or curie.endswith(":"):
+            return value
+        return curie
+
     def same_entity(self, a: str, b: str) -> bool:
         """True when two CURIEs or URIs name the same entity."""
         return self.expand(a) == self.expand(b)
@@ -164,9 +194,17 @@ class SSSOMGenerator(Generator):
         self.used_prefixes.add(value.split(":", 1)[0])
 
     def add_row(self, row: dict[str, str]) -> None:
-        """Keep a row, once, and note the prefixes it uses."""
-        if row in self.rows:
+        """Keep a row unless the same mapping is already written, and note the prefixes it uses.
+
+        The schema loader visits a slot that a class refines in ``slot_usage`` again, with the
+        same mappings and perhaps another title. The first row for a mapping comes from the
+        slot's own declaration, and it is the one kept.
+        """
+        triple = (row["subject_id"], row["predicate_id"], row["object_id"])
+        if triple in self.written:
             return
+        self.written.add(triple)
+        self.related.add((row["subject_id"], row["object_id"]))
         self.rows.append(row)
         for column in ("subject_id", "predicate_id", "object_id", "mapping_justification"):
             self.note_prefix(row[column])
@@ -181,20 +219,28 @@ class SSSOMGenerator(Generator):
         **extra_columns: str,
     ) -> None:
         """Write one row per mapping the element declares, with ``extra_exact`` as further exact matches."""
+        subject_id = self.as_curie(subject_id)
         for metaslot, predicate_id in self.mapping_type_dict.items():
             object_ids = list(getattr(element, metaslot) or [])
             if metaslot == "exact_mappings" and extra_exact:
                 object_ids = extra_exact + object_ids
             for object_id in object_ids:
+                object_id = self.as_curie(object_id)
                 if self.same_entity(subject_id, object_id):
                     # A class_uri or slot_uri equal to the element's own URI names the element,
-                    # not a mapping. The schema loader copies it into exact_mappings as well.
+                    # not a mapping. The schema loader copies a class_uri into exact_mappings
+                    # and a slot_uri into the generic mappings as well.
+                    continue
+                if metaslot == "mappings" and (subject_id, object_id) in self.related:
+                    # skos:mappingRelation is the parent of the SKOS match properties, so it adds
+                    # nothing to a pair that a more specific mapping already relates, such as a
+                    # slot_uri that the schema loader has put into the generic mappings.
                     continue
                 row = {
                     "subject_id": subject_id,
                     "subject_label": subject_label,
                     "predicate_id": predicate_id,
-                    "object_id": str(object_id),
+                    "object_id": object_id,
                     "mapping_justification": self.mapping_justification,
                 }
                 if subject_source:
@@ -249,7 +295,7 @@ class SSSOMGenerator(Generator):
         declared = self.schema.license
         if not declared:
             return UNSPECIFIED_LICENSE, "The schema declares no license."
-        declared = str(declared)
+        declared = self.expand(str(declared))
         if "://" in declared:
             return declared, None
         url = SPDX_LICENSE_URLS.get(declared.upper())
@@ -285,8 +331,10 @@ class SSSOMGenerator(Generator):
         metadata["license"], comment = self.license_url()
         metadata["mapping_provider"] = str(self.schema.id)
         if self.include_generation_date:
+            # The day the file is written is its publication_date. A mapping_date would say that
+            # every mapping was asserted that day, since SSSOM propagates it to each mapping.
             # A date object, so that the header carries an unquoted YAML date as SSSOM files do.
-            metadata["mapping_date"] = date.today()
+            metadata["publication_date"] = date.today()
         if comment:
             metadata["comment"] = comment
         metadata["curie_map"] = self.curie_map()
@@ -302,7 +350,7 @@ class SSSOMGenerator(Generator):
                 sssom_tsv.write("#" + line + "\n")
             sssom_tsv.write("\t".join(columns) + "\n")
             for row in self.rows:
-                sssom_tsv.write("\t".join(row.get(column, "") for column in columns) + "\n")
+                sssom_tsv.write("\t".join(tsv_cell(row.get(column, "")) for column in columns) + "\n")
 
 
 @shared_arguments(SSSOMGenerator)

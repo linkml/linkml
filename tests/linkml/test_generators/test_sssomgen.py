@@ -65,6 +65,7 @@ def test_header_identifies_the_set(schema_path, sssom):
     assert metadata["license"] == schema["license"]
     assert metadata["mapping_provider"] == SCHEMA_ID
     # Off by default, like every generator's generation_date, so output is byte-stable.
+    assert "publication_date" not in metadata
     assert "mapping_date" not in metadata
     # Pre-1.0 header keys the generator used to invent.
     assert "creator_id" not in metadata
@@ -165,6 +166,17 @@ def test_permissible_values(sssom):
     assert sibling["predicate_id"] == "skos:closeMatch"
 
 
+def test_generic_mappings_are_mapping_relations(sssom):
+    _, _, rows = sssom
+    found = triples(rows)
+    assert ("ks:Person", "skos:mappingRelation", "wd:Q5") in found
+    # The schema loader puts a slot_uri into the generic mappings too; the exact match says more.
+    assert ("ks:ceo", "skos:exactMatch", "schema:ceo") in found
+    assert ("ks:ceo", "skos:mappingRelation", "schema:ceo") not in found
+    pairs = [(subject, obj) for subject, _, obj in found]
+    assert len(pairs) == len(set(pairs))
+
+
 @pytest.mark.parametrize("justification", ["semapv:LexicalMatching", "semapv:MappingReview"])
 def test_mapping_justification_option(schema_path, tmp_path, justification):
     _, _, rows = generate(schema_path, tmp_path, mapping_justification=justification)
@@ -182,9 +194,11 @@ def test_mapping_set_id_option(schema_path, tmp_path):
     assert metadata["mapping_set_id"] == "https://example.org/sets/ks"
 
 
-def test_mapping_date_follows_generation_date_option(schema_path, tmp_path):
+def test_publication_date_follows_generation_date_option(schema_path, tmp_path):
     metadata, _, _ = generate(schema_path, tmp_path, include_generation_date=True)
-    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(metadata["mapping_date"]))
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(metadata["publication_date"]))
+    # mapping_date would claim that every mapping was asserted on the day of generation.
+    assert "mapping_date" not in metadata
 
 
 MINIMAL_SCHEMA = """
@@ -194,6 +208,7 @@ name: minimal
 prefixes:
   ex: https://example.org/minimal/
   schema: http://schema.org/
+  spdx: http://spdx.org/licenses/
 default_prefix: ex
 classes:
   Person:
@@ -212,6 +227,7 @@ classes:
         ),
         ("license: CC0-1.0", "https://creativecommons.org/publicdomain/zero/1.0/", False),
         ("license: MIT", "https://spdx.org/licenses/MIT.html", False),
+        ("license: spdx:CC0-1.0", "http://spdx.org/licenses/CC0-1.0", False),
         ("license: Proprietary", UNSPECIFIED_LICENSE, True),
         ("", UNSPECIFIED_LICENSE, True),
     ],
@@ -225,3 +241,50 @@ def test_license_is_a_uri(tmp_path, license_line, expected_license, comment_expe
     if comment_expected:
         assert "license" in metadata["comment"]
     assert triples(rows) == {("ex:Person", "skos:exactMatch", "schema:Person")}
+
+
+CELLS_SCHEMA = """
+id: https://example.org/cells
+name: cells
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/cells/
+  schema: http://schema.org/
+default_prefix: ex
+imports:
+  - linkml:types
+classes:
+  Person:
+    title: "A person\\twith a tab\\nand a line break"
+    class_uri: http://schema.org/Person
+    slots:
+      - name
+    slot_usage:
+      name:
+        title: person name
+  Robot:
+    exact_mappings:
+      - http://example.org/elsewhere/Robot
+slots:
+  name:
+    exact_mappings:
+      - http://schema.org/name
+"""
+
+
+def test_cells_are_sssom_tsv(tmp_path):
+    schema_path = tmp_path / "cells.yaml"
+    schema_path.write_text(CELLS_SCHEMA)
+    _, columns, rows = generate(str(schema_path), tmp_path)
+    # A tab or line break in a label would split the row.
+    assert all(len(row) == len(columns) for row in rows)
+    labels = {row["subject_id"]: row["subject_label"] for row in rows}
+    assert labels["ex:Person"] == "A person with a tab and a line break"
+    found = triples(rows)
+    # Full URIs under a declared prefix are written as CURIEs; others stay URIs.
+    assert ("ex:Person", "skos:exactMatch", "schema:Person") in found
+    assert ("ex:name", "skos:exactMatch", "schema:name") in found
+    assert ("ex:Robot", "skos:exactMatch", "http://example.org/elsewhere/Robot") in found
+    # The slot that slot_usage refines gives the mapping once, with the slot's own label.
+    name_rows = [row for row in rows if row["subject_id"] == "ex:name"]
+    assert [row["subject_label"] for row in name_rows] == ["name"]
