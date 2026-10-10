@@ -240,6 +240,10 @@ class OpenApiGenerator(Generator):
 
     The OpenAPI version to be generated is obtained from the template's top-level
     attribute `openapi`.
+
+    The template can be written by hand, or created from the schema by
+    :meth:`create_template`, which exposes the classes the ``expose`` and ``exclude``
+    settings name.
     """
 
     generatorname = os.path.basename(__file__)
@@ -884,10 +888,12 @@ class OpenApiGenerator(Generator):
 
         The set is the subset's classes, plus the explicit ``expose.classes``, minus ``exclude``,
         minus abstract and mixin classes. The abstract and mixin filter applies to what the subset
-        sweeps in; a class named in ``expose.classes`` is a deliberate choice and is kept as
-        written, so an API can bind an endpoint to a mixin that several concrete classes share.
-        With neither ``subset`` nor ``classes`` every concrete class is exposed. The subset's
-        members come in schema order, then the explicit classes in configuration order.
+        contributes. A class named in ``expose.classes`` is exposed as stated, even an abstract
+        class or a mixin, because naming it is a deliberate choice: a listing of an abstract class
+        returns the records of its subclasses, and a schema may give a mixin records of its own.
+        With neither ``subset`` nor ``classes`` every class that is neither abstract nor a mixin
+        is exposed. The subset's members come in schema order, then the explicit classes in
+        configuration order.
 
         :raises ValueError: if a name is not in the schema, a class is both exposed and excluded,
             or two classes share a path.
@@ -964,8 +970,8 @@ class OpenApiGenerator(Generator):
         A parameter holds structure only: ``in``, ``name``, ``required``, ``schema.type`` and
         ``x-linkml-source: <Class>.<slot>``. The ``name`` is the slot's ``alias`` when it has
         one, since the generated schema names the property that way, and the slot name
-        otherwise. Descriptions, enum values and defaults are not copied from the schema; they
-        belong to the instantiated document, and the source key says where a later pass finds them.
+        otherwise. Descriptions, enum values and defaults are not copied from the schema, where
+        they would drift; the source key says where a later pass at instantiation can find them.
         """
         return [
             {
@@ -991,10 +997,11 @@ class OpenApiGenerator(Generator):
 
         The template holds structure only: ``info`` from the schema's metadata, one list ``GET``
         per class with ``crud`` on, whose query parameters are the class's slots typed from their
-        ranges, and one ``components/schemas`` placeholder per exposed class. Descriptions, enum
-        values and defaults are left to :meth:`serialize`, which generates them from the schema
-        when the template is instantiated, so the template cannot drift from the model. The
-        template is validated as it is returned, so it instantiates without further editing.
+        ranges, and one ``components/schemas`` placeholder per exposed class. The component
+        schemas, with their descriptions, enum values and defaults, are left to :meth:`serialize`,
+        which generates them from the schema when the template is instantiated, so the template
+        cannot drift from the model. The template is validated as it is returned, so it
+        instantiates without further editing.
 
         :param openapi_version: The OpenAPI version the template declares.
         """
@@ -1061,9 +1068,10 @@ class OpenApiGenerator(Generator):
     "--create-template",
     is_flag=True,
     default=False,
-    help="Print an OpenAPI template exposing the classes the config file names under "
-    "'generator_args: {openapi: {expose: ..., exclude: ...}}', instead of instantiating one; "
-    "without a config file every concrete class is exposed",
+    help="Print an OpenAPI template that exposes the classes named under "
+    "'generator_args: {openapi: {expose: ..., exclude: ...}}' in the config file, instead of "
+    "instantiating a template; without a config file every class that is neither abstract nor "
+    "a mixin is exposed",
 )
 @click.option(
     "--openapi-version",
@@ -1079,8 +1087,8 @@ class OpenApiGenerator(Generator):
     help="Path to a YAML config file supplying defaults under "
     "'generator_args: {openapi: {template: ...}}'. Keys are this command's own option "
     "names with dashes as underscores; explicit command-line options always take "
-    "precedence over the config file. The same section carries the nested 'expose', "
-    "'exclude' and 'overlay' settings that --create-template reads.",
+    "precedence over the config file. The same section carries the nested 'expose' and "
+    "'exclude' settings that --create-template reads.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.pass_context
@@ -1097,7 +1105,8 @@ def cli(
 ):
     """Generate an OpenAPI YAML with resources modelled with LinkML.
     If no OpenAPI template is provided,
-    a generic one with one exemplary class/type schema is printed out."""
+    a generic one with one exemplary class/type schema is printed out.
+    With --create-template, a template for the classes the config file exposes is printed instead."""
     config = read_generator_config(config_file, OpenApiGenerator.config_section_name)
     # The generator reads the settings in EXPOSURE_CONFIG_KEYS itself. They are not options of
     # this command, so apply_config_defaults would warn that each is an unknown key. Take them

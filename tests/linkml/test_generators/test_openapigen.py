@@ -1733,7 +1733,7 @@ def create_template(schema_path: str, oas_version: str, **settings) -> dict:
 
     :param schema_path: the LinkML schema to expose
     :param oas_version: the OpenAPI version the template declares
-    :param settings: ``expose``, ``exclude`` and ``overlay`` as the config file would carry them
+    :param settings: ``expose`` and ``exclude``, as the config file would carry them
     """
     return yaml.safe_load(OpenApiGenerator(schema_path, **settings).create_template(oas_version))
 

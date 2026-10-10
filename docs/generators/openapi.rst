@@ -48,6 +48,9 @@ be used as a starting point:
 
    gen-openapi personinfo.yaml > api-template.yaml
 
+To create a template for the classes an API exposes instead, from the schema and a
+configuration file, see :ref:`openapi-create-template`.
+
 OpenAPI Validation
 ------------------
 
@@ -190,9 +193,9 @@ Configuration File
 ``gen-project`` reads (see :doc:`project-generator`), and reads only its
 ``generator_args.openapi`` section. Any option of the command can be set there,
 keyed by its name with dashes as underscores, such as ``template``,
-``keep_unreferenced`` and ``inline_enums``. Options given on the command line
-take precedence over the file, and a key that is not an option is reported as a
-warning and ignored.
+``keep_unreferenced``, ``inline_enums`` and ``openapi_version``. Options given on
+the command line take precedence over the file, and a key that is not an option is
+reported as a warning and ignored.
 
 .. code-block:: yaml
 
@@ -205,6 +208,134 @@ warning and ignored.
 .. code:: bash
 
    gen-openapi -C api.yaml personinfo.yaml > personinfo.openapi.yaml
+
+The same section carries two settings that are not options, which
+``--create-template`` reads: ``expose`` and ``exclude`` choose the classes the API
+exposes. The schema itself says nothing about the API, so one schema can serve
+several APIs, each with its own file.
+
+.. code-block:: yaml
+
+    # api.yaml
+    generator_args:
+      openapi:
+        template: api-template.yaml
+        expose:
+          subset: core
+          classes:
+            Risk: {path: /risks, operation_id: list_risks}
+            Hazard: {crud: false}
+        exclude: [Entity]
+
+.. _openapi-create-template:
+
+Creating a Template from the Schema
+-----------------------------------
+
+``--create-template`` prints a template for the classes the configuration file
+exposes, which the generator then instantiates like a hand-written one:
+
+.. code-block:: bash
+
+   gen-openapi --create-template -C api.yaml risks.yaml > api-template.yaml
+   gen-openapi -C api.yaml risks.yaml > risks.openapi.yaml
+
+The template holds structure only, so that it cannot drift from the schema:
+
+* ``info`` takes the schema's ``title``, or its ``name`` when it has no title, its
+  ``version``, or ``0.1.0`` when it has none, and its ``description``.
+* Each exposed class gets a placeholder in ``components/schemas`` that carries
+  ``type: object``, ``x-linkml-schema`` and ``x-linkml-source`` and nothing else.
+* Each exposed class with ``crud`` on gets one ``GET`` path that returns a list of
+  the class, with one query parameter per slot. A parameter carries ``in``,
+  ``name``, ``required: false``, ``schema.type`` and
+  ``x-linkml-source: <Class>.<slot>``, and no description, enum values or default.
+
+When the template is instantiated, the component schemas are generated from the
+schema with their descriptions and enum values, and a placeholder can still be
+annotated by hand, as described under Template Annotations above. The query
+parameters keep the bare type the template gives them. ``--openapi-version`` sets
+the version the template declares, 3.0.3 by default, and the template is validated
+against that version before it is printed. When ``expose`` names neither a subset
+nor any classes, as without a configuration file, every class that is neither
+abstract nor a mixin is exposed.
+
+An excerpt of a created template, for the class ``Risk`` exposed at ``/risks``:
+
+.. code-block:: yaml
+
+    paths:
+      /risks:
+        get:
+          summary: Get Risk
+          operationId: list_risks
+          parameters:
+          - in: query
+            name: severity
+            required: false
+            schema:
+              type: string
+            x-linkml-source: Risk.severity
+          responses:
+            '200':
+              description: A list of Risk
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Risk'
+    components:
+      schemas:
+        Risk:
+          type: object
+          x-linkml-schema: https://w3id.org/linkml/my_schema
+          x-linkml-source: Risk
+
+Exposure
+^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Setting
+     - Effect
+   * - ``expose.subset``
+     - Exposes the classes the schema tags with this subset through ``in_subset``,
+       leaving out abstract classes and mixins. When the subset also tags slots,
+       the query parameters of every exposed class are narrowed to those slots.
+   * - ``expose.classes``
+     - Exposes each class it names, as stated, even an abstract class or a mixin:
+       a listing of an abstract class returns the records of its subclasses, and a
+       schema may give a mixin records of its own.
+   * - ``exclude``
+     - Removes classes from the exposed set. A class cannot be both named under
+       ``expose.classes`` and excluded.
+   * - ``crud: true``, the default
+     - The class gets a placeholder and one list ``GET``.
+   * - ``crud: false``
+     - The class gets a placeholder and no path, for a class that only
+       hand-written paths return.
+
+An entry under ``expose.classes`` may set ``path``, ``operation_id`` and
+``summary``. Otherwise they are derived from the class name, as
+``/<class in lowercase>``, ``list_<class in lowercase>`` and ``Get <Class>``.
+
+Query parameters come in the ``rank`` order of their slots, and slots without a
+rank follow in schema order. A parameter is named as the generated schema names the
+property, so by the slot's ``alias`` when it has one. Its type is ``integer``,
+``number`` or ``boolean`` when the slot's range is an integer, a float, double or
+decimal, or a boolean type, and ``string`` for any other type, for an enum, and for
+a reference to a class, which is passed by its identifier.
+
+The settings are checked before anything is printed. A key directly under
+``expose`` other than ``subset`` and ``classes`` is an error, and so is a key in a
+class entry that looks like a misspelling of ``path``, ``operation_id``,
+``summary`` or ``crud``, such as ``operationId``. Any other key in a class entry is
+left alone, so that a server reading the same file can keep its own settings beside
+the class it serves. A class or a subset the schema does not declare is an error
+too, and so are two exposed classes on one path.
 
 Docs
 ----
@@ -222,4 +353,4 @@ Code
 .. currentmodule:: linkml.generators.openapigen
 
 .. autoclass:: OpenApiGenerator
-    :members: serialize
+    :members: serialize, create_template
