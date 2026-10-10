@@ -378,6 +378,16 @@ currently supported.
 Not yet, but we are working on a tool to this, please check out
 [linkml-transformer](https://github.com/linkml/linkml-transformer) for more details.
 
+### Can I generate output for only part of a schema?
+
+Yes. Declare a subset under `subsets`, add it to the `in_subset` of the classes you want, and of their slots too if each
+kept class should keep only some of its slots, then pass `--subset NAME` to the generator, for example
+`gen-json-schema --subset core my_schema.yaml`. The generator works from a copy of the schema pruned to the subset's
+members and what they need: the ancestors of each kept class, the slots it keeps, and every class, enum and type that
+those slots refer to. An imported schema is pruned the same way, so the few classes that a schema uses from a large
+imported model no longer bring the whole model into the output. See [generators](../generators/index) and
+[subsets](../schemas/subsets).
+
 ### Can I combine dynamic enums using boolean expressions
 
 Yes, this is possible.
