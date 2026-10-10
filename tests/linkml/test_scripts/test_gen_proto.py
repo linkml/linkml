@@ -1139,12 +1139,9 @@ def test_slots_sharing_a_field_name_collapse_to_one_field(tmp_path, caplog):
 def test_kitchen_sink_proto_compiles_with_protoc(tmp_path):
     """The generated kitchen_sink proto must compile cleanly with ``protoc``.
 
-    Uses ``grpc_tools.protoc`` (the same Python wrapper as ``uvx --from
-    grpcio-tools``) so no system ``protoc`` binary is required. Skipped if
-    ``grpc_tools`` isn't installed in the test environment.
+    Uses ``grpc_tools.protoc`` from ``grpcio-tools``, a member of the ``tests``
+    dependency group, so no system ``protoc`` binary is required.
     """
-    pytest.importorskip("grpc_tools")
-
     result = CliRunner().invoke(cli, [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
 
