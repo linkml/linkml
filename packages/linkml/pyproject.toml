@@ -83,6 +83,7 @@ tests = [
   { include-group = "typing" },
   { include-group = "shacl" },
   "duckdb>=1.5.5",
+  "grpcio-tools>=1.76.0",
   "sqlalchemy-bigquery>=1.17.2",
   "tomli-w>=1.2.0",
 ]
