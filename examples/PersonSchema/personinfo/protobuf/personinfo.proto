@@ -1,177 +1,251 @@
- syntax="proto3";
- package
-// metamodel_version: 1.7.0
-message Address
- {
-  string street = 0
-  string city = 0
-  string postalCode = 0
- }
-message CodeSystem
- {
-  uriorcurie id = 0
-  string name = 0
- }
-message Concept
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  codeSystem codeSystem = 0
- repeated  crossReference mappings = 0
- }
-message Container
- {
- repeated  person persons = 0
- repeated  organization organizations = 0
- repeated  place places = 0
- }
-message DiagnosisConcept
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  codeSystem codeSystem = 0
- repeated  crossReference mappings = 0
- }
-message EmploymentEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  float duration = 0
-  boolean isCurrent = 0
-  organization employedAt = 0
-  salaryType salary = 0
- }
-message Event
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  float duration = 0
-  boolean isCurrent = 0
- }
-message FamilialRelationship
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  person relatedTo = 0
-  familialRelationshipType type = 0
-  person relatedTo = 0
- }
-message ImagingProcedureConcept
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  codeSystem codeSystem = 0
- repeated  crossReference mappings = 0
- }
-message IntegerPrimaryKeyObject
- {
-  integer intId = 0
- }
-message InterPersonalRelationship
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  person relatedTo = 0
-  string type = 0
-  person relatedTo = 0
- }
-message MedicalEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  float duration = 0
-  boolean isCurrent = 0
-  diagnosisConcept diagnosis = 0
-  procedureConcept procedure = 0
-  place inLocation = 0
- }
+syntax = "proto3";
+package personinfo;
+// metamodel_version: 1.12.0
+message Address {
+  string street = 1;
+  string city = 2;
+  string postal_code = 3;
+}
+message CodeSystem {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+}
+message Concept {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  // reference to CodeSystem
+  string code_system = 5;
+  repeated string mappings = 6;
+}
+message Container {
+  repeated Person persons = 1;
+  repeated Organization organizations = 2;
+  repeated Place places = 3;
+}
+message DiagnosisConcept {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  // reference to CodeSystem
+  string code_system = 5;
+  repeated string mappings = 6;
+}
+message EmploymentEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  float duration = 3;
+  bool is_current = 4;
+  // reference to Organization
+  string employed_at = 5;
+  string salary = 6;
+}
+message Event {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  float duration = 3;
+  bool is_current = 4;
+}
+message FamilialRelationship {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  // required
+  // reference to Person
+  string related_to = 3;
+  // required
+  FamilialRelationshipType type = 4;
+}
+// A mixin applied to any class that can have aliases/alternateNames
+message HasAliases {
+  repeated string aliases = 1;
+}
+message HasNewsEvents {
+  repeated NewsEvent has_news_events = 1;
+}
+message ImagingProcedureConcept {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  // reference to CodeSystem
+  string code_system = 5;
+  repeated string mappings = 6;
+}
+message IntegerPrimaryKeyObject {
+  // identifier
+  // required
+  int32 int_id = 1;
+}
+message InterPersonalRelationship {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  // required
+  // reference to Person
+  string related_to = 3;
+  // required
+  string type = 4;
+}
+message MedicalEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  float duration = 3;
+  bool is_current = 4;
+  DiagnosisConcept diagnosis = 5;
+  ProcedureConcept procedure = 6;
+  // reference to Place
+  string in_location = 7;
+}
 // A generic grouping for any identifiable entity
-message NamedThing
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
- }
-message NewsEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  float duration = 0
-  boolean isCurrent = 0
-  string headline = 0
- }
-message OperationProcedureConcept
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  codeSystem codeSystem = 0
- repeated  crossReference mappings = 0
- }
+message NamedThing {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+}
+message NewsEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  float duration = 3;
+  bool is_current = 4;
+  string headline = 5;
+}
+message OperationProcedureConcept {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  // reference to CodeSystem
+  string code_system = 5;
+  repeated string mappings = 6;
+}
 // An organization such as a company or university
-message Organization
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  string missionStatement = 0
-  string foundingDate = 0
-  place foundingLocation = 0
- repeated  organizationType categories = 0
-  decimal score = 0
-  salaryType minSalary = 0
- repeated  string aliases = 0
- repeated  newsEvent hasNewsEvents = 0
- }
+message Organization {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  string mission_statement = 5;
+  string founding_date = 6;
+  // reference to Place
+  string founding_location = 7;
+  repeated OrganizationType categories = 8;
+  // A score between 0 and 5, represented as a decimal
+  string score = 9;
+  string min_salary = 10;
+  repeated string aliases = 11;
+  repeated NewsEvent has_news_events = 12;
+}
 // A person (alive, dead, undead, or fictional).
-message Person
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  string primaryEmail = 0
-  string birthDate = 0
-  integer age = 0
-  genderType gender = 0
-  address currentAddress = 0
-  string telephone = 0
- repeated  employmentEvent hasEmploymentHistory = 0
- repeated  familialRelationship hasFamilialRelationships = 0
- repeated  interPersonalRelationship hasInterpersonalRelationships = 0
- repeated  medicalEvent hasMedicalHistory = 0
- repeated  string aliases = 0
- repeated  newsEvent hasNewsEvents = 0
- }
-message Place
- {
-  uriorcurie id = 0
-  string name = 0
-  imageURL depictedBy = 0
- repeated  string aliases = 0
- }
-message ProcedureConcept
- {
-  uriorcurie id = 0
-  string name = 0
-  string description = 0
-  imageURL depictedBy = 0
-  codeSystem codeSystem = 0
- repeated  crossReference mappings = 0
- }
-message Relationship
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  person relatedTo = 0
-  string type = 0
- }
+message Person {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  string primary_email = 5;
+  string birth_date = 6;
+  int32 age = 7;
+  GenderType gender = 8;
+  // The address at which a person currently lives
+  Address current_address = 9;
+  string telephone = 10;
+  repeated EmploymentEvent has_employment_history = 11;
+  repeated FamilialRelationship has_familial_relationships = 12;
+  repeated InterPersonalRelationship has_interpersonal_relationships = 13;
+  repeated MedicalEvent has_medical_history = 14;
+  repeated string aliases = 15;
+  repeated NewsEvent has_news_events = 16;
+}
+message Place {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string depicted_by = 3;
+  repeated string aliases = 4;
+}
+message ProcedureConcept {
+  // identifier
+  // required
+  string id = 1;
+  // required
+  string name = 2;
+  string description = 3;
+  string depicted_by = 4;
+  // reference to CodeSystem
+  string code_system = 5;
+  repeated string mappings = 6;
+}
+message Relationship {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  // reference to Person
+  string related_to = 3;
+  string type = 4;
+}
+message WithLocation {
+  // reference to Place
+  string in_location = 1;
+}
+
+enum DiagnosisType {
+  DIAGNOSIS_TYPE_UNSPECIFIED = 0;
+  DIAGNOSIS_TYPE_TODO = 1;
+}
+enum FamilialRelationshipType {
+  FAMILIAL_RELATIONSHIP_TYPE_UNSPECIFIED = 0;
+  FAMILIAL_RELATIONSHIP_TYPE_SIBLING_OF = 1;
+  FAMILIAL_RELATIONSHIP_TYPE_PARENT_OF = 2;
+  FAMILIAL_RELATIONSHIP_TYPE_CHILD_OF = 3;
+}
+enum GenderType {
+  GENDER_TYPE_UNSPECIFIED = 0;
+  GENDER_TYPE_NONBINARY_MAN = 1;
+  GENDER_TYPE_NONBINARY_WOMAN = 2;
+  GENDER_TYPE_TRANSGENDER_WOMAN = 3;
+  GENDER_TYPE_TRANSGENDER_MAN = 4;
+  GENDER_TYPE_CISGENDER_MAN = 5;
+  GENDER_TYPE_CISGENDER_WOMAN = 6;
+}
+enum NonFamilialRelationshipType {
+  NON_FAMILIAL_RELATIONSHIP_TYPE_UNSPECIFIED = 0;
+  NON_FAMILIAL_RELATIONSHIP_TYPE_COWORKER_OF = 1;
+  NON_FAMILIAL_RELATIONSHIP_TYPE_ROOMMATE_OF = 2;
+  NON_FAMILIAL_RELATIONSHIP_TYPE_BEST_FRIEND_OF = 3;
+  NON_FAMILIAL_RELATIONSHIP_TYPE_MORTAL_ENEMY_OF = 4;
+}
+enum OrganizationType {
+  ORGANIZATION_TYPE_UNSPECIFIED = 0;
+  ORGANIZATION_TYPE_NON_PROFIT = 1;
+  ORGANIZATION_TYPE_FOR_PROFIT = 2;
+  ORGANIZATION_TYPE_OFFSHORE = 3;
+  ORGANIZATION_TYPE_CHARITY = 4;
+  ORGANIZATION_TYPE_SHELL_COMPANY = 5;
+  ORGANIZATION_TYPE_LOOSE_ORGANIZATION = 6;
+}
