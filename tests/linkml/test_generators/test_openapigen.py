@@ -1710,9 +1710,7 @@ def test_cli_config_file_without_openapi_section_prints_generic_template(input_p
     assert "x-linkml-source: Described" in result.output
 
 
-# ---------------------------------------------------------------------------
-# Config-driven exposure and --create-template
-# ---------------------------------------------------------------------------
+# The tests below create templates with --create-template from the expose and exclude settings.
 
 EXPOSURE_ID = "https://w3id.org/linkml/tests/exposure"
 
