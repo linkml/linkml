@@ -637,8 +637,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             else:
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                result.attribute.range = f"list[{self._apply_value_constraints_to_elements(result)}]"
+                result.attribute.collection = "list"
             else:
+                result.attribute.collection = "dict"
+                result.attribute.collection_key = collection_key
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
@@ -646,48 +648,18 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
                     if simple_dict_value != result.attribute.range:
-                        simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
-                    result.attribute.range = f"dict[str, {simple_dict_value}]"
-                else:
-                    result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
+                        result.attribute.object_range = result.attribute.range
+                    result.attribute.range = simple_dict_value
+                    result.attribute.collection_key = "str"
+            if result.attribute.constrain_values:
+                annotated = Import(module="typing", objects=[ObjectImport(name="Annotated")])
+                result.imports = (result.imports if result.imports is not None else Imports()) + annotated
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            result.attribute.range = f"Optional[{result.attribute.range}]"
+            if slot.array is None:
+                result.attribute.optional = True
+            else:
+                result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
-
-    @staticmethod
-    def _apply_value_constraints_to_elements(result: SlotResult) -> str:
-        """
-        Move the value constraints of a multivalued slot from the field to the elements of its list.
-
-        ``ge`` and ``le`` on the ``Field`` of a list apply to the list itself, which pydantic rejects
-        for every value. When the slot has ``minimum_value``, ``maximum_value`` or ``equals_number``,
-        they are removed from the attribute and applied to the element range with ``Annotated``.
-        Cardinality constraints stay on the list.
-
-        Args:
-            result (:class:`.SlotResult`): the result of a multivalued slot that is rendered as a list.
-                Its attribute and imports are updated in place.
-
-        Returns:
-            str: the range of the elements of the list
-        """
-        attribute = result.attribute
-        if attribute.equals_number is not None:
-            bounds = {"ge": attribute.equals_number, "le": attribute.equals_number}
-        else:
-            bounds = {"ge": attribute.minimum_value, "le": attribute.maximum_value}
-        bounds = {name: value for name, value in bounds.items() if value is not None}
-        if not bounds:
-            return attribute.range
-
-        arguments = ", ".join(f"{name}={value}" for name, value in bounds.items())
-        element_range = f"Annotated[{attribute.range}, Field({arguments})]"
-        attribute.equals_number = None
-        attribute.minimum_value = None
-        attribute.maximum_value = None
-        annotated = Import(module="typing", objects=[ObjectImport(name="Annotated")])
-        result.imports = (result.imports if result.imports is not None else Imports()) + annotated
-        return element_range
 
     @property
     def predefined_slot_values(self) -> dict[str, dict[str, str]]:

@@ -1006,6 +1006,154 @@ classes:
     assert mod.CardinalityArray.model_fields["min_max_cardinality_array"].metadata[1].max_length == 8
 
 
+@pytest.mark.parametrize(
+    "value,required,minimum_value,maximum_value,equals_number,valid",
+    (
+        ([10, 20, 30], False, 0, 100, None, True),
+        ([10, 200, 30], False, 0, 100, None, False),
+        ([10, -1, 30], False, 0, 100, None, False),
+        ([10, 20, 30], True, 0, 100, None, True),
+        ([10, 200, 30], True, 0, 100, None, False),
+        ([], False, 0, 100, None, True),
+        ([10, 20], False, 10, None, None, True),
+        ([9, 20], False, 10, None, None, False),
+        ([10, 20], False, None, 20, None, True),
+        ([10, 21], False, None, 20, None, False),
+        ([0.5, 1.5], False, 0.5, None, None, True),
+        ([0.25, 1.5], False, 0.5, None, None, False),
+        ([5, 5], False, None, None, 5, True),
+        ([5, 6], False, None, None, 5, False),
+    ),
+)
+def test_pydantic_value_range_multivalued(value, required, minimum_value, maximum_value, equals_number, valid):
+    """
+    Ensure that the value constraints of a multivalued slot apply to each element of the list
+    in the generated pydantic model, and not to the list itself.
+    """
+    schema_builder = SchemaBuilder("value_range_test")
+    schema_builder.add_class(
+        "ValueRangeArray",
+        slots=[
+            SlotDefinition(
+                "value_range_array",
+                range="float",
+                multivalued=True,
+                required=required,
+                minimum_value=minimum_value,
+                maximum_value=maximum_value,
+                equals_number=equals_number,
+            )
+        ],
+    )
+    schema_builder.add_defaults()
+
+    mod = compile_python(PydanticGenerator(schema=schema_builder.schema).serialize())
+    cls = mod.ValueRangeArray
+
+    if valid:
+        cls(value_range_array=value)
+    else:
+        with pytest.raises(ValidationError):
+            cls(value_range_array=value)
+
+    # the value constraints do not change whether the slot is required
+    if required:
+        with pytest.raises(ValidationError):
+            cls()
+    else:
+        assert cls().value_range_array is None
+
+
+@pytest.mark.parametrize(
+    "value,valid",
+    (
+        ([1, 2], True),
+        ([1], False),  # too short
+        ([1, 200], False),  # element out of range
+    ),
+)
+def test_pydantic_value_range_multivalued_with_cardinality(value, valid):
+    """
+    Ensure that value constraints apply to the elements and cardinality constraints to the list
+    when a multivalued slot has both.
+    """
+    schema_builder = SchemaBuilder("value_range_cardinality_test")
+    schema_builder.add_class(
+        "ValueRangeArray",
+        slots=[
+            SlotDefinition(
+                "value_range_array",
+                range="integer",
+                multivalued=True,
+                minimum_cardinality=2,
+                minimum_value=0,
+                maximum_value=100,
+            )
+        ],
+    )
+    schema_builder.add_defaults()
+
+    mod = compile_python(PydanticGenerator(schema=schema_builder.schema).serialize())
+
+    if valid:
+        mod.ValueRangeArray(value_range_array=value)
+    else:
+        with pytest.raises(ValidationError):
+            mod.ValueRangeArray(value_range_array=value)
+
+
+@pytest.mark.parametrize(
+    "scores,valid",
+    (
+        ({}, True),
+        ({"a": 5}, True),
+        ({"a": 100}, True),
+        ({"a": 500}, False),
+        ({"a": -1}, False),
+        # the object form of a simple dict is not a number, so the value constraints do not apply to it
+        ({"a": {"name": "a", "points": 5}}, True),
+        ({"a": {"points": 5}}, False),
+    ),
+)
+def test_pydantic_value_range_inlined_as_simple_dict(scores, valid):
+    """
+    Ensure that the value constraints of a multivalued slot that is inlined as a simple dict apply to the simple
+    values, and that the object form is still accepted.
+    """
+    schema = """
+id: https://example.org/value-range-dict
+name: value_range_dict
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Score:
+    attributes:
+      name:
+        key: true
+      points:
+        range: integer
+  Container:
+    attributes:
+      scores:
+        range: Score
+        multivalued: true
+        inlined: true
+        minimum_value: 0
+        maximum_value: 100
+"""
+    mod = compile_python(PydanticGenerator(schema).serialize())
+
+    if valid:
+        mod.Container(scores=scores)
+    else:
+        with pytest.raises(ValidationError):
+            mod.Container(scores=scores)
+
+
 @pytest.mark.skip("this format of arrays is not yet implemented in the metamodel??")
 def test_column_ordered_array_not_supported():
     unit_test_schema = """
