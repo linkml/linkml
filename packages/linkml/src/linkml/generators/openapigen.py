@@ -903,7 +903,9 @@ class OpenApiGenerator(Generator):
         class returns the records of its subclasses, and a schema may give a mixin records of its
         own. With neither ``subset`` nor ``classes``, every class that is neither abstract nor a
         mixin is exposed. The subset's members come first, in schema order, and then the classes
-        named under ``expose.classes``, in the order the settings give them.
+        named under ``expose.classes``, in the order the settings give them. When the subset tags
+        slots, the parameters of the subset's classes narrow to those slots, and a class named
+        from outside the subset keeps all its slots.
 
         :raises ValueError: if a name is not in the schema, a class is both exposed and excluded,
             or two classes share a path.
@@ -927,9 +929,14 @@ class OpenApiGenerator(Generator):
                 entries[name] = {}
         for name, entry in explicit.items():
             entries[name] = {**entries.get(name, {}), **entry}
-        # Narrow the parameters to the subset's slots only when the subset tags at least one slot.
+        # When the subset tags at least one slot, narrow the parameters of the subset's classes to
+        # those slots. A class named from outside the subset keeps all its slots, because the
+        # subset says nothing about them.
         narrow_to = subset_name if subset_slots else None
-        exposed = [self._exposed_class(name, entry, narrow_to) for name, entry in entries.items()]
+        exposed = [
+            self._exposed_class(name, entry, narrow_to if name in candidates else None)
+            for name, entry in entries.items()
+        ]
         paths: dict[str, str] = {}
         for cls in exposed:
             if cls.crud and cls.path in paths:

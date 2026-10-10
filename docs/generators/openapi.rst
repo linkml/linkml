@@ -308,7 +308,9 @@ Exposure
    * - ``expose.subset``
      - Exposes the classes the schema tags with this subset through ``in_subset``,
        leaving out abstract classes and mixins. When the subset also tags slots,
-       the query parameters of every exposed class are narrowed to those slots.
+       the query parameters of the classes in the subset are narrowed to those
+       slots. A class named under ``expose.classes`` from outside the subset keeps
+       all of its slots.
    * - ``expose.classes``
      - Exposes each class it names, even when the class is abstract or a mixin,
        because a person chose it by name. A listing of an abstract class returns the

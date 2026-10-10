@@ -1796,6 +1796,17 @@ def test_parameters_narrow_to_the_subset_slots_in_rank_order(exposure_template):
         }
 
 
+def test_a_class_named_outside_the_subset_keeps_every_slot(exposure_template):
+    """Test that the subset's slots narrow only the parameters of the classes in the subset.
+
+    ``Action`` is named under ``expose.classes`` and is outside the core subset, so the subset
+    says nothing about its slots. It keeps its own ``name`` and the inherited ``id``, although
+    the core subset tags only ``id`` of the two.
+    """
+    parameters = exposure_template["paths"]["/action"]["get"]["parameters"]
+    assert [p["x-linkml-source"] for p in parameters] == ["Action.name", "Action.id"]
+
+
 # (slot, expected ``schema.type``) for every slot of Risk when no subset narrows them
 PARAMETER_TYPE_CASES = [
     ("hazards", "string"),  # multivalued reference: one identifier per request
