@@ -240,6 +240,10 @@ exposes, which the generator then instantiates like a hand-written one:
    gen-openapi --create-template -C api.yaml risks.yaml > api-template.yaml
    gen-openapi -C api.yaml risks.yaml > risks.openapi.yaml
 
+``--create-template`` cannot be given with ``--template`` on the command line. A
+``template`` key in the configuration file is allowed, and the run that creates the
+template does not read it, so one file can name the template that it creates.
+
 The template holds structure only, so that it cannot drift from the schema:
 
 * ``info`` takes the schema's ``title``, or its ``name`` when it has no title, its

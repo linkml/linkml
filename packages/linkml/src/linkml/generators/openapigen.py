@@ -1071,7 +1071,7 @@ class OpenApiGenerator(Generator):
     help="Print an OpenAPI template that exposes the classes named under "
     "'generator_args: {openapi: {expose: ..., exclude: ...}}' in the config file, instead of "
     "instantiating a template; without a config file every class that is neither abstract nor "
-    "a mixin is exposed",
+    "a mixin is exposed. It cannot be given with --template.",
 )
 @click.option(
     "--openapi-version",
@@ -1124,6 +1124,11 @@ def cli(
     inline_enums = args.pop("inline_enums", inline_enums)
     create_template = args.pop("create_template", create_template)
     openapi_version = args.pop("openapi_version", openapi_version)
+    # Refuse a --template given on the command line, which asks this run to instantiate it. A
+    # template named in the config file is allowed, because it names the template that a later
+    # run instantiates, which is often the file this run creates.
+    if create_template and ctx.get_parameter_source("template") is click.ParameterSource.COMMANDLINE:
+        raise click.UsageError("--template and --create-template cannot be given together")
     if create_template:
         print(OpenApiGenerator(yamlfile, **args).create_template(openapi_version), end="")
         return

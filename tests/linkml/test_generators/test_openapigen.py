@@ -2012,3 +2012,37 @@ def test_cli_malformed_expose_is_a_usage_error(exposure_schema_path, tmp_path):
 
     assert result.exit_code == 2
     assert "expose: unknown key 'subsets'" in result.output
+
+
+def test_cli_template_with_create_template_is_a_usage_error(exposure_schema_path, tmp_path):
+    """Test that ``-t`` and ``--create-template`` given together on the command line are a usage error."""
+    template_path = write_template(tmp_path, template_described("Existing"))
+
+    result = CliRunner().invoke(cli, ["--create-template", "-t", template_path, exposure_schema_path])
+
+    assert result.exit_code == 2
+    assert "--template and --create-template cannot be given together" in result.output
+
+
+def test_cli_config_file_names_the_template_it_creates(exposure_schema_path, tmp_path, oas_version):
+    """Test that one config file both creates the template it names and then instantiates it.
+
+    The template does not exist until ``--create-template`` writes it, so the first run must
+    not read it. The second run, with ``-C`` alone, instantiates it.
+    """
+    template_path = tmp_path / "api-template.yaml"
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        openapi_config_yaml(template=str(template_path), openapi_version=oas_version, **EXPOSURE_SETTINGS)
+    )
+
+    result = CliRunner().invoke(cli, ["--create-template", "-C", str(config_path), exposure_schema_path])
+
+    assert result.exit_code == 0, result.output
+    template_path.write_text(result.output)
+    result = CliRunner().invoke(cli, ["-C", str(config_path), exposure_schema_path])
+
+    assert result.exit_code == 0, result.output
+    spec = yaml.safe_load(result.output)
+    assert list(spec["paths"]) == ["/risks", "/action"]
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
