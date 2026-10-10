@@ -99,6 +99,7 @@ class RDFGenerator(Generator):
             include_generation_date=self.include_generation_date,
             importmap=self.importmap,
             metamodel_context=LOCAL_METAMODEL_LDCONTEXT_FILE,
+            subset=self.subset,
         )
         # Iterate over permissible text strings making them URI compatible
         for e in gen.schema.enums.values():

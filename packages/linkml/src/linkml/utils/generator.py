@@ -37,6 +37,7 @@ from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
+from linkml.utils.subsetting import prune_to_subset
 from linkml.utils.typereferences import References
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -57,6 +58,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinitionName,
     metamodel_version,
 )
+from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 
@@ -252,6 +254,11 @@ class Generator(metaclass=abc.ABCMeta):
     include: str | Path | SchemaDefinition | None = None
     """If set, include extra schema outside of the imports mechanism"""
 
+    subset: str | None = None
+    """Name of a subset that the schema declares. If it is set, the schema is pruned to that subset's
+    members and the elements they need before it is loaded. The generator then sees only that slice.
+    :func:`linkml.utils.subsetting.subset_closure` says what is kept."""
+
     def __post_init__(self) -> None:
         # The ``namespaces`` dataclass field defaults to the property object
         # itself (see its declaration).  When no ``namespaces=`` kwarg is passed,
@@ -279,6 +286,8 @@ class Generator(metaclass=abc.ABCMeta):
         schema = self.schema
         if isinstance(schema, Path):
             schema = str(schema)
+        if self.subset:
+            schema = self._prune_to_subset(schema)
 
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
@@ -294,10 +303,8 @@ class Generator(metaclass=abc.ABCMeta):
                 # caller's object. Copy first so the generator owns what it mutates.
                 schema = deepcopy(schema)
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
-            if self.include:
-                if isinstance(self.include, str | Path):
-                    self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
-                self.schemaview.merge_schema(self.include)
+            if self.include and not self.subset:
+                self.schemaview.merge_schema(self._included_schema())
             self.schema = self.schemaview.schema
             # Set metamodel_version if not already defined in the schema.
             # This ensures consistency with SchemaLoader-based generators.
@@ -309,6 +316,30 @@ class Generator(metaclass=abc.ABCMeta):
         # generators, so clearing it here covers every generator uniformly.
         if not self.include_generation_date and self.schema is not None:
             self.schema.generation_date = None
+
+    def _prune_to_subset(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]) -> SchemaDefinition:
+        """Prune the input schema to :attr:`subset` before either loading path sees it.
+
+        The pruning works on a SchemaView of the input, whatever form the input takes. It returns a
+        self-contained SchemaDefinition, which both the SchemaLoader path and the SchemaView path accept.
+        So every generator gets the subset without knowing about it. Only the SchemaView path reads
+        :attr:`include`. On that path, the included schema is merged in first so that it is pruned too.
+        """
+        if isinstance(schema, Generator):
+            schema = schema.schema
+        elif not isinstance(schema, str | SchemaDefinition):
+            # the input is an open file, which SchemaView cannot read directly
+            schema = yaml_loader.load(schema, target_class=SchemaDefinition)
+        schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
+        if self.include and not self.uses_schemaloader:
+            schemaview.merge_schema(self._included_schema())
+        return prune_to_subset(schemaview, self.subset)
+
+    def _included_schema(self) -> SchemaDefinition:
+        """Return :attr:`include` as a SchemaDefinition, loading it first if it is a path."""
+        if isinstance(self.include, str | Path):
+            self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
+        return self.include
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
@@ -1091,6 +1122,15 @@ def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) 
                 ("--mergeimports/--no-mergeimports",),
                 default=True,
                 help="Merge imports into source file (default=mergeimports)",
+            )
+        )
+        f.params.append(
+            Option(
+                ("--subset",),
+                help="Generate only this declared subset: its members, the ancestors of each kept "
+                "class, the slots each kept class uses and every element those refer to. When the "
+                "subset names slots, a kept class keeps only the subset's slots and its identifier. "
+                "Imports other than those of the LinkML metamodel are merged into the pruned schema.",
             )
         )
         f.params.append(

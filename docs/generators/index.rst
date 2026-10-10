@@ -114,6 +114,46 @@ Others
    yaml
    pandera
 
+Generating part of a schema
+---------------------------
+
+The generator commands that share the common options accept
+``--subset NAME``. These are all of them except ``gen-project``,
+``gen-pandera`` and ``gen-dbml``. ``NAME`` is a subset that the schema
+declares under ``subsets`` and that elements join through
+``in_subset``.
+
+The generator then works from a copy of the schema pruned to the
+subset's members and what they need:
+
+- the ancestors and mixins of each kept class;
+- the slots of each kept class;
+- every class, enum and type that those slots refer to.
+
+The generator follows these references until nothing that is kept
+refers to anything dropped.
+
+When the subset names slots as well as classes, a kept class keeps only
+its identifier and the slots that are members for it. A ``slot_usage``
+can make a slot a member for one class only. A slot that stays
+declared on an ancestor is inherited as usual.
+
+Imported schemas are merged into the copy, apart from the schemas of
+the LinkML metamodel such as ``linkml:types``. So an imported model
+contributes only the elements that the subset reaches, and those keep
+their URIs. The metamodel marks its core as ``MinimalSubset``:
+
+.. code-block:: bash
+
+   gen-json-schema --subset MinimalSubset meta.yaml
+   gen-doc --subset MinimalSubset -d docs meta.yaml
+
+An unknown name is an error that lists the declared subsets. Each run
+takes one subset, so a slice that spans several subsets needs a subset
+of its own. ``gen-markdown-datadict`` does not support ``--subset``,
+because it reads the schema file again for its diagrams. See
+:doc:`../schemas/subsets` for declaring subsets.
+
 Feature Dashboard
 -----------------
 
