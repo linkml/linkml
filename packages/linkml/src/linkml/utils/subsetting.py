@@ -33,14 +33,14 @@ from linkml_runtime.linkml_model.meta import (
 logger = logging.getLogger(__name__)
 
 METAMODEL_IMPORT_PREFIXES = ("linkml:", "https://w3id.org/linkml/")
-"""How an import of one of the LinkML metamodel's own schemas (``linkml:types`` and its siblings) is
-written. Those imports stay imports in the pruned schema, just as the SchemaLoader keeps their
-elements apart when it merges every other import (see :func:`linkml.utils.mergeutils.merge_dicts`)."""
+"""How an import of a LinkML metamodel schema is written: ``linkml:types`` and its siblings. Those
+imports stay imports in the pruned schema. The SchemaLoader likewise keeps their elements apart when
+it merges every other import (see :func:`linkml.utils.mergeutils.merge_dicts`)."""
 
 KEPT_SLOT_FLAGS = ("identifier", "key", "designates_type")
 """Flags that keep a slot on a kept class even when the subset names other slots. A reference to the
-class is written as the value of its identifier or key, and a polymorphic range is resolved through
-its type designator, so a class without them would be serialized differently."""
+class is written as the value of its identifier or key. A polymorphic range is resolved through its
+type designator. So a class without them would be serialized differently."""
 
 
 @dataclass
@@ -68,15 +68,15 @@ def subset_closure(schemaview: SchemaView, subset_name: str) -> SubsetClosure:
     subset names slots when one of its members is a slot or an attribute, or when a class's
     ``slot_usage`` puts a slot in it. The closure keeps, over the whole imports closure:
 
-    - the members themselves;
+    - the members;
     - every ancestor of a kept class, through ``is_a`` and ``mixins``, so that inheritance still
-      resolves; a mixin that a kept class uses is therefore kept, and so is a class that applies
-      itself to a kept class through ``apply_to``, which the SchemaLoader turns into a mixin;
+      resolves. So a mixin that a kept class uses is kept. The SchemaLoader turns ``apply_to`` into
+      a mixin, so a class that applies itself to a kept class that way is kept too;
     - for every kept class, its induced slots. When the subset names no slot, every induced slot
       stays. When it names any, a class keeps the induced slots that are members for that class,
-      which ``slot_usage`` and attributes can make class-specific, together with its identifier, key
-      and type designator (see :data:`KEPT_SLOT_FLAGS`). A class of a LinkML metamodel schema keeps
-      every induced slot, because those schemas stay imported in full;
+      together with its identifier, key and type designator (see :data:`KEPT_SLOT_FLAGS`).
+      ``slot_usage`` and attributes can make a slot a member for one class only. A class of a
+      LinkML metamodel schema keeps every induced slot, because those schemas stay imported in full;
     - for every slot that a class keeps, each declaration and ``slot_usage`` of it on the class's
       ancestors, so that the induced slot is the same as in the full schema. A slot that stays
       declared on an ancestor is inherited, so every kept class below that ancestor keeps it too;
@@ -86,14 +86,16 @@ def subset_closure(schemaview: SchemaView, subset_name: str) -> SubsetClosure:
     - every class, enum and type that a kept slot refers to: its range, the ranges in its boolean
       expressions (``any_of``, ``exactly_one_of``, ``all_of``, ``none_of``) and in ``has_member``
       and ``all_members``, the enums that its ``enum_range`` inherits from, the classes in its
-      ``range_expression``, and its ``domain``; likewise a kept class's ``union_of`` members and
-      ``extra_slots`` range, a kept enum's ancestors and the enums it ``inherits`` from, a kept
-      type's ``typeof`` chain and ``union_of`` members, and the schema's ``default_range``.
+      ``range_expression``, and its ``domain``;
+    - likewise, a kept class's ``union_of`` members and ``extra_slots`` range, a kept enum's
+      ancestors and the enums it ``inherits`` from, and a kept type's ``typeof`` chain and
+      ``union_of`` members;
+    - the schema's ``default_range``.
 
-    The rules are applied together until nothing new is reached, so that no kept element refers to
-    a dropped one; that is the reference closure. Everything else is dropped. Subset definitions are
-    not part of the closure; :func:`prune_to_subset` keeps all of them so that ``in_subset`` values
-    still resolve.
+    The rules are applied together until nothing new is reached. Then no kept element refers to a
+    dropped one, and the kept elements form the reference closure. Everything else is dropped.
+    Subset definitions are not part of the closure. :func:`prune_to_subset` keeps all of them so
+    that ``in_subset`` values still resolve.
 
     :param schemaview: view of the schema, imports included
     :param subset_name: name of a subset that the schema declares
@@ -231,7 +233,7 @@ def subset_closure(schemaview: SchemaView, subset_name: str) -> SubsetClosure:
         if isinstance(element, ClassDefinition):
             add_class(element.name)
         elif isinstance(element, SlotDefinition):
-            # a member attribute is not a schema-level slot; it stays with its class if that is kept
+            # a member attribute is not a schema-level slot, and it stays with its class if that class is kept
             add_slot(element.name)
         elif isinstance(element, EnumDefinition):
             add_enum(element.name)
@@ -253,23 +255,24 @@ def prune_to_subset(schemaview: SchemaView, subset_name: str) -> SchemaDefinitio
     """Return a copy of the schema that holds only what :func:`subset_closure` keeps.
 
     The copy is self-contained. Every imported schema is merged into it, apart from the LinkML
-    metamodel's own (``linkml:types`` and its siblings, see :data:`METAMODEL_IMPORT_PREFIXES`), which
-    stay imports because generators treat their elements as a standard library. So an imported model
-    contributes only the elements that the subset reaches. The prefixes and settings of the merged
-    schemas are added where the root schema does not define them, every subset definition is kept so
-    that ``in_subset`` values still resolve, and the root schema's own metadata is unchanged. A class,
-    slot, attribute or enum merged from an import would take the root schema's namespace, so the URI
-    it has in the full schema is written out as its ``class_uri``, ``slot_uri`` or ``enum_uri``,
-    unless it declares one.
+    metamodel schemas: ``linkml:types`` and its siblings (see :data:`METAMODEL_IMPORT_PREFIXES`).
+    Those stay imports because generators treat their elements as a standard library. So an imported
+    model contributes only the elements that the subset reaches.
+
+    The prefixes and settings of the merged schemas are added where the root schema does not define
+    them. Every subset definition is kept so that ``in_subset`` values still resolve. The root
+    schema's metadata is unchanged. A class, slot, attribute or enum merged from an import would take
+    the root schema's namespace. So the URI it has in the full schema is written out as its
+    ``class_uri``, ``slot_uri`` or ``enum_uri``, unless it declares one.
 
     A kept class keeps the slots, attributes and slot usages that the closure keeps for it. A
-    constraint that refers to a dropped slot, class, enum or type is dropped whole, which can only
-    loosen validation: a unique key, the list of defining slots, a rule, a classification rule, one
-    of the boolean expression lists ``any_of``, ``all_of``, ``exactly_one_of`` and ``none_of``, or a
-    slot condition. A kept class keeps only the ``disjoint_with`` and ``apply_to`` classes that are
-    kept, and a kept slot keeps only the ``disjoint_with`` slots and the ``inverse`` that are kept.
-    Every slot definition, attribute and slot usage lists in ``domain_of`` only the classes that still
-    have the slot.
+    constraint that refers to a dropped slot, class, enum or type is dropped whole. Such a constraint
+    is a unique key, the list of defining slots, a rule, a classification rule, one of the boolean
+    expression lists ``any_of``, ``all_of``, ``exactly_one_of`` and ``none_of``, or a slot
+    condition. Dropping one can only loosen validation. A kept class keeps only the ``disjoint_with``
+    and ``apply_to`` classes that are kept, and a kept slot keeps only the ``disjoint_with`` slots and
+    the ``inverse`` that are kept. Every slot definition, attribute and slot usage lists in
+    ``domain_of`` only the classes that still have the slot.
 
     :param schemaview: view of the schema, imports included
     :param subset_name: name of a subset that the schema declares
@@ -387,7 +390,7 @@ def _keep(target: dict, view: dict, keep: set[str], metamodel_ids: set[str]) -> 
 def _trim_domain_of(slot: SlotDefinition, closure: SubsetClosure) -> None:
     """Keep only the classes in a slot's ``domain_of`` that still have the slot.
 
-    ``domain_of`` is derived, and SchemaView adds to it in place whenever it induces a slot, so a copied
+    ``domain_of`` is derived. SchemaView adds to it in place whenever it induces a slot, so a copied
     definition can list classes that the pruning dropped.
     """
     slot.domain_of = [name for name in slot.domain_of if slot.name in closure.classes.get(name, ())]

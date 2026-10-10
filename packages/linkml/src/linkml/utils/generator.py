@@ -255,9 +255,9 @@ class Generator(metaclass=abc.ABCMeta):
     """If set, include extra schema outside of the imports mechanism"""
 
     subset: str | None = None
-    """Name of a subset that the schema declares. If set, the schema is pruned to that subset's members
-    and the elements they need before it is loaded, so the generator sees only that slice; see
-    :func:`linkml.utils.subsetting.subset_closure` for what is kept."""
+    """Name of a subset that the schema declares. If it is set, the schema is pruned to that subset's
+    members and the elements they need before it is loaded. The generator then sees only that slice.
+    :func:`linkml.utils.subsetting.subset_closure` says what is kept."""
 
     def __post_init__(self) -> None:
         # The ``namespaces`` dataclass field defaults to the property object
@@ -320,15 +320,15 @@ class Generator(metaclass=abc.ABCMeta):
     def _prune_to_subset(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]) -> SchemaDefinition:
         """Prune the input schema to :attr:`subset` before either loading path sees it.
 
-        The pruning works on a SchemaView of the input, whatever form the input takes, and returns a
-        self-contained SchemaDefinition. Both the SchemaLoader and the SchemaView path accept that, so
-        every generator gets the subset without knowing about it. On the SchemaView path, the only one
-        that reads :attr:`include`, the included schema is merged in first so that it is pruned too.
+        The pruning works on a SchemaView of the input, whatever form the input takes. It returns a
+        self-contained SchemaDefinition, which both the SchemaLoader path and the SchemaView path accept.
+        So every generator gets the subset without knowing about it. Only the SchemaView path reads
+        :attr:`include`. On that path, the included schema is merged in first so that it is pruned too.
         """
         if isinstance(schema, Generator):
             schema = schema.schema
         elif not isinstance(schema, str | SchemaDefinition):
-            # an open file, which SchemaView cannot read itself
+            # the input is an open file, which SchemaView cannot read directly
             schema = yaml_loader.load(schema, target_class=SchemaDefinition)
         schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
         if self.include and not self.uses_schemaloader:
@@ -1128,9 +1128,9 @@ def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) 
             Option(
                 ("--subset",),
                 help="Generate only this declared subset: its members, the ancestors of each kept "
-                "class, the slots each kept class uses (only the subset's own slots and the class's "
-                "identifier when the subset names slots) and every element those refer to. Imports "
-                "other than the LinkML metamodel's own are merged into the pruned schema.",
+                "class, the slots each kept class uses and every element those refer to. When the "
+                "subset names slots, a kept class keeps only the subset's slots and its identifier. "
+                "Imports other than those of the LinkML metamodel are merged into the pruned schema.",
             )
         )
         f.params.append(

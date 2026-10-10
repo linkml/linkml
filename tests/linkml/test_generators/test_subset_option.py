@@ -1,8 +1,8 @@
 """Tests for the shared ``--subset`` generator option and the pruning behind it.
 
 The fixture ``subset_profile.yaml`` is a small risk register with three subsets: ``core`` names one
-class, ``summary`` names a class and some slots, two of them only through the class's
-``slot_usage``, and ``empty_subset`` has no members. It imports ``subset_profile_imported.yaml``,
+class; ``summary`` names a class and some slots, two of them only through the class's
+``slot_usage``; and ``empty_subset`` has no members. It imports ``subset_profile_imported.yaml``,
 which has its own namespace and contributes one class that ``core`` reaches and one that no subset
 reaches.
 """
@@ -68,9 +68,10 @@ def mentions(output: str, name: str) -> bool:
 
 
 def test_closure_of_subset_naming_classes_only(profile_view):
-    """A subset that names only Risk keeps all of Risk's induced slots, its ancestor and mixin, the
-    class that applies itself to Risk, and every element those slots reach: Person and Address
-    through ranges, the imported Tag, both enums, and RiskCode with its typeof ancestor BaseCode."""
+    """A subset that names only Risk keeps all of Risk's induced slots, its ancestor and mixin, and the
+    class that applies itself to Risk. It also keeps every element those slots reach: Person and
+    Address through ranges, the imported Tag, both enums, and RiskCode with its typeof ancestor
+    BaseCode."""
     closure = subset_closure(profile_view, "core")
     assert closure.classes == CORE_CLASSES
     assert closure.slots == {
@@ -166,9 +167,9 @@ def test_prune_drops_what_refers_to_dropped_slots(profile_view):
     ],
 )
 def test_prune_leaves_kept_classes_as_they_were(profile_path, schema, subset_name):
-    """Every kept class has exactly the slots that the closure keeps for it, each induced as in the
-    full schema and with the same URI, no kept slot's range is dropped, and every ``domain_of`` names
-    a class that is still there."""
+    """Every kept class has exactly the slots that the closure keeps for it. Each slot is induced as in
+    the full schema and has the same URI. No kept slot's range is dropped, and every ``domain_of``
+    names a class that is still there."""
     path = profile_path if schema == "profile" else str(LOCAL_METAMODEL_YAML_FILE)
     full = SchemaView(path)
     closure = subset_closure(full, subset_name)
@@ -267,7 +268,7 @@ def test_gen_jsonld_context_keeps_the_uris_of_merged_classes(profile_path):
 @pytest.mark.parametrize("mergeimports", [True, False])
 def test_subset_composes_with_mergeimports(profile_path, mergeimports):
     """The pruned schema keeps linkml:types as an import, so --mergeimports still decides whether
-    its types are written out, while the merged sibling import is part of the schema either way."""
+    its types are written out. The merged sibling import is part of the schema either way."""
     schema = yaml.safe_load(LinkmlGenerator(profile_path, subset="core", mergeimports=mergeimports).serialize())
     assert "Tag" in schema["classes"]
     assert "Unused" not in schema["classes"]
@@ -277,7 +278,7 @@ def test_subset_composes_with_mergeimports(profile_path, mergeimports):
 
 def test_subset_prunes_an_included_schema(profile_path, tmp_path):
     """A schema given with ``include`` is merged before pruning, so only what the subset reaches
-    stays; without a subset, all of it is included as before."""
+    stays. Without a subset, all of it is included as before."""
     extra = tmp_path / "extra.yaml"
     extra.write_text(
         yaml.safe_dump(
@@ -301,7 +302,7 @@ def test_subset_prunes_an_included_schema(profile_path, tmp_path):
 def test_metamodel_minimal_subset():
     """MinimalSubset prunes the metamodel to the three definition classes that it names, their
     ancestors and mixins, type_definition (the range of default_range) and the ten slots that it
-    names. The metamodel's own imports, which hold further mixins, stay imports."""
+    names. The metamodel's imports, which hold further mixins, stay imports."""
     sv = SchemaView(str(LOCAL_METAMODEL_YAML_FILE))
     pruned = prune_to_subset(sv, "MinimalSubset")
     assert set(pruned.classes) == {
