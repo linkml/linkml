@@ -1,6 +1,7 @@
 """Generate OpenAPI YAML files."""
 
 import copy
+import difflib
 import json
 import logging
 import os
@@ -44,8 +45,10 @@ EXPOSURE_CONFIG_KEYS = ("expose", "exclude")
 EXPOSE_KEYS = frozenset({"subset", "classes"})
 
 # Keys of one ``expose.classes`` entry that the generator reads, with the type each must have.
-# Any other key is the consumer's own (a server keeps its routing hints beside the class it
-# serves) and passes through untouched.
+# Any other key belongs to another tool that reads the same file, such as a server keeping its
+# routing hints beside the class it serves, and is left alone. A key that looks like a
+# misspelling of one of these, such as ``operationId``, is an error instead, because ignoring it
+# would quietly change the API.
 EXPOSE_CLASS_KEYS: dict[str, type] = {"path": str, "operation_id": str, "summary": str, "crud": bool}
 
 # Where a shape mistake in the exposure settings is reported from.
@@ -119,6 +122,24 @@ OVERRIDABLE_SCHEMA_KEYS = frozenset({"description", "title", "example", "externa
 LINKML_BOOKKEEPING_PREFIX = "x-linkml-"
 
 
+def _misspelt_class_key(key: str) -> str | None:
+    """Return the ``expose.classes`` key that ``key`` looks like a misspelling of, or None.
+
+    The comparison ignores case, dashes and underscores, so ``operationId`` and
+    ``operation-id`` both read as ``operation_id``, and then allows a close misspelling.
+
+    >>> _misspelt_class_key("operationId")
+    'operation_id'
+    >>> _misspelt_class_key("summry")
+    'summary'
+    >>> _misspelt_class_key("related") is None
+    True
+    """
+    spelling = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", key).replace("-", "_").lower()
+    matches = difflib.get_close_matches(spelling, EXPOSE_CLASS_KEYS, n=1, cutoff=0.8)
+    return matches[0] if matches else None
+
+
 def exposure_settings(expose: Any, exclude: Any) -> tuple[dict[str, Any], list[str]]:
     """Check the shape of the ``expose`` and ``exclude`` settings and hand them back normalised.
 
@@ -156,8 +177,15 @@ def exposure_settings(expose: Any, exclude: Any) -> tuple[dict[str, Any], list[s
                     )
             if "path" in entry and not entry["path"].startswith("/"):
                 raise ValueError(f"expose.classes.{name}.path: a path starts with '/', found {entry['path']!r}")
-            if other := sorted(set(entry) - set(EXPOSE_CLASS_KEYS)):
-                logger.debug(f"expose.classes.{name}: leaving the consumer's own keys {other} alone")
+            for key in entry:
+                if key in EXPOSE_CLASS_KEYS:
+                    continue
+                if meant := _misspelt_class_key(str(key)):
+                    raise ValueError(
+                        f"expose.classes.{name}.{key}: did you mean {meant!r}? gen-openapi reads "
+                        f"{', '.join(EXPOSE_CLASS_KEYS)} in a class entry and leaves other keys alone"
+                    )
+                logger.debug(f"expose.classes.{name}.{key}: not read by gen-openapi, left for other tools")
             classes[name] = entry
         expose["classes"] = classes
     if exclude is None:

@@ -1889,7 +1889,11 @@ def test_a_named_abstract_or_mixin_class_is_kept(exposure_schema_path):
 
 
 def test_consumer_keys_in_a_class_entry_pass_through(exposure_schema_path):
-    """Test that a key the generator does not read, such as a server's routing hint, is left alone."""
+    """Test that a key the generator does not read, such as a server's routing hint, is left alone.
+
+    ai-linkmo keeps ``related: true`` beside ``path`` for its own server, so a key that does not
+    look like a misspelling of one of the generator's keys must not stop the template.
+    """
     template = create_template(
         exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Risk": {"related": True}}}
     )
@@ -1936,6 +1940,16 @@ EXPOSURE_ERROR_CASES = [
     ),
     pytest.param({"expose": {"classes": {"Risk": {"crud": "yes"}}}}, "crud: expected bool", id="crud-not-bool"),
     pytest.param({"expose": {"classes": {"Risk": {"path": "risks"}}}}, "a path starts with '/'", id="path-no-slash"),
+    pytest.param(
+        {"expose": {"classes": {"Risk": {"operationId": "list_risks"}}}},
+        "expose.classes.Risk.operationId: did you mean 'operation_id'?",
+        id="openapi-spelling-of-a-key",
+    ),
+    pytest.param(
+        {"expose": {"classes": {"Risk": {"summry": "Risks"}}}},
+        "expose.classes.Risk.summry: did you mean 'summary'?",
+        id="misspelt-key",
+    ),
     pytest.param(
         {"expose": {"classes": {"Risk": {"path": "/x"}, "Action": {"path": "/x"}}}},
         "Risk and Action share the path /x",
