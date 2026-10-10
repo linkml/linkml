@@ -16,13 +16,13 @@ from linkml.generators.sssomgen import (
 
 SCHEMA_ID = "https://w3id.org/linkml/tests/kitchen_sink"
 
-# Columns SSSOM 1.x requires in every mapping (sssom_schema: required slots of ``mapping``),
-# plus the recommended subject_label.
+# The columns that SSSOM 1.x requires in every mapping, which are the required slots of
+# ``mapping`` in sssom_schema, plus the recommended subject_label.
 REQUIRED_COLUMNS = {"subject_id", "subject_label", "predicate_id", "object_id", "mapping_justification"}
 
 
 def read_sssom(path: str) -> tuple[dict, list[str], list[dict[str, str]]]:
-    """Split an SSSOM/TSV file into its YAML header, its column names and its rows as dicts."""
+    """Split a SSSOM/TSV file into its YAML header, its column names and its rows as dicts."""
     header_lines = []
     table_lines = []
     for line in Path(path).read_text().splitlines():
@@ -64,10 +64,11 @@ def test_header_identifies_the_set(schema_path, sssom):
     assert metadata["mapping_set_id"] == SCHEMA_ID + "/mappings"
     assert metadata["license"] == schema["license"]
     assert metadata["mapping_provider"] == SCHEMA_ID
-    # Off by default, like every generator's generation_date, so output is byte-stable.
+    # publication_date is off by default, as every generator's generation date is, so that the
+    # output is the same byte for byte on every run.
     assert "publication_date" not in metadata
     assert "mapping_date" not in metadata
-    # Pre-1.0 header keys the generator used to invent.
+    # The generator used to write these header keys with values it invented.
     assert "creator_id" not in metadata
     assert "mapping_tool" not in metadata
 
@@ -112,7 +113,7 @@ def test_class_uri_is_a_mapping_not_a_self_row(sssom):
     found = triples(rows)
     for subject, _, obj in found:
         assert subject != obj
-    # Person declares class_uri: schema:Person; the mapping runs from its own URI to it.
+    # Person declares class_uri: schema:Person, so the row maps the class's own URI to it.
     assert ("ks:Person", "skos:exactMatch", "schema:Person") in found
     assert ("ks:Person", "skos:exactMatch", "wd:Q215627") in found
     # agent, imported from core, declares class_uri: prov:Agent.
@@ -136,7 +137,8 @@ def test_slot_uri_is_a_mapping_not_a_self_row(sssom):
 def test_labels(sssom):
     _, _, rows = sssom
     labels = {(row["subject_id"], row["object_id"]): row["subject_label"] for row in rows}
-    # A slot's label is its alias (the attribute name), not the loader's mangled slot name.
+    # A slot's label is its alias, which is the attribute name, and not the slot name that the
+    # loader builds from the class and attribute names.
     assert labels[("ks:ceo", "schema:ceo")] == "ceo"
     assert labels[("ks:Person", "schema:Person")] == "Person"
     assert labels[("ks:has_medical_history", "wd:Q309")] == "has medical history"
@@ -153,11 +155,11 @@ def test_permissible_values(sssom):
     assert hire["subject_label"] == "HIRE"
     assert hire["predicate_id"] == "skos:exactMatch"
     assert hire["subject_category"] == "EmploymentEventType"
-    # A meaning is an exact mapping of the value, also when the value has nothing else.
+    # A meaning is an exact mapping of the value, even when the value has no other mapping.
     assert ("ks:EmploymentEventType#HIRE", "skos:exactMatch", "bizcodes:001") in found
     assert ("ks:EmploymentEventType#FIRE", "skos:exactMatch", "bizcodes:002") in found
     assert not {subject for subject, _, _ in found} & {"bizcodes:001", "bizcodes:002"}
-    # A title wins over the text as the label.
+    # A title takes precedence over the text as the label.
     assert by_object["CODE:promotion"]["subject_label"] == "Promotion"
     assert by_object["bizcodes:003"]["subject_label"] == "Promotion"
     sibling = by_object["CODE:sibling"]
@@ -170,7 +172,8 @@ def test_generic_mappings_are_mapping_relations(sssom):
     _, _, rows = sssom
     found = triples(rows)
     assert ("ks:Person", "skos:mappingRelation", "wd:Q5") in found
-    # The schema loader puts a slot_uri into the generic mappings too; the exact match says more.
+    # The schema loader also puts a slot_uri into the generic mappings. The exact match says
+    # more, so the pair gets no generic row.
     assert ("ks:ceo", "skos:exactMatch", "schema:ceo") in found
     assert ("ks:ceo", "skos:mappingRelation", "schema:ceo") not in found
     pairs = [(subject, obj) for subject, _, obj in found]
@@ -281,10 +284,10 @@ def test_cells_are_sssom_tsv(tmp_path):
     labels = {row["subject_id"]: row["subject_label"] for row in rows}
     assert labels["ex:Person"] == "A person with a tab and a line break"
     found = triples(rows)
-    # Full URIs under a declared prefix are written as CURIEs; others stay URIs.
+    # Full URIs under a declared prefix are written as CURIEs. Other URIs stay as they are.
     assert ("ex:Person", "skos:exactMatch", "schema:Person") in found
     assert ("ex:name", "skos:exactMatch", "schema:name") in found
     assert ("ex:Robot", "skos:exactMatch", "http://example.org/elsewhere/Robot") in found
-    # The slot that slot_usage refines gives the mapping once, with the slot's own label.
+    # The slot that slot_usage refines gives one row for its mapping, with the slot's own label.
     name_rows = [row for row in rows if row["subject_id"] == "ex:name"]
     assert [row["subject_label"] for row in name_rows] == ["name"]
