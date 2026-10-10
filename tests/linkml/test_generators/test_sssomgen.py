@@ -143,23 +143,26 @@ def test_labels(sssom):
 
 def test_permissible_values(sssom):
     _, _, rows = sssom
+    found = triples(rows)
     by_object = {row["object_id"]: row for row in rows}
-    # A value with a meaning is that term, as in gen-owl, labelled with the value's text.
+    # Every value is named under its enum, as gen-owl names a value without a meaning,
+    # and labelled with its text.
     hire = by_object["CODE:hire"]
-    assert hire["subject_id"] == "bizcodes:001"
+    assert hire["subject_id"] == "ks:EmploymentEventType#HIRE"
     assert hire["subject_label"] == "HIRE"
     assert hire["predicate_id"] == "skos:exactMatch"
     assert hire["subject_category"] == "EmploymentEventType"
+    # A meaning is an exact mapping of the value, also when the value has nothing else.
+    assert ("ks:EmploymentEventType#HIRE", "skos:exactMatch", "bizcodes:001") in found
+    assert ("ks:EmploymentEventType#FIRE", "skos:exactMatch", "bizcodes:002") in found
+    assert not {subject for subject, _, _ in found} & {"bizcodes:001", "bizcodes:002"}
     # A title wins over the text as the label.
     assert by_object["CODE:promotion"]["subject_label"] == "Promotion"
-    # A value without a meaning has a URI under its enum.
+    assert by_object["bizcodes:003"]["subject_label"] == "Promotion"
     sibling = by_object["CODE:sibling"]
     assert sibling["subject_id"] == "ks:FamilialRelationshipType#SIBLING_OF"
     assert sibling["subject_label"] == "SIBLING_OF"
     assert sibling["predicate_id"] == "skos:closeMatch"
-    # The meaning itself is the value's identity, not a mapping.
-    assert "bizcodes:002" not in by_object
-    assert ("bizcodes:001", "skos:exactMatch", "bizcodes:001") not in triples(rows)
 
 
 @pytest.mark.parametrize("justification", ["semapv:LexicalMatching", "semapv:MappingReview"])

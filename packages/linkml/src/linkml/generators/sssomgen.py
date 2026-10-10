@@ -85,8 +85,9 @@ class SSSOMGenerator(Generator):
     and ``broad_mappings`` entry on a class, slot or permissible value becomes one row whose
     predicate is the matching SKOS property. A ``class_uri`` or ``slot_uri`` that differs
     from the element's own URI is an exact mapping to it; one that equals it is the element
-    itself and produces no row. As in gen-owl, a permissible value with a ``meaning`` is
-    identified by that term; one without is identified by a URI under its enum.
+    itself and produces no row. A permissible value is identified by its enum's URI, a hash
+    and its text, which is how gen-owl names a value without a ``meaning``; a ``meaning`` is
+    written as an exact mapping of the value.
     """
 
     # ClassVars
@@ -225,19 +226,21 @@ class SSSOMGenerator(Generator):
         )
 
     def visit_enum(self, enum: EnumDefinition) -> None:
-        """Rows for the mappings of each permissible value, labelled with its title or text."""
+        """Rows for each permissible value's meaning and mappings, labelled with its title or text.
+
+        Every value is identified the same way, by the URI gen-owl gives a value without a
+        meaning: its enum's URI, a hash and the text. A ``meaning`` names the external term the
+        value stands for, which is a mapping, so it becomes the value's first exact match
+        rather than its identifier, and a value with nothing but a meaning still has its row.
+        """
         enum_uri = str(enum.enum_uri) if enum.enum_uri else self.native_uri(enum, camelcase(enum.name))
         for pv in enum.permissible_values.values():
-            if pv.meaning:
-                subject_id = str(pv.meaning)
-            else:
-                # The URI gen-owl gives a value without a meaning: its enum's URI, a hash and the text.
-                subject_id = enum_uri + "#" + quote(pv.text.strip(), safe="")
             self.add_mapping_rows(
                 pv,
-                subject_id,
+                enum_uri + "#" + quote(pv.text.strip(), safe=""),
                 pv.title or pv.text,
                 enum.from_schema,
+                extra_exact=[str(pv.meaning)] if pv.meaning else None,
                 subject_category=enum.name,
             )
 
