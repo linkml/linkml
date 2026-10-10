@@ -23,27 +23,27 @@ How a schema maps to proto3
 ---------------------------
 
 Every class becomes a ``message``, including mixins and abstract classes, so
-that every type a field names is declared. Protobuf has no inheritance, so each
+that every type a field names is declared. proto3 has no inheritance, so each
 message lists the slots it inherits as well as its own. The ``package`` name
 comes from the schema ``name``.
 
 Field names are ``snake_case``. A slot with a ``rank`` keeps it as its field
-number; the other slots are numbered from 1 in schema order, skipping the
+number. The other slots are numbered from 1 in schema order, skipping the
 numbers taken by ranks and the reserved range 19000 to 19999. When no slot of
 a class has a rank, the identifier slot takes field number 1. A rank that
-protobuf cannot use as a field number, or that another slot of the same class
+proto3 cannot use as a field number, or that another slot of the same class
 already uses, is dropped with a warning, and the slot is numbered
 automatically. Fields are written in field-number order.
 
 LinkML types map to proto3 scalars: ``integer`` to ``int32``, ``boolean`` to
 ``bool``, ``float`` to ``float``, ``double`` to ``double``, and every other
-type, including dates, URIs and decimals, to ``string``. A multivalued slot is
-``repeated``. A slot with no single range, such as one declared with
-``any_of``, is a ``string``.
+type, including dates, URIs and decimals, to ``string``. A multivalued slot
+becomes a ``repeated`` field. A slot with no single range, such as one declared
+with ``any_of``, becomes a ``string`` field.
 
 A slot whose range is a class carries the nested message when the slot is
-inlined. Otherwise it carries a reference, the identifier of the object, so the
-field has the identifier's scalar type, usually ``string``, and a
+inlined. Otherwise it carries a reference: the identifier of the object. The
+field then has the identifier's scalar type, usually ``string``, and a
 ``// reference to`` comment names the class. A class without an identifier is
 always inlined.
 
@@ -88,11 +88,11 @@ and ``depicted_by`` from ``NamedThing``, and ``aliases`` from a mixin:
       - current_address
       - telephone
 
-(some parts truncated for brevity)
+The example leaves some slots out for brevity.
 
-This generates the following messages. The identifier leads each one, the
-reference to ``Address`` stays a nested message because the slot is inlined,
-and ``aliases`` is rolled down from the mixin:
+``gen-proto`` writes the following messages. The identifier leads each one.
+The reference to ``Address`` stays a nested message because the slot is
+inlined. ``Person`` lists ``aliases``, which it inherits from the mixin:
 
 .. code-block:: proto
 
@@ -136,23 +136,47 @@ and ``aliases`` is rolled down from the mixin:
 Configuration File
 ------------------
 
-``gen-proto`` accepts a ``--config-file``/``-C`` YAML file in the format that
-``gen-project`` reads (see :doc:`project-generator`), and reads only its
-``generator_args.proto`` section. Any option of the command can be set there,
-keyed by its name with dashes as underscores, such as ``importmap``.
-Options given on the command line take precedence over the
-file, and a key that is not an option is reported as a warning and ignored.
+``gen-proto`` accepts a ``--config-file``/``-C`` YAML file. The file has the
+format that ``gen-project`` reads with its own ``--config-file`` (see
+:doc:`project-generator`), and ``gen-java`` (see :doc:`java`) and
+``gen-golang`` (see :doc:`golang`) read the same format. One project-wide
+``config.yaml`` can therefore serve ``gen-project`` and a standalone
+``gen-proto`` run. The settings for ``gen-proto`` live under
+``generator_args.proto``:
 
 .. code-block:: yaml
 
-    # proto.yaml
+    # config.yaml
     generator_args:
       proto:
         importmap: importmap.json
+        mergeimports: true
+      java:
+        package: org.example.model
 
 .. code:: bash
 
-   gen-proto -C proto.yaml personinfo.yaml > personinfo.proto
+   gen-proto -C config.yaml personinfo.yaml > personinfo.proto
+
+``gen-proto`` reads only ``generator_args.proto``. It ignores the sections of
+other generators, so a full project ``config.yaml`` can be passed unchanged. A
+file without a ``proto`` section changes nothing.
+
+Any option of the command can be set in the section. Each key is the option's
+name with underscores in place of dashes, such as ``importmap`` for
+``--importmap``. A key that is
+not an option of ``gen-proto`` is reported as a warning and ignored.
+``--log_level``, ``--verbose`` and ``--stacktrace`` act as soon as the command
+line is read, so they are taken from the command line only.
+
+Each option takes its value in this order of precedence:
+
+1. The option given on the command line.
+2. The value under ``generator_args.proto`` in the file given with ``--config-file``.
+3. The option's default.
+
+``gen-proto`` never reads a ``config.yaml`` on its own. The file is used only
+when it is named with ``--config-file``.
 
 Docs
 ----
