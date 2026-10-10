@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from textwrap import dedent
 
@@ -1707,3 +1708,280 @@ def test_cli_config_file_without_openapi_section_prints_generic_template(input_p
     assert result.exit_code == 0, result.output
     assert "# TODO: remove this whole comment block after processing" in result.output
     assert "x-linkml-source: Described" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Config-driven exposure and --create-template
+# ---------------------------------------------------------------------------
+
+EXPOSURE_ID = "https://w3id.org/linkml/tests/exposure"
+
+# The settings most exposure tests create their template from: the core subset, Action added
+# by name, Hazard excluded, and Risk's derived defaults replaced by explicit values.
+EXPOSURE_SETTINGS = {
+    "expose": {
+        "subset": "core",
+        "classes": {
+            "Action": {},
+            "Risk": {"path": "/risks", "operation_id": "list_risks", "summary": "Risks"},
+        },
+    },
+    "exclude": ["Hazard"],
+}
+
+
+def create_template(schema_path: str, oas_version: str, **settings) -> dict:
+    """Create a template from the exposure ``settings`` and parse it.
+
+    :param schema_path: the LinkML schema to expose
+    :param oas_version: the OpenAPI version the template declares
+    :param settings: ``expose``, ``exclude`` and ``overlay`` as the config file would carry them
+    """
+    return yaml.safe_load(OpenApiGenerator(schema_path, **settings).create_template(oas_version))
+
+
+@pytest.fixture
+def exposure_schema_path(input_path) -> str:
+    return input_path("openapi/schema_exposure.yaml")
+
+
+@pytest.fixture
+def exposure_template(exposure_schema_path, oas_version) -> dict:
+    """The template :data:`EXPOSURE_SETTINGS` creates, parsed."""
+    return create_template(exposure_schema_path, oas_version, **EXPOSURE_SETTINGS)
+
+
+def test_created_template_is_valid_for_its_version(exposure_template, oas_version):
+    """Test that a created template validates, as it is, against the OpenAPI version it declares."""
+    assert exposure_template["openapi"] == oas_version
+    assert validate(exposure_template, cls=OAS_VALIDATORS[oas_version]) is None
+
+
+def test_exposed_set_is_subset_plus_named_minus_excluded_abstract_and_mixin(exposure_template):
+    """Test the exposed set: the subset's concrete classes, plus the named class, minus the excluded one.
+
+    ``Entity`` (abstract) and ``Taggable`` (mixin) are in the core subset and must not be
+    exposed; ``Hazard`` is in it and is excluded; ``Note`` is outside it and not named. The
+    subset's members come first, then the named classes.
+    """
+    assert list(exposure_template["components"]["schemas"]) == ["Risk", "Action"]
+    assert list(exposure_template["paths"]) == ["/risks", "/action"]
+
+
+def test_placeholders_hold_structure_only(exposure_template):
+    """Test that a placeholder is ``type: object`` and the two bookkeeping keys, nothing else.
+
+    A description or title copied from the schema would drift from it; both are generated when
+    the template is instantiated.
+    """
+    for name, placeholder in exposure_template["components"]["schemas"].items():
+        assert placeholder == {"type": "object", "x-linkml-schema": EXPOSURE_ID, "x-linkml-source": name}
+
+
+def test_parameters_narrow_to_the_subset_slots_in_rank_order(exposure_template):
+    """Test that a class's parameters are its induced slots in the subset, ordered by ``rank``.
+
+    The core subset names ``hazards`` (rank 1), ``severity`` (rank 2) and the inherited ``id``
+    (no rank), so ``count``, ``score``, ``active``, ``noted_on`` and the mixin's ``tag`` stay out.
+    Each parameter holds structure only, typed as a string: ``hazards`` is a reference passed as
+    an identifier, ``severity`` an enum passed as a value's text, ``id`` an identifier.
+    """
+    parameters = exposure_template["paths"]["/risks"]["get"]["parameters"]
+    assert [p["name"] for p in parameters] == ["hazards", "severity", "id"]
+    for parameter in parameters:
+        assert parameter == {
+            "in": "query",
+            "name": parameter["name"],
+            "required": False,
+            "schema": {"type": "string"},
+            "x-linkml-source": f"Risk.{parameter['name']}",
+        }
+
+
+# (slot, expected ``schema.type``) for every slot of Risk when no subset narrows them
+PARAMETER_TYPE_CASES = [
+    ("hazards", "string"),  # multivalued reference: one identifier per request
+    ("severity", "string"),  # enum: the text of a permissible value
+    ("count", "integer"),
+    ("score", "number"),
+    ("active", "boolean"),
+    ("noted_on", "string"),  # date: a string, as the JSON Schema generator types it
+    ("tag", "string"),  # inherited from the mixin
+    ("id", "string"),  # inherited from the abstract parent
+]
+
+
+@pytest.mark.parametrize(("slot", "expected_type"), PARAMETER_TYPE_CASES)
+def test_parameter_type_follows_the_slot_range(exposure_schema_path, slot, expected_type):
+    """Test that a parameter's ``schema.type`` follows the slot's range through its base type.
+
+    The ``summary`` subset names classes only, so every induced slot of ``Risk`` becomes a
+    parameter and the whole range of types is covered.
+    """
+    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
+    parameters = {p["name"]: p for p in template["paths"]["/risk"]["get"]["parameters"]}
+    assert parameters[slot]["schema"] == {"type": expected_type}
+    assert parameters[slot]["x-linkml-source"] == f"Risk.{slot}"
+
+
+def test_a_subset_naming_no_slot_leaves_every_induced_slot(exposure_schema_path):
+    """Test that a subset with no slot members does not narrow the parameters, and rank still orders them."""
+    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"subset": "summary"})
+    names = [p["name"] for p in template["paths"]["/risk"]["get"]["parameters"]]
+    assert names[:2] == ["hazards", "severity"]
+    assert sorted(names) == sorted(slot for slot, _ in PARAMETER_TYPE_CASES)
+
+
+def test_template_copies_no_linkml_field_values(exposure_schema_path, oas_version):
+    """Test that no description, enum value or default from the schema reaches the template.
+
+    Those values are generated at instantiation; copied into the template they would drift.
+    """
+    text = OpenApiGenerator(exposure_schema_path, **EXPOSURE_SETTINGS).create_template(oas_version)
+    for linkml_value in ("a risk, the class every test exposes", "the hazards behind the risk", "low", "high"):
+        assert linkml_value not in text
+
+
+def test_explicit_entry_wins_over_derived_defaults(exposure_template):
+    """Test the per-class entry over the derived defaults: path, operation id and summary.
+
+    ``Risk`` is configured; ``Action`` falls back to ``/action``, ``list_action`` and ``Get Action``.
+    """
+    risk = exposure_template["paths"]["/risks"]["get"]
+    assert (risk["operationId"], risk["summary"]) == ("list_risks", "Risks")
+    action = exposure_template["paths"]["/action"]["get"]
+    assert (action["operationId"], action["summary"]) == ("list_action", "Get Action")
+    for name, operation in (("Risk", risk), ("Action", action)):
+        response_schema = operation["responses"]["200"]["content"]["application/json"]["schema"]
+        assert response_schema == {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}}
+
+
+def test_crud_false_gives_a_placeholder_without_an_endpoint(exposure_schema_path):
+    """Test that ``crud: false`` puts the class in ``components/schemas`` and gives it no path."""
+    template = create_template(
+        exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Risk": {"crud": False}, "Action": {}}}
+    )
+    assert list(template["components"]["schemas"]) == ["Risk", "Action"]
+    assert list(template["paths"]) == ["/action"]
+
+
+def test_without_expose_every_concrete_class_is_exposed(exposure_schema_path):
+    """Test that with neither ``subset`` nor ``classes`` every concrete class gets an endpoint."""
+    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION)
+    assert list(template["paths"]) == ["/risk", "/hazard", "/action", "/note"]
+
+
+def test_exclude_accepts_a_bare_class_name(exposure_schema_path):
+    """Test that ``exclude: Hazard`` reads as the one-item list, as the shared config treats a scalar."""
+    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, exclude="Hazard")
+    assert list(template["paths"]) == ["/risk", "/action", "/note"]
+
+
+def test_a_named_abstract_or_mixin_class_is_kept(exposure_schema_path):
+    """Test that the abstract and mixin filter applies to a subset's members, not to a named class.
+
+    Naming a class is a deliberate choice: an API may bind an endpoint to a mixin that several
+    concrete classes share, so ``Taggable`` is exposed when named and left out when the subset
+    sweeps it in.
+    """
+    template = create_template(exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Taggable": {}}})
+    assert list(template["paths"]) == ["/taggable"]
+
+
+def test_consumer_keys_in_a_class_entry_pass_through(exposure_schema_path):
+    """Test that a key the generator does not read, such as a server's routing hint, is left alone."""
+    template = create_template(
+        exposure_schema_path, DEFAULT_OAS_VERSION, expose={"classes": {"Risk": {"related": True}}}
+    )
+    assert list(template["paths"]) == ["/risk"]
+
+
+def test_info_comes_from_the_schema_metadata(exposure_template):
+    """Test that ``info`` is the schema's title, version and description, so it cannot drift from them."""
+    assert exposure_template["info"] == {
+        "title": "The Exposure API",
+        "version": "2.3.4",
+        "description": "a schema whose classes an API exposes by subset and by name",
+    }
+
+
+def test_created_template_round_trips_with_no_dangling_ref(tmp_path, exposure_schema_path, oas_version):
+    """Test the round trip: a created template instantiates into a valid document.
+
+    ``serialize`` raises on a dangling ``$ref``, so returning at all means there is none. The
+    placeholders are replaced by generated schemas, and the enum ``Risk.severity`` reaches
+    is generated with them.
+    """
+    template_path = write_template(
+        tmp_path, OpenApiGenerator(exposure_schema_path, **EXPOSURE_SETTINGS).create_template(oas_version)
+    )
+    spec = yaml.safe_load(OpenApiGenerator(exposure_schema_path).serialize(template_path))
+    assert validate(spec, cls=OAS_VALIDATORS[oas_version]) is None
+    schemas = spec["components"]["schemas"]
+    assert sorted(schemas) == ["Action", "Risk", "SeverityEnum"]
+    assert schemas["Risk"]["description"] == "a risk, the class every test exposes"
+    assert "x-linkml-" not in str(schemas)
+
+
+EXPOSURE_ERROR_CASES = [
+    pytest.param({"expose": "Risk"}, "expected a YAML mapping at 'expose'", id="expose-scalar"),
+    pytest.param({"expose": {"subsets": "core"}}, "unknown key 'subsets'", id="unknown-expose-key"),
+    pytest.param({"expose": {"subset": "nope"}}, "declares no subset 'nope'", id="undeclared-subset"),
+    pytest.param({"expose": {"classes": {"Nope": {}}}}, "no class 'Nope'", id="unknown-class"),
+    pytest.param({"exclude": ["Nope"]}, "no class 'Nope'", id="unknown-excluded-class"),
+    pytest.param(
+        {"expose": {"classes": {"Risk": {}}}, "exclude": ["Risk"]},
+        "Risk named both in expose.classes and in exclude",
+        id="exposed-and-excluded",
+    ),
+    pytest.param({"expose": {"classes": {"Risk": {"crud": "yes"}}}}, "crud: expected bool", id="crud-not-bool"),
+    pytest.param({"expose": {"classes": {"Risk": {"path": "risks"}}}}, "a path starts with '/'", id="path-no-slash"),
+    pytest.param(
+        {"expose": {"classes": {"Risk": {"path": "/x"}, "Action": {"path": "/x"}}}},
+        "Risk and Action share the path /x",
+        id="shared-path",
+    ),
+    pytest.param({"exclude": {"Risk": True}}, "exclude: expected a list of class names", id="exclude-mapping"),
+]
+
+
+@pytest.mark.parametrize(("settings", "message"), EXPOSURE_ERROR_CASES)
+def test_malformed_exposure_settings_are_rejected(exposure_schema_path, settings, message):
+    """Test that a mistake in the exposure settings is reported where it was made, before any output."""
+    with pytest.raises(ValueError, match=re.escape(message)):
+        OpenApiGenerator(exposure_schema_path, **settings).create_template()
+
+
+def test_cli_create_template_reads_the_exposure_from_the_config_file(exposure_schema_path, tmp_path, oas_version):
+    """Test ``--create-template -C``: the section's ``expose`` and ``exclude`` drive the template.
+
+    ``openapi_version`` is an option, so the config file sets it like any other; the nested
+    exposure settings are read by the generator itself. The created template then instantiates
+    through the same command with ``-t``.
+    """
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(openapi_config_yaml(openapi_version=oas_version, **EXPOSURE_SETTINGS))
+
+    result = CliRunner().invoke(cli, ["--create-template", "-C", str(config_path), exposure_schema_path])
+
+    assert result.exit_code == 0, result.output
+    template = yaml.safe_load(result.output)
+    assert template["openapi"] == oas_version
+    assert list(template["paths"]) == ["/risks", "/action"]
+
+    template_path = write_template(tmp_path, result.output)
+    result = CliRunner().invoke(cli, ["-t", template_path, "-C", str(config_path), exposure_schema_path])
+
+    assert result.exit_code == 0, result.output
+    assert validate(yaml.safe_load(result.output), cls=OAS_VALIDATORS[oas_version]) is None
+
+
+def test_cli_malformed_expose_is_a_usage_error(exposure_schema_path, tmp_path):
+    """Test that the command line reports a malformed ``expose`` as a usage error, not a traceback."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(openapi_config_yaml(expose={"subsets": "core"}))
+
+    result = CliRunner().invoke(cli, ["--create-template", "-C", str(config_path), exposure_schema_path])
+
+    assert result.exit_code == 2
+    assert "expose: unknown key 'subsets'" in result.output

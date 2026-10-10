@@ -1,0 +1,94 @@
+# LinkML schema exercising config-driven exposure and --create-template
+id: https://w3id.org/linkml/tests/exposure
+name: exposure
+title: The Exposure API
+version: 2.3.4
+description: a schema whose classes an API exposes by subset and by name
+default_prefix: exposure
+default_range: string
+imports:
+  - linkml:types
+
+subsets:
+  core:
+    description: the classes and the slots this API serves
+  summary:
+    description: a tier that names classes only, so every slot of a member is served
+
+enums:
+  SeverityEnum:
+    description: how bad a risk is
+    permissible_values:
+      low: {}
+      high: {}
+
+classes:
+  Entity:
+    abstract: true
+    description: an abstract root, swept into core but never exposed
+    in_subset:
+      - core
+    attributes:
+      id:
+        identifier: true
+        in_subset:
+          - core
+
+  Taggable:
+    mixin: true
+    description: a mixin, never exposed from a subset
+    in_subset:
+      - core
+    attributes:
+      tag:
+        description: a free tag
+
+  Risk:
+    is_a: Entity
+    mixins:
+      - Taggable
+    description: a risk, the class every test exposes
+    in_subset:
+      - core
+      - summary
+    attributes:
+      hazards:
+        description: the hazards behind the risk
+        range: Hazard
+        multivalued: true
+        rank: 1
+        in_subset:
+          - core
+      severity:
+        range: SeverityEnum
+        rank: 2
+        in_subset:
+          - core
+      count:
+        range: integer
+      score:
+        range: float
+      active:
+        range: boolean
+      noted_on:
+        range: date
+
+  Hazard:
+    is_a: Entity
+    description: a hazard, in core but excluded by the tests' configuration
+    in_subset:
+      - core
+    attributes:
+      label: {}
+
+  Action:
+    is_a: Entity
+    description: an action, outside every subset and exposed by name
+    attributes:
+      name: {}
+
+  Note:
+    is_a: Entity
+    description: a note, outside every subset and never exposed
+    attributes:
+      text: {}
