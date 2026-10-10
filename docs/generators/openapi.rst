@@ -324,7 +324,10 @@ Exposure
 
 An entry under ``expose.classes`` may set ``path``, ``operation_id`` and
 ``summary``. Otherwise they are derived from the class name, as
-``/<class in lowercase>``, ``list_<class in lowercase>`` and ``Get <Class>``.
+``/<class in lowercase>``, ``list_<class in lowercase>`` and ``Get <Class>``. An
+entry may also set ``description``, which becomes the description of the
+operation. The description has no default, because the class's description in
+the schema would drift once copied into the template.
 
 Query parameters come in the ``rank`` order of their slots, and slots without a
 rank follow in schema order. A parameter is named as the generated schema names the
@@ -336,10 +339,10 @@ a reference to a class, which is passed by its identifier.
 The settings are checked before anything is printed. A key directly under
 ``expose`` other than ``subset`` and ``classes`` is an error, and so is a key in a
 class entry that looks like a misspelling of ``path``, ``operation_id``,
-``summary`` or ``crud``, such as ``operationId``. Any other key in a class entry is
-left alone, so that a server reading the same file can keep its own settings beside
-the class it serves. A class or a subset the schema does not declare is an error
-too, and so are two exposed classes on one path.
+``summary``, ``description`` or ``crud``, such as ``operationId``. Any other key in
+a class entry is left alone, so that a server reading the same file can keep its
+own settings beside the class it serves. A class or a subset the schema does not
+declare is an error too, and so are two exposed classes on one path.
 
 Docs
 ----

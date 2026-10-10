@@ -49,7 +49,13 @@ EXPOSE_KEYS = frozenset({"subset", "classes"})
 # routing hints beside the class it serves, and is left alone. A key that looks like a
 # misspelling of one of these, such as ``operationId``, is an error instead, because ignoring it
 # would quietly change the API.
-EXPOSE_CLASS_KEYS: dict[str, type] = {"path": str, "operation_id": str, "summary": str, "crud": bool}
+EXPOSE_CLASS_KEYS: dict[str, type] = {
+    "path": str,
+    "operation_id": str,
+    "summary": str,
+    "description": str,
+    "crud": bool,
+}
 
 # Where a shape mistake in the exposure settings is reported from.
 EXPOSURE_SOURCE = "generator_args.openapi"
@@ -132,6 +138,8 @@ def _misspelt_class_key(key: str) -> str | None:
     'operation_id'
     >>> _misspelt_class_key("summry")
     'summary'
+    >>> _misspelt_class_key("descripton")
+    'description'
     >>> _misspelt_class_key("related") is None
     True
     """
@@ -210,6 +218,8 @@ class ExposedClass:
     """The path of the list ``GET``."""
     operation_id: str
     summary: str
+    description: str | None
+    """The operation's ``description``, written only when the class entry sets one."""
     crud: bool
     """False puts the class in ``components/schemas`` without an endpoint."""
     slots: list[SlotDefinition]
@@ -931,9 +941,11 @@ class OpenApiGenerator(Generator):
         """Resolve one exposed class: its entry's values over the derived defaults.
 
         The derived defaults are the path ``/<lowercase class>``, the operation id
-        ``list_<lowercase class>`` and the summary ``Get <Class>``. The slots are the class's
-        induced slots, kept to those tagged ``in_subset`` with ``narrow_to`` when it is given,
-        in ``rank`` order with unranked slots last in schema order.
+        ``list_<lowercase class>`` and the summary ``Get <Class>``. The description has no
+        default, because the class's description in the schema would drift once copied into a
+        template. The slots are the class's induced slots, kept to those tagged ``in_subset``
+        with ``narrow_to`` when it is given, in ``rank`` order with unranked slots last in
+        schema order.
         """
         # plain str: the metamodel's name classes would otherwise reach yaml.dump as Python tags
         name = str(name)
@@ -948,6 +960,7 @@ class OpenApiGenerator(Generator):
             path=entry.get("path", f"/{openapi_name.lower()}"),
             operation_id=entry.get("operation_id", f"list_{openapi_name.lower()}"),
             summary=entry.get("summary", f"Get {name}"),
+            description=entry.get("description"),
             crud=entry.get("crud", True),
             slots=slots,
         )
@@ -1017,7 +1030,10 @@ class OpenApiGenerator(Generator):
             schemas[cls.openapi_name] = {"type": "object", "x-linkml-schema": schema_id, "x-linkml-source": cls.name}
             if not cls.crud:
                 continue
-            operation: dict[str, Any] = {"summary": cls.summary, "operationId": cls.operation_id}
+            operation: dict[str, Any] = {"summary": cls.summary}
+            if cls.description is not None:
+                operation["description"] = cls.description
+            operation["operationId"] = cls.operation_id
             if parameters := self._class_parameters(cls):
                 operation["parameters"] = parameters
             operation["responses"] = {

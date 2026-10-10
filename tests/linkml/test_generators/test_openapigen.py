@@ -1866,6 +1866,22 @@ def test_explicit_entry_wins_over_derived_defaults(exposure_template):
         assert response_schema == {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}}
 
 
+def test_entry_description_is_the_operation_description(exposure_schema_path, oas_version):
+    """Test that a class entry's ``description`` becomes its operation's, and that without one there is none.
+
+    The class's description in the schema is never copied into the template, where it would drift.
+    """
+    template = create_template(
+        exposure_schema_path,
+        oas_version,
+        expose={"classes": {"Risk": {"description": "Lists the risks, newest first"}, "Action": {}}},
+    )
+    risk = template["paths"]["/risk"]["get"]
+    assert list(risk) == ["summary", "description", "operationId", "parameters", "responses"]
+    assert risk["description"] == "Lists the risks, newest first"
+    assert "description" not in template["paths"]["/action"]["get"]
+
+
 def test_crud_false_gives_a_placeholder_without_an_endpoint(exposure_schema_path, oas_version):
     """Test that ``crud: false`` puts the class in ``components/schemas`` and gives it no path."""
     template = create_template(
@@ -1952,6 +1968,11 @@ EXPOSURE_ERROR_CASES = [
         id="exposed-and-excluded",
     ),
     pytest.param({"expose": {"classes": {"Risk": {"crud": "yes"}}}}, "crud: expected bool", id="crud-not-bool"),
+    pytest.param(
+        {"expose": {"classes": {"Risk": {"description": ["Risks"]}}}},
+        "description: expected str",
+        id="description-not-str",
+    ),
     pytest.param({"expose": {"classes": {"Risk": {"path": "risks"}}}}, "a path starts with '/'", id="path-no-slash"),
     pytest.param(
         {"expose": {"classes": {"Risk": {"operationId": "list_risks"}}}},
