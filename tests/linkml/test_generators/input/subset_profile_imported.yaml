@@ -1,0 +1,19 @@
+id: https://example.org/subset-profile-imported
+name: subset_profile_imported
+description: Imported by the subset_profile test schema, with its own namespace.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  imp: https://example.org/subset-profile-imported/
+default_prefix: imp
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  Tag:
+    attributes:
+      label:
+  Unused:
+    attributes:
+      whatever:

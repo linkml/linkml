@@ -1,0 +1,160 @@
+id: https://example.org/subset-profile
+name: subset_profile
+description: >-
+  A small risk register for the tests of the shared --subset generator option. One subset names
+  classes only, one names classes and slots, and one has no members. It imports a sibling schema
+  with one class that a subset reaches and one that none reaches.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/subset-profile/
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+  - subset_profile_imported
+
+subsets:
+  core:
+    description: Names classes only, so a kept class keeps every slot.
+  summary:
+    description: Names classes and slots, so a kept class keeps its member slots and its identifier.
+  empty_subset:
+    description: Declared with no members.
+
+types:
+  BaseCode:
+    typeof: string
+    description: Kept only as the typeof ancestor of a kept type.
+  RiskCode:
+    typeof: BaseCode
+  HazardCode:
+    typeof: string
+
+enums:
+  SeverityEnum:
+    permissible_values:
+      low:
+      high:
+  CountryEnum:
+    permissible_values:
+      IE:
+      FR:
+  HazardKindEnum:
+    permissible_values:
+      fire:
+      flood:
+
+classes:
+  Named:
+    mixin: true
+    slots:
+      - name
+  Entity:
+    abstract: true
+    slots:
+      - id
+      - created_on
+  Risk:
+    is_a: Entity
+    mixins:
+      - Named
+    in_subset:
+      - core
+      - summary
+    slots:
+      - severity
+      - code
+      - owner
+      - tags
+      - title
+    slot_usage:
+      created_on:
+        description: >-
+          A member for this class only, but declared on the shared ancestor, so every kept class
+          that inherits it keeps it.
+        in_subset:
+          - summary
+      title:
+        description: A member for this class only, and declared by each class that has it.
+        in_subset:
+          - summary
+    attributes:
+      notes:
+    unique_keys:
+      owner_and_code:
+        unique_key_slots:
+          - owner
+          - code
+    rules:
+      - preconditions:
+          slot_conditions:
+            severity:
+              equals_string: high
+        postconditions:
+          slot_conditions:
+            owner:
+              required: true
+  Audited:
+    mixin: true
+    description: Applies itself to Risk, so it is kept wherever Risk is.
+    apply_to:
+      - Risk
+    slots:
+      - reviewed_on
+  Person:
+    is_a: Entity
+    description: Kept as the range of a kept slot; its own slots follow the same rule.
+    slots:
+      - address
+      - title
+      - owns
+  Address:
+    attributes:
+      street:
+      country:
+        range: CountryEnum
+  Hazard:
+    is_a: Entity
+    slots:
+      - kind
+      - hazard_code
+  Mitigation:
+    is_a: Entity
+    description: Refers to a kept class, which does not make it kept.
+    slots:
+      - mitigates
+
+slots:
+  id:
+    identifier: true
+  created_on:
+  name:
+    in_subset:
+      - summary
+  title:
+  reviewed_on:
+  severity:
+    range: SeverityEnum
+  code:
+    range: RiskCode
+  owner:
+    range: Person
+    inverse: owns
+    in_subset:
+      - summary
+  owns:
+    range: Risk
+    multivalued: true
+    inverse: owner
+  tags:
+    range: Tag
+    multivalued: true
+  address:
+    range: Address
+  kind:
+    range: HazardKindEnum
+  hazard_code:
+    range: HazardCode
+  mitigates:
+    range: Risk
