@@ -209,10 +209,11 @@ reported as a warning and ignored.
 
    gen-openapi -C api.yaml personinfo.yaml > personinfo.openapi.yaml
 
-The same section carries two settings that are not options, which
+The same section carries three settings that are not options, which
 ``--create-template`` reads: ``expose`` and ``exclude`` choose the classes the API
-exposes. The schema says nothing about the API, so one schema can serve several
-APIs, each with its own file.
+exposes, and ``overlay`` holds the parts of the API that are written by hand. The
+schema says nothing about the API, so one schema can serve several APIs, each with
+its own file.
 
 .. code-block:: yaml
 
@@ -226,6 +227,13 @@ APIs, each with its own file.
             Risk: {path: /risks, operation_id: list_risks}
             Hazard: {crud: false}
         exclude: [Entity]
+        overlay:
+          info: {title: The Risk API}
+          paths:
+            /graph:
+              get:
+                summary: Get graph
+                responses: {"200": {description: OK}}
 
 .. _openapi-create-template:
 
@@ -322,7 +330,7 @@ Exposure
      - The class gets a placeholder and one list ``GET``.
    * - ``crud: false``
      - The class gets a placeholder and no path, for a class that only
-       hand-written paths return.
+       hand-written paths in the overlay return.
 
 An entry under ``expose.classes`` may set ``path``, ``operation_id`` and
 ``summary``. Otherwise they are derived from the class name, as
@@ -346,6 +354,29 @@ class entry that looks like a misspelling of ``path``, ``operation_id``,
 a class entry is left alone, so that a server reading the same file can keep its
 own settings beside the class it serves. A class or a subset the schema does not
 declare is an error too, and so are two exposed classes on one path.
+
+Overlay
+^^^^^^^
+
+The ``overlay`` is OpenAPI that is deep-merged into the created template, after
+everything else. It carries what the schema cannot say: hand-written paths,
+reusable parameters, responses and security schemes, and an ``info`` of the API's
+own. Two mappings merge key by key, and any other value of the overlay replaces the
+generated one. The overlay never changes the bookkeeping that instantiation reads:
+
+* It cannot write an ``x-linkml-*`` key into what the generator wrote, nor replace
+  a generated value that holds one, such as the query parameters of a generated
+  path.
+* It cannot change a placeholder the generator wrote, whose body is generated from
+  the schema.
+* A schema it adds must be a placeholder, with ``x-linkml-schema`` and an
+  ``x-linkml-source`` that names a class, enum or type the generator does not
+  expose already, because instantiation replaces every placeholder with a
+  generated schema.
+* It cannot set ``openapi``, which ``--openapi-version`` sets.
+
+The overlay is merged when the template is created, so a change to the overlay
+takes effect when the template is created again.
 
 Docs
 ----
