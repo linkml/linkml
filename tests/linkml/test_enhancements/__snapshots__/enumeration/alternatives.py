@@ -66,6 +66,9 @@ CLUE = CurieNamespace('CLUE', 'http://ontologies-r.us/clue/')
 CS = CurieNamespace('CS', 'http://ontologies-r.us/codesystems/')
 EVIDENCE = CurieNamespace('evidence', 'http://example.org/test/evidence/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = EVIDENCE
 
 

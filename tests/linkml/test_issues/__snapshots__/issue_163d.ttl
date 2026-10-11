@@ -10,7 +10,7 @@ ex:C1 a linkml:ClassDefinition ;
 	skos:inScheme "http://example.org/sample/example163d"^^xsd:anyURI ;
 	linkml:class_uri "http://example.org/C1"^^xsd:anyURI ;
 	linkml:definition_uri "http://example.org/C1"^^xsd:anyURI ;
-	linkml:slot_usage _:c14n1 .
+	linkml:slot_usage _:c14n3 .
 ex:boolean a linkml:TypeDefinition ;
 	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
 	skos:exactMatch "schema:Boolean"^^xsd:anyURI ;
@@ -81,7 +81,7 @@ ex:double a linkml:TypeDefinition ;
 	linkml:uri "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI .
 ex:example163d dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
 	a linkml:SchemaDefinition ;
-	sh:declare _:c14n0 , _:c14n2 ;
+	sh:declare _:c14n0 , _:c14n1 , _:c14n2 , _:c14n4 , _:c14n5 ;
 	linkml:classes ex:C1 ;
 	linkml:default_prefix "ex" ;
 	linkml:default_range ex:string ;
@@ -211,5 +211,11 @@ ex:uriorcurie a linkml:TypeDefinition ;
 	linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
 _:c14n0 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
 	sh:prefix "linkml" .
-_:c14n2 sh:namespace "http://example.org/"^^xsd:anyURI ;
+_:c14n1 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+	sh:prefix "xsd" .
+_:c14n2 sh:namespace "http://schema.org/"^^xsd:anyURI ;
+	sh:prefix "schema" .
+_:c14n4 sh:namespace "http://www.w3.org/ns/shex#"^^xsd:anyURI ;
+	sh:prefix "shex" .
+_:c14n5 sh:namespace "http://example.org/"^^xsd:anyURI ;
 	sh:prefix "ex" .

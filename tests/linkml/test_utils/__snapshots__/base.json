@@ -18,6 +18,18 @@
       {
          "prefix_prefix": "OIO",
          "prefix_reference": "http://www.geneontology.org/formats/oboInOwl#"
+      },
+      {
+         "prefix_prefix": "xsd",
+         "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+      },
+      {
+         "prefix_prefix": "shex",
+         "prefix_reference": "http://www.w3.org/ns/shex#"
+      },
+      {
+         "prefix_prefix": "schema",
+         "prefix_reference": "http://schema.org/"
       }
    ],
    "emit_prefixes": [
