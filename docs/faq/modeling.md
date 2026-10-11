@@ -494,6 +494,9 @@ its name. A class cannot have both such a slot and a slot named like its
 attribute, such as `from` and `from_`, and the generator reports an error
 for it. The pages for these generators show the generated code.
 
+The Python generator also adds the trailing underscore, but its classes
+do not yet map between the two names when they load or dump data.
+
 Other generators may not handle reserved names yet, so avoid them when you
 use those generators.
 

@@ -100,6 +100,14 @@ def test_sqla_basic_declatative(schema):
         assert expected in tables
 
 
+@pytest.mark.parametrize("template", list(TemplateEnum))
+def test_template_enum(schema, template):
+    """TemplateEnum is a Python enum, and the string value of a member selects the same template as the member."""
+    assert TemplateEnum(template.value) is template
+    by_value = SQLAlchemyGenerator(schema).generate_sqla(template=template.value)
+    assert by_value == SQLAlchemyGenerator(schema).generate_sqla(template=template)
+
+
 def test_mixin():
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("ref_to_c1", range="my_class1", multivalued=True))

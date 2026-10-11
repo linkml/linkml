@@ -4,11 +4,11 @@ import logging
 import os
 from collections import defaultdict
 from dataclasses import dataclass
+from enum import Enum
 from types import ModuleType
 
 import click
 from jinja2 import Environment, Template
-from sqlalchemy import Enum
 
 from linkml._version import __version__
 from linkml.generators.common.naming import check_keyword_collisions, escape_python_keyword
@@ -34,7 +34,10 @@ def python_name(name: str) -> str:
     return escape_python_keyword(underscore(name))
 
 
-class TemplateEnum(Enum):
+class TemplateEnum(str, Enum):
+    """The style of SQLAlchemy mapping to generate. A member equals its string value, so the template
+    ``"declarative"`` is the same as ``TemplateEnum.DECLARATIVE``."""
+
     DECLARATIVE = "declarative"
     IMPERATIVE = "imperative"
     DECLARATIVE_2X = "declarative_2x"
