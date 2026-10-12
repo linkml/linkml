@@ -2784,3 +2784,52 @@ classes:
     has_boolean = any("BOUND" in q for q in queries)
     assert has_exclusive, "Expected one exclusive-value SPARQL constraint"
     assert has_boolean, "Expected one boolean-guard SPARQL constraint"
+
+
+def test_shacl_modular_schema_with_reused_attribute_name(tmp_path) -> None:
+    """A modular schema imported by relative path generates SHACL (#3878).
+
+    Two classes reuse an attribute name with distinct slot_uris, and the schema declaring
+    them is imported as ``../nucleo/core``, so its closure key differs from its name.
+    """
+    nucleo = tmp_path / "nucleo"
+    dominios = tmp_path / "dominios"
+    nucleo.mkdir()
+    dominios.mkdir()
+    (nucleo / "core.yaml").write_text(
+        "id: https://example.org/core\n"
+        "name: core\n"
+        "prefixes: {linkml: 'https://w3id.org/linkml/', core: 'https://example.org/core/'}\n"
+        "default_prefix: core\n"
+        "default_range: string\n"
+        "imports: [linkml:types]\n"
+        "classes:\n"
+        "  Transaccion:\n"
+        "    attributes:\n"
+        "      id_transaccion: {identifier: true}\n"
+        "      estado: {slot_uri: core:transaccion_estado}\n"
+        "  Compromiso:\n"
+        "    attributes:\n"
+        "      id_compromiso: {identifier: true}\n"
+        "      estado: {slot_uri: core:compromiso_estado}\n"
+    )
+    domain = dominios / "domain.yaml"
+    domain.write_text(
+        "id: https://example.org/domain\n"
+        "name: domain\n"
+        "prefixes: {linkml: 'https://w3id.org/linkml/', core: 'https://example.org/core/', "
+        "dom: 'https://example.org/domain/'}\n"
+        "default_prefix: dom\n"
+        "default_range: string\n"
+        "imports: [linkml:types, ../nucleo/core]\n"
+        "classes:\n"
+        "  Pedido:\n"
+        "    is_a: Transaccion\n"
+        "    attributes:\n"
+        "      importe: {range: float}\n"
+    )
+
+    graph = rdflib.Graph()
+    graph.parse(data=ShaclGenerator(str(domain)).serialize(), format="turtle")
+    shapes = set(graph.subjects(RDF.type, SH.NodeShape))
+    assert URIRef("https://example.org/domain/Pedido") in shapes

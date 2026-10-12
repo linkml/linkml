@@ -1,0 +1,9 @@
+id: https://example.org/bar
+name: org-example-bar
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+
+classes:
+
+  Bar:

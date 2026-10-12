@@ -58,7 +58,7 @@ from rdflib import (
 
 from . issue_368_imports import ParentClass, SampleEnum
 
-metamodel_version = "1.11.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces
