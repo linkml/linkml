@@ -158,9 +158,9 @@ linkml:types dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/
 	linkml:default_range linkml:string ;
 	linkml:description "Shared type definitions for the core LinkML mode and metamodel" ;
 	linkml:id "https://w3id.org/linkml/types"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:source_file "types.yaml" ;
-	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
 	linkml:source_file_size 7296 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:uri dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;

@@ -28,7 +28,7 @@ from linkml.generators.golanggen.template import (
 )
 from linkml.generators.oocodegen import PACKAGE, OOCodeGenerator
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
-from linkml.utils.generator import read_generator_config, shared_arguments
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -168,6 +168,7 @@ class GolangGenerator(OOCodeGenerator):
     generatorversion = "0.2.0"
     valid_formats = ["go", "golang"]
     file_extension = "go"
+    config_section_name = "golang"
 
     # ObjectVars
     package: PACKAGE | None = None
@@ -712,9 +713,10 @@ _TEMPLATE_NAMES = [
     "--config-file",
     "-C",
     type=click.File("rb"),
-    help="Path to a gen-project-style YAML config file setting "
-    "'generator_args: {golang: {package: ...}}'. An explicit --package always "
-    "takes precedence over the config file.",
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {golang: {package: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
 )
 @click.option(
     "--alphabetical-sort/--no-alphabetical-sort",
@@ -753,10 +755,10 @@ Available templates to override:
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="golang")
+@click.pass_context
 def cli(
+    ctx,
     yamlfile,
-    package: str | None = None,
-    package_name: str | None = None,
     config_file=None,
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
@@ -773,13 +775,27 @@ def cli(
     - JSON tags for serialization
     - Struct embedding for inheritance
     """
+    # --package / --package-name consumed from **args; fold the deprecated alias before overlay
+    package_name = args.pop("package_name", None)
+    config = read_generator_config(config_file, GolangGenerator.config_section_name)
     if package_name is not None:
         deprecation_warning("golanggen-package-name-option")
-        if package is None:
-            package = package_name
-    if package is None:
-        package = read_generator_config(config_file, "golang").get("package")
-    GolangGenerator.validate_generator_args({"package": package})
+        if args.get("package") is None:
+            args["package"] = package_name
+            # a deprecated --package-name outranks a config-file package
+            config = {k: v for k, v in config.items() if k != "package"}
+    apply_config_defaults(ctx, config, args)
+    # a config-file-supplied deprecated `package_name` folds same as --package-name
+    if args.get("package_name") is not None and args.get("package") is None:
+        deprecation_warning("golanggen-package-name-option")
+        args["package"] = args.pop("package_name")
+    args.pop("package_name", None)
+    GolangGenerator.validate_generator_args(args)
+    # rebind named locals so overlaid config values are honored and never collide with **args below
+    alphabetical_sort = args.pop("alphabetical_sort", alphabetical_sort)
+    nullable_primitives = args.pop("nullable_primitives", nullable_primitives)
+    named_slot_types = args.pop("named_slot_types", named_slot_types)
+    template_dir = args.pop("template_dir", template_dir)
 
     if template_dir is not None:
         if not Path(template_dir).exists():
@@ -791,7 +807,6 @@ def cli(
     # its own traceback rather than being caught and mistaken for one.
     gen = GolangGenerator(
         yamlfile,
-        package=package,
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
         named_slot_types=named_slot_types,
