@@ -1785,3 +1785,55 @@ def test_top_class_matches_regardless_of_case(tmp_path):
 
     assert schema["additionalProperties"] is False
     assert "name" in schema["properties"]
+
+
+IDENTIFIER_CURIES_SCHEMA = """
+id: https://example.org/identifier-test
+name: identifier-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/identifier-test/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  id:
+    identifier: true
+  name: {}
+classes:
+  MyClass:
+    slots: [id, name]
+    rules:
+      - preconditions:
+          slot_conditions:
+            name:
+              equals_string: x
+        postconditions:
+          slot_conditions:
+            id:
+              pattern: "^ex:"
+"""
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+def test_identifier_property_keeps_slot_name(tmp_path, use_curies):
+    """Identifier properties are keyed by slot name, with or without ``--use-curies``.
+
+    Regression test for https://github.com/linkml/linkml/issues/4056: the identifier
+    maps to the JSON-LD ``@id`` alias, which cannot be CURIE-keyed, so the JSON Schema
+    must key it the same way the JSON-LD context does. Other slots still use CURIEs.
+    """
+    schema_file = tmp_path / "identifier_test.yaml"
+    schema_file.write_text(IDENTIFIER_CURIES_SCHEMA)
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), use_curies=use_curies).serialize())
+    cls_def = generated["$defs"]["ex:MyClass" if use_curies else "MyClass"]
+    name_key = "ex:name" if use_curies else "name"
+
+    assert set(cls_def["properties"]) == {"id", name_key}
+    assert cls_def["required"] == ["id"]
+    assert cls_def["then"]["properties"] == {"id": {"pattern": "^ex:"}}
+    assert cls_def["then"]["required"] == ["id"]
+
+    instance = {"id": "ex:thing1", name_key: "x"}
+    jsonschema.validate(instance, {**generated, "$ref": f"#/$defs/{'ex:MyClass' if use_curies else 'MyClass'}"})

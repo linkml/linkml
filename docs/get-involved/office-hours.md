@@ -17,7 +17,6 @@ There is no agenda! Any community member is welcome to join the office hours to 
 | September 3 |
 | October 1 |
 | November 5 |
-| December 3 |
 
 ## Questions?
 Contact Sarah Gehrke on [Slack](https://docs.google.com/forms/d/e/1FAIpQLScJbdW0QcCS3432mHkTiir9D-HwT5g2iaXYiiy2aOOiCFS3RQ/viewform?usp=dialog) and they can direct you to someone who can help.
