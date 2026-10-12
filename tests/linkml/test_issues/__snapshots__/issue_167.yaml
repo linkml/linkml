@@ -79,8 +79,6 @@ classes:
         tag: EX:foo3
         value: bar3
     from_schema: http://example.org/tests/issue167
-    exact_mappings:
-    - http://example.org/tests/issue167/C1
     slots:
     - sa
     - sb
@@ -90,8 +88,6 @@ classes:
     name: c2
     definition_uri: http://example.org/tests/issue167/C2
     from_schema: http://example.org/tests/issue167
-    exact_mappings:
-    - http://example.org/tests/issue167/C2
     slots:
     - sb
     class_uri: http://example.org/tests/issue167/C2
