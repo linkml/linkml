@@ -34,222 +34,25 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal, InvalidOperation
 import click
 
 from linkml._version import __version__
+from linkml.generators.typedb.naming import (
+    ClassRangeNarrowing,
+    RoleInfo,
+    build_class_range_narrowings,
+    build_name_maps,
+    build_relationship_role_info,
+    build_role_names,
+    check_class_name_collisions,
+    is_relationship_class,
+    resolve_typedb_value_type,
+    slot_ranges,
+    typedb_name,
+    typeql_string,
+)
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
-
-# Maps LinkML / XSD type local-names to TypeDB primitive value types.
-_TYPEDB_PRIMITIVE: dict[str, str] = {
-    # string-like
-    "string": "string",
-    "str": "string",
-    "anyuri": "string",
-    "uri": "string",
-    "uriorcurie": "string",
-    "curie": "string",
-    "ncname": "string",
-    "nodeid": "string",
-    "jsonpointer": "string",
-    "jsonschemanoturi": "string",
-    # integer-like
-    "integer": "integer",
-    "int": "integer",
-    "long": "integer",
-    "short": "integer",
-    "byte": "integer",
-    "nonpositiveinteger": "integer",
-    "negativeinteger": "integer",
-    "nonnegativeinteger": "integer",
-    "positiveinteger": "integer",
-    "unsignedlong": "integer",
-    "unsignedint": "integer",
-    "unsignedshort": "integer",
-    "unsignedbyte": "integer",
-    # double-like
-    "float": "double",
-    "double": "double",
-    # boolean
-    "boolean": "boolean",
-    "bool": "boolean",
-    # datetime-like
-    "datetime": "datetime",
-    "datetimestamp": "datetime",
-    "time": "datetime",
-    "date": "date",
-    "decimal": "decimal",
-    "duration": "duration",
-}
-
-
-# TypeDB 3.x reserved keywords that cannot be used as user-defined type names.
-# When a slot or class name collides with one of these, we append a suffix.
-# Covers every word in the ``reserved`` rule of the TypeQL grammar
-# (https://github.com/typedb/typeql/blob/master/rust/parser/typeql.pest), plus other keywords
-# from the TypeQL keyword glossary (https://typedb.com/docs/typeql-reference/keywords/).
-_TYPEDB_RESERVED: frozenset[str] = frozenset(
-    {
-        # Schema queries
-        "define",
-        "undefine",
-        "redefine",
-        # Pipeline stages
-        "match",
-        "fetch",
-        "insert",
-        "delete",
-        "update",
-        "put",
-        "select",
-        "require",
-        "distinct",
-        "sort",
-        "limit",
-        "offset",
-        "reduce",
-        "with",
-        "given",
-        "end",
-        # Pattern logic
-        "or",
-        "not",
-        "try",
-        # Type statements
-        "entity",
-        "relation",
-        "attribute",
-        "role",
-        "struct",
-        "fun",
-        # Constraint statements
-        "sub",
-        "sub!",
-        "relates",
-        "plays",
-        "value",
-        "owns",
-        "alias",
-        # Instance statements
-        "isa",
-        "isa!",
-        "links",
-        "has",
-        "is",
-        "let",
-        "contains",
-        "like",
-        # Identity
-        "label",
-        "iid",
-        # Reductions
-        "count",
-        "max",
-        "min",
-        "mean",
-        "median",
-        "std",
-        "sum",
-        "list",
-        # Value types
-        "boolean",
-        "integer",
-        "double",
-        "decimal",
-        "datetime-tz",
-        "datetime",
-        "date",
-        "duration",
-        "string",
-        # Built-ins
-        "round",
-        "ceil",
-        "floor",
-        "abs",
-        "len",
-        # Misc
-        "true",
-        "false",
-        "asc",
-        "desc",
-        "first",
-        "last",
-        "return",
-        "of",
-        "from",
-        "in",
-        "as",
-        "type",
-    }
-)
-
-
-def _typeql_string(value: str) -> str:
-    """Return ``value`` as an escaped, double-quoted TypeQL string literal.
-
-    Newlines and tabs are escaped because TypeQL string literals are single-line.
-    """
-    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
-    escaped = escaped.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n").replace("\t", "\\t")
-    return f'"{escaped}"'
-
-
-def _typedb_name(name: str) -> str:
-    """Convert a LinkML name to a TypeDB type label.
-
-    Whitespace becomes underscores; everything else is kept verbatim. Reserved TypeDB
-    keywords are suffixed with ``_attr`` to avoid parse errors.
-
-    Examples:
-        >>> _typedb_name("GeneToDiseaseAssociation")
-        'GeneToDiseaseAssociation'
-        >>> _typedb_name("gene to disease association")
-        'gene_to_disease_association'
-        >>> _typedb_name("match")
-        'match_attr'
-    """
-    result = "_".join(name.split())
-    if result in _TYPEDB_RESERVED:
-        result = result + "_attr"
-    return result
-
-
-def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None) -> str | None:
-    """Return the TypeDB value type for a scalar range, or None if range is a class/enum.
-
-    Walks the LinkML type hierarchy to find the XSD URI, then maps to a TypeDB primitive.
-    Returns None if the range refers to a class or enum (i.e. not a scalar type).
-    """
-    if range_name is None:
-        return "string"
-
-    all_classes = sv.all_classes()
-    all_enums = sv.all_enums()
-
-    if range_name in all_classes:
-        return None  # object reference, not scalar
-    if range_name in all_enums:
-        return "string"  # enums become string attributes
-
-    primitives = _TYPEDB_PRIMITIVE
-
-    # Walk type aliases until we find an XSD URI
-    type_def = sv.get_type(range_name)
-    while type_def is not None:
-        uri = str(type_def.uri) if type_def.uri else ""
-        # Extract the local name from a full URI (e.g. http://...#dateTime) or a CURIE (xsd:dateTime)
-        local = uri.split("#")[-1].split("/")[-1].split(":")[-1].lower()
-        if local in primitives:
-            return primitives[local]
-        # Try the base type name
-        base_lower = (type_def.base or "").lower()
-        if base_lower in primitives:
-            return primitives[base_lower]
-        # Walk up
-        type_def = sv.get_type(type_def.typeof) if type_def.typeof else None
-
-    # Last resort: match the range name directly
-    return primitives.get(range_name.lower(), "string")
 
 
 def _card(lo: object, hi: object) -> str:
@@ -293,7 +96,7 @@ def _build_range_annotation(sv: SchemaView, induced: SlotDefinition) -> str | No
     hi = induced.maximum_value
     if lo is None and hi is None:
         return None
-    value_type = _resolve_typedb_value_type(sv, induced.range)
+    value_type = resolve_typedb_value_type(sv, induced.range)
     lo_str = _range_bound_literal(lo, value_type, is_lower=True) if lo is not None else ""
     hi_str = _range_bound_literal(hi, value_type, is_lower=False) if hi is not None else ""
     return f"@range({lo_str}..{hi_str})"
@@ -333,7 +136,7 @@ def _regex_drop_reason(sv: SchemaView, induced: SlotDefinition) -> str | None:
     """
     if not induced.pattern:
         return None
-    value_type = _resolve_typedb_value_type(sv, induced.range)
+    value_type = resolve_typedb_value_type(sv, induced.range)
     if value_type is None:
         return None
     if value_type != "string":
@@ -356,7 +159,7 @@ def _build_regex_annotation(sv: SchemaView, induced: SlotDefinition) -> str | No
     :param induced: the induced SlotDefinition carrying the ``pattern`` constraint
     :return: annotation string like ``@regex("^[A-Z]+$")`` or ``None``
     """
-    if not induced.pattern or _resolve_typedb_value_type(sv, induced.range) is None:
+    if not induced.pattern or resolve_typedb_value_type(sv, induced.range) is None:
         return None
     if _regex_drop_reason(sv, induced):
         return None
@@ -391,248 +194,7 @@ def _build_doc_annotation(description: str | None) -> str | None:
     """
     if not description:
         return None
-    return f"@doc({_typeql_string(description)})"
-
-
-def _check_class_name_collisions(sv: SchemaView) -> None:
-    """Raise if two distinct LinkML class names map to the same TypeDB label.
-
-    This happens when names differ only in whitespace vs underscores
-    (``gene to disease`` and ``gene_to_disease``).
-
-    :raises ValueError: if any TypeDB label is claimed by more than one class
-    """
-    by_label: dict[str, list[str]] = {}
-    for class_name in sv.all_classes():
-        by_label.setdefault(_typedb_name(class_name), []).append(class_name)
-    clashes = {label: names for label, names in by_label.items() if len(names) > 1}
-    if clashes:
-        detail = "; ".join(f"{label!r} <- {sorted(names)}" for label, names in sorted(clashes.items()))
-        raise ValueError(
-            f"Cannot generate TypeQL: distinct LinkML classes map to the same TypeDB label ({detail}). "
-            "TypeDB labels must be unique; rename the conflicting classes in the source schema."
-        )
-
-
-def _slot_ranges(sv: SchemaView) -> dict[str, str | None]:
-    """Return each slot's range, inherited through slot ``is_a`` when not set on the slot."""
-    return {name: sv.induced_slot(name).range for name in sv.all_slots()}
-
-
-def _build_name_maps(sv: SchemaView, slot_ranges: dict[str, str | None]) -> tuple[dict[str, str], dict[str, str]]:
-    """Build safe TypeDB name mappings for attributes and relations.
-
-    TypeDB requires globally unique labels across all type kinds (entity, attribute,
-    relation). This function detects and resolves:
-
-    - Attribute name colliding with an entity name → append ``-attr``
-    - Relation name colliding with an entity or attribute name → append ``-rel``
-
-    Relations arise from two sources: object-ranged slots on regular classes, and
-    classes with ``represents_relationship: true`` (which become TypeDB ``relation``
-    types directly rather than generating standalone relation types per slot).
-
-    :return: ``(attr_names, rel_names)`` where each maps original slot name → safe TypeDB name
-    """
-    entity_names = {_typedb_name(cn) for cn in sv.all_classes()}
-
-    # ── Attribute names ───────────────────────────────────────────────────────
-    all_class_names = set(sv.all_classes().keys())
-    attr_names: dict[str, str] = {}
-    for class_name in sv.all_classes():
-        for slot in sv.class_induced_slots(class_name):
-            if slot.name in attr_names:
-                continue
-            if slot.range in all_class_names:
-                continue  # object-ranged → relation, not attribute
-            candidate = _typedb_name(slot.name)
-            if candidate in entity_names:
-                candidate = candidate + "_attr"
-            attr_names[slot.name] = candidate
-
-    # Unattached scalar slots too, so whole slot is_a trees can be emitted.
-    for slot_name, slot_range in slot_ranges.items():
-        if slot_name in attr_names or slot_range in all_class_names:
-            continue
-        candidate = _typedb_name(slot_name)
-        if candidate in entity_names:
-            candidate = candidate + "_attr"
-        attr_names[slot_name] = candidate
-
-    # ── Relation names ────────────────────────────────────────────────────────
-    # Relations are derived from object-ranged slots only. ``class_induced_slots``
-    # returns the union of inherited slots, top-level ``slots:`` references, and
-    # inline ``attributes:`` declarations, so all three sources contribute.
-    taken = entity_names | set(attr_names.values())
-    rel_names: dict[str, str] = {}
-    candidates = [
-        slot.name
-        for class_name in sv.all_classes()
-        for slot in sv.class_induced_slots(class_name)
-        if slot.range in all_class_names
-    ] + [slot_name for slot_name, slot_range in slot_ranges.items() if slot_range in all_class_names]
-    for slot_name in candidates:
-        if slot_name in rel_names:
-            continue
-        candidate = _typedb_name(slot_name)
-        if candidate in taken:
-            candidate = candidate + "_rel"
-        rel_names[slot_name] = candidate
-        taken.add(candidate)
-
-    return attr_names, rel_names
-
-
-def _build_role_names(sv: SchemaView, rel_names: dict[str, str]) -> dict[str, tuple[str, str]]:
-    """Build role-label pairs for each object-ranged slot's relation.
-
-    The owning role is named after the slot and the played role after the range class,
-    so reflexive slots (``parent`` on ``person``) still get two distinct roles. If the
-    two names collide, the played role gets a ``_role`` suffix.
-
-    :param rel_names: slot name → safe TypeDB relation name (from ``_build_name_maps``)
-    :return: slot name → ``(owning_role_name, played_role_name)``
-    """
-    result: dict[str, tuple[str, str]] = {}
-    for slot_name in sv.all_slots():
-        # Name the played role after the slot's own range, not a class's slot_usage narrowing of it.
-        induced = sv.induced_slot(slot_name)
-        if induced.range not in sv.all_classes():
-            for class_name in sv.all_classes():
-                declared = next((s for s in sv.class_induced_slots(class_name) if s.name == slot_name), None)
-                if declared is not None:
-                    induced = declared
-                    break
-        if induced.range not in sv.all_classes():
-            continue
-        owning_role = _typedb_name(slot_name)
-        played_role = _typedb_name(induced.range)
-        if played_role == owning_role:
-            played_role = played_role + "_role"
-        result[slot_name] = (owning_role, played_role)
-    return result
-
-
-def _is_relationship_class(sv: SchemaView, class_name: str) -> bool:
-    """Return True if ``class_name`` should be emitted as a TypeDB ``relation``.
-
-    The nearest class in the ``is_a`` chain that sets ``represents_relationship``
-    (true or false) decides. If none does, fall back to ``SchemaView.is_relationship()``,
-    which detects RDF statement reification (``rdf:Statement`` / ``owl:Axiom``).
-    """
-    current = class_name
-    while current:
-        class_def = sv.get_class(current)
-        if class_def is None:
-            break
-        if class_def.represents_relationship is not None:
-            return bool(class_def.represents_relationship)
-        current = class_def.is_a
-    return sv.is_relationship(class_name)
-
-
-@dataclass
-class _RoleInfo:
-    """Resolved TypeDB role info for one object-ranged slot on one relationship class.
-
-    :ivar role_name: the role this class's players use (base or specialized)
-    :ivar specializes: the parent role this one specializes, or None if not new here
-    :ivar introduced_here: True if this class must emit the ``relates`` declaration
-    :ivar declared_on: the relation type that declares ``role_name``; ``plays`` must be
-        scoped to it, since inherited roles are only declared on their introducing class
-    """
-
-    role_name: str
-    specializes: str | None
-    introduced_here: bool
-    declared_on: str
-
-
-def _build_relationship_role_info(sv: SchemaView, relationship_classes: set[str]) -> dict[tuple[str, str], _RoleInfo]:
-    """Compute per-(class, slot) role specialization info for relationship classes.
-
-    A specialized role ``<range>_<parent-role>`` is introduced only where the range
-    actually changes along the ``is_a`` chain; restating an unchanged range reuses the
-    ancestor's role, since redeclaring it violates TypeDB's ``[SVL7]``.
-
-    :param relationship_classes: the set of class names being emitted as relations
-    :return: ``(class_name, slot_name) -> _RoleInfo`` for every object-ranged slot
-        directly usable on a relationship class (including inherited ones)
-    """
-    result: dict[tuple[str, str], _RoleInfo] = {}
-    all_class_names = set(sv.all_classes().keys())
-
-    for class_name in relationship_classes:
-        # Root-first chain of this class's own relationship-class ancestry.
-        chain = [class_name]
-        cur = sv.get_class(class_name)
-        while cur and cur.is_a and cur.is_a in relationship_classes:
-            chain.append(cur.is_a)
-            cur = sv.get_class(cur.is_a)
-        chain.reverse()
-
-        # Per slot: range, role and declaring class from the nearest ancestor.
-        last_range: dict[str, str] = {}
-        last_role: dict[str, str] = {}
-        last_declared_on: dict[str, str] = {}
-
-        for cls in chain:
-            for induced in sv.class_induced_slots(cls):
-                if induced.range not in all_class_names:
-                    continue
-                slot_name = induced.name
-                base_role = _typedb_name(slot_name)
-                prior_range = last_range.get(slot_name)
-                prior_role = last_role.get(slot_name, base_role)
-
-                if prior_range is None:
-                    result[(cls, slot_name)] = _RoleInfo(
-                        role_name=base_role, specializes=None, introduced_here=True, declared_on=cls
-                    )
-                    last_range[slot_name] = induced.range
-                    last_role[slot_name] = base_role
-                    last_declared_on[slot_name] = cls
-                elif induced.range == prior_range:
-                    result[(cls, slot_name)] = _RoleInfo(
-                        role_name=prior_role,
-                        specializes=None,
-                        introduced_here=False,
-                        declared_on=last_declared_on[slot_name],
-                    )
-                else:
-                    specialized = f"{_typedb_name(induced.range)}_{prior_role}"
-                    result[(cls, slot_name)] = _RoleInfo(
-                        role_name=specialized, specializes=prior_role, introduced_here=True, declared_on=cls
-                    )
-                    last_range[slot_name] = induced.range
-                    last_role[slot_name] = specialized
-                    last_declared_on[slot_name] = cls
-
-    return result
-
-
-@dataclass
-class _ClassRangeNarrowing:
-    """A single class-ranged slot narrowing on an ordinary (non-relationship) class.
-
-    :ivar slot_name: the LinkML slot being narrowed
-    :ivar narrowing_class: the class whose ``slot_usage`` narrows the range
-    :ivar base_relation: the slot's base relation
-    :ivar sub_relation: the sub-relation emitted for this narrowing
-    :ivar owning_role: the owning role, inherited from the base relation
-    :ivar base_played_role: the played role being specialized
-    :ivar narrowed_played_role: the specialized played role
-    :ivar narrowed_range: the narrowed LinkML range class
-    """
-
-    slot_name: str
-    narrowing_class: str
-    base_relation: str
-    sub_relation: str
-    owning_role: str
-    base_played_role: str
-    narrowed_played_role: str
-    narrowed_range: str
+    return f"@doc({typeql_string(description)})"
 
 
 @dataclass
@@ -659,69 +221,6 @@ class _SlotRelation:
     declared: bool = True
 
 
-def _build_class_range_narrowings(
-    sv: SchemaView,
-    relationship_classes: set[str],
-    rel_names: dict[str, str],
-    role_names: dict[str, tuple[str, str]],
-) -> list[_ClassRangeNarrowing]:
-    """Find class-ranged slots that an ordinary (non-relationship) subclass narrows.
-
-    Each narrowing becomes a sub-relation of the slot's base relation with a specialized
-    played role (``relates <narrowed> as <base>``), so queries on the base role still
-    match data inserted through the narrowed one. Only the first class in an ``is_a``
-    chain to change the range counts; unchanged restatements are skipped.
-
-    :param relationship_classes: class names emitted as ``relation`` (skipped)
-    :param rel_names: slot name → safe TypeDB base relation name
-    :param role_names: slot name → (owning_role_name, played_role_name)
-    :return: one ``_ClassRangeNarrowing`` per class that introduces a real narrowing
-    """
-    all_class_names = set(sv.all_classes().keys())
-    result: list[_ClassRangeNarrowing] = []
-
-    for slot_name in sv.all_slots():
-        base_range = sv.induced_slot(slot_name).range
-        if base_range not in all_class_names:
-            continue  # not a class-ranged slot at all
-
-        owning_role, base_played_role = role_names.get(slot_name, (_typedb_name(slot_name), _typedb_name(base_range)))
-        base_relation = rel_names.get(slot_name, _typedb_name(slot_name))
-
-        for class_name in sv.all_classes():
-            class_def = sv.get_class(class_name)
-            if class_def.mixin or class_name in relationship_classes:
-                continue
-            if slot_name not in (class_def.slots or []) and slot_name not in (class_def.slot_usage or {}):
-                continue
-            induced = sv.induced_slot(slot_name, class_name)
-            if induced.range not in all_class_names or induced.range == base_range:
-                continue  # unranged, or same as the base range
-
-            # Skip if the parent already has this range (a restatement, not a narrowing).
-            parent = class_def.is_a
-            parent_range = sv.induced_slot(slot_name, parent).range if parent else base_range
-            if induced.range == parent_range:
-                continue
-
-            sub_relation = f"{base_relation}_{_typedb_name(class_name)}"
-            narrowed_played_role = f"{_typedb_name(induced.range)}_{base_played_role}"
-            result.append(
-                _ClassRangeNarrowing(
-                    slot_name=slot_name,
-                    narrowing_class=class_name,
-                    base_relation=base_relation,
-                    sub_relation=sub_relation,
-                    owning_role=owning_role,
-                    base_played_role=base_played_role,
-                    narrowed_played_role=narrowed_played_role,
-                    narrowed_range=induced.range,
-                )
-            )
-
-    return result
-
-
 @dataclass
 class TypeDBGenerator(Generator):
     """Generates TypeDB 3.x TypeQL schema definitions from a LinkML schema.
@@ -743,16 +242,16 @@ class TypeDBGenerator(Generator):
         :return: TypeQL schema as a string
         """
         sv = self.schemaview
-        _check_class_name_collisions(sv)
+        check_class_name_collisions(sv)
         # Pre-compute safe names; resolves collisions across entity/attribute/relation labels.
-        attr_names, rel_names = _build_name_maps(sv, _slot_ranges(sv))
-        role_names = _build_role_names(sv, rel_names)
-        relationship_classes = {cn for cn in sv.all_classes() if _is_relationship_class(sv, cn)}
-        relationship_role_info = _build_relationship_role_info(sv, relationship_classes)
+        attr_names, rel_names = build_name_maps(sv, slot_ranges(sv))
+        role_names = build_role_names(sv, rel_names)
+        relationship_classes = {cn for cn in sv.all_classes() if is_relationship_class(sv, cn)}
+        relationship_role_info = build_relationship_role_info(sv, relationship_classes)
         slot_relations = self._build_slot_relations(sv, relationship_classes, rel_names, role_names)
         for slot_name, sr in slot_relations.items():
             role_names[slot_name] = (sr.owning_role, sr.played_role)
-        class_range_narrowings = _build_class_range_narrowings(sv, relationship_classes, rel_names, role_names)
+        class_range_narrowings = build_class_range_narrowings(sv, relationship_classes, rel_names, role_names)
         lines: list[str] = []
 
         # Header comment
@@ -876,8 +375,8 @@ class TypeDBGenerator(Generator):
         result: dict[str, _SlotRelation] = {}
         for slot_name in sorted(defs, key=depth):
             induced = defs[slot_name]
-            relation = rel_names.get(slot_name, _typedb_name(slot_name))
-            owning_role, played_role = role_names.get(slot_name, (_typedb_name(slot_name), _typedb_name(induced.range)))
+            relation = rel_names.get(slot_name, typedb_name(slot_name))
+            owning_role, played_role = role_names.get(slot_name, (typedb_name(slot_name), typedb_name(induced.range)))
             parent = sv.get_slot(slot_name).is_a
             if parent not in result:
                 result[slot_name] = _SlotRelation(induced, relation, None, owning_role, played_role, relation, None)
@@ -894,7 +393,7 @@ class TypeDBGenerator(Generator):
                 ancestor_roles.update((result[cur].owning_role, result[cur].played_role))
                 cur = result[cur].parent
             if played_role in ancestor_roles:
-                played_role = f"{_typedb_name(induced.range)}_{p.played_role}"
+                played_role = f"{typedb_name(induced.range)}_{p.played_role}"
             result[slot_name] = _SlotRelation(
                 induced, relation, parent, owning_role, played_role, relation, p.played_role
             )
@@ -950,10 +449,10 @@ class TypeDBGenerator(Generator):
 
         for class_name in sv.all_classes():
             for induced_slot in sv.class_induced_slots(class_name):
-                slot_name = attr_names.get(induced_slot.name, _typedb_name(induced_slot.name))
+                slot_name = attr_names.get(induced_slot.name, typedb_name(induced_slot.name))
                 if slot_name in seen:
                     continue
-                value_type = _resolve_typedb_value_type(sv, induced_slot.range)
+                value_type = resolve_typedb_value_type(sv, induced_slot.range)
                 if value_type is None:
                     continue  # object range → relation, not attribute
                 doc_ann = _build_doc_annotation(induced_slot.description)
@@ -969,7 +468,7 @@ class TypeDBGenerator(Generator):
                 continue
             slot_def = all_slots_for_base.get(slot_name_orig)
             slot_range = sv.induced_slot(slot_name_orig).range if slot_def else None
-            value_type = _resolve_typedb_value_type(sv, slot_range)
+            value_type = resolve_typedb_value_type(sv, slot_range)
             if value_type is None:
                 continue  # object range → relation, not attribute
             doc_ann = _build_doc_annotation(slot_def.description if slot_def else None)
@@ -988,7 +487,7 @@ class TypeDBGenerator(Generator):
             values_ann = self._enum_values(enum_name)
             if values_ann is None:
                 continue  # no static values: stays a plain string attribute
-            enum_attr_lines.append(f"# Enum: {_typedb_name(enum_name)}")
+            enum_attr_lines.append(f"# Enum: {typedb_name(enum_name)}")
             seen.pop(slot_name)
             enum_attr_lines.append(f"attribute {slot_name}, value string {values_ann};")
 
@@ -1047,7 +546,7 @@ class TypeDBGenerator(Generator):
         for induced in sv.class_induced_slots(class_name):
             if induced.name not in parent_slot_names:
                 continue
-            if _resolve_typedb_value_type(sv, induced.range) is None:
+            if resolve_typedb_value_type(sv, induced.range) is None:
                 continue  # object-ranged slots are roles, handled elsewhere
             inherited = sv.induced_slot(induced.name, parent)
             builders = (
@@ -1069,7 +568,7 @@ class TypeDBGenerator(Generator):
         permitted = list(enum_def.permissible_values.keys()) if enum_def else []
         if not permitted:
             return None
-        return f"@values({', '.join(_typeql_string(v) for v in permitted)})"
+        return f"@values({', '.join(typeql_string(v) for v in permitted)})"
 
     def _values_annotation(self, induced: SlotDefinition) -> str | None:
         """Return ``@values(...)`` for an owns whose enum range differs from the slot's own range."""
@@ -1213,8 +712,8 @@ class TypeDBGenerator(Generator):
         rel_names: dict[str, str],
         role_names: dict[str, tuple[str, str]],
         relationship_classes: set[str],
-        relationship_role_info: dict[tuple[str, str], "_RoleInfo"],
-        class_range_narrowings: list["_ClassRangeNarrowing"],
+        relationship_role_info: dict[tuple[str, str], "RoleInfo"],
+        class_range_narrowings: list["ClassRangeNarrowing"],
         slot_relations: dict[str, "_SlotRelation"],
     ) -> list[str]:
         """Return entity and relation-class type definition lines including owns, relates, and plays.
@@ -1232,7 +731,7 @@ class TypeDBGenerator(Generator):
         :param role_names: slot name → (owning_role_name, played_role_name)
         :param relationship_classes: class names to emit as ``relation``
         :param relationship_role_info: (class_name, slot_name) → resolved role info
-        :param class_range_narrowings: output of ``_build_class_range_narrowings``
+        :param class_range_narrowings: output of ``build_class_range_narrowings``
         :param slot_relations: output of ``_build_slot_relations``
         """
         # Pre-compute ancestor slot names and direct induced slots for all classes.
@@ -1241,7 +740,7 @@ class TypeDBGenerator(Generator):
         ancestor_slot_names_cache: dict[str, set[str]] = {
             cn: self._ancestor_slot_names(sv, cn) for cn in sv.all_classes()
         }
-        narrowing_by_class_slot: dict[tuple[str, str], _ClassRangeNarrowing] = {
+        narrowing_by_class_slot: dict[tuple[str, str], ClassRangeNarrowing] = {
             (n.narrowing_class, n.slot_name): n for n in class_range_narrowings
         }
         direct_slots_cache: dict[str, list[SlotDefinition]] = {
@@ -1262,7 +761,7 @@ class TypeDBGenerator(Generator):
             if slot_name in declared_slot_names or slot_def.abstract:
                 continue
             induced = sv.induced_slot(slot_name)
-            if not induced.domain or _resolve_typedb_value_type(sv, induced.range) is None:
+            if not induced.domain or resolve_typedb_value_type(sv, induced.range) is None:
                 continue
             for owner in self._player_classes_for_range(sv, induced.domain):
                 if owner in domain_owned:
@@ -1282,7 +781,7 @@ class TypeDBGenerator(Generator):
                 info = relationship_role_info.get((class_name, induced.name))
                 if info is None:
                     continue
-                rel_tname = _typedb_name(info.declared_on)
+                rel_tname = typedb_name(info.declared_on)
                 plays_stmt = self._build_plays_stmt(rel_tname, info.role_name)
                 for player in self._player_classes_for_range(sv, induced.range):
                     if player in plays_map:
@@ -1361,7 +860,7 @@ class TypeDBGenerator(Generator):
         for class_name, class_def in sv.all_classes().items():
             if class_def.mixin:
                 continue  # mixins are not emitted as TypeDB types
-            tname = _typedb_name(class_name)
+            tname = typedb_name(class_name)
             is_rel_class = class_name in relationship_classes
             is_abstract = bool(class_def.abstract) and self._abstract_ok(sv, class_name)
 
@@ -1376,7 +875,7 @@ class TypeDBGenerator(Generator):
                 )
                 warnings.append(
                     f"  # WARNING: '{tname}' is abstract in LinkML but its supertype "
-                    f"'{_typedb_name(parent)}' {why}; TypeDB requires an abstract "
+                    f"'{typedb_name(parent)}' {why}; TypeDB requires an abstract "
                     "type's direct supertype to also be abstract [SVL14]. @abstract dropped "
                     "here rather than propagated to the (likely intentionally concrete) "
                     "supertype — review whether the supertype should be abstract instead."
@@ -1399,7 +898,7 @@ class TypeDBGenerator(Generator):
                 parts.append(label)
                 has_relation_supertype = bool(class_def.is_a) and not is_a_is_mixin and not is_a_not_relationship
                 if has_relation_supertype:
-                    parts[0] += f", sub {_typedb_name(class_def.is_a)}"
+                    parts[0] += f", sub {typedb_name(class_def.is_a)}"
 
                 # All induced slots, since a range can be narrowed anywhere in the chain.
                 for induced in sv.class_induced_slots(class_name):
@@ -1419,20 +918,20 @@ class TypeDBGenerator(Generator):
                     direct_slots_cache[class_name] if has_relation_supertype else sv.class_induced_slots(class_name)
                 )
                 for induced in scalar_slots:
-                    value_type = _resolve_typedb_value_type(sv, induced.range)
+                    value_type = resolve_typedb_value_type(sv, induced.range)
                     if value_type is not None:
-                        slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                        slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                         parts.append(self._build_owns_stmt(slot_tname, induced))
                 if has_relation_supertype:
                     for induced in self._narrowed_inherited_slots(sv, class_name):
-                        slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                        slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                         parts.append(self._build_owns_narrowing_stmt(slot_tname, induced))
                 domain_sources = [class_name]
                 if not has_relation_supertype:
                     domain_sources += [a for a in sv.class_ancestors(class_name)[1:] if not sv.get_class(a).mixin]
                 for source in domain_sources:
                     for induced in domain_owned.get(source, []):
-                        slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                        slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                         parts.append(self._build_owns_stmt(slot_tname, induced))
             else:
                 # Emit as TypeDB entity type
@@ -1443,24 +942,24 @@ class TypeDBGenerator(Generator):
                     label += " @abstract"
                 parts.append(label)
                 if class_def.is_a and not is_a_is_mixin:
-                    parts[0] += f", sub {_typedb_name(class_def.is_a)}"
+                    parts[0] += f", sub {typedb_name(class_def.is_a)}"
 
                 # Slots that appear on ANY non-mixin ancestor are already inherited
                 # in TypeDB — redeclaring them causes [SVL42].
                 for induced in direct_slots_cache[class_name]:
-                    value_type = _resolve_typedb_value_type(sv, induced.range)
+                    value_type = resolve_typedb_value_type(sv, induced.range)
                     if value_type is None:
                         continue  # object range → relation
-                    slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                    slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                     parts.append(self._build_owns_stmt(slot_tname, induced))
                 for induced in domain_owned[class_name]:
-                    slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                    slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                     parts.append(self._build_owns_stmt(slot_tname, induced))
 
                 # An inherited slot the class narrows via slot_usage is redeclared with
                 # just the tightened constraints, which TypeDB accepts as a narrowing.
                 for induced in self._narrowed_inherited_slots(sv, class_name):
-                    slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
+                    slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                     parts.append(self._build_owns_narrowing_stmt(slot_tname, induced))
 
                 for plays_stmt in dict.fromkeys(plays_map.get(class_name, [])):
@@ -1487,7 +986,7 @@ class TypeDBGenerator(Generator):
         self,
         sv: SchemaView,
         slot_relations: dict[str, "_SlotRelation"],
-        class_range_narrowings: list["_ClassRangeNarrowing"],
+        class_range_narrowings: list["ClassRangeNarrowing"],
     ) -> list[str]:
         """Return relation type definition lines for all object-ranged slots.
 
@@ -1496,9 +995,9 @@ class TypeDBGenerator(Generator):
         ordinary subclass.
 
         :param slot_relations: output of ``_build_slot_relations``
-        :param class_range_narrowings: output of ``_build_class_range_narrowings``
+        :param class_range_narrowings: output of ``build_class_range_narrowings``
         """
-        narrowings_by_slot: dict[str, list[_ClassRangeNarrowing]] = {}
+        narrowings_by_slot: dict[str, list[ClassRangeNarrowing]] = {}
         for n in class_range_narrowings:
             narrowings_by_slot.setdefault(n.slot_name, []).append(n)
 
