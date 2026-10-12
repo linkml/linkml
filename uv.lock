@@ -10,7 +10,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-10-02T14:30:50.454964009Z"
+exclude-newer = "2026-10-05T14:20:10.261279343Z"
 exclude-newer-span = "P7D"
 
 [manifest]
@@ -2492,7 +2492,7 @@ typing = [
 [package.metadata]
 requires-dist = [
     { name = "antlr4-python3-runtime", specifier = ">=4.9.0,<4.10" },
-    { name = "click", specifier = ">=8.2" },
+    { name = "click", specifier = ">=8.3.3" },
     { name = "graphviz", specifier = ">=0.10.1" },
     { name = "hbreader" },
     { name = "isodate", specifier = ">=0.6.0" },
