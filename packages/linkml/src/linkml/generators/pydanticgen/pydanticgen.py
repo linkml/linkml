@@ -494,16 +494,22 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         Determine the per-class ``extra`` value for the Pydantic ``ConfigDict``
         based on the class's ``extra_slots`` metadata.
 
+        ``allowed`` takes precedence over ``range_expression``, as in
+        :meth:`.JsonSchemaGenerator.get_additional_properties`. The metamodel says
+        that ``allowed: false`` forbids extra data even beside a ``range_expression``.
+
         Returns ``None`` if the class does not override the generator-wide default,
         so the inherited base-model configuration is used.
         """
         if not cls.extra_slots:
             return None
+        elif cls.extra_slots.allowed is not None:
+            return "allow" if cls.extra_slots.allowed else "forbid"
         elif cls.extra_slots.range_expression:
             result = self.generate_slot(cls.extra_slots.range_expression, cls)
             return result.attribute
         else:
-            return "allow" if cls.extra_slots.allowed else "forbid"
+            return "forbid"
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         # Handle union_of classes by creating a type alias instead of a class

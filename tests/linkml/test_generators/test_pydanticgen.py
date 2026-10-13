@@ -3215,6 +3215,8 @@ def extra_slots(input_path) -> ModuleType:
         ),
         ("ExtraCardinality", True, {"x": 1, "another": [1, 2, 3, 4, 5]}),
         ("ExtraCardinality", False, {"x": 1, "another": [1, 2, 3, 4, 5, 6]}),
+        ("ExtraNotAllowedExpression", False, {"x": 1, "y": "string"}),
+        ("ExtraAllowedExpression", True, {"x": 1, "y": "string"}),
     ],
 )
 def test_extra_slots(data, clsname, valid, extra_slots):
