@@ -507,12 +507,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         else:
             return "forbid"
 
-    def _get_extra_for_class(
-        self, cls: ClassDefinition
-    ) -> Literal["allow", "forbid", "ignore"] | PydanticAttribute | None:
+    def _get_extra_for_class(self, cls: ClassDefinition) -> Literal["allow", "forbid", "ignore"] | SlotResult | None:
         """
         Determine the per-class ``extra`` value for the Pydantic ``ConfigDict``
         based on the class's ``extra_slots`` metadata.
+
+        Extra data with a type comes back as a :class:`.SlotResult` whose attribute
+        gives that type, so that :meth:`.generate_class` can merge its imports.
 
         A class without ``extra_slots`` follows the generator-wide :attr:`.extra_fields`,
         as in :class:`.JsonSchemaGenerator`, even when an ancestor has ``extra_slots``.
@@ -524,8 +525,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         mode = self._extra_slots_mode(cls)
         if mode == "expression":
-            result = self.generate_slot(cls.extra_slots.range_expression, cls)
-            return result.attribute
+            return self.generate_slot(cls.extra_slots.range_expression, cls)
 
         ancestors = self.schemaview.class_ancestors(cls.name, mixins=self.gen_mixin_inheritance, reflexive=False)
         ancestor_modes = {self._extra_slots_mode(self.schemaview.get_class(ancestor)) for ancestor in ancestors}
@@ -535,8 +535,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             mode = self.extra_fields
         if mode == "allow" and "expression" in ancestor_modes:
             # An ancestor's typed __pydantic_extra__ would still limit the extra values,
-            # so this class accepts values of any type.
-            return PydanticAttribute(name="__anonymous__", range="Any", as_annotated=True)
+            # so this class accepts values of any type, as an empty expression does.
+            return SlotResult(
+                attribute=PydanticAttribute(name="__anonymous__", range="Any", as_annotated=True),
+                source=AnonymousSlotExpression(),
+            )
         return mode
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
@@ -545,16 +548,20 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             return self._generate_union_class(cls)
 
         class_python_name = self._get_class_python_name(cls.name)
+        extra = self._get_extra_for_class(cls)
         pyclass = PydanticClass(
             name=class_python_name,
             bases=self.class_bases.get(class_python_name, PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
-            extra=self._get_extra_for_class(cls),
+            extra=extra.attribute if isinstance(extra, SlotResult) else extra,
         )
 
         imports = self._get_imports(cls) if self.split else None
 
         result = ClassResult(cls=pyclass, source=cls, imports=imports)
+        if isinstance(extra, SlotResult):
+            # Brings in the imports for any class that types the extra data.
+            result = result.merge(extra)
 
         # Gather slots
         slots = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
@@ -1101,7 +1108,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         model.meta = meta
         return model
 
-    def _get_imports(self, element: ClassDefinition | SlotDefinition | None = None) -> Imports:
+    def _get_imports(
+        self, element: ClassDefinition | SlotDefinition | AnonymousSlotExpression | None = None
+    ) -> Imports:
         """
         Get imports that are implied by their usage in slots or classes
         (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
@@ -1118,8 +1127,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         where we will need to revise our expectations of what is imported when.
 
         Args:
-            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` , None): The element
-                to get import for. If ``None`` , get all needed imports (see :attr:`.split_mode`
+            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` ,
+                :class:`.AnonymousSlotExpression` , None): The element to get imports for.
+                If ``None`` , get all needed imports (see :attr:`.split_mode` )
         """
         # import from local references, rather than serializing every class in every file
         if not self.split or (self.split_mode == SplitMode.FULL and element is not None):
@@ -1147,12 +1157,18 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             slot_ranges = self.schemaview.slot_range_as_union(element)
             needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
 
+        elif isinstance(element, AnonymousSlotExpression):
+            # the same ranges for an expression, such as the range_expression of extra_slots,
+            # which SchemaView.slot_range_as_union does not accept
+            expressions = [element, *element.exactly_one_of, *element.any_of]
+            needed_classes.extend([e.range for e in expressions if e.range in all_classes])
+
         elif element is None:
             # get all imports
             needed_classes.extend([cls for cls in all_classes if cls not in local_classes])
 
         else:
-            raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
+            raise ValueError(f"Unsupported type of element to get imports from: {type(element)}")
 
         # SPECIAL CASE: classes that are not generated for structural reasons.
         # TODO: Do we want to have a general means of skipping class generation?

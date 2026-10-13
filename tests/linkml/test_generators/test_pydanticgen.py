@@ -3259,3 +3259,54 @@ def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allo
     else:
         with pytest.raises(ValidationError):
             cls(**data)
+
+
+EXTRA_SLOTS_SPLIT_IMPORTED = """
+id: https://example.org/extra_slots_imported
+name: extra_slots_imported
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Remote:
+    attributes:
+      y:
+        range: string
+"""
+
+EXTRA_SLOTS_SPLIT_MAIN = """
+id: https://example.org/extra_slots_main
+name: extra_slots_main
+imports:
+  - linkml:types
+  - extra_slots_imported
+default_range: string
+classes:
+  Holder:
+    attributes:
+      x:
+        range: integer
+    extra_slots:
+      range_expression:
+        range: Remote
+"""
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_extra_slots(tmp_path, monkeypatch):
+    """
+    In split mode, a class that types the extra data of another class is imported
+    from the module of the schema that defines it.
+    """
+    (tmp_path / "extra_slots_imported.yaml").write_text(EXTRA_SLOTS_SPLIT_IMPORTED)
+    (tmp_path / "extra_slots_main.yaml").write_text(EXTRA_SLOTS_SPLIT_MAIN)
+    output_file = tmp_path / "split_extra_slots" / "extra_slots_main.py"
+    PydanticGenerator.generate_split(
+        str(tmp_path / "extra_slots_main.yaml"), output_file, split_pattern=".{{ schema.name }}"
+    )
+
+    monkeypatch.syspath_prepend(str(tmp_path))
+    module = importlib.import_module("split_extra_slots.extra_slots_main")
+    module.Holder(x=1, extra={"y": "string"})
+    with pytest.raises(ValidationError):
+        module.Holder(x=1, extra={"y": 1})
