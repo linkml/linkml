@@ -2841,12 +2841,13 @@ def test_shacl_modular_schema_with_reused_attribute_name(tmp_path) -> None:
 
 
 def test_any_of_with_pattern(input_path):
-    """Test that pattern constraints inside any_of branches emit sh:pattern.
+    """Test that pattern constraints combined with any_of emit sh:pattern.
 
-    Exercises three cases:
+    Exercises four cases:
     1. PatternOnlyBranch: any_of with a pattern-only branch (no range)
     2. RangeWithPattern: any_of with range + pattern on the same branch
     3. MixedBranches: combination of range-only, pattern-only, and range+pattern
+    4. SlotPatternWithAnyOf: a slot-level pattern next to any_of
     """
     shacl = ShaclGenerator(input_path("shaclgen/any_of_pattern.yaml"), mergeimports=True).serialize()
     g = rdflib.Graph()
@@ -2904,6 +2905,16 @@ def test_any_of_with_pattern(input_path):
     assert len(no_pattern) == 1
     assert list(g.objects(no_pattern[0], SH.datatype)) == [URIRef("http://www.w3.org/2001/XMLSchema#integer")]
 
+    # Case 4: SlotPatternWithAnyOf — the property shape carries the slot-level pattern next to sh:or.
+    prop = next(
+        p
+        for p in g.objects(URIRef(f"{prefix}SlotPatternWithAnyOf"), SH.property)
+        if str(g.value(p, SH.path)).endswith("tag")
+    )
+    assert [str(p) for p in g.objects(prop, SH.pattern)] == ["^[a-z]+$"]
+    branches = get_or_branch_nodes(f"{prefix}SlotPatternWithAnyOf", "tag")
+    assert sorted(str(g.value(b, SH.pattern)) for b in branches) == ["^x", "^y"]
+
 
 def test_any_of_with_pattern_pyshacl_end_to_end(input_path):
     """End-to-end: pyshacl accepts values matching an ``any_of`` pattern branch and rejects others.
@@ -2954,3 +2965,10 @@ def test_any_of_with_pattern_pyshacl_end_to_end(input_path):
         assert ok, f"code {value} should conform:\n{text}"
     ok, _ = conforms(f'{prefixes}\nex:c2 a ex:MixedBranches ; ex:code "STD-xyz" .')
     assert not ok, "A value matching no any_of branch must be rejected"
+
+    # Case 4: a slot-level pattern applies in addition to the matching branch.
+    ok, text = conforms(f'{prefixes}\nex:t1 a ex:SlotPatternWithAnyOf ; ex:tag "xa" .')
+    assert ok, f"tag 'xa' should conform:\n{text}"
+    for value in ('"x1"', '"za"'):
+        ok, _ = conforms(f"{prefixes}\nex:t2 a ex:SlotPatternWithAnyOf ; ex:tag {value} .")
+        assert not ok, f"tag {value} violates the slot pattern or matches no branch and must be rejected"
