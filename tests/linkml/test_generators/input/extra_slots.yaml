@@ -76,6 +76,11 @@ classes:
       range_expression:
         range: integer
 
+  ExtraSlotsEmpty:
+    is_a: Base
+    description: "An extra_slots with neither allowed nor range_expression forbids extra fields"
+    extra_slots: {}
+
   ExtraAllowedChild:
     is_a: ExtraAllowed
     description: "Has no extra_slots of its own, so it follows the generator default"

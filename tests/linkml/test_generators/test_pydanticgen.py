@@ -3245,6 +3245,7 @@ def extra_slots_allowed_by_default(input_path) -> ModuleType:
         ("ExtraNotAllowed", False),
         ("ExtraString", False),
         ("ExtraStringChild", True),
+        ("ExtraSlotsEmpty", False),
     ],
 )
 def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allowed_by_default):
