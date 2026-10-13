@@ -684,13 +684,14 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     def gen_accept_extra_slots(self) -> str:
         """
         Generate the ``accept_extra_slots`` decorator, which the classes whose ``extra_slots``
-        allows extra data are wrapped in, and the ``ExtraSlotValue`` holder that the checks
-        of a ``range_expression`` run on. Returns an empty string when no class needs them.
+        allows extra data are wrapped in, and, when a class checks its extra values, the
+        ``ExtraSlotValue`` holder that the checks run on. Returns an empty string when no
+        class takes extra data.
         """
         local_classes = [cls for cls in self.schema.classes.values() if not cls.imported_from]
         if not any(self._accepts_extra_slots(cls) for cls in local_classes):
             return ""
-        return """
+        code = """
 
 def accept_extra_slots(cls):
     \"\"\"
@@ -717,7 +718,9 @@ def accept_extra_slots(cls):
 
     cls.__init__ = __init__
     return cls
-
+"""
+        if any(self.gen_extra_slot_value(cls) for cls in local_classes):
+            code += """
 
 class ExtraSlotValue(YAMLRoot):
     \"\"\"Holds one extra value while it is checked against a range_expression.\"\"\"
@@ -726,6 +729,7 @@ class ExtraSlotValue(YAMLRoot):
         super().__init__()
         self.extra_value = extra_value
 """
+        return code
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
