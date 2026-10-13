@@ -3192,6 +3192,8 @@ def extra_slots(input_path) -> ModuleType:
 @pytest.mark.parametrize(
     "clsname,valid,data",
     [
+        ("Base", True, {"x": 1}),
+        ("Base", False, {"x": 1, "y": 2}),
         ("ExtraNotAllowed", True, {"x": 1}),
         ("ExtraNotAllowed", False, {"x": 1, "y": 2}),
         ("ExtraAllowed", True, {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}}),
