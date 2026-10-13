@@ -472,7 +472,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+    """If true, use class_uri/slot_uri CURIEs for class definitions and non-identifier
+    slot properties. Identifier properties retain their slot-name aliases so they
+    remain consistent with the JSON-LD ``@id`` alias.
+    """
 
     def __post_init__(self):
         if self.materialize_patterns is not None:
@@ -682,6 +685,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             # Anonymous slot expressions don't carry the underlying slot's `identifier` or
             # `multivalued` flags, so look them up on the schema's slot definition.
             base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Identifier slots retain their slot-name alias, matching the direct
+            # class-slot path and the JSON-LD @id context entry.
             if self.use_curies and not (base_slot is not None and base_slot.identifier):
                 prop_name = self._curie(slot)
             else:
@@ -1024,6 +1029,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
+        # Identifier properties are the JSON-LD @id alias; never CURIE-key them.
         if self.use_curies and not slot.identifier:
             prop_name = self._curie(slot)
         else:
@@ -1261,7 +1267,8 @@ wins. The top level takes its value from the document's root class.
     default=False,
     show_default=True,
     help="""
-Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
+Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD @id alias.
 """,
 )
 @click.option(
