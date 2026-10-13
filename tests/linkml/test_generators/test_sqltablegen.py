@@ -2,6 +2,7 @@ import re
 import sqlite3
 
 import pytest
+import yaml
 from click.testing import CliRunner
 from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Numeric, Text, Time
@@ -27,6 +28,19 @@ DUMMY_CLASS = "dummy class"
 @pytest.fixture
 def schema(input_path) -> str:
     return str(input_path("personinfo.yaml"))
+
+
+@pytest.fixture
+def write_schema(tmp_path):
+    """Return a helper that writes a SchemaBuilder's schema to a YAML file and returns its path."""
+
+    def _write(builder: SchemaBuilder, name: str = "test_schema.yaml") -> str:
+        path = tmp_path / name
+        with open(path, "w") as f:
+            yaml.dump(builder.as_dict(), f)
+        return str(path)
+
+    return _write
 
 
 def test_inject_primary_key() -> None:
@@ -197,6 +211,163 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Nowt_id" ON "Class_With_Nowt" (id)' in ddl
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
+
+
+def test_cli_basic(write_schema):
+    """Test CLI with basic schema."""
+
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("age", range="integer"))
+    b.add_class("Person", slots=["id", "age"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path])
+
+    assert result.exit_code == 0
+    assert "Class: Person" in result.output, "Expect sql comments in output"
+    assert 'CREATE TABLE "Person"' in result.output, "Expect table CREATE statement in output"
+    assert "CREATE INDEX " in result.output, "Expect index CREATE statement in output"
+    assert "age INTEGER" in result.output, "Expect attribute age in output"
+
+
+def test_cli_dialect(write_schema):
+    """Test CLI --dialect option produces dialect-specific DDL."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("age", range="integer", description="age in years"))
+    b.add_class("Person", slots=["age"], description="A person")
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    # PostgreSQL: auto-injected PK becomes SERIAL and comments are supported
+    result_pg = runner.invoke(cli, [schema_path, "--dialect", "postgresql"])
+    assert result_pg.exit_code == 0, f"CLI failed: {result_pg.output}"
+    assert "SERIAL" in result_pg.output
+    assert "COMMENT ON TABLE" in result_pg.output
+
+    # SQLite: auto-injected PK is INTEGER; comments emitted as SQL line comments
+    result_sqlite = runner.invoke(cli, [schema_path, "--dialect", "sqlite"])
+    assert result_sqlite.exit_code == 0, f"CLI failed: {result_sqlite.output}"
+    assert "INTEGER" in result_sqlite.output
+    assert "COMMENT ON TABLE" not in result_sqlite.output
+    assert "-- # Class: Person Description: A person" in result_sqlite.output
+
+    # MySQL: auto-injected PK gets AUTO_INCREMENT
+    result_mysql = runner.invoke(cli, [schema_path, "--dialect", "mysql"])
+    assert result_mysql.exit_code == 0, f"CLI failed: {result_mysql.output}"
+    assert "AUTO_INCREMENT" in result_mysql.output
+    assert "COMMENT='A person'" in result_mysql.output
+
+
+def test_cli_no_foreign_keys(write_schema):
+    """Test CLI --no-use-foreign-keys suppresses FOREIGN KEY declarations."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with_fk = runner.invoke(cli, [schema_path, "--use-foreign-keys"])
+    assert result_with_fk.exit_code == 0, f"CLI failed: {result_with_fk.output}"
+    assert "FOREIGN KEY" in result_with_fk.output
+
+    result_no_fk = runner.invoke(cli, [schema_path, "--no-use-foreign-keys"])
+    assert result_no_fk.exit_code == 0, f"CLI failed: {result_no_fk.output}"
+    assert "FOREIGN KEY" not in result_no_fk.output
+
+
+def test_cli_relmodel_output(tmp_path, write_schema):
+    """Test CLI --relmodel-output writes the intermediate relational model YAML."""
+    relmodel_path = tmp_path / "relmodel.yaml"
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path, "--relmodel-output", str(relmodel_path)])
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert relmodel_path.exists(), "relmodel output file should be created"
+
+    relmodel = yaml.safe_load(relmodel_path.read_text())
+    assert "classes" in relmodel
+    assert "Person" in relmodel["classes"]
+
+
+def test_cli_generate_abstract_class_ddl(write_schema):
+    """Test CLI --generate_abstract_class_ddl controls abstract class table emission."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Animal", slots=["id", "name"], **{"abstract": True})
+    b.add_class("Dog", slots=["name"], **{"is_a": "Animal"})
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "True"])
+    assert result_with.exit_code == 0, f"CLI failed: {result_with.output}"
+    assert 'CREATE TABLE "Animal"' in result_with.output
+    assert 'CREATE TABLE "Dog"' in result_with.output
+
+    result_without = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "False"])
+    assert result_without.exit_code == 0, f"CLI failed: {result_without.output}"
+    assert 'CREATE TABLE "Animal"' not in result_without.output
+    assert 'CREATE TABLE "Dog"' in result_without.output
+
+
+def test_cli_rename_foreign_keys(write_schema):
+    """Test CLI --rename-foreign-keys suffixes FK columns with target PK name."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_default = runner.invoke(cli, [schema_path])
+    assert result_default.exit_code == 0, f"CLI failed: {result_default.output}"
+    assert "address_ref" in result_default.output
+    assert "address_ref_id" not in result_default.output
+
+    result_renamed = runner.invoke(cli, [schema_path, "--rename-foreign-keys"])
+    assert result_renamed.exit_code == 0, f"CLI failed: {result_renamed.output}"
+    assert "address_ref_id" in result_renamed.output
+
+
+def test_cli_default_length_oracle(write_schema):
+    """Test CLI --default_length_oracle sets VARCHAR2 length for oracle dialect."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [schema_path, "--dialect", "oracle", "--default_length_oracle", "512"],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert "VARCHAR2(512 CHAR)" in result.output
 
 
 def test_cli_index(schema: str) -> None:

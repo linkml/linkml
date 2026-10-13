@@ -1,5 +1,6 @@
 import logging
 import os
+import string
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -14,12 +15,48 @@ from linkml.generators.common.subproperty import get_subproperty_values, is_uri_
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
+from linkml.utils.language_tags import LanguageTagResolver
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
+
+
+MESSAGE_TEMPLATE_FIELDS = ("name", "title", "description", "comments", "class", "path")
+"""Placeholders permitted in ``--message-template`` (see :attr:`ShaclGenerator.message_template`)."""
+
+
+def _validate_message_template(template: str) -> None:
+    """Validate a ``--message-template`` string, failing fast with a helpful error.
+
+    Only the bare placeholders in :data:`MESSAGE_TEMPLATE_FIELDS` are permitted.
+    Attribute access (``{name.foo}``), indexing (``{name[0]}``), positional fields
+    (``{0}`` / ``{}``), conversions (``{name!r}``) and format specs (``{name:>5}``)
+    are all rejected, as are unbalanced braces. Validation runs once, up front, so a
+    malformed template is caught even for schemas that contain no slots.
+
+    :param template: the raw template string.
+    :raises ValueError: if the template contains an unsupported placeholder or is
+        otherwise malformed.
+    """
+    allowed = frozenset(MESSAGE_TEMPLATE_FIELDS)
+    hint = "Allowed placeholders: " + ", ".join(f"{{{name}}}" for name in MESSAGE_TEMPLATE_FIELDS)
+    try:
+        parsed = list(string.Formatter().parse(template))
+    except ValueError as exc:
+        raise ValueError(f"Invalid placeholder in --message-template ({exc}). {hint}") from None
+    for _literal_text, field_name, format_spec, conversion in parsed:
+        if field_name is None:
+            continue
+        if field_name not in allowed:
+            raise ValueError(f"Invalid placeholder '{{{field_name}}}' in --message-template. {hint}")
+        if conversion is not None or format_spec:
+            raise ValueError(
+                f"Invalid placeholder '{{{field_name}}}' in --message-template: "
+                f"conversions and format specs are not supported. {hint}"
+            )
 
 
 @dataclass
@@ -75,6 +112,52 @@ class ShaclGenerator(Generator):
     """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
+
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``sh:name``, ``sh:description``, ``rdfs:label``, and
+    ``rdfs:comment`` literals are emitted with the specified language tag.
+    Conforms to :rfc:`5646` (BCP 47).
+    """
+
+    message_template: str | None = None
+    """Template for ``sh:message`` on property shapes.
+
+    When set, each property shape receives an ``sh:message`` literal built from
+    this template.  The following placeholders are expanded:
+
+    * ``{name}`` — the slot's LinkML name, exactly as written in the schema
+    * ``{title}`` — the slot title (human-readable), falls back to *name*
+    * ``{description}`` — the slot description, falls back to empty string
+    * ``{comments}`` — the slot comments joined with ``; ``, falls back to empty string
+    * ``{class}`` — the enclosing class name
+    * ``{path}``  — the fully-expanded property IRI
+
+    Example: ``"Validation of {name} failed!"`` →
+    ``sh:message "Validation of has_speed failed!"``
+
+    If ``default_language`` is set the literal is tagged with it. The message text
+    is a single template, so it deliberately follows ``default_language`` only and
+    ignores any per-slot ``in_language``.
+    """
+
+    emit_rules: bool = True
+    """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
+
+    When ``True`` (default), recognised rule patterns are translated into
+    SHACL-SPARQL constraints (``sh:SPARQLConstraint``) on the corresponding
+    ``sh:NodeShape``.  Currently two patterns are recognised:
+
+    * *Boolean guard* — a precondition with ``value_presence: PRESENT`` on a
+      value slot and a postcondition with ``equals_string: "true"`` on a
+      boolean flag slot.
+    * *Exclusive value* — a precondition with ``equals_string`` on a slot and
+      a postcondition with ``maximum_cardinality`` on the *same* slot.
+
+    See `W3C SHACL §5 <https://www.w3.org/TR/shacl/#sparql-constraints>`_
+    and `linkml/linkml#2464 <https://github.com/linkml/linkml/issues/2464>`_.
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -82,8 +165,26 @@ class ShaclGenerator(Generator):
     visit_all_class_slots = False
     uses_schemaloader = False
 
+    def _resolve_language(self, element=None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.
+        Resolution order is element-level ``in_language`` first, then the
+        generator-level default.
+        """
+        return self._language_resolver.resolve(element)
+
     def __post_init__(self) -> None:
+        # Resolver must be assigned before ``super().__post_init__()`` so that
+        # any hook the parent invokes during initialisation can safely call
+        # ``_resolve_language``. The resolver also validates the default tag
+        # once here; per-element tags are validated lazily, with at most one
+        # warning per distinct malformed tag.
+        self._language_resolver = LanguageTagResolver(self.default_language)
         super().__post_init__()
+        self.message_template = (self.message_template or "").strip() or None
+        if self.message_template is not None:
+            _validate_message_template(self.message_template)
         self.generate_header()
 
     def generate_header(self) -> str:
@@ -133,13 +234,13 @@ class ShaclGenerator(Generator):
             if c.title is not None:
                 # Use rdfs:label for NodeShape titles per SHACL spec.
                 # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
-                shape_pv(RDFS.label, Literal(c.title))
+                shape_pv(RDFS.label, Literal(c.title, lang=self._resolve_language(c)))
             if c.description is not None:
                 # Use rdfs:comment for NodeShape descriptions per SHACL spec.
                 # sh:description has rdfs:domain of sh:PropertyShape, so using it
                 # on NodeShapes causes RDFS-aware validators to incorrectly infer
                 # the NodeShape is also a PropertyShape. See issue #3059.
-                shape_pv(RDFS.comment, Literal(c.description))
+                shape_pv(RDFS.comment, Literal(c.description, lang=self._resolve_language(c)))
 
             shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
@@ -164,15 +265,35 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v)))
 
+                def prop_pv_text(p, v):
+                    if v is not None:
+                        g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
+
                 prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
-                prop_pv_literal(SH.name, s.title)
-                prop_pv_literal(SH.description, s.description)
+                prop_pv_text(SH.name, s.title)
+                prop_pv_text(SH.description, s.description)
+
+                # sh:message from a user template. The template is validated once in
+                # __post_init__, so expansion here cannot raise. The message is a single
+                # template string, so it is tagged with the generator default language
+                # only (via _resolve_language(None)) and ignores per-slot in_language.
+                if self.message_template is not None:
+                    msg_text = self.message_template.format(
+                        name=s.name,
+                        title=s.title or s.name,
+                        description=s.description or "",
+                        comments="; ".join(s.comments) if s.comments else "",
+                        **{"class": c.name},
+                        path=str(slot_uri),
+                    ).strip()
+                    if msg_text:
+                        g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
                 # minCount
-                if s.minimum_cardinality:
+                if s.minimum_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
-                elif s.exact_cardinality:
+                elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
                 # Identifiers map to the node's IRI rather than a property triple,
                 # so there's no arc to constrain with sh:minCount 1 — emitting it
@@ -180,9 +301,9 @@ class ShaclGenerator(Generator):
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
                 # maxCount
-                if s.maximum_cardinality:
+                if s.maximum_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.maximum_cardinality)
-                elif s.exact_cardinality:
+                elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.exact_cardinality)
                 elif not s.multivalued:
                     prop_pv_literal(SH.maxCount, 1)
@@ -284,30 +405,271 @@ class ShaclGenerator(Generator):
                 if default_value:
                     prop_pv(SH.defaultValue, default_value)
 
+            if self.emit_rules:
+                self._add_rules(g, class_uri_with_suffix, c)
+
         return g
 
     LINKML_ANY_URI = "https://w3id.org/linkml/Any"
 
+    # -------------------------------------------------------------------
+    # Rules → sh:sparql
+    # -------------------------------------------------------------------
+
+    def _add_rules(self, g: Graph, shape_uri: URIRef, cls: ClassDefinition) -> None:
+        """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
+
+        Each recognised rule is converted into an ``sh:SPARQLConstraint``
+        attached to *shape_uri*.  Unrecognised patterns are logged at
+        ``DEBUG`` level and silently skipped.
+
+        Currently recognised patterns:
+
+        * **Boolean guard** — a *precondition* with
+          ``value_presence: PRESENT`` on a value slot and a *postcondition*
+          with ``equals_string: "true"`` on a boolean flag slot.
+
+        * **Exclusive value** — a *precondition* with ``equals_string`` on
+          a slot and a *postcondition* with ``maximum_cardinality`` on the
+          *same* slot.  Enforces that when a specific value is present in a
+          multivalued slot, the total number of values must not exceed the
+          given cardinality (typically 1 for mutual exclusion).
+
+        See `W3C SHACL §5 <https://www.w3.org/TR/shacl/#sparql-constraints>`_.
+        """
+        if not cls.rules:
+            return
+
+        sv = self.schemaview
+        for rule in cls.rules:
+            if getattr(rule, "deactivated", False):
+                continue
+
+            if getattr(rule, "bidirectional", False):
+                logger.warning(
+                    "Rule in class %r has bidirectional=true; "
+                    "SHACL-SPARQL generation does not support bidirectional rules. "
+                    "Skipping this rule entirely.",
+                    cls.name,
+                )
+                continue
+
+            if getattr(rule, "open_world", False):
+                logger.warning(
+                    "Rule in class %r has open_world=true; "
+                    "SHACL operates under closed-world assumption. "
+                    "The constraint is emitted but may not match open-world semantics.",
+                    cls.name,
+                )
+
+            if getattr(rule, "elseconditions", None):
+                logger.warning(
+                    "Rule in class %r has elseconditions; "
+                    "only the forward (if/then) branch is emitted as sh:sparql. "
+                    "The else branch cannot be represented in SHACL-SPARQL.",
+                    cls.name,
+                )
+
+            sparql_query = self._rule_to_sparql(sv, cls, rule)
+            if sparql_query is None:
+                logger.debug(
+                    "Skipping unsupported rule pattern in class %r: %s",
+                    cls.name,
+                    getattr(rule, "description", "(no description)"),
+                )
+                continue
+
+            constraint = BNode()
+            g.add((shape_uri, SH.sparql, constraint))
+            g.add((constraint, RDF.type, SH.SPARQLConstraint))
+
+            message = getattr(rule, "description", None)
+            if message:
+                g.add((constraint, SH.message, Literal(message)))
+
+            g.add((constraint, SH.select, Literal(sparql_query)))
+
+    def _rule_to_sparql(self, sv, cls: ClassDefinition, rule) -> str | None:
+        """Convert a ``ClassRule`` to a SPARQL SELECT query string.
+
+        Returns ``None`` when the rule does not match any supported pattern.
+        """
+        pre = getattr(rule, "preconditions", None)
+        post = getattr(rule, "postconditions", None)
+        if not pre or not post:
+            return None
+
+        pre_slots = getattr(pre, "slot_conditions", None) or {}
+        post_slots = getattr(post, "slot_conditions", None) or {}
+
+        # Pattern: boolean guard
+        # preconditions: exactly one slot with value_presence PRESENT
+        # postconditions: exactly one slot with equals_string "true"
+        if len(pre_slots) == 1 and len(post_slots) == 1:
+            pre_slot_name = next(iter(pre_slots))
+            post_slot_name = next(iter(post_slots))
+
+            pre_cond = pre_slots[pre_slot_name]
+            post_cond = post_slots[post_slot_name]
+
+            # Note: PresenceEnum.PRESENT is a PermissibleValue, but parsed schemas
+            # return PresenceEnum instances — wrapping ensures type-compatible comparison.
+            is_value_present = getattr(pre_cond, "value_presence", None) == PresenceEnum(PresenceEnum.PRESENT)
+            is_flag_true = getattr(post_cond, "equals_string", None) == "true"
+
+            if is_value_present and is_flag_true:
+                return self._build_boolean_guard_sparql(sv, cls, post_slot_name, pre_slot_name)
+
+            # Pattern: exclusive value
+            # preconditions: slot X has equals_string (a specific enum value)
+            # postconditions: same slot X has maximum_cardinality N
+            # Semantics: "If value V is present in slot X, then X has at most N values."
+            pre_equals = getattr(pre_cond, "equals_string", None)
+            post_max_card = getattr(post_cond, "maximum_cardinality", None)
+
+            if pre_equals is not None and post_max_card is not None and pre_slot_name == post_slot_name:
+                return self._build_exclusive_value_sparql(sv, cls, pre_slot_name, pre_equals, int(post_max_card))
+
+        return None
+
+    def _build_boolean_guard_sparql(self, sv, cls: ClassDefinition, flag_slot_name: str, value_slot_name: str) -> str:
+        """Build a SPARQL SELECT query for the boolean-guard pattern.
+
+        The query detects violations where the value property is present
+        but the boolean flag is absent or not ``true``.
+
+        Conforms to `SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_:
+        ``$this`` is pre-bound to each focus node.
+        """
+        flag_uri = self._slot_uri(sv, flag_slot_name, cls)
+        value_uri = self._slot_uri(sv, value_slot_name, cls)
+
+        return (
+            f"SELECT $this WHERE {{\n"
+            f"    OPTIONAL {{ $this <{flag_uri}> ?flag . }}\n"
+            f"    OPTIONAL {{ $this <{value_uri}> ?value . }}\n"
+            f"    FILTER (\n"
+            f'        ( !BOUND(?flag) || str(?flag) != "true" ) &&\n'
+            f"        BOUND(?value)\n"
+            f"    )\n"
+            f"}}"
+        )
+
+    def _build_exclusive_value_sparql(
+        self,
+        sv,
+        cls: ClassDefinition,
+        slot_name: str,
+        value_name: str,
+        max_card: int,
+    ) -> str | None:
+        """Build a SPARQL SELECT query for the exclusive-value pattern.
+
+        Detects violations where a specific value is present in a multivalued
+        slot but the total number of values exceeds *max_card*.
+
+        For the common case ``max_card == 1``, the query checks whether the
+        exclusive value coexists with any other value (simple existence test).
+        For ``max_card > 1``, a subquery counts all values and checks against
+        the limit.
+
+        The exclusive value is resolved to its full IRI via the slot's enum
+        ``meaning`` field.  If the slot is not an enum or the value has no
+        ``meaning``, the value is compared as a plain literal.
+
+        Conforms to `SHACL §5.3.1
+        <https://www.w3.org/TR/shacl/#sparql-constraints-prebound>`_:
+        ``$this`` is pre-bound to each focus node.
+        """
+        slot_uri = self._slot_uri(sv, slot_name, cls)
+        value_ref = self._resolve_enum_value_ref(sv, slot_name, value_name)
+
+        if max_card == 1:
+            return (
+                f"SELECT $this WHERE {{\n"
+                f"    $this <{slot_uri}> {value_ref} .\n"
+                f"    $this <{slot_uri}> ?other .\n"
+                f"    FILTER (?other != {value_ref})\n"
+                f"}}"
+            )
+
+        return (
+            f"SELECT $this WHERE {{\n"
+            f"    $this <{slot_uri}> {value_ref} .\n"
+            f"    {{\n"
+            f"        SELECT $this (COUNT(?val) AS ?count)\n"
+            f"        WHERE {{ $this <{slot_uri}> ?val . }}\n"
+            f"        GROUP BY $this\n"
+            f"        HAVING (?count > {max_card})\n"
+            f"    }}\n"
+            f"}}"
+        )
+
+    def _resolve_enum_value_ref(self, sv, slot_name: str, value_name: str) -> str:
+        """Resolve an enum value name to a SPARQL term (IRI or literal).
+
+        Looks up the slot's range as an enum, finds the permissible value
+        matching *value_name*, and returns its ``meaning`` as a full IRI
+        wrapped in angle brackets.  Falls back to a quoted literal if the
+        slot is not an enum or the value lacks a ``meaning``.
+        """
+        slot = sv.get_slot(slot_name)
+        if slot:
+            range_name = slot.range
+            if range_name and range_name in sv.all_enums():
+                enum = sv.get_enum(range_name)
+                pv = enum.permissible_values.get(value_name)
+                if pv and pv.meaning:
+                    iri = sv.expand_curie(pv.meaning)
+                    return f"<{iri}>"
+        return f'"{value_name}"'
+
+    def _slot_uri(self, sv, slot_name: str, cls: ClassDefinition) -> str:
+        """Resolve a slot name to a full IRI string for use in SPARQL queries.
+
+        Mirrors the resolution logic used for ``sh:path`` in the main slot loop:
+        prefer ``sv.get_uri()`` for slots registered in the schema map, fall
+        back to ``default_prefix:underscored_name``.
+        """
+        slot = sv.get_slot(slot_name)
+        if slot and slot_name in sv.element_by_schema_map():
+            return sv.get_uri(slot, expand=True)
+        pfx = sv.schema.default_prefix
+        return sv.expand_curie(f"{pfx}:{underscore(slot_name)}")
+
     def _add_class(self, func: Callable, r: ElementName) -> None:
-        """Add an sh:class constraint for range class *r*.
+        """Add a class/shape constraint for range class *r*.
 
         Skips the constraint when *r* resolves to ``linkml:Any`` — the
-        LinkML meta-type representing an unconstrained range.  Emitting
-        ``sh:class linkml:Any`` in SHACL output is incorrect because the
-        ``linkml:Any`` class is never instantiated in real data; it would
-        cause every instance to fail validation.
+        LinkML meta-type representing an unconstrained range.
+
+        In default mode (``use_class_uri_names=True``): emits ``sh:class <class_uri>``
+        so validators check the RDF type hierarchy.
+
+        In native names mode (``use_class_uri_names=False``): emits ``sh:node <native_shape_uri>``
+        instead of ``sh:class``.  Using ``sh:class`` with a native shape URI (e.g.
+        ``dcatapplus:Resource``) is incorrect because data nodes are never typed as
+        that URI — it is a shape identifier, not an RDF class.  ``sh:node`` correctly
+        validates the referenced node against the named shape.
+
+        Because ``sh:node`` references a shape by its identifier, the ``suffix``
+        option has to be applied here too — otherwise the reference points at a
+        shape that was never emitted and the constraint silently passes.
         """
         sv = self.schemaview
         cls = sv.get_class(r)
         if cls and getattr(cls, "class_uri", None) == "linkml:Any":
             return
-        if self.use_class_uri_names:
-            range_ref = sv.get_uri(r, expand=True)
-        else:
-            range_ref = sv.get_uri(r, expand=True, native=True)
+        range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
         if range_ref == self.LINKML_ANY_URI:
             return
-        func(SH["class"], URIRef(range_ref))
+        if self.use_class_uri_names:
+            func(SH["class"], URIRef(range_ref))
+            return
+        if self.suffix:
+            range_ref += self.suffix
+        func(SH["node"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
@@ -345,7 +707,8 @@ class ShaclGenerator(Generator):
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        rt = sv.get_type(r)
+        # Types can inherit URI and pattern constraints.
+        rt = sv.induced_type(r)
         type_uri = rt.uri
         expanded = sv.get_uri(rt, expand=True) if type_uri else None
         if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
@@ -430,9 +793,14 @@ class ShaclGenerator(Generator):
             else:
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
-            # otherwise treat as Literal with derived XSD datatype
+            # otherwise treat as Literal with derived XSD datatype.
+            # String annotations are language-tagged when default_language is set;
+            # non-string types (bool, int, float) keep their XSD datatype.
+            lang = self._resolve_language(item)
             if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
+            elif isinstance(a["value"], str) and lang:
+                N_object = Literal(a["value"], lang=lang)
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
 
@@ -473,7 +841,7 @@ class ShaclGenerator(Generator):
 
         list_node = BNode()
         ignored_properties.add(RDF.type)
-        Collection(g, list_node, list(ignored_properties))
+        Collection(g, list_node, sorted(ignored_properties, key=str))
 
         return list_node
 
@@ -526,6 +894,40 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, "
+        "rdfs:label and rdfs:comment are emitted with the specified "
+        "language tag."
+    ),
+)
+@click.option(
+    "--message-template",
+    default=None,
+    show_default=True,
+    help=(
+        "Template string for sh:message on each property shape. "
+        "Placeholders: {name} (slot name), {title} (slot title or name), "
+        "{description} (slot description), {comments} (slot comments joined with '; '), "
+        "{class} (class name), {path} (fully-expanded property IRI). "
+        'Example: "{name} ({class}): {description} [{comments}]"'
+    ),
+)
+@click.option(
+    "--emit-rules/--no-emit-rules",
+    default=True,
+    show_default=True,
+    help=(
+        "Emit sh:sparql constraints from LinkML rules: blocks. "
+        "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
+        "are translated into SHACL-SPARQL constraints on the corresponding "
+        "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

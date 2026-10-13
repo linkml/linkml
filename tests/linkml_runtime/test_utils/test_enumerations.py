@@ -76,3 +76,17 @@ def test_construct_with_inherited_code(cls):
 def test_construct_with_own_code_on_grandchild():
     instance = _GrandchildEnum("C")
     assert str(instance) == "C"
+
+
+@pytest.mark.parametrize("cls", [_ParentEnum, _WrapperEnum, _GrandchildEnum])
+def test_enum_value_is_hashable(cls):
+    """Regression for https://github.com/linkml/linkml/issues/3590.
+
+    ``YAMLRoot`` inherited ``__eq__`` without ``__hash__``, so enum values were
+    unhashable and could not be used as keys when normalizing inlined-as-dict
+    slots.
+    """
+    value = cls("A")
+    assert hash(value) == hash(cls("A"))
+    assert {value, cls("A")} == {value}
+    assert {value: "x"}[cls("A")] == "x"

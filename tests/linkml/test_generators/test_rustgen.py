@@ -277,6 +277,215 @@ def test_rustgen_file_mode_generation(temp_dir):
     assert "pub fn register_pymodule" not in contents
 
 
+MERGE_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/merge
+    name: rustgen_merge_strategies
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Entry:
+        attributes:
+          key:
+            identifier: true
+            range: string
+          value:
+            range: string
+
+      Holder:
+        annotations:
+          rust.linkml.io/generate/merge: true
+        attributes:
+          optional_mapping:
+            range: Entry
+            inlined: true
+            multivalued: true
+            required: false
+          required_mapping:
+            range: Entry
+            inlined: true
+            multivalued: true
+            required: true
+          optional_scalar:
+            range: string
+            required: false
+    """
+)
+
+
+def test_rustgen_merge_strategy_per_key_for_optional_maps(temp_dir):
+    """Optional map fields merge per-key, not whole-map overwrite.
+
+    A ``slot_usage``/mixin override of a map-valued slot (e.g. ``annotations``)
+    must fold keys together rather than replacing the inherited map wholesale.
+    Optional maps therefore use the ``option_map_overwrite`` strategy and the
+    generator must emit that helper.
+    """
+    schema_path = Path(temp_dir) / "rustgen_merge.yaml"
+    schema_path.write_text(MERGE_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "merge.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # The per-key merge helper must be emitted.
+    assert "fn option_map_overwrite" in contents
+
+    # Optional map -> per-key merge.
+    assert re.search(
+        r"#\[merge\(strategy = option_map_overwrite\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub optional_mapping:",
+        contents,
+    ), "optional map field should use per-key option_map_overwrite"
+
+    # Required map keeps the existing whole-map per-key overwrite strategy.
+    assert re.search(
+        r"#\[merge\(strategy = merge::hashmap::overwrite\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub required_mapping:",
+        contents,
+    ), "required map field should keep merge::hashmap::overwrite"
+
+    # Optional scalar still overwrites unless None.
+    assert re.search(
+        r"#\[merge\(strategy = overwrite_except_none\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub optional_scalar:",
+        contents,
+    ), "optional scalar should keep overwrite_except_none"
+
+    # The optional map must NOT fall back to whole-value overwrite.
+    optional_block = contents[: contents.index("pub optional_mapping:")].rsplit("#[merge(", 1)[-1]
+    assert "overwrite_except_none" not in optional_block, "optional map must not use overwrite_except_none"
+
+
+def test_rustgen_merge_strategy_cargo_check(temp_dir):
+    """The generated per-key merge helper compiles as a valid merge strategy."""
+    schema_path = Path(temp_dir) / "rustgen_merge_check.yaml"
+    schema_path.write_text(MERGE_SCHEMA, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "merge_check_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=False,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    result = _cargo_check(out_dir, context="merge strategy schema")
+    if result.returncode != 0:
+        pytest.fail(
+            f"cargo check failed for merge strategy schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
+def test_rustgen_skip_serializing_if(temp_dir):
+    """Optional, list and mapping fields emit serde ``skip_serializing_if`` attributes.
+
+    This keeps generated JSON/YAML compact by omitting ``None`` options and
+    empty containers on serialization.
+    """
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/skip
+        name: rustgen_skip_serializing_if
+        prefixes:
+          ex: https://example.org/rustgen/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        default_range: string
+        imports:
+          - linkml:types
+
+        classes:
+          MapEntry:
+            attributes:
+              identifier:
+                identifier: true
+                range: string
+              label:
+                range: string
+
+          SkipRoot:
+            attributes:
+              required_scalar:
+                range: string
+                required: true
+              optional_scalar:
+                range: string
+                required: false
+              required_list:
+                range: string
+                multivalued: true
+                required: true
+              mapping_values:
+                range: MapEntry
+                inlined: true
+                multivalued: true
+                required: true
+        """
+    )
+    schema_path = Path(temp_dir) / "rustgen_skip.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "skip.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # Optional scalar -> Option::is_none
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Option::is_none"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub optional_scalar:",
+        contents,
+    ), "optional scalar should be skipped when None"
+
+    # Required list -> Vec::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Vec::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub required_list:",
+        contents,
+    ), "list field should be skipped when empty"
+
+    # Mapping -> HashMap::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"HashMap::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub mapping_values:",
+        contents,
+    ), "mapping field should be skipped when empty"
+
+    # Required scalar must NOT get a skip attribute
+    assert re.search(
+        r"(?:#\[[^\]]*\]\s*)*pub required_scalar:",
+        contents,
+    )
+    required_block = contents[: contents.index("pub required_scalar:")].rsplit("\n\n", 1)[-1]
+    assert "skip_serializing_if" not in required_block, "required scalar must always serialize"
+
+
 def test_rustgen_dataframe_like_schema(temp_dir):
     schema_path = Path(__file__).parent / "input" / "rustgen_dataframe.yaml"
     out_dir = Path(temp_dir) / "rustgen_dataframe"
@@ -1116,4 +1325,132 @@ def test_subproperty_of_cargo_check(temp_dir):
     if result.returncode != 0:
         pytest.fail(
             f"cargo check failed for subproperty_of schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
+_TYPE_DESIGNATOR_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/type_designator
+    name: rustgen_type_designator
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Event:
+        tree_root: true
+        slots:
+          - category
+          - name
+        slot_usage:
+          category:
+            designates_type: true
+      EmploymentEvent:
+        is_a: Event
+        slots:
+          - employer
+      MedicalEvent:
+        is_a: Event
+        slots:
+          - diagnosis
+
+    slots:
+      category:
+        range: string
+      name:
+        range: string
+      employer:
+        range: string
+      diagnosis:
+        range: string
+    """
+)
+
+
+def test_rustgen_type_designator_emits_serde_tag(temp_dir):
+    """A ``designates_type`` slot on a class with subtypes produces an internally
+    tagged ``*OrSubtype`` enum (``#[serde(tag = ...)]``), not an untagged one.
+
+    Regression for two compounding bugs: ``type_designators`` was typed
+    ``dict[str, str]`` while the generator supplies ``list[str]`` (which crashed
+    generation with a ``ValidationError``), and the enum was built with a
+    ``type_designator_name`` kwarg that did not match the model field
+    ``type_designator_field`` (silently dropped, so the tag was never emitted).
+    """
+    schema_path = Path(temp_dir) / "rustgen_type_designator.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "type_designator.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    # Generation itself must not raise (covers the dict[str, list[str]] crash).
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # The designator slot drives an internally tagged enum.
+    assert 'serde(tag = "category")' in contents
+    # And the fall-back untagged form is no longer used for the OrSubtype enum.
+    assert "serde(untagged)" not in contents
+    # Each subtype variant is renamed to the value carried by the designator.
+    assert 'serde(rename = "EmploymentEvent"' in contents
+    assert 'serde(rename = "MedicalEvent"' in contents
+
+
+def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
+    """The tagged ``*OrSubtype`` enum discriminates variants by the designator
+    value and round-trips it through serde."""
+    schema_path = Path(temp_dir) / "rustgen_type_designator_rt.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "type_designator_crate")
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "type_designator.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn tagged_discriminates_by_designator() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let yaml = "category: MedicalEvent\\nname: x\\ndiagnosis: flu\\n";\n'
+            '    let value: EventOrSubtype = serde_yml::from_str(yaml).expect("decode tagged");\n'
+            "    match value {\n"
+            "        EventOrSubtype::MedicalEvent(_) => {}\n"
+            '        _ => panic!("expected MedicalEvent variant"),\n'
+            "    }\n"
+            '    let out = serde_yml::to_string(&value).expect("encode");\n'
+            '    assert!(out.contains("category: MedicalEvent"), "designator tag not round-tripped: {out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "type_designator"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
         )

@@ -185,7 +185,10 @@ class SQLTableGenerator(Generator):
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
-        sqltr = RelationalModelTransformer(SchemaView(self.schema))
+        # Forward importmap/base_dir; ``self.schema`` may still be a path with
+        # URI-style imports resolved via ``--importmap``, which a bare
+        # ``SchemaView(self.schema)`` would re-resolve through HTTP.
+        sqltr = RelationalModelTransformer(SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
         elif self.rename_foreign_keys:
@@ -371,7 +374,9 @@ class SQLTableGenerator(Generator):
             schema = self.schema
 
         if sv is None:  # if no SchemaView arg is provided, then create one
-            sv = SchemaView(schema)
+            # Forward importmap/base_dir so a URI-style schema input still
+            # resolves through the user's ``--importmap`` here.
+            sv = SchemaView(schema, base_dir=self.base_dir, importmap=self.importmap)
         if slot_range in sv.all_classes():
             # FK type should be the same as the identifier of the foreign key.
             # Prefer the target's *direct* identifier: an abstract parent without
