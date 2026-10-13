@@ -2333,7 +2333,8 @@ wins. The top level takes its value from the document’s root class.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-json-schema-use-curies">
 <span id="cmdoption-linkml-generate-full-json-schema-not-use-curies"></span><span class="sig-name descname"><span class="pre">--use-curies</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--not-use-curies</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-json-schema-use-curies" title="Link to this definition">¶</a></dt>
-<dd><p>Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri</p>
+<dd><p>Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD &#64;id alias.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
@@ -2766,7 +2767,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-context-use-curies">
 <span id="cmdoption-linkml-generate-full-jsonld-context-not-use-curies"></span><span class="sig-name descname"><span class="pre">--use-curies</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--not-use-curies</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-context-use-curies" title="Link to this definition">¶</a></dt>
-<dd><p>Use class_uri/slot_uri CURIEs as context keys instead of element names.</p>
+<dd><p>Use class_uri/slot_uri CURIEs as class and non-identifier slot context keys; identifier slots retain their slot-name key and map to &#64;id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>

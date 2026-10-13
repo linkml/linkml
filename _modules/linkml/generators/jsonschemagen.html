@@ -883,7 +883,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">use_curies</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, use class_uri/slot_uri CURIEs instead of calculated URIs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, use class_uri/slot_uri CURIEs for class definitions and non-identifier</span>
+<span class="sd">    slot properties. Identifier properties retain their slot-name aliases so they</span>
+<span class="sd">    remain consistent with the JSON-LD ``@id`` alias.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">materialize_patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1093,6 +1096,8 @@
             <span class="c1"># Anonymous slot expressions don&#39;t carry the underlying slot&#39;s `identifier` or</span>
             <span class="c1"># `multivalued` flags, so look them up on the schema&#39;s slot definition.</span>
             <span class="n">base_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="c1"># Identifier slots retain their slot-name alias, matching the direct</span>
+            <span class="c1"># class-slot path and the JSON-LD @id context entry.</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">base_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">base_slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">):</span>
                 <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1435,6 +1440,7 @@
         <span class="p">)</span>
         <span class="n">value_disallowed</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">)</span>
 
+        <span class="c1"># Identifier properties are the JSON-LD @id alias; never CURIE-key them.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_curies</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
             <span class="n">prop_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curie</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1676,7 +1682,8 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri</span>
+<span class="s2">Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.</span>
+<span class="s2">Identifier properties retain their slot-name aliases to match the JSON-LD @id alias.</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>

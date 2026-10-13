@@ -444,6 +444,41 @@ validation strategies</p>
 <p>Note that any JSON that conforms to the derived JSON Schema can be
 converted to RDF using the derived JSON-LD context.</p>
 </div>
+<section id="curie-usage">
+<h3>CURIE usage<a class="headerlink" href="#curie-usage" title="Link to this heading">¶</a></h3>
+<p>By default, JSON Schema property names use the generator’s normal slot-name alias. With
+<code class="docutils literal notranslate"><span class="pre">--use-curies</span></code>, non-identifier slot properties use their CURIEs (for example,
+<code class="docutils literal notranslate"><span class="pre">demo_id</span></code> with <code class="docutils literal notranslate"><span class="pre">slot_uri:</span> <span class="pre">demo:id</span></code> becomes <code class="docutils literal notranslate"><span class="pre">demo:id</span></code>). Identifier slots marked
+<code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">true</span></code> are an exception: they retain their slot-name alias (<code class="docutils literal notranslate"><span class="pre">id</span></code> in
+the example) so that the property name agrees with the JSON-LD <code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> alias. Class
+<code class="docutils literal notranslate"><span class="pre">$defs</span></code> names are CURIE-keyed as well.</p>
+<p>The CURIE mode is opt-in. CURIEs are resolved with <code class="docutils literal notranslate"><span class="pre">SchemaView.get_curie</span></code> using the
+schema’s prefixes and default prefix.</p>
+<p>Example (<code class="docutils literal notranslate"><span class="pre">ex</span></code> is the schema’s <code class="docutils literal notranslate"><span class="pre">default_prefix</span></code>):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/</span>
+<span class="w">  </span><span class="nt">demo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/demo/</span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Entity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo_id</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">demo_id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo:id</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">gen-json-schema</span> <span class="pre">--use-curies</span></code>, the identifier property remains <code class="docutils literal notranslate"><span class="pre">id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">demo_id</span></code> is keyed as <code class="docutils literal notranslate"><span class="pre">demo:id</span></code>.</p>
+</section>
 <section id="inheritance">
 <h3>Inheritance<a class="headerlink" href="#inheritance" title="Link to this heading">¶</a></h3>
 <p>Because JSON-Schema does not support inheritance hierarchy, slots are
@@ -870,7 +905,8 @@ wins. The top level takes its value from the document’s root class.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-json-schema-use-curies">
 <span id="cmdoption-gen-json-schema-not-use-curies"></span><span class="sig-name descname"><span class="pre">--use-curies</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--not-use-curies</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-use-curies" title="Link to this definition">¶</a></dt>
-<dd><p>Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri</p>
+<dd><p>Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD &#64;id alias.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
@@ -1164,6 +1200,7 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
 <li><a class="reference internal" href="#">JSON Schema</a><ul>
 <li><a class="reference internal" href="#example-output">Example Output</a></li>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#curie-usage">CURIE usage</a></li>
 <li><a class="reference internal" href="#inheritance">Inheritance</a></li>
 <li><a class="reference internal" href="#composition">Composition</a></li>
 <li><a class="reference internal" href="#inlining">Inlining</a></li>
