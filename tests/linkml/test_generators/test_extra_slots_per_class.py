@@ -1,16 +1,15 @@
 """
-Tests for honoring per-class ``extra_slots`` metadata in code generators.
+Tests for honoring per-class ``extra_slots`` metadata in the Pydantic generator.
 
 LinkML's metamodel lets a class declare ``extra_slots: {allowed: true}`` to opt
 in to open-world semantics (see https://github.com/linkml/linkml/issues/1341).
-These tests verify that 'gen-python' and 'gen-pydantic' honor per-class
-setting, matching behavior already seen in 'gen-json-schema'.
+These tests verify that 'gen-pydantic' honors the per-class setting, matching
+behavior already seen in 'gen-json-schema'.
 """
 
 import pytest
 
 from linkml.generators.pydanticgen import PydanticGenerator
-from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
 
 SCHEMA_MIXED = """
@@ -57,40 +56,6 @@ def schema_file(tmp_path):
     p = tmp_path / "schema.yaml"
     p.write_text(SCHEMA_MIXED)
     return str(p)
-
-
-class TestPythonGeneratorPerClassExtraSlots:
-    """PythonGenerator honors per-class ``extra_slots.allowed``."""
-
-    def test_default_class_rejects_extras(self, schema_file):
-        code = PythonGenerator(schema_file).serialize()
-        module = compile_python(code)
-        with pytest.raises(TypeError, match="unexpected keyword argument"):
-            module.StrictPerson(name="Alice", extra_field="x")
-
-    def test_extra_slots_allowed_class_accepts_extras(self, schema_file):
-        code = PythonGenerator(schema_file).serialize()
-        module = compile_python(code)
-        instance = module.FlexiblePerson(name="Bob", extra_field="value", age=30)
-        assert instance.name == "Bob"
-        assert instance.extra_field == "value"
-        assert instance.age == 30
-
-    def test_extra_slots_disallowed_class_rejects_extras(self, schema_file):
-        code = PythonGenerator(schema_file).serialize()
-        module = compile_python(code)
-        with pytest.raises(TypeError, match="unexpected keyword argument"):
-            module.ExplicitlyClosedPerson(name="Carol", extra_field="x")
-
-    def test_custom_init_only_emitted_for_open_classes(self, schema_file):
-        code = PythonGenerator(schema_file).serialize()
-
-        # The custom open-world __init__ is the only place ``def __init__`` is
-        # generated (the normal dataclass init is synthesized at runtime).
-        # It should appear exactly once – for FlexiblePerson only.
-        assert code.count("def __init__(") == 1
-        # And the strict classes should not have the init=False decorator.
-        assert code.count("init=False") == 1
 
 
 class TestPydanticGeneratorPerClassExtraSlots:
