@@ -1,3 +1,4 @@
+import importlib
 import json
 import keyword
 import re
@@ -963,12 +964,19 @@ classes:
       allowed: true
       range_expression:
         range: integer
-  ExpressionOnly:
-    description: A range_expression alone keeps the class closed.
+  IntegerPerson:
     is_a: Person
     extra_slots:
       range_expression:
         range: integer
+  IntegerPersonChild:
+    description: Has no extra_slots of its own, so it does not take extra data.
+    is_a: IntegerPerson
+  OpenIntegerPersonChild:
+    description: Takes any extra data, although its parent only takes integers.
+    is_a: IntegerPerson
+    extra_slots:
+      allowed: true
 """
 
 
@@ -985,7 +993,8 @@ def extra_slots_module() -> ModuleType:
         ("ClosedPerson", False),
         ("OpenPersonChild", False),
         ("OpenWithExpression", True),
-        ("ExpressionOnly", False),
+        ("IntegerPersonChild", False),
+        ("OpenIntegerPersonChild", True),
     ],
 )
 def test_extra_slots(extra_slots_module, clsname, accepts_extras):
@@ -999,6 +1008,13 @@ def test_extra_slots(extra_slots_module, clsname, accepts_extras):
             cls(name="Bob", extra_field="value")
 
 
+def test_extra_slots_range_expression(extra_slots_module):
+    """A range_expression checks and converts each extra value, as for a declared slot."""
+    assert extra_slots_module.IntegerPerson(name="Bob", extra_field="7").extra_field == 7
+    with pytest.raises(ValueError):
+        extra_slots_module.IntegerPerson(name="Bob", extra_field="seven")
+
+
 def test_extra_slots_open_class_still_checks_slots(extra_slots_module):
     """Extra data does not bypass the checks and conversions of the declared slots."""
     assert extra_slots_module.OpenPerson(name="Bob", age="30", extra_field="value").age == 30
@@ -1008,6 +1024,117 @@ def test_extra_slots_open_class_still_checks_slots(extra_slots_module):
 
 def test_extra_slots_round_trip(extra_slots_module):
     """Extra data is dumped with the instance and loaded back."""
-    instance = extra_slots_module.OpenPerson(name="Bob", extra_field="value")
-    loaded = yaml_loader.loads(yaml_dumper.dumps(instance), extra_slots_module.OpenPerson)
-    assert loaded.extra_field == "value"
+    instance = extra_slots_module.IntegerPerson(name="Bob", extra_field=7)
+    loaded = yaml_loader.loads(yaml_dumper.dumps(instance), extra_slots_module.IntegerPerson)
+    assert loaded.extra_field == 7
+
+
+@pytest.fixture(scope="module")
+def extra_slots_fixture_module(input_path) -> ModuleType:
+    """The extra_slots cases that gen-json-schema and gen-pydantic test too."""
+    return make_python(input_path("extra_slots.yaml"))
+
+
+@pytest.mark.parametrize(
+    "clsname,data,expected",
+    [
+        ("ExtraAllowed", {"whatever": "else"}, {"whatever": "else"}),
+        ("ExtraString", {"y": "string"}, {"y": "string"}),
+        ("ExtraString", {"y": 2}, {"y": "2"}),
+        ("ExtraAnyOf", {"another": "hey", "third": 2}, {"another": "hey", "third": 2}),
+        ("ExtraCardinality", {"another": [1, 2, 3]}, {"another": [1, 2, 3]}),
+        ("ExtraCardinality", {"another": "4"}, {"another": [4]}),
+    ],
+)
+def test_extra_slots_fixture_values(extra_slots_fixture_module, clsname, data, expected):
+    """
+    Extra values are converted as declared slots are. Unlike gen-json-schema and
+    gen-pydantic, gen-python converts a value to the range rather than rejecting it,
+    so a string range turns 2 into "2", and it does not check cardinality.
+    """
+    instance = getattr(extra_slots_fixture_module, clsname)(x=1, **data)
+    for key, value in expected.items():
+        assert getattr(instance, key) == value
+
+
+def test_extra_slots_fixture_class_range(extra_slots_fixture_module):
+    """An extra value with a class range becomes an instance of that class."""
+    instance = extra_slots_fixture_module.ExtraClass(x=1, another={"y": "string"})
+    assert isinstance(instance.another, extra_slots_fixture_module.Other)
+    assert instance.another.y == "string"
+
+
+@pytest.mark.parametrize(
+    "clsname,data,error",
+    [
+        ("ExtraNotAllowed", {"y": 2}, TypeError),
+        ("ExtraClass", {"another": {"z": 1}}, TypeError),
+        ("ExtraCardinality", {"another": ["x"]}, ValueError),
+    ],
+)
+def test_extra_slots_fixture_rejects(extra_slots_fixture_module, clsname, data, error):
+    """Extra data is rejected when the class forbids it or a value cannot be converted."""
+    with pytest.raises(error):
+        getattr(extra_slots_fixture_module, clsname)(x=1, **data)
+
+
+def test_extra_slots_fixture_nested(extra_slots_fixture_module):
+    """Extra data on nested objects follows the same rules, and AnyClass takes any value."""
+    container = extra_slots_fixture_module.Container(
+        any_class={"x": 1, "whatever": "else"}, extra_string={"x": 1, "y": 2}
+    )
+    assert container.extra_string.y == "2"
+    with pytest.raises(TypeError):
+        extra_slots_fixture_module.Container(not_allowed={"x": 1, "y": 2})
+
+
+_EXTRA_SLOTS_IMPORTED = """id: https://example.org/extra_slots_imported
+name: extra_slots_imported
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Remote:
+    attributes:
+      y:
+"""
+
+_EXTRA_SLOTS_MAIN = """id: https://example.org/extra_slots_main
+name: extra_slots_main
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+  - extra_slots_imported
+default_range: string
+classes:
+  Holder:
+    attributes:
+      x:
+        range: integer
+    extra_slots:
+      range_expression:
+        range: Remote
+"""
+
+
+def test_extra_slots_imported_class(tmp_path, monkeypatch):
+    """A class from an imported schema that types extra data is imported into the module."""
+    package = tmp_path / "extra_slots_package"
+    package.mkdir()
+    (package / "__init__.py").write_text("")
+    for name, text in (("extra_slots_imported", _EXTRA_SLOTS_IMPORTED), ("extra_slots_main", _EXTRA_SLOTS_MAIN)):
+        (package / f"{name}.yaml").write_text(text)
+        code = PythonGenerator(str(package / f"{name}.yaml"), mergeimports=False).serialize()
+        (package / f"{name}.py").write_text(code)
+
+    monkeypatch.syspath_prepend(str(tmp_path))
+    module = importlib.import_module("extra_slots_package.extra_slots_main")
+    holder = module.Holder(x=1, extra={"y": "string"})
+    assert isinstance(holder.extra, module.Remote)
