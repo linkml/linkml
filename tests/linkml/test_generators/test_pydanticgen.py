@@ -3226,3 +3226,32 @@ def test_extra_slots(data, clsname, valid, extra_slots):
     else:
         with pytest.raises(ValidationError):
             cls(**data)
+
+
+@pytest.fixture(scope="module")
+def extra_slots_allowed_by_default(input_path) -> ModuleType:
+    schema = input_path("extra_slots.yaml")
+    generated = PydanticGenerator(schema, extra_fields="allow").serialize()
+    return compile_python(generated)
+
+
+@pytest.mark.parametrize(
+    "clsname,valid",
+    [
+        ("Base", True),
+        ("ExtraNotAllowed", False),
+        ("ExtraString", False),
+    ],
+)
+def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allowed_by_default):
+    """
+    An explicit ``extra_slots`` on a class wins over the generator-wide ``extra_fields``,
+    which only applies to classes without ``extra_slots``.
+    """
+    cls = getattr(extra_slots_allowed_by_default, clsname)
+    data = {"x": 1, "y": 2}
+    if valid:
+        cls(**data)
+    else:
+        with pytest.raises(ValidationError):
+            cls(**data)
