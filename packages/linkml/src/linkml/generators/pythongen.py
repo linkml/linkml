@@ -276,7 +276,7 @@ class PythonGenerator(Generator):
 
 {all_imports.render()}
 {self.gen_imports()}
-
+{self.gen_accept_extra_slots()}
 metamodel_version = "{self.schema.metamodel_version}"
 version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
@@ -573,8 +573,18 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
+        # A class that allows extra data keeps its dataclass __init__, wrapped so that it also
+        # takes keyword arguments it does not declare. A class that inherits from such a class
+        # without allowing extra data itself gets its own __init__, so it stays closed.
+        accepts_extra_slots = self._extra_slots_allowed(cls)
+        dataclass_decorator = ""
+        if slotdefs or accepts_extra_slots or self._has_open_ancestor(cls):
+            dataclass_decorator = f"\n@dataclass(repr={self.dataclass_repr})"
+        if accepts_extra_slots:
+            dataclass_decorator = "\n@accept_extra_slots" + dataclass_decorator
+
         cd_str = (
-            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
+            dataclass_decorator
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"
@@ -584,6 +594,50 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         )
 
         return cd_str
+
+    @staticmethod
+    def _extra_slots_allowed(cls: ClassDefinition) -> bool:
+        """
+        Return ``True`` when the class's own ``extra_slots`` says ``allowed: true``.
+
+        ``allowed`` takes precedence over ``range_expression``, as in the JSON Schema
+        generator. A ``range_expression`` alone keeps the class closed for now, because the
+        generated code does not yet check extra values against it.
+        """
+        return bool(cls.extra_slots and cls.extra_slots.allowed)
+
+    def _has_open_ancestor(self, cls: ClassDefinition) -> bool:
+        """Return ``True`` when a class that ``cls`` inherits from allows extra data."""
+        ancestors = self.schemaview.class_ancestors(cls.name, mixins=False, reflexive=False)
+        return any(self._extra_slots_allowed(self.schemaview.get_class(ancestor)) for ancestor in ancestors)
+
+    def gen_accept_extra_slots(self) -> str:
+        """
+        Generate the ``accept_extra_slots`` decorator, which the classes whose ``extra_slots``
+        allows extra data are wrapped in. Returns an empty string when no class needs it.
+        """
+        if not any(self._extra_slots_allowed(cls) for cls in self.schema.classes.values() if not cls.imported_from):
+            return ""
+        return """
+
+def accept_extra_slots(cls):
+    \"\"\"
+    Let a dataclass take keyword arguments that it does not declare, as its extra_slots allows.
+    The declared fields go through the usual __init__ and __post_init__, and the others
+    become attributes of the instance.
+    \"\"\"
+    declared = {field.name for field in dataclasses.fields(cls)}
+    dataclass_init = cls.__init__
+
+    def __init__(self, *args, **kwargs):
+        extra = {key: kwargs.pop(key) for key in list(kwargs) if key not in declared}
+        dataclass_init(self, *args, **kwargs)
+        for key, value in extra.items():
+            setattr(self, key, value)
+
+    cls.__init__ = __init__
+    return cls
+"""
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:

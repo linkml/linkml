@@ -7,8 +7,9 @@ import pytest
 from jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.loaders import json_loader
+from linkml_runtime.loaders import json_loader, yaml_loader
 from linkml_runtime.utils.compile_python import compile_python
 
 pytestmark = pytest.mark.pythongen
@@ -923,3 +924,90 @@ def test_exactly_one_of_ambiguous_matches_raises_distinct_message():
     py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
     with pytest.raises(ValueError, match="ambiguously matches"):
         py_module.Top(thing={"a": "hi"})
+
+
+# --------------------------------------------------
+# extra_slots
+# --------------------------------------------------
+
+_EXTRA_SLOTS_SCHEMA = """id: https://example.org/extra-slots-test
+name: extra-slots-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    attributes:
+      name:
+        required: true
+      age:
+        range: integer
+  OpenPerson:
+    is_a: Person
+    extra_slots:
+      allowed: true
+  ClosedPerson:
+    is_a: Person
+    extra_slots:
+      allowed: false
+  OpenPersonChild:
+    description: Has no extra_slots of its own, so it does not take extra data.
+    is_a: OpenPerson
+  OpenWithExpression:
+    description: allowed takes precedence over range_expression.
+    is_a: Person
+    extra_slots:
+      allowed: true
+      range_expression:
+        range: integer
+  ExpressionOnly:
+    description: A range_expression alone keeps the class closed.
+    is_a: Person
+    extra_slots:
+      range_expression:
+        range: integer
+"""
+
+
+@pytest.fixture(scope="module")
+def extra_slots_module() -> ModuleType:
+    return make_python(_EXTRA_SLOTS_SCHEMA)
+
+
+@pytest.mark.parametrize(
+    "clsname,accepts_extras",
+    [
+        ("Person", False),
+        ("OpenPerson", True),
+        ("ClosedPerson", False),
+        ("OpenPersonChild", False),
+        ("OpenWithExpression", True),
+        ("ExpressionOnly", False),
+    ],
+)
+def test_extra_slots(extra_slots_module, clsname, accepts_extras):
+    """A class takes keyword arguments it does not declare only when its own extra_slots allows them."""
+    cls = getattr(extra_slots_module, clsname)
+    if accepts_extras:
+        instance = cls(name="Bob", age=30, extra_field="value")
+        assert (instance.name, instance.age, instance.extra_field) == ("Bob", 30, "value")
+    else:
+        with pytest.raises(TypeError, match="unexpected keyword argument"):
+            cls(name="Bob", extra_field="value")
+
+
+def test_extra_slots_open_class_still_checks_slots(extra_slots_module):
+    """Extra data does not bypass the checks and conversions of the declared slots."""
+    assert extra_slots_module.OpenPerson(name="Bob", age="30", extra_field="value").age == 30
+    with pytest.raises(ValueError, match="name must be supplied"):
+        extra_slots_module.OpenPerson(extra_field="value")
+
+
+def test_extra_slots_round_trip(extra_slots_module):
+    """Extra data is dumped with the instance and loaded back."""
+    instance = extra_slots_module.OpenPerson(name="Bob", extra_field="value")
+    loaded = yaml_loader.loads(yaml_dumper.dumps(instance), extra_slots_module.OpenPerson)
+    assert loaded.extra_field == "value"
