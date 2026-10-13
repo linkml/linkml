@@ -279,6 +279,9 @@ class PydanticClass(PydanticTemplateModel):
     When set, emits ``model_config = ConfigDict(extra="...")`` in the generated
     class body so the class overrides the base model's ``extra`` configuration.
     Derived from the LinkML ``extra_slots`` metadata on the source class.
+
+    A :class:`.PydanticAttribute` gives the type of the extra values instead: the class
+    then gets a ``__pydantic_extra__`` annotation of that type and ``extra="allow"``.
     """
     is_type_alias: bool = False
     """
