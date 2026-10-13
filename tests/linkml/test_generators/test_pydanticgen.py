@@ -3231,6 +3231,28 @@ def test_extra_slots(data, clsname, valid, extra_slots):
             cls(**data)
 
 
+@pytest.mark.parametrize(
+    "data,valid",
+    [
+        ({"any_class": {"x": 1, "whatever": "else"}}, True),
+        ({"allowed": {"x": 1, "whatever": "else"}}, True),
+        ({"not_allowed": {"x": 1, "y": 2}}, False),
+        ({"extra_string": {"x": 1, "y": "string"}}, True),
+        ({"extra_string": {"x": 1, "y": 2}}, False),
+    ],
+)
+def test_extra_slots_nested(data, valid, extra_slots):
+    """
+    Extra data is checked on nested objects too, through the ``Container`` class
+    that the gen-json-schema tests use. ``AnyClass`` takes any value.
+    """
+    if valid:
+        extra_slots.Container(**data)
+    else:
+        with pytest.raises(ValidationError):
+            extra_slots.Container(**data)
+
+
 @pytest.fixture(scope="module")
 def extra_slots_allowed_by_default(input_path) -> ModuleType:
     schema = input_path("extra_slots.yaml")
