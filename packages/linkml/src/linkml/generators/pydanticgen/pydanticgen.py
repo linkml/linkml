@@ -487,6 +487,26 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
+    @staticmethod
+    def _extra_slots_mode(cls: ClassDefinition) -> Literal["allow", "forbid", "expression"] | None:
+        """
+        Say how the class's own ``extra_slots`` treats extra data: ``allow``, ``forbid``,
+        or ``expression`` when a ``range_expression`` types the extra values.
+        Returns ``None`` if the class has no ``extra_slots``.
+
+        ``allowed`` takes precedence over ``range_expression``, as in
+        :meth:`.JsonSchemaGenerator.get_additional_properties`. The metamodel says
+        that ``allowed: false`` forbids extra data even beside a ``range_expression``.
+        """
+        if not cls.extra_slots:
+            return None
+        elif cls.extra_slots.allowed is not None:
+            return "allow" if cls.extra_slots.allowed else "forbid"
+        elif cls.extra_slots.range_expression:
+            return "expression"
+        else:
+            return "forbid"
+
     def _get_extra_for_class(
         self, cls: ClassDefinition
     ) -> Literal["allow", "forbid", "ignore"] | PydanticAttribute | None:
@@ -494,22 +514,30 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         Determine the per-class ``extra`` value for the Pydantic ``ConfigDict``
         based on the class's ``extra_slots`` metadata.
 
-        ``allowed`` takes precedence over ``range_expression``, as in
-        :meth:`.JsonSchemaGenerator.get_additional_properties`. The metamodel says
-        that ``allowed: false`` forbids extra data even beside a ``range_expression``.
+        A class without ``extra_slots`` follows the generator-wide :attr:`.extra_fields`,
+        as in :class:`.JsonSchemaGenerator`, even when an ancestor has ``extra_slots``.
+        Pydantic would carry the ancestor's setting into the subclass, so the class
+        states the default again in that case.
 
         Returns ``None`` if the class does not override the generator-wide default,
         so the inherited base-model configuration is used.
         """
-        if not cls.extra_slots:
-            return None
-        elif cls.extra_slots.allowed is not None:
-            return "allow" if cls.extra_slots.allowed else "forbid"
-        elif cls.extra_slots.range_expression:
+        mode = self._extra_slots_mode(cls)
+        if mode == "expression":
             result = self.generate_slot(cls.extra_slots.range_expression, cls)
             return result.attribute
-        else:
-            return "forbid"
+
+        ancestors = self.schemaview.class_ancestors(cls.name, mixins=self.gen_mixin_inheritance, reflexive=False)
+        ancestor_modes = {self._extra_slots_mode(self.schemaview.get_class(ancestor)) for ancestor in ancestors}
+        if mode is None:
+            if not ancestor_modes - {None, self.extra_fields}:
+                return None
+            mode = self.extra_fields
+        if mode == "allow" and "expression" in ancestor_modes:
+            # An ancestor's typed __pydantic_extra__ would still limit the extra values,
+            # so this class accepts values of any type.
+            return PydanticAttribute(name="__anonymous__", range="Any", as_annotated=True)
+        return mode
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         # Handle union_of classes by creating a type alias instead of a class

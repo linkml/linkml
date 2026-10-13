@@ -3217,6 +3217,9 @@ def extra_slots(input_path) -> ModuleType:
         ("ExtraCardinality", False, {"x": 1, "another": [1, 2, 3, 4, 5, 6]}),
         ("ExtraNotAllowedExpression", False, {"x": 1, "y": "string"}),
         ("ExtraAllowedExpression", True, {"x": 1, "y": "string"}),
+        ("ExtraAllowedChild", False, {"x": 1, "y": 2}),
+        ("ExtraStringChild", False, {"x": 1, "y": "string"}),
+        ("ExtraStringAllowedChild", True, {"x": 1, "y": 2}),
     ],
 )
 def test_extra_slots(data, clsname, valid, extra_slots):
@@ -3241,6 +3244,7 @@ def extra_slots_allowed_by_default(input_path) -> ModuleType:
         ("Base", True),
         ("ExtraNotAllowed", False),
         ("ExtraString", False),
+        ("ExtraStringChild", True),
     ],
 )
 def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allowed_by_default):

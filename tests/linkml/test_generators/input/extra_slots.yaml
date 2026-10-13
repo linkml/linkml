@@ -76,6 +76,20 @@ classes:
       range_expression:
         range: integer
 
+  ExtraAllowedChild:
+    is_a: ExtraAllowed
+    description: "Has no extra_slots of its own, so it follows the generator default"
+
+  ExtraStringChild:
+    is_a: ExtraString
+    description: "Has no extra_slots of its own, so it follows the generator default"
+
+  ExtraStringAllowedChild:
+    is_a: ExtraString
+    description: "Allows any extra fields, although its parent only takes strings"
+    extra_slots:
+      allowed: true
+
   AnyClass:
     class_uri: linkml:Any
     description: "The Any type implicitly allows any extra slots"
