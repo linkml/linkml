@@ -3,7 +3,6 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 from rdflib import RDF, Graph
-from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
 
 from linkml_runtime.linkml_model.meta import LINKML
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
@@ -56,7 +55,7 @@ def compare_rdf(
     :return: None if they match else summary of difference
     """
 
-    def rem_metadata(g: Graph) -> IsomorphicGraph:
+    def rem_metadata(g: Graph) -> Graph:
         # Remove list declarations from target
         for s in g.subjects(RDF.type, RDF.List):
             g.remove((s, RDF.type, RDF.List))
@@ -70,33 +69,52 @@ def compare_rdf(
                 TYPE.source_file_size,
             ):
                 g.remove(t)
-        g_iso = to_isomorphic(g)
-        return g_iso
+        return g
+
+    def to_subgraph(lines: set[str], source_graph: Graph) -> Graph:
+        # Rebuild a Graph from a subset of canonical N-Triples lines,
+        # keeping the source graph's prefixes so print_triples() output
+        # stays readable.
+        sub = Graph()
+        for prefix, namespace in source_graph.namespace_manager.namespaces():
+            sub.bind(prefix, namespace)
+        if lines:
+            sub.parse(data="\n".join(lines), format="nt")
+        return sub
 
     # Bypass compare if settings have turned it off
     if SKIP_RDF_COMPARE:
         print(f"tests/utils/compare_rdf.py: {SKIP_RDF_COMPARE_REASON}")
         return None
 
-    expected_graph = to_graph(expected, fmt)
-    expected_isomorphic = rem_metadata(expected_graph)
-    actual_graph = to_graph(actual, fmt)
-    actual_isomorphic = rem_metadata(actual_graph)
+    expected_graph = rem_metadata(to_graph(expected, fmt))
+    actual_graph = rem_metadata(to_graph(actual, fmt))
 
-    # Graph compare takes a Looong time
-    in_both, in_old, in_new = graph_diff(expected_isomorphic, actual_isomorphic)
-    # if old_iso != new_iso:
-    #     in_both, in_old, in_new = graph_diff(old_iso, new_iso)
-    old_len = len(list(in_old))
-    new_len = len(list(in_new))
-    if old_len or new_len:
-        txt = StringIO()
-        with redirect_stdout(txt):
-            print("----- Missing Triples -----")
-            if old_len:
-                print_triples(in_old)
-            print("----- Added Triples -----")
-            if new_len:
-                print_triples(in_new)
-        return txt.getvalue()
-    return None
+    # Isomorphism check via canonical N-Triples: same canonicalizer the
+    # generators use (fast pyoxigraph RDFC-1.0 path in the common case,
+    # timeout-bounded rdflib fallback otherwise -- see rdf_canonicalize.py),
+    # instead of rdflib.compare.graph_diff/to_isomorphic, which has no
+    # complexity bound and can hang on graphs with symmetric blank-node
+    # structure.
+    expected_nt = canonicalize_rdf_graph(expected_graph, output_format="nt")
+    actual_nt = canonicalize_rdf_graph(actual_graph, output_format="nt")
+    if expected_nt == actual_nt:
+        return None
+
+    expected_lines = set(expected_nt.splitlines())
+    actual_lines = set(actual_nt.splitlines())
+    missing_lines = expected_lines - actual_lines
+    added_lines = actual_lines - expected_lines
+
+    in_old = to_subgraph(missing_lines, expected_graph)
+    in_new = to_subgraph(added_lines, actual_graph)
+
+    txt = StringIO()
+    with redirect_stdout(txt):
+        print("----- Missing Triples -----")
+        if missing_lines:
+            print_triples(in_old)
+        print("----- Added Triples -----")
+        if added_lines:
+            print_triples(in_new)
+    return txt.getvalue()

@@ -34,15 +34,80 @@ with stable blank node labels and sorted triples.
    is valid Turtle (PN_LOCAL_ESC), but rdflib's notation3 parser rejects
    it because it conflicts with the statement-terminator dot.  We
    post-process the output to expand such CURIEs to full ``<IRI>`` form.
+
+6. **Pathological blank-node structure**: ``rdflib.compare.to_canonical_graph``
+   (used for the fallback in limitation 2) has no complexity bound and can
+   take an unbounded amount of time on graphs with highly symmetric blank-node
+   structure (e.g. many structurally-similar ``owl:Restriction``/``rdf:List``
+   nodes). To guarantee ``canonicalize_rdf_graph`` always returns, this
+   canonicalization step runs in a subprocess with a timeout
+   (``fallback_timeout``, default :data:`DEFAULT_FALLBACK_TIMEOUT_SECONDS`).
+   If it does not finish in time, the subprocess is killed and the graph is
+   serialized directly (no blank-node canonicalization at all), with a
+   warning. Output is still valid RDF, just not guaranteed deterministic
+   across runs.
 """
 
 import io
+import multiprocessing
 import re
 import warnings
 
 import pyoxigraph as ox
 import rdflib
 from rdflib.compare import to_canonical_graph
+
+#: Default time budget, in seconds, for the rdflib fallback canonicalization
+#: (see limitation 6 above) before giving up and serializing non-canonically.
+DEFAULT_FALLBACK_TIMEOUT_SECONDS = 30.0
+
+
+def _canonicalize_worker(graph: rdflib.Graph, result_queue: "multiprocessing.Queue") -> None:
+    """Run ``to_canonical_graph`` and post the result back to the parent process.
+
+    Runs in a spawned subprocess so it can be forcibly terminated if it
+    doesn't finish in time -- ``to_canonical_graph`` is pure-Python and
+    CPU-bound with no cooperative-cancellation hook, so there is no way to
+    safely interrupt it in-process.
+    """
+    canonical = rdflib.Graph()
+    canonical += to_canonical_graph(graph)
+    result_queue.put(canonical)
+
+
+def _canonicalize_with_timeout(graph: rdflib.Graph, timeout: float) -> rdflib.Graph | None:
+    """Run ``to_canonical_graph`` on ``graph`` with a wall-clock timeout.
+
+    :param graph: The rdflib Graph to canonicalize.
+    :param timeout: Maximum time to wait, in seconds.
+    :return: The canonicalized graph, or ``None`` if it did not finish in time,
+        or if the subprocess could not be created/communicated with at all
+        (e.g. the host is out of file descriptors or processes). The whole
+        point of this function is that ``canonicalize_rdf_graph`` always
+        returns rather than hanging or crashing, so any failure mode here
+        degrades the same way a timeout does.
+    """
+    ctx = multiprocessing.get_context("spawn")
+    try:
+        result_queue: multiprocessing.Queue = ctx.Queue()
+        process = ctx.Process(target=_canonicalize_worker, args=(graph, result_queue))
+        process.start()
+    except OSError:
+        return None
+    try:
+        process.join(timeout)
+        if process.is_alive():
+            process.terminate()
+            process.join()
+            return None
+        return result_queue.get_nowait()
+    except Exception:
+        # Worker exited without posting a result, or process management
+        # itself failed (e.g. OSError from resource exhaustion).
+        return None
+    finally:
+        result_queue.close()
+        result_queue.cancel_join_thread()
 
 
 class RDFCanonicalizationWarning(UserWarning):
@@ -80,7 +145,7 @@ _PREFIX_FORMATS = frozenset({ox.RdfFormat.TURTLE, ox.RdfFormat.TRIG, ox.RdfForma
 _LINE_ORIENTED_FORMATS = frozenset({"nt", "ntriples", "n-triples", "nt11", "nquads", "n-quads"})
 
 
-def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -> str:
+def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str, fallback_timeout: float) -> str:
     """Serialize a graph that pyoxigraph cannot canonicalize, deterministically.
 
     pyoxigraph rejects some graphs that rdflib accepts -- notably graphs
@@ -98,22 +163,43 @@ def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -
     line-oriented formats we additionally sort the serialized lines, since
     rdflib does not emit N-Triples/N-Quads in a stable order.
 
+    ``to_canonical_graph`` has no complexity bound and can take an unbounded
+    amount of time on graphs with highly symmetric blank-node structure, so
+    it runs in a subprocess with a ``fallback_timeout`` budget (see module
+    docstring, limitation 6). If it doesn't finish in time, we give up on
+    canonicalization entirely and serialize the graph directly, with a
+    warning -- valid RDF, just not guaranteed deterministic across runs.
+
     Relative IRIs are preserved verbatim (not resolved against the base): the
     goal is deterministic output, and silently rewriting ``<testing>`` into an
     absolute IRI would mask what is really a data problem in the source graph.
 
     :param graph: The rdflib Graph that pyoxigraph could not parse.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
-    :return: Deterministic string serialization of the graph.
+    :param fallback_timeout: Maximum time, in seconds, to spend on blank-node
+        canonicalization before giving up and serializing non-canonically.
+    :return: String serialization of the graph, canonicalized if it finished
+        within the timeout.
     """
-    canonical = to_canonical_graph(graph)
-    # to_canonical_graph builds a fresh graph without the source's namespace
-    # bindings; rebind them so the output does not fall back to rdflib's
-    # non-deterministic auto-generated ``ns1:``/``ns2:`` prefixes.
-    for prefix, namespace in graph.namespace_manager.namespaces():
-        canonical.namespace_manager.bind(prefix, namespace, replace=True)
-    canonical.base = graph.base
-    serialized = canonical.serialize(format=output_format)
+    canonical = _canonicalize_with_timeout(graph, fallback_timeout)
+    if canonical is None:
+        warnings.warn(
+            f"rdflib fallback canonicalization did not complete within {fallback_timeout}s "
+            "(graph has too much symmetric blank-node structure); falling back to "
+            "non-canonical serialization. Output is valid RDF but blank-node labels "
+            "and triple ordering are not guaranteed stable across runs.",
+            RDFCanonicalizationWarning,
+            stacklevel=3,
+        )
+        serialized = graph.serialize(format=output_format)
+    else:
+        # to_canonical_graph builds a fresh graph without the source's namespace
+        # bindings; rebind them so the output does not fall back to rdflib's
+        # non-deterministic auto-generated ``ns1:``/``ns2:`` prefixes.
+        for prefix, namespace in graph.namespace_manager.namespaces():
+            canonical.namespace_manager.bind(prefix, namespace, replace=True)
+        canonical.base = graph.base
+        serialized = canonical.serialize(format=output_format)
     if output_format.lower() in _LINE_ORIENTED_FORMATS:
         lines = [line for line in serialized.splitlines() if line.strip()]
         return "\n".join(sorted(lines)) + "\n"
@@ -287,6 +373,7 @@ def _is_safe_prefix_iri(iri: str) -> bool:
 def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
+    fallback_timeout: float = DEFAULT_FALLBACK_TIMEOUT_SECONDS,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -296,11 +383,19 @@ def canonicalize_rdf_graph(
     for formats that support them (Turtle, TriG, N3, RDF/XML).
 
     Falls back to plain rdflib serialization for unsupported formats or
-    graphs containing non-standard RDF (e.g. literal predicates).
+    graphs containing non-standard RDF (e.g. literal predicates). That
+    fallback's own blank-node canonicalization step is bounded by
+    ``fallback_timeout`` (see module docstring, limitation 6) so this
+    function always returns rather than hanging.
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
-    :return: Deterministic string serialization of the graph.
+    :param fallback_timeout: Maximum time, in seconds, the rdflib fallback path
+        may spend on blank-node canonicalization before giving up and
+        serializing non-canonically.
+    :return: Deterministic string serialization of the graph (or, if the
+        fallback's canonicalization step timed out, a valid but
+        non-deterministic serialization).
     """
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
@@ -330,7 +425,7 @@ def canonicalize_rdf_graph(
             RDFCanonicalizationWarning,
             stacklevel=2,
         )
-        return _deterministic_fallback_serialize(graph, output_format)
+        return _deterministic_fallback_serialize(graph, output_format, fallback_timeout)
 
     dataset = ox.Dataset()
     for triple in triples:
