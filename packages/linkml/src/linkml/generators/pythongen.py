@@ -708,7 +708,12 @@ def accept_extra_slots(cls):
         extra = {key: kwargs.pop(key) for key in list(kwargs) if key not in declared}
         dataclass_init(self, *args, **kwargs)
         for key, value in extra.items():
-            setattr(self, key, value if extra_slot_value is None else extra_slot_value(value))
+            if extra_slot_value is None:
+                setattr(self, key, value)
+            else:
+                # Stored as checked, the way __post_init__ stores an inlined slot, so that a
+                # dictionary of instances stays a dictionary.
+                self[key] = extra_slot_value(value)
 
     cls.__init__ = __init__
     return cls

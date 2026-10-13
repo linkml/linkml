@@ -977,6 +977,17 @@ classes:
     is_a: IntegerPerson
     extra_slots:
       allowed: true
+  Thing:
+    attributes:
+      id:
+        identifier: true
+      label:
+  ThingBag:
+    extra_slots:
+      range_expression:
+        range: Thing
+        multivalued: true
+        inlined: true
 """
 
 
@@ -1013,6 +1024,13 @@ def test_extra_slots_range_expression(extra_slots_module):
     assert extra_slots_module.IntegerPerson(name="Bob", extra_field="7").extra_field == 7
     with pytest.raises(ValueError):
         extra_slots_module.IntegerPerson(name="Bob", extra_field="seven")
+
+
+def test_extra_slots_inlined_dict(extra_slots_module):
+    """Extra data inlined as a dictionary stays a dictionary of instances, as a declared slot does."""
+    bag = extra_slots_module.ThingBag(things={"a": {"label": "x"}})
+    assert isinstance(bag.things, dict)
+    assert bag.things["a"].label == "x"
 
 
 def test_extra_slots_open_class_still_checks_slots(extra_slots_module):
