@@ -3477,6 +3477,8 @@ def sv_induced_inlined() -> SchemaView:
         ("to_plain_multivalued", True),
         # Explicitly not inlined -> not a list.
         ("to_plain_explicit_not_inlined", False),
+        # An explicit list representation implies inlining, even if inlined is false.
+        ("to_plain_explicit_inlined_as_list", True),
         # Scalar / unconstrained ranges -> inlining does not apply.
         ("to_integer", False),
         ("to_any", False),
@@ -3493,6 +3495,15 @@ def test_is_inlined_as_list(sv_induced_inlined: SchemaView, slot_name: str, expe
     assert sv_induced_inlined.is_inlined_as_list(induced) is expected
     # The materialized induced slot must agree with the resolver.
     assert bool(induced.inlined_as_list) == sv_induced_inlined.is_inlined_as_list(induced)
+
+
+def test_is_inlined_as_list_honors_explicit_list_on_asserted_slot(sv_induced_inlined: SchemaView) -> None:
+    """The resolver honors an explicit list declaration on raw, non-induced slots."""
+    asserted = sv_induced_inlined.get_slot("to_plain_explicit_inlined_as_list")
+
+    assert asserted.inlined is False
+    assert asserted.inlined_as_list is True
+    assert sv_induced_inlined.is_inlined_as_list(asserted) is True
 
 
 @pytest.mark.parametrize(
@@ -3512,6 +3523,8 @@ def test_is_inlined_as_list(sv_induced_inlined: SchemaView, slot_name: str, expe
         # Explicitly declared inlined=false must never be clobbered by inference; and as the
         # slot is not inlined, inlined_as_list is meaningless -> left unset.
         ("to_plain_explicit_not_inlined", False, None),
+        # An explicit list representation takes precedence and implies inlining.
+        ("to_plain_explicit_inlined_as_list", True, True),
         # Non-class (scalar) range -> inlining rule does not apply; metaslots stay unset.
         ("to_integer", None, None),
         # linkml:Any (unconstrained) range -> must NOT be force-inlined even though the

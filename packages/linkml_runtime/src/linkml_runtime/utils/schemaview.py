@@ -2285,7 +2285,14 @@ class SchemaView:
         if slot_range not in self.all_classes():
             return False
 
-        # A slot explicitly declared not-inlined can never be inlined as a list.
+        # Explicit list representation implies inlining, even if the inlined flag itself was
+        # also explicitly set to false. This implication is materialized by induced_slot();
+        # honor it here too for callers that pass asserted slot definitions directly.
+        if slot.inlined_as_list is True:
+            return True
+
+        # A slot explicitly declared not-inlined, without an explicit list representation,
+        # cannot be inlined as a list.
         if slot.inlined is False:
             return False
 
