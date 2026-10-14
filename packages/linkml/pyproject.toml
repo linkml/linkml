@@ -39,14 +39,14 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
-    "click >= 8.2",
+    "click >= 8.3.3",
     "graphviz >= 0.10.1",
     "hbreader",
     "isodate >= 0.6.0",
     "jinja2 >= 3.1.0",
     "jsonasobj2 >= 1.0.3, < 2.0.0",
     "jsonschema[format]>=4.26.0",
-    "linkml-runtime >= 1.10.0, < 2.0.0",
+    "linkml-runtime >= 1.12.0, < 2.0.0",
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
@@ -65,7 +65,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "sphinx-click (>=6.0.0)",
     "openapi-spec-validator >= 0.8.4",
     "pydantic-settings>=2.15.0",
-    "platformdirs>=4.11.12",
+    "platformdirs>=4.12.2",
 ]
 
 [dependency-groups]
@@ -96,13 +96,13 @@ dev = [
   "jupyter",
   "nbconvert",
   "nbformat",
-  "coverage>=7.16.0",
-  "tox>=4.63.0",
+  "coverage>=7.16.2",
+  "tox>=4.64.1",
   "tox-uv",
   "myst-nb>=1.4.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
   "rich>=15.0.0",
-  "gql>=4.0.0",
+  "gql>=4.4.0",
 ]
 
 pandera = [

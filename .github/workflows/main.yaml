@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
 
@@ -76,7 +76,7 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -105,7 +105,7 @@ jobs:
         shell: bash
       - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -114,7 +114,7 @@ jobs:
           fail_ci_if_error: true
       - name: Upload runtime coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -139,7 +139,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -160,7 +160,7 @@ jobs:
           uv run coverage report -m
       - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -189,7 +189,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -207,7 +207,7 @@ jobs:
           uv run pytest tests/linkml/test_notebooks/ -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
       - name: Upload notebook coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           name: codecov-notebooks-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -232,7 +232,7 @@ jobs:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.2.0
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives

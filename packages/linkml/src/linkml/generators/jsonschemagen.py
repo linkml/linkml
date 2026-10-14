@@ -472,7 +472,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+    """If true, use class_uri/slot_uri CURIEs for class definitions and non-identifier
+    slot properties. Identifier properties retain their slot-name aliases so they
+    remain consistent with the JSON-LD ``@id`` alias.
+    """
 
     def __post_init__(self):
         if self.materialize_patterns is not None:
@@ -679,14 +682,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
-            if self.use_curies:
+            # Anonymous slot expressions don't carry the underlying slot's `identifier` or
+            # `multivalued` flags, so look them up on the schema's slot definition.
+            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Identifier slots retain their slot-name alias, matching the direct
+            # class-slot path and the JSON-LD @id context entry.
+            if self.use_curies and not (base_slot is not None and base_slot.identifier):
                 prop_name = self._curie(slot)
             else:
                 prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
-            # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
-            # so look it up on the schema's slot definition and wrap so item-level constraints apply.
-            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Wrap multivalued slots so item-level constraints apply.
             if base_slot is not None and base_slot.multivalued and not prop.is_array:
                 prop = JsonSchema.array_of(prop, include_null=False, required=False)
             value_required = False
@@ -778,8 +784,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            if schema_type.base:
-                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            # Types without an explicit base have no more specific JSON Schema
+            # representation available, so treat them like other unknown bases.
+            base = schema_type.base.lower() if schema_type.base else ""
+            (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
@@ -1023,7 +1031,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        if self.use_curies:
+        # Identifier properties are the JSON-LD @id alias; never CURIE-key them.
+        if self.use_curies and not slot.identifier:
             prop_name = self._curie(slot)
         else:
             prop_name = self.aliased_slot_name(slot)
@@ -1260,7 +1269,8 @@ wins. The top level takes its value from the document's root class.
     default=False,
     show_default=True,
     help="""
-Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
+Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD @id alias.
 """,
 )
 @click.option(
