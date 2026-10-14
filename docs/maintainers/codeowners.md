@@ -85,6 +85,20 @@ including PRs authored by CODEOWNERS or core developers. The mechanisms
 below — the 1-month fallback, the project-direction override, and the
 stepping-down process — exist within that frame.
 
+## Experiment: delegating self-contained areas
+
+A few generators are self-contained enough that core-team review adds little.
+Where trusted, established community members know such an area well, we hand
+it to them outright: they review each other's changes and merge without
+core-team sign-off.
+This does not preclude participants, at their discretion, from occasionally
+explicitly requesting approval from the core-team for some reason.
+
+The goal is to let those areas move at the pace of the people who care about
+them rather than at the pace of core-team availability. Rules covering them
+are marked `EXPERIMENT` in
+[`.github/CODEOWNERS`](https://github.com/linkml/linkml/blob/main/.github/CODEOWNERS).
+
 ## Avoiding review bottlenecks: the 1-month fallback
 
 CODEOWNERS is a stewardship signal, **not a veto**. If CODEOWNERS become
