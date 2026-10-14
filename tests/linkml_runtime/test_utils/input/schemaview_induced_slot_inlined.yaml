@@ -39,6 +39,7 @@ classes:
       - to_plain
       - to_plain_multivalued
       - to_plain_explicit_not_inlined
+      - to_plain_explicit_inlined_as_list
       - to_integer
       - to_any
 
@@ -77,6 +78,11 @@ slots:
     range: WithoutReference
     multivalued: true
     inlined: false
+  to_plain_explicit_inlined_as_list:
+    range: WithIdentifier
+    multivalued: true
+    inlined: false
+    inlined_as_list: true
 
   to_integer:
     range: integer
