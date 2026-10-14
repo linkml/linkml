@@ -122,6 +122,9 @@ class OwlSchemaGenerator(Generator):
     """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     metadata_profile: MetadataProfile | None = None
     """Deprecated - use metadata_profiles."""
 
@@ -135,6 +138,7 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
+
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
 
@@ -300,6 +304,8 @@ class OwlSchemaGenerator(Generator):
             self.consolidate_cardinality_axioms = False
 
         sv = self.schemaview
+        sv.imports_closure()  # populate schema_map with all imported sub-schemas
+        sv.namespaces.cache_clear()  # ensure namespace cache is rebuilt with the full schema_map
         schema = sv.schema
         owl_id = schema.id
         if self.ontology_uri_suffix:
@@ -323,7 +329,9 @@ class OwlSchemaGenerator(Generator):
         for slot in sv.all_slots(imports=mergeimports, attributes=False).values():
             self.add_slot(slot, attribute=False)
         for typ in sv.all_types(imports=mergeimports).values():
-            self.add_type(typ)
+            # Type constraints are inherited, so emit the effective type rather
+            # than the asserted definition from the schema.
+            self.add_type(sv.induced_type(typ.name))
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
         for cls in sv.all_classes(imports=mergeimports).values():
@@ -348,7 +356,7 @@ class OwlSchemaGenerator(Generator):
         """
         self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(self.graph, output_format=fmt)
+        return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
@@ -941,7 +949,7 @@ class OwlSchemaGenerator(Generator):
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: element.pattern,  # TODO: map between ECMAScript and XSD regular expressions
+            XSD.pattern: self._structured_pattern_as_xsd(element),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -997,6 +1005,29 @@ class OwlSchemaGenerator(Generator):
                 graph.add((x, constraint_prop, Literal(constraint_val)))
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
+
+    def _structured_pattern_as_xsd(
+        self,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+    ) -> str | None:
+        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
+        pattern = element.pattern
+        structured_pattern = element.structured_pattern
+        # OWL also processes anonymous expressions, which cannot be induced.
+        # Named definitions that reach this point without a pattern are raw
+        # schema elements, so resolve them locally without mutating the schema.
+        if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
+            pattern = self.schemaview.resolve_pattern(element)
+        if pattern is None or structured_pattern is None:
+            return pattern
+        inner = pattern
+        if inner.startswith("^(?:") and inner.endswith(")$"):
+            inner = inner[4:-2]
+        if inner.startswith("^") and inner.endswith("$"):
+            inner = inner[1:-1]
+        if structured_pattern.partial_match:
+            return f".*({inner}).*"
+        return inner
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
@@ -1533,7 +1564,7 @@ class OwlSchemaGenerator(Generator):
             if self.type_objects:
                 return self._type_uri(typ.name)
             else:
-                return self.namespaces.uri_for(typ.uri)
+                return URIRef(self.schemaview.get_uri(typ, expand=True))
         elif slot.range in self.schema.enums:
             # TODO: enums fill this in
             return self._enum_uri(EnumDefinitionName(slot.range))
@@ -1819,6 +1850,15 @@ class OwlSchemaGenerator(Generator):
         "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
         "skos:definition and other text annotations are emitted with the "
         "specified language tag.  Element-level in_language overrides this."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")

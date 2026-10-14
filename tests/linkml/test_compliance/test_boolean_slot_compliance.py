@@ -142,7 +142,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
         core_elements=["any_of", "range"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
+    if framework in [SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
         # if use_default_range and not is_valid:

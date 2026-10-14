@@ -30,7 +30,7 @@ if sys.version_info >= (3, 14):
 
 typedb = pytest.importorskip("typedb.driver", reason="typedb-driver not installed")
 
-from typedb.driver import Credentials, DriverOptions, TransactionType, TypeDB  # noqa: E402
+from typedb.driver import Credentials, DriverOptions, DriverTlsConfig, TransactionType, TypeDB  # noqa: E402
 
 TYPEDB_HOST = "localhost:1729"
 
@@ -51,7 +51,7 @@ pytestmark = pytest.mark.skipif(
 _INPUT_DIR = Path(__file__).parent / "input"
 
 TYPEDB_CREDENTIALS = Credentials("admin", "password")
-TYPEDB_OPTIONS = DriverOptions(is_tls_enabled=False)
+TYPEDB_OPTIONS = DriverOptions(DriverTlsConfig.disabled())
 
 
 @pytest.fixture(scope="module")

@@ -1,17 +1,23 @@
 import json
 import logging
 
+import pytest
+from click.testing import CliRunner
 from rdflib import Graph, term
 from yaml import safe_load
 
 from linkml.generators import JSONLDGenerator, RDFGenerator
+from linkml.generators.jsonldgen import cli as jsonld_cli
+from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
 
+# network: rdflib fetches the @context URLs in the generated JSON-LD
+@pytest.mark.network
 def test_class_uri(input_path):
-    """`class_uri` should result in an `skos:exactMatch` relationship
+    """`class_uri` should be kept and also result in an `skos:exactMatch` relationship
     in the generated JSON-LD and RDF."""
     # focusing on the class `Thing` of the schema jsonld_context_class_uri_prefix.yaml:
     # [...]
@@ -39,6 +45,7 @@ def test_class_uri(input_path):
     #   "name": "Thing",
     #   "definition_uri": "http://uri.interlex.org/tgbugs/uris/readable/sparc/Thing",
     #   "from_schema": "https://sparc.olympiangods.org/sparcur/schemas/1/sparc",
+    #   "class_uri": "http://www.w3.org/2000/01/rdf-schema#Resource",
     #   "exact_mappings": [
     #     "rdfs:Resource"
     #   ],
@@ -53,7 +60,7 @@ def test_class_uri(input_path):
     # check each of the schema classes (according the SchemaView)
     for class_name, class_info in classes_with_custom_uri.items():
         assert class_info["uri"] in classes_jsonld.keys()
-        assert "class_uri" not in classes_jsonld[class_info["uri"]].keys()
+        assert classes_jsonld[class_info["uri"]]["class_uri"] == schema_view.expand_curie(class_info["class_uri"])
         assert "exact_mappings" in classes_jsonld[class_info["uri"]].keys()
         assert class_info["class_uri"] in classes_jsonld[class_info["uri"]]["exact_mappings"]
 
@@ -62,6 +69,7 @@ def test_class_uri(input_path):
     # <http://uri.interlex.org/tgbugs/uris/readable/sparc/Thing> a linkml:ClassDefinition ;
     #     skos:inScheme <https://sparc.olympiangods.org/sparcur/schemas/1/sparc> ;
     #     skos:exactMatch rdfs:Resource ;
+    #     linkml:class_uri rdfs:Resource ;
     #     linkml:definition_uri <http://uri.interlex.org/tgbugs/uris/readable/sparc/Thing> ;
     #     linkml:slot_usage [ ] .
     # [...]
@@ -86,10 +94,129 @@ def test_class_uri(input_path):
                     single_item = class_properties[str(p)]
                     class_properties[str(p)] = [single_item]
                 class_properties[str(p)].append(str(o))
-        assert "https://w3id.org/linkml/class_uri" not in class_properties.keys()
+        assert class_properties["https://w3id.org/linkml/class_uri"] == schema_view.expand_curie(
+            class_info["class_uri"]
+        )
         assert "http://www.w3.org/2004/02/skos/core#exactMatch" in class_properties.keys()
         assert schema_view.expand_curie(class_info["class_uri"]) == schema_view.expand_curie(
             class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
         ) or schema_view.expand_curie(class_info["class_uri"]) in schema_view.expand_curie(
             class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
         )
+
+
+CLASS_URI_SCHEMA = """
+id: https://example.org/class-uri-test
+name: class-uri-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/class-uri-test/
+  owl: http://www.w3.org/2002/07/owl#
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+classes:
+  Mapping:
+    class_uri: owl:Axiom
+  MappingSet: {}
+"""
+
+
+def test_class_uri_kept_alongside_exact_mapping(tmp_path):
+    """An explicit `class_uri` is kept and added to `exact_mappings`; an implicit one adds no mapping.
+
+    Regression test for https://github.com/linkml/linkml/issues/4066: the JSON-LD
+    schema dropped `class_uri`, so it no longer round-tripped, and every class
+    without an explicit `class_uri` gained an `exact_mappings` entry to itself.
+    """
+    schema_path = tmp_path / "class_uri_test.yaml"
+    schema_path.write_text(CLASS_URI_SCHEMA)
+
+    jsonld = json.loads(JSONLDGenerator(str(schema_path), format="jsonld").serialize())
+    classes = {cls["name"]: cls for cls in jsonld["classes"]}
+    assert classes["Mapping"]["class_uri"] == "http://www.w3.org/2002/07/owl#Axiom"
+    assert classes["Mapping"]["exact_mappings"] == ["owl:Axiom"]
+    assert classes["MappingSet"]["class_uri"] == "https://example.org/class-uri-test/MappingSet"
+    assert "exact_mappings" not in classes["MappingSet"]
+
+    merged = safe_load(YAMLGenerator(str(schema_path)).serialize())
+    assert merged["classes"]["Mapping"]["exact_mappings"] == ["owl:Axiom"]
+    assert "exact_mappings" not in merged["classes"]["MappingSet"]
+
+
+CORE_SCHEMA = """
+id: https://example.org/core
+name: core
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/tiny/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+classes:
+  Base:
+    attributes:
+      label: {}
+"""
+
+TINY_SCHEMA = """
+id: https://example.org/tiny
+name: tiny
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/tiny/
+imports:
+  - linkml:types
+  - ./core
+default_prefix: ex
+default_range: string
+classes:
+  Thing:
+    is_a: Base
+    attributes:
+      name: {}
+"""
+
+
+@pytest.mark.parametrize(
+    "make_output",
+    [
+        pytest.param(
+            lambda schema_dir: CliRunner().invoke(jsonld_cli, ["--no-metadata", "dist/tiny.yaml"]).output,
+            id="cli-relative-path",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("dist/tiny.yaml", metadata=False).serialize(),
+            id="api-relative-path",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("tiny.yaml", base_dir="dist", metadata=False).serialize(),
+            id="api-relative-base-dir",
+        ),
+        pytest.param(
+            lambda schema_dir: JSONLDGenerator("tiny.yaml", base_dir=str(schema_dir), metadata=False).serialize(),
+            id="api-absolute-base-dir",
+        ),
+    ],
+)
+def test_relative_schema_locations(tmp_path, monkeypatch, make_output):
+    """`gen-jsonld` finds the schema and its relative imports however its location is given.
+
+    Regression test: the nested ContextGenerator was handed the schema path together with
+    the base_dir SchemaLoader derived from it, so ``dist/tiny.yaml`` was looked up as
+    ``dist/dist/tiny.yaml``. Forwarding the caller's own base_dir instead must keep an
+    explicit ``base_dir`` and a sibling ``./core`` import working.
+    """
+    schema_dir = tmp_path / "dist"
+    schema_dir.mkdir()
+    (schema_dir / "core.yaml").write_text(CORE_SCHEMA)
+    (schema_dir / "tiny.yaml").write_text(TINY_SCHEMA)
+    expected = JSONLDGenerator(str(schema_dir / "tiny.yaml"), metadata=False).serialize()
+    monkeypatch.chdir(tmp_path)
+
+    output = make_output(schema_dir)
+
+    assert '"name": "Base"' in output
+    assert output.rstrip() == expected.rstrip()

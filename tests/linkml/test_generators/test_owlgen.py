@@ -5,7 +5,7 @@ from enum import Enum
 import pytest
 from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import OWL, RDF
+from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
@@ -89,6 +89,47 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     coll = Collection(g, enum_bnode)
     assert [BIZ["001"], BIZ["002"], BIZ["003"], BIZ["004"]] == list(coll)
     assert BIZ["001"] in owl_classes
+
+
+@pytest.mark.parametrize(
+    ("partial_match", "expected_pattern"),
+    [
+        (False, r"[a-z]+"),
+        (True, r".*([a-z]+).*"),
+    ],
+)
+def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
+    """Translate structured patterns without modifying the source schema."""
+    generator = OwlSchemaGenerator(
+        f"""
+id: https://example.org/pattern
+name: pattern
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: true
+      partial_match: {str(partial_match).lower()}
+classes:
+  C:
+    slots:
+      - value
+"""
+    )
+    value_slot = generator.schemaview.get_slot("value")
+
+    assert value_slot.pattern is None
+
+    graph = generator.as_graph()
+
+    patterns = list(graph.objects(None, XSD.pattern))
+    assert Literal(expected_pattern) in patterns, patterns
+    assert value_slot.pattern is None
 
 
 def test_rdfs_profile(kitchen_sink_path):
