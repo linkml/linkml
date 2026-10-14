@@ -109,6 +109,31 @@ def test_nested_struct_recursion():
     assert "STRUCT<" in ddl
 
 
+def test_inlined_struct_preserves_get_sql_range_override_signature():
+    """Nested struct fields keep dispatching through legacy subclass overrides."""
+    from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
+    class LegacySignatureBigQueryGenerator(BigQueryGenerator):
+        def get_sql_range(self, slot, schema=None, sv=None):
+            self.visited_slots.append(slot.name)
+            return super().get_sql_range(slot, schema=schema, sv=sv)
+
+    b = SchemaBuilder()
+    b.add_slot(SD("street", range="string"))
+    b.add_slot(SD("city", range="string"))
+    b.add_class("Address", slots=["street", "city"])
+    b.add_slot(SD("address", range="Address", inlined=True))
+    b.add_class("Person", slots=["id", "address"])
+    b.add_defaults()
+    gen = LegacySignatureBigQueryGenerator(b.schema)
+    gen.visited_slots = []
+
+    ddl = gen.generate_ddl()
+
+    assert "STRUCT<" in ddl
+    assert {"street", "city"}.issubset(gen.visited_slots)
+
+
 def test_self_referential_inlined_slot_does_not_recurse():
     """a slot whose inlined range points back at its own class must not recurse forever.
 

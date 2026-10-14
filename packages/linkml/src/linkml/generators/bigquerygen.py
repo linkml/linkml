@@ -1,5 +1,6 @@
 import logging
 import os
+from contextvars import ContextVar, Token
 from dataclasses import dataclass
 
 import click
@@ -26,6 +27,7 @@ from linkml.generators.sqltablegen import (  # noqa: F401 — used in generate_d
 from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
+_INLINED_STRUCT_STACK: ContextVar[set[str] | None] = ContextVar("bigquery_inlined_struct_stack", default=None)
 
 # Module-level stubs so the file is importable without sqlalchemy-bigquery installed.
 _BQ_AVAILABLE = False
@@ -222,7 +224,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
         return kwargs
 
-    def get_sql_range(self, slot, schema=None, sv=None, _stack=None):
+    def get_sql_range(self, slot, schema=None, sv=None):
         """Returns the BigQuery SQLAlchemy column type for the given slot."""
         _require_bq()
         from linkml_runtime.utils.schemaview import SchemaView
@@ -243,7 +245,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
         # 3. Inlined class-range → STRUCT<field type, ...>.
         if slot.range in sv.all_classes() and (slot.inlined or slot.inlined_as_list):
-            return self._build_struct(slot.range, sv, _stack)
+            return self._build_struct(slot.range, sv)
 
         # 4. Scalar (default path).
         return self._get_scalar_type(slot.range, sv)
@@ -268,7 +270,7 @@ class BigQueryGenerator(SQLTableGenerator):
             return String()
         return BQ_TYPEMAP.get(base, String())
 
-    def _build_struct(self, class_name, sv, _stack=None):
+    def _build_struct(self, class_name, sv):
         """Build a STRUCT<...> type from the induced slots of class_name.
 
         BigQuery RECORD types cannot nest directly on themselves (an infinite
@@ -277,18 +279,25 @@ class BigQueryGenerator(SQLTableGenerator):
         STRING (the inlined object is stored as JSON).
         """
         _require_bq()
-        if _stack is None:
-            _stack = set()
-        if class_name in _stack:
+        stack = _INLINED_STRUCT_STACK.get()
+        token: Token[set[str] | None] | None = None
+        if stack is None:
+            stack = set()
+            token = _INLINED_STRUCT_STACK.set(stack)
+        if class_name in stack:
             return String()
-        _stack.add(class_name)
+        stack.add(class_name)
         try:
             fields = {}
             for slot in sv.class_induced_slots(class_name):
-                fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv, _stack=_stack)
+                # Dispatch through the public method without private recursion arguments so
+                # subclasses overriding the historical get_sql_range signature remain valid.
+                fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv)
             return STRUCT(**fields)
         finally:
-            _stack.discard(class_name)
+            stack.discard(class_name)
+            if token is not None:
+                _INLINED_STRUCT_STACK.reset(token)
 
     def _resolve_type_override(self, type_str):
         """Return the BQ SQLAlchemy type for a bigquery_type annotation value."""
