@@ -169,6 +169,29 @@ def test_inject_backref_foreign_key() -> None:
     assert get_foreign_key_map(d) == {"c_id": "c.id"}
 
 
+def test_distinct_inlined_collections_get_distinct_backref_foreign_keys() -> None:
+    """Separate collection slots must not overwrite one another's owner foreign key."""
+    builder = SchemaBuilder(name="distinct_inlined_collections")
+    builder.add_class("owner", ["positive", "negative"])
+    builder.add_class("expression", ["value"])
+    builder.set_slot("positive", range="expression", multivalued=True)
+    builder.set_slot("negative", range="expression", multivalued=True)
+
+    result = _translate(builder)
+    relationships = {
+        mapping.source_slot: mapping.target_slot
+        for mapping in result.mappings
+        if mapping.source_class == "owner" and mapping.target_class == "expression"
+    }
+    relational_view = SchemaView(result.schema)
+    expression = relational_view.get_class("expression")
+
+    assert set(relationships) == {"positive", "negative"}
+    assert len(set(relationships.values())) == 2
+    assert set(relationships.values()).issubset(expression.attributes)
+    assert {get_foreign_key_map(expression)[slot] for slot in relationships.values()} == {"owner.id"}
+
+
 @pytest.mark.parametrize("add_id_to_c", [True, False])
 @pytest.mark.parametrize("add_id_to_d", [True, False])
 def test_inject_many_to_many(add_id_to_c: bool, add_id_to_d: bool) -> None:  # noqa: FBT001
