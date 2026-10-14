@@ -449,6 +449,31 @@ but can (and should) also be used to maintain and manage data, metadata, ontolog
 for “registry” style projects, but in other cases the data may be best managed separately in a dedicated
 store or a repository like Zenodo or Figshare.</p>
 </section>
+<section id="keep-generated-rdf-diffs-small">
+<span id="rdf-in-version-control"></span><h3>Keep generated RDF diffs small<a class="headerlink" href="#keep-generated-rdf-diffs-small" title="Link to this heading">¶</a></h3>
+<p>When you track generated RDF in Git, adding a class or property can change many
+blank-node labels. The default RDFC-1.0 numbering is repeatable for the same graph,
+but an insertion can renumber existing nodes and obscure the actual schema edit.</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">--diff-stable</span></code> flag uses
+<a class="reference external" href="https://github.com/ASCS-eV/diffable-rdf">diffable-rdf</a> to reduce this label churn.
+In a uv project containing your schema, install LinkML with the extra and generate
+SHACL as follows (using a release that includes this option):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;linkml[diff-stable]&#39;</span>
+uv<span class="w"> </span>run<span class="w"> </span>gen-shacl<span class="w"> </span>--diff-stable<span class="w"> </span>schema.yaml<span class="w"> </span>&gt;<span class="w"> </span>schema.shacl.ttl
+</pre></div>
+</div>
+<p>The flag also works with <code class="docutils literal notranslate"><span class="pre">gen-owl</span></code>, <code class="docutils literal notranslate"><span class="pre">gen-rdf</span></code>, and <code class="docutils literal notranslate"><span class="pre">gen-shex</span> <span class="pre">--format</span> <span class="pre">rdf</span></code>.
+Python callers of <code class="docutils literal notranslate"><span class="pre">canonicalize_rdf_graph(...,</span> <span class="pre">diff_stable=True)</span></code> can install
+<code class="docutils literal notranslate"><span class="pre">linkml-runtime[diff-stable]</span></code>. The feature is disabled by default; enabling it
+changes existing labels once, so keep that regeneration separate from schema edits.</p>
+<p>Labels depend on blank-node neighborhoods. Edits within connected structures or
+among symmetric nodes can still affect other labels; minimum diffs are not
+guaranteed. Keep tool versions consistent when comparing generated files.
+The relabeled output is not the standard RDFC canonical representation.
+ShExC, ShEx JSON and instance-data conversion are outside this option’s scope.
+Non-standard RDF takes the existing fallback path, which warns that it cannot
+apply diff-stable labels.</p>
+</section>
 <section id="permissively-license-your-code-and-data">
 <h3>Permissively License Your Code and Data<a class="headerlink" href="#permissively-license-your-code-and-data" title="Link to this heading">¶</a></h3>
 <p>(adapted from <a class="reference external" href="https://osf.io/vuzt3/">O3 guidelines</a>)</p>
@@ -767,6 +792,7 @@ open ecosystem. The <a class="reference external" href="https://oboacademy.githu
 <li><a class="reference internal" href="#sources">Sources</a></li>
 <li><a class="reference internal" href="#principles">Principles</a><ul>
 <li><a class="reference internal" href="#version-control-your-schema">Version Control Your Schema</a></li>
+<li><a class="reference internal" href="#keep-generated-rdf-diffs-small">Keep generated RDF diffs small</a></li>
 <li><a class="reference internal" href="#permissively-license-your-code-and-data">Permissively License Your Code and Data</a></li>
 <li><a class="reference internal" href="#use-technical-workflows-automation-and-social-workflows">Use Technical Workflows (Automation) and Social Workflows</a></li>
 <li><a class="reference internal" href="#establish-project-governance">Establish Project Governance</a></li>

@@ -553,6 +553,9 @@
 <span class="sd">    ignores any per-slot ``in_language``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">diff_stable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduce blank-node label churn. See :ref:`rdf-in-version-control`.&quot;&quot;&quot;</span>
+
     <span class="n">emit_rules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.</span>
 
@@ -609,7 +612,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_graph</span><span class="p">()</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;turtle&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;owl&quot;</span><span class="p">,</span> <span class="s2">&quot;ttl&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span>
-        <span class="k">return</span> <span class="n">canonicalize_rdf_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">canonicalize_rdf_graph</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">diff_stable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_stable</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
@@ -1342,6 +1345,15 @@
         <span class="s2">&quot;When enabled (default), recognised rule patterns (e.g. boolean-guard) &quot;</span>
         <span class="s2">&quot;are translated into SHACL-SPARQL constraints on the corresponding &quot;</span>
         <span class="s2">&quot;sh:NodeShape. Use --no-emit-rules to suppress rule generation.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--diff-stable/--no-diff-stable&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Reduce blank-node label churn across edits. See &quot;</span>
+        <span class="s2">&quot;https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control&quot;</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
