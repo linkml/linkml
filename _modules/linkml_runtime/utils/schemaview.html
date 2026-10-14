@@ -1365,7 +1365,7 @@
 <span class="sd">        :param slot_name: name of the slot to be retrieved</span>
 <span class="sd">        :param imports: include import closure</span>
 <span class="sd">        :param attributes: include attributes</span>
-<span class="sd">        :param strict: raise ValueError is not found</span>
+<span class="sd">        :param strict: raise ValueError if not found</span>
 <span class="sd">        :return: slot definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1392,8 +1392,9 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubsetDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve a subset from the schema.</span>
 
-<span class="sd">        :param subset_name: name of the subsey to be retrieved</span>
+<span class="sd">        :param subset_name: name of the subset to be retrieved</span>
 <span class="sd">        :param imports: include import closure</span>
+<span class="sd">        :param strict: raise ValueError if not found</span>
 <span class="sd">        :return: subset definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsets</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subset_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
