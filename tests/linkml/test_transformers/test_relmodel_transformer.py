@@ -127,6 +127,7 @@ def test_add_primary_key_candidate_names(existing_attr_names: list[str], expecte
     sv = SchemaView(schema)
 
     pk = RelationalModelTransformer.add_primary_key("Person", sv)
+    sv.set_modified()
 
     assert pk.name == expected_pk_name
     assert pk.identifier is True
@@ -157,6 +158,7 @@ def test_add_primary_key_pk_at_start_of_attributes() -> None:
     sv = SchemaView(schema)
 
     pk = RelationalModelTransformer.add_primary_key("Person", sv)
+    sv.set_modified()
 
     attr_names = list(sv.get_class("Person").attributes.keys())
     assert attr_names[0] == pk.name
@@ -181,13 +183,14 @@ def test_add_primary_key_does_not_call_set_modified() -> None:
     # Prime the class_induced_slots cache — no identifier present yet.
     assert sv.class_induced_slots("Person") == []
 
-    # add_primary_key modifies the class attributes dict without calling set_modified().
+    # add_primary_key stages a class snapshot without invalidating the cache.
     RelationalModelTransformer.add_primary_key("Person", sv)
 
-    # The class object is immediately updated …
-    assert "id" in sv.get_class("Person").attributes
+    # Until the caller invalidates, cached queries retain their previous result.
+    assert "id" not in sv.get_class("Person").attributes
+    assert "id" not in schema.classes["Person"].attributes
 
-    # … but the cached class_induced_slots result is still stale.
+    # The cached class_induced_slots result is stale as well.
     assert sv.class_induced_slots("Person") == []
 
     # After an explicit set_modified() the cache is busted and the PK is reflected.

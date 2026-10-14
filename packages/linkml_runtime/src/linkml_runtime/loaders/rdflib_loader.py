@@ -97,6 +97,12 @@ class RDFLibLoader(Loader):
         node_tuples_to_visit = [(subject, target_class.class_name) for subject in root_subjects]
         uri_to_slot: dict[str, SlotDefinition]  ## lookup table for RDF predicates -> slots
         uri_to_slot = {URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.all_slots().values()}
+        # A name-only slot map cannot represent same-named class attributes whose
+        # defining schemas (and therefore slot URIs) differ. Include induced,
+        # class-context slots so each predicate can resolve to its own definition.
+        for class_name in schemaview.all_classes():
+            for slot in schemaview.class_induced_slots(class_name):
+                uri_to_slot.setdefault(URIRef(schemaview.get_uri(slot, expand=True)), slot)
         processed: set[VALID_SUBJECT] = set()  ## track nodes already visited, or already scheduled
         for n, _ in node_tuples_to_visit:
             processed.add(n)
