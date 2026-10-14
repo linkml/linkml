@@ -33,6 +33,37 @@ def test_structured_patterns_are_resolved_without_modifying_schema(input_path) -
     assert height_slot.pattern is None
 
 
+_PREFIXES = "prefixes: {linkml: https://w3id.org/linkml/, ex: https://example.org/}\ndefault_prefix: ex\n"
+
+
+def test_slot_usage_structured_pattern_uses_settings_of_the_class_module(tmp_path) -> None:
+    """A slot_usage pattern is interpolated with the settings of the module that holds the slot_usage.
+
+    The base slot lives in a module with no settings, so using its module instead leaves the
+    placeholder in the generated pattern.
+    """
+    (tmp_path / "slots.yaml").write_text(
+        "id: https://example.org/slots\nname: slots\n" + _PREFIXES + "imports: [linkml:types]\n"
+        "slots:\n  id: {identifier: true, range: string}\n"
+    )
+    (tmp_path / "classes.yaml").write_text(
+        "id: https://example.org/classes\nname: classes\n" + _PREFIXES + "imports: [linkml:types, slots]\n"
+        "settings:\n  p: ex\n"
+        "classes:\n  Thing:\n    slots: [id]\n    slot_usage:\n      id:\n"
+        '        structured_pattern: {syntax: "^{p}:[0-9]+$", interpolated: true}\n'
+    )
+    (tmp_path / "root.yaml").write_text(
+        "id: https://example.org/root\nname: root\n" + _PREFIXES + "imports: [linkml:types, classes, slots]\n"
+    )
+    generator = PythonGenerator(str(tmp_path / "root.yaml"))
+    expected = generator.schemaview.induced_slot("id", "Thing").pattern
+    assert expected == "^(?:^ex:[0-9]+$)$"
+
+    output = generator.serialize()
+    thing_id = output[output.index("slots.Thing_id = ") :].split("\n\n", 1)[0]
+    assert f"pattern=re.compile(r'{expected}')" in thing_id
+
+
 def test_pythongen(kitchen_sink_path):
     """python"""
     kitchen_module = make_python(kitchen_sink_path)
