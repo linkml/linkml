@@ -933,6 +933,72 @@ def test_schemaview_merge_imports_does_not_mutate_passed_schema_definition() -> 
     assert schema == original
 
 
+@pytest.mark.parametrize(
+    ("method_name", "collection_name", "element"),
+    [
+        ("add_class", "classes", ClassDefinition(name="AddedClass", todos=["original"])),
+        ("add_slot", "slots", SlotDefinition(name="AddedSlot", todos=["original"])),
+        ("add_enum", "enums", EnumDefinition(name="AddedEnum", todos=["original"])),
+        ("add_type", "types", TypeDefinition(name="AddedType", todos=["original"])),
+        ("add_subset", "subsets", SubsetDefinition(name="AddedSubset", todos=["original"])),
+    ],
+)
+def test_schemaview_add_methods_do_not_retain_or_mutate_input(
+    method_name: str, collection_name: str, element: Any
+) -> None:
+    """Added definitions are copied before they become part of the view."""
+    original = deepcopy(element)
+    view = SchemaView(SchemaDefinition(id="https://example.org/test", name="test"))
+
+    getattr(view, method_name)(element)
+    stored_element = getattr(view.schema, collection_name)[element.name]
+    stored_element.todos.append("view mutation")
+
+    assert stored_element is not element
+    assert element == original
+
+
+def test_schemaview_merge_schema_does_not_retain_or_mutate_input() -> None:
+    """Merged definitions are deeply copied from the supplied schema."""
+    source = SchemaDefinition(
+        id="https://example.org/source",
+        name="source",
+        classes={"Thing": ClassDefinition(name="Thing", todos=["original"])},
+    )
+    original = deepcopy(source)
+    view = SchemaView(SchemaDefinition(id="https://example.org/dest", name="dest"))
+
+    view.merge_schema(source)
+    stored_class = view.schema.classes["Thing"]
+    view.all_classes()
+    stored_class.todos.append("view mutation")
+
+    assert stored_class is not source.classes["Thing"]
+    assert stored_class.todos is not source.classes["Thing"].todos
+    assert source == original
+
+
+def test_schemaview_does_not_mutate_passed_importmap() -> None:
+    """In-memory schemas in an import map are isolated from the caller's dict."""
+    importmap = {
+        "core": {
+            "id": "https://example.org/core",
+            "name": "core",
+            "slots": {"core_slot": {"name": "core_slot", "range": "string"}},
+        }
+    }
+    original = deepcopy(importmap)
+    view = SchemaView(
+        SchemaDefinition(id="https://example.org/test", name="test", imports=["core"]),
+        importmap=importmap,
+    )
+
+    view.load_import("core")
+
+    assert view.importmap["core"] is not importmap["core"]
+    assert importmap == original
+
+
 def test_eq_not_implemented() -> None:
     """Test that __eq__ returns NotImplemented for non-SchemaView objects."""
     schema = SchemaDefinition(id="test-schema", name="TestSchema")

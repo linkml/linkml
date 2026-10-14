@@ -251,6 +251,9 @@ class SchemaUsage:
 class SchemaView:
     """A SchemaView provides a virtual schema layered on top of a schema plus its import closure.
 
+    Mutable inputs are not modified by SchemaView methods. When a mutable input is retained
+    by the view, it is copied before being stored.
+
     Most operations are parameterized by `imports`. If this is set to True (default), then the full
     import closure is considered when answering
 
@@ -292,7 +295,8 @@ class SchemaView:
         :type schema: str | Path | SchemaDefinition
         :param importmap: import mapping. Values may be file-path/URL strings or
             in-memory schema dicts (loaded directly, without filesystem or network
-            access). Defaults to None.
+            access). Defaults to None. The supplied mapping is copied and will not
+            be mutated by this view.
         :type importmap: dict[str, str | dict[str, Any]] | None, optional
         :param merge_imports: whether or not to merge imports, defaults to False
         :type merge_imports: bool, optional
@@ -310,7 +314,7 @@ class SchemaView:
             schema = deepcopy(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
-        self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else {}
+        self.importmap = parse_import_map(deepcopy(importmap), base_dir) if importmap is not None else {}
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
@@ -405,12 +409,12 @@ class SchemaView:
         self.set_modified()
 
     def merge_schema(self, schema: SchemaDefinition, clobber: bool = False) -> None:
-        """Merge another schema into this one.
+        """Merge copies of another schema's elements into this one.
 
         If the other schema has an element with the same name as an element in this schema,
         then this element is NOT copied.
 
-        :param schema: schema to be merged
+        :param schema: schema to be merged; it is not modified
         :param clobber: if True, then overwrite existing elements
         """
         dest = self.schema
@@ -420,7 +424,7 @@ class SchemaView:
                 # if clobber is True or the key does not exist in the destination schema
                 if clobber or k not in getattr(dest, el):
                     # copy the element value to the destination schema indexed under k
-                    getattr(dest, el)[k] = copy(v)
+                    getattr(dest, el)[k] = deepcopy(v)
         self.set_modified()
 
     def _get_dict(self, element_name: str, imports: bool = True) -> dict:
@@ -2415,48 +2419,48 @@ class SchemaView:
     # MUTATION OPERATIONS
 
     def add_class(self, cls: ClassDefinition) -> None:
-        """Add a class to the schema.
+        """Add a copy of a class to the schema.
 
         :param cls: class to be added
         :return:
         """
-        self.schema.classes[cls.name] = cls
+        self.schema.classes[cls.name] = deepcopy(cls)
         self.set_modified()
 
     def add_slot(self, slot: SlotDefinition) -> None:
-        """Add a slot to the schema.
+        """Add a copy of a slot to the schema.
 
         :param slot: slot to be added
         :return:
         """
-        self.schema.slots[slot.name] = slot
+        self.schema.slots[slot.name] = deepcopy(slot)
         self.set_modified()
 
     def add_enum(self, enum: EnumDefinition) -> None:
-        """Add an enum to the schema.
+        """Add a copy of an enum to the schema.
 
         :param enum: enum to be added
         :return:
         """
-        self.schema.enums[enum.name] = enum
+        self.schema.enums[enum.name] = deepcopy(enum)
         self.set_modified()
 
     def add_type(self, type_def: TypeDefinition) -> None:
-        """Add a type to the schema.
+        """Add a copy of a type to the schema.
 
         :param type: type to be added
         :return:
         """
-        self.schema.types[type_def.name] = type_def
+        self.schema.types[type_def.name] = deepcopy(type_def)
         self.set_modified()
 
     def add_subset(self, subset: SubsetDefinition) -> None:
-        """Add a subset to the schema.
+        """Add a copy of a subset to the schema.
 
         :param subset: subset to be added
         :return:
         """
-        self.schema.subsets[subset.name] = subset
+        self.schema.subsets[subset.name] = deepcopy(subset)
         self.set_modified()
 
     def delete_class(self, class_name: ClassDefinitionName, delete_references: bool = True) -> None:
