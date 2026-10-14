@@ -34,6 +34,7 @@ classes:
     slots:
       - to_identifier
       - to_identifier_multivalued
+      - to_identifier_with_alias
       - to_key
       - to_key_multivalued
       - to_plain
@@ -62,6 +63,9 @@ slots:
   to_identifier_multivalued:
     range: WithIdentifier
     multivalued: true
+  to_identifier_with_alias:
+    range: WithIdentifier
+    alias: explicit_identifier_alias
 
   to_key:
     range: WithKey
