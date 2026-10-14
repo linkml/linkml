@@ -156,7 +156,9 @@ class OwlSchemaGenerator(Generator):
     allow a property to be both."""
 
     assert_equivalent_classes: bool = False
-    """If True, assert equivalence between definition_uris and class_uris"""
+    """If True, assert equivalence between definition_uris and class_uris.
+
+    Only applies when use_native_uris is True; otherwise no cross-reference is emitted."""
 
     use_native_uris: bool = True
     """If True, use the definition_uris, otherwise use class_uris."""
@@ -1755,7 +1757,7 @@ class OwlSchemaGenerator(Generator):
     "--assert-equivalent-classes/--no-assert-equivalent-classes",
     default=False,
     show_default=True,
-    help="If true, add owl:equivalentClass between a class and a class_uri",
+    help="If true, add owl:equivalentClass between a class and a class_uri (only applies with --use-native-uris)",
 )
 @click.option(
     "--mixins-as-expressions/--no-mixins-as-expressions",
