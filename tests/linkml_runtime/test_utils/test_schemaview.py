@@ -3550,6 +3550,25 @@ def test_induced_slot_materializes_inlined(
 
 
 @pytest.mark.parametrize(
+    ("slot_name", "expected_name", "expected_alias"),
+    [
+        ("to_identifier", "Container__to_identifier", "to_identifier"),
+        ("to_identifier_with_alias", "Container__to_identifier_with_alias", "explicit_identifier_alias"),
+    ],
+)
+def test_induced_slot_mangles_name_when_requested(
+    sv_induced_inlined: SchemaView, slot_name: str, expected_name: str, expected_alias: str
+) -> None:
+    """Mangled induced slots have class-qualified names and retain their usable aliases."""
+    unmangled = sv_induced_inlined.induced_slot(slot_name, "Container")
+    mangled = sv_induced_inlined.induced_slot(slot_name, "Container", mangle_name=True)
+
+    assert unmangled.name == slot_name
+    assert mangled.name == expected_name
+    assert mangled.alias == expected_alias
+
+
+@pytest.mark.parametrize(
     "slot_name",
     [
         "to_identifier",
