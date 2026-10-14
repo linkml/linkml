@@ -286,7 +286,9 @@ class SchemaView:
     ) -> None:
         """Initialize a SchemaView instance.
 
-        :param schema: schema or path to schema to be viewed
+        :param schema: schema or path to schema to be viewed. If a
+            :class:`SchemaDefinition` is supplied, SchemaView makes a deep copy;
+            the supplied object will not be mutated by this view.
         :type schema: str | Path | SchemaDefinition
         :param importmap: import mapping. Values may be file-path/URL strings or
             in-memory schema dicts (loaded directly, without filesystem or network
@@ -301,6 +303,11 @@ class SchemaView:
             schema = str(schema)
         if isinstance(schema, str):
             schema = load_schema_wrap(schema)
+        else:
+            # SchemaView operations may update schema elements (for example,
+            # imports_closure injects provenance metadata). Own a deep copy so
+            # those changes can never affect a caller-supplied SchemaDefinition.
+            schema = deepcopy(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
         self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else {}

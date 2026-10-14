@@ -882,6 +882,57 @@ def test_eq_true_false() -> None:
     assert diff_view != view
 
 
+def test_schemaview_does_not_mutate_passed_schema_definition() -> None:
+    """SchemaView owns a deep copy of an in-memory SchemaDefinition."""
+    schema = SchemaDefinition(
+        id="https://example.org/test",
+        name="test",
+        classes={"Thing": ClassDefinition(name="Thing", slots=["slot"])},
+        slots={"slot": SlotDefinition(name="slot", domain_of=[])},
+    )
+    original = deepcopy(schema)
+
+    view = SchemaView(schema)
+    other_view = SchemaView(schema)
+
+    assert view.schema is not schema
+    assert view.schema.classes["Thing"] is not schema.classes["Thing"]
+    assert other_view.schema is not schema
+
+    # Both operations can mutate schema elements held by the view: the first
+    # injects from_schema metadata, and the second can append to domain_of.
+    view.all_classes()
+    view.induced_slot("slot", class_name="Thing")
+
+    assert view.schema.classes["Thing"].from_schema == schema.id
+    assert view.schema.slots["slot"].domain_of == ["Thing"]
+    assert other_view.schema.classes["Thing"].from_schema is None
+    assert other_view.schema.slots["slot"].domain_of == []
+    assert schema == original
+
+
+def test_schemaview_merge_imports_does_not_mutate_passed_schema_definition() -> None:
+    """Constructor-time import merging only mutates the view's schema copy."""
+    schema = SchemaDefinition(id="https://example.org/test", name="test", imports=["core"])
+    original = deepcopy(schema)
+
+    view = SchemaView(
+        schema,
+        importmap={
+            "core": {
+                "id": "https://example.org/core",
+                "name": "core",
+                "slots": {"core_slot": {"name": "core_slot", "range": "string"}},
+            }
+        },
+        merge_imports=True,
+    )
+
+    assert view.schema.imports == []
+    assert "core_slot" in view.schema.slots
+    assert schema == original
+
+
 def test_eq_not_implemented() -> None:
     """Test that __eq__ returns NotImplemented for non-SchemaView objects."""
     schema = SchemaDefinition(id="test-schema", name="TestSchema")
