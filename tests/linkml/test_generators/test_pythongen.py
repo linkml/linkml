@@ -4,9 +4,11 @@ import re
 from types import ModuleType, SimpleNamespace
 
 import pytest
+import yaml
 from jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
@@ -289,6 +291,76 @@ def test_keyword_named_slots_and_attributes(input_path):
     # The generated module must be valid Python (catches dataclass fields,
     # __post_init__ self-refs, and CurieNamespace attribute access).
     compile(output, "<generated>", "exec")
+
+
+# Keys whose slot name is not a Python identifier: Term's identifier ``term id`` keys an inlined dict
+# and list, and Window's required ``start-date`` keys an inlined list. Data uses ``term_id`` and
+# ``start_date``, as the dataclass fields, JSON Schema and Pydantic do.
+_SPACED_KEY_SCHEMA = """id: https://example.org/spaced-key
+name: spaced-key
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Term:
+    attributes:
+      term id:
+        identifier: true
+      label:
+  Window:
+    attributes:
+      start-date:
+        required: true
+      end:
+  Holder:
+    attributes:
+      id:
+        identifier: true
+      terms:
+        range: Term
+        multivalued: true
+        inlined: true
+      term list:
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+      windows:
+        range: Window
+        multivalued: true
+        inlined_as_list: true
+"""
+
+
+@pytest.mark.parametrize(
+    "data,expected",
+    [
+        (
+            {"terms": {"ex:t1": {"label": "L"}}},
+            {"terms": {"ex:t1": {"term_id": "ex:t1", "label": "L"}}},
+        ),
+        (
+            {"term_list": [{"term_id": "ex:t1", "label": "L"}]},
+            {"term_list": [{"term_id": "ex:t1", "label": "L"}]},
+        ),
+        (
+            {"windows": [{"start_date": "2026-01-01", "end": "2026-02-01"}]},
+            {"windows": [{"start_date": "2026-01-01", "end": "2026-02-01"}]},
+        ),
+        (
+            {"windows": {"2026-01-01": "2026-02-01"}},
+            {"windows": [{"start_date": "2026-01-01", "end": "2026-02-01"}]},
+        ),
+    ],
+    ids=["dict-keyed-by-identifier", "list-with-identifier", "list-keyed-by-required-slot", "simpledict-shorthand"],
+)
+def test_inlined_collection_keyed_by_non_identifier_slot_name(data, expected):
+    """An inlined collection whose key's slot name has a space or hyphen loads under the underscored name."""
+    py_module = make_python(_SPACED_KEY_SCHEMA)
+    holder = py_module.Holder(id="h1", **data)
+    assert yaml.safe_load(yaml_dumper.dumps(holder)) == {"id": "h1", **expected}
 
 
 def test_permissible_values():
