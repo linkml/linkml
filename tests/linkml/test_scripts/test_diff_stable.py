@@ -28,7 +28,7 @@ classes:
     ("flag", "label_pattern"),
     [
         pytest.param("--no-diff-stable", r"c14n[0-9]+", id="disabled"),
-        pytest.param("--diff-stable", r"b[0-9a-f]{12}(?:_[1-9][0-9]*)?", id="enabled", marks=pytest.mark.diffable_rdf),
+        pytest.param("--diff-stable", r"[0-9a-f]{24}(?:[1-9][0-9]*)?", id="enabled"),
     ],
 )
 def test_the_flag_reaches_the_serializer(tmp_path: Path, flag: str, label_pattern: str) -> None:

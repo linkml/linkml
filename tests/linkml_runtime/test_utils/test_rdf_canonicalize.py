@@ -13,6 +13,7 @@ import pytest
 import rdflib
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, SH, XSD
+from rdflib.collection import Collection
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
@@ -331,7 +332,7 @@ def test_unsupported_format_warns_and_falls_back():
     g.bind("ex", "http://example.com/")
     g.add((URIRef("http://example.com/a"), RDF.type, URIRef("http://example.com/Thing")))
     with pytest.warns(RDFCanonicalizationWarning, match="does not support format"):
-        result = canonicalize_rdf_graph(g, output_format="json-ld")
+        result = canonicalize_rdf_graph(g, output_format="pretty-xml")
     # The fallback should still produce valid output in the requested format.
     assert result
 
@@ -445,6 +446,79 @@ def test_fallback_on_invalid_rdf():
     assert "not_a_predicate" in result
 
 
+# --- stable (content-hash) blank-node labels -------------------------------
+
+
+def _label_of(ttl: str, literal_text: str) -> str:
+    """Return the blank-node label on the line carrying ``literal_text``."""
+    import re
+
+    for line in ttl.splitlines():
+        if f'"{literal_text}"' in line:
+            m = re.search(r"_:[A-Za-z0-9_]+", line)
+            if m:
+                return m.group(0)
+    raise AssertionError(f"no blank-node label found for {literal_text!r}")
+
+
+def test_stable_labels_are_content_hashed():
+    """Opt-in labels are bare content hashes, not ordinal (``_:c14n...``).
+
+    The bare-hash shape (no prefix) matches the label contract of oxigraph's
+    ``UnstableHashedIds`` canonicalization variant (oxigraph#1824), so a later
+    swap to the upstream implementation changes only the hash values.
+    """
+    g = _make_graph_with_bnodes()
+    ttl = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=True)
+    assert "_:c14n" not in ttl
+    assert re.fullmatch(r"_:[0-9a-f]{24}", _label_of(ttl, "blank_val"))
+
+
+def test_stable_labels_automorphic_nodes_kept_distinct():
+    """Two blank nodes with identical content stay distinct (no accidental merge)."""
+    g = Graph()
+    q = URIRef("http://example.com/q")
+    for subj in ("a", "b"):
+        bn = BNode()
+        g.add((URIRef(f"http://example.com/{subj}"), URIRef("http://example.com/r"), bn))
+        g.add((bn, q, Literal("same")))
+    hashed = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=True)
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert len(g_hashed) == 4, "automorphic blank nodes were merged"
+    assert rdflib.compare.isomorphic(g, g_hashed)
+
+
+def test_stable_labels_cycle_falls_back():
+    """Blank nodes in a cycle keep their c14n label (no infinite recursion)."""
+    g = Graph()
+    p = URIRef("http://example.com/p")
+    bn1, bn2 = BNode(), BNode()
+    g.add((bn1, p, bn2))
+    g.add((bn2, p, bn1))
+    g.add((URIRef("http://example.com/a"), URIRef("http://example.com/r"), bn1))
+    hashed = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=True)
+    # Cyclic nodes are left with ordinal labels rather than crashing/looping.
+    assert "_:c14n" in hashed
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert rdflib.compare.isomorphic(g, g_hashed)
+
+
+def test_stable_labels_long_list():
+    """A list longer than the recursion limit is hashed, not crashed on.
+
+    Each list cell's hash depends on the next, so a recursive hash goes one
+    frame per cell; an enum with a few thousand values used to raise
+    ``RecursionError``.
+    """
+    g = Graph()
+    head = BNode()
+    Collection(g, head, [Literal(f"v{i}") for i in range(3000)])
+    g.add((URIRef("http://example.com/s"), URIRef("http://example.com/in"), head))
+    hashed = canonicalize_rdf_graph(g, output_format="nt", diff_stable=True)
+    assert "_:c14n" not in hashed
+    assert rdflib.compare.isomorphic(g, Graph().parse(data=hashed, format="nt"))
+
+
 def test_fallback_preserves_relative_iri():
     """Relative IRIs are preserved verbatim in the fallback, not resolved against the base.
 
@@ -462,7 +536,7 @@ def test_fallback_preserves_relative_iri():
     assert "<testing>" in result
 
 
-@pytest.mark.parametrize("output_format", ["turtle", "nt"])
+@pytest.mark.parametrize("output_format", ["turtle", "xml"])
 def test_fallback_is_deterministic_across_processes(output_format):
     """The rdflib fallback produces byte-identical output across processes.
 
@@ -516,6 +590,32 @@ def test_fallback_is_deterministic_across_processes(output_format):
     )
 
 
+def test_stable_labels_stable_across_processes():
+    """Content-hash labels are byte-identical across PYTHONHASHSEED values."""
+    program = textwrap.dedent(
+        """
+        from rdflib import BNode, Graph, Literal, URIRef
+        from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
+        g = Graph()
+        g.bind("ex", "http://example.com/")
+        for letter in ["z", "y", "x", "m", "f", "a"]:
+            bn = BNode()
+            g.add((URIRef(f"http://example.com/{letter}"), URIRef("http://example.com/has"), bn))
+            g.add((bn, URIRef("http://example.com/q"), Literal(f"val_{letter}")))
+        print(canonicalize_rdf_graph(g, output_format="turtle", diff_stable=True), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        env = {**os.environ, "PYTHONHASHSEED": seed}
+        return subprocess.run(
+            [sys.executable, "-c", program], check=True, capture_output=True, text=True, env=env
+        ).stdout
+
+    assert run("0") == run("42")
+
+
 def _shapes_graph(count: int, extra: bool = False) -> Graph:
     """A graph shaped like generator output: one blank node per named subject."""
     g = Graph()
@@ -536,15 +636,7 @@ def _changed_line_count(before: str, after: str) -> int:
     return sum(1 for line in diff if line[:1] in "+-" and not line.startswith(("+++", "---")))
 
 
-def test_diff_stable_without_the_extra_names_the_extra(mock_missing_import) -> None:
-    """Requesting the opt-in path without diffable-rdf says how to install it."""
-    mock_missing_import("diffable_rdf")
-
-    with pytest.raises(ImportError, match=r"linkml-runtime\[diff-stable\]"):
-        canonicalize_rdf_graph(_make_graph_with_bnodes(), diff_stable=True)
-
-
-@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
+@pytest.mark.parametrize("diff_stable", [False, True])
 @pytest.mark.parametrize("output_format", ["nt", "turtle"])
 def test_diff_stable_preserves_semantics(diff_stable: bool, output_format: str) -> None:
     """Each serialization preserves the source graph under blank-node renaming."""
@@ -555,7 +647,6 @@ def test_diff_stable_preserves_semantics(diff_stable: bool, output_format: str) 
     assert rdflib.compare.isomorphic(graph, parsed)
 
 
-@pytest.mark.diffable_rdf
 def test_diff_stable_is_deterministic() -> None:
     """A cycle's tied signatures remain independent of input blank-node IDs."""
     graphs = []
@@ -575,9 +666,9 @@ def test_diff_stable_is_deterministic() -> None:
         assert rdflib.compare.isomorphic(graph, Graph().parse(data=output, format="nt"))
 
 
-@pytest.mark.parametrize("diff_stable", [False, pytest.param(True, marks=pytest.mark.diffable_rdf)])
+@pytest.mark.parametrize("diff_stable", [False, True])
 def test_diff_stable_insertion_labels(diff_stable: bool) -> None:
-    """An independent insertion renumbers RDFC labels but preserves the old WL label."""
+    """An independent insertion renumbers RDFC labels but preserves the old content-hash label."""
     before = Graph().parse(
         data="""@prefix ex: <http://example.com/> .
         ex:Shape00 ex:property _:old .
@@ -632,7 +723,6 @@ def test_diff_stable_insertion_labels(diff_stable: bool) -> None:
         assert rdflib.compare.isomorphic(graph, Graph().parse(data=output, format="nt"))
 
 
-@pytest.mark.diffable_rdf
 def test_diff_stable_confines_an_insertion_to_the_lines_it_touches() -> None:
     """Diff-stable labels reduce Turtle line churn for independent property nodes."""
     before, after = _shapes_graph(20), _shapes_graph(20, extra=True)
@@ -644,7 +734,7 @@ def test_diff_stable_confines_an_insertion_to_the_lines_it_touches() -> None:
     assert stable < baseline / 4, f"expected diff-stable output to churn far less; got {stable} vs baseline {baseline}"
 
 
-_STABLE_LABEL = r"b[0-9a-f]{12}(?:_[1-9][0-9]*)?"
+_STABLE_LABEL = r"[0-9a-f]{24}(?:[1-9][0-9]*)?"
 
 
 _DIFF_STABLE_SCHEMA = """\
@@ -679,7 +769,6 @@ def diff_stable_schema(tmp_path: Path) -> Path:
     return schema
 
 
-@pytest.mark.diffable_rdf
 @pytest.mark.parametrize(
     ("generator", "kwargs"),
     [
@@ -745,7 +834,6 @@ def test_diff_stable_reaches_every_rdf_generator(
         assert (knows, shex.max, Literal(-1)) in graph
 
 
-@pytest.mark.diffable_rdf
 def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback() -> None:
     """A relative IRI requires the fallback and a warning that labels cannot apply."""
     graph = _make_graph_with_bnodes()
@@ -755,3 +843,14 @@ def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback() -> No
     with pytest.warns(RDFCanonicalizationWarning):
         plain = canonicalize_rdf_graph(graph, diff_stable=False)
     assert stable == plain
+
+
+@pytest.mark.xfail(strict=True, reason="pyoxigraph has not released hash-based blank-node ids (oxigraph/oxigraph#1824)")
+def test_pyoxigraph_ships_hashed_ids() -> None:
+    """Fails the suite once pyoxigraph releases ``UNSTABLE_HASHED_IDS``.
+
+    That is the signal to replace ``_relabel_blank_nodes_by_hash`` with
+    ``dataset.canonicalize(ox.CanonicalizationAlgorithm.UNSTABLE_HASHED_IDS)``,
+    whose labels use the same bare-hash-plus-counter shape.
+    """
+    assert hasattr(ox.CanonicalizationAlgorithm, "UNSTABLE_HASHED_IDS")

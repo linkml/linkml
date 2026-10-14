@@ -451,8 +451,8 @@ def mock_missing_import():
     dependency does not need a fixture of its own::
 
         def test_requires_the_extra(mock_missing_import):
-            mock_missing_import("diffable_rdf")
-            with pytest.raises(ImportError, match="linkml-runtime[diff-stable]"):
+            mock_missing_import("optional_module")
+            with pytest.raises(ImportError, match="Install with"):
                 ...
 
     See :class:`MockImportErrorFinder` for the caveat about reimporting

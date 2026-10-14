@@ -69,7 +69,8 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
 ]
 
 [project.optional-dependencies]
-diff-stable = ["linkml-runtime[diff-stable]>=1.10.0,<2.0.0"]
+# Kept so existing installs of the extra keep working; labels no longer need a dependency.
+diff-stable = []
 
 [dependency-groups]
 lint = [
@@ -82,7 +83,6 @@ shacl = [
     "pyshacl>=0.40.1",
 ]
 tests = [
-  "linkml-runtime[diff-stable]",
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },

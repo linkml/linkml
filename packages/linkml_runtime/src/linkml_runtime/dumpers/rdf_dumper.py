@@ -91,17 +91,26 @@ class RDFDumper(Dumper):
         super().dump(element, to_file, contexts=contexts, fmt=fmt)
 
     def dumps(
-        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, fmt: str | None = "turtle"
+        self,
+        element: BaseModel | YAMLRoot,
+        contexts: CONTEXTS_PARAM_TYPE = None,
+        fmt: str | None = "turtle",
+        diff_stable: bool = False,
     ) -> str:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
         :param element: element to represent in RDF
         :param contexts: JSON-LD context(s) in the form of a file or URL, a json string or a json obj
         :param fmt: rdf format
+        :param diff_stable: if True, label blank nodes by a hash of their
+            subtree content instead of RDFC-1.0's ordinal ``c14nN`` labels, so a small
+            data change yields a small diff (change-locality).
         :return: rdflib Graph containing element
         """
         if isinstance(element, BaseModel):
             element = element.model_dump()
         return canonicalize_rdf_graph(
-            self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts), output_format=fmt
+            self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts),
+            output_format=fmt,
+            diff_stable=diff_stable,
         )
