@@ -13,6 +13,7 @@ import pytest
 import rdflib
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, SH, XSD
+from rdflib.collection import Collection
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
@@ -500,6 +501,22 @@ def test_stable_labels_cycle_falls_back():
     assert "_:c14n" in hashed
     g_hashed = Graph().parse(data=hashed, format="turtle")
     assert rdflib.compare.isomorphic(g, g_hashed)
+
+
+def test_stable_labels_long_list():
+    """A list longer than the recursion limit is hashed, not crashed on.
+
+    Each list cell's hash depends on the next, so a recursive hash goes one
+    frame per cell; an enum with a few thousand values used to raise
+    ``RecursionError``.
+    """
+    g = Graph()
+    head = BNode()
+    Collection(g, head, [Literal(f"v{i}") for i in range(3000)])
+    g.add((URIRef("http://example.com/s"), URIRef("http://example.com/in"), head))
+    hashed = canonicalize_rdf_graph(g, output_format="nt", diff_stable=True)
+    assert "_:c14n" not in hashed
+    assert rdflib.compare.isomorphic(g, Graph().parse(data=hashed, format="nt"))
 
 
 def test_fallback_preserves_relative_iri():

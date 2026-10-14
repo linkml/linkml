@@ -458,38 +458,48 @@ def _relabel_blank_nodes_by_hash(triples: list["ox.Triple"]) -> list["ox.Triple"
     # Merkle hash per blank node; None marks a node that reaches a cycle.
     memo: dict[str, str | None] = {}
 
-    def node_hash(bid: str, stack: frozenset[str]) -> str | None:
-        if bid in memo:
-            return memo[bid]
-        if bid in stack:
-            return None  # back-edge: this closure contains a cycle
-        inner_stack = stack | {bid}
-        reprs: list[str] = []
-        for pred, obj in out_edges.get(bid, []):
-            if isinstance(obj, ox.BlankNode):
-                child = node_hash(obj.value, inner_stack)
-                if child is None:
-                    memo[bid] = None
-                    return None
-                obj_repr = "B:" + child
+    def node_hash(bid: str) -> str | None:
+        """Hash ``bid`` after its blank-node children, iteratively so long RDF lists cannot exhaust the stack."""
+        on_path = {bid}
+        stack = [bid]
+        while stack:
+            node = stack[-1]
+            pending = [
+                obj.value
+                for _, obj in out_edges.get(node, [])
+                if isinstance(obj, ox.BlankNode) and obj.value not in memo
+            ]
+            if any(child in on_path for child in pending):
+                memo[node] = None  # back-edge: this closure contains a cycle
+            elif pending:
+                on_path.add(pending[0])
+                stack.append(pending[0])
+                continue
+            elif any(isinstance(obj, ox.BlankNode) and memo[obj.value] is None for _, obj in out_edges.get(node, [])):
+                memo[node] = None
             else:
-                obj_repr = "T:" + str(obj)
-            reprs.append(pred + "\x00" + obj_repr)
-        digest = hashlib.sha256("\x01".join(sorted(reprs)).encode("utf-8")).hexdigest()
-        memo[bid] = digest
-        return digest
+                reprs = [
+                    pred + "\x00" + ("B:" + memo[obj.value] if isinstance(obj, ox.BlankNode) else "T:" + str(obj))
+                    for pred, obj in out_edges.get(node, [])
+                ]
+                memo[node] = hashlib.sha256("\x01".join(sorted(reprs)).encode("utf-8")).hexdigest()
+            on_path.discard(node)
+            stack.pop()
+        return memo[bid]
 
     # Include blank nodes that only appear as objects: with no outgoing triples
     # they hash to the empty content and are told apart by the counter suffix.
     blank_nodes = {term.value for t in triples for term in (t.subject, t.object) if isinstance(term, ox.BlankNode)}
     for bid in blank_nodes:
-        node_hash(bid, frozenset())
+        if bid not in memo:
+            node_hash(bid)
 
-    # Group by hash to disambiguate genuine automorphic collisions.
+    # Group by the label prefix actually emitted, so two digests that share it
+    # still get distinct labels; this also keeps automorphic siblings apart.
     by_hash: dict[str, list[str]] = {}
     for bid, digest in memo.items():
         if digest is not None:
-            by_hash.setdefault(digest, []).append(bid)
+            by_hash.setdefault(digest[:24], []).append(bid)
 
     # Label contract matches oxigraph's UnstableHashedIds variant (oxigraph#1824,
     # merged upstream but unreleased): the label is the bare hash, and colliding
@@ -497,10 +507,10 @@ def _relabel_blank_nodes_by_hash(triples: list["ox.Triple"]) -> list["ox.Triple"
     # Keeping the same shape means swapping to the real oxigraph hashes later
     # changes only the hash values, not the labeling contract.
     label_map: dict[str, str] = {}
-    for digest, bids in by_hash.items():
+    for prefix, bids in by_hash.items():
         # Order by the numeric c14n index; a text sort puts c14n10 between c14n1 and c14n2.
         for k, bid in enumerate(sorted(bids, key=lambda b: int(b.removeprefix("c14n")))):
-            label_map[bid] = digest[:24] if k == 0 else f"{digest[:24]}{k}"
+            label_map[bid] = prefix if k == 0 else f"{prefix}{k}"
 
     def remap(term: "ox.Term") -> "ox.Term":
         if isinstance(term, ox.BlankNode) and term.value in label_map:
