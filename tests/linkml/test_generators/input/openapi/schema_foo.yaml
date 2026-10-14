@@ -1,5 +1,4 @@
-# LinkML schema used in tests for the bug
-# reporter's reproduction
+# LinkML schema used for different templates
 id: https://example.org/foo
 name: foo
 default_range: string

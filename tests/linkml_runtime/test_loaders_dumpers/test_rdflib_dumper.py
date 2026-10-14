@@ -513,8 +513,8 @@ classes:
 
 
 @pytest.mark.parametrize("prefix_map", [PREFIX_MAP])
-def test_dumps_stable_blank_node_labels(prefix_map):
-    """rdflib_dumper honors stable_blank_node_labels; output stays isomorphic to the default."""
+def test_dumps_diff_stable(prefix_map):
+    """rdflib_dumper honors diff_stable; output stays isomorphic to the default."""
     import rdflib.compare
 
     view = SchemaView(str(SCHEMA))
@@ -526,7 +526,7 @@ def test_dumps_stable_blank_node_labels(prefix_map):
         ignore_unmapped_predicates=True,
     )
     default = rdflib_dumper.dumps(address, schemaview=view)
-    hashed = rdflib_dumper.dumps(address, schemaview=view, stable_blank_node_labels=True)
+    hashed = rdflib_dumper.dumps(address, schemaview=view, diff_stable=True)
     assert "_:c14n" not in hashed
     g_default = Graph().parse(data=default, format="ttl")
     g_hashed = Graph().parse(data=hashed, format="ttl")

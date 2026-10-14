@@ -112,10 +112,6 @@ class ShaclGenerator(Generator):
     """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
-    stable_blank_node_labels: bool = False
-    """If True, label blank nodes by a hash of their subtree content instead of
-    RDFC-1.0's ordinal ``c14nN`` labels, so a small schema change yields a small
-    diff (change-locality).  See ``linkml_runtime.utils.rdf_canonicalize``."""
 
     default_language: str | None = None
     """Default BCP 47 language tag for human-readable string literals.
@@ -145,6 +141,9 @@ class ShaclGenerator(Generator):
     is a single template, so it deliberately follows ``default_language`` only and
     ignores any per-slot ``in_language``.
     """
+
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
 
     emit_rules: bool = True
     """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
@@ -200,7 +199,7 @@ class ShaclGenerator(Generator):
     def serialize(self, **args) -> str:
         g = self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt, stable_blank_node_labels=self.stable_blank_node_labels)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -643,25 +642,37 @@ class ShaclGenerator(Generator):
         return sv.expand_curie(f"{pfx}:{underscore(slot_name)}")
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
-        """Add an sh:class constraint for range class *r*.
+        """Add a class/shape constraint for range class *r*.
 
         Skips the constraint when *r* resolves to ``linkml:Any`` — the
-        LinkML meta-type representing an unconstrained range.  Emitting
-        ``sh:class linkml:Any`` in SHACL output is incorrect because the
-        ``linkml:Any`` class is never instantiated in real data; it would
-        cause every instance to fail validation.
+        LinkML meta-type representing an unconstrained range.
+
+        In default mode (``use_class_uri_names=True``): emits ``sh:class <class_uri>``
+        so validators check the RDF type hierarchy.
+
+        In native names mode (``use_class_uri_names=False``): emits ``sh:node <native_shape_uri>``
+        instead of ``sh:class``.  Using ``sh:class`` with a native shape URI (e.g.
+        ``dcatapplus:Resource``) is incorrect because data nodes are never typed as
+        that URI — it is a shape identifier, not an RDF class.  ``sh:node`` correctly
+        validates the referenced node against the named shape.
+
+        Because ``sh:node`` references a shape by its identifier, the ``suffix``
+        option has to be applied here too — otherwise the reference points at a
+        shape that was never emitted and the constraint silently passes.
         """
         sv = self.schemaview
         cls = sv.get_class(r)
         if cls and getattr(cls, "class_uri", None) == "linkml:Any":
             return
-        if self.use_class_uri_names:
-            range_ref = sv.get_uri(r, expand=True)
-        else:
-            range_ref = sv.get_uri(r, expand=True, native=True)
+        range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
         if range_ref == self.LINKML_ANY_URI:
             return
-        func(SH["class"], URIRef(range_ref))
+        if self.use_class_uri_names:
+            func(SH["class"], URIRef(range_ref))
+            return
+        if self.suffix:
+            range_ref += self.suffix
+        func(SH["node"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
@@ -888,13 +899,6 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
 )
 @click.option(
-    "--stable-blank-node-labels/--no-stable-blank-node-labels",
-    default=False,
-    show_default=True,
-    help="Label blank nodes by a hash of their subtree content instead of RDFC-1.0's ordinal c14nN labels, "
-    "so a small schema change produces a small diff. Opt-in; output stays isomorphic to the default.",
-)
-@click.option(
     "--default-language",
     default=None,
     show_default=True,
@@ -926,6 +930,15 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
         "are translated into SHACL-SPARQL constraints on the corresponding "
         "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")

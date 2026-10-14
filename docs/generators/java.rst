@@ -135,10 +135,11 @@ since that file is structured to configure every generator at once:
       java:
         package: org.example.model
 
-``gen-java`` only ever reads ``generator_args.java.package`` out of this file --
-every other key (``directory``, ``excludes``, other generators' ``generator_args``
-entries, etc.) is ignored, so a full multi-generator project ``config.yaml`` can be
-passed as-is without modification.
+``gen-java`` reads only the ``generator_args.java`` section of this file (``directory``,
+``excludes``, other generators' ``generator_args`` entries, etc. are ignored), so a full
+multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-java`` option can
+be set there, keyed by its name with dashes as underscores; command-line options take
+precedence, and a key that is not an option is reported as a warning and ignored.
 
 An explicit ``--package`` command-line option always overrides a value set via
 ``--config-file``.

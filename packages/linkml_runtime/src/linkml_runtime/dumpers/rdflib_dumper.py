@@ -188,7 +188,7 @@ class RDFLibDumper(Dumper):
         schemaview: SchemaView = None,
         fmt: str | None = "turtle",
         prefix_map: dict[str, str] | Converter | None = None,
-        stable_blank_node_labels: bool = False,
+        diff_stable: bool = False,
     ) -> str:
         """
         Convert element into an RDF graph guided by the schema
@@ -197,7 +197,7 @@ class RDFLibDumper(Dumper):
         :param schemaview:
         :param fmt:
         :param prefix_map:
-        :param stable_blank_node_labels: if True, label blank nodes by a hash of their
+        :param diff_stable: if True, label blank nodes by a hash of their
             subtree content instead of RDFC-1.0's ordinal ``c14nN`` labels, so a small
             data change yields a small diff (change-locality).
         :return: serialization of rdflib Graph containing element
@@ -205,7 +205,7 @@ class RDFLibDumper(Dumper):
         return canonicalize_rdf_graph(
             self.as_rdf_graph(element, schemaview, prefix_map=prefix_map),
             output_format=fmt,
-            stable_blank_node_labels=stable_blank_node_labels,
+            diff_stable=diff_stable,
         )
 
     def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:

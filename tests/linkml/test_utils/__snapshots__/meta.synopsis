@@ -1,6 +1,6 @@
 
 Classes: 46
-	Referenced by: 29 classes, 236 slots, 0 types, 0 enums 
+	Referenced by: 29 classes, 237 slots, 0 types, 0 enums 
 	Root: 32
 	Leaf: 40
 	Standalone: 45
@@ -9,14 +9,14 @@ Classes: 46
 		enum_expression
 	Abstract: 5
 
-Slots: 272
-	Referenced by: 42 classes, 64 slots, 0 types, 0 enums 
+Slots: 273
+	Referenced by: 42 classes, 65 slots, 0 types, 0 enums 
 	Root: 208
-	Leaf: 243
-	Standalone: 275
+	Leaf: 244
+	Standalone: 276
 	Declared mixin: 0
 	Undeclared mixin: 0
-	Abstract: 8
+	Abstract: 9
 	* Unowned slots: disjoint_with, inapplicable, inlined_as_simple_dict, owned_by, publisher, relational_logical_characteristic, rules, structured_imports, union_of
 	Not in domain: 14
 		slot.name: slot.domain
@@ -42,9 +42,9 @@ Slots: 272
 			datetime: 4
 			integer: 9
 			ncname: 7
-			string: 55
+			string: 56
 			uri: 4
-			uriorcurie: 38
+			uriorcurie: 37
 		Class:
 			AnyValue: 1
 			Anything: 4
@@ -56,7 +56,7 @@ Slots: 272
 			anonymous_slot_expression: 7
 			anonymous_type_expression: 4
 			array_expression: 1
-			class_definition: 8
+			class_definition: 9
 			class_rule: 2
 			definition: 5
 			dimension_expression: 1

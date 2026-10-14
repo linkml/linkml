@@ -122,6 +122,9 @@ class OwlSchemaGenerator(Generator):
     """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     metadata_profile: MetadataProfile | None = None
     """Deprecated - use metadata_profiles."""
 
@@ -133,11 +136,6 @@ class OwlSchemaGenerator(Generator):
     """if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning"""
 
     add_root_classes: bool = False
-
-    stable_blank_node_labels: bool = False
-    """If True, label blank nodes by a hash of their subtree content instead of
-    RDFC-1.0's ordinal ``c14nN`` labels, so a small schema change yields a small
-    diff (change-locality).  See ``linkml_runtime.utils.rdf_canonicalize``."""
 
     add_ols_annotations: bool = True
 
@@ -358,9 +356,7 @@ class OwlSchemaGenerator(Generator):
         """
         self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(
-            self.graph, output_format=fmt, stable_blank_node_labels=self.stable_blank_node_labels
-        )
+        return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
@@ -1563,7 +1559,7 @@ class OwlSchemaGenerator(Generator):
             if self.type_objects:
                 return self._type_uri(typ.name)
             else:
-                return self.namespaces.uri_for(typ.uri)
+                return URIRef(self.schemaview.get_uri(typ, expand=True))
         elif slot.range in self.schema.enums:
             # TODO: enums fill this in
             return self._enum_uri(EnumDefinitionName(slot.range))
@@ -1841,16 +1837,6 @@ class OwlSchemaGenerator(Generator):
     ),
 )
 @click.option(
-    "--stable-blank-node-labels/--no-stable-blank-node-labels",
-    default=False,
-    show_default=True,
-    help=(
-        "Label blank nodes by a hash of their subtree content instead of RDFC-1.0's "
-        "ordinal c14nN labels, so a small schema change produces a small diff. "
-        "Opt-in; output stays isomorphic to the default."
-    ),
-)
-@click.option(
     "--default-language",
     default=None,
     show_default=True,
@@ -1859,6 +1845,15 @@ class OwlSchemaGenerator(Generator):
         "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
         "skos:definition and other text annotations are emitted with the "
         "specified language tag.  Element-level in_language overrides this."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")

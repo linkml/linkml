@@ -1,4 +1,4 @@
-# metamodel_version: 1.11.0
+# metamodel_version: 1.12.0
 BASE <https://w3id.org/linkml/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -10,7 +10,6 @@ PREFIX skosxl: <http://www.w3.org/2008/05/skos-xl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX oslc: <http://open-services.net/ns/core#>
 PREFIX schema1: <http://schema.org/>
-PREFIX bibo: <http://purl.org/ontology/bibo/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX dc1: <http://purl.org/dc/terms/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
@@ -159,7 +158,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -284,7 +283,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -393,7 +392,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
        ) ;
@@ -431,7 +430,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -500,7 +499,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -558,7 +557,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -613,7 +612,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -754,7 +753,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -827,7 +826,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -877,7 +876,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -929,7 +928,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -1160,7 +1159,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           schema1:keywords @<String> *
        ) ;
@@ -1266,7 +1265,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
@@ -1316,7 +1315,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
+          <status> @<String> ? ;
           sh:order @<Integer> ? ;
           dc1:subject @<Uriorcurie> * ;
           schema1:keywords @<String> *
