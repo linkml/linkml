@@ -73,7 +73,7 @@ diff-stable = ["linkml-runtime[diff-stable]>=1.10.0,<2.0.0"]
 
 [dependency-groups]
 lint = [
-    "black >= 24.0.0",
+    "black>=26.10.0",
 ]
 typing = [
     "numpydantic>=1.10.0",
