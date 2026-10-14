@@ -1817,7 +1817,6 @@ class SchemaView:
             pattern = f"^(?:{pattern})$"
         return pattern
 
-    @lru_cache(None)
     def induced_slot(
         self,
         slot_name: SLOT_NAME,
@@ -1828,16 +1827,44 @@ class SchemaView:
         """Generate a SlotDefinition with all properties materialized.
 
         Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
-        has all properties materialized.
+        has all properties materialized. This uses schema slots such as attributes and
+        ``slot_usage``, as well as ancestor relationships to infer missing values.
 
-        This makes use of schema slots, such as attributes, slot_usage. It also uses ancestor relationships
-        to infer missing values, for inheritable slots
+        Recursive inlining inference can temporarily produce an incomplete slot. Such a result
+        must not be cached: the same slot may be encountered later, after its range's identifier
+        has been resolved, and should then be fully materialized. Arguments are normalized
+        before entering the cache so omitted defaults and explicitly supplied defaults share
+        the same cache entry.
 
-        :param slot_name: slot to be queries
+        :param slot_name: slot to be queried
         :param class_name: class used as context
         :param imports: include imports closure
+        :param mangle_name: mangle the resulting slot name with its class name
         :return: dynamic slot constructed by inference
         """
+        if self._inlined_inference_in_progress:
+            return self._induced_slot(slot_name, class_name, imports, mangle_name)
+        return self._induced_slot_cached(slot_name, class_name, imports, mangle_name)
+
+    @lru_cache(None)
+    def _induced_slot_cached(
+        self,
+        slot_name: SLOT_NAME,
+        class_name: CLASS_NAME | None,
+        imports: bool,
+        mangle_name: bool,
+    ) -> SlotDefinition:
+        """Cache only top-level induced slots, never recursion-guarded partial results."""
+        return self._induced_slot(slot_name, class_name, imports, mangle_name)
+
+    def _induced_slot(
+        self,
+        slot_name: SLOT_NAME,
+        class_name: CLASS_NAME | None = None,
+        imports: bool = True,
+        mangle_name: bool = False,
+    ) -> SlotDefinition:
+        """Compute a derived slot without caching recursive partial results."""
         cls = self.get_class(class_name, imports, strict=True) if class_name else None
 
         # attributes take priority over schema-level slot definitions, IF
