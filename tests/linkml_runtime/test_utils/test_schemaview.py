@@ -3568,6 +3568,41 @@ def test_induced_slot_inlined_inference_handles_identifier_cycles(sv_induced_inl
     induced = sv_induced_inlined.induced_slot("self_ref", "CycleClass")
     # CycleClass has no identifier/key slot, so the self-referential slot is inlined.
     assert induced.inlined is True
+    # The recursive identifier lookup must not leave a partial result cached under the
+    # explicit-imports call form used by class_induced_slots().
+    assert sv_induced_inlined.class_induced_slots("CycleClass")[0].inlined is True
+    assert sv_induced_inlined.induced_slot("self_ref", "CycleClass", imports=True).inlined is True
+
+
+@pytest.mark.parametrize("slot_order", [["a_to_b", "another_a_to_b"], ["another_a_to_b", "a_to_b"]])
+@pytest.mark.parametrize("first_class", ["A", "B"])
+def test_induced_slot_inlining_is_independent_of_traversal_order(slot_order: list[str], first_class: str) -> None:
+    """Identifier-cycle inference must not cache partial results based on traversal order."""
+    schema = SchemaDefinition(
+        id="https://example.org/inlining-order",
+        name="inlining_order",
+        slots={
+            name: SlotDefinition(name=name, range=range_name, multivalued=True)
+            for name, range_name in [
+                ("a_to_b", "B"),
+                ("another_a_to_b", "B"),
+                ("b_to_a", "A"),
+            ]
+        },
+        classes={
+            "A": ClassDefinition(name="A", slots=slot_order),
+            "B": ClassDefinition(name="B", slots=["b_to_a"]),
+        },
+    )
+    view = SchemaView(schema)
+
+    view.class_induced_slots(first_class)
+    induced = {slot.name: slot for slot in view.class_induced_slots("A")}
+
+    assert induced["a_to_b"].inlined is True
+    assert induced["a_to_b"].inlined_as_list is True
+    assert induced["another_a_to_b"].inlined is True
+    assert induced["another_a_to_b"].inlined_as_list is True
 
 
 def test_materialize_nonscalar_slot_usage() -> None:
