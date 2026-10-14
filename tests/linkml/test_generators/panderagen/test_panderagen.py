@@ -5,6 +5,7 @@ import pytest
 
 from linkml.cli.main import linkml as linkml_cli
 from linkml.generators.panderagen import PanderaDataframeGenerator, cli
+from linkml.generators.panderagen.dataframe_generator import _is_valid_python_package
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 np = pytest.importorskip("numpy", reason="NumPY not installed")
@@ -287,6 +288,63 @@ def test_cli_package(cli_runner, test_inputs_dir, tmp_path):
     assert (tmp_path / "test_package" / "panderagen_polars_schema_transform.py").exists()
     assert (tmp_path / "test_package" / "panderagen_class_based.py").exists()
     assert (tmp_path / "test_package" / "panderagen_schema_loaded.py").exists()
+
+
+@pytest.mark.parametrize(
+    "package,valid",
+    [
+        ("my_models", True),
+        ("out/my_models", True),
+        ("/tmp/out/my_models/", True),
+        ("my-models", False),
+        ("out/2models", False),
+        ("class", False),
+    ],
+)
+def test_is_valid_python_package(package, valid):
+    """--package is a directory; its last component must be importable as a package."""
+    assert _is_valid_python_package(package) is valid
+
+
+# --config-file tests follow the javagen/golanggen ones of the same names; --package here
+# is the output directory, so values are tmp_path-based paths.
+
+
+def test_cli_config_file_sets_package(cli_runner, test_inputs_dir, tmp_path):
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(f"generator_args:\n  pandera:\n    package: {tmp_path / 'from_config'}\n")
+
+    result = cli_runner.invoke(cli, ["--config-file", str(config_path), schema_path])
+
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "from_config" / "__init__.py").exists()
+    assert (tmp_path / "from_config" / "panderagen_class_based.py").exists()
+
+
+def test_cli_package_overrides_config_file(cli_runner, test_inputs_dir, tmp_path):
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(f"generator_args:\n  pandera:\n    package: {tmp_path / 'from_config'}\n")
+
+    result = cli_runner.invoke(cli, ["-C", str(config_path), "--package", str(tmp_path / "from_cli"), schema_path])
+
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "from_cli" / "__init__.py").exists()
+    assert not (tmp_path / "from_config").exists()
+
+
+def test_cli_invalid_config_package_errors(cli_runner, test_inputs_dir, tmp_path):
+    """A package directory that could not be imported is a usage error, raised before anything is written."""
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(f"generator_args:\n  pandera:\n    package: {tmp_path / 'my-models'}\n")
+
+    result = cli_runner.invoke(cli, ["--config-file", str(config_path), schema_path])
+
+    assert result.exit_code == 2
+    assert "not a valid Python package directory" in result.output
+    assert not (tmp_path / "my-models").exists()
 
 
 @pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])
