@@ -286,6 +286,7 @@ class BiolinkNameSpace:
         CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#'),
         CurieNamespace('regulates', 'http://example.org/UNKNOWN/regulates/'),
         CurieNamespace('schema', 'http://schema.org/'),
+        CurieNamespace('shex', 'http://www.w3.org/ns/shex#'),
         CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
         CurieNamespace('wgs', 'http://www.w3.org/2003/01/geo/wgs84_pos'),
         CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#'),

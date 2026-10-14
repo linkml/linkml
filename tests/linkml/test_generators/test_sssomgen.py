@@ -51,7 +51,7 @@ def test_sssom_metadata(schema_path, sssom_path):
                 else:
                     if "curie_map" not in ln:
                         curie_ln = ln.lstrip("#").rstrip("\n").split(": ")
-                        curie_map[curie_ln[0]] = curie_ln[1]
+                        curie_map[curie_ln[0].strip()] = curie_ln[1]
             else:
                 # This is the MappingSetDataFrame
                 row_count += 1
@@ -68,5 +68,7 @@ def test_sssom_metadata(schema_path, sssom_path):
 
     # Assertions
     assert len(meta) == 5
-    assert len(curie_map) == len(input_data["prefixes"])
+    # The curie_map also carries the prefixes declared by the imports linkml:types and core.
+    imported_prefixes = {"core", "prov", "shex", "xsd"}
+    assert set(curie_map) == set(input_data["prefixes"]) | imported_prefixes
     assert " " not in msdf_as_dict["subject_id"]

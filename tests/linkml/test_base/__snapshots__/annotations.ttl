@@ -20,7 +20,7 @@ linkml:Annotation a linkml:ClassDefinition ;
 	linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
 	linkml:is_a linkml:Extension ;
 	linkml:mixins linkml:Annotatable ;
-	linkml:slot_usage _:c14n6 ;
+	linkml:slot_usage _:c14n8 ;
 	linkml:slots linkml:annotations , linkml:extension_tag , linkml:extension_value , linkml:extensions .
 linkml:AnyValue a linkml:ClassDefinition ;
 	skos:exactMatch "linkml:Any"^^xsd:anyURI ;
@@ -36,7 +36,7 @@ linkml:Extensible a linkml:ClassDefinition ;
 	linkml:description "mixin for classes that support extension" ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:mixin true ;
-	linkml:slot_usage _:c14n5 ;
+	linkml:slot_usage _:c14n7 ;
 	linkml:slots linkml:extensions .
 linkml:Extension a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
@@ -44,13 +44,13 @@ linkml:Extension a linkml:ClassDefinition ;
 	linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:description "a tag/value pair used to add non-model information to an entry" ;
 	linkml:imported_from "linkml:extensions" ;
-	linkml:slot_usage _:c14n4 ;
+	linkml:slot_usage _:c14n5 ;
 	linkml:slots linkml:extension_tag , linkml:extension_value , linkml:extensions .
 linkml:annotations dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
 	pav:version "2.0.0" ;
 	a linkml:SchemaDefinition , linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
-	sh:declare _:c14n2 ;
+	sh:declare _:c14n2 , _:c14n3 , _:c14n6 , _:c14n9 ;
 	linkml:classes linkml:Annotatable , linkml:Annotation , linkml:AnyValue , linkml:Extensible , linkml:Extension ;
 	linkml:default_prefix "linkml" ;
 	linkml:default_range linkml:string ;
@@ -158,7 +158,7 @@ linkml:extension_tag a linkml:SlotDefinition ;
 linkml:extension_value a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	skos:prefLabel "value" ;
-	linkml:annotations _:c14n3 ;
+	linkml:annotations _:c14n4 ;
 	linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
 	linkml:description "the actual annotation" ;
 	linkml:domain linkml:Extension ;
@@ -300,6 +300,12 @@ linkml:uriorcurie a linkml:TypeDefinition ;
 	linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
 _:c14n2 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
 	sh:prefix "linkml" .
-_:c14n3 a linkml:Annotation ;
+_:c14n3 sh:namespace "http://www.w3.org/ns/shex#"^^xsd:anyURI ;
+	sh:prefix "shex" .
+_:c14n4 a linkml:Annotation ;
 	skos:example true ;
 	linkml:tag linkml:simple_dict_value .
+_:c14n6 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+	sh:prefix "xsd" .
+_:c14n9 sh:namespace "http://schema.org/"^^xsd:anyURI ;
+	sh:prefix "schema" .

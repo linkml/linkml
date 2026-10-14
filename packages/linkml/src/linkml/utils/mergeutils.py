@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     Element,
     EnumDefinition,
+    Prefix,
     SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
@@ -31,8 +32,12 @@ def merge_schemas(
     imported_from: str | None = None,
     namespaces: Namespaces | None = None,
     merge_imports: bool = True,
+    prefix_conflicts: list[str] | None = None,
 ) -> None:
-    """Merge mergee into target"""
+    """Merge mergee into target
+
+    :param prefix_conflicts: collects prefix conflicts instead of raising; see :func:`merge_namespaces`
+    """
     assert target.name is not None, "Schema name must be supplied"
     if target.license is None:
         target.license = mergee.license
@@ -41,7 +46,7 @@ def merge_schemas(
     set_from_schema(mergee)
 
     if namespaces:
-        merge_namespaces(target, mergee, namespaces)
+        merge_namespaces(target, mergee, namespaces, prefix_conflicts)
 
     if merge_imports:
         for prefix in mergee.emit_prefixes:
@@ -62,13 +67,26 @@ def merge_schemas(
     merge_dicts(target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports)
 
 
-def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespaces) -> None:
+def merge_namespaces(
+    target: SchemaDefinition,
+    mergee: SchemaDefinition,
+    namespaces,
+    prefix_conflicts: list[str] | None = None,
+) -> None:
     """
     Add the mergee namespace definitions to target
+
+    A prefix that the mergee declares and the target lacks is added to the target.
+    A prefix that the target already has with a different reference is a conflict,
+    whether the target declares it or took it from an earlier import. A conflict
+    raises a ``ValueError``, unless ``prefix_conflicts`` is given: then it is added
+    to that list and the target keeps its definition, so that the caller can report
+    every conflict at once.
 
     :param target:
     :param mergee:
     :param namespaces:
+    :param prefix_conflicts: list that collects conflicts instead of raising
     :return:
     """
     for prefix in mergee.prefixes.values():
@@ -99,16 +117,33 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
                         mergee.name,
                         namespaces[prefix.prefix_prefix],
                     )
+                elif prefix.prefix_prefix not in target.prefixes:
+                    # The prefix already resolved into a shared Namespaces map
+                    # (some other schema provided the absolute form). Propagate
+                    # it into target.prefixes so downstream generators that
+                    # iterate target.prefixes (e.g. gen-yaml, gen-shacl) see
+                    # the union of imported prefixes.
+                    target.prefixes[prefix.prefix_prefix] = Prefix(
+                        prefix.prefix_prefix, namespaces[prefix.prefix_prefix]
+                    )
             continue
 
+        existing = target.prefixes.get(prefix.prefix_prefix)
+        if existing is not None and existing.prefix_reference != prefix.prefix_reference:
+            conflict = (
+                f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}: "
+                f"{target.name} has {existing.prefix_reference}, {mergee.name} has {prefix.prefix_reference}"
+            )
+            if prefix_conflicts is None:
+                raise ValueError(conflict)
+            prefix_conflicts.append(conflict)
+            continue
         namespaces[prefix.prefix_prefix] = prefix.prefix_reference
-        # if prefix.prefix_prefix not in target.prefixes:
-        #     target.prefixes[prefix.prefix_prefix] = prefix
-        if (
-            prefix.prefix_prefix in target.prefixes
-            and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
-        ):
-            raise ValueError(f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}")
+        if existing is None:
+            # Propagate prefixes declared only in imported sub-schemas into the
+            # root schema's prefixes dict. Generators iterating target.prefixes
+            # need these so emitted content referencing the prefix resolves.
+            target.prefixes[prefix.prefix_prefix] = Prefix(prefix.prefix_prefix, prefix.prefix_reference)
     for mmap in mergee.default_curi_maps:
         namespaces.add_prefixmap(mmap)
 

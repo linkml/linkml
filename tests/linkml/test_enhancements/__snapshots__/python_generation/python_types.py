@@ -65,6 +65,8 @@ version = None
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PTYPES = CurieNamespace('ptypes', 'http://examples.org/linkml/ptypes')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = PTYPES
 

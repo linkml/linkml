@@ -18,6 +18,34 @@
       {
          "prefix_prefix": "test",
          "prefix_reference": "http://example.org/import_test_1#"
+      },
+      {
+         "prefix_prefix": "test2",
+         "prefix_reference": "http://example.org/import_test_2#"
+      },
+      {
+         "prefix_prefix": "test3",
+         "prefix_reference": "http://example.org/import_test_3#"
+      },
+      {
+         "prefix_prefix": "linkml",
+         "prefix_reference": "https://w3id.org/linkml/"
+      },
+      {
+         "prefix_prefix": "xsd",
+         "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+      },
+      {
+         "prefix_prefix": "shex",
+         "prefix_reference": "http://www.w3.org/ns/shex#"
+      },
+      {
+         "prefix_prefix": "schema",
+         "prefix_reference": "http://schema.org/"
+      },
+      {
+         "prefix_prefix": "test4",
+         "prefix_reference": "http://example.org/import_test_4#"
       }
    ],
    "default_curi_maps": [
