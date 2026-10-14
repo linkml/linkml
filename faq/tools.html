@@ -483,6 +483,23 @@ schema class in the metamodel)</p>
 <h2>How can I check my schema is valid?<a class="headerlink" href="#how-can-i-check-my-schema-is-valid" title="Link to this heading">¶</a></h2>
 <p>You can use any of the generator tools distributed as part of linkml to check for errors in your schema.</p>
 </section>
+<section id="is-there-a-master-list-of-which-generators-or-validators-support-which-linkml-features">
+<h2>Is there a master list of which generators or validators support which LinkML features?<a class="headerlink" href="#is-there-a-master-list-of-which-generators-or-validators-support-which-linkml-features" title="Link to this heading">¶</a></h2>
+<p>There is no separately curated, complete matrix of every generator and validator against every metamodel slot.</p>
+<p>The closest source of truth is the <a class="reference internal" href="../generators/dashboard.html"><span class="doc std std-doc">Generator Feature Dashboard</span></a>. It is generated from the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/tests/linkml/test_compliance">compliance test suite</a> and shows which metamodel features each tested generator implements, partially implements, ignores, or has not yet been tested for.</p>
+<p>That dashboard is the outcome of <a class="reference external" href="https://github.com/linkml/linkml/issues/2333">issue 2333</a> (Generator Support Matrix). It is not exhaustive:</p>
+<ul class="simple">
+<li><p>Only generators that participate in the compliance suite appear as columns.</p></li>
+<li><p>Cells can be unknown or partial; a result reflects the current tests, not a guarantee of every edge case.</p></li>
+<li><p>There is no equivalent complete matrix for validators such as JSON Schema, Pydantic, SHACL, or ShEx. Those validators typically consume generated artifacts, so generator coverage on the dashboard is the relevant proxy.</p></li>
+</ul>
+<p>For more detail, see:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generators/index.html"><span class="doc std std-doc">Generators</span></a> and the individual generator pages (JSON Schema, Pydantic, SHACL, ShEx, and others)</p></li>
+<li><p><a class="reference internal" href="../data/validating-data.html"><span class="doc std std-doc">Validating data</span></a> for validation strategies and plugins</p></li>
+</ul>
+<p>If a feature you need is missing or marked unknown, please open an issue or add a compliance test rather than treating the dashboard as a finished catalog.</p>
+</section>
 <section id="is-there-a-linter-for-linkml">
 <h2>Is there a linter for LinkML?<a class="headerlink" href="#is-there-a-linter-for-linkml" title="Link to this heading">¶</a></h2>
 <p>Yes! See the documentation for <a class="reference external" href="https://linkml.io/linkml/schemas/linter.html">the schema linter</a>.</p>
@@ -779,6 +796,7 @@ but there may be scenarios where you have a CSV with large data values, e.g</p>
 <li><a class="reference internal" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets">Is there a tool to manage schemas as spreadsheets?</a></li>
 <li><a class="reference internal" href="#how-do-i-browse-a-schema">How do I browse a schema?</a></li>
 <li><a class="reference internal" href="#how-can-i-check-my-schema-is-valid">How can I check my schema is valid?</a></li>
+<li><a class="reference internal" href="#is-there-a-master-list-of-which-generators-or-validators-support-which-linkml-features">Is there a master list of which generators or validators support which LinkML features?</a></li>
 <li><a class="reference internal" href="#is-there-a-linter-for-linkml">Is there a linter for LinkML?</a></li>
 <li><a class="reference internal" href="#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?</a></li>
 <li><a class="reference internal" href="#are-there-tools-to-infer-a-schema-from-data">Are there tools to infer a schema from data?</a></li>
