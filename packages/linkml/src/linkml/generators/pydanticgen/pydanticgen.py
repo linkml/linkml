@@ -488,11 +488,18 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return slist
 
     @staticmethod
-    def _extra_slots_allowed(cls: ClassDefinition) -> bool | AnonymousSlotExpression | None:
+    def _extra_slots_setting(cls: ClassDefinition) -> bool | AnonymousSlotExpression | None:
         """
         Read the class's own ``extra_slots`` in the metamodel's terms: ``True`` or ``False``
         when it allows or forbids extra data, its ``range_expression`` when that gives the
         values extra data may take, or ``None`` when the class has no ``extra_slots``.
+
+        :meth:`._get_extra_for_class` reads this setting for the class and for each of its
+        ancestors. The metamodel does not pass ``extra_slots`` down to subclasses, but
+        Pydantic does pass a parent's ``model_config`` and ``__pydantic_extra__`` down, so
+        the generator compares the class's setting with its ancestors' to decide when the
+        class must state its own. The ancestors need the setting itself rather than a
+        generated slot, which is why this is a separate method.
 
         This follows :meth:`.JsonSchemaGenerator.get_additional_properties`. ``allowed``
         takes precedence over ``range_expression``, as the metamodel says that
@@ -528,20 +535,20 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         Returns ``None`` if the class does not override the generator-wide default,
         so the inherited base-model configuration is used.
         """
-        allowed = self._extra_slots_allowed(cls)
-        if isinstance(allowed, AnonymousSlotExpression):
-            return self.generate_slot(allowed, cls)
+        setting = self._extra_slots_setting(cls)
+        if isinstance(setting, AnonymousSlotExpression):
+            return self.generate_slot(setting, cls)
 
         ancestors = self.schemaview.class_ancestors(cls.name, mixins=self.gen_mixin_inheritance, reflexive=False)
-        ancestors_allowed = [self._extra_slots_allowed(self.schemaview.get_class(ancestor)) for ancestor in ancestors]
-        typed_ancestor = any(isinstance(a, AnonymousSlotExpression) for a in ancestors_allowed)
-        if allowed is None:
-            ancestors_extra = {"allow" if a else "forbid" for a in ancestors_allowed if isinstance(a, bool)}
+        ancestor_settings = [self._extra_slots_setting(self.schemaview.get_class(ancestor)) for ancestor in ancestors]
+        typed_ancestor = any(isinstance(a, AnonymousSlotExpression) for a in ancestor_settings)
+        if setting is None:
+            ancestors_extra = {"allow" if a else "forbid" for a in ancestor_settings if isinstance(a, bool)}
             if not typed_ancestor and ancestors_extra <= {self.extra_fields}:
                 return None
             extra = self.extra_fields
         else:
-            extra = "allow" if allowed else "forbid"
+            extra = "allow" if setting else "forbid"
         if extra == "allow" and typed_ancestor:
             # An ancestor's typed __pydantic_extra__ would still limit the extra values,
             # so this class accepts values of any type, as an empty expression does.
