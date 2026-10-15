@@ -184,7 +184,11 @@ class ContextGenerator(Generator):
                 comments.generation_date = self.schema.generation_date
             comments.source = self.schema.source_file
             context.comments = comments
-        context_content = {"xsd": "http://www.w3.org/2001/XMLSchema#"}
+        # The generated contexts use JSON-LD 1.1 constructs (scoped contexts, ``@prefix``)
+        # that a JSON-LD 1.0 processor silently ignores. ``"@version": 1.1`` makes such a
+        # processor stop instead (JSON-LD 1.1 §1.7), and a JSON-LD 1.1 processor then
+        # requires 1.1 processing (JSON-LD 1.1 API §4.1.2, step 5.5).
+        context_content = {"@version": 1.1, "xsd": "http://www.w3.org/2001/XMLSchema#"}
         if base:
             base = str(base)
             if "://" not in base:

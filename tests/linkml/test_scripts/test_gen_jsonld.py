@@ -221,5 +221,4 @@ def test_context_kwargs(input_path, prefixes: bool, flatprefixes: bool):
             assert isinstance(pref_dict["bar"], dict)
             assert pref_dict["bar"]["@prefix"] is True
     else:
-        assert len(pref_dict) == 1
-        assert "xsd" in pref_dict
+        assert pref_dict.keys() == {"@version", "xsd"}

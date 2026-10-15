@@ -4,7 +4,7 @@ import textwrap
 
 import pytest
 from click.testing import CliRunner
-from rdflib import Graph, Literal, URIRef
+from rdflib import XSD, Graph, Literal, URIRef
 
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
@@ -1790,3 +1790,72 @@ def test_identifier_context_round_trips_to_rdf(tmp_path, use_curies):
 
     ex = "https://example.org/identifier-test/"
     assert set(graph) == {(URIRef(ex + "thing1"), URIRef(ex + "name"), Literal("n"))}
+
+
+VERSION_SCHEMA = """
+id: https://example.org/version
+name: version
+prefixes:
+  ex: https://example.org/version/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports: [linkml:types]
+slots:
+  value:
+    slot_uri: ex:value
+classes:
+  Quantity:
+    class_uri: ex:Quantity
+    slots: [value]
+    slot_usage:
+      value:
+        range: float
+  Token:
+    class_uri: ex:Token
+    slots: [value]
+  Thing:
+    class_uri: ex:Thing
+    tree_root: true
+    attributes:
+      reading: {range: Quantity, inlined: true}
+      label: {range: Token, inlined: true}
+"""
+
+
+def test_context_declares_jsonld_1_1(tmp_path):
+    """Generated contexts, also as embedded by gen-jsonld, declare ``"@version": 1.1`` first.
+
+    JSON-LD 1.1 §1.7: the value is the number 1.1, which makes a JSON-LD 1.0
+    processor stop instead of ignoring the 1.1 constructs.
+    """
+    schema = tmp_path / "version.yaml"
+    schema.write_text(VERSION_SCHEMA, encoding="utf-8")
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())["@context"]
+    assert next(iter(context)) == "@version"
+    assert context["@version"] == 1.1 and isinstance(context["@version"], float)
+
+    # gen-jsonld embeds a prefix-only generated context first, then ``@base`` on its own
+    embedded = json.loads(JSONLDGenerator(str(schema)).serialize())["@context"]
+    assert next(c for c in embedded if isinstance(c, dict))["@version"] == 1.1
+
+
+@pytest.mark.parametrize("version", [None, 1.0], ids=["processor-default", "json-ld-1.0-requested"])
+def test_type_scoped_coercion_survives_json_ld_1_0_processing(tmp_path, version):
+    """A class-level range override reaches the data even when the caller asks rdflib for JSON-LD 1.0.
+
+    The override is a type-scoped context, a JSON-LD 1.1 construct. rdflib in
+    JSON-LD 1.0 mode ignores it, so ``1.5`` would become ``xsd:double``, but a
+    context's ``@version`` overrides the requested mode.
+    """
+    schema = tmp_path / "version.yaml"
+    schema.write_text(VERSION_SCHEMA, encoding="utf-8")
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    doc = {**context, "@type": "Thing", "reading": {"@type": "Quantity", "value": 1.5}, "label": {"value": "x"}}
+
+    options = {} if version is None else {"version": version}
+    graph = Graph().parse(data=json.dumps(doc), format="json-ld", **options)
+
+    values = {o.datatype for o in graph.objects(None, URIRef("https://example.org/version/value"))}
+    assert values == {XSD.float, None}
