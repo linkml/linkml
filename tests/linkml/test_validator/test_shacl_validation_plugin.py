@@ -11,6 +11,9 @@ import pytest
 # not re-exported, so that pyshacl stays an optional dependency.
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
 from linkml.validator.report import Severity
+from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 def test_conforming_instance_yields_no_results(validation_context):
@@ -87,3 +90,88 @@ def test_generated_shapes_are_cached(validation_context):
     list(plugin.process({"id": "P:1", "name": "One"}, validation_context))
 
     assert len(plugin._loaded_graphs) == 1
+
+
+_RULES_SCHEMA_YAML = """
+id: https://example.org/plugin-rules
+name: plugin_rules
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/plugin-rules/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+enums:
+  Color:
+    permissible_values:
+      Red:
+        meaning: ex:Red
+      Blue:
+        meaning: ex:Blue
+  Code:
+    permissible_values:
+      alpha:
+      beta:
+classes:
+  Base:
+    attributes:
+      id:
+        identifier: true
+      guard: {}
+      label: {}
+      color:
+        range: Color
+      code:
+        range: Code
+    rules:
+      - preconditions:
+          slot_conditions:
+            guard:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            label:
+              equals_string: x
+      - preconditions:
+          slot_conditions:
+            guard:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            color:
+              equals_string: Red
+      - preconditions:
+          slot_conditions:
+            guard:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            code:
+              equals_string_in: [alpha]
+  Child:
+    is_a: Base
+"""
+
+
+@pytest.mark.parametrize("target_class", ["Base", "Child"])
+@pytest.mark.parametrize(
+    "instance,violates",
+    [
+        pytest.param({"guard": "g", "label": "x", "color": "Red", "code": "alpha"}, False, id="conforming"),
+        pytest.param({"guard": "g", "label": "y", "color": "Red", "code": "alpha"}, True, id="string"),
+        pytest.param({"guard": "g", "label": "x", "color": "Blue", "code": "alpha"}, True, id="enum-meaning"),
+        pytest.param({"guard": "g", "label": "x", "color": "Red", "code": "beta"}, True, id="enum-literal"),
+        pytest.param({"guard": "g", "color": "Red", "code": "alpha"}, True, id="target-absent"),
+        pytest.param({"label": "y", "color": "Blue", "code": "beta"}, False, id="unguarded"),
+    ],
+)
+def test_rule_violation_is_reported(target_class, instance, violates):
+    """Rules translated to ``sh:sparql`` are enforced through the plugin, whose
+    data graph comes from the LinkML RDF dumper, on instances of the declaring
+    class and of its subclasses alike."""
+    context = ValidationContext(yaml_loader.loads(_RULES_SCHEMA_YAML, SchemaDefinition), target_class)
+    results = list(ShaclValidationPlugin().process({"id": "ex:x", **instance}, context))
+
+    assert all(result.severity is Severity.ERROR for result in results)
+    assert any("SPARQLConstraintComponent" in result.message for result in results) is violates
