@@ -3,11 +3,12 @@ from textwrap import dedent
 
 import pytest
 import yaml
+from click.testing import CliRunner
 from openapi_spec_validator import OpenAPIV30SpecValidator, OpenAPIV31SpecValidator, validate
 from openapi_spec_validator.validation.exceptions import OpenAPIValidationError
 from referencing.exceptions import PointerToNowhere
 
-from linkml.generators.openapigen import OVERRIDABLE_SCHEMA_KEYS, OpenApiGenerator
+from linkml.generators.openapigen import OVERRIDABLE_SCHEMA_KEYS, OpenApiGenerator, cli
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import YAMLLoader
 
@@ -1625,3 +1626,84 @@ def test_wrongly_typed_annotation_override_is_rejected(input_path, tmp_path, oas
     head_path = write_template(tmp_path, template)
     with pytest.raises(OpenAPIValidationError):
         OpenApiGenerator(schema_path).serialize(head_path)
+
+
+# The tests below pass gen-openapi its settings in a config file, with -C.
+
+
+def openapi_config_yaml(**settings) -> str:
+    """Return a config file in gen-project's format that holds ``settings`` under ``generator_args.openapi``.
+
+    :param settings: option names, with dashes as underscores, and their values
+    """
+    return yaml.safe_dump({"generator_args": {"openapi": settings}}, sort_keys=False)
+
+
+def template_described(title: str, oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Return a template with a path for ``Described`` and a placeholder for ``Untouched``, which no path references.
+
+    :param title: the API title, which tells a test which of two templates was instantiated
+    :param oas_version: the OpenAPI version the template declares
+    """
+    return openapi_template(
+        title,
+        endpoints=get_endpoint("/api/described", "Described"),
+        schemas=schema_stubs(
+            [("Described", TEMPLATE_OVERRIDES_ID, "Described"), ("Untouched", TEMPLATE_OVERRIDES_ID, "Untouched")]
+        ),
+        oas_version=oas_version,
+    )
+
+
+def test_cli_config_file_supplies_template_and_flags(input_path, tmp_path, oas_version):
+    """Test that ``-C`` sets ``template``, ``keep_unreferenced`` and ``inline_enums`` together.
+
+    The config file takes the place of ``-t``, ``-k`` and ``-e``. The generator instantiates
+    the template the file names, keeps the placeholder ``Untouched`` that no path references,
+    and inlines the enum of ``Described.color`` instead of writing it as a schema of its own.
+    """
+    template_path = write_template(tmp_path, template_described("From Config", oas_version=oas_version))
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(openapi_config_yaml(template=template_path, keep_unreferenced=True, inline_enums=True))
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), input_path("openapi/schema_template_overrides.yaml")])
+
+    assert result.exit_code == 0, result.output
+    spec = yaml.safe_load(result.output)
+    assert spec["info"]["title"] == "From Config"
+    schemas = spec["components"]["schemas"]
+    assert "Untouched" in schemas
+    assert "ColorEnum" not in schemas
+    assert schemas["Described"]["properties"]["color"]["enum"] == ["RED", "BLUE"]
+
+
+def test_cli_explicit_template_overrides_config_file(input_path, tmp_path):
+    """Test that ``-t`` on the command line takes precedence over ``template`` in the config file."""
+    config_template = tmp_path / "config_template.yaml"
+    config_template.write_text(template_described("From Config"))
+    cli_template = tmp_path / "cli_template.yaml"
+    cli_template.write_text(template_described("From CLI"))
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(openapi_config_yaml(template=str(config_template)))
+
+    result = CliRunner().invoke(
+        cli, ["-C", str(config_path), "-t", str(cli_template), input_path("openapi/schema_template_overrides.yaml")]
+    )
+
+    assert result.exit_code == 0, result.output
+    spec = yaml.safe_load(result.output)
+    assert spec["info"]["title"] == "From CLI"
+    # -k and -e are left at their defaults, so the placeholder that no path references is pruned.
+    assert "Untouched" not in spec["components"]["schemas"]
+
+
+def test_cli_config_file_without_openapi_section_prints_generic_template(input_path, tmp_path):
+    """Test that a config file without an ``openapi`` section changes nothing, so the generic template is printed."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n")
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), input_path("openapi/schema_template_overrides.yaml")])
+
+    assert result.exit_code == 0, result.output
+    assert "# TODO: remove this whole comment block after processing" in result.output
+    assert "x-linkml-source: Described" in result.output
