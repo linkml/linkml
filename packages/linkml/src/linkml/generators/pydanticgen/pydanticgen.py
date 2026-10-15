@@ -1171,16 +1171,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if element.mixins:
                 needed_classes.extend(element.mixins)
 
-        elif isinstance(element, SlotDefinition):
+        elif isinstance(element, (SlotDefinition, AnonymousSlotExpression)):
             # collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list
             slot_ranges = self.schemaview.slot_range_as_union(element)
             needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
-
-        elif isinstance(element, AnonymousSlotExpression):
-            # the same ranges for an expression, such as the range_expression of extra_slots,
-            # which SchemaView.slot_range_as_union does not accept
-            expressions = [element, *element.exactly_one_of, *element.any_of]
-            needed_classes.extend([e.range for e in expressions if e.range in all_classes])
 
         elif element is None:
             # get all imports
