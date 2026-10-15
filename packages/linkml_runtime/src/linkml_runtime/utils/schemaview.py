@@ -2237,7 +2237,7 @@ class SchemaView:
         :param slot:
         :return: list of ranges
         """
-        if not slot or not isinstance(slot, (SlotDefinition, AnonymousSlotExpression)):
+        if not slot or not isinstance(slot, SlotDefinition | AnonymousSlotExpression):
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 
