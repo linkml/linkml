@@ -6,10 +6,6 @@
       "personinfo": "https://w3id.org/linkml/examples/personinfo/",
       "schema": "http://schema.org/",
       "@vocab": "https://w3id.org/linkml/examples/personinfo/",
-      "persons": {
-         "@type": "@id",
-         "@id": "persons"
-      },
       "age": {
          "@type": "xsd:integer",
          "@id": "age"
@@ -21,6 +17,10 @@
          "@id": "schema:name"
       },
       "id": "@id",
+      "persons": {
+         "@type": "@id",
+         "@id": "persons"
+      },
       "phone": {
          "@id": "schema:telephone"
       },
