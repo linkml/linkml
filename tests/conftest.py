@@ -422,7 +422,8 @@ class MockImportErrorFinder(MetaPathFinder):
     """
     Fake like we don't have a module when we really do.
 
-    see the ``mock_black_import`` fixture for example usage.
+    see the ``mock_missing_import`` fixture to hide any module, or ``mock_black_import``
+    for a single-purpose example.
 
     .. note::
 
@@ -440,6 +441,40 @@ class MockImportErrorFinder(MetaPathFinder):
             raise ImportError(f"module with name {fullname} could not be found")
         else:
             return None
+
+
+@pytest.fixture(scope="function")
+def mock_missing_import():
+    """Pretend an optional dependency is not installed, for any module.
+
+    Yields a callable taking a module name, so a test for one optional
+    dependency does not need a fixture of its own::
+
+        def test_requires_the_extra(mock_missing_import):
+            mock_missing_import("diffable_rdf")
+            with pytest.raises(ImportError, match="linkml-runtime[diff-stable]"):
+                ...
+
+    See :class:`MockImportErrorFinder` for the caveat about reimporting
+    modules that already imported the one being hidden.
+    """
+    removed = {}
+    finders = []
+
+    def hide(module: str) -> None:
+        for name, loaded in list(sys.modules.items()):
+            if name.startswith(module):
+                removed[name] = loaded
+                del sys.modules[name]
+        finder = MockImportErrorFinder(module)
+        finders.append(finder)
+        sys.meta_path.insert(0, finder)
+
+    yield hide
+
+    sys.modules.update(removed)
+    for finder in finders:
+        sys.meta_path.remove(finder)
 
 
 @pytest.fixture(scope="function")
