@@ -565,17 +565,20 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         class_python_name = self._get_class_python_name(cls.name)
         extra = self._get_extra_for_class(cls)
+        typed_extra = isinstance(extra, SlotResult)
         pyclass = PydanticClass(
             name=class_python_name,
             bases=self.class_bases.get(class_python_name, PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
-            extra=extra.attribute if isinstance(extra, SlotResult) else extra,
+            # Pydantic keeps typed extra values only when extra data is allowed.
+            extra="allow" if typed_extra else extra,
+            pydantic_extra=extra.attribute if typed_extra else None,
         )
 
         imports = self._get_imports(cls) if self.split else None
 
         result = ClassResult(cls=pyclass, source=cls, imports=imports)
-        if isinstance(extra, SlotResult):
+        if typed_extra:
             # Brings in the imports for any class that types the extra data.
             result = result.merge(extra)
 
