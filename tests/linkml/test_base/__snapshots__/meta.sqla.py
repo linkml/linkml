@@ -303,6 +303,18 @@ class AnonymousTypeExpression(Base):
     implicit_prefix = Column(Text())
     equals_string = Column(Text())
     equals_number = Column(Integer())
+    type_expression_none_of_id = Column(Integer(), ForeignKey('type_expression.id'))
+    type_expression_exactly_one_of_id = Column(Integer(), ForeignKey('type_expression.id'))
+    type_expression_any_of_id = Column(Integer(), ForeignKey('type_expression.id'))
+    type_expression_all_of_id = Column(Integer(), ForeignKey('type_expression.id'))
+    anonymous_type_expression_none_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'))
+    anonymous_type_expression_exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'))
+    anonymous_type_expression_any_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'))
+    anonymous_type_expression_all_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'))
+    type_definition_none_of_name = Column(Text(), ForeignKey('type_definition.name'))
+    type_definition_exactly_one_of_name = Column(Text(), ForeignKey('type_definition.name'))
+    type_definition_any_of_name = Column(Text(), ForeignKey('type_definition.name'))
+    type_definition_all_of_name = Column(Text(), ForeignKey('type_definition.name'))
     structured_pattern_id = Column(Integer(), ForeignKey('pattern_expression.id'))
     structured_pattern = relationship("PatternExpression", uselist=False, foreign_keys=[structured_pattern_id])
     unit_id = Column(Integer(), ForeignKey('UnitOfMeasure.id'))
@@ -318,24 +330,24 @@ class AnonymousTypeExpression(Base):
                                   creator=lambda x_: AnonymousTypeExpressionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousTypeExpression", secondary="anonymous_type_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_type_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='anonymous_type_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.anonymous_type_expression_none_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousTypeExpression", secondary="anonymous_type_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_type_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='anonymous_type_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.anonymous_type_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousTypeExpression", secondary="anonymous_type_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_type_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='anonymous_type_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.anonymous_type_expression_any_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousTypeExpression", secondary="anonymous_type_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_type_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='anonymous_type_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.anonymous_type_expression_all_of_id]")
     
 
     def __repr__(self):
-        return f"anonymous_type_expression(id={self.id},pattern={self.pattern},implicit_prefix={self.implicit_prefix},equals_string={self.equals_string},equals_number={self.equals_number},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},)"
+        return f"anonymous_type_expression(id={self.id},pattern={self.pattern},implicit_prefix={self.implicit_prefix},equals_string={self.equals_string},equals_number={self.equals_number},type_expression_none_of_id={self.type_expression_none_of_id},type_expression_exactly_one_of_id={self.type_expression_exactly_one_of_id},type_expression_any_of_id={self.type_expression_any_of_id},type_expression_all_of_id={self.type_expression_all_of_id},anonymous_type_expression_none_of_id={self.anonymous_type_expression_none_of_id},anonymous_type_expression_exactly_one_of_id={self.anonymous_type_expression_exactly_one_of_id},anonymous_type_expression_any_of_id={self.anonymous_type_expression_any_of_id},anonymous_type_expression_all_of_id={self.anonymous_type_expression_all_of_id},type_definition_none_of_name={self.type_definition_none_of_name},type_definition_exactly_one_of_name={self.type_definition_exactly_one_of_name},type_definition_any_of_name={self.type_definition_any_of_name},type_definition_all_of_name={self.type_definition_all_of_name},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},)"
 
 
 
@@ -353,6 +365,12 @@ class AnonymousEnumExpression(Base):
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
     pv_formula = Column(Enum('CODE', 'CURIE', 'URI', 'FHIR_CODING', 'LABEL', name='pv_formula_options'))
+    enum_expression_include_id = Column(Integer(), ForeignKey('enum_expression.id'))
+    enum_expression_minus_id = Column(Integer(), ForeignKey('enum_expression.id'))
+    anonymous_enum_expression_include_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'))
+    anonymous_enum_expression_minus_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'))
+    enum_definition_include_name = Column(Text(), ForeignKey('enum_definition.name'))
+    enum_definition_minus_name = Column(Text(), ForeignKey('enum_definition.name'))
     reachable_from_id = Column(Integer(), ForeignKey('reachability_query.id'))
     reachable_from = relationship("ReachabilityQuery", uselist=False, foreign_keys=[reachable_from_id])
     matches_id = Column(Integer(), ForeignKey('match_query.id'))
@@ -363,12 +381,12 @@ class AnonymousEnumExpression(Base):
     permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.anonymous_enum_expression_id]")
     
     
-    # ManyToMany
-    include = relationship( "AnonymousEnumExpression", secondary="anonymous_enum_expression_include")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_enum_expression', source_slot='include', mapping_type=None, target_class='anonymous_enum_expression', target_slot='anonymous_enum_expression_include_id', join_class=None, uses_join_table=None, multivalued=False)
+    include = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.anonymous_enum_expression_include_id]")
     
     
-    # ManyToMany
-    minus = relationship( "AnonymousEnumExpression", secondary="anonymous_enum_expression_minus")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_enum_expression', source_slot='minus', mapping_type=None, target_class='anonymous_enum_expression', target_slot='anonymous_enum_expression_minus_id', join_class=None, uses_join_table=None, multivalued=False)
+    minus = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.anonymous_enum_expression_minus_id]")
     
     
     # ManyToMany
@@ -381,7 +399,7 @@ class AnonymousEnumExpression(Base):
     
 
     def __repr__(self):
-        return f"anonymous_enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
+        return f"anonymous_enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},enum_expression_include_id={self.enum_expression_include_id},enum_expression_minus_id={self.enum_expression_minus_id},anonymous_enum_expression_include_id={self.anonymous_enum_expression_include_id},anonymous_enum_expression_minus_id={self.anonymous_enum_expression_minus_id},enum_definition_include_name={self.enum_definition_include_name},enum_definition_minus_name={self.enum_definition_minus_name},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
 
 
 
@@ -895,26 +913,30 @@ class PathExpression(Base):
     modified_by = Column(Text())
     status = Column(Text())
     rank = Column(Integer())
+    path_expression_none_of_id = Column(Integer(), ForeignKey('path_expression.id'))
+    path_expression_any_of_id = Column(Integer(), ForeignKey('path_expression.id'))
+    path_expression_all_of_id = Column(Integer(), ForeignKey('path_expression.id'))
+    path_expression_exactly_one_of_id = Column(Integer(), ForeignKey('path_expression.id'))
     followed_by_id = Column(Integer(), ForeignKey('path_expression.id'))
     followed_by = relationship("PathExpression", uselist=False, foreign_keys=[followed_by_id])
     range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
     range_expression = relationship("AnonymousClassExpression", uselist=False, foreign_keys=[range_expression_id])
     
     
-    # ManyToMany
-    none_of = relationship( "PathExpression", secondary="path_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='none_of', mapping_type=None, target_class='path_expression', target_slot='path_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "PathExpression", foreign_keys="[PathExpression.path_expression_none_of_id]")
     
     
-    # ManyToMany
-    any_of = relationship( "PathExpression", secondary="path_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='any_of', mapping_type=None, target_class='path_expression', target_slot='path_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "PathExpression", foreign_keys="[PathExpression.path_expression_any_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "PathExpression", secondary="path_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='all_of', mapping_type=None, target_class='path_expression', target_slot='path_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "PathExpression", foreign_keys="[PathExpression.path_expression_all_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "PathExpression", secondary="path_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='exactly_one_of', mapping_type=None, target_class='path_expression', target_slot='path_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "PathExpression", foreign_keys="[PathExpression.path_expression_exactly_one_of_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -1012,7 +1034,7 @@ class PathExpression(Base):
     
 
     def __repr__(self):
-        return f"path_expression(id={self.id},reversed={self.reversed},traverse={self.traverse},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},followed_by_id={self.followed_by_id},range_expression_id={self.range_expression_id},)"
+        return f"path_expression(id={self.id},reversed={self.reversed},traverse={self.traverse},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},path_expression_none_of_id={self.path_expression_none_of_id},path_expression_any_of_id={self.path_expression_any_of_id},path_expression_all_of_id={self.path_expression_all_of_id},path_expression_exactly_one_of_id={self.path_expression_exactly_one_of_id},followed_by_id={self.followed_by_id},range_expression_id={self.range_expression_id},)"
 
 
 
@@ -1028,20 +1050,20 @@ class ClassExpression(Base):
     id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousClassExpression", secondary="class_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_expression_any_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousClassExpression", secondary="class_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousClassExpression", secondary="class_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_expression_none_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousClassExpression", secondary="class_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_expression_all_of_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_expression', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -1101,8 +1123,8 @@ class ArrayExpression(Base):
     maximum_number_dimensions = relationship("Anything", uselist=False, foreign_keys=[maximum_number_dimensions_id])
     
     
-    # ManyToMany
-    dimensions = relationship( "DimensionExpression", secondary="array_expression_dimensions")
+    # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='dimensions', mapping_type=None, target_class='dimension_expression', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    dimensions = relationship( "DimensionExpression", foreign_keys="[DimensionExpression.array_expression_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='array_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='array_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -1233,6 +1255,7 @@ class DimensionExpression(Base):
     modified_by = Column(Text())
     status = Column(Text())
     rank = Column(Integer())
+    array_expression_id = Column(Integer(), ForeignKey('array_expression.id'))
     
     
     # One-To-Many: OneToAnyMapping(source_class='dimension_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='dimension_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -1330,7 +1353,7 @@ class DimensionExpression(Base):
     
 
     def __repr__(self):
-        return f"dimension_expression(id={self.id},alias={self.alias},maximum_cardinality={self.maximum_cardinality},minimum_cardinality={self.minimum_cardinality},exact_cardinality={self.exact_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},)"
+        return f"dimension_expression(id={self.id},alias={self.alias},maximum_cardinality={self.maximum_cardinality},minimum_cardinality={self.minimum_cardinality},exact_cardinality={self.exact_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},array_expression_id={self.array_expression_id},)"
 
 
 
@@ -2051,6 +2074,7 @@ class TypeMapping(Base):
     modified_by = Column(Text(), primary_key=True)
     status = Column(Text(), primary_key=True)
     rank = Column(Integer(), primary_key=True)
+    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_mapping', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='type_mapping_framework', join_class=None, uses_join_table=None, multivalued=False)
@@ -2148,7 +2172,7 @@ class TypeMapping(Base):
     
 
     def __repr__(self):
-        return f"type_mapping(framework={self.framework},type={self.type},string_serialization={self.string_serialization},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},)"
+        return f"type_mapping(framework={self.framework},type={self.type},string_serialization={self.string_serialization},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},slot_definition_name={self.slot_definition_name},)"
 
 
 
@@ -3304,78 +3328,6 @@ class TypeExpressionEqualsStringIn(Base):
     
 
 
-class TypeExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_expression_none_of'
-
-    type_expression_id = Column(Integer(), ForeignKey('type_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_expression_none_of(type_expression_id={self.type_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class TypeExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_expression_exactly_one_of'
-
-    type_expression_id = Column(Integer(), ForeignKey('type_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_expression_exactly_one_of(type_expression_id={self.type_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class TypeExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_expression_any_of'
-
-    type_expression_id = Column(Integer(), ForeignKey('type_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_expression_any_of(type_expression_id={self.type_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class TypeExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_expression_all_of'
-
-    type_expression_id = Column(Integer(), ForeignKey('type_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_expression_all_of(type_expression_id={self.type_expression_id},all_of_id={self.all_of_id},)"
-
-
-
-    
-
-
 class AnonymousTypeExpressionEqualsStringIn(Base):
     """
     None
@@ -3388,78 +3340,6 @@ class AnonymousTypeExpressionEqualsStringIn(Base):
 
     def __repr__(self):
         return f"anonymous_type_expression_equals_string_in(anonymous_type_expression_id={self.anonymous_type_expression_id},equals_string_in={self.equals_string_in},)"
-
-
-
-    
-
-
-class AnonymousTypeExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_type_expression_none_of'
-
-    anonymous_type_expression_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_type_expression_none_of(anonymous_type_expression_id={self.anonymous_type_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class AnonymousTypeExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_type_expression_exactly_one_of'
-
-    anonymous_type_expression_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_type_expression_exactly_one_of(anonymous_type_expression_id={self.anonymous_type_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class AnonymousTypeExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_type_expression_any_of'
-
-    anonymous_type_expression_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_type_expression_any_of(anonymous_type_expression_id={self.anonymous_type_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class AnonymousTypeExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_type_expression_all_of'
-
-    anonymous_type_expression_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_type_expression_all_of(anonymous_type_expression_id={self.anonymous_type_expression_id},all_of_id={self.all_of_id},)"
 
 
 
@@ -3496,78 +3376,6 @@ class TypeDefinitionEqualsStringIn(Base):
 
     def __repr__(self):
         return f"type_definition_equals_string_in(type_definition_name={self.type_definition_name},equals_string_in={self.equals_string_in},)"
-
-
-
-    
-
-
-class TypeDefinitionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_definition_none_of'
-
-    type_definition_name = Column(Text(), ForeignKey('type_definition.name'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_definition_none_of(type_definition_name={self.type_definition_name},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class TypeDefinitionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_definition_exactly_one_of'
-
-    type_definition_name = Column(Text(), ForeignKey('type_definition.name'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_definition_exactly_one_of(type_definition_name={self.type_definition_name},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class TypeDefinitionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_definition_any_of'
-
-    type_definition_name = Column(Text(), ForeignKey('type_definition.name'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_definition_any_of(type_definition_name={self.type_definition_name},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class TypeDefinitionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'type_definition_all_of'
-
-    type_definition_name = Column(Text(), ForeignKey('type_definition.name'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_type_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"type_definition_all_of(type_definition_name={self.type_definition_name},all_of_id={self.all_of_id},)"
 
 
 
@@ -4600,42 +4408,6 @@ class DefinitionKeyword(Base):
     
 
 
-class EnumExpressionInclude(Base):
-    """
-    None
-    """
-    __tablename__ = 'enum_expression_include'
-
-    enum_expression_id = Column(Integer(), ForeignKey('enum_expression.id'), primary_key=True)
-    include_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"enum_expression_include(enum_expression_id={self.enum_expression_id},include_id={self.include_id},)"
-
-
-
-    
-
-
-class EnumExpressionMinus(Base):
-    """
-    None
-    """
-    __tablename__ = 'enum_expression_minus'
-
-    enum_expression_id = Column(Integer(), ForeignKey('enum_expression.id'), primary_key=True)
-    minus_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"enum_expression_minus(enum_expression_id={self.enum_expression_id},minus_id={self.minus_id},)"
-
-
-
-    
-
-
 class EnumExpressionInherits(Base):
     """
     None
@@ -4672,42 +4444,6 @@ class EnumExpressionConcepts(Base):
     
 
 
-class AnonymousEnumExpressionInclude(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_enum_expression_include'
-
-    anonymous_enum_expression_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    include_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_enum_expression_include(anonymous_enum_expression_id={self.anonymous_enum_expression_id},include_id={self.include_id},)"
-
-
-
-    
-
-
-class AnonymousEnumExpressionMinus(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_enum_expression_minus'
-
-    anonymous_enum_expression_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    minus_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_enum_expression_minus(anonymous_enum_expression_id={self.anonymous_enum_expression_id},minus_id={self.minus_id},)"
-
-
-
-    
-
-
 class AnonymousEnumExpressionInherits(Base):
     """
     None
@@ -4738,42 +4474,6 @@ class AnonymousEnumExpressionConcepts(Base):
 
     def __repr__(self):
         return f"anonymous_enum_expression_concepts(anonymous_enum_expression_id={self.anonymous_enum_expression_id},concepts={self.concepts},)"
-
-
-
-    
-
-
-class EnumDefinitionInclude(Base):
-    """
-    None
-    """
-    __tablename__ = 'enum_definition_include'
-
-    enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'), primary_key=True)
-    include_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"enum_definition_include(enum_definition_name={self.enum_definition_name},include_id={self.include_id},)"
-
-
-
-    
-
-
-class EnumDefinitionMinus(Base):
-    """
-    None
-    """
-    __tablename__ = 'enum_definition_minus'
-
-    enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'), primary_key=True)
-    minus_id = Column(Integer(), ForeignKey('anonymous_enum_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"enum_definition_minus(enum_definition_name={self.enum_definition_name},minus_id={self.minus_id},)"
 
 
 
@@ -6058,78 +5758,6 @@ class AnonymousExpressionKeyword(Base):
     
 
 
-class PathExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'path_expression_none_of'
-
-    path_expression_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"path_expression_none_of(path_expression_id={self.path_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class PathExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'path_expression_any_of'
-
-    path_expression_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"path_expression_any_of(path_expression_id={self.path_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class PathExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'path_expression_all_of'
-
-    path_expression_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"path_expression_all_of(path_expression_id={self.path_expression_id},all_of_id={self.all_of_id},)"
-
-
-
-    
-
-
-class PathExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'path_expression_exactly_one_of'
-
-    path_expression_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('path_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"path_expression_exactly_one_of(path_expression_id={self.path_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
 class PathExpressionTodos(Base):
     """
     None
@@ -6418,78 +6046,6 @@ class SlotExpressionEqualsStringIn(Base):
     
 
 
-class SlotExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_expression_none_of'
-
-    slot_expression_id = Column(Integer(), ForeignKey('slot_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_expression_none_of(slot_expression_id={self.slot_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class SlotExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_expression_exactly_one_of'
-
-    slot_expression_id = Column(Integer(), ForeignKey('slot_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_expression_exactly_one_of(slot_expression_id={self.slot_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class SlotExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_expression_any_of'
-
-    slot_expression_id = Column(Integer(), ForeignKey('slot_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_expression_any_of(slot_expression_id={self.slot_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class SlotExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_expression_all_of'
-
-    slot_expression_id = Column(Integer(), ForeignKey('slot_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_expression_all_of(slot_expression_id={self.slot_expression_id},all_of_id={self.all_of_id},)"
-
-
-
-    
-
-
 class AnonymousSlotExpressionEqualsStringIn(Base):
     """
     None
@@ -6502,78 +6058,6 @@ class AnonymousSlotExpressionEqualsStringIn(Base):
 
     def __repr__(self):
         return f"anonymous_slot_expression_equals_string_in(anonymous_slot_expression_id={self.anonymous_slot_expression_id},equals_string_in={self.equals_string_in},)"
-
-
-
-    
-
-
-class AnonymousSlotExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_slot_expression_none_of'
-
-    anonymous_slot_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_slot_expression_none_of(anonymous_slot_expression_id={self.anonymous_slot_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class AnonymousSlotExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_slot_expression_exactly_one_of'
-
-    anonymous_slot_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_slot_expression_exactly_one_of(anonymous_slot_expression_id={self.anonymous_slot_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class AnonymousSlotExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_slot_expression_any_of'
-
-    anonymous_slot_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_slot_expression_any_of(anonymous_slot_expression_id={self.anonymous_slot_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class AnonymousSlotExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_slot_expression_all_of'
-
-    anonymous_slot_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_slot_expression_all_of(anonymous_slot_expression_id={self.anonymous_slot_expression_id},all_of_id={self.all_of_id},)"
 
 
 
@@ -6904,24 +6388,6 @@ class SlotDefinitionUnionOf(Base):
     
 
 
-class SlotDefinitionTypeMappings(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_definition_type_mappings'
-
-    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
-    type_mappings_framework = Column(Text(), ForeignKey('type_mapping.framework'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_definition_type_mappings(slot_definition_name={self.slot_definition_name},type_mappings_framework={self.type_mappings_framework},)"
-
-
-
-    
-
-
 class SlotDefinitionEqualsStringIn(Base):
     """
     None
@@ -6934,78 +6400,6 @@ class SlotDefinitionEqualsStringIn(Base):
 
     def __repr__(self):
         return f"slot_definition_equals_string_in(slot_definition_name={self.slot_definition_name},equals_string_in={self.equals_string_in},)"
-
-
-
-    
-
-
-class SlotDefinitionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_definition_none_of'
-
-    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_definition_none_of(slot_definition_name={self.slot_definition_name},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class SlotDefinitionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_definition_exactly_one_of'
-
-    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_definition_exactly_one_of(slot_definition_name={self.slot_definition_name},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class SlotDefinitionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_definition_any_of'
-
-    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_definition_any_of(slot_definition_name={self.slot_definition_name},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class SlotDefinitionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'slot_definition_all_of'
-
-    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"slot_definition_all_of(slot_definition_name={self.slot_definition_name},all_of_id={self.all_of_id},)"
 
 
 
@@ -7390,150 +6784,6 @@ class SlotDefinitionKeyword(Base):
     
 
 
-class ClassExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_expression_any_of'
-
-    class_expression_id = Column(Integer(), ForeignKey('class_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_expression_any_of(class_expression_id={self.class_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class ClassExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_expression_exactly_one_of'
-
-    class_expression_id = Column(Integer(), ForeignKey('class_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_expression_exactly_one_of(class_expression_id={self.class_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class ClassExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_expression_none_of'
-
-    class_expression_id = Column(Integer(), ForeignKey('class_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_expression_none_of(class_expression_id={self.class_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class ClassExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_expression_all_of'
-
-    class_expression_id = Column(Integer(), ForeignKey('class_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_expression_all_of(class_expression_id={self.class_expression_id},all_of_id={self.all_of_id},)"
-
-
-
-    
-
-
-class AnonymousClassExpressionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_class_expression_any_of'
-
-    anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_class_expression_any_of(anonymous_class_expression_id={self.anonymous_class_expression_id},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class AnonymousClassExpressionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_class_expression_exactly_one_of'
-
-    anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_class_expression_exactly_one_of(anonymous_class_expression_id={self.anonymous_class_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class AnonymousClassExpressionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_class_expression_none_of'
-
-    anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_class_expression_none_of(anonymous_class_expression_id={self.anonymous_class_expression_id},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class AnonymousClassExpressionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'anonymous_class_expression_all_of'
-
-    anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"anonymous_class_expression_all_of(anonymous_class_expression_id={self.anonymous_class_expression_id},all_of_id={self.all_of_id},)"
-
-
-
-    
-
-
 class AnonymousClassExpressionTodos(Base):
     """
     None
@@ -7870,78 +7120,6 @@ class ClassDefinitionDisjointWith(Base):
 
     def __repr__(self):
         return f"class_definition_disjoint_with(class_definition_name={self.class_definition_name},disjoint_with_name={self.disjoint_with_name},)"
-
-
-
-    
-
-
-class ClassDefinitionAnyOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_definition_any_of'
-
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
-    any_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_definition_any_of(class_definition_name={self.class_definition_name},any_of_id={self.any_of_id},)"
-
-
-
-    
-
-
-class ClassDefinitionExactlyOneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_definition_exactly_one_of'
-
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
-    exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_definition_exactly_one_of(class_definition_name={self.class_definition_name},exactly_one_of_id={self.exactly_one_of_id},)"
-
-
-
-    
-
-
-class ClassDefinitionNoneOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_definition_none_of'
-
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
-    none_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_definition_none_of(class_definition_name={self.class_definition_name},none_of_id={self.none_of_id},)"
-
-
-
-    
-
-
-class ClassDefinitionAllOf(Base):
-    """
-    None
-    """
-    __tablename__ = 'class_definition_all_of'
-
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
-    all_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"class_definition_all_of(class_definition_name={self.class_definition_name},all_of_id={self.all_of_id},)"
 
 
 
@@ -8590,24 +7768,6 @@ class ClassRuleKeyword(Base):
 
     def __repr__(self):
         return f"class_rule_keyword(class_rule_id={self.class_rule_id},keyword={self.keyword},)"
-
-
-
-    
-
-
-class ArrayExpressionDimensions(Base):
-    """
-    None
-    """
-    __tablename__ = 'array_expression_dimensions'
-
-    array_expression_id = Column(Integer(), ForeignKey('array_expression.id'), primary_key=True)
-    dimensions_id = Column(Integer(), ForeignKey('dimension_expression.id'), primary_key=True)
-    
-
-    def __repr__(self):
-        return f"array_expression_dimensions(array_expression_id={self.array_expression_id},dimensions_id={self.dimensions_id},)"
 
 
 
@@ -10651,8 +9811,8 @@ class SchemaDefinition(Element):
                                   creator=lambda x_: SchemaDefinitionDefaultCuriMaps(default_curi_maps=x_))
     
     
-    # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='subsets', mapping_type=None, target_class='subset_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    subsets = relationship( "SubsetDefinition", foreign_keys="[SubsetDefinition.schema_definition_name]")
+    # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='subsets', mapping_type=None, target_class='subset_definition', target_slot='schema_definition_subsets_name', join_class=None, uses_join_table=None, multivalued=False)
+    subsets = relationship( "SubsetDefinition", foreign_keys="[SubsetDefinition.schema_definition_subsets_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='types', mapping_type=None, target_class='type_definition', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -10831,20 +9991,20 @@ class TypeExpression(Expression):
                                   creator=lambda x_: TypeExpressionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousTypeExpression", secondary="type_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_expression_none_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousTypeExpression", secondary="type_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousTypeExpression", secondary="type_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_expression_any_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousTypeExpression", secondary="type_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_expression_all_of_id]")
     
 
     def __repr__(self):
@@ -10913,20 +10073,20 @@ class TypeDefinition(Element):
                                   creator=lambda x_: TypeDefinitionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousTypeExpression", secondary="type_definition_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='none_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_definition_none_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_definition_none_of_name]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousTypeExpression", secondary="type_definition_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_definition_exactly_one_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_definition_exactly_one_of_name]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousTypeExpression", secondary="type_definition_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='any_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_definition_any_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_definition_any_of_name]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousTypeExpression", secondary="type_definition_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='all_of', mapping_type=None, target_class='anonymous_type_expression', target_slot='type_definition_all_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousTypeExpression", foreign_keys="[AnonymousTypeExpression.type_definition_all_of_name]")
     
     
     id_prefixes_rel = relationship( "TypeDefinitionIdPrefixes" )
@@ -11080,7 +10240,7 @@ class SubsetDefinition(Element):
     modified_by = Column(Text())
     status = Column(Text())
     rank = Column(Integer())
-    schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
+    schema_definition_subsets_name = Column(Text(), ForeignKey('schema_definition.name'))
     
     
     id_prefixes_rel = relationship( "SubsetDefinitionIdPrefixes" )
@@ -11197,7 +10357,7 @@ class SubsetDefinition(Element):
     
 
     def __repr__(self):
-        return f"subset_definition(name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},)"
+        return f"subset_definition(name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_subsets_name={self.schema_definition_subsets_name},)"
 
 
 
@@ -11400,12 +10560,12 @@ class EnumExpression(Expression):
     permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.enum_expression_id]")
     
     
-    # ManyToMany
-    include = relationship( "AnonymousEnumExpression", secondary="enum_expression_include")
+    # One-To-Many: OneToAnyMapping(source_class='enum_expression', source_slot='include', mapping_type=None, target_class='anonymous_enum_expression', target_slot='enum_expression_include_id', join_class=None, uses_join_table=None, multivalued=False)
+    include = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.enum_expression_include_id]")
     
     
-    # ManyToMany
-    minus = relationship( "AnonymousEnumExpression", secondary="enum_expression_minus")
+    # One-To-Many: OneToAnyMapping(source_class='enum_expression', source_slot='minus', mapping_type=None, target_class='anonymous_enum_expression', target_slot='enum_expression_minus_id', join_class=None, uses_join_table=None, multivalued=False)
+    minus = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.enum_expression_minus_id]")
     
     
     # ManyToMany
@@ -11481,20 +10641,20 @@ class SlotExpression(Expression):
                                   creator=lambda x_: SlotExpressionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousSlotExpression", secondary="slot_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_expression_none_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousSlotExpression", secondary="slot_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousSlotExpression", secondary="slot_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_expression_any_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousSlotExpression", secondary="slot_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_expression_all_of_id]")
     
 
     def __repr__(self):
@@ -11547,6 +10707,18 @@ class AnonymousSlotExpression(AnonymousExpression):
     modified_by = Column(Text())
     status = Column(Text())
     rank = Column(Integer())
+    slot_expression_none_of_id = Column(Integer(), ForeignKey('slot_expression.id'))
+    slot_expression_exactly_one_of_id = Column(Integer(), ForeignKey('slot_expression.id'))
+    slot_expression_any_of_id = Column(Integer(), ForeignKey('slot_expression.id'))
+    slot_expression_all_of_id = Column(Integer(), ForeignKey('slot_expression.id'))
+    anonymous_slot_expression_none_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
+    anonymous_slot_expression_exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
+    anonymous_slot_expression_any_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
+    anonymous_slot_expression_all_of_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
+    slot_definition_none_of_name = Column(Text(), ForeignKey('slot_definition.name'))
+    slot_definition_exactly_one_of_name = Column(Text(), ForeignKey('slot_definition.name'))
+    slot_definition_any_of_name = Column(Text(), ForeignKey('slot_definition.name'))
+    slot_definition_all_of_name = Column(Text(), ForeignKey('slot_definition.name'))
     range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
     range_expression = relationship("AnonymousClassExpression", uselist=False, foreign_keys=[range_expression_id])
     enum_range_id = Column(Integer(), ForeignKey('enum_expression.id'))
@@ -11576,20 +10748,20 @@ class AnonymousSlotExpression(AnonymousExpression):
                                   creator=lambda x_: AnonymousSlotExpressionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousSlotExpression", secondary="anonymous_slot_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='anonymous_slot_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.anonymous_slot_expression_none_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousSlotExpression", secondary="anonymous_slot_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='anonymous_slot_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.anonymous_slot_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousSlotExpression", secondary="anonymous_slot_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='anonymous_slot_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.anonymous_slot_expression_any_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousSlotExpression", secondary="anonymous_slot_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='anonymous_slot_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.anonymous_slot_expression_all_of_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -11687,7 +10859,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
 
     def __repr__(self):
-        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
+        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},slot_expression_none_of_id={self.slot_expression_none_of_id},slot_expression_exactly_one_of_id={self.slot_expression_exactly_one_of_id},slot_expression_any_of_id={self.slot_expression_any_of_id},slot_expression_all_of_id={self.slot_expression_all_of_id},anonymous_slot_expression_none_of_id={self.anonymous_slot_expression_none_of_id},anonymous_slot_expression_exactly_one_of_id={self.anonymous_slot_expression_exactly_one_of_id},anonymous_slot_expression_any_of_id={self.anonymous_slot_expression_any_of_id},anonymous_slot_expression_all_of_id={self.anonymous_slot_expression_all_of_id},slot_definition_none_of_name={self.slot_definition_none_of_name},slot_definition_exactly_one_of_name={self.slot_definition_exactly_one_of_name},slot_definition_any_of_name={self.slot_definition_any_of_name},slot_definition_all_of_name={self.slot_definition_all_of_name},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
 
 
 
@@ -11722,23 +10894,35 @@ class AnonymousClassExpression(AnonymousExpression):
     modified_by = Column(Text())
     status = Column(Text())
     rank = Column(Integer())
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_expression_any_of_id = Column(Integer(), ForeignKey('class_expression.id'))
+    class_expression_exactly_one_of_id = Column(Integer(), ForeignKey('class_expression.id'))
+    class_expression_none_of_id = Column(Integer(), ForeignKey('class_expression.id'))
+    class_expression_all_of_id = Column(Integer(), ForeignKey('class_expression.id'))
+    anonymous_class_expression_any_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
+    anonymous_class_expression_exactly_one_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
+    anonymous_class_expression_none_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
+    anonymous_class_expression_all_of_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
+    class_definition_classification_rules_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_any_of_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_exactly_one_of_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_none_of_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_all_of_name = Column(Text(), ForeignKey('class_definition.name'))
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousClassExpression", secondary="anonymous_class_expression_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='any_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='anonymous_class_expression_any_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.anonymous_class_expression_any_of_id]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousClassExpression", secondary="anonymous_class_expression_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='anonymous_class_expression_exactly_one_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.anonymous_class_expression_exactly_one_of_id]")
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousClassExpression", secondary="anonymous_class_expression_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='none_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='anonymous_class_expression_none_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.anonymous_class_expression_none_of_id]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousClassExpression", secondary="anonymous_class_expression_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='all_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='anonymous_class_expression_all_of_id', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.anonymous_class_expression_all_of_id]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_class_expression', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='anonymous_class_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -11840,7 +11024,7 @@ class AnonymousClassExpression(AnonymousExpression):
     
 
     def __repr__(self):
-        return f"anonymous_class_expression(id={self.id},is_a={self.is_a},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},class_definition_name={self.class_definition_name},)"
+        return f"anonymous_class_expression(id={self.id},is_a={self.is_a},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},class_expression_any_of_id={self.class_expression_any_of_id},class_expression_exactly_one_of_id={self.class_expression_exactly_one_of_id},class_expression_none_of_id={self.class_expression_none_of_id},class_expression_all_of_id={self.class_expression_all_of_id},anonymous_class_expression_any_of_id={self.anonymous_class_expression_any_of_id},anonymous_class_expression_exactly_one_of_id={self.anonymous_class_expression_exactly_one_of_id},anonymous_class_expression_none_of_id={self.anonymous_class_expression_none_of_id},anonymous_class_expression_all_of_id={self.anonymous_class_expression_all_of_id},class_definition_classification_rules_name={self.class_definition_classification_rules_name},class_definition_any_of_name={self.class_definition_any_of_name},class_definition_exactly_one_of_name={self.class_definition_exactly_one_of_name},class_definition_none_of_name={self.class_definition_none_of_name},class_definition_all_of_name={self.class_definition_all_of_name},)"
 
 
 
@@ -12094,12 +11278,12 @@ class EnumDefinition(Definition):
     permissible_values = relationship( "PermissibleValue", foreign_keys="[PermissibleValue.enum_definition_name]")
     
     
-    # ManyToMany
-    include = relationship( "AnonymousEnumExpression", secondary="enum_definition_include")
+    # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='include', mapping_type=None, target_class='anonymous_enum_expression', target_slot='enum_definition_include_name', join_class=None, uses_join_table=None, multivalued=False)
+    include = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.enum_definition_include_name]")
     
     
-    # ManyToMany
-    minus = relationship( "AnonymousEnumExpression", secondary="enum_definition_minus")
+    # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='minus', mapping_type=None, target_class='anonymous_enum_expression', target_slot='enum_definition_minus_name', join_class=None, uses_join_table=None, multivalued=False)
+    minus = relationship( "AnonymousEnumExpression", foreign_keys="[AnonymousEnumExpression.enum_definition_minus_name]")
     
     
     # ManyToMany
@@ -12329,7 +11513,9 @@ class SlotDefinition(Definition):
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
     class_expression_id = Column(Integer(), ForeignKey('class_expression.id'))
     anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_slot_usage_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_attributes_name = Column(Text(), ForeignKey('class_definition.name'))
+    class_definition_slot_conditions_name = Column(Text(), ForeignKey('class_definition.name'))
     path_rule_id = Column(Integer(), ForeignKey('path_expression.id'))
     path_rule = relationship("PathExpression", uselist=False, foreign_keys=[path_rule_id])
     range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
@@ -12364,8 +11550,8 @@ class SlotDefinition(Definition):
     union_of = relationship( "SlotDefinition", secondary="slot_definition_union_of")
     
     
-    # ManyToMany
-    type_mappings = relationship( "TypeMapping", secondary="slot_definition_type_mappings")
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='type_mappings', mapping_type=None, target_class='type_mapping', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    type_mappings = relationship( "TypeMapping", foreign_keys="[TypeMapping.slot_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -12377,20 +11563,20 @@ class SlotDefinition(Definition):
                                   creator=lambda x_: SlotDefinitionEqualsStringIn(equals_string_in=x_))
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousSlotExpression", secondary="slot_definition_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='none_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_definition_none_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_definition_none_of_name]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousSlotExpression", secondary="slot_definition_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_definition_exactly_one_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_definition_exactly_one_of_name]")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousSlotExpression", secondary="slot_definition_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='any_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_definition_any_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_definition_any_of_name]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousSlotExpression", secondary="slot_definition_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='all_of', mapping_type=None, target_class='anonymous_slot_expression', target_slot='slot_definition_all_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousSlotExpression", foreign_keys="[AnonymousSlotExpression.slot_definition_all_of_name]")
     
     
     # ManyToMany
@@ -12520,7 +11706,7 @@ class SlotDefinition(Definition):
     
 
     def __repr__(self):
-        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},list_elements_unique={self.list_elements_unique},list_elements_ordered={self.list_elements_ordered},shared={self.shared},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},reflexive={self.reflexive},locally_reflexive={self.locally_reflexive},irreflexive={self.irreflexive},asymmetric={self.asymmetric},transitive={self.transitive},inverse={self.inverse},is_class_field={self.is_class_field},transitive_form_of={self.transitive_form_of},reflexive_transitive_form_of={self.reflexive_transitive_form_of},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},relational_role={self.relational_role},slot_group={self.slot_group},is_grouping_slot={self.is_grouping_slot},children_are_mutually_disjoint={self.children_are_mutually_disjoint},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},path_rule_id={self.path_rule_id},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
+        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},list_elements_unique={self.list_elements_unique},list_elements_ordered={self.list_elements_ordered},shared={self.shared},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},reflexive={self.reflexive},locally_reflexive={self.locally_reflexive},irreflexive={self.irreflexive},asymmetric={self.asymmetric},transitive={self.transitive},inverse={self.inverse},is_class_field={self.is_class_field},transitive_form_of={self.transitive_form_of},reflexive_transitive_form_of={self.reflexive_transitive_form_of},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},relational_role={self.relational_role},slot_group={self.slot_group},is_grouping_slot={self.is_grouping_slot},children_are_mutually_disjoint={self.children_are_mutually_disjoint},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_slot_usage_name={self.class_definition_slot_usage_name},class_definition_attributes_name={self.class_definition_attributes_name},class_definition_slot_conditions_name={self.class_definition_slot_conditions_name},path_rule_id={self.path_rule_id},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
 
 
 
@@ -12577,12 +11763,12 @@ class ClassDefinition(Definition):
     slots = relationship( "SlotDefinition", secondary="class_definition_slots")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_usage', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    slot_usage = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_usage', mapping_type=None, target_class='slot_definition', target_slot='class_definition_slot_usage_name', join_class=None, uses_join_table=None, multivalued=False)
+    slot_usage = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_slot_usage_name]")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='attributes', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    attributes = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='attributes', mapping_type=None, target_class='slot_definition', target_slot='class_definition_attributes_name', join_class=None, uses_join_table=None, multivalued=False)
+    attributes = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_attributes_name]")
     
     
     # ManyToMany
@@ -12601,32 +11787,32 @@ class ClassDefinition(Definition):
     rules = relationship( "ClassRule", foreign_keys="[ClassRule.class_definition_name]")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='classification_rules', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    classification_rules = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_name]")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='classification_rules', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_classification_rules_name', join_class=None, uses_join_table=None, multivalued=False)
+    classification_rules = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_classification_rules_name]")
     
     
     # ManyToMany
     disjoint_with = relationship( "ClassDefinition", secondary="class_definition_disjoint_with")
     
     
-    # ManyToMany
-    any_of = relationship( "AnonymousClassExpression", secondary="class_definition_any_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='any_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_any_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    any_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_any_of_name]")
     
     
-    # ManyToMany
-    exactly_one_of = relationship( "AnonymousClassExpression", secondary="class_definition_exactly_one_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='exactly_one_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_exactly_one_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    exactly_one_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_exactly_one_of_name]")
     
     
-    # ManyToMany
-    none_of = relationship( "AnonymousClassExpression", secondary="class_definition_none_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='none_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_none_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    none_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_none_of_name]")
     
     
-    # ManyToMany
-    all_of = relationship( "AnonymousClassExpression", secondary="class_definition_all_of")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='all_of', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_all_of_name', join_class=None, uses_join_table=None, multivalued=False)
+    all_of = relationship( "AnonymousClassExpression", foreign_keys="[AnonymousClassExpression.class_definition_all_of_name]")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
-    slot_conditions = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_name]")
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='slot_conditions', mapping_type=None, target_class='slot_definition', target_slot='class_definition_slot_conditions_name', join_class=None, uses_join_table=None, multivalued=False)
+    slot_conditions = relationship( "SlotDefinition", foreign_keys="[SlotDefinition.class_definition_slot_conditions_name]")
     
     
     # ManyToMany
