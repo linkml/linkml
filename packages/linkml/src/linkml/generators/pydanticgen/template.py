@@ -198,7 +198,23 @@ class PydanticAttribute(PydanticTemplateModel):
     predefined: str | None = None
     """Fixed string to use in body of field"""
     range: str | None = None
-    """Type annotation used for model field"""
+    """
+    Type annotation used for model field.
+
+    When :attr:`.collection` or :attr:`.optional` is set, this is the annotation of a single value
+    and the template wraps it. Otherwise it is the complete annotation.
+    """
+    collection: Literal["list", "dict"] | None = None
+    """How the values of a multivalued slot are collected, when the template renders it"""
+    collection_key: str | None = None
+    """Type of the keys when :attr:`.collection` is ``"dict"``"""
+    object_range: str | None = None
+    """
+    Annotation of the object form that a ``dict`` collection also accepts in place of the simple value in
+    :attr:`.range`, when the values are inlined as a simple dict
+    """
+    optional: bool = False
+    """Render the annotation as ``Optional[...]``"""
     title: str | None = None
     description: str | None = None
     equals_number: int | float | None = None
@@ -223,9 +239,28 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
-            if self.empty_list_for_multivalued_slots and self.range and self.range.startswith("Optional[list"):
+            if self.empty_list_for_multivalued_slots and self.range and self._is_optional_list():
                 return "[]"
             return "None"
+
+    @computed_field
+    def constrain_values(self) -> bool:
+        """
+        Whether the value constraints apply to the values of the collection.
+
+        On the ``Field`` of a collection they would apply to the collection itself, which pydantic rejects.
+        """
+        has_constraints = any(
+            value is not None for value in (self.equals_number, self.minimum_value, self.maximum_value)
+        )
+        has_simple_values = self.collection == "list" or (self.collection == "dict" and self.object_range)
+        return bool(has_constraints and has_simple_values)
+
+    def _is_optional_list(self) -> bool:
+        """Whether the field is annotated as an optional list"""
+        if self.collection is not None or self.optional:
+            return self.optional and self.collection == "list"
+        return self.range.startswith("Optional[list")
 
     @model_validator(mode="after")
     def alias_python_keywords(self) -> Self:
