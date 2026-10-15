@@ -139,8 +139,7 @@ By default enumerations are declared as separate schemas in the
 ``components/schemas`` of the resulting OAD (OpenAPI Description) document.
 
 An enumeration that lists no permissible values, such as a dynamic enum
-defined by ``reachable_from``, becomes a ``type: string`` schema in both
-OpenAPI versions.
+defined by ``reachable_from``, becomes a ``type: string`` schema.
 
 Using the *inline_enums* option (object constructor boolean argument
 ``inline_enums``, CLI flag ``--inline-enums``) it's possible to change
