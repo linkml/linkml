@@ -1422,7 +1422,19 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         # Global slot definitions are emitted directly rather than through
         # induced_slot(), so resolve structured patterns explicitly here
         # without changing the source SlotDefinition.
-        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        usage = (
+            self.schemaview.get_class(slot.owner).slot_usage.get(slot.usage_slot_name)
+            if slot.is_usage_slot and slot.owner in self.schemaview.all_classes()
+            else None
+        )
+        if usage is not None and not usage.is_a and slot.usage_slot_name in self.schemaview.class_slots(slot.owner):
+            # A slot_usage slot merges definitions from several modules, and its from_schema
+            # is the base slot's. induced_slot resolves each pattern with the settings of
+            # the module that asserted it. induced_slot does not follow an is_a given in
+            # the slot_usage itself, so those slots keep the merged slot's pattern.
+            resolved_pattern = self.schemaview.induced_slot(slot.usage_slot_name, slot.owner).pattern
+        else:
+            resolved_pattern = self.schemaview.resolve_pattern(slot)
         pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
