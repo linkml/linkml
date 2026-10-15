@@ -18,7 +18,6 @@ from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from deprecated.classic import deprecated
-from jsonasobj2 import items
 
 from linkml_runtime.exceptions import OrderingError
 from linkml_runtime.linkml_model.meta import (
@@ -1806,7 +1805,7 @@ class SchemaView:
         """
         resolver = PatternResolver(SchemaView(schema))
         if with_root_settings and schema is not self.schema and self.schema.settings:
-            for key, setting in items(self.schema.settings):
+            for key, setting in self.schema.settings.items():
                 resolver.format_spec.setdefault(key, setting.setting_value)
         return resolver
 
@@ -1824,14 +1823,14 @@ class SchemaView:
         if structured_pattern is None:
             return definition.pattern
 
-        resolver = self._pattern_resolver(
-            str(definition.from_schema or self.schema.id), bool(structured_pattern.interpolated)
-        )
+        schema_id = str(definition.from_schema or self.schema.id)
         pattern = structured_pattern.syntax
         if structured_pattern.interpolated:
-            pattern = resolver.resolve(pattern)
+            pattern = self._pattern_resolver(schema_id, with_root_settings=True).resolve(pattern)
         else:
-            pattern = resolver.escape_uninterpolated(pattern)
+            # Escaping uses only the defining schema's settings. A root key escaped here would
+            # break the pattern: ``\N{SPACE}`` would become ``\N\{SPACE\}``.
+            pattern = self._pattern_resolver(schema_id, with_root_settings=False).escape_uninterpolated(pattern)
         if not structured_pattern.partial_match:
             pattern = f"^(?:{pattern})$"
         return pattern
@@ -2566,6 +2565,7 @@ class SchemaView:
         ) -> PatternResolver:
             source = owning_class if owning_class is not None else element_def
             schema_id = str(source.from_schema) if source.from_schema is not None else str(self.schema.id)
+            # Root settings are added only for interpolation, as in resolve_pattern.
             key = (schema_id, bool(element_def.structured_pattern.interpolated))
             if key not in resolvers:
                 schema = schemas_by_id.get(schema_id, self.schema)
