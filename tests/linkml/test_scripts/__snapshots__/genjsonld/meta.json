@@ -1539,6 +1539,7 @@
       "attributes": [
         {
           "name": "attribute1",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "any_of": [
             {
               "range": "string"
@@ -1562,6 +1563,7 @@
       "attributes": [
         {
           "name": "attribute2",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "any_of": [
             {
               "range": "Person"
@@ -1585,6 +1587,7 @@
       "attributes": [
         {
           "name": "attribute3",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "any_of": [
             {
               "range": "DiagnosisType"
@@ -1608,6 +1611,7 @@
       "attributes": [
         {
           "name": "attribute4",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "any_of": [
             {
               "range": "integer"
@@ -1634,6 +1638,7 @@
       "attributes": [
         {
           "name": "attribute5",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "equals_string": "foo"
         }
       ],
@@ -1650,6 +1655,7 @@
       "attributes": [
         {
           "name": "attribute6",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "equals_string_in": [
             "foo",
             "bar"
@@ -1670,6 +1676,7 @@
       "attributes": [
         {
           "name": "aliases",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "slot_uri": "skos:altLabel",
           "multivalued": true
         }
@@ -1745,6 +1752,7 @@
       "attributes": [
         {
           "name": "is_living",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "LifeStatusEnum"
         }
       ],
@@ -1978,6 +1986,7 @@
       "attributes": [
         {
           "name": "ceo",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "slot_uri": "schema:ceo",
           "range": "Person"
         }
@@ -2012,6 +2021,7 @@
       "attributes": [
         {
           "name": "persons",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "Person",
           "multivalued": true,
           "inlined": true,
@@ -2019,6 +2029,7 @@
         },
         {
           "name": "companies",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "Company",
           "multivalued": true,
           "inlined": true,
@@ -2026,6 +2037,7 @@
         },
         {
           "name": "activities",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "Activity",
           "multivalued": true,
           "inlined": true,
@@ -2033,6 +2045,7 @@
         },
         {
           "name": "code_systems",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "CodeSystem",
           "multivalued": true,
           "inlined_as_list": true
@@ -2052,7 +2065,8 @@
       "slot_usage": {},
       "attributes": [
         {
-          "name": "test_attribute"
+          "name": "test_attribute",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink"
         }
       ],
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass"
@@ -2067,7 +2081,8 @@
       "slot_usage": {},
       "attributes": [
         {
-          "name": "slot_with_space_1"
+          "name": "slot_with_space_1",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink"
         }
       ],
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces"
@@ -2085,6 +2100,7 @@
       "attributes": [
         {
           "name": "slot_with_space_2",
+          "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
           "range": "ClassWithSpaces"
         }
       ],
