@@ -1,5 +1,6 @@
 {
    "@context": {
+      "@version": 1.1,
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "foo": "http://samples.r.us/foo#",
       "simple_slots": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots/",

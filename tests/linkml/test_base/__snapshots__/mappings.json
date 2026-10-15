@@ -474,6 +474,7 @@
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
     {
+      "@version": 1.1,
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "IAO": {
         "@id": "http://purl.obolibrary.org/obo/IAO_",
