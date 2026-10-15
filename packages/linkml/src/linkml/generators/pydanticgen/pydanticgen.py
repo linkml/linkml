@@ -1136,6 +1136,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # enums
         enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
         enums = self.generate_enums({e.name: e for e in enums})
+        # An enum with no permissible values is a str subclass, which needs a core schema
+        # for pydantic to validate it and to generate its JSON Schema.
+        if any(not enum["values"] for enum in enums.values()):
+            imports += Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
+            imports += Import(module="pydantic_core", objects=[ObjectImport(name="core_schema")])
 
         base_model = PydanticBaseModel(
             extra_fields=self.extra_fields,
