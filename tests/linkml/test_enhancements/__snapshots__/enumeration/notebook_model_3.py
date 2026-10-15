@@ -74,6 +74,22 @@ DEFAULT_ = PLAY
 class FavoriteColorId(extended_str):
     pass
 
+def _coerce_enum_slot(cls: type, name: str, value: Any) -> Any:
+    # Coerce a value assigned to an enum-ranged slot into its enum class.  The
+    # class is resolved by name because enums are emitted after the classes that
+    # use them; the module is fully loaded by assignment time.
+    spec = cls._enum_slots.get(name)
+    if spec is None or value is None:
+        return value
+    enum_name, multivalued = spec
+    enum_cls = globals()[enum_name]
+    if not multivalued:
+        return value if isinstance(value, enum_cls) else enum_cls(value)
+    if not isinstance(value, list):
+        value = [value]
+    return [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]
+
+
 
 @dataclass(repr=False)
 class FavoriteColor(YAMLRoot):
@@ -88,10 +104,13 @@ class FavoriteColor(YAMLRoot):
 
         if self._is_empty(self.position):
             self.MissingRequiredField("position")
-        if not isinstance(self.position, Colors):
-            self.position = Colors(self.position)
 
         super().__post_init__(**kwargs)
+
+    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {"position": ("Colors", False)}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, _coerce_enum_slot(type(self), name, value))
 
 
 # Enumerations
