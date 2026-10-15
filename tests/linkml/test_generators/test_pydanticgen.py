@@ -3220,12 +3220,15 @@ def extra_slots(input_path) -> ModuleType:
         ("ExtraAllowedChild", False, {"x": 1, "y": 2}),
         ("ExtraStringChild", False, {"x": 1, "y": "string"}),
         ("ExtraStringAllowedChild", True, {"x": 1, "y": 2}),
+        ("ExtraString", True, {"x": 1, "y": None}),
     ],
 )
 def test_extra_slots(data, clsname, valid, extra_slots):
     cls = getattr(extra_slots, clsname)
     if valid:
-        cls(**data)
+        # Pydantic's default extra="ignore" would also accept the data, so check the extras were kept.
+        # model_extra is None when the class does not allow extra data.
+        assert set(cls(**data).model_extra or {}) == set(data) - {"x"}
     else:
         with pytest.raises(ValidationError):
             cls(**data)
