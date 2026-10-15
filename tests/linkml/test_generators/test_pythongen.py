@@ -64,6 +64,19 @@ def test_slot_usage_structured_pattern_uses_settings_of_the_class_module(tmp_pat
     assert f"pattern=re.compile(r'{expected}')" in thing_id
 
 
+def test_slot_usage_keeps_pattern_from_its_is_a_parent(tmp_path) -> None:
+    """A slot_usage that names its own is_a parent keeps that parent's pattern."""
+    (tmp_path / "schema.yaml").write_text(
+        "id: https://example.org/s\nname: s\n" + _PREFIXES + "imports: [linkml:types]\ndefault_range: string\n"
+        "slots:\n  value: {}\n"
+        '  constrained_value: {pattern: "^[A-Z]+$"}\n'
+        "classes:\n  Thing:\n    slots: [value]\n    slot_usage:\n      value:\n        is_a: constrained_value\n"
+    )
+    output = PythonGenerator(str(tmp_path / "schema.yaml")).serialize()
+    thing_value = output[output.index("slots.Thing_value = ") :].split("\n\n", 1)[0]
+    assert "pattern=re.compile(r'^[A-Z]+$')" in thing_value
+
+
 def test_pythongen(kitchen_sink_path):
     """python"""
     kitchen_module = make_python(kitchen_sink_path)
