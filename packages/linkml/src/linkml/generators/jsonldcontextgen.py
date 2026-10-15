@@ -133,6 +133,8 @@ class ContextGenerator(Generator):
         return external_classes, external_slots
 
     def visit_schema(self, base: str | Namespace | None = None, output: str | None = None, **_):
+        # Whether a class or slot definition carries a scoped context, a JSON-LD 1.1 construct
+        self._uses_scoped_contexts = False
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -185,6 +187,7 @@ class ContextGenerator(Generator):
             comments.source = self.schema.source_file
             context.comments = comments
         context_content = {"xsd": "http://www.w3.org/2001/XMLSchema#"}
+        uses_prefix_flag = False
         if base:
             base = str(base)
             if "://" not in base:
@@ -201,12 +204,20 @@ class ContextGenerator(Generator):
                     prefix_obj = JsonObj()
                     prefix_obj["@id"] = url
                     prefix_obj["@prefix"] = True
+                    uses_prefix_flag = True
                     context_content[prefix] = prefix_obj
         if model:
             for k, v in self.context_body.items():
                 context_content[k] = v
             for k, v in self.slot_class_maps.items():
                 context_content[k] = v
+        if uses_prefix_flag or (model and self._uses_scoped_contexts):
+            # The context uses a JSON-LD 1.1 construct (``@prefix``, a scoped context), which a
+            # JSON-LD 1.0 processor silently ignores. ``"@version": 1.1`` makes such a processor
+            # stop instead (JSON-LD 1.1 §1.7), and a JSON-LD 1.1 processor then requires 1.1
+            # processing (JSON-LD 1.1 API §4.1.2, step 5.5). A context without such a
+            # construct stays loadable by a 1.0 processor.
+            context_content = {"@version": 1.1, **context_content}
         context["@context"] = context_content
         if output and not self.embed_context_in_frame:
             with open(output, "w", encoding="UTF-8") as outf:
@@ -275,6 +286,7 @@ class ContextGenerator(Generator):
         scoped_context = self._build_scoped_context(cls)
         if scoped_context:
             class_def["@context"] = scoped_context
+            self._uses_scoped_contexts = True
 
         if class_def:
             self.slot_class_maps[cn] = class_def
@@ -406,6 +418,7 @@ class ContextGenerator(Generator):
                         slot_def["@context"] = {**ENUM_CONTEXT, "@vocab": vocab_ns}
                     else:
                         slot_def["@context"] = ENUM_CONTEXT
+                    self._uses_scoped_contexts = True
                     # Add the necessary prefixes to the namespace
                     skos = self.namespaces.prefix_for(SKOS)
                     if not skos:
