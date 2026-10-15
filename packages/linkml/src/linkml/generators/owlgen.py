@@ -521,7 +521,8 @@ class OwlSchemaGenerator(Generator):
             # In this branch use_native_uris is True, so cls_uri is the native URI and the
             # mapped target is the explicit class_uri (native=False).
             mapped_uri = sv.get_uri(cls, expand=True, native=False)
-            if cls_uri != mapped_uri:
+            # cls_uri is a URIRef, and a URIRef never equals a str, so compare as URIRefs.
+            if cls_uri != URIRef(mapped_uri):
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
         subject_expr = URIRef(cls_uri)

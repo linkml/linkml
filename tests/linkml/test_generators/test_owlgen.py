@@ -426,8 +426,9 @@ def test_definition_uris(
             assert list(g.objects(c, SKOS.definition)) == []
 
 
+@pytest.mark.parametrize("assert_equivalent_classes", [True, False])
 @pytest.mark.parametrize("use_native_uris", [True, False])
-def test_no_synthetic_uri_crossref_when_native_uris_disabled(use_native_uris) -> None:
+def test_no_synthetic_uri_crossref_when_native_uris_disabled(use_native_uris, assert_equivalent_classes) -> None:
     """The class_uri <-> name-based-URI cross-reference is emitted only for the native URI.
 
     With ``use_native_uris=False`` a class is minted at its explicit ``class_uri``
@@ -452,7 +453,7 @@ def test_no_synthetic_uri_crossref_when_native_uris_disabled(use_native_uris) ->
         metaclasses=False,
         type_objects=False,
         use_native_uris=use_native_uris,
-        assert_equivalent_classes=True,
+        assert_equivalent_classes=assert_equivalent_classes,
     ).serialize()
     g = Graph()
     g.parse(data=owl)
@@ -464,6 +465,26 @@ def test_no_synthetic_uri_crossref_when_native_uris_disabled(use_native_uris) ->
     else:
         # class minted at schema:Person; no cross-reference to the synthetic ex:MyPerson
         assert not any((SCHEMA.Person, p, EX.MyPerson) in g for p in crossref_predicates)
+
+
+@pytest.mark.parametrize("assert_equivalent_classes", [True, False])
+def test_no_crossref_when_class_uri_is_the_native_uri(assert_equivalent_classes) -> None:
+    """A class_uri equal to the class's name-based URI does not link the class to itself."""
+    sb = SchemaBuilder()
+    sb.add_class("Person", class_uri="test_schema:Person")
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        assert_equivalent_classes=assert_equivalent_classes,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl)
+
+    assert not any((EX.Person, p, EX.Person) in g for p in (OWL.equivalentClass, SKOS.exactMatch))
 
 
 class PermissibleValueURIMixture(Enum):
