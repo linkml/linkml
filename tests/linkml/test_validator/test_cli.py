@@ -505,3 +505,53 @@ def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_d
     assert result.exception is None
     assert "No issues found" in result.output
     assert result.exit_code == 0
+
+
+@pytest.fixture
+def importmap_schema_files(tmp_path):
+    """Write a base schema, a user schema that imports it by URI, and an importmap
+    file that maps the URI to the base schema path. Returns their paths."""
+    base = tmp_path / "base_schema.yaml"
+    base.write_text(
+        "id: https://example.org/base_schema/0.1.0\n"
+        "name: base_schema\n"
+        "prefixes: {linkml: https://w3id.org/linkml/}\n"
+        "imports: [linkml:types]\n"
+        "classes:\n"
+        "  Record:\n"
+        "    tree_root: true\n"
+        "    attributes:\n"
+        "      code: {equals_string: 'OK'}\n"
+    )
+    user = tmp_path / "user_schema.yaml"
+    user.write_text(
+        "id: https://example.org/user_schema\n"
+        "name: user_schema\n"
+        "prefixes: {linkml: https://w3id.org/linkml/}\n"
+        "imports: [linkml:types, https://example.org/base_schema/0.1.0]\n"
+    )
+    importmap = tmp_path / "importmap.yaml"
+    importmap.write_text(f"https://example.org/base_schema/0.1.0: {base.with_suffix('')}\n")
+    return str(user), str(importmap)
+
+
+def test_importmap_option_resolves_imports(cli_runner, json_data_file, importmap_schema_files):
+    """``-im/--importmap`` resolves a schema's custom import URI so validation
+    enforces the imported constraint."""
+    user_schema, importmap = importmap_schema_files
+    data_path = json_data_file([{"code": "nope"}])
+    result = cli_runner.invoke(
+        cli,
+        ["-s", user_schema, "-C", "Record", "-im", importmap, data_path],
+    )
+    assert "'OK' was expected" in result.output
+    assert result.exit_code == 1
+
+    good_path = json_data_file([{"code": "OK"}], filename="good.json")
+    result_ok = cli_runner.invoke(
+        cli,
+        ["-s", user_schema, "-C", "Record", "-im", importmap, good_path],
+    )
+    assert result_ok.exception is None, result_ok.output
+    assert "No issues found" in result_ok.output
+    assert result_ok.exit_code == 0
