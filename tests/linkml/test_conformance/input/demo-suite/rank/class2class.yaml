@@ -1,0 +1,30 @@
+id: urn:rank/class2class
+name: class2class
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+slots:
+  first_slot:
+    range: string
+    required: true
+    rank: 1
+  second_slot:
+    range: string
+    required: true
+
+classes:
+  BaseClass:
+    slots:
+      - first_slot
+      - second_slot
+    slot_usage:
+      second_slot:
+        rank: 2
+
+  SomeClass:
+    is_a: BaseClass
+    tree_root: true

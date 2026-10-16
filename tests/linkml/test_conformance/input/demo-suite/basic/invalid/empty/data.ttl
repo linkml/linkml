@@ -1,0 +1,3 @@
+@prefix : <https://neverblink.eu/linkml/tests/basic/> .
+
+_:b1 a :SomeClass .

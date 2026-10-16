@@ -1,0 +1,19 @@
+id: urn:rank/zero/
+name: zero
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+slots:
+  zero_rank_slot:
+    range: string
+    rank: 0
+
+classes:
+  SomeClass:
+    tree_root: true
+    slots:
+      - zero_rank_slot
