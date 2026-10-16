@@ -295,6 +295,65 @@ class YAMLRoot(JsonObj):
     def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> type["YAMLRoot"] | None:
         return cls._class_for("class_class_curie", curie)
 
+    @classmethod
+    def _instantiate_for_kwargs(cls: type["YAMLRoot"], kwargs: dict) -> "YAMLRoot":
+        """Instantiate ``cls`` or one of its concrete descendants from ``kwargs``.
+
+        Generated dataclass code may receive a dict for a slot whose declared
+        range is a parent/abstract class, with the dict containing fields that
+        belong to a concrete child class (not the parent dataclass). Calling
+        ``ParentClass(**kwargs)`` directly would fail with "unexpected keyword"
+        errors before type-designator dispatch can choose the right class.
+        See: https://github.com/linkml/linkml/issues/3487
+
+        First, try constructing ``cls`` itself when the provided keys match the
+        dataclass fields on ``cls``. This gives generated ``__new__`` logic a
+        chance to honor explicit type designators.
+
+        If the keys do not fit ``cls`` (for example, they are child-only
+        fields), walk descendants depth-first and instantiate the first class
+        whose dataclass fields cover all keys.
+
+        If none match, fall back to
+        ``cls(**kwargs)`` so callers still see the original constructor error.
+        """
+        keys = set(kwargs)
+
+        cls_fields = getattr(cls, "__dataclass_fields__", None)
+        if cls_fields is not None and keys <= set(cls_fields):
+            return cls(**kwargs)
+
+        for sub in cls._dataclass_descendants():
+            fields = getattr(sub, "__dataclass_fields__", None)
+            if fields is not None and keys <= set(fields):
+                return sub(**kwargs)
+        return cls(**kwargs)
+
+    @classmethod
+    def _dataclass_descendants(cls: type["YAMLRoot"]) -> list[type["YAMLRoot"]]:
+        """Return descendants of ``cls`` in depth-first (most-specific-first) order.
+
+        For example, if the class hierarchy is:
+
+            AbstractDetail
+            |-- PersonDetail
+            |   |-- ChildPersonDetail   <- appended first
+            |-- PersonDetail            <- appended second
+            |-- OrgDetail               <- appended third
+
+        Return value is: [ChildPersonDetail, PersonDetail, OrgDetail]
+        """
+        ordered: list[type[YAMLRoot]] = []
+
+        def walk(c: type[YAMLRoot]) -> None:
+            for sub in c.__subclasses__():  # direct children of c
+                walk(sub)  # recursively walk children before appending
+                ordered.append(sub)  # added after children (parents after descendants).
+
+        # start with 'cls' itself so its included in the search for a match.
+        walk(cls)
+        return ordered
+
     # ==================
     # Error intercepts
     # ==================
