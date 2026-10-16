@@ -5,7 +5,9 @@ meta-circular interpreter for evaluating python expressions
 """
 
 import ast
+import keyword
 import operator as op
+import re
 
 # supported operators
 from typing import Any
@@ -20,6 +22,40 @@ operators = {
     ast.USub: op.neg,
 }
 compare_operators = {ast.Eq: op.eq, ast.Lt: op.lt, ast.LtE: op.le, ast.Gt: op.gt, ast.GtE: op.ge}
+
+# A quoted string, left as it is, or a {variable}
+_STRING_OR_VARIABLE = re.compile(r"""('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")|\{\s*([A-Za-z_]\w*)\s*\}""")
+
+
+def _rename_keyword_variables(expr: str, bindings: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """
+    Python cannot parse a keyword such as ``in`` as a variable, so rename each ``{in}`` to an unused
+    name, such as ``{_in}``, bound to the same value. An unbound ``{in}`` stays unset, like any ``{x}``.
+    Text in quoted strings is left as it is.
+
+    >>> _rename_keyword_variables("{in} + {out}", {"in": 1, "out": 2})
+    ('{_in} + {out}', {'in': 1, 'out': 2, '_in': 1})
+    >>> _rename_keyword_variables("strlen('{in}')", {"in": "abc"})
+    ("strlen('{in}')", {'in': 'abc'})
+    """
+    renames = {}
+
+    def rename(match: re.Match) -> str:
+        name = match.group(2)
+        # True, False and None are keywords too, but they are values, not variable names
+        if name is None or not keyword.iskeyword(name) or name in ("True", "False", "None"):
+            return match.group(0)
+        if name not in renames:
+            safe = f"_{name}"
+            while safe in bindings or safe in expr:
+                safe = f"_{safe}"
+            renames[name] = safe
+        return "{" + renames[name] + "}"
+
+    expr = _STRING_OR_VARIABLE.sub(rename, expr)
+    if not renames:
+        return expr, bindings
+    return expr, {**bindings, **{safe: bindings.get(name) for name, safe in renames.items()}}
 
 
 def eval_conditional(*conds: list[tuple[bool, Any]]) -> Any:
@@ -77,6 +113,12 @@ def eval_expr(expr: str, _distribute=True, **kwargs) -> Any:
 
     >>> assert eval_expr('{x} + {y}', x=None, y=2) is None
 
+    A variable named after a Python keyword works inside {}s:
+
+    >>> eval_expr('{in} + {out}', **{'in': 1, 'out': 2})
+    3
+    >>> assert eval_expr('{in} + {out}', out=2) is None
+
     Functions:
 
     - only a small set of functions are currently supported. All SPARQL functions will be supported in future
@@ -102,6 +144,7 @@ def eval_expr(expr: str, _distribute=True, **kwargs) -> Any:
         # TODO: do this as part of parsing
         return None
     else:
+        expr, kwargs = _rename_keyword_variables(expr, kwargs)
         try:
             return eval_(ast.parse(expr, mode="eval").body, kwargs, distribute=_distribute)
         except UnsetValueException:

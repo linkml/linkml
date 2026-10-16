@@ -4,11 +4,15 @@ import re
 from types import ModuleType, SimpleNamespace
 
 import pytest
-from jsonasobj2 import as_json
+import yaml
+from jsonasobj2 import as_json, items, keys
 
 from linkml.generators.pythongen import PythonGenerator
+from linkml.workspaces.example_runner import ExampleRunner
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.loaders import json_loader
+from linkml_runtime.loaders import json_loader, rdflib_loader, yaml_loader
 from linkml_runtime.utils.compile_python import compile_python
 
 pytestmark = pytest.mark.pythongen
@@ -289,6 +293,235 @@ def test_keyword_named_slots_and_attributes(input_path):
     # The generated module must be valid Python (catches dataclass fields,
     # __post_init__ self-refs, and CurieNamespace attribute access).
     compile(output, "<generated>", "exec")
+
+
+# ---------------------------------------------------------------------------
+# Keyword-named slots load and dump under their own name
+# ---------------------------------------------------------------------------
+#
+# Since #3317, pythongen escapes a slot named after a Python keyword: ``from``
+# becomes the field ``from_``. The generated class must still accept ``from``
+# and write it back, at top level, nested, and through RDF.
+# See https://github.com/linkml/linkml/issues/3316.
+
+_KEYWORD_SLOT_SCHEMA = """id: https://example.org/kw
+name: kw
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/kw/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      {kw}:
+        range: date
+  LateWindow:
+    is_a: Window
+    attributes:
+      note:
+  Booking:
+    attributes:
+      id:
+        identifier: true
+      window:
+        range: Window
+        inlined: true
+"""
+
+
+@pytest.mark.parametrize("kw", ["from", "class", "in"])
+def test_keyword_named_slot_loads_and_dumps_its_own_name(kw):
+    """The slot's name is accepted on load, top level and nested, and written back on dump."""
+    py_module = make_python(_KEYWORD_SLOT_SCHEMA.format(kw=kw))
+
+    window = yaml_loader.loads(f"{kw}: 2026-01-01\n", target_class=py_module.Window)
+    assert getattr(window, f"{kw}_") == "2026-01-01"
+    late = yaml_loader.loads(f"{kw}: 2026-01-01\nnote: late\n", target_class=py_module.LateWindow)
+    assert getattr(late, f"{kw}_") == "2026-01-01"
+    booking = yaml_loader.loads(f"id: b1\nwindow:\n  {kw}: 2026-01-01\n", target_class=py_module.Booking)
+    assert getattr(booking.window, f"{kw}_") == "2026-01-01"
+
+    assert yaml.safe_load(yaml_dumper.dumps(booking)) == {"id": "b1", "window": {kw: "2026-01-01"}}
+    assert json.loads(json_dumper.dumps(booking, inject_type=False)) == {"id": "b1", "window": {kw: "2026-01-01"}}
+    assert json_loader.loads(json_dumper.dumps(late), target_class=py_module.LateWindow) == late
+
+
+def test_keyword_named_slot_rejects_both_names():
+    """Passing the slot name and the field name together is an error, not a silent overwrite."""
+    py_module = make_python(_KEYWORD_SLOT_SCHEMA.format(kw="from"))
+    with pytest.raises(TypeError, match="both 'from' and 'from_'"):
+        py_module.Window(**{"from": "2026-01-01", "from_": "2026-01-02"})
+
+
+def test_keyword_named_slot_colliding_with_escaped_name():
+    """A class with slots ``from`` and ``from_`` fails to generate rather than silently keeping one field."""
+    schema = """id: https://example.org/kw-collide
+name: kw-collide
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+      from_:
+"""
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        PythonGenerator(schema).serialize()
+
+
+def test_keyword_named_slot_rdf_round_trip(tmp_path):
+    """The RDF dumper finds the slot behind the escaped field, and the RDF loader fills it."""
+    schema_path = tmp_path / "kw.yaml"
+    schema_path.write_text(_KEYWORD_SLOT_SCHEMA.format(kw="from"))
+    py_module = make_python(str(schema_path))
+    schemaview = SchemaView(str(schema_path))
+    booking = py_module.Booking(id="ex:b1", window=py_module.Window(from_="2026-01-01"))
+
+    ttl = rdflib_dumper.dumps(booking, schemaview)
+    assert "ex:from" in ttl
+    loaded = rdflib_loader.loads(ttl, target_class=py_module.Booking, schemaview=schemaview)
+    assert str(loaded.window.from_) == "2026-01-01"
+
+
+def test_keyword_named_type_designator():
+    """A type designator named after a keyword still picks the subclass from its slot name."""
+    schema = """id: https://example.org/kw-td
+name: kw-td
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Thing:
+    attributes:
+      class:
+        designates_type: true
+  Widget:
+    is_a: Thing
+    attributes:
+      size:
+"""
+    py_module = make_python(schema)
+    widget = py_module.Thing(**{"class": "Widget", "size": "big"})
+    assert isinstance(widget, py_module.Widget)
+    assert widget.size == "big"
+
+
+# Keys and identifiers with keyword names: Window's required ``from`` is the key of an inlined list,
+# Term's identifier ``in`` the key of an inlined dict
+_KEYWORD_KEY_SCHEMA = """id: https://example.org/kw-key
+name: kw-key
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/kw-key/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+        required: true
+      to:
+  Booking:
+    attributes:
+      id:
+        identifier: true
+      windows:
+        range: Window
+        multivalued: true
+        inlined_as_list: true
+  Term:
+    attributes:
+      in:
+        identifier: true
+      label:
+  Holder:
+    attributes:
+      id:
+        identifier: true
+      terms:
+        range: Term
+        multivalued: true
+        inlined: true
+"""
+
+
+@pytest.mark.parametrize(
+    "class_name,data,dumped",
+    [
+        (
+            "Booking",
+            {"id": "b1", "windows": [{"from": "x", "to": "y"}]},
+            {"id": "b1", "windows": [{"from": "x", "to": "y"}]},
+        ),
+        ("Booking", {"id": "b1", "windows": {"x": "y"}}, {"id": "b1", "windows": [{"from": "x", "to": "y"}]}),
+        (
+            "Holder",
+            {"id": "h1", "terms": {"ex:t1": {"label": "L"}}},
+            {"id": "h1", "terms": {"ex:t1": {"in": "ex:t1", "label": "L"}}},
+        ),
+    ],
+    ids=["list-keyed", "simpledict-shorthand", "dict-keyed-by-identifier"],
+)
+def test_keyword_named_key_in_inlined_collection(class_name, data, dumped):
+    """An inlined collection keyed by a keyword-named key or identifier loads and dumps under the slot name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    obj = getattr(py_module, class_name)(**data)
+    assert yaml.safe_load(yaml_dumper.dumps(obj)) == dumped
+
+
+def test_keyword_named_slot_item_access():
+    """Item access, keys() and ``in`` agree with items(): all take the slot name, and the field name still works."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    window = py_module.Window(**{"from": "x"})
+
+    assert list(keys(window)) == [k for k, _ in items(window)] == ["from", "to"]
+    assert "from" in window and "from_" in window
+    assert window["from"] == window["from_"] == "x"
+    window["from"] = "z"
+    assert window.from_ == "z"
+
+
+def test_keyword_named_identifier_rdf_dump():
+    """The RDF dumper reads a keyword-named identifier through its slot name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    ttl = rdflib_dumper.dumps(py_module.Term(**{"in": "ex:t1", "label": "L"}), SchemaView(_KEYWORD_KEY_SCHEMA))
+    assert "ex:t1 a ex:Term" in ttl
+
+
+def test_keyword_named_required_slot_reported_by_slot_name():
+    """A missing required slot is reported under the slot name, not the escaped field name."""
+    py_module = make_python(_KEYWORD_KEY_SCHEMA)
+    with pytest.raises(ValueError, match="^from must be supplied"):
+        py_module.Window(to="y")
+
+
+def test_keyword_named_slot_in_example_runner(tmp_path):
+    """linkml-run-examples loads an example that uses the keyword-named slot."""
+    schema_path = tmp_path / "kw.yaml"
+    schema_path.write_text(_KEYWORD_SLOT_SCHEMA.format(kw="from"))
+    runner = ExampleRunner(schemaview=SchemaView(str(schema_path)))
+    obj = runner._load_from_dict({"from": "2026-01-01"}, target_class="Window")
+    assert obj.from_ == "2026-01-01"
+
+
+def test_slot_aliases_imported_only_when_needed():
+    """A schema without keyword-named slots keeps its generated imports unchanged."""
+    assert "slot_aliases" not in PythonGenerator(_ANY_OF_SCHEMA).serialize()
+    assert "slot_aliases" in PythonGenerator(_KEYWORD_SLOT_SCHEMA.format(kw="from")).serialize()
 
 
 def test_permissible_values():

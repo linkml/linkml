@@ -11,7 +11,7 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.walker_utils import traverse_object_tree
-from linkml_runtime.utils.yamlutils import YAMLRoot
+from linkml_runtime.utils.yamlutils import YAMLRoot, field_name_for, slot_name_for
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,8 @@ def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = Non
     if resolve_function:
         return {k: resolve_function(v, k) for k, v in items(obj)}
     else:
-        return {k: v for k, v in vars(obj).items()}
+        # Keyed by slot name, so a template can say {from} for the field from_
+        return {slot_name_for(obj, k): v for k, v in vars(obj).items()}
 
 
 @dataclass
@@ -114,13 +115,14 @@ def infer_slot_value(
     Infer the value of a slot for an object
 
     :param obj: mutable object to be transformed
-    :param slot_name:
+    :param slot_name: slot name as data uses it, e.g. ``from`` for the field ``from_``
     :param schemaview:
     :param class_name:
     :param policy:
     :param config:
     """
-    v = getattr(obj, slot_name, None)
+    field_name = field_name_for(obj, slot_name)
+    v = getattr(obj, field_name, None)
     if v is not None and policy == Policy.KEEP:
         return v
     new_v = generate_slot_value(obj, slot_name, schemaview, class_name=class_name, config=config)
@@ -131,10 +133,10 @@ def infer_slot_value(
             if policy == Policy.STRICT:
                 raise ValueError(f"Inconsistent value {v} != {new_v} for {slot_name} for {obj}")
             elif policy == Policy.OVERRIDE:
-                setattr(obj, slot_name, new_v)
+                setattr(obj, field_name, new_v)
                 obj.__post_init__()
         else:
-            setattr(obj, slot_name, new_v)
+            setattr(obj, field_name, new_v)
             # print(f'CALLING POST INIT ON {obj} from {slot_name} = {new_v}')
             obj.__post_init__()
 
@@ -167,9 +169,10 @@ def infer_all_slot_values(
             and not isinstance(in_obj, EnumDefinitionImpl)
             and not isinstance(in_obj, PermissibleValue)
         ):
-            for k, v in vars(in_obj).items():
-                # print(f'  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}')
-                infer_slot_value(in_obj, k, schemaview, class_name=class_name, policy=policy, config=config)
+            for k in vars(in_obj):
+                infer_slot_value(
+                    in_obj, slot_name_for(in_obj, k), schemaview, class_name=class_name, policy=policy, config=config
+                )
         return in_obj
 
     traverse_object_tree(obj, infer)
