@@ -266,6 +266,9 @@ class JsonSchema(dict):
         if "properties" not in self:
             self["properties"] = {}
 
+        if canonical_name in self["properties"]:
+            raise ValueError(f"JSON Schema property key collision: {canonical_name!r}")
+
         self["properties"][canonical_name] = subschema
 
         if value_required:
@@ -685,10 +688,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             # Anonymous slot expressions don't carry the underlying slot's `identifier` or
             # `multivalued` flags, so look them up on the schema's slot definition.
             base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
-            # Identifier slots retain their slot-name alias, matching the direct
-            # class-slot path and the JSON-LD @id context entry.
-            if self.use_curies and not (base_slot is not None and base_slot.identifier):
-                prop_name = self._curie(slot)
+            if base_slot is not None:
+                alias_name = self.aliased_slot_name(base_slot)
+                prop_name = self.serialized_slot_name(
+                    base_slot,
+                    use_curies=self.use_curies,
+                    curie_name=lambda: self._curie(base_slot),
+                    alias_name=alias_name,
+                    identifier_name=alias_name,
+                )
             else:
                 prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
@@ -1031,11 +1039,14 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        # Identifier properties are the JSON-LD @id alias; never CURIE-key them.
-        if self.use_curies and not slot.identifier:
-            prop_name = self._curie(slot)
-        else:
-            prop_name = self.aliased_slot_name(slot)
+        alias_name = self.aliased_slot_name(slot)
+        prop_name = self.serialized_slot_name(
+            slot,
+            use_curies=self.use_curies,
+            curie_name=lambda: self._curie(slot),
+            alias_name=alias_name,
+            identifier_name=alias_name,
+        )
         prop = self.get_subschema_for_slot(slot, include_null=self.include_null, cls=cls)
         prop = self.after_generate_class_slot(
             SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
