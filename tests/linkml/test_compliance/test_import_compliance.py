@@ -181,6 +181,25 @@ def test_import(
         f"_SU1{slot_1_uri}_SU2{slot_2_uri}_CUC{class_c_uri}_CUD{class_d_uri}"
         f"_TU{type_uri}"
     ).replace(":", "_")
+    if data_name == "conflict_s2" and framework == "jsonschema":
+        # Both inherited and local slots serialize as ``s2alias``. JSON Schema
+        # cannot represent them as separate properties, so generation must fail
+        # explicitly instead of silently replacing one property's schema.
+        with pytest.raises(ValueError, match="property key collision: 's2alias'"):
+            validated_schema(
+                test_import,
+                schema_name,
+                framework,
+                imports=["linkml:types", SCHEMA_M1],
+                imported_schemas=[imported_schema],
+                classes=classes,
+                slots=slots,
+                prefixes={"schema": "http://schema.org/"},
+                core_elements=["alias", "class_uri", "slot_uri"],
+                mappings=mappings,
+                merge_type_imports=False,
+            )
+        return
     schema = validated_schema(
         test_import,
         schema_name,
