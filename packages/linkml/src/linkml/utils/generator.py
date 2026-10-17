@@ -794,6 +794,42 @@ class Generator(metaclass=abc.ABCMeta):
             slot = self.schema.slots[cast(SlotDefinitionName, slot)]
         return slot.alias if slot.alias else slot.name
 
+    def serialized_slot_name(
+        self,
+        slot: SlotDefinition,
+        *,
+        use_curies: bool,
+        curie_name: Callable[[], str],
+        alias_name: str,
+        identifier_name: str,
+    ) -> str:
+        """Resolve a slot's serialized key for generators that emit instance keys.
+
+        Identifier naming takes precedence over CURIE naming. A non-identifier
+        slot mapped to the expanded RDF ``type`` predicate is serialized under
+        its normalized alias, matching the JSON-LD keyword alias convention.
+        Other slots retain the calling generator's existing alias/CURIE policy.
+        """
+        if slot.identifier:
+            return identifier_name
+        if self.is_rdf_type_slot(slot):
+            return underscore(self.aliased_slot_name(slot))
+        if use_curies:
+            return curie_name()
+        return alias_name
+
+    def is_rdf_type_slot(self, slot: SlotDefinition) -> bool:
+        """Return whether *slot* maps to RDF type, resolving prefixes first."""
+        if not slot.slot_uri:
+            return False
+        if self.schemaview is not None:
+            expanded_uri = self.schemaview.get_uri(slot, expand=True)
+        elif self.namespaces is not None:
+            expanded_uri = self.namespaces.uri_for(slot.slot_uri)
+        else:
+            expanded_uri = slot.slot_uri
+        return str(expanded_uri) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
     def class_or_type_for(self, name: str) -> Element | None:
         """
         Return the corresponding class or type for name
