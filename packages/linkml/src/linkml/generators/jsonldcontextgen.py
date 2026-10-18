@@ -245,16 +245,6 @@ class ContextGenerator(Generator):
 
         return str(as_json(context)) + "\n"
 
-    def _curie(self, element: ClassDefinition | SlotDefinition) -> str:
-        if self.schemaview is None:
-            source = self.schema.source_file or self.schema
-            if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
-                source = str(Path(self.base_dir) / source)
-            sv = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
-        else:
-            sv = self.schemaview
-        return sv.get_curie(element)
-
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.exclude_imports and cls.name not in self._local_classes:
             return False
@@ -448,9 +438,7 @@ class ContextGenerator(Generator):
             key = self.serialized_slot_name(
                 slot,
                 use_curies=self.use_curies,
-                curie_name=lambda: self._curie(slot),
                 alias_name=alias_key,
-                identifier_name=alias_key,
             )
             is_rdf_type = not slot.identifier and self.is_rdf_type_slot(slot)
             previous_slot = self._context_slot_names.get(key)
@@ -512,9 +500,7 @@ class ContextGenerator(Generator):
             key = self.serialized_slot_name(
                 global_slot,
                 use_curies=self.use_curies,
-                curie_name=lambda: self._curie(global_slot),
                 alias_name=alias_key,
-                identifier_name=alias_key,
             )
             scoped[key] = entry
 

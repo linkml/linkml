@@ -454,7 +454,6 @@ class GolangGenerator(OOCodeGenerator):
         json_name = self.serialized_slot_name(
             slot,
             use_curies=False,
-            curie_name=lambda: alias_name,
             alias_name=alias_name,
             identifier_name=alias_name,
         )

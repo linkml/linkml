@@ -809,14 +809,29 @@ class Generator(metaclass=abc.ABCMeta):
             slot = self.schema.slots[cast(SlotDefinitionName, slot)]
         return slot.alias if slot.alias else slot.name
 
+    def _curie(self, element: Element) -> str:
+        """Return the CURIE for a schema element using the generator's schema source.
+
+        SchemaView-based generators use their initialized view. SchemaLoader-based
+        generators may not have one, so construct a view from the schema source,
+        preserving relative-source, import-map, and base-directory handling.
+        """
+        if self.schemaview is not None:
+            schemaview = self.schemaview
+        else:
+            source = self.schema.source_file or self.schema
+            if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
+                source = str(Path(self.base_dir) / source)
+            schemaview = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
+        return schemaview.get_curie(element)
+
     def serialized_slot_name(
         self,
         slot: SlotDefinition,
         *,
         use_curies: bool,
-        curie_name: Callable[[], str],
         alias_name: str,
-        identifier_name: str,
+        identifier_name: str | None = None,
     ) -> str:
         """Resolve the serialized property name for a slot.
 
@@ -829,11 +844,11 @@ class Generator(metaclass=abc.ABCMeta):
         Other slots retain the calling generator's existing alias/CURIE policy.
         """
         if slot.identifier:
-            return identifier_name
+            return identifier_name if identifier_name is not None else alias_name
         if self.is_rdf_type_slot(slot):
             return underscore(self.aliased_slot_name(slot))
         if use_curies:
-            return curie_name()
+            return self._curie(slot)
         return alias_name
 
     def is_rdf_type_slot(self, slot: SlotDefinition) -> bool:

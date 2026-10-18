@@ -30,7 +30,6 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     DimensionExpression,
-    Element,
     EnumDefinition,
     Example,
     PermissibleValue,
@@ -556,9 +555,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             }
         )
 
-    def _curie(self, element: Element) -> str:
-        return self.schemaview.get_curie(element)
-
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
 
@@ -693,9 +689,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 prop_name = self.serialized_slot_name(
                     base_slot,
                     use_curies=self.use_curies,
-                    curie_name=lambda: self._curie(base_slot),
                     alias_name=alias_name,
-                    identifier_name=alias_name,
                 )
             else:
                 prop_name = self.aliased_slot_name(slot)
@@ -1061,9 +1055,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         prop_name = self.serialized_slot_name(
             slot,
             use_curies=self.use_curies,
-            curie_name=lambda: self._curie(slot),
             alias_name=alias_name,
-            identifier_name=alias_name,
         )
         prop = self.get_subschema_for_slot(slot, include_null=self.include_null, cls=cls)
         prop = self.after_generate_class_slot(
