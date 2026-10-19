@@ -67,9 +67,9 @@ Team: [`core-team`](https://github.com/orgs/linkml/teams/core-team)
 Capabilities:
 
 - All collaborator capabilities
-- Can review and approve PRs anywhere in the monorepo (team write access is
-  sufficient; CODEOWNER approval is only required for paths explicitly listed
-  in the [CODEOWNERS](codeowners.md) file)
+- Can review and approve PRs anywhere in the monorepo. By default, core-team
+  approval is what the [CODEOWNERS](codeowners.md) file requires everywhere;
+  paths with a per-subsystem rule additionally require that area's CODEOWNER
 - May invoke the [1-month CODEOWNER fallback](codeowners.md#avoiding-review-bottlenecks-the-1-month-fallback)
   to approve stalled PRs in areas with unresponsive CODEOWNERS
 - Still subject to branch protection rules (cannot force-push, etc.)
