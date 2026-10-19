@@ -6,8 +6,9 @@ from typing import Any, ClassVar, Optional, Union
 import hbreader
 import pytest
 import yaml
+from jsonasobj2 import JsonObj
 
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import Annotation, SchemaDefinition
 from linkml_runtime.utils.metamodelcore import empty_dict, empty_list
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot, extended_str, from_yaml
 from tests.linkml_runtime.test_utils.environment import env
@@ -143,6 +144,24 @@ slots:
 """
     schema = from_yaml(model_txt, SchemaDefinition)
     assert "name" in schema.slots
+
+
+def test_safe_dumper_handles_jsonobj_with_annotation_value() -> None:
+    """Regression test for JsonObj representer registration in yamlutils.
+
+    Reproduces a crash path where a JsonObj containing Annotation values under
+    slot annotations raised yaml.representer.RepresenterError.
+    """
+    fail_value = JsonObj(metadata_scheme=Annotation(tag="metadata_scheme", value=True))
+    slot_payload = {"issuer": {"range": "string", "annotations": fail_value}}
+
+    dumped = yaml.dump(slot_payload, Dumper=yaml.SafeDumper, sort_keys=False)
+
+    assert "issuer:" in dumped
+    assert "annotations:" in dumped
+    assert "metadata_scheme:" in dumped
+    assert "tag: metadata_scheme" in dumped
+    assert "value: true" in dumped
 
 
 # ---------------------------------------------------------------------------

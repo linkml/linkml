@@ -6,14 +6,24 @@ class DependencySorter:
     rather than for general use.
     """
 
-    def __init__(self, dependency_dict: dict[str, list[str]] = None):
+    def __init__(self, dependency_dict: dict[str, list[str]] = None, *, allow_cycles: bool = False):
         """
         Initialize the DependencySorter with a dictionary representing a dependency graph.
 
         :param dependency_dict: A dictionary where keys are labels and values are lists of dependency.
         :type dependency_dict: dict[str, list[str]], optional
+        :param allow_cycles: If True, cycles between distinct nodes are silently
+            broken (the edge that closes the cycle is skipped) instead of
+            raising. Self-references are always silently skipped regardless.
+            Use this for inputs that may contain mutually-recursive classes —
+            e.g. importing the LinkML metamodel, where peer classes such as
+            ``path_expression``/``schema_definition``/``slot_definition`` form
+            real cycles that can't be topologically ordered but still need to
+            be code-generated in some order.
+        :type allow_cycles: bool
         """
         self.dependency_dict = dependency_dict or {}
+        self.allow_cycles = allow_cycles
 
     def _expand_dependencies(self) -> None:
         """
@@ -38,12 +48,21 @@ class DependencySorter:
         if node in visited:
             return
         if node in in_progress:
+            if self.allow_cycles:
+                # Caller opted into cycle tolerance — break the cycle by
+                # treating the node as already-visited from this branch.
+                return
             cycle_path = " -> ".join(list(in_progress) + [node])
-
             raise ValueError(f"Cyclic dependency detected: {cycle_path}")
 
         in_progress.add(node)
         for dependency in self.dependency_dict[node]:
+            # Self-references (e.g. LinkML metamodel's `extension` holding
+            # nested `extensions` of the same type) impose no ordering
+            # constraint — a class can't be "before itself" — so silently
+            # skip them regardless of the allow_cycles flag.
+            if dependency == node:
+                continue
             self._visit(dependency, visited, in_progress, result)
         in_progress.remove(node)
         visited.add(node)

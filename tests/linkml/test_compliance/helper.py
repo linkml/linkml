@@ -54,6 +54,15 @@ from linkml.generators import (
     ShExGenerator,
     sqlalchemygen,
 )
+
+try:
+    from linkml.generators.bigquerygen import BigQueryGenerator
+
+    _BQ_AVAILABLE = True
+except ImportError:
+    BigQueryGenerator = None  # type: ignore[assignment,misc]
+    _BQ_AVAILABLE = False
+
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
@@ -85,12 +94,13 @@ PANDERA_POLARS_CLASS = "pandera_polars_class"
 DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
+SQL_DDL_BIGQUERY = "sql_ddl_bigquery"
 OWL = "owl"
 GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, Any]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
-    JSON_SCHEMA: generators.JsonSchemaGenerator,
+    JSON_SCHEMA: (generators.JsonSchemaGenerator, {"not_closed": False}),
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
     JSONLD: generators.JSONLDGenerator,
@@ -116,6 +126,9 @@ GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, A
         },
     ),
 }
+
+if _BQ_AVAILABLE:
+    GENERATORS[SQL_DDL_BIGQUERY] = (BigQueryGenerator, {"dataset": "compliance_test"})
 
 
 class ValidationBehavior(str, enum.Enum):
@@ -739,6 +752,7 @@ def check_data(
     description: str = None,
     coerced: dict = None,
     exclude_rdf=False,
+    strip_nulls: bool = True,
 ):
     """
     Validate the given object against the given schema using the given framework.
@@ -758,6 +772,8 @@ def check_data(
     :param target_class: the type of the object
     :param description: description of this particular test combination
     :param coerced: Dict representation of repaired/coerced form of object
+    :param strip_nulls: if True (default), remove null-valued keys before plugin-based
+        validation (jsonschema, shacl); set to False to test explicit null handling
     :return:
     """
     out_dir = _schema_out_path(schema)
@@ -924,7 +940,8 @@ def check_data(
         # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
 
         try:
-            errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+            cleaned_object = clean_null_terms(object_to_validate) if strip_nulls else object_to_validate
+            errors = list(validator.iter_results(cleaned_object, target_class))
         except Exception as e:
             errors = [e]
         logger.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")

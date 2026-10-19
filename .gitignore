@@ -2,6 +2,7 @@ metamodel/metamodel.py-PREV
 temp/
 output/
 *.db
+notebooks/tmp/
 
 # sphinx
 docs/_sources
@@ -126,4 +127,5 @@ examples/PersonSchema/rust/Cargo.lock
 # temporary ignore
 monorepo-cleanup.sh
 /tests/linkml/test_generators/__snapshots__/figs/class_event_local.svg
+/packages/linkml_runtime/linkml-model-github
 .worktrees/

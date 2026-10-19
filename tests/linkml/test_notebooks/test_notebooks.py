@@ -54,6 +54,9 @@ def ep():
     sys.platform == "win32",
     reason="charset failure on windows in github actions. See https://github.com/linkml/linkml/issues/314",
 )
+# network: the kernel process fetches remote schemas/contexts; the conftest
+# fixture injects the offline guard into it via sitecustomize
+@pytest.mark.network
 @pytest.mark.parametrize(
     "nbname",
     [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],

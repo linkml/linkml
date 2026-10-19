@@ -19,7 +19,14 @@ impl serde_utils::InlinedPair for {{ name }} {
         };
         let key_value = serde_value::to_value(k.clone())
             .map_err(|e| format!("unable to serialize key: {}", e))?;
-        map.insert(Value::String("{{key_property_name}}".into()), key_value);
+        // Only inject the inferred key if the inner map does not already carry it
+        // under its canonical name or any accepted alias. Injecting unconditionally
+        // would produce a duplicate field once serde resolves aliases.
+        let already_keyed = map.contains_key(&Value::String("{{ key_property_name }}".into()))
+            {%- for a in key_property_aliases %} || map.contains_key(&Value::String("{{ a }}".into())){%- endfor %};
+        if !already_keyed {
+            map.insert(Value::String("{{ key_property_name }}".into()), key_value);
+        }
         let de          = Value::Map(map).into_deserializer();
         match serde_path_to_error::deserialize(de) {
             Ok(ok)  => Ok(ok),

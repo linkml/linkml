@@ -1,0 +1,29 @@
+id: https://example.org/test-parent-child-cycle
+name: test_parent_child_cycle
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: test
+
+classes:
+  Parent:
+    description: >-
+      Parent class with a slot whose range is a child class.
+      Without the fix in ClassHandlerBase.add_dependencies_by_association,
+      the hierarchy edge Child->Parent and the association edge Parent->Child
+      create a cycle in the dependency sorter.
+    attributes:
+      child_ref:
+        range: Child
+      child_refs:
+        range: Child
+        multivalued: true
+        inlined: true
+
+  Child:
+    is_a: Parent
+    attributes:
+      value:
+        range: string

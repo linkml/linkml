@@ -105,7 +105,11 @@ Alias: {{ element.alias }}
 {%- if element.is_grouping_slot %}
 | Is Grouping Slot | Yes |
 {%- endif %}
+{%- set has_cardinality = element.required or element.recommended
+    or element.multivalued or element.minimum_cardinality is not none
+    or element.maximum_cardinality is not none or element.exact_cardinality is not none %}
 
+{%- if has_cardinality %}
 ### Cardinality and Requirements
 
 | Property | Value |
@@ -128,6 +132,7 @@ Alias: {{ element.alias }}
 | Exact Cardinality | {{ element.exact_cardinality }} |
 {%- endif %}
 
+{% endif %}
 {%- if element.multivalued and (element.list_elements_unique is not none or element.list_elements_ordered is not none) %}
 ### List/Collection Properties
 

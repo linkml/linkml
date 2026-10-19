@@ -85,14 +85,14 @@ def test_include_range_class_descendants():
     )
     validation_context = ValidationContext(schema)
 
-    plugin = JsonschemaValidationPlugin(include_range_class_descendants=True)
+    plugin = JsonschemaValidationPlugin(include_range_class_descendants=True, closed=True)
     results = list(plugin.process({"thing": {"a": "1"}}, validation_context))
     assert results == []
 
     results = list(plugin.process({"thing": {"a": "1", "b": "2"}}, validation_context))
     assert results == []
 
-    plugin = JsonschemaValidationPlugin(include_range_class_descendants=False)
+    plugin = JsonschemaValidationPlugin(include_range_class_descendants=False, closed=True)
     results = list(plugin.process({"thing": {"a": "1"}}, validation_context))
     assert results == []
 
