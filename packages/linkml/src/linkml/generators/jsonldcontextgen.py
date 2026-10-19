@@ -77,7 +77,9 @@ class ContextGenerator(Generator):
     _external_classes: set | None = field(default=None, repr=False)
     _external_slots: set | None = field(default=None, repr=False)
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs as context keys instead of element names."""
+    """If true, use class_uri/slot_uri CURIEs as class and non-identifier slot
+    context keys. Identifier slots retain their slot-name key and map to ``@id``.
+    """
 
     xsd_anyuri_as_iri: bool = False
     """Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.
@@ -429,7 +431,12 @@ class ContextGenerator(Generator):
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
-            if self.use_curies:
+            if slot.identifier:
+                # Identifier slots map to the JSON-LD @id keyword. The context key
+                # must be the slot *name* (the term used in instance data), not a
+                # CURIE — even when --use-curies is enabled.
+                key = underscore(aliased_slot_name)
+            elif self.use_curies:
                 key = self._curie(slot)
             else:
                 key = underscore(aliased_slot_name)
@@ -480,7 +487,7 @@ class ContextGenerator(Generator):
             self._build_element_id(entry, global_slot.slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
-            if self.use_curies:
+            if self.use_curies and not global_slot.identifier:
                 scoped[self._curie(global_slot)] = entry
             else:
                 scoped[underscore(slot_name)] = entry
@@ -606,7 +613,8 @@ class ContextGenerator(Generator):
     "--use-curies/--not-use-curies",
     default=False,
     show_default=True,
-    help="Use class_uri/slot_uri CURIEs as context keys instead of element names.",
+    help="Use class_uri/slot_uri CURIEs as class and non-identifier slot context keys; identifier slots retain their "
+    + "slot-name key and map to @id.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):

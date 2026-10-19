@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, cast
 
 import click
@@ -218,6 +218,7 @@ def _slot_examples_for_json_schema(
 class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
     PRESERVE_NAMES: bool = False
+    USE_CURIES: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -247,7 +248,7 @@ class JsonSchema(dict):
             names = [names]
 
         for name in names:
-            canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+            canonical_name = name if self.PRESERVE_NAMES or self.USE_CURIES else camelcase(name)
 
             if "$defs" not in self or canonical_name not in self["$defs"]:
                 self._lax_forward_refs[canonical_name] = identifier_name
@@ -319,7 +320,7 @@ class JsonSchema(dict):
     @classmethod
     def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
-            def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
+            def_name = class_name if cls.PRESERVE_NAMES or cls.USE_CURIES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
@@ -413,8 +414,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     # @deprecated("Use top_class")
     topClass: str | None = None
 
-    not_closed: bool | None = True
-    """If not closed, then an open-ended set of attributes can be instantiated for any object"""
+    not_closed: bool = False
+    """Allow data to include properties that the schema does not declare.
+
+    Defaults to closed, following the metamodel: ``meta.yaml`` documents an absent
+    ``extra_slots`` as "forbid all additional data (default)". An explicit
+    ``extra_slots`` on a class always takes precedence over this.
+
+    This governs classes only. The top-level schema takes ``additionalProperties``
+    from the document's root class -- see :meth:`start_schema`.
+    """
 
     indent: int = 4
 
@@ -422,6 +431,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     top_class: ClassDefinitionName | str | None = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
+
+    _root_class_name: str | None = field(default=None, init=False, repr=False)
+    """Name of the resolved root class, set by :meth:`start_schema`."""
 
     include_range_class_descendants: bool = False
     """If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.
@@ -460,7 +472,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+    """If true, use class_uri/slot_uri CURIEs for class definitions and non-identifier
+    slot properties. Identifier properties retain their slot-name aliases so they
+    remain consistent with the JSON-LD ``@id`` alias.
+    """
 
     def __post_init__(self):
         if self.materialize_patterns is not None:
@@ -471,24 +486,60 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             self.top_class = self.topClass
 
         super().__post_init__()
-        if self.namespaces is None:
-            raise TypeError("Schema text must be supplied to JSON schema generator.  Preparsed schema will not work")
 
         # Set the class variable for JsonSchema to use
         JsonSchema.PRESERVE_NAMES = self.preserve_names
+        # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
+        # pre-converted to CURIEs, so they must not be camelcased again.
+        JsonSchema.USE_CURIES = self.use_curies
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
 
+    def _names_match(self, a: str, b: str) -> bool:
+        """Compare class names the way ``--top-class`` has always been matched.
+
+        ``top_class`` is habitually passed in CamelCase while the schema spells the
+        class out (``top_class="AnyType"`` for ``any type``), so the comparison is
+        on ``camelcase`` unless ``preserve_names`` is set.
+        """
+        return a == b if self.preserve_names else camelcase(a) == camelcase(b)
+
+    def _root_class(self) -> ClassDefinition | None:
+        """The class the root of the document instantiates, or ``None`` if there is none.
+
+        Named by ``--top-class``, or failing that declared with ``tree_root: true``.
+        A schema may carry more than one ``tree_root`` (biolink-model does), so the
+        first is taken; the point is that every use site agrees on which it is.
+        """
+        classes = self.schemaview.all_classes().values()
+        if self.top_class:
+            return next((c for c in classes if self._names_match(self.top_class, c.name)), None)
+        return next((c for c in classes if c.tree_root), None)
+
+    def _is_root_class(self, cls: ClassDefinition) -> bool:
+        """Whether *cls* is the class the root of the document instantiates.
+
+        Compares against the name resolved in :meth:`start_schema`, so the top-level
+        ``additionalProperties`` and the subschema merged beneath it cannot come from
+        two different classes.
+        """
+        return self._root_class_name is not None and self._names_match(self._root_class_name, cls.name)
+
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
-        top_additional_properties = self.not_closed
-        if self.top_class:
-            top_class_def = self.schemaview.get_class(self.top_class)
-            if top_class_def is not None:
-                top_additional_properties = self.get_additional_properties(top_class_def)
+        root_class_def = self._root_class()
+        self._root_class_name = root_class_def.name if root_class_def is not None else None
+
+        if root_class_def is not None:
+            top_additional_properties = self.get_additional_properties(root_class_def)
+        else:
+            # No root class means the top level has no properties of its own, so
+            # closing it would admit nothing but `{}`. Stay open regardless of
+            # `not_closed`, which governs classes.
+            top_additional_properties = True
 
         self.top_level_schema = JsonSchema(
             {
@@ -615,13 +666,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         else:
             self.top_level_schema.add_def(cls.name, class_subschema)
 
-        if (
-            self.top_class is not None
-            and (
-                (self.preserve_names and self.top_class == cls.name)
-                or (not self.preserve_names and camelcase(self.top_class) == camelcase(cls.name))
-            )
-        ) or (self.top_class is None and cls.tree_root):
+        if self._is_root_class(cls):
             for key, value in class_subschema.items():
                 # check this first to ensure we don't overwrite things like additionalProperties
                 # or description on the root. But we do want to copy over properties, required,
@@ -637,14 +682,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
-            if self.use_curies:
+            # Anonymous slot expressions don't carry the underlying slot's `identifier` or
+            # `multivalued` flags, so look them up on the schema's slot definition.
+            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Identifier slots retain their slot-name alias, matching the direct
+            # class-slot path and the JSON-LD @id context entry.
+            if self.use_curies and not (base_slot is not None and base_slot.identifier):
                 prop_name = self._curie(slot)
             else:
                 prop_name = self.aliased_slot_name(slot)
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
-            # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
-            # so look it up on the schema's slot definition and wrap so item-level constraints apply.
-            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Wrap multivalued slots so item-level constraints apply.
             if base_slot is not None and base_slot.multivalued and not prop.is_array:
                 prop = JsonSchema.array_of(prop, include_null=False, required=False)
             value_required = False
@@ -736,8 +784,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            if schema_type.base:
-                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            # Types without an explicit base have no more specific JSON Schema
+            # representation available, so treat them like other unknown bases.
+            base = schema_type.base.lower() if schema_type.base else ""
+            (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
@@ -756,6 +806,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     reference = descendants
                 else:
                     reference = slot.range
+                if self.use_curies:
+                    # $defs for classes are keyed by CURIE under --use-curies,
+                    # so the $ref targets must use the same CURIE keys.
+                    if isinstance(reference, list):
+                        reference = [self._curie(self.schemaview.get_class(r)) for r in reference]
+                    else:
+                        reference = self._curie(self.schemaview.get_class(reference))
             else:
                 id_slot = self.schemaview.get_identifier_slot(slot.range)
                 return self.get_type_info_for_slot_subschema(id_slot)
@@ -992,7 +1049,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
-        if self.use_curies:
+        # Identifier properties are the JSON-LD @id alias; never CURIE-key them.
+        if self.use_curies and not slot.identifier:
             prop_name = self._curie(slot)
         else:
             prop_name = self.aliased_slot_name(slot)
@@ -1216,10 +1274,12 @@ Top level class; slots of this class will become top level properties in the jso
 )
 @click.option(
     "--not-closed/--closed",
-    default=True,
+    default=False,
     show_default=True,
     help="""
-Set additionalProperties=False if closed otherwise true if not closed at the global level
+Allow data to include properties that the schema does not declare. Closed by
+default, following the metamodel; an explicit `extra_slots` on a class always
+wins. The top level takes its value from the document's root class.
 """,
 )
 @click.option(
@@ -1227,7 +1287,8 @@ Set additionalProperties=False if closed otherwise true if not closed at the glo
     default=False,
     show_default=True,
     help="""
-Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
+Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD @id alias.
 """,
 )
 @click.option(

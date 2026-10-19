@@ -22,15 +22,15 @@
 linkml:AltDescription OIO:inSubset linkml:BasicSubset ;
 	a linkml:ClassDefinition ;
 	skos:altLabel "structured description" ;
-	skos:exactMatch linkml:AltDescription ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/AltDescription"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AltDescription"^^xsd:anyURI ;
 	linkml:description "an attributed description" ;
 	linkml:slot_usage _:c14n16 ;
 	linkml:slots linkml:alt_description_source , linkml:alt_description_text .
 linkml:Annotatable a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Annotatable ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support annotations" ;
 	linkml:imported_from "linkml:annotations" ;
@@ -38,52 +38,52 @@ linkml:Annotatable a linkml:ClassDefinition ;
 	linkml:slot_usage _:c14n29 ;
 	linkml:slots linkml:annotations .
 linkml:Annotation a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Annotation ;
 	skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
 	linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
 	linkml:imported_from "linkml:annotations" ;
 	linkml:is_a linkml:Extension ;
 	linkml:mixins linkml:Annotatable ;
-	linkml:slot_usage _:c14n91 ;
+	linkml:slot_usage _:c14n92 ;
 	linkml:slots linkml:annotations , linkml:extension_tag , linkml:extension_value , linkml:extensions .
 linkml:AnonymousClassExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:AnonymousClassExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/AnonymousClassExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnonymousClassExpression"^^xsd:anyURI ;
 	linkml:is_a linkml:AnonymousExpression ;
 	linkml:mixins linkml:ClassExpression ;
 	linkml:slot_usage _:c14n55 ;
-	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:is_a , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:slot_conditions , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
+	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:anonymous_class_expression_is_a , linkml:broad_mappings , linkml:categories , linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:slot_conditions , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:AnonymousEnumExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:AnonymousEnumExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/AnonymousEnumExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnonymousEnumExpression"^^xsd:anyURI ;
 	linkml:description "An enum_expression that is not named" ;
 	linkml:mixins linkml:EnumExpression ;
 	linkml:slot_usage _:c14n75 ;
 	linkml:slots linkml:code_set , linkml:code_set_tag , linkml:code_set_version , linkml:concepts , linkml:include , linkml:inherits , linkml:matches , linkml:minus , linkml:permissible_values , linkml:pv_formula , linkml:reachable_from .
 linkml:AnonymousExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:AnonymousExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "anonymous expressions are useful for when it is necessary to build a complex expression without introducing a named element for each sub-expression" ;
 	linkml:abstract true ;
+	linkml:class_uri "https://w3id.org/linkml/AnonymousExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnonymousExpression"^^xsd:anyURI ;
 	linkml:description "An abstract parent class for any nested expression" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Expression , linkml:Extensible ;
 	linkml:slot_usage _:c14n81 ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:AnonymousSlotExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
 	linkml:is_a linkml:AnonymousExpression ;
 	linkml:mixins linkml:SlotExpression ;
 	linkml:slot_usage _:c14n54 ;
 	linkml:slots linkml:aliases , linkml:all_members , linkml:alt_descriptions , linkml:annotations , linkml:array , linkml:bindings , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:enum_range , linkml:equals_expression , linkml:equals_number , linkml:equals_string , linkml:equals_string_in , linkml:exact_cardinality , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:has_member , linkml:implicit_prefix , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:inlined , linkml:inlined_as_list , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:maximum_cardinality , linkml:maximum_value , linkml:minimum_cardinality , linkml:minimum_value , linkml:modified_by , linkml:multivalued , linkml:narrow_mappings , linkml:notes , linkml:pattern , linkml:range , linkml:range_expression , linkml:rank , linkml:recommended , linkml:related_mappings , linkml:required , linkml:see_also , linkml:slot_expression_all_of , linkml:slot_expression_any_of , linkml:slot_expression_exactly_one_of , linkml:slot_expression_none_of , linkml:source , linkml:status , linkml:structured_aliases , linkml:structured_pattern , linkml:title , linkml:todos , linkml:unit , linkml:value_presence .
 linkml:AnonymousTypeExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:AnonymousTypeExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/AnonymousTypeExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnonymousTypeExpression"^^xsd:anyURI ;
 	linkml:description "A type expression that is not a top-level named type definition. Used for nesting." ;
 	linkml:mixins linkml:TypeExpression ;
@@ -92,23 +92,25 @@ linkml:AnonymousTypeExpression a linkml:ClassDefinition ;
 linkml:AnyValue a linkml:ClassDefinition ;
 	skos:exactMatch linkml:Any ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:slot_usage _:c14n43 .
 linkml:Anything a linkml:ClassDefinition ;
 	skos:exactMatch linkml:Any ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Anything"^^xsd:anyURI ;
 	linkml:slot_usage _:c14n47 .
-linkml:ArrayExpression bibo:status "testing"^^xsd:anyURI ;
-	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ArrayExpression ;
+linkml:ArrayExpression a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ArrayExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ArrayExpression"^^xsd:anyURI ;
 	linkml:description "defines the dimensions of an array" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
 	linkml:slot_usage _:c14n18 ;
-	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:dimensions , linkml:exact_mappings , linkml:exact_number_dimensions , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:maximum_number_dimensions , linkml:minimum_number_dimensions , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
+	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:dimensions , linkml:exact_mappings , linkml:exact_number_dimensions , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:maximum_number_dimensions , linkml:minimum_number_dimensions , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos ;
+	linkml:status "testing" .
 linkml:BROAD_SYNONYM linkml:meaning "skos:broaderMatch"^^xsd:anyURI .
 linkml:BasicSubset dcterms:title "basic subset" ;
 	a linkml:SubsetDefinition ;
@@ -122,9 +124,9 @@ linkml:ClassDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , 
 	a linkml:ClassDefinition ;
 	skos:altLabel "message" , "observation" , "record" , "table" , "template" ;
 	skos:closeMatch owl:Class ;
-	skos:exactMatch linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 2 ;
+	linkml:class_uri "https://w3id.org/linkml/ClassDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ClassDefinition"^^xsd:anyURI ;
 	linkml:description "an element whose instances are complex objects that may have slot-value assignments" ;
 	linkml:is_a linkml:Definition ;
@@ -132,26 +134,26 @@ linkml:ClassDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , 
 	linkml:slot_usage _:c14n35 ;
 	linkml:slots linkml:abstract , linkml:alias , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:attributes , linkml:broad_mappings , linkml:categories , linkml:children_are_mutually_disjoint , linkml:class_definition_apply_to , linkml:class_definition_disjoint_with , linkml:class_definition_is_a , linkml:class_definition_mixins , linkml:class_definition_rules , linkml:class_definition_union_of , linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:class_uri , linkml:classification_rules , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:defining_slots , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:extra_slots , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:mixin , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:represents_relationship , linkml:see_also , linkml:slot_conditions , linkml:slot_names_unique , linkml:slot_usage , linkml:slots , linkml:source , linkml:status , linkml:string_serialization , linkml:structured_aliases , linkml:subclass_of , linkml:title , linkml:todos , linkml:tree_root , linkml:unique_keys , linkml:values_from .
 linkml:ClassExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ClassExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ClassExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ClassExpression"^^xsd:anyURI ;
 	linkml:description "A boolean expression that can be used to dynamically determine membership of a class" ;
 	linkml:mixin true ;
 	linkml:slot_usage _:c14n74 ;
 	linkml:slots linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:slot_conditions .
 linkml:ClassLevelRule a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ClassLevelRule ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
+	linkml:class_uri "https://w3id.org/linkml/ClassLevelRule"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ClassLevelRule"^^xsd:anyURI ;
 	linkml:description "A rule that is applied to classes" ;
-	linkml:slot_usage _:c14n87 .
+	linkml:slot_usage _:c14n88 .
 linkml:ClassRule OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
 	skos:altLabel "if rule" ;
 	skos:closeMatch swrl:Imp , sh:TripleRule ;
-	skos:exactMatch linkml:ClassRule ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ClassRule"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ClassRule"^^xsd:anyURI ;
 	linkml:description "A rule that applies to instances of a class" ;
 	linkml:is_a linkml:ClassLevelRule ;
@@ -160,8 +162,8 @@ linkml:ClassRule OIO:inSubset linkml:SpecificationSubset ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:bidirectional , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deactivated , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:elseconditions , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:open_world , linkml:postconditions , linkml:preconditions , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:CommonMetadata OIO:inSubset linkml:BasicSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:CommonMetadata ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/CommonMetadata"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/CommonMetadata"^^xsd:anyURI ;
 	linkml:description "Generic metadata shared across definitions" ;
 	linkml:mixin true ;
@@ -171,32 +173,32 @@ linkml:DISCOURAGED linkml:description "The metadata element is allowed but disco
 linkml:Definition OIO:inSubset linkml:BasicSubset ;
 	a linkml:ClassDefinition ;
 	rdfs:seeAlso "https://en.wikipedia.org/wiki/Data_element_definition"^^xsd:anyURI ;
-	skos:exactMatch linkml:Definition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
+	linkml:class_uri "https://w3id.org/linkml/Definition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Definition"^^xsd:anyURI ;
 	linkml:description "abstract base class for core metaclasses" ;
 	linkml:is_a linkml:Element ;
 	linkml:slot_usage _:c14n8 ;
 	linkml:slots linkml:abstract , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:apply_to , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:is_a , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:mixin , linkml:mixins , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:string_serialization , linkml:structured_aliases , linkml:title , linkml:todos , linkml:values_from .
-linkml:DimensionExpression bibo:status "testing"^^xsd:anyURI ;
-	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:DimensionExpression ;
+linkml:DimensionExpression a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/DimensionExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/DimensionExpression"^^xsd:anyURI ;
 	linkml:description "defines one of the dimensions of an array" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
-	linkml:slot_usage _:c14n92 ;
-	linkml:slots linkml:alias , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_cardinality , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:maximum_cardinality , linkml:minimum_cardinality , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
+	linkml:slot_usage _:c14n93 ;
+	linkml:slots linkml:alias , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_cardinality , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:maximum_cardinality , linkml:minimum_cardinality , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos ;
+	linkml:status "testing" .
 linkml:EXACT_SYNONYM linkml:meaning "skos:exactMatch"^^xsd:anyURI .
 linkml:EXAMPLE linkml:description "The metadata element is an example of how to use the model" .
 linkml:Element OIO:inSubset linkml:BasicSubset ;
 	a linkml:ClassDefinition ;
 	rdfs:seeAlso "https://en.wikipedia.org/wiki/Data_element"^^xsd:anyURI ;
 	skos:altLabel "data element" , "object" ;
-	skos:exactMatch linkml:Element ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
+	linkml:class_uri "https://w3id.org/linkml/Element"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Element"^^xsd:anyURI ;
 	linkml:description "A named element in the model" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
@@ -204,8 +206,8 @@ linkml:Element OIO:inSubset linkml:BasicSubset ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:EnumBinding OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:EnumBinding ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/EnumBinding"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/EnumBinding"^^xsd:anyURI ;
 	linkml:description "A binding of a slot or a class to a permissible value from an enumeration." ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
@@ -215,9 +217,10 @@ linkml:EnumDefinition OIO:inSubset linkml:BasicSubset , linkml:ObjectOrientedPro
 	a linkml:ClassDefinition ;
 	skos:altLabel "Terminology Value Set" , "answer list" , "code set" , "concept set" , "enum" , "enumeration" , "semantic enumeration" , "term set" , "value domain" , "value set" ;
 	skos:closeMatch skos:ConceptScheme ;
-	skos:exactMatch NCIT:C113497 , qb:HierarchicalCodeList , cdisc:ValueDomain , linkml:EnumDefinition ;
+	skos:exactMatch NCIT:C113497 , qb:HierarchicalCodeList , cdisc:ValueDomain ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 5 ;
+	linkml:class_uri "https://w3id.org/linkml/EnumDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/EnumDefinition"^^xsd:anyURI ;
 	linkml:description "an element whose instances must be drawn from a specified set of permissible values" ;
 	linkml:is_a linkml:Definition ;
@@ -225,8 +228,8 @@ linkml:EnumDefinition OIO:inSubset linkml:BasicSubset , linkml:ObjectOrientedPro
 	linkml:slot_usage _:c14n6 ;
 	linkml:slots linkml:abstract , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:apply_to , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:code_set , linkml:code_set_tag , linkml:code_set_version , linkml:comments , linkml:concepts , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:enum_uri , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:include , linkml:inherits , linkml:instantiates , linkml:is_a , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:matches , linkml:minus , linkml:mixin , linkml:mixins , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:permissible_values , linkml:pv_formula , linkml:rank , linkml:reachable_from , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:string_serialization , linkml:structured_aliases , linkml:title , linkml:todos , linkml:values_from .
 linkml:EnumExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:EnumExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/EnumExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/EnumExpression"^^xsd:anyURI ;
 	linkml:description "An expression that constrains the range of a slot" ;
 	linkml:is_a linkml:Expression ;
@@ -234,67 +237,67 @@ linkml:EnumExpression a linkml:ClassDefinition ;
 	linkml:slots linkml:code_set , linkml:code_set_tag , linkml:code_set_version , linkml:concepts , linkml:include , linkml:inherits , linkml:matches , linkml:minus , linkml:permissible_values , linkml:pv_formula , linkml:reachable_from .
 linkml:Example OIO:inSubset linkml:BasicSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Example ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Example"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Example"^^xsd:anyURI ;
 	linkml:description "usage example and description" ;
 	linkml:slot_usage _:c14n66 ;
 	linkml:slots linkml:value , linkml:value_description , linkml:value_object .
 linkml:Expression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Expression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
+	linkml:class_uri "https://w3id.org/linkml/Expression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Expression"^^xsd:anyURI ;
 	linkml:description "general mixin for any class that can represent some form of expression" ;
 	linkml:mixin true ;
-	linkml:slot_usage _:c14n93 .
+	linkml:slot_usage _:c14n94 .
 linkml:Extensible a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Extensible ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support extension" ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:mixin true ;
-	linkml:slot_usage _:c14n86 ;
+	linkml:slot_usage _:c14n87 ;
 	linkml:slots linkml:extensions .
 linkml:Extension a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Extension ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:description "a tag/value pair used to add non-model information to an entry" ;
 	linkml:imported_from "linkml:extensions" ;
 	linkml:slot_usage _:c14n73 ;
 	linkml:slots linkml:extension_tag , linkml:extension_value , linkml:extensions .
 linkml:ExtraSlotsExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ExtraSlotsExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
 	linkml:description "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class.\nSee `extra_slots` for usage examples.\n" ;
 	linkml:mixins linkml:Expression ;
 	linkml:slot_usage _:c14n19 ;
 	linkml:slots linkml:allowed , linkml:extra_slots_expression_range_expression .
 linkml:FHIR_CODING linkml:description "The permissible values are the set of FHIR coding elements derived from the code set" .
-linkml:ImportExpression bibo:status "testing"^^xsd:anyURI ;
-	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ImportExpression ;
+linkml:ImportExpression a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ImportExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ImportExpression"^^xsd:anyURI ;
 	linkml:description "an expression describing an import" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
 	linkml:slot_usage _:c14n69 ;
-	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:import_as , linkml:import_from , linkml:import_map , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
+	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:import_as , linkml:import_from , linkml:import_map , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos ;
+	linkml:status "testing" .
 linkml:LABEL linkml:description "The permissible values are the set of human readable labels in the code set" .
 linkml:LocalName a linkml:ClassDefinition ;
-	skos:exactMatch linkml:LocalName ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/LocalName"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/LocalName"^^xsd:anyURI ;
 	linkml:description "an attributed label" ;
-	linkml:slot_usage _:c14n90 ;
+	linkml:slot_usage _:c14n91 ;
 	linkml:slots linkml:local_name_source , linkml:local_name_value .
 linkml:MatchQuery OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:MatchQuery ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/MatchQuery"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/MatchQuery"^^xsd:anyURI ;
 	linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that matches on properties of the external concepts." ;
 	linkml:slot_usage _:c14n48 ;
@@ -327,16 +330,16 @@ linkml:PREDICATE skos:exactMatch owl:annotatedProperty ;
 	linkml:description "a slot with this role connects a relationship to its predicate/property" ;
 	linkml:meaning "rdf:predicate"^^xsd:anyURI .
 linkml:PathExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:PathExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/PathExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/PathExpression"^^xsd:anyURI ;
 	linkml:description "An expression that describes an abstract path from an object to another through a sequence of slot lookups" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Expression , linkml:Extensible ;
 	linkml:slot_usage _:c14n67 ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:path_expression_all_of , linkml:path_expression_any_of , linkml:path_expression_exactly_one_of , linkml:path_expression_followed_by , linkml:path_expression_none_of , linkml:range_expression , linkml:rank , linkml:related_mappings , linkml:reversed , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos , linkml:traverse .
 linkml:PatternExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:PatternExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/PatternExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/PatternExpression"^^xsd:anyURI ;
 	linkml:description "a regular expression pattern used to evaluate conformance of a string" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
@@ -346,19 +349,19 @@ linkml:PermissibleValue OIO:inSubset linkml:BasicSubset , linkml:SpecificationSu
 	a linkml:ClassDefinition ;
 	skos:altLabel "PV" ;
 	skos:closeMatch skos:Concept ;
-	skos:exactMatch linkml:PermissibleValue ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 16 ;
+	linkml:class_uri "https://w3id.org/linkml/PermissibleValue"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/PermissibleValue"^^xsd:anyURI ;
 	linkml:description "a permissible value, accompanied by intended text and an optional mapping to a concept URI" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
-	linkml:slot_usage _:c14n62 ;
+	linkml:slot_usage _:c14n61 ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:meaning , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:permissible_value_is_a , linkml:permissible_value_mixins , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:text , linkml:title , linkml:todos , linkml:unit .
 linkml:Prefix OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Prefix ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 12 ;
+	linkml:class_uri "https://w3id.org/linkml/Prefix"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Prefix"^^xsd:anyURI ;
 	linkml:description "prefix URI tuple" ;
 	linkml:slot_usage _:c14n50 ;
@@ -369,8 +372,8 @@ linkml:RELATED_SYNONYM linkml:meaning "skos:relatedMatch"^^xsd:anyURI .
 linkml:REQUIRED linkml:description "The metadata element is required to be present in the model" .
 linkml:ReachabilityQuery OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:ReachabilityQuery ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/ReachabilityQuery"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/ReachabilityQuery"^^xsd:anyURI ;
 	linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
 	linkml:slot_usage _:c14n25 ;
@@ -389,9 +392,9 @@ linkml:SchemaDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset ,
 	rdfs:seeAlso "https://en.wikipedia.org/wiki/Data_dictionary"^^xsd:anyURI ;
 	skos:altLabel "data dictionary" , "data model" , "information model" , "logical model" , "model" , "schema" ;
 	skos:closeMatch qb:ComponentSet , owl:Ontology ;
-	skos:exactMatch linkml:SchemaDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 1 ;
+	linkml:class_uri "https://w3id.org/linkml/SchemaDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/SchemaDefinition"^^xsd:anyURI ;
 	linkml:description "A collection of definitions that make up a schema or a data model." ;
 	linkml:is_a linkml:Element ;
@@ -400,8 +403,8 @@ linkml:SchemaDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset ,
 	linkml:tree_root true .
 linkml:Setting OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:Setting ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/Setting"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Setting"^^xsd:anyURI ;
 	linkml:description "assignment of a key to a value" ;
 	linkml:slot_usage _:c14n57 ;
@@ -410,9 +413,9 @@ linkml:SlotDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , l
 	a linkml:ClassDefinition ;
 	skos:altLabel "attribute" , "column" , "field" , "property" , "slot" , "variable" ;
 	skos:closeMatch qb:ComponentProperty , rdf:Property ;
-	skos:exactMatch linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 3 ;
+	linkml:class_uri "https://w3id.org/linkml/SlotDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/SlotDefinition"^^xsd:anyURI ;
 	linkml:description "an element that describes how instances are related to other instances" ;
 	linkml:is_a linkml:Definition ;
@@ -420,8 +423,8 @@ linkml:SlotDefinition OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , l
 	linkml:slot_usage _:c14n41 ;
 	linkml:slots linkml:abstract , linkml:alias , linkml:aliases , linkml:all_members , linkml:alt_descriptions , linkml:annotations , linkml:array , linkml:asymmetric , linkml:bindings , linkml:broad_mappings , linkml:categories , linkml:children_are_mutually_disjoint , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:designates_type , linkml:domain , linkml:domain_of , linkml:enum_range , linkml:equals_expression , linkml:equals_number , linkml:equals_string , linkml:equals_string_in , linkml:exact_cardinality , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:has_member , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:identifier , linkml:ifabsent , linkml:implements , linkml:implicit_prefix , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:inherited , linkml:inlined , linkml:inlined_as_list , linkml:instantiates , linkml:inverse , linkml:irreflexive , linkml:is_class_field , linkml:is_grouping_slot , linkml:is_usage_slot , linkml:key , linkml:keywords , linkml:last_updated_on , linkml:list_elements_ordered , linkml:list_elements_unique , linkml:local_names , linkml:locally_reflexive , linkml:mappings , linkml:maximum_cardinality , linkml:maximum_value , linkml:minimum_cardinality , linkml:minimum_value , linkml:mixin , linkml:modified_by , linkml:multivalued , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:owner , linkml:path_rule , linkml:pattern , linkml:range , linkml:range_expression , linkml:rank , linkml:readonly , linkml:recommended , linkml:reflexive , linkml:reflexive_transitive_form_of , linkml:related_mappings , linkml:relational_role , linkml:required , linkml:role , linkml:see_also , linkml:shared , linkml:singular_name , linkml:slot_definition_apply_to , linkml:slot_definition_disjoint_with , linkml:slot_definition_is_a , linkml:slot_definition_mixins , linkml:slot_definition_union_of , linkml:slot_expression_all_of , linkml:slot_expression_any_of , linkml:slot_expression_exactly_one_of , linkml:slot_expression_none_of , linkml:slot_group , linkml:slot_uri , linkml:source , linkml:status , linkml:string_serialization , linkml:structured_aliases , linkml:structured_pattern , linkml:subproperty_of , linkml:symmetric , linkml:title , linkml:todos , linkml:transitive , linkml:transitive_form_of , linkml:type_mappings , linkml:unit , linkml:usage_slot_name , linkml:value_presence , linkml:values_from .
 linkml:SlotExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:SlotExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/SlotExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/SlotExpression"^^xsd:anyURI ;
 	linkml:description "an expression that constrains the range of values a slot can take" ;
 	linkml:is_a linkml:Expression ;
@@ -437,6 +440,7 @@ linkml:SpecificationSubset dcterms:title "specification subset" ;
 linkml:StructuredAlias a linkml:ClassDefinition ;
 	skos:exactMatch skosxl:Label ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "http://www.w3.org/2008/05/skos-xl#Label"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/StructuredAlias"^^xsd:anyURI ;
 	linkml:description "object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Expression , linkml:Extensible ;
@@ -444,9 +448,9 @@ linkml:StructuredAlias a linkml:ClassDefinition ;
 	linkml:slots linkml:alias_contexts , linkml:alias_predicate , linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:close_mappings , linkml:comments , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:literal_form , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_alias_categories , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:SubsetDefinition OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:SubsetDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 6 ;
+	linkml:class_uri "https://w3id.org/linkml/SubsetDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/SubsetDefinition"^^xsd:anyURI ;
 	linkml:description "an element that can be used to group other metamodel elements" ;
 	linkml:is_a linkml:Element ;
@@ -454,9 +458,9 @@ linkml:SubsetDefinition OIO:inSubset linkml:BasicSubset , linkml:SpecificationSu
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos .
 linkml:TypeDefinition OIO:inSubset linkml:BasicSubset , linkml:OwlProfile , linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:TypeDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 4 ;
+	linkml:class_uri "https://w3id.org/linkml/TypeDefinition"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/TypeDefinition"^^xsd:anyURI ;
 	linkml:description "an element that whose instances are atomic scalar values that can be mapped to primitive types" ;
 	linkml:is_a linkml:Element ;
@@ -464,8 +468,8 @@ linkml:TypeDefinition OIO:inSubset linkml:BasicSubset , linkml:OwlProfile , link
 	linkml:slot_usage _:c14n1 ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:base , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:conforms_to , linkml:contributors , linkml:created_by , linkml:created_on , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:equals_number , linkml:equals_string , linkml:equals_string_in , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:implements , linkml:implicit_prefix , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:instantiates , linkml:keywords , linkml:last_updated_on , linkml:local_names , linkml:mappings , linkml:maximum_value , linkml:minimum_value , linkml:modified_by , linkml:name , linkml:narrow_mappings , linkml:notes , linkml:pattern , linkml:rank , linkml:related_mappings , linkml:repr , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:structured_pattern , linkml:title , linkml:todos , linkml:type_definition_union_of , linkml:type_expression_all_of , linkml:type_expression_any_of , linkml:type_expression_exactly_one_of , linkml:type_expression_none_of , linkml:type_uri , linkml:typeof , linkml:unit .
 linkml:TypeExpression a linkml:ClassDefinition ;
-	skos:exactMatch linkml:TypeExpression ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/linkml/TypeExpression"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/TypeExpression"^^xsd:anyURI ;
 	linkml:description "An abstract class grouping named types and anonymous type expressions" ;
 	linkml:is_a linkml:Expression ;
@@ -474,9 +478,9 @@ linkml:TypeExpression a linkml:ClassDefinition ;
 	linkml:slots linkml:equals_number , linkml:equals_string , linkml:equals_string_in , linkml:implicit_prefix , linkml:maximum_value , linkml:minimum_value , linkml:pattern , linkml:structured_pattern , linkml:type_expression_all_of , linkml:type_expression_any_of , linkml:type_expression_exactly_one_of , linkml:type_expression_none_of , linkml:unit .
 linkml:TypeMapping OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:TypeMapping ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 21 ;
+	linkml:class_uri "https://w3id.org/linkml/TypeMapping"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/TypeMapping"^^xsd:anyURI ;
 	linkml:description "Represents how a slot or type can be serialized to a format." ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
@@ -485,18 +489,19 @@ linkml:TypeMapping OIO:inSubset linkml:SpecificationSubset ;
 linkml:URI linkml:description "The permissible values are the set of code URIs in the code set" .
 linkml:UniqueKey OIO:inSubset linkml:BasicSubset , linkml:RelationalModelProfile , linkml:SpecificationSubset ;
 	a linkml:ClassDefinition ;
-	skos:exactMatch linkml:UniqueKey ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 20 ;
+	linkml:class_uri "https://w3id.org/linkml/UniqueKey"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/UniqueKey"^^xsd:anyURI ;
 	linkml:description "a collection of slots whose values uniquely identify an instance of a class" ;
 	linkml:mixins linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible ;
-	linkml:slot_usage _:c14n60 ;
+	linkml:slot_usage _:c14n59 ;
 	linkml:slots linkml:aliases , linkml:alt_descriptions , linkml:annotations , linkml:broad_mappings , linkml:categories , linkml:close_mappings , linkml:comments , linkml:consider_nulls_inequal , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:description , linkml:exact_mappings , linkml:examples , linkml:extensions , linkml:from_schema , linkml:imported_from , linkml:in_language , linkml:in_subset , linkml:keywords , linkml:last_updated_on , linkml:mappings , linkml:modified_by , linkml:narrow_mappings , linkml:notes , linkml:rank , linkml:related_mappings , linkml:see_also , linkml:source , linkml:status , linkml:structured_aliases , linkml:title , linkml:todos , linkml:unique_key_name , linkml:unique_key_slots .
 linkml:UnitOfMeasure a linkml:ClassDefinition ;
 	skos:exactMatch qudt:Unit ;
 	skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
 	linkml:any_of _:c14n13 , _:c14n58 , _:c14n72 , _:c14n9 ;
+	linkml:class_uri "http://qudt.org/schema/qudt/Unit"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure"^^xsd:anyURI ;
 	linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
 	linkml:imported_from "linkml:units" ;
@@ -595,8 +600,7 @@ linkml:aliases OIO:inSubset linkml:BasicSubset ;
 	linkml:owner linkml:aliases ;
 	linkml:range linkml:string ;
 	linkml:slot_uri "http://www.w3.org/2004/02/skos/core#altLabel"^^xsd:anyURI .
-linkml:all_members bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:all_members OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/all_members"^^xsd:anyURI ;
@@ -607,7 +611,8 @@ linkml:all_members bibo:status "testing"^^xsd:anyURI ;
 	linkml:is_a linkml:list_value_specification_constant ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:AnonymousSlotExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/all_members"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/all_members"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:all_of OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://w3id.org/linkml/docs/specification/05validation/#rules"^^xsd:anyURI ;
@@ -684,6 +689,22 @@ linkml:annotations a linkml:SlotDefinition ;
 	linkml:owner linkml:Annotation ;
 	linkml:range linkml:Annotation ;
 	linkml:slot_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI .
+linkml:anonymous_class_expression_is_a OIO:inSubset linkml:BasicSubset , linkml:ObjectOrientedProfile , linkml:OwlProfile , linkml:SpecificationSubset ;
+	a linkml:SlotDefinition ;
+	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+	skos:prefLabel "is_a" ;
+	sh:order 11 ;
+	linkml:abstract true ;
+	linkml:definition_uri "https://w3id.org/linkml/is_a"^^xsd:anyURI ;
+	linkml:description "A class that any instance satisfying this expression must also be an instance of" ;
+	linkml:domain linkml:AnonymousClassExpression ;
+	linkml:domain_of linkml:AnonymousClassExpression ;
+	linkml:is_a linkml:is_a ;
+	linkml:is_usage_slot true ;
+	linkml:owner linkml:AnonymousClassExpression ;
+	linkml:range linkml:ClassDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/is_a"^^xsd:anyURI ;
+	linkml:usage_slot_name "is_a" .
 linkml:any_of OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://w3id.org/linkml/docs/specification/05validation/#rules"^^xsd:anyURI ;
@@ -700,8 +721,7 @@ linkml:any_of OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:ClassExpression ;
 	linkml:range linkml:Expression ;
 	linkml:slot_uri "https://w3id.org/linkml/any_of"^^xsd:anyURI .
-linkml:apply_to bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:apply_to a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
 	linkml:description "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class." ;
@@ -710,9 +730,9 @@ linkml:apply_to bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:Definition ;
 	linkml:range linkml:Definition ;
-	linkml:slot_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI .
-linkml:array bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
+	linkml:status "testing" .
+linkml:array a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/array"^^xsd:anyURI ;
 	linkml:description "coerces the value of the slot into an array and defines the dimensions of that array" ;
@@ -723,7 +743,8 @@ linkml:array bibo:status "testing"^^xsd:anyURI ;
 	linkml:inlined_as_list true ;
 	linkml:owner linkml:array ;
 	linkml:range linkml:ArrayExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/array"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/array"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:asymmetric OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:closeMatch owl:AsymmetricProperty ;
@@ -774,8 +795,7 @@ linkml:bidirectional OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:ClassRule ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/bidirectional"^^xsd:anyURI .
-linkml:bindings bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:bindings OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/bindings"^^xsd:anyURI ;
@@ -787,7 +807,8 @@ linkml:bindings bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:bindings ;
 	linkml:range linkml:EnumBinding ;
-	linkml:slot_uri "https://w3id.org/linkml/bindings"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/bindings"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:binds_value_of OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -852,8 +873,7 @@ linkml:children_are_mutually_disjoint a linkml:SlotDefinition ;
 	linkml:owner linkml:children_are_mutually_disjoint ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/children_are_mutually_disjoint"^^xsd:anyURI .
-linkml:class_definition_apply_to bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:class_definition_apply_to a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:prefLabel "apply_to" ;
 	linkml:definition_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
@@ -866,6 +886,7 @@ linkml:class_definition_apply_to bibo:status "testing"^^xsd:anyURI ;
 	linkml:owner linkml:ClassDefinition ;
 	linkml:range linkml:ClassDefinition ;
 	linkml:slot_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
+	linkml:status "testing" ;
 	linkml:usage_slot_name "apply_to" .
 linkml:class_definition_disjoint_with OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
@@ -1389,8 +1410,7 @@ linkml:designates_type OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/designates_type"^^xsd:anyURI .
-linkml:dimensions bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:dimensions a linkml:SlotDefinition ;
 	skos:altLabel "axes" ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/dimensions"^^xsd:anyURI ;
@@ -1403,7 +1423,8 @@ linkml:dimensions bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:ArrayExpression ;
 	linkml:range linkml:DimensionExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/dimensions"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/dimensions"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:disjoint_with OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -1489,8 +1510,7 @@ linkml:enum_binding_range OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset
 	linkml:range linkml:EnumDefinition ;
 	linkml:slot_uri "https://w3id.org/linkml/range"^^xsd:anyURI ;
 	linkml:usage_slot_name "range" .
-linkml:enum_range bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:enum_range OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/enum_range"^^xsd:anyURI ;
@@ -1500,7 +1520,8 @@ linkml:enum_range bibo:status "testing"^^xsd:anyURI ;
 	linkml:inlined_as_list true ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:EnumExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/enum_range"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/enum_range"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:enum_uri OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:altLabel "public ID" ;
@@ -1539,8 +1560,7 @@ linkml:equals_expression OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:string ;
 	linkml:slot_uri "https://w3id.org/linkml/equals_expression"^^xsd:anyURI .
-linkml:equals_number bibo:status "unstable"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:equals_number a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/equals_number"^^xsd:anyURI ;
 	linkml:description "the slot must have range of a number and the value of the slot must equal the specified value" ;
@@ -1549,9 +1569,9 @@ linkml:equals_number bibo:status "unstable"^^xsd:anyURI ;
 	linkml:is_a linkml:list_value_specification_constant ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:integer ;
-	linkml:slot_uri "https://w3id.org/linkml/equals_number"^^xsd:anyURI .
-linkml:equals_number_in bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+	linkml:slot_uri "https://w3id.org/linkml/equals_number"^^xsd:anyURI ;
+	linkml:status "unstable" .
+linkml:equals_number_in OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/equals_number_in"^^xsd:anyURI ;
@@ -1560,7 +1580,8 @@ linkml:equals_number_in bibo:status "testing"^^xsd:anyURI ;
 	linkml:is_a linkml:list_value_specification_constant ;
 	linkml:multivalued true ;
 	linkml:range linkml:integer ;
-	linkml:slot_uri "https://w3id.org/linkml/equals_number_in"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/equals_number_in"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:equals_string OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -1572,8 +1593,7 @@ linkml:equals_string OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:string ;
 	linkml:slot_uri "https://w3id.org/linkml/equals_string"^^xsd:anyURI .
-linkml:equals_string_in bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:equals_string_in OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/equals_string_in"^^xsd:anyURI ;
@@ -1584,7 +1604,8 @@ linkml:equals_string_in bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:string ;
-	linkml:slot_uri "https://w3id.org/linkml/equals_string_in"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/equals_string_in"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:exact_cardinality OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -1610,8 +1631,7 @@ linkml:exact_mappings a linkml:SlotDefinition ;
 	linkml:range linkml:uriorcurie ;
 	linkml:required true ;
 	linkml:slot_uri "http://www.w3.org/2004/02/skos/core#exactMatch"^^xsd:anyURI .
-linkml:exact_number_dimensions bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:exact_number_dimensions a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value" ;
 	linkml:definition_uri "https://w3id.org/linkml/exact_number_dimensions"^^xsd:anyURI ;
@@ -1620,7 +1640,8 @@ linkml:exact_number_dimensions bibo:status "testing"^^xsd:anyURI ;
 	linkml:domain_of linkml:ArrayExpression ;
 	linkml:owner linkml:ArrayExpression ;
 	linkml:range linkml:integer ;
-	linkml:slot_uri "https://w3id.org/linkml/exact_number_dimensions"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/exact_number_dimensions"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:exactly_one_of OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://w3id.org/linkml/docs/specification/05validation/#rules"^^xsd:anyURI ;
@@ -1699,14 +1720,13 @@ linkml:extra_slots OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset 
 	linkml:description "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n" ;
 	linkml:domain linkml:ClassDefinition ;
 	linkml:domain_of linkml:ClassDefinition ;
-	linkml:examples _:c14n15 , _:c14n27 , _:c14n37 , _:c14n40 , _:c14n52 , _:c14n61 , _:c14n64 , _:c14n85 ;
+	linkml:examples _:c14n15 , _:c14n27 , _:c14n37 , _:c14n40 , _:c14n52 , _:c14n60 , _:c14n63 , _:c14n85 ;
 	linkml:inlined true ;
 	linkml:inlined_as_list true ;
 	linkml:owner linkml:ClassDefinition ;
 	linkml:range linkml:ExtraSlotsExpression ;
 	linkml:slot_uri "https://w3id.org/linkml/extra_slots"^^xsd:anyURI .
-linkml:extra_slots_expression_range_expression bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:extra_slots_expression_range_expression OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "one use for this is being able to describe a range using any_of expressions, for example to combine two enums" ;
@@ -1722,6 +1742,7 @@ linkml:extra_slots_expression_range_expression bibo:status "testing"^^xsd:anyURI
 	linkml:owner linkml:ExtraSlotsExpression ;
 	linkml:range linkml:AnonymousSlotExpression ;
 	linkml:slot_uri "https://w3id.org/linkml/range_expression"^^xsd:anyURI ;
+	linkml:status "testing" ;
 	linkml:usage_slot_name "range_expression" .
 linkml:float a linkml:TypeDefinition ;
 	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
@@ -1777,8 +1798,7 @@ linkml:generation_date OIO:inSubset linkml:BasicSubset ;
 	linkml:range linkml:datetime ;
 	linkml:readonly "supplied by the schema loader or schema view" ;
 	linkml:slot_uri "https://w3id.org/linkml/generation_date"^^xsd:anyURI .
-linkml:has_member bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:has_member OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/has_member"^^xsd:anyURI ;
@@ -1789,7 +1809,8 @@ linkml:has_member bibo:status "testing"^^xsd:anyURI ;
 	linkml:is_a linkml:list_value_specification_constant ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:AnonymousSlotExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/has_member"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/has_member"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:has_quantity_kind a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
 	skos:mappingRelation qudt:hasQuantityKind ;
@@ -1894,8 +1915,7 @@ linkml:implements a linkml:SlotDefinition ;
 	linkml:owner linkml:PermissibleValue ;
 	linkml:range linkml:uriorcurie ;
 	linkml:slot_uri "https://w3id.org/linkml/implements"^^xsd:anyURI .
-linkml:implicit_prefix bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:implicit_prefix OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/implicit_prefix"^^xsd:anyURI ;
@@ -1904,18 +1924,18 @@ linkml:implicit_prefix bibo:status "testing"^^xsd:anyURI ;
 	linkml:domain_of linkml:SlotExpression , linkml:TypeExpression ;
 	linkml:owner linkml:SlotExpression ;
 	linkml:range linkml:string ;
-	linkml:slot_uri "https://w3id.org/linkml/implicit_prefix"^^xsd:anyURI .
-linkml:import_as bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/implicit_prefix"^^xsd:anyURI ;
+	linkml:status "testing" .
+linkml:import_as a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/import_as"^^xsd:anyURI ;
 	linkml:domain linkml:ImportExpression ;
 	linkml:domain_of linkml:ImportExpression ;
 	linkml:owner linkml:ImportExpression ;
 	linkml:range linkml:ncname ;
-	linkml:slot_uri "https://w3id.org/linkml/import_as"^^xsd:anyURI .
-linkml:import_from bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/import_as"^^xsd:anyURI ;
+	linkml:status "testing" .
+linkml:import_from a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/import_from"^^xsd:anyURI ;
 	linkml:domain linkml:ImportExpression ;
@@ -1923,9 +1943,9 @@ linkml:import_from bibo:status "testing"^^xsd:anyURI ;
 	linkml:owner linkml:ImportExpression ;
 	linkml:range linkml:uriorcurie ;
 	linkml:required true ;
-	linkml:slot_uri "https://w3id.org/linkml/import_from"^^xsd:anyURI .
-linkml:import_map bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/import_from"^^xsd:anyURI ;
+	linkml:status "testing" .
+linkml:import_map a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/import_map"^^xsd:anyURI ;
 	linkml:domain linkml:ImportExpression ;
@@ -1934,7 +1954,8 @@ linkml:import_map bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:ImportExpression ;
 	linkml:range linkml:Setting ;
-	linkml:slot_uri "https://w3id.org/linkml/import_map"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/import_map"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:imported_from a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/imported_from"^^xsd:anyURI ;
@@ -2068,8 +2089,7 @@ linkml:inlined_as_list OIO:inSubset linkml:BasicSubset , linkml:SpecificationSub
 	linkml:owner linkml:inlined_as_list ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/inlined_as_list"^^xsd:anyURI .
-linkml:inlined_as_simple_dict bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:inlined_as_simple_dict OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -2080,7 +2100,8 @@ linkml:inlined_as_simple_dict bibo:status "testing"^^xsd:anyURI ;
 	linkml:inherited true ;
 	linkml:owner linkml:inlined_as_simple_dict ;
 	linkml:range linkml:boolean ;
-	linkml:slot_uri "https://w3id.org/linkml/inlined_as_simple_dict"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/inlined_as_simple_dict"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:instantiates a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/instantiates"^^xsd:anyURI ;
@@ -2256,8 +2277,7 @@ linkml:license OIO:inSubset linkml:BasicSubset ;
 	linkml:owner linkml:SchemaDefinition ;
 	linkml:range linkml:string ;
 	linkml:slot_uri "http://purl.org/dc/terms/license"^^xsd:anyURI .
-linkml:list_elements_ordered bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:list_elements_ordered OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "should only be used with multivalued slots" ;
@@ -2268,7 +2288,8 @@ linkml:list_elements_ordered bibo:status "testing"^^xsd:anyURI ;
 	linkml:inherited true ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:boolean ;
-	linkml:slot_uri "https://w3id.org/linkml/list_elements_ordered"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/list_elements_ordered"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:list_elements_unique OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -2281,14 +2302,14 @@ linkml:list_elements_unique OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/list_elements_unique"^^xsd:anyURI .
-linkml:list_value_specification_constant bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:list_value_specification_constant a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
 	linkml:definition_uri "https://w3id.org/linkml/list_value_specification_constant"^^xsd:anyURI ;
 	linkml:description "Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant" ;
 	linkml:range linkml:string ;
-	linkml:slot_uri "https://w3id.org/linkml/list_value_specification_constant"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/list_value_specification_constant"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:literal_form a linkml:SlotDefinition ;
 	skos:altLabel "alias_name" , "string_value" ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -2389,8 +2410,7 @@ linkml:maximum_cardinality OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:DimensionExpression ;
 	linkml:range linkml:integer ;
 	linkml:slot_uri "https://w3id.org/linkml/maximum_cardinality"^^xsd:anyURI .
-linkml:maximum_number_dimensions bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:maximum_number_dimensions a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "maximum_number_dimensions cannot be less than minimum_number_dimensions" ;
 	linkml:any_of _:c14n4 , _:c14n53 ;
@@ -2402,7 +2422,8 @@ linkml:maximum_number_dimensions bibo:status "testing"^^xsd:anyURI ;
 	linkml:inlined_as_list true ;
 	linkml:owner linkml:ArrayExpression ;
 	linkml:range linkml:Anything ;
-	linkml:slot_uri "https://w3id.org/linkml/maximum_number_dimensions"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/maximum_number_dimensions"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:maximum_value OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:altLabel "high value" ;
@@ -2435,7 +2456,7 @@ linkml:meaning OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 linkml:meta dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
 	dcterms:title "LinkML Schema Metamodel" ;
 	a linkml:SchemaDefinition ;
-	sh:declare _:c14n0 , _:c14n10 , _:c14n11 , _:c14n12 , _:c14n17 , _:c14n21 , _:c14n24 , _:c14n28 , _:c14n30 , _:c14n31 , _:c14n32 , _:c14n36 , _:c14n39 , _:c14n44 , _:c14n45 , _:c14n71 , _:c14n76 , _:c14n78 , _:c14n83 , _:c14n84 , _:c14n94 ;
+	sh:declare _:c14n0 , _:c14n10 , _:c14n11 , _:c14n12 , _:c14n17 , _:c14n21 , _:c14n24 , _:c14n28 , _:c14n30 , _:c14n31 , _:c14n32 , _:c14n36 , _:c14n39 , _:c14n44 , _:c14n45 , _:c14n71 , _:c14n76 , _:c14n78 , _:c14n83 , _:c14n84 , _:c14n95 ;
 	linkml:classes linkml:AltDescription , linkml:Annotatable , linkml:Annotation , linkml:AnonymousClassExpression , linkml:AnonymousEnumExpression , linkml:AnonymousExpression , linkml:AnonymousSlotExpression , linkml:AnonymousTypeExpression , linkml:AnyValue , linkml:Anything , linkml:ArrayExpression , linkml:ClassDefinition , linkml:ClassExpression , linkml:ClassLevelRule , linkml:ClassRule , linkml:CommonMetadata , linkml:Definition , linkml:DimensionExpression , linkml:Element , linkml:EnumBinding , linkml:EnumDefinition , linkml:EnumExpression , linkml:Example , linkml:Expression , linkml:Extensible , linkml:Extension , linkml:ExtraSlotsExpression , linkml:ImportExpression , linkml:LocalName , linkml:MatchQuery , linkml:PathExpression , linkml:PatternExpression , linkml:PermissibleValue , linkml:Prefix , linkml:ReachabilityQuery , linkml:SchemaDefinition , linkml:Setting , linkml:SlotDefinition , linkml:SlotExpression , linkml:StructuredAlias , linkml:SubsetDefinition , linkml:TypeDefinition , linkml:TypeExpression , linkml:TypeMapping , linkml:UniqueKey , linkml:UnitOfMeasure ;
 	linkml:default_curi_maps "semweb_context" ;
 	linkml:default_prefix "linkml" ;
@@ -2446,8 +2467,8 @@ linkml:meta dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/"
 	linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
 	linkml:id "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:imports "linkml:annotations"^^xsd:anyURI , "linkml:extensions"^^xsd:anyURI , "linkml:mappings"^^xsd:anyURI , "linkml:types"^^xsd:anyURI , "linkml:units"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
-	linkml:slots linkml:UnitOfMeasure_exact_mappings , linkml:abbreviation , linkml:abstract , linkml:alias , linkml:alias_contexts , linkml:alias_predicate , linkml:aliases , linkml:all_members , linkml:all_of , linkml:allowed , linkml:alt_description_source , linkml:alt_description_text , linkml:alt_descriptions , linkml:annotations , linkml:any_of , linkml:apply_to , linkml:array , linkml:asymmetric , linkml:attributes , linkml:base , linkml:bidirectional , linkml:bindings , linkml:binds_value_of , linkml:boolean_slot , linkml:broad_mappings , linkml:categories , linkml:children_are_mutually_disjoint , linkml:class_definition_apply_to , linkml:class_definition_disjoint_with , linkml:class_definition_is_a , linkml:class_definition_mixins , linkml:class_definition_rules , linkml:class_definition_union_of , linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:class_uri , linkml:classes , linkml:classification_rules , linkml:close_mappings , linkml:code_set , linkml:code_set_tag , linkml:code_set_version , linkml:comments , linkml:concepts , linkml:conforms_to , linkml:consider_nulls_inequal , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deactivated , linkml:default_curi_maps , linkml:default_prefix , linkml:default_range , linkml:defining_slots , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:derivation , linkml:description , linkml:descriptive_name , linkml:designates_type , linkml:dimensions , linkml:disjoint_with , linkml:domain , linkml:domain_of , linkml:elseconditions , linkml:emit_prefixes , linkml:enum_binding_range , linkml:enum_range , linkml:enum_uri , linkml:enums , linkml:equals_expression , linkml:equals_number , linkml:equals_number_in , linkml:equals_string , linkml:equals_string_in , linkml:exact_cardinality , linkml:exact_mappings , linkml:exact_number_dimensions , linkml:exactly_one_of , linkml:examples , linkml:extension_tag , linkml:extension_value , linkml:extensions , linkml:extra_slots , linkml:extra_slots_expression_range_expression , linkml:followed_by , linkml:framework_key , linkml:from_schema , linkml:generation_date , linkml:has_member , linkml:has_quantity_kind , linkml:id , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:identifier , linkml:identifier_pattern , linkml:iec61360code , linkml:ifabsent , linkml:implements , linkml:implicit_prefix , linkml:import_as , linkml:import_from , linkml:import_map , linkml:imported_from , linkml:imports , linkml:in_language , linkml:in_subset , linkml:inapplicable , linkml:include , linkml:include_self , linkml:inherited , linkml:inherits , linkml:inlined , linkml:inlined_as_list , linkml:inlined_as_simple_dict , linkml:instantiates , linkml:interpolated , linkml:inverse , linkml:irreflexive , linkml:is_a , linkml:is_class_field , linkml:is_direct , linkml:is_grouping_slot , linkml:is_usage_slot , linkml:key , linkml:keywords , linkml:last_updated_on , linkml:license , linkml:list_elements_ordered , linkml:list_elements_unique , linkml:list_value_specification_constant , linkml:literal_form , linkml:local_name_source , linkml:local_name_value , linkml:local_names , linkml:locally_reflexive , linkml:mapped_type , linkml:mappings , linkml:matches , linkml:maximum_cardinality , linkml:maximum_number_dimensions , linkml:maximum_value , linkml:meaning , linkml:metamodel_version , linkml:minimum_cardinality , linkml:minimum_number_dimensions , linkml:minimum_value , linkml:minus , linkml:mixin , linkml:mixins , linkml:modified_by , linkml:multivalued , linkml:name , linkml:narrow_mappings , linkml:none_of , linkml:notes , linkml:obligation_level , linkml:open_world , linkml:owned_by , linkml:owner , linkml:partial_match , linkml:path_expression_all_of , linkml:path_expression_any_of , linkml:path_expression_exactly_one_of , linkml:path_expression_followed_by , linkml:path_expression_none_of , linkml:path_rule , linkml:pattern , linkml:permissible_value_is_a , linkml:permissible_value_mixins , linkml:permissible_values , linkml:postconditions , linkml:preconditions , linkml:prefix_prefix , linkml:prefix_reference , linkml:prefixes , linkml:publisher , linkml:pv_formula , linkml:range , linkml:range_expression , linkml:rank , linkml:reachable_from , linkml:readonly , linkml:recommended , linkml:reflexive , linkml:reflexive_transitive_form_of , linkml:related_mappings , linkml:relational_logical_characteristic , linkml:relational_role , linkml:relationship_types , linkml:repr , linkml:represents_relationship , linkml:required , linkml:reversed , linkml:role , linkml:rules , linkml:schema_definition_name , linkml:see_also , linkml:setting_key , linkml:setting_value , linkml:settings , linkml:shared , linkml:singular_name , linkml:slot_conditions , linkml:slot_definition_apply_to , linkml:slot_definition_disjoint_with , linkml:slot_definition_is_a , linkml:slot_definition_mixins , linkml:slot_definition_union_of , linkml:slot_definitions , linkml:slot_expression_all_of , linkml:slot_expression_any_of , linkml:slot_expression_exactly_one_of , linkml:slot_expression_none_of , linkml:slot_group , linkml:slot_names_unique , linkml:slot_uri , linkml:slot_usage , linkml:slots , linkml:source , linkml:source_file , linkml:source_file_date , linkml:source_file_size , linkml:source_nodes , linkml:source_ontology , linkml:status , linkml:string_serialization , linkml:structured_alias_categories , linkml:structured_aliases , linkml:structured_imports , linkml:structured_pattern , linkml:subclass_of , linkml:subproperty_of , linkml:subsets , linkml:symbol , linkml:symmetric , linkml:syntax , linkml:text , linkml:title , linkml:todos , linkml:transitive , linkml:transitive_form_of , linkml:traverse , linkml:traverse_up , linkml:tree_root , linkml:type_definition_union_of , linkml:type_expression_all_of , linkml:type_expression_any_of , linkml:type_expression_exactly_one_of , linkml:type_expression_none_of , linkml:type_mappings , linkml:type_uri , linkml:typeof , linkml:types , linkml:ucum_code , linkml:union_of , linkml:unique_key_name , linkml:unique_key_slots , linkml:unique_keys , linkml:unit , linkml:usage_slot_name , linkml:value , linkml:value_description , linkml:value_object , linkml:value_presence , linkml:value_specification_constant , linkml:values_from , linkml:version ;
+	linkml:metamodel_version "1.12.0" ;
+	linkml:slots linkml:UnitOfMeasure_exact_mappings , linkml:abbreviation , linkml:abstract , linkml:alias , linkml:alias_contexts , linkml:alias_predicate , linkml:aliases , linkml:all_members , linkml:all_of , linkml:allowed , linkml:alt_description_source , linkml:alt_description_text , linkml:alt_descriptions , linkml:annotations , linkml:anonymous_class_expression_is_a , linkml:any_of , linkml:apply_to , linkml:array , linkml:asymmetric , linkml:attributes , linkml:base , linkml:bidirectional , linkml:bindings , linkml:binds_value_of , linkml:boolean_slot , linkml:broad_mappings , linkml:categories , linkml:children_are_mutually_disjoint , linkml:class_definition_apply_to , linkml:class_definition_disjoint_with , linkml:class_definition_is_a , linkml:class_definition_mixins , linkml:class_definition_rules , linkml:class_definition_union_of , linkml:class_expression_all_of , linkml:class_expression_any_of , linkml:class_expression_exactly_one_of , linkml:class_expression_none_of , linkml:class_uri , linkml:classes , linkml:classification_rules , linkml:close_mappings , linkml:code_set , linkml:code_set_tag , linkml:code_set_version , linkml:comments , linkml:concepts , linkml:conforms_to , linkml:consider_nulls_inequal , linkml:contributors , linkml:created_by , linkml:created_on , linkml:deactivated , linkml:default_curi_maps , linkml:default_prefix , linkml:default_range , linkml:defining_slots , linkml:definition_uri , linkml:deprecated , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:derivation , linkml:description , linkml:descriptive_name , linkml:designates_type , linkml:dimensions , linkml:disjoint_with , linkml:domain , linkml:domain_of , linkml:elseconditions , linkml:emit_prefixes , linkml:enum_binding_range , linkml:enum_range , linkml:enum_uri , linkml:enums , linkml:equals_expression , linkml:equals_number , linkml:equals_number_in , linkml:equals_string , linkml:equals_string_in , linkml:exact_cardinality , linkml:exact_mappings , linkml:exact_number_dimensions , linkml:exactly_one_of , linkml:examples , linkml:extension_tag , linkml:extension_value , linkml:extensions , linkml:extra_slots , linkml:extra_slots_expression_range_expression , linkml:followed_by , linkml:framework_key , linkml:from_schema , linkml:generation_date , linkml:has_member , linkml:has_quantity_kind , linkml:id , linkml:id_prefixes , linkml:id_prefixes_are_closed , linkml:identifier , linkml:identifier_pattern , linkml:iec61360code , linkml:ifabsent , linkml:implements , linkml:implicit_prefix , linkml:import_as , linkml:import_from , linkml:import_map , linkml:imported_from , linkml:imports , linkml:in_language , linkml:in_subset , linkml:inapplicable , linkml:include , linkml:include_self , linkml:inherited , linkml:inherits , linkml:inlined , linkml:inlined_as_list , linkml:inlined_as_simple_dict , linkml:instantiates , linkml:interpolated , linkml:inverse , linkml:irreflexive , linkml:is_a , linkml:is_class_field , linkml:is_direct , linkml:is_grouping_slot , linkml:is_usage_slot , linkml:key , linkml:keywords , linkml:last_updated_on , linkml:license , linkml:list_elements_ordered , linkml:list_elements_unique , linkml:list_value_specification_constant , linkml:literal_form , linkml:local_name_source , linkml:local_name_value , linkml:local_names , linkml:locally_reflexive , linkml:mapped_type , linkml:mappings , linkml:matches , linkml:maximum_cardinality , linkml:maximum_number_dimensions , linkml:maximum_value , linkml:meaning , linkml:metamodel_version , linkml:minimum_cardinality , linkml:minimum_number_dimensions , linkml:minimum_value , linkml:minus , linkml:mixin , linkml:mixins , linkml:modified_by , linkml:multivalued , linkml:name , linkml:narrow_mappings , linkml:none_of , linkml:notes , linkml:obligation_level , linkml:open_world , linkml:owned_by , linkml:owner , linkml:partial_match , linkml:path_expression_all_of , linkml:path_expression_any_of , linkml:path_expression_exactly_one_of , linkml:path_expression_followed_by , linkml:path_expression_none_of , linkml:path_rule , linkml:pattern , linkml:permissible_value_is_a , linkml:permissible_value_mixins , linkml:permissible_values , linkml:postconditions , linkml:preconditions , linkml:prefix_prefix , linkml:prefix_reference , linkml:prefixes , linkml:publisher , linkml:pv_formula , linkml:range , linkml:range_expression , linkml:rank , linkml:reachable_from , linkml:readonly , linkml:recommended , linkml:reflexive , linkml:reflexive_transitive_form_of , linkml:related_mappings , linkml:relational_logical_characteristic , linkml:relational_role , linkml:relationship_types , linkml:repr , linkml:represents_relationship , linkml:required , linkml:reversed , linkml:role , linkml:rules , linkml:schema_definition_name , linkml:see_also , linkml:setting_key , linkml:setting_value , linkml:settings , linkml:shared , linkml:singular_name , linkml:slot_conditions , linkml:slot_definition_apply_to , linkml:slot_definition_disjoint_with , linkml:slot_definition_is_a , linkml:slot_definition_mixins , linkml:slot_definition_union_of , linkml:slot_definitions , linkml:slot_expression_all_of , linkml:slot_expression_any_of , linkml:slot_expression_exactly_one_of , linkml:slot_expression_none_of , linkml:slot_group , linkml:slot_names_unique , linkml:slot_uri , linkml:slot_usage , linkml:slots , linkml:source , linkml:source_file , linkml:source_file_date , linkml:source_file_size , linkml:source_nodes , linkml:source_ontology , linkml:status , linkml:string_serialization , linkml:structured_alias_categories , linkml:structured_aliases , linkml:structured_imports , linkml:structured_pattern , linkml:subclass_of , linkml:subproperty_of , linkml:subsets , linkml:symbol , linkml:symmetric , linkml:syntax , linkml:text , linkml:title , linkml:todos , linkml:transitive , linkml:transitive_form_of , linkml:traverse , linkml:traverse_up , linkml:tree_root , linkml:type_definition_union_of , linkml:type_expression_all_of , linkml:type_expression_any_of , linkml:type_expression_exactly_one_of , linkml:type_expression_none_of , linkml:type_mappings , linkml:type_uri , linkml:typeof , linkml:types , linkml:ucum_code , linkml:union_of , linkml:unique_key_name , linkml:unique_key_slots , linkml:unique_keys , linkml:unit , linkml:usage_slot_name , linkml:value , linkml:value_description , linkml:value_object , linkml:value_presence , linkml:value_specification_constant , linkml:values_from , linkml:version ;
 	linkml:source_file "meta.yaml" ;
 	linkml:source_file_date "2000-01-01T00:00:00"^^xsd:dateTime ;
 	linkml:source_file_size 1 ;
@@ -2476,8 +2497,7 @@ linkml:minimum_cardinality OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:DimensionExpression ;
 	linkml:range linkml:integer ;
 	linkml:slot_uri "https://w3id.org/linkml/minimum_cardinality"^^xsd:anyURI .
-linkml:minimum_number_dimensions bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:minimum_number_dimensions a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "minimum_cardinality cannot be greater than maximum_cardinality" ;
 	linkml:definition_uri "https://w3id.org/linkml/minimum_number_dimensions"^^xsd:anyURI ;
@@ -2486,7 +2506,8 @@ linkml:minimum_number_dimensions bibo:status "testing"^^xsd:anyURI ;
 	linkml:domain_of linkml:ArrayExpression ;
 	linkml:owner linkml:ArrayExpression ;
 	linkml:range linkml:integer ;
-	linkml:slot_uri "https://w3id.org/linkml/minimum_number_dimensions"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/minimum_number_dimensions"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:minimum_value OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:altLabel "low value" ;
@@ -2944,12 +2965,12 @@ linkml:prefixes OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	linkml:owner linkml:SchemaDefinition ;
 	linkml:range linkml:Prefix ;
 	linkml:slot_uri "http://www.w3.org/ns/shacl#declare"^^xsd:anyURI .
-linkml:presence_enum bibo:status "testing"^^xsd:anyURI ;
-	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+linkml:presence_enum skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 11 ;
 	linkml:definition_uri "https://w3id.org/linkml/PresenceEnum"^^xsd:anyURI ;
 	linkml:description "enumeration of conditions by which a slot value should be set" ;
-	linkml:permissible_values linkml:ABSENT , linkml:PRESENT , linkml:UNCOMMITTED .
+	linkml:permissible_values linkml:ABSENT , linkml:PRESENT , linkml:UNCOMMITTED ;
+	linkml:status "testing" .
 linkml:publisher OIO:inSubset linkml:BasicSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -2990,8 +3011,7 @@ linkml:range OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , linkml:Obj
 	linkml:owner linkml:range ;
 	linkml:range linkml:Element ;
 	linkml:slot_uri "https://w3id.org/linkml/range"^^xsd:anyURI .
-linkml:range_expression bibo:status "testing"^^xsd:anyURI ;
-	OIO:inSubset linkml:SpecificationSubset ;
+linkml:range_expression OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "one use for this is being able to describe a range using any_of expressions, for example to combine two enums" ;
@@ -3003,7 +3023,8 @@ linkml:range_expression bibo:status "testing"^^xsd:anyURI ;
 	linkml:inlined_as_list true ;
 	linkml:owner linkml:ExtraSlotsExpression ;
 	linkml:range linkml:AnonymousClassExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/range_expression"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/range_expression"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:rank OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:altLabel "display order" , "order" , "precedence" ;
@@ -3099,8 +3120,7 @@ linkml:relational_logical_characteristic a linkml:SlotDefinition ;
 	linkml:owner linkml:relational_logical_characteristic ;
 	linkml:range linkml:boolean ;
 	linkml:slot_uri "https://w3id.org/linkml/relational_logical_characteristic"^^xsd:anyURI .
-linkml:relational_role bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:relational_role a linkml:SlotDefinition ;
 	skos:altLabel "reification_role" ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "in the context of RDF, this should be used for slots that can be modeled using the RDF reification vocabulary" , "in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes" , "this should only be used on slots that are applicable to class that represent relationships" ;
@@ -3111,7 +3131,8 @@ linkml:relational_role bibo:status "testing"^^xsd:anyURI ;
 	linkml:inherited true ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:relational_role_enum ;
-	linkml:slot_uri "https://w3id.org/linkml/relational_role"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/relational_role"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:relational_role_enum skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	sh:order 3 ;
 	linkml:definition_uri "https://w3id.org/linkml/RelationalRoleEnum"^^xsd:anyURI ;
@@ -3141,8 +3162,7 @@ linkml:repr OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	linkml:owner linkml:TypeDefinition ;
 	linkml:range linkml:string ;
 	linkml:slot_uri "https://w3id.org/linkml/repr"^^xsd:anyURI .
-linkml:represents_relationship bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:represents_relationship a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://patterns.dataincubator.org/book/qualified-relation.html"^^xsd:anyURI , "rdf:Statement"^^xsd:anyURI ;
 	skos:altLabel "is_reified" ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -3154,7 +3174,8 @@ linkml:represents_relationship bibo:status "testing"^^xsd:anyURI ;
 	linkml:inherited true ;
 	linkml:owner linkml:ClassDefinition ;
 	linkml:range linkml:boolean ;
-	linkml:slot_uri "https://w3id.org/linkml/represents_relationship"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/represents_relationship"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:required OIO:inSubset linkml:BasicSubset , linkml:MinimalSubset , linkml:ObjectOrientedProfile , linkml:RelationalModelProfile , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -3307,8 +3328,7 @@ linkml:slot_conditions OIO:inSubset linkml:SpecificationSubset ;
 	linkml:owner linkml:ClassExpression ;
 	linkml:range linkml:SlotDefinition ;
 	linkml:slot_uri "https://w3id.org/linkml/slot_conditions"^^xsd:anyURI .
-linkml:slot_definition_apply_to bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:slot_definition_apply_to a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:prefLabel "apply_to" ;
 	linkml:definition_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
@@ -3321,6 +3341,7 @@ linkml:slot_definition_apply_to bibo:status "testing"^^xsd:anyURI ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:SlotDefinition ;
 	linkml:slot_uri "https://w3id.org/linkml/apply_to"^^xsd:anyURI ;
+	linkml:status "testing" ;
 	linkml:usage_slot_name "apply_to" .
 linkml:slot_definition_disjoint_with OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
@@ -3494,10 +3515,9 @@ linkml:slot_group OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	linkml:domain_of linkml:SlotDefinition ;
 	linkml:owner linkml:SlotDefinition ;
 	linkml:range linkml:SlotDefinition ;
-	linkml:range_expression _:c14n89 ;
+	linkml:range_expression _:c14n90 ;
 	linkml:slot_uri "http://www.w3.org/ns/shacl#group"^^xsd:anyURI .
-linkml:slot_names_unique bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:slot_names_unique a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/slot_names_unique"^^xsd:anyURI ;
 	linkml:description "if true then induced/mangled slot names are not created for class_usage and attributes" ;
@@ -3505,7 +3525,8 @@ linkml:slot_names_unique bibo:status "testing"^^xsd:anyURI ;
 	linkml:domain_of linkml:ClassDefinition , linkml:SchemaDefinition ;
 	linkml:owner linkml:slot_names_unique ;
 	linkml:range linkml:boolean ;
-	linkml:slot_uri "https://w3id.org/linkml/slot_names_unique"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/slot_names_unique"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:slot_uri OIO:inSubset linkml:BasicSubset , linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://linkml.io/linkml/schemas/uris-and-mappings.html"^^xsd:anyURI , "linkml:definition_uri"^^xsd:anyURI ;
@@ -3631,16 +3652,16 @@ linkml:status OIO:inSubset linkml:BasicSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://www.hl7.org/fhir/valueset-publication-status.html"^^xsd:anyURI , "https://www.hl7.org/fhir/versions.html#std-process"^^xsd:anyURI ;
 	skos:altLabel "workflow status" ;
+	skos:closeMatch bibo:status ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
-	skos:mappingRelation bibo:status ;
 	linkml:definition_uri "https://w3id.org/linkml/status"^^xsd:anyURI ;
 	linkml:description "status of the element" ;
 	linkml:domain linkml:Element ;
 	linkml:domain_of linkml:CommonMetadata ;
-	linkml:examples _:c14n59 ;
+	linkml:examples _:c14n65 , _:c14n86 ;
 	linkml:owner linkml:status ;
-	linkml:range linkml:uriorcurie ;
-	linkml:slot_uri "http://purl.org/ontology/bibo/status"^^xsd:anyURI .
+	linkml:range linkml:string ;
+	linkml:slot_uri "https://w3id.org/linkml/status"^^xsd:anyURI .
 linkml:string a linkml:TypeDefinition ;
 	skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
 	skos:exactMatch schema1:Text ;
@@ -3693,8 +3714,7 @@ linkml:structured_aliases a linkml:SlotDefinition ;
 	linkml:owner linkml:CommonMetadata ;
 	linkml:range linkml:StructuredAlias ;
 	linkml:slot_uri "http://www.w3.org/2008/05/skos-xl#altLabel"^^xsd:anyURI .
-linkml:structured_imports bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:structured_imports a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/structured_imports"^^xsd:anyURI ;
 	linkml:description "A list of specifications for how to import elements from external schemas" ;
@@ -3704,7 +3724,8 @@ linkml:structured_imports bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:structured_imports ;
 	linkml:range linkml:ImportExpression ;
-	linkml:slot_uri "https://w3id.org/linkml/structured_imports"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/structured_imports"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:structured_pattern OIO:inSubset linkml:SpecificationSubset ;
 	a linkml:SlotDefinition ;
 	rdfs:seeAlso "https://linkml.io/linkml/schemas/constraints.html#structured-patterns"^^xsd:anyURI ;
@@ -4179,8 +4200,7 @@ linkml:value_object OIO:inSubset linkml:BasicSubset ;
 	linkml:owner linkml:Example ;
 	linkml:range linkml:Anything ;
 	linkml:slot_uri "https://w3id.org/linkml/object"^^xsd:anyURI .
-linkml:value_presence bibo:status "unstable"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+linkml:value_presence a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	skos:note "if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present" ;
 	linkml:definition_uri "https://w3id.org/linkml/value_presence"^^xsd:anyURI ;
@@ -4191,17 +4211,17 @@ linkml:value_presence bibo:status "unstable"^^xsd:anyURI ;
 	linkml:is_a linkml:list_value_specification_constant ;
 	linkml:owner linkml:value_presence ;
 	linkml:range linkml:presence_enum ;
-	linkml:slot_uri "https://w3id.org/linkml/value_presence"^^xsd:anyURI .
-linkml:value_specification_constant bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/value_presence"^^xsd:anyURI ;
+	linkml:status "unstable" .
+linkml:value_specification_constant a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:abstract true ;
 	linkml:definition_uri "https://w3id.org/linkml/value_specification_constant"^^xsd:anyURI ;
 	linkml:description "Grouping for metamodel slots that constrain the a slot value to equal a specified constant" ;
 	linkml:range linkml:string ;
-	linkml:slot_uri "https://w3id.org/linkml/value_specification_constant"^^xsd:anyURI .
-linkml:values_from bibo:status "testing"^^xsd:anyURI ;
-	a linkml:SlotDefinition ;
+	linkml:slot_uri "https://w3id.org/linkml/value_specification_constant"^^xsd:anyURI ;
+	linkml:status "testing" .
+linkml:values_from a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/values_from"^^xsd:anyURI ;
 	linkml:description "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model." ;
@@ -4210,7 +4230,8 @@ linkml:values_from bibo:status "testing"^^xsd:anyURI ;
 	linkml:multivalued true ;
 	linkml:owner linkml:Definition ;
 	linkml:range linkml:uriorcurie ;
-	linkml:slot_uri "https://w3id.org/linkml/values_from"^^xsd:anyURI .
+	linkml:slot_uri "https://w3id.org/linkml/values_from"^^xsd:anyURI ;
+	linkml:status "testing" .
 linkml:version OIO:inSubset linkml:BasicSubset ;
 	a linkml:SlotDefinition ;
 	skos:exactMatch schema1:schemaVersion ;
@@ -4227,8 +4248,9 @@ _:c14n0 sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI ;
 	sh:prefix "bibo" .
 _:c14n10 sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ;
 	sh:prefix "dcterms" .
-_:c14n100 linkml:range_expression _:c14n65 .
+_:c14n100 linkml:range_expression _:c14n101 .
 _:c14n101 linkml:range linkml:string .
+_:c14n102 linkml:range linkml:string .
 _:c14n11 sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI ;
 	sh:prefix "rdf" .
 _:c14n12 sh:namespace "http://open-services.net/ns/core#"^^xsd:anyURI ;
@@ -4237,7 +4259,7 @@ _:c14n13 a linkml:AnonymousClassExpression ;
 	linkml:slot_conditions linkml:symbol .
 _:c14n15 a linkml:Example ;
 	linkml:description "Allow additional data that are strings" ;
-	linkml:object _:c14n97 .
+	linkml:object _:c14n100 .
 _:c14n17 sh:namespace "http://www.w3.org/ns/shacl#"^^xsd:anyURI ;
 	sh:prefix "sh" .
 _:c14n21 sh:namespace "http://www.w3.org/ns/prov#"^^xsd:anyURI ;
@@ -4251,7 +4273,7 @@ _:c14n27 a linkml:Example ;
 _:c14n28 sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI ;
 	sh:prefix "owl" .
 _:c14n3 linkml:allowed false ;
-	linkml:range_expression _:c14n101 .
+	linkml:range_expression _:c14n102 .
 _:c14n30 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
 	sh:prefix "linkml" .
 _:c14n31 sh:namespace "http://www.w3.org/2003/11/swrl#"^^xsd:anyURI ;
@@ -4266,14 +4288,14 @@ _:c14n36 sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
 	sh:prefix "skos" .
 _:c14n37 a linkml:Example ;
 	linkml:description "Allow additional data if they are integers.\n`required` is meaningless in this context and ignored, since by definition all \"extra\" slots are optional.\n" ;
-	linkml:object _:c14n95 .
+	linkml:object _:c14n96 .
 _:c14n39 sh:namespace "http://semanticscience.org/resource/SIO_"^^xsd:anyURI ;
 	sh:prefix "SIO" .
 _:c14n4 a linkml:AnonymousSlotExpression ;
 	linkml:range linkml:boolean .
 _:c14n40 a linkml:Example ;
 	linkml:description "Forbid any additional data" ;
-	linkml:object _:c14n88 .
+	linkml:object _:c14n89 .
 _:c14n44 sh:namespace "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#"^^xsd:anyURI ;
 	sh:prefix "NCIT" .
 _:c14n45 sh:namespace "https://vocab.org/vann/"^^xsd:anyURI ;
@@ -4287,18 +4309,18 @@ _:c14n53 a linkml:AnonymousSlotExpression ;
 	linkml:range linkml:integer .
 _:c14n58 a linkml:AnonymousClassExpression ;
 	linkml:slot_conditions linkml:iec61360code .
-_:c14n59 a linkml:Example ;
-	skos:example "bibo:draft" .
-_:c14n61 a linkml:Example ;
+_:c14n60 a linkml:Example ;
 	linkml:description "Allow additional data if they are instances of the class definition \"AClassDefinition\"" ;
-	linkml:object _:c14n96 .
-_:c14n63 linkml:any_of _:c14n34 , _:c14n77 .
-_:c14n64 a linkml:Example ;
+	linkml:object _:c14n98 .
+_:c14n62 linkml:any_of _:c14n34 , _:c14n77 .
+_:c14n63 a linkml:Example ;
 	linkml:description "Allow additional data if they are lists of integers of at most length 5.\nNote that this does *not* mean that a maximum of 5 extra slots are allowed.\n" ;
-	linkml:object _:c14n100 .
-_:c14n65 linkml:maximum_cardinality 5 ;
+	linkml:object _:c14n97 .
+_:c14n64 linkml:maximum_cardinality 5 ;
 	linkml:multivalued true ;
 	linkml:range linkml:integer .
+_:c14n65 a linkml:Example ;
+	skos:example "testing" .
 _:c14n68 a linkml:Example ;
 	skos:example "https://w3id.org/mod#acronym" ;
 	linkml:description "An acronym" .
@@ -4322,15 +4344,16 @@ _:c14n84 sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI ;
 _:c14n85 a linkml:Example ;
 	linkml:description "allow additional data if they are either strings or integers" ;
 	linkml:object _:c14n99 .
-_:c14n88 linkml:allowed false .
-_:c14n89 a linkml:AnonymousClassExpression ;
-	linkml:slot_conditions linkml:is_grouping_slot .
+_:c14n86 a linkml:Example ;
+	skos:example "unstable" .
+_:c14n89 linkml:allowed false .
 _:c14n9 a linkml:AnonymousClassExpression ;
 	linkml:slot_conditions linkml:ucum_code .
-_:c14n94 sh:namespace "http://schema.org/"^^xsd:anyURI ;
+_:c14n90 a linkml:AnonymousClassExpression ;
+	linkml:slot_conditions linkml:is_grouping_slot .
+_:c14n95 sh:namespace "http://schema.org/"^^xsd:anyURI ;
 	sh:prefix "schema" .
-_:c14n95 linkml:range_expression _:c14n5 .
-_:c14n96 linkml:range_expression _:c14n23 .
-_:c14n97 linkml:range_expression _:c14n98 .
-_:c14n98 linkml:range linkml:string .
-_:c14n99 linkml:range_expression _:c14n63 .
+_:c14n96 linkml:range_expression _:c14n5 .
+_:c14n97 linkml:range_expression _:c14n64 .
+_:c14n98 linkml:range_expression _:c14n23 .
+_:c14n99 linkml:range_expression _:c14n62 .
