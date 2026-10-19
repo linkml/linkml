@@ -592,12 +592,52 @@ class TypeDBGenerator(Generator):
                 owns += f" {ann}"
         return owns
 
+    def _widened_owns_for_class(self, sv: SchemaView, class_name: str) -> set[str]:
+        """Return the slots whose ``owns`` upper bound must be left open on ``class_name``.
+
+        In LinkML, ``minimum_numeric_value is_a numeric_value`` organises vocabulary
+        and says nothing about cardinality. Conversely TypeDB counts an ``owns``
+        cardinality over an attribute **and its subtypes**, so leaving TypeDB's
+        default ``@card(0..1)`` on the parent would reject data at commit with
+        ``[CNT5]`` if two child attributes were owned by the same instance.
+
+        :param sv: the schema view
+        :param class_name: the class whose ``owns`` statements are being emitted
+        :return: slot names needing an open upper bound on this class
+        """
+
+        def owned_scalars(cn: str) -> set[str]:
+            return {s.name for s in sv.class_induced_slots(cn) if resolve_typedb_value_type(sv, s.range) is not None}
+
+        inheritors = [class_name, *sv.class_descendants(class_name)]
+        owned_by_family = set()
+        for cn in inheritors:
+            owned_by_family |= owned_scalars(cn)
+
+        widen: set[str] = set()
+        for slot_name in owned_scalars(class_name):
+            kin = set(sv.slot_descendants(slot_name)) - {slot_name}
+            if kin & owned_by_family:
+                widen.add(slot_name)
+        return widen
+
+    def _owns_lower_bound(self, induced: SlotDefinition) -> object:
+        """Return the minimum number of values an ``owns`` must admit."""
+        if induced.exact_cardinality is not None:
+            return induced.exact_cardinality
+        if induced.minimum_cardinality is not None:
+            return induced.minimum_cardinality
+        return 1 if induced.required else 0
+
     def _build_owns_stmt(self, slot_tname: str, induced: SlotDefinition) -> str:
         """Return a TypeQL ``owns`` statement with cardinality/range/regex/doc annotations.
 
         Uses ``minimum_cardinality`` / ``maximum_cardinality`` / ``exact_cardinality``
         when set, falling back to the boolean flags (``required``, ``multivalued``,
         ``identifier``) for backwards compatibility.
+
+        A slot that is the parent of an owned sub-slot has its upper bound left open; see
+        :meth:`_slots_needing_widened_owns`.
 
         :param slot_tname: the safe TypeDB attribute name for the slot
         :param induced: the induced SlotDefinition carrying cardinality/constraint metadata
@@ -606,6 +646,11 @@ class TypeDBGenerator(Generator):
         owns = f"owns {slot_tname}"
         if induced.identifier:
             owns += " @key"
+        elif induced.name in getattr(self, "_widen_owns", ()):
+            # A parent of an owned sub-slot: the upper bound has to admit the whole
+            # subtype family, since that is what TypeDB counts. The lower bound is kept,
+            # so a `required` parent stays required.
+            owns += f" @card({self._owns_lower_bound(induced)}..)"
         elif induced.exact_cardinality is not None:
             owns += f" {_card(induced.exact_cardinality, induced.exact_cardinality)}"
         elif induced.minimum_cardinality is not None or induced.maximum_cardinality is not None:
@@ -912,6 +957,8 @@ class TypeDBGenerator(Generator):
                     else:
                         parts.append(self._build_relates_stmt(info.role_name, induced))
 
+                self._widen_owns = self._widened_owns_for_class(sv, class_name)
+
                 # Scalar slots: direct ones only, since inherited ones can't be redeclared. A root
                 # relation inherits nothing, so it also declares slots from non-relation ancestors.
                 scalar_slots = (
@@ -943,6 +990,8 @@ class TypeDBGenerator(Generator):
                 parts.append(label)
                 if class_def.is_a and not is_a_is_mixin:
                     parts[0] += f", sub {typedb_name(class_def.is_a)}"
+
+                self._widen_owns = self._widened_owns_for_class(sv, class_name)
 
                 # Slots that appear on ANY non-mixin ancestor are already inherited
                 # in TypeDB — redeclaring them causes [SVL42].

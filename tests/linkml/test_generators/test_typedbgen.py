@@ -2228,3 +2228,106 @@ slots:
     output = TypeDBGenerator(str(schema_file)).serialize()
     assert "attribute title, sub annotation;" in output
     assert "attribute score, value double;" in output
+
+
+def _generate(tmp_path, schema_yaml: str) -> str:
+    """Write a schema and return its generated TypeQL."""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    return TypeDBGenerator(str(schema_file)).serialize()
+
+
+SUB_SLOT_SCHEMA = """
+id: http://example.org/test
+name: test-schema
+default_range: string
+classes:
+  Quantity:
+    slots: [numeric value, minimum numeric value, maximum numeric value]
+slots:
+  numeric value:
+    range: decimal
+  minimum numeric value:
+    is_a: numeric value
+  maximum numeric value:
+    is_a: numeric value
+"""
+
+
+def test_owned_parent_of_owned_sub_slot_is_widened(tmp_path):
+    """A parent slot owned alongside its children leaves its upper bound open.
+
+    TypeDB counts an ``owns`` cardinality over an attribute *and its subtypes*, so the
+    default ``@card(0..1)`` on the parent would cap the whole family at one value and
+    reject a quantity carrying both a minimum and a maximum, which LinkML permits.
+    """
+    output = _generate(tmp_path, SUB_SLOT_SCHEMA)
+    assert "owns numeric_value @card(0..)" in output
+    # the children stay single-valued, each capped on its own
+    assert "owns minimum_numeric_value," in output
+    assert "owns maximum_numeric_value;" in output
+
+
+def test_widened_parent_keeps_its_lower_bound(tmp_path):
+    """Widening the upper bound must not make a required parent optional."""
+    output = _generate(
+        tmp_path,
+        SUB_SLOT_SCHEMA.replace(
+            "  numeric value:\n    range: decimal",
+            "  numeric value:\n    range: decimal\n    required: true",
+        ),
+    )
+    assert "owns numeric_value @card(1..)" in output
+
+
+def test_parent_widened_when_subclass_owns_the_child(tmp_path):
+    """The conflict also arises through inheritance, since a subclass inherits the owns."""
+    output = _generate(
+        tmp_path,
+        """
+id: http://example.org/test
+name: test-schema
+default_range: string
+classes:
+  Thing:
+    slots: [numeric value]
+  Quantity:
+    is_a: Thing
+    slots: [minimum numeric value]
+slots:
+  numeric value:
+    range: decimal
+  minimum numeric value:
+    is_a: numeric value
+""",
+    )
+    assert "owns numeric_value @card(0..)" in output
+
+
+def test_parent_not_widened_for_unrelated_classes(tmp_path):
+    """Unrelated classes share no cardinality budget, so the constraint is kept.
+
+    Only a class that owns both a parent and one of its children, directly or through a
+    subclass, can hit the family limit. Widening more than that would silently relax a
+    constraint the schema does state.
+    """
+    output = _generate(
+        tmp_path,
+        """
+id: http://example.org/test
+name: test-schema
+default_range: string
+classes:
+  Org:
+    slots: [name]
+  Employee:
+    slots: [first name]
+slots:
+  name:
+    range: string
+  first name:
+    is_a: name
+""",
+    )
+    assert "owns name," in output or "owns name;" in output
+    assert "owns name @card" not in output
