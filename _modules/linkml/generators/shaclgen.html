@@ -776,6 +776,11 @@
 
                             <span class="n">add_simple_data_type</span><span class="p">(</span><span class="n">st_node_pv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
                             <span class="n">range_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node</span><span class="p">)</span>
+                        <span class="c1"># Propagate pattern constraint to the branch node.</span>
+                        <span class="c1"># A branch may combine range + pattern (e.g. range: string</span>
+                        <span class="c1"># with pattern: &quot;^...&quot;) or specify pattern alone (no range).</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
+                            <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">range_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="nb">any</span><span class="o">.</span><span class="n">pattern</span><span class="p">)))</span>
                     <span class="n">Collection</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">or_node</span><span class="p">,</span> <span class="n">range_list</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
@@ -803,8 +808,6 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_enum</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">add_simple_data_type</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
-                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string</span><span class="p">:</span>
                         <span class="c1"># Map equal_string and equal_string_in to sh:in</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_and_equals_string</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">equals_string</span><span class="p">])</span>
@@ -814,6 +817,9 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
                         <span class="c1"># Map subproperty_of to sh:in with slot descendants</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_subproperty_constraint</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
+                    <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
 
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_annotations</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_add_annotations</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
