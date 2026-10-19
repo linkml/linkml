@@ -362,6 +362,11 @@ class ShaclGenerator(Generator):
 
                             add_simple_data_type(st_node_pv, r)
                             range_list.append(st_node)
+                        # Propagate pattern constraint to the branch node.
+                        # A branch may combine range + pattern (e.g. range: string
+                        # with pattern: "^...") or specify pattern alone (no range).
+                        if any.pattern:
+                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
@@ -389,8 +394,6 @@ class ShaclGenerator(Generator):
                         self._add_enum(g, prop_pv, r)
                     else:
                         add_simple_data_type(prop_pv, r)
-                    if s.pattern:
-                        prop_pv(SH.pattern, Literal(s.pattern))
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
@@ -400,6 +403,9 @@ class ShaclGenerator(Generator):
                     if self.expand_subproperty_of and s.subproperty_of:
                         # Map subproperty_of to sh:in with slot descendants
                         self._add_subproperty_constraint(g, prop_pv, s)
+
+                if s.pattern:
+                    prop_pv(SH.pattern, Literal(s.pattern))
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
