@@ -2430,6 +2430,7 @@ dev = [
     { name = "linkml-runtime", extra = ["diff-stable"] },
     { name = "mock" },
     { name = "myst-nb" },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2453,6 +2454,7 @@ dev = [
     { name = "tomli-w" },
     { name = "tox" },
     { name = "tox-uv" },
+    { name = "yamlmagic" },
 ]
 docs = [
     { name = "furo" },
@@ -2474,9 +2476,11 @@ notebooks = [
     { name = "ipykernel" },
     { name = "ipython-genutils" },
     { name = "jupyter" },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "pip" },
+    { name = "yamlmagic" },
 ]
 pandera = [
     { name = "pandas" },
@@ -2493,6 +2497,7 @@ tests = [
     { name = "ipython-genutils" },
     { name = "jupyter" },
     { name = "linkml-runtime", extra = ["diff-stable"] },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "numpydantic" },
@@ -2500,6 +2505,7 @@ tests = [
     { name = "pyshacl" },
     { name = "sqlalchemy-bigquery" },
     { name = "tomli-w" },
+    { name = "yamlmagic" },
 ]
 tests-extra = [
     { name = "jsonpatch" },
@@ -2573,6 +2579,7 @@ dev = [
     { name = "linkml-runtime", extras = ["diff-stable"], editable = "packages/linkml_runtime" },
     { name = "mock", specifier = ">=5.1.0" },
     { name = "myst-nb", marker = "python_full_version >= '3.10'", specifier = ">=1.4.0" },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "numpy", marker = "python_full_version < '3.12'", specifier = ">=1.24.3" },
@@ -2596,6 +2603,7 @@ dev = [
     { name = "tomli-w", specifier = ">=1.2.0" },
     { name = "tox", specifier = ">=4.64.1" },
     { name = "tox-uv" },
+    { name = "yamlmagic" },
 ]
 docs = [
     { name = "furo", specifier = ">=2025.12.19" },
@@ -2614,9 +2622,11 @@ notebooks = [
     { name = "ipykernel" },
     { name = "ipython-genutils" },
     { name = "jupyter" },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "pip" },
+    { name = "yamlmagic" },
 ]
 pandera = [
     { name = "pandas" },
@@ -2631,6 +2641,7 @@ tests = [
     { name = "ipython-genutils" },
     { name = "jupyter" },
     { name = "linkml-runtime", extras = ["diff-stable"], editable = "packages/linkml_runtime" },
+    { name = "names" },
     { name = "nbconvert" },
     { name = "nbformat" },
     { name = "numpydantic", specifier = ">=1.10.0" },
@@ -2638,6 +2649,7 @@ tests = [
     { name = "pyshacl", specifier = ">=0.40.1" },
     { name = "sqlalchemy-bigquery", specifier = ">=1.17.2" },
     { name = "tomli-w", specifier = ">=1.2.0" },
+    { name = "yamlmagic" },
 ]
 tests-extra = [
     { name = "jsonpatch", specifier = ">=1.33" },
@@ -3201,6 +3213,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/66/a5/9626ba4f73555b373
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5f/df/76d0321c3797b54b60fef9ec3bd6f4cfd124b9e422182156a1dd418722cf/myst_parser-4.0.1-py3-none-any.whl", hash = "sha256:9134e88959ec3b5780aedf8a99680ea242869d012e8821db3126d427edc9c95d", size = 84579, upload-time = "2025-02-12T10:53:02.078Z" },
 ]
+
+[[package]]
+name = "names"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/44/4e/f9cb7ef2df0250f4ba3334fbdabaa94f9c88097089763d8e85ada8092f84/names-0.3.0.tar.gz", hash = "sha256:726e46254f2ed03f1ffb5d941dae3bc67c35123941c29becd02d48d0caa2a671", size = 789099, upload-time = "2013-05-14T14:55:49.073Z" }
 
 [[package]]
 name = "nbclient"
@@ -5974,6 +5992,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b4/c2/502bd4557a3a9199ea73cc5932cf83354bd362682162f0b14164d2e90216/wrapt-2.0.0-cp314-cp314t-win_amd64.whl", hash = "sha256:7a0efbbc06d3e2077476a04f55859819d23206600b4c33f791359a8e6fa3c362", size = 63988, upload-time = "2025-10-19T23:47:23.826Z" },
     { url = "https://files.pythonhosted.org/packages/1f/f2/632b13942f45db7af709f346ff38b8992c8c21b004e61ab320b0dec525fe/wrapt-2.0.0-cp314-cp314t-win_arm64.whl", hash = "sha256:7fec8a9455c029c8cf4ff143a53b6e7c463268d42be6c17efa847ebd2f809965", size = 60584, upload-time = "2025-10-19T23:47:25.396Z" },
     { url = "https://files.pythonhosted.org/packages/00/5c/c34575f96a0a038579683c7f10fca943c15c7946037d1d254ab9db1536ec/wrapt-2.0.0-py3-none-any.whl", hash = "sha256:02482fb0df89857e35427dfb844319417e14fae05878f295ee43fa3bf3b15502", size = 43998, upload-time = "2025-10-19T23:47:52.858Z" },
+]
+
+[[package]]
+name = "yamlmagic"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/79/6f0f00b6ff87bb9c2a1227adef728293770c8161e8141101b8faf8b4e344/yamlmagic-0.2.0.tar.gz", hash = "sha256:c9a64977dd3f379530127a74a35dfc5b1a5ac82efb9a36d87a182d0c650a7205", size = 6968, upload-time = "2015-08-15T22:27:09.479Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/db/d677d565b9048b9003ae6aac3ec34cce9dcc0e9c13bd68289c7c8dde3959/yamlmagic-0.2.0-py2.py3-none-any.whl", hash = "sha256:a2d405f613b3bdd8004355cb242092a840f2a24a26db1cdbcc867e2004a80d03", size = 5501, upload-time = "2015-08-15T22:27:26.385Z" },
 ]
 
 [[package]]

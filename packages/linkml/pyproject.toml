@@ -85,9 +85,11 @@ notebooks = [
   "ipykernel",
   "ipython-genutils",
   "jupyter",
+  "names",
   "nbconvert",
   "nbformat",
   "pip",
+  "yamlmagic",
 ]
 tests = [
   "linkml-runtime[diff-stable]",
