@@ -1326,3 +1326,131 @@ def test_subproperty_of_cargo_check(temp_dir):
         pytest.fail(
             f"cargo check failed for subproperty_of schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
         )
+
+
+_TYPE_DESIGNATOR_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/type_designator
+    name: rustgen_type_designator
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Event:
+        tree_root: true
+        slots:
+          - category
+          - name
+        slot_usage:
+          category:
+            designates_type: true
+      EmploymentEvent:
+        is_a: Event
+        slots:
+          - employer
+      MedicalEvent:
+        is_a: Event
+        slots:
+          - diagnosis
+
+    slots:
+      category:
+        range: string
+      name:
+        range: string
+      employer:
+        range: string
+      diagnosis:
+        range: string
+    """
+)
+
+
+def test_rustgen_type_designator_emits_serde_tag(temp_dir):
+    """A ``designates_type`` slot on a class with subtypes produces an internally
+    tagged ``*OrSubtype`` enum (``#[serde(tag = ...)]``), not an untagged one.
+
+    Regression for two compounding bugs: ``type_designators`` was typed
+    ``dict[str, str]`` while the generator supplies ``list[str]`` (which crashed
+    generation with a ``ValidationError``), and the enum was built with a
+    ``type_designator_name`` kwarg that did not match the model field
+    ``type_designator_field`` (silently dropped, so the tag was never emitted).
+    """
+    schema_path = Path(temp_dir) / "rustgen_type_designator.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "type_designator.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    # Generation itself must not raise (covers the dict[str, list[str]] crash).
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # The designator slot drives an internally tagged enum.
+    assert 'serde(tag = "category")' in contents
+    # And the fall-back untagged form is no longer used for the OrSubtype enum.
+    assert "serde(untagged)" not in contents
+    # Each subtype variant is renamed to the value carried by the designator.
+    assert 'serde(rename = "EmploymentEvent"' in contents
+    assert 'serde(rename = "MedicalEvent"' in contents
+
+
+def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
+    """The tagged ``*OrSubtype`` enum discriminates variants by the designator
+    value and round-trips it through serde."""
+    schema_path = Path(temp_dir) / "rustgen_type_designator_rt.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "type_designator_crate")
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "type_designator.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn tagged_discriminates_by_designator() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let yaml = "category: MedicalEvent\\nname: x\\ndiagnosis: flu\\n";\n'
+            '    let value: EventOrSubtype = serde_yml::from_str(yaml).expect("decode tagged");\n'
+            "    match value {\n"
+            "        EventOrSubtype::MedicalEvent(_) => {}\n"
+            '        _ => panic!("expected MedicalEvent variant"),\n'
+            "    }\n"
+            '    let out = serde_yml::to_string(&value).expect("encode");\n'
+            '    assert!(out.contains("category: MedicalEvent"), "designator tag not round-tripped: {out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "type_designator"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )

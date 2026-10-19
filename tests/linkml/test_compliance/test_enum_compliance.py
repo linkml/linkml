@@ -24,7 +24,15 @@ from tests.linkml.test_compliance.helper import (
     generate_tree,
     validated_schema,
 )
-from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
+from tests.linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    ENUM_E,
+    EXAMPLE_NS,
+    PV_1,
+    PV_2,
+    SLOT_S1,
+)
 
 
 @feature_category("Enumerations", "Static enums")
@@ -453,4 +461,68 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=data_name,
+    )
+
+
+@feature_category("Enumerations", "Optional enum nullability")
+@pytest.mark.parametrize(
+    "data_name,data,is_valid",
+    [
+        ("present", {SLOT_S1: PV_1}, True),
+        ("absent", {}, True),
+        ("explicit_null", {SLOT_S1: None}, True),
+        ("invalid_value", {SLOT_S1: "not_a_pv"}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_optional_enum_slot_nullability(framework, data_name, data, is_valid):
+    """
+    Tests that an optional (required: false) enum slot accepts an absent key or an explicit null value.
+
+    Non-required slots of other ranges (types, classes) already accept explicit nulls; enum
+    ranges should behave consistently.
+
+    References:
+        - https://github.com/linkml/linkml/issues/3736
+        - https://github.com/linkml/linkml/issues/2155
+
+    :param framework: generator framework to check
+    :param data_name: unique label for the data case
+    :param data: object to validate
+    :param is_valid: whether the object is expected to be valid
+    """
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": ENUM_E,
+                    "required": False,
+                },
+            }
+        },
+    }
+    enums = {
+        ENUM_E: {
+            "permissible_values": {PV_1: {}, PV_2: {}},
+        }
+    }
+    schema = validated_schema(
+        test_optional_enum_slot_nullability,
+        "optional_enum",
+        framework,
+        classes=classes,
+        enums=enums,
+        core_elements=["enum_definitions", "permissible_values", "required"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        data_name,
+        framework,
+        data,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=data_name,
+        strip_nulls=False,
     )

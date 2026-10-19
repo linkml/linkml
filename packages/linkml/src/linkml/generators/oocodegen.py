@@ -128,7 +128,13 @@ class OOCodeGenerator(Generator):
         super().__post_init__()
 
     @abc.abstractmethod
-    def serialize(self, directory: str) -> None:
+    def serialize(self, directory: str | None = None, **kwargs) -> str | None:
+        """Serialize the schema to generated code.
+
+        Single-file generators return the generated code as a ``str``;
+        multi-file generators (e.g. javagen) write one file per class
+        into ``directory`` and return ``None``.
+        """
         raise NotImplementedError("Not implemented.")
 
     @abc.abstractmethod
@@ -331,7 +337,7 @@ class OOCodeGenerator(Generator):
                     source_slot=slot,
                     range=range,
                     default_value=default_value,
-                    slot_uri=sv.get_uri(slot.name, expand=True),
+                    slot_uri=sv.get_uri(slot, expand=True),
                 )
 
                 if sn not in parent_slots:

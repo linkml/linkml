@@ -752,6 +752,7 @@ def check_data(
     description: str = None,
     coerced: dict = None,
     exclude_rdf=False,
+    strip_nulls: bool = True,
 ):
     """
     Validate the given object against the given schema using the given framework.
@@ -771,6 +772,8 @@ def check_data(
     :param target_class: the type of the object
     :param description: description of this particular test combination
     :param coerced: Dict representation of repaired/coerced form of object
+    :param strip_nulls: if True (default), remove null-valued keys before plugin-based
+        validation (jsonschema, shacl); set to False to test explicit null handling
     :return:
     """
     out_dir = _schema_out_path(schema)
@@ -937,7 +940,8 @@ def check_data(
         # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
 
         try:
-            errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+            cleaned_object = clean_null_terms(object_to_validate) if strip_nulls else object_to_validate
+            errors = list(validator.iter_results(cleaned_object, target_class))
         except Exception as e:
             errors = [e]
         logger.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
