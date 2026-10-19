@@ -21,6 +21,7 @@ When this JSON-LD context is combined with JSON it generates valid RDF
 Note there are some features missing from JSON-LD generation:
 
  * `@type` information is not generated at all levels
+ * Enums do not support IRI translation via the `meaning` keyword ([#2497](https://github.com/linkml/linkml/issues/2497))
 
 These should be addressed in future LinkML releases
 
