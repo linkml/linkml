@@ -417,6 +417,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">hbreader</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileInfo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span>
 
@@ -549,56 +550,43 @@
                     <span class="n">range_applicable_elements</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_applicable_range_elements</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
                     <span class="n">is_inlined</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">is_inlined</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
                     <span class="n">slot_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assuming no meaning assigned for value </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> for Enum </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="n">TypeDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Cannot map Literal </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> to a slot </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> whose range </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2"> is not a type;&quot;</span>
+                    <span class="c1"># An ordered multivalued slot is serialized as an rdf:List (see issue #3531);</span>
+                    <span class="c1"># the object of the triple is the list head, which we traverse in order.</span>
+                    <span class="c1"># Only probe the graph for a list head on ordered slots -- the membership</span>
+                    <span class="c1"># check runs for every object of every slot otherwise.</span>
+                    <span class="n">is_list_head</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span>
+                        <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">list_elements_ordered</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="n">o</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span> <span class="ow">or</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">is_list_head</span><span class="p">:</span>
+                        <span class="n">members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Collection</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">o</span><span class="p">))</span>
+                        <span class="c1"># mark the rdf:List spine (rdf:first/rdf:rest triples) as processed</span>
+                        <span class="n">spine</span> <span class="o">=</span> <span class="n">o</span>
+                        <span class="k">while</span> <span class="n">spine</span> <span class="ow">and</span> <span class="n">spine</span> <span class="o">!=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">spine_triple</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">spine</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+                                <span class="n">processed_triples</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spine_triple</span><span class="p">)</span>
+                            <span class="n">spine</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">spine</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_obj</span><span class="p">:</span>
+                            <span class="n">dict_obj</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_to_value</span><span class="p">(</span>
+                                <span class="n">member</span><span class="p">,</span>
+                                <span class="n">slot</span><span class="p">,</span>
+                                <span class="n">range_applicable_elements</span><span class="p">,</span>
+                                <span class="n">is_inlined</span><span class="p">,</span>
+                                <span class="n">namespaces</span><span class="p">,</span>
+                                <span class="n">schemaview</span><span class="p">,</span>
+                                <span class="n">cast_literals</span><span class="p">,</span>
+                                <span class="n">subject</span><span class="p">,</span>
                             <span class="p">)</span>
-                        <span class="n">v</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span>
-                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_inlined</span><span class="p">:</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;blank nodes should be inlined; </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="n">v</span> <span class="o">=</span> <span class="n">Pointer</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">ClassDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-                                <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
-                                <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri_to_id</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">)</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No CURIE for </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">subject_class</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-                                <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
-                            <span class="n">range_union_elements</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_range_as_union</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
-                            <span class="n">enum_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">range_union_elements</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()]</span>
-                            <span class="c1"># if a PV has a meaning URI declared, map this</span>
-                            <span class="c1"># back to a text representation</span>
-                            <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                            <span class="k">for</span> <span class="n">enum_name</span> <span class="ow">in</span> <span class="n">enum_names</span><span class="p">:</span>
-                                <span class="n">e</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">enum_name</span><span class="p">)</span>
-                                <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no enum found for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> (ns=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                                    <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">==</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
-                                        <span class="n">v</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span>
-                                        <span class="k">break</span>
-                        <span class="k">elif</span> <span class="n">TypeDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">cast_literals</span><span class="p">:</span>
-                                <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                                    <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Casting </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> to string&quot;</span><span class="p">)</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;Expected literal value (</span><span class="si">{</span><span class="n">range_applicable_elements</span><span class="si">}</span><span class="s2">) for </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
-                                <span class="p">)</span>
-                        <span class="k">if</span> <span class="n">is_inlined</span><span class="p">:</span>
-                            <span class="c1"># the object of the triple may not yet be processed;</span>
-                            <span class="c1"># we store a pointer to o, and then replace this later</span>
-                            <span class="n">v</span> <span class="o">=</span> <span class="n">Pointer</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                            <span class="n">dict_obj</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">member</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">processed</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+                                <span class="n">node_tuples_to_visit</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">member</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)))</span>
+                        <span class="k">continue</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_to_value</span><span class="p">(</span>
+                        <span class="n">o</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">range_applicable_elements</span><span class="p">,</span> <span class="n">is_inlined</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">cast_literals</span><span class="p">,</span> <span class="n">subject</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_obj</span><span class="p">:</span>
                             <span class="n">dict_obj</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -656,6 +644,81 @@
                 <span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="c1"># Final step: translate dicts into instances of target_class</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">target_class</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">root_dicts</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_object_to_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">o</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span>
+        <span class="n">range_applicable_elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">is_inlined</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">namespaces</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+        <span class="n">cast_literals</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a single RDF object node into the Python value for a slot.</span>
+
+<span class="sd">        :param o: the RDF object node (Literal, URIRef, or BNode)</span>
+<span class="sd">        :param slot: the slot the value is being assigned to</span>
+<span class="sd">        :param range_applicable_elements: metamodel elements applicable to the slot range</span>
+<span class="sd">        :param is_inlined: whether the slot is inlined</span>
+<span class="sd">        :param namespaces: schema namespaces, used to resolve CURIEs</span>
+<span class="sd">        :param schemaview: schema view guiding interpretation</span>
+<span class="sd">        :param cast_literals: if True, cast unexpected literals/URIs to strings</span>
+<span class="sd">        :param subject: the RDF subject the value belongs to, used only for diagnostics</span>
+<span class="sd">        :return: the Python value (scalar, id reference, or a Pointer to an inlined object)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assuming no meaning assigned for value </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> for Enum </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">TypeDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot map Literal </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> to a slot </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> whose range </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2"> is not a type;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_inlined</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;blank nodes should be inlined; </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Pointer</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ClassDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+                    <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri_to_id</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No CURIE for </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
+                <span class="n">range_union_elements</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_range_as_union</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+                <span class="n">enum_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">range_union_elements</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()]</span>
+                <span class="c1"># if a PV has a meaning URI declared, map this</span>
+                <span class="c1"># back to a text representation</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">enum_name</span> <span class="ow">in</span> <span class="n">enum_names</span><span class="p">:</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">enum_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no enum found for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> (ns=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">==</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span>
+                            <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">TypeDefinition</span><span class="o">.</span><span class="n">class_name</span> <span class="ow">in</span> <span class="n">range_applicable_elements</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cast_literals</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Casting </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2"> to string&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected literal value (</span><span class="si">{</span><span class="n">range_applicable_elements</span><span class="si">}</span><span class="s2">) for </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_inlined</span><span class="p">:</span>
+                <span class="c1"># the object of the triple may not yet be processed;</span>
+                <span class="c1"># we store a pointer to o, and then replace this later</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">Pointer</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">v</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_id_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">VALID_SUBJECT</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ANYDICT</span><span class="p">:</span>
         <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>

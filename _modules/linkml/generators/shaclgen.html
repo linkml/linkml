@@ -686,7 +686,20 @@
                     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pnode</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">s</span><span class="p">))))</span>
 
-                <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">)</span>
+                <span class="n">is_ordered_list</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">list_elements_ordered</span>
+                <span class="k">if</span> <span class="n">is_ordered_list</span><span class="p">:</span>
+                    <span class="c1"># Ordered multivalued slots are serialized as an rdf:List (see issue #3531),</span>
+                    <span class="c1"># so the value constraints must apply to each list member rather than to the</span>
+                    <span class="c1"># list head. Use a SHACL sequence path that steps through the slot, walks the</span>
+                    <span class="c1"># rdf:rest spine, then reads each rdf:first:</span>
+                    <span class="c1">#   sh:path ( &lt;slot&gt; [ sh:zeroOrMorePath rdf:rest ] rdf:first )</span>
+                    <span class="n">rest_path</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+                    <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">rest_path</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">zeroOrMorePath</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">))</span>
+                    <span class="n">seq_path</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+                    <span class="n">Collection</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">seq_path</span><span class="p">,</span> <span class="p">[</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">rest_path</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">])</span>
+                    <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">seq_path</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">)</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
                 <span class="n">order</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">prop_pv_text</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
@@ -707,8 +720,17 @@
                     <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">msg_text</span><span class="p">:</span>
                         <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pnode</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">msg_text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="kc">None</span><span class="p">))))</span>
+                <span class="c1"># Cardinality. For an ordered list the path is a SHACL sequence path over</span>
+                <span class="c1"># rdf:List members; SHACL value nodes are a *set*, so sh:minCount/sh:maxCount</span>
+                <span class="c1"># would count distinct member values, not list length -- a false violation on</span>
+                <span class="c1"># (a a b) with minimum_cardinality 3, a false pass on (a a a a) with</span>
+                <span class="c1"># maximum_cardinality 3. We therefore only assert non-emptiness (sh:minCount 1)</span>
+                <span class="c1"># for ordered lists and skip length-based counts. See #3531 / PR #3693 review.</span>
                 <span class="c1"># minCount</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_ordered_list</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
+                        <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>
@@ -717,8 +739,11 @@
                 <span class="c1"># would cause spurious violations on every instance.</span>
                 <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="c1"># maxCount</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># maxCount (skipped for ordered lists: list length is not expressible over a</span>
+                <span class="c1"># set-valued sequence path)</span>
+                <span class="k">if</span> <span class="n">is_ordered_list</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">maxCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>

@@ -414,6 +414,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">curies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Converter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSD</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Node</span>
 
@@ -551,23 +552,42 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v_or_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">vs</span> <span class="o">=</span> <span class="n">v_or_list</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v_or_list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">vs</span> <span class="o">=</span> <span class="n">v_or_list</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="n">vs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">v_or_list</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">vs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v_or_list</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="c1"># Skip slots with no values before resolving the slot: an element may carry</span>
+            <span class="c1"># python attributes (e.g. defaults) that are not schema slots, and resolving</span>
+            <span class="c1"># those would raise. This mirrors the original per-value loop, which only</span>
+            <span class="c1"># touched the schema once it had a value to emit.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">vs</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slot_name_map</span><span class="p">:</span>
+                <span class="n">slot_name</span> <span class="o">=</span> <span class="n">slot_name_map</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slot </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> not in name map&quot;</span><span class="p">)</span>
+                <span class="n">slot_name</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">slot_uri</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">list_elements_ordered</span><span class="p">:</span>
+                <span class="c1"># emit an ordered rdf:List (rdf:first/rdf:rest) so element order is part</span>
+                <span class="c1"># of the RDF semantics and survives canonicalization. This applies to</span>
+                <span class="c1"># both list- and dict-backed collections: ``vs`` is already in the</span>
+                <span class="c1"># correct (insertion) order for either form. See issue #3531.</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inject_triples</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">]</span>
+                <span class="n">list_head</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+                <span class="n">Collection</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">list_head</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">element_uri</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">,</span> <span class="n">list_head</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
+                    <span class="n">type_added</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slot_name_map</span><span class="p">:</span>
-                    <span class="n">k</span> <span class="o">=</span> <span class="n">slot_name_map</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slot </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> not in name map&quot;</span><span class="p">)</span>
-                <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
-                    <span class="n">slot_uri</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-                    <span class="n">v_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inject_triples</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
-                    <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">element_uri</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">,</span> <span class="n">v_node</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
-                        <span class="n">type_added</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">v_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inject_triples</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">element_uri</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">,</span> <span class="n">v_node</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
+                    <span class="n">type_added</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">type_added</span><span class="p">:</span>
             <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">element_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">))))</span>
         <span class="k">return</span> <span class="n">element_uri</span>
