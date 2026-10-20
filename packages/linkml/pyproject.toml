@@ -134,7 +134,7 @@ tests-extra = [
   "requests-cache >= 1.3.2",
   "mock >= 5.1.0",
   "testcontainers==4.15.0",
-  "jsonpatch >= 1.33",
+  "jsonpatch>=1.35",
   "openapi-spec-validator >= 0.8.4",
 ]
 docs = [
