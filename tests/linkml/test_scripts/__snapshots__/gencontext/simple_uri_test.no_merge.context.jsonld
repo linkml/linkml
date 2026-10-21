@@ -10,7 +10,7 @@
       "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "tag": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "linkml:tag"
       },
       "value": {
