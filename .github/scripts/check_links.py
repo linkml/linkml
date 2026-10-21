@@ -142,11 +142,12 @@ def needs_check(url: str, cache: dict[str, dict], ttl_days: int, jitter_days: in
         return True
 
 
-TRANSIENT_STATUSES = {"timeout", "connection_error"}
-"""Failures that say the network misbehaved, not that the link is dead.
+TRANSIENT_STATUSES = {"timeout", "connection_error", "408", "429", "500", "502", "503", "504"}
+"""Failures that say the network or server misbehaved, not that the link is dead.
 
-A dead link answers with 404. A dropped connection or a timeout is weather, and
-retrying clears it -- so these are retried before being reported.
+A dead link answers with 404. A dropped connection, a timeout, rate limiting, or
+a server/gateway error is weather, and retrying clears it -- so these are retried
+before being reported.
 """
 
 RETRY_ATTEMPTS = 3
@@ -190,7 +191,7 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
     This avoids false failures when redirect targets have bot protection.
 
     Transient network failures are retried up to ``RETRY_ATTEMPTS`` times with a
-    linear backoff, so a single dropped connection is not reported as a broken link.
+    linear backoff, so a single dropped connection or 503 is not reported as a broken link.
 
     Returns:
         Tuple of (status_code_or_error, error_message_or_empty)
