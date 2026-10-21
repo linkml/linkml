@@ -319,6 +319,9 @@ class RustProperty(RustTemplateModel):
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
     alias: str | None = None
+    serde_rename: str | None = None
+    """Wire name to serialize/deserialize under when the Rust field name was escaped
+    (e.g. a slot named ``type`` becomes the field ``type_``; the data still uses ``type``)."""
     generate_merge: bool = False
     container_mode: str
     name: str
