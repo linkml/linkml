@@ -19,6 +19,7 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.annotations import declared_annotation
 from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
@@ -43,7 +44,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-from linkml_runtime.utils.rdf_terms import type_term
+from linkml_runtime.utils.rdf_terms import link_iri, type_term, value_term
 
 logger = logging.getLogger(__name__)
 
@@ -383,14 +384,7 @@ class OwlSchemaGenerator(Generator):
                 metaslot_value = [metaslot_value]
             for v in metaslot_value:
                 if metaslot_range in msv.all_types():
-                    if metaslot_range == "uri":
-                        obj = URIRef(v)
-                    elif metaslot_range == "uriorcurie":
-                        obj = URIRef(this_sv.expand_curie(v))
-                    elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
-                        obj = Literal(v, lang=lang)
-                    else:
-                        obj = Literal(v)
+                    obj = self._metaslot_term(metaslot_range, v, lang, f"{metaslot_name} of {uri}")
                 elif metaslot_range in msv.all_subsets():
                     obj = Literal(v)  # TODO
                 elif metaslot_range in msv.all_classes():
@@ -415,6 +409,10 @@ class OwlSchemaGenerator(Generator):
         for k, v in e.annotations.items():
             if isinstance(v, dict) or isinstance(v, list):
                 continue
+            declared = declared_annotation(this_sv, e, k, v.value, lang)
+            if declared is not None:
+                self.graph.add((uri, declared.predicate, declared.value))
+                continue
             if ":" not in k:
                 default_prefix = this_sv.schema.default_prefix
                 if default_prefix in this_sv.schema.prefixes:
@@ -431,6 +429,32 @@ class OwlSchemaGenerator(Generator):
                 else:
                     obj = Literal(v.value)
                 self.graph.add((uri, URIRef(k_uri), obj))
+
+    def _metaslot_term(
+        self, range_name: str, value: Any, language: str | None, origin: str
+    ) -> URIRef | BNode | Literal:
+        """Return the RDF term of a native metadata value according to the metamodel slot's range.
+
+        The term kind follows :func:`~linkml_runtime.utils.rdf_terms.value_term`, so
+        ``see_also`` and ``source`` values are IRIs and ``license`` values are
+        strings. A link's CURIE is expanded with the schema's prefixes, then with the
+        metamodel's. Human-readable text carries the resolved language. A link value
+        that is neither an IRI nor a CURIE, such as a bare element name in
+        ``see_also``, cannot be resolved; it is written as a plain literal, with a
+        warning, since a relative IRI would make the whole graph non-standard RDF
+        and OWL 2 admits a literal as an annotation value (Structural Specification
+        §10.1).
+        """
+        msv = self.metamodel_schemaview
+        if range_name in self._LANGUAGE_TAGGABLE_RANGES and language:
+            return Literal(value, lang=language)
+        if not type_term(msv, range_name).kind.is_node:
+            return value_term(msv, range_name, value)
+        link = self.schemaview.expand_curie(str(value))
+        if link_iri(msv, link) is None and not link.startswith("_:"):
+            logger.warning(f"{origin}: {value!r} is neither an IRI nor a CURIE; written as a literal")
+            return Literal(str(value))
+        return value_term(msv, range_name, link)
 
     def add_class(self, cls: ClassDefinition) -> None:
         """

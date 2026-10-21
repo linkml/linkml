@@ -12,6 +12,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
+from linkml.generators.common.annotations import declared_annotation
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
@@ -809,6 +810,10 @@ class ShaclGenerator(Generator):
         if type(annotations) is JsonObj:
             annotations = as_dict(annotations)
         for a in annotations.values():
+            declared = declared_annotation(sv, item, a["tag"], a["value"], self._resolve_language(item))
+            if declared is not None:
+                func(declared.predicate, declared.value)
+                continue
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
             if ":" in a["tag"]:
                 N_predicate = URIRef(sv.expand_curie(a["tag"]))

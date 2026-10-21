@@ -45,6 +45,8 @@ TypeTerm(kind=<TermKind.LITERAL: 'literal'>, datatype='http://www.w3.org/2001/XM
 rdflib.term.URIRef('https://example.org/t/me.jpg')
 >>> value_term(sv, "FilePath", "./docs/cv.pdf")
 rdflib.term.Literal('./docs/cv.pdf', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#anyURI'))
+>>> link_iri(sv, "ex:me.jpg"), link_iri(sv, "./docs/cv.pdf")
+('https://example.org/t/me.jpg', None)
 """
 
 import re
@@ -174,6 +176,17 @@ def type_term(sv: SchemaView, type_name: str) -> TypeTerm:
     return TypeTerm(TermKind.LITERAL, datatype)
 
 
+def link_iri(sv: SchemaView, value: str) -> str | None:
+    """Return the absolute IRI that link *value* denotes, or ``None`` if it is a relative reference.
+
+    A CURIE is expanded with the schema's prefixes. A value with an undeclared prefix
+    passes as an absolute IRI of that scheme, as in JSON-LD; one without a scheme
+    (RFC 3986 §3.1) is a relative reference.
+    """
+    iri = sv.expand_curie(value)
+    return iri if _SCHEME.match(iri) else None
+
+
 def value_term(sv: SchemaView, type_name: str, value: Any) -> Node:
     """Return the RDF term for *value* of the type *type_name*.
 
@@ -197,8 +210,8 @@ def value_term(sv: SchemaView, type_name: str, value: Any) -> Node:
         raise ValueError(f"Value {text!r} of type {type_name!r} must be a blank node label such as '_:b1'")
     if text.startswith("_:"):
         raise ValueError(f"Value {text!r} of type {type_name!r} is a blank node, but values of this type are IRIs")
-    iri = sv.expand_curie(text)
-    if not _SCHEME.match(iri):
+    iri = link_iri(sv, text)
+    if iri is None:
         raise ValueError(
             f"Value {text!r} of type {type_name!r} is a relative reference, but values of this type are "
             "IRIs, which must be absolute. Use a type derived from string with uri: xsd:anyURI to keep "
