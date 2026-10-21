@@ -36,6 +36,7 @@ meta:objslot a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:inScheme <http://example.org/owl2> .
 <http://example.org/owl2> a owl:Ontology ;
 	rdfs:label "owl2" .
+skos:inScheme a owl:AnnotationProperty .
 linkml:topValue a owl:DatatypeProperty ;
 	rdfs:label "value" .
 _:c14n0 a owl:Restriction ;

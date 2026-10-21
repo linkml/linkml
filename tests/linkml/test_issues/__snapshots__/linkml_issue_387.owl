@@ -26,3 +26,5 @@ ex:a a owl:DatatypeProperty ;
     rdfs:label "a" ;
     skos:inScheme <https://w3id.org/linkml/examples/test> .
 
+skos:inScheme a owl:AnnotationProperty .
+
