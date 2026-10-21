@@ -35,7 +35,7 @@ rdflib.term.Literal('well defined', lang='en')
 True
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from rdflib import BNode, Literal, URIRef
@@ -47,10 +47,11 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 @dataclass(frozen=True)
 class DeclaredAnnotation:
-    """The RDF predicate and value of an annotation that a metaclass slot declares."""
+    """The RDF predicate and value of an annotation, and the metaclass slot that declares it."""
 
     predicate: URIRef
     value: URIRef | BNode | Literal
+    slot: SlotDefinition = field(compare=False, hash=False, repr=False)
 
 
 def declaring_slots(sv: SchemaView, element: Element | PermissibleValue, tag: str) -> list[SlotDefinition]:
@@ -113,7 +114,7 @@ def declared_annotation(
     for slot in declaring_slots(sv, element, tag):
         term = annotation_term(sv, slot, value, language)
         if term is not None:
-            declared.add(DeclaredAnnotation(URIRef(sv.get_uri(slot, expand=True)), term))
+            declared.add(DeclaredAnnotation(URIRef(sv.get_uri(slot, expand=True)), term, slot))
     if len(declared) > 1:
         metaclasses = ", ".join(element.instantiates)
         raise ValueError(f"The metaclasses {metaclasses} declare annotation {tag!r} with different terms")

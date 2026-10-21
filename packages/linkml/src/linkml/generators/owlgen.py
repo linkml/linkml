@@ -248,6 +248,89 @@ class OwlSchemaGenerator(Generator):
     # is technical and must never be language-tagged.
     _LANGUAGE_TAGGABLE_RANGES: ClassVar[frozenset[str]] = frozenset({"string", "ncname"})
 
+    # The built-in annotation properties of OWL 2 (Structural Specification §5.5, Table 5).
+    _BUILTIN_ANNOTATION_PROPERTIES: ClassVar[frozenset[URIRef]] = frozenset(
+        {
+            RDFS.label,
+            RDFS.comment,
+            RDFS.seeAlso,
+            RDFS.isDefinedBy,
+            OWL.deprecated,
+            OWL.versionInfo,
+            OWL.priorVersion,
+            OWL.backwardCompatibleWith,
+            OWL.incompatibleWith,
+        }
+    )
+    # The namespaces of the OWL 2 reserved vocabulary (Structural Specification §2.4, Table 2).
+    _RESERVED_NAMESPACES: ClassVar[tuple[str, ...]] = (str(RDF), str(RDFS), str(XSD), str(OWL))
+    # The declarations of a property's role (§5.3 to §5.5).
+    _PROPERTY_DECLARATIONS: ClassVar[frozenset[URIRef]] = frozenset(
+        {OWL.ObjectProperty, OWL.DatatypeProperty, OWL.AnnotationProperty}
+    )
+
+    def _declare_annotation_properties(self) -> None:
+        """Declare every predicate of the ontology that has no role as an annotation property.
+
+        OWL 2 DL requires each IRI used as a property to be declared (Structural
+        Specification §5.8.1). The generator declares the object and data
+        properties of the slots it emits; every other predicate it writes outside
+        the reserved vocabulary (§2.4) is an annotation: the metadata of elements
+        (``skos:definition``, ``skos:inScheme``, ``dcterms:title``, ...), the
+        mappings, and annotations. A predicate that a restriction uses
+        (``owl:onProperty``) is a logical property and is left alone.
+        """
+        graph = self.graph
+        declared = {s for s, role in graph.subject_objects(RDF.type) if role in self._PROPERTY_DECLARATIONS}
+        restricted = set(graph.objects(None, OWL.onProperty))
+        for predicate in set(graph.predicates()):
+            if str(predicate).startswith(self._RESERVED_NAMESPACES) or predicate in declared | restricted:
+                continue
+            graph.add((predicate, RDF.type, OWL.AnnotationProperty))
+
+    # The property roles a slot can declare with ``implements`` (OWL 2 §5.3 to §5.5).
+    _PROPERTY_ROLES: ClassVar[frozenset[URIRef]] = frozenset(
+        {OWL.AnnotationProperty, OWL.ObjectProperty, OWL.DatatypeProperty}
+    )
+
+    def _declared_property_role(self, slot: SlotDefinition) -> URIRef | None:
+        """Return the OWL property role that *slot* declares with ``implements``, if any.
+
+        :raises ValueError: if the slot declares more than one role; an IRI is an
+            annotation, an object or a data property (OWL 2 §5.8.1)
+        """
+        roles: set[URIRef] = set()
+        for value in slot.implements:
+            uri = self.schemaview.expand_curie(value)
+            if uri.startswith("owl:"):
+                uri = str(OWL) + uri[len("owl:") :]
+            if URIRef(uri) in self._PROPERTY_ROLES:
+                roles.add(URIRef(uri))
+        if len(roles) > 1:
+            raise ValueError(f"Slot {slot.name!r} implements more than one OWL property role: {sorted(roles)}")
+        return next(iter(roles), None)
+
+    def is_annotation_property(self, slot: SlotDefinition) -> bool:
+        """Whether *slot* is an OWL annotation property.
+
+        It is one when it implements ``owl:AnnotationProperty`` or when its property
+        IRI is a built-in annotation property (OWL 2 §5.5), as for a slot mapped to
+        ``rdfs:label`` and emitted with that IRI.
+        """
+        return (
+            self._declared_property_role(slot) == OWL.AnnotationProperty
+            or self._prop_uri(slot) in self._BUILTIN_ANNOTATION_PROPERTIES
+        )
+
+    def _resolved_slot(
+        self, slot: SlotDefinition, cls: "ClassDefinition | AnonymousClassExpression | None"
+    ) -> SlotDefinition:
+        """Return *slot* with its global definition and, within a class, the class's usage applied."""
+        sv = self.schemaview
+        if isinstance(cls, ClassDefinition) and slot.name in sv.class_slots(cls.name):
+            return sv.induced_slot(slot.name, cls.name)
+        return sv.get_slot(slot.name, attributes=True) or slot
+
     def __post_init__(self) -> None:
         # Resolver must be assigned before ``super().__post_init__()`` so that
         # any hook the parent invokes during initialisation can safely call
@@ -334,6 +417,7 @@ class OwlSchemaGenerator(Generator):
 
         # Add metadata as annotation properties
         self.add_metadata(schema, base)
+        self._declare_annotation_properties()
         return graph
 
     def serialize(self, **kwargs: Any) -> str:
@@ -411,6 +495,11 @@ class OwlSchemaGenerator(Generator):
                 continue
             declared = declared_annotation(this_sv, e, k, v.value, lang)
             if declared is not None:
+                if (
+                    self.is_annotation_property(declared.slot)
+                    and declared.predicate not in self._BUILTIN_ANNOTATION_PROPERTIES
+                ):
+                    self.graph.add((declared.predicate, RDF.type, OWL.AnnotationProperty))
                 self.graph.add((uri, declared.predicate, declared.value))
                 continue
             if ":" not in k:
@@ -537,12 +626,19 @@ class OwlSchemaGenerator(Generator):
         # then create an axiom: (t some C) subClassOf C.
         type_designator = sv.get_type_designator_slot(cls.name)
         if type_designator:
+            if self.is_annotation_property(self._resolved_slot(type_designator, cls)):
+                raise ValueError(
+                    f"Annotation property {type_designator.name!r} cannot be the type designator of {cls.name!r}"
+                )
             td_prop = self._prop_uri(type_designator.name)
             restr = self._some_values_from(td_prop, subject_expr)
             self.graph.add((restr, RDFS.subClassOf, subject_expr))
         # unique key constraints are mapped to OWL hasKey
         if cls.unique_keys:
             for uk in cls.unique_keys.values():
+                for slot_name in uk.unique_key_slots:
+                    if self.is_annotation_property(sv.induced_slot(slot_name, cls.name)):
+                        raise ValueError(f"Annotation property {slot_name!r} cannot be in a unique key of {cls.name!r}")
                 uk_props = [self._prop_uri(slot) for slot in uk.unique_key_slots]
                 uk_props_listnode = BNode()
                 Collection(self.graph, uk_props_listnode, uk_props)
@@ -716,6 +812,11 @@ class OwlSchemaGenerator(Generator):
             if none_of_expr:
                 owl_exprs.append(none_of_expr)
         for slot in own_slots:
+            if self.is_annotation_property(self._resolved_slot(slot, cls)):
+                if isinstance(cls, AnonymousClassExpression):
+                    raise ValueError(f"Annotation property {slot.name!r} cannot be a condition of a class expression")
+                # An annotation property has no logical meaning (OWL 2 §10.1), so no restriction.
+                continue
             if slot.name:
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
             else:
@@ -1046,7 +1147,9 @@ class OwlSchemaGenerator(Generator):
 
         # Slots may be modeled as Object or Datatype Properties
         # if type_objects is True, then ALL slots are ObjectProperties
-        self.graph.add((slot_uri, RDF.type, self.slot_owl_type(slot)))
+        role = self.slot_owl_type(slot)
+        if slot_uri not in self._BUILTIN_ANNOTATION_PROPERTIES:
+            self.graph.add((slot_uri, RDF.type, role))
         if self.metaclasses:
             # add metaclass which this property instantiates -- induces punning
             self.graph.add(
@@ -1072,6 +1175,10 @@ class OwlSchemaGenerator(Generator):
 
         if attribute:
             return
+        if role == OWL.AnnotationProperty:
+            if slot_uri not in self._BUILTIN_ANNOTATION_PROPERTIES:
+                self._add_annotation_property_axioms(slot, slot_uri)
+            return
 
         range_expr = self.transform_class_slot_expression(None, slot)
         if range_expr:
@@ -1091,10 +1198,54 @@ class OwlSchemaGenerator(Generator):
             if getattr(slot, metaslot, False):
                 self.graph.add((slot_uri, RDF.type, uri))
 
-        if slot.is_a:
-            self.graph.add((slot_uri, RDFS.subPropertyOf, self._prop_uri(slot.is_a)))
-        for mixin in slot.mixins:
-            self.graph.add((slot_uri, RDFS.subPropertyOf, self._prop_uri(mixin)))
+        self._add_super_properties(slot, slot_uri)
+
+    def _add_super_properties(self, slot: SlotDefinition, slot_uri: URIRef) -> None:
+        """Emit the ``is_a`` parent and the mixins of *slot* as its super-properties.
+
+        A sub-property axiom relates two annotation properties (OWL 2 §10.2.1) or two
+        properties of a logical role (§9.2.1, §9.3.1), so a super-property must have
+        the role *slot* has: a slot whose ``is_a`` or mixin is an annotation property
+        while it is none, or the reverse, is an error.
+
+        :raises ValueError: if *slot* and a super-property differ in the annotation role
+        """
+        is_annotation = self.is_annotation_property(slot)
+        for parent_name in ([slot.is_a] if slot.is_a else []) + list(slot.mixins):
+            parent = self.schemaview.get_slot(parent_name, attributes=True)
+            if parent is not None and self.is_annotation_property(parent) != is_annotation:
+                kinds = (
+                    ("an annotation property", "not one") if is_annotation else ("not an annotation property", "one")
+                )
+                raise ValueError(
+                    f"Slot {slot.name!r} is {kinds[0]} but its super-property {parent_name!r} is {kinds[1]}; "
+                    "a sub-property axiom needs both to have the same role (OWL 2 §10.2.1)"
+                )
+            self.graph.add((slot_uri, RDFS.subPropertyOf, self._prop_uri(parent_name)))
+
+    def _add_annotation_property_axioms(self, slot: SlotDefinition, slot_uri: URIRef) -> None:
+        """Emit the axioms OWL 2 allows for an annotation property (§10.2).
+
+        These are sub-properties and a domain and a range given by a named IRI; a
+        range that is a type gives its datatype, a node type gives no range. Inverses
+        and property characteristics are object property axioms (§9.2), so a slot that
+        declares them with the annotation role is an error.
+        """
+        for metaslot in ("inverse", "symmetric", "asymmetric", "transitive", "reflexive", "irreflexive"):
+            if getattr(slot, metaslot):
+                raise ValueError(f"Annotation property {slot.name!r} cannot declare {metaslot}")
+        sv = self.schemaview
+        if slot.domain:
+            self.graph.add((slot_uri, RDFS.domain, self._class_uri(slot.domain)))
+        if slot.range in sv.all_types():
+            term = type_term(sv, slot.range)
+            if not term.kind.is_node:
+                self.graph.add((slot_uri, RDFS.range, URIRef(term.datatype)))
+        elif slot.range in sv.all_classes():
+            self.graph.add((slot_uri, RDFS.range, self._class_uri(slot.range)))
+        elif slot.range in sv.all_enums():
+            self.graph.add((slot_uri, RDFS.range, self._enum_uri(slot.range)))
+        self._add_super_properties(slot, slot_uri)
 
     def add_type(self, typ: TypeDefinition) -> None:
         type_uri = self._type_uri(typ.name)
@@ -1688,10 +1839,11 @@ class OwlSchemaGenerator(Generator):
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
         sv = self.schemaview
-        if slot.implements:
-            for t in ["owl:AnnotationProperty", "owl:ObjectProperty", "owl:DatatypeProperty"]:
-                if t in slot.implements:
-                    return OWL[t.replace("owl:", "")]
+        role = self._declared_property_role(slot)
+        if role is not None:
+            return role
+        if self._prop_uri(slot) in self._BUILTIN_ANNOTATION_PROPERTIES:
+            return OWL.AnnotationProperty
         if slot.range is None:
             slot_range = self.schemaview.schema.default_range
         else:
