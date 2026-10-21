@@ -70,6 +70,25 @@ Mapping
 
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
+Annotation values
+^^^^^^^^^^^^^^^^^
+
+Native metadata takes the RDF term of its metamodel range: ``see_also`` and ``source``
+values are IRIs, ``license`` and ``description`` values are strings, and ``created_on``
+is an ``xsd:dateTime`` literal. A link value that is neither an IRI nor a CURIE, such as
+a bare element name in ``see_also``, is written as a plain literal, with a warning. An annotation
+whose tag a metaclass declares through ``instantiates`` takes the term of that slot's
+range in the same way (see :ref:`annotations-in-rdf`); any other annotation value is a
+string.
+
+.. literalinclude:: ../examples/owl-dcmi-agent-annotations.yaml
+    :language: yaml
+
+The ontology header then carries ``dcterms:creator <https://orcid.org/0000-0002-1825-0097>``
+and ``dcterms:rights "Copyright 2026 The Example Team"``. ``implements: [owl:AnnotationProperty]``
+declares the two predicates as annotation properties; the restrictions that the metaclass's
+own slots produce are a matter of the property role, not of the value.
+
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
