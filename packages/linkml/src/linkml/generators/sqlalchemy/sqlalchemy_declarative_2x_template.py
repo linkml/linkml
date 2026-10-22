@@ -42,41 +42,41 @@ class {{ classname(c.name) }}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Ba
 {% for s in c.attributes.values() %}
 {% set pytype = python_type(s.annotations['sql_type'].value) %}
 {% if 'primary_key' in s.annotations %}
-    {{ s.alias }}: Mapped[{{ pytype }}] = mapped_column({{ s.annotations['sql_type'].value }}
+    {{ s.alias }}: Mapped[{{ pytype }}] = mapped_column({%- if 'column_name' in s.annotations %}"{{ s.annotations['column_name'].value }}", {% endif -%}{{ s.annotations['sql_type'].value }}
         {%- if 'foreign_key' in s.annotations %}, ForeignKey("{{ s.annotations['foreign_key'].value }}"){% endif -%}
         , primary_key=True
         {%- if 'autoincrement' in s.annotations %}, autoincrement=True{% endif -%}
     )
 {% elif 'required' in s.annotations %}
-    {{ s.alias }}: Mapped[{{ pytype }}] = mapped_column({{ s.annotations['sql_type'].value }}
+    {{ s.alias }}: Mapped[{{ pytype }}] = mapped_column({%- if 'column_name' in s.annotations %}"{{ s.annotations['column_name'].value }}", {% endif -%}{{ s.annotations['sql_type'].value }}
         {%- if 'foreign_key' in s.annotations %}, ForeignKey("{{ s.annotations['foreign_key'].value }}"){% endif -%}
     )
 {% else %}
-    {{ s.alias }}: Mapped[{{ pytype }} | None] = mapped_column({{ s.annotations['sql_type'].value }}
+    {{ s.alias }}: Mapped[{{ pytype }} | None] = mapped_column({%- if 'column_name' in s.annotations %}"{{ s.annotations['column_name'].value }}", {% endif -%}{{ s.annotations['sql_type'].value }}
         {%- if 'foreign_key' in s.annotations %}, ForeignKey("{{ s.annotations['foreign_key'].value }}"){% endif -%}
     )
 {% endif %}
 {% if 'foreign_key' in s.annotations and 'original_slot' in s.annotations %}
-    {{ s.annotations['original_slot'].value }}: Mapped[{{ classname(s.range) }} | None] = relationship(foreign_keys=[{{ s.alias }}])
+    {{ python_name(s.annotations['original_slot'].value) }}: Mapped[{{ classname(s.range) }} | None] = relationship(foreign_keys=[{{ s.alias }}])
 {% endif %}
 {% endfor %}
 {% for mapping in backrefs[c.name] %}
 {% if mapping.mapping_type == "ManyToMany" %}
 
     # ManyToMany
-    {{ mapping.source_slot }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(secondary="{{ mapping.join_class }}")
+    {{ python_name(mapping.source_slot) }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(secondary="{{ mapping.join_class }}")
 {% elif mapping.mapping_type == "MultivaluedScalar" %}
 
     {{ mapping.source_slot }}_rel: Mapped[list[{{ classname(mapping.join_class) }}]] = relationship()
-    {{ mapping.source_slot }}: AssociationProxy[list[str]] = association_proxy(
+    {{ python_name(mapping.source_slot) }}: AssociationProxy[list[str]] = association_proxy(
         "{{ mapping.source_slot }}_rel",
-        "{{ mapping.target_slot }}",
-        creator=lambda x_: {{ classname(mapping.join_class) }}({{ mapping.target_slot }}=x_),
+        "{{ python_name(mapping.target_slot) }}",
+        creator=lambda x_: {{ classname(mapping.join_class) }}({{ python_name(mapping.target_slot) }}=x_),
     )
 {% else %}
 
     # One-To-Many: {{ mapping }}
-    {{ mapping.source_slot }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(foreign_keys="[{{ classname(mapping.target_class) }}.{{ mapping.target_slot }}]")
+    {{ python_name(mapping.source_slot) }}: Mapped[list[{{ classname(mapping.target_class) }}]] = relationship(foreign_keys="[{{ classname(mapping.target_class) }}.{{ python_name(mapping.target_slot) }}]")
 {% endif %}
 {% endfor %}
 
