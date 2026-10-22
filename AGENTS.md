@@ -23,6 +23,8 @@ All commands use `uv run` prefix (e.g., `uv run pytest`).
 * Do not "fix" issues by changing or weakening test conditions. Try harder, or ask questions if a test fails.
 * Avoid try/except blocks, these can mask bugs
 * Failing fast is a good principle
+* Optional dependencies are the documented exception to the two rules above. Guard the import, not the spec: `try: import x` / `except ImportError as exc: raise ImportError("x is required. Install with: pip install 'linkml[extra]'") from exc` - see `generators/bigquerygen.py`. `importlib.util.find_spec` raises under the test fixture below, which hides your message.
+* Testing that an optional dependency is absent is not a mock test: use the `mock_missing_import` fixture in `tests/conftest.py`. Do not build isolated environments in CI for this.
 * Follow the DRY principle
 * Avoid repeating chunks of code, but also avoid premature over-abstraction
 * Declarative principles are favored
