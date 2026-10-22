@@ -5,7 +5,7 @@ import click
 
 from linkml._version import __version__
 from linkml.generators.rustgen import RUST_MODES, RustGenerator
-from linkml.utils.generator import shared_arguments
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
 
 
 @shared_arguments(RustGenerator)
@@ -17,7 +17,6 @@ from linkml.utils.generator import shared_arguments
     help="Generation mode: 'crate' (Cargo package) or 'file' (single .rs)",
 )
 @click.option(
-    "-f",
     "--force",
     is_flag=True,
     help="Overwrite output if it already exists",
@@ -48,36 +47,43 @@ from linkml.utils.generator import shared_arguments
         "The shim is only created on first run and left untouched on subsequent regenerations."
     ),
 )
+@click.option(
+    "--stubgen/--no-stubgen",
+    default=True,
+    show_default=True,
+    help="Emit the pyo3-stub-gen binary (src/bin/stub_gen.rs) behind a 'stubgen' Cargo feature.",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="Emit a Rust enum of the descendant slots for a slot with 'subproperty_of'; otherwise a plain String.",
+)
 @click.option("-n", "--crate-name", type=str, default=None, help="Name of the generated crate/module")
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {rust: {crate_name: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
 @click.option(
     "-o",
     "--output",
     type=click.Path(dir_okay=True),
+    required=True,
     help="Output directory (crate mode) or .rs file (file mode)",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="rust")
-def cli(
-    yamlfile: Path,
-    mode: RUST_MODES = "crate",
-    force: bool = False,
-    pyo3: bool = False,
-    serde: bool = False,
-    crate_name: str | None = None,
-    handwritten_lib: bool = False,
-    output: Path | None = None,
-    **kwargs,
-):
-    gen = RustGenerator(
-        yamlfile,
-        mode=mode,
-        pyo3=pyo3,
-        serde=serde,
-        output=output,
-        crate_name=crate_name,
-        handwritten_lib=handwritten_lib,
-        **kwargs,
-    )
-    serialized = gen.serialize(force=force)
-    if output is None:
-        print(serialized)
+@click.pass_context
+def cli(ctx: click.Context, yamlfile: Path, config_file=None, **kwargs):
+    """Generate Rust types from a LinkML model"""
+    config = read_generator_config(config_file, RustGenerator.config_section_name)
+    apply_config_defaults(ctx, config, kwargs)
+    RustGenerator.validate_generator_args(kwargs)
+    # every option but --force is a constructor argument; --force is a serialize() one
+    force = kwargs.pop("force")
+    RustGenerator(yamlfile, **kwargs).serialize(force=force)
