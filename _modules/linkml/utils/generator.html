@@ -903,6 +903,21 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_class_uri_exact_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a class&#39;s URI as an exact mapping when it differs from its definition URI.</span>
+
+<span class="sd">        SchemaLoader deliberately leaves ``exact_mappings`` untouched. Generators</span>
+<span class="sd">        that serialize this relationship can opt in here without making loading</span>
+<span class="sd">        itself mutate the schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">class_uri</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span>
+        <span class="n">expanded_class_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">class_uri</span><span class="p">)</span>
+        <span class="n">expanded_definition_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">definition_uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">expanded_class_uri</span> <span class="o">!=</span> <span class="n">expanded_definition_uri</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span> <span class="o">==</span> <span class="n">expanded_class_uri</span> <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">exact_mappings</span>
+        <span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">exact_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_uri</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Generator.end_class">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator.end_class">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
