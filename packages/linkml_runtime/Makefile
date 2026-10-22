@@ -9,21 +9,57 @@
 
 UPSTREAM_SHA_FILE = src/linkml_runtime/linkml_model/UPSTREAM_SHA
 
+# Single source of truth for "which linkml-model revision should we be on".
+# `update_model` vendors it; the weekly metamodel-compat workflow compares it
+# against UPSTREAM_SHA to notice a release we have not adopted. Keeping one
+# resolver means the two can never disagree about what "latest" means.
+#
+# The commits endpoint is used rather than /git/refs/tags because it dereferences
+# annotated tags to a commit; /git/refs/tags returns the tag *object* SHA, which
+# `git fetch <sha>` cannot resolve.
+define LATEST_MODEL_RELEASE_PY
+import json
+import sys
+import urllib.request
+
+BASE = "https://api.github.com/repos/linkml/linkml-model"
+TIMEOUT_SECONDS = 30
+
+
+def get(path):
+    # urlopen has no default timeout, so a wedged API would hang the weekly job
+    # until the runner limit rather than failing.
+    with urllib.request.urlopen(BASE + path, timeout=TIMEOUT_SECONDS) as response:
+        return json.load(response)
+
+
+# Releases are ordered newest-first and the list includes drafts for anyone with
+# push access. A draft is not something to vendor -- its tag may not exist yet --
+# so skip them. Prereleases are kept: release candidates are exactly what we pin to.
+releases = [release for release in get("/releases?per_page=10") if not release["draft"]]
+if not releases:
+    sys.exit("No published linkml-model releases returned. Refusing to guess a revision.")
+
+tag = releases[0]["tag_name"]
+sha = get("/commits/" + tag)["sha"]
+print(tag, sha)
+endef
+export LATEST_MODEL_RELEASE_PY
+
 all: update_model update_validation_model
 
-update_model:
-	# Resolve the latest release or pre-release tag from the GitHub Releases API
-	$(eval LINKML_MODEL_TAG := $(shell \
-		curl -fsSL "https://api.github.com/repos/linkml/linkml-model/releases?per_page=1" \
-		| python3 -c "import sys, json; releases = json.load(sys.stdin); print(releases[0]['tag_name'])"))
+# Prints "<tag> <commit-sha>" for the newest release, prereleases included.
+.PHONY: print_latest_model_release
+print_latest_model_release:
+	@python3 -c "$$LATEST_MODEL_RELEASE_PY"
 
-	# Resolve the tag to its commit SHA. The commits endpoint dereferences the ref for
-	# us, so this yields a commit SHA for annotated tags as well as lightweight ones --
-	# /git/refs/tags returns the tag *object* SHA for annotated tags, which is not
-	# something `git fetch <sha>` can resolve.
-	$(eval LINKML_MODEL_SHA := $(shell \
-		curl -fsSL "https://api.github.com/repos/linkml/linkml-model/commits/$(LINKML_MODEL_TAG)" \
-		| python3 -c "import sys, json; print(json.load(sys.stdin)['sha'])"))
+update_model:
+	$(eval LINKML_MODEL_RELEASE := $(shell $(MAKE) -s print_latest_model_release))
+	$(eval LINKML_MODEL_TAG := $(word 1,$(LINKML_MODEL_RELEASE)))
+	$(eval LINKML_MODEL_SHA := $(word 2,$(LINKML_MODEL_RELEASE)))
+
+	@test -n "$(LINKML_MODEL_TAG)" -a -n "$(LINKML_MODEL_SHA)" \
+		|| { echo "Could not resolve the latest linkml-model release; aborting."; exit 1; }
 
 	@echo "Vendoring linkml-model $(LINKML_MODEL_TAG) @ $(LINKML_MODEL_SHA)"
 
