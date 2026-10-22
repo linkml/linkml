@@ -276,7 +276,7 @@ class PythonGenerator(Generator):
 
 {all_imports.render()}
 {self.gen_imports()}
-
+{self.gen_accept_extra_slots()}
 metamodel_version = "{self.schema.metamodel_version}"
 version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
@@ -413,6 +413,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                             )
                 for slotname in cls.slots:
                     add_slot_range(self.schema.slots[slotname])
+                expression = self._extra_slots_allowed(cls)
+                if isinstance(expression, AnonymousSlotExpression):
+                    add_slot_range(self._extra_value_slot(expression))
 
         return rval.values()
 
@@ -573,17 +576,160 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
+        # A class that allows extra data keeps its dataclass __init__, wrapped so that it also
+        # takes keyword arguments it does not declare. A class that inherits from such a class
+        # without allowing extra data itself gets its own __init__, so it stays closed.
+        accepts_extra_slots = self._accepts_extra_slots(cls)
+        dataclass_decorator = ""
+        if slotdefs or accepts_extra_slots or self._has_open_ancestor(cls):
+            dataclass_decorator = f"\n@dataclass(repr={self.dataclass_repr})"
+        if accepts_extra_slots:
+            dataclass_decorator = "\n@accept_extra_slots" + dataclass_decorator
+        extra_slot_value = self.gen_extra_slot_value(cls)
+
         cd_str = (
-            (f"\n@dataclass(repr={self.dataclass_repr})" if slotdefs else "")
+            dataclass_decorator
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"
             + (f"\n\t{slotdefs}" if slotdefs else "")
             + (f"\n{postinits}" if postinits else "")
+            + (f"\n{extra_slot_value}" if extra_slot_value else "")
             + (f"\n{constructor}" if constructor else "")
         )
 
         return cd_str
+
+    @staticmethod
+    def _extra_slots_allowed(cls: ClassDefinition) -> bool | AnonymousSlotExpression | None:
+        """
+        Read the class's own ``extra_slots`` in the metamodel's terms: ``True`` or ``False``
+        when it allows or forbids extra data, its ``range_expression`` when that gives the
+        values extra data may take, or ``None`` when the class has no ``extra_slots``.
+
+        ``allowed`` takes precedence over ``range_expression``, as in the JSON Schema
+        generator. The metamodel says that ``allowed: false`` forbids extra data even beside
+        a ``range_expression``, and treats an ``extra_slots`` with neither as forbidding it.
+        """
+        if not cls.extra_slots:
+            return None
+        elif cls.extra_slots.allowed is not None:
+            return cls.extra_slots.allowed
+        elif cls.extra_slots.range_expression:
+            return cls.extra_slots.range_expression
+        else:
+            return False
+
+    def _accepts_extra_slots(self, cls: ClassDefinition) -> bool:
+        """Return ``True`` when the class's own ``extra_slots`` lets it take extra data."""
+        allowed = self._extra_slots_allowed(cls)
+        return allowed is True or isinstance(allowed, AnonymousSlotExpression)
+
+    def _has_open_ancestor(self, cls: ClassDefinition) -> bool:
+        """Return ``True`` when a class that ``cls`` inherits from takes extra data."""
+        ancestors = self.schemaview.class_ancestors(cls.name, mixins=False, reflexive=False)
+        return any(self._accepts_extra_slots(self.schemaview.get_class(ancestor)) for ancestor in ancestors)
+
+    def _extra_value_slot(self, expression: AnonymousSlotExpression) -> SlotDefinition:
+        """
+        Make a slot from a ``range_expression``, so that the checks and conversions that
+        ``__post_init__`` makes on a declared slot can be generated for an extra value.
+
+        The metamodel says that ``required`` means nothing for extra data, so the slot is
+        never required. A class range without an identifier is inlined, as the schema
+        loader makes it for a declared slot.
+        """
+        slot_range = expression.range or self.schema.default_range
+        inlined = expression.inlined
+        if inlined is None:
+            inlined = slot_range in self.schema.classes and not self.class_identifier(slot_range)
+        return SlotDefinition(
+            name="extra value",
+            range=slot_range,
+            multivalued=expression.multivalued,
+            inlined=inlined,
+            inlined_as_list=expression.inlined_as_list,
+            any_of=expression.any_of,
+            exactly_one_of=expression.exactly_one_of,
+        )
+
+    def gen_extra_slot_value(self, cls: ClassDefinition) -> str:
+        """
+        Generate ``_extra_slot_value``, which checks and converts an extra value as the
+        class's ``extra_slots.range_expression`` says. Returns an empty string when the
+        class has no ``range_expression`` or the expression does not constrain the values.
+        """
+        expression = self._extra_slots_allowed(cls)
+        if not isinstance(expression, AnonymousSlotExpression):
+            return ""
+        slot = self._extra_value_slot(expression)
+        branch_ranges = [branch.range for branch in [*slot.any_of, *slot.exactly_one_of] if branch.range]
+        if not slot.range and (slot.multivalued or not branch_ranges):
+            # Without a range there is nothing to check the values against.
+            return ""
+        checks = self.gen_postinit(cls, slot)
+        if not checks:
+            return ""
+        # gen_postinit names a slot that is not in the schema unknown_extra_value.
+        checks = checks.replace("unknown_extra_value", "extra_value")
+        return f"""
+\t@staticmethod
+\tdef _extra_slot_value(value: Any) -> Any:
+\t\t\"\"\"Check and convert an extra value, as the extra_slots.range_expression of this class says.\"\"\"
+\t\t# The checks are the ones __post_init__ makes on a declared slot, so they run on a holder named self.
+\t\tself = ExtraSlotValue(value)
+\t\t{checks}
+\t\treturn self.extra_value"""
+
+    def gen_accept_extra_slots(self) -> str:
+        """
+        Generate the ``accept_extra_slots`` decorator, which the classes whose ``extra_slots``
+        allows extra data are wrapped in, and, when a class checks its extra values, the
+        ``ExtraSlotValue`` holder that the checks run on. Returns an empty string when no
+        class takes extra data.
+        """
+        local_classes = [cls for cls in self.schema.classes.values() if not cls.imported_from]
+        if not any(self._accepts_extra_slots(cls) for cls in local_classes):
+            return ""
+        code = """
+
+def accept_extra_slots(cls):
+    \"\"\"
+    Let a dataclass take keyword arguments that it does not declare, as its extra_slots allows.
+    The declared fields go through the usual __init__ and __post_init__, and the others
+    become attributes of the instance. A class whose extra_slots has a range_expression
+    defines _extra_slot_value, which checks and converts each extra value first. Only the
+    class's own _extra_slot_value counts, because extra_slots is not inherited.
+    \"\"\"
+    declared = {field.name for field in dataclasses.fields(cls)}
+    dataclass_init = cls.__init__
+    extra_slot_value = cls.__dict__.get("_extra_slot_value")
+
+    def __init__(self, *args, **kwargs):
+        extra = {key: kwargs.pop(key) for key in list(kwargs) if key not in declared}
+        dataclass_init(self, *args, **kwargs)
+        for key, value in extra.items():
+            if extra_slot_value is None:
+                setattr(self, key, value)
+            else:
+                # Stored as checked, the way __post_init__ stores an inlined slot, so that a
+                # dictionary of instances stays a dictionary.
+                self[key] = extra_slot_value(value)
+
+    cls.__init__ = __init__
+    return cls
+"""
+        if any(self.gen_extra_slot_value(cls) for cls in local_classes):
+            code += """
+
+class ExtraSlotValue(YAMLRoot):
+    \"\"\"Holds one extra value while it is checked against a range_expression.\"\"\"
+
+    def __init__(self, extra_value: Any) -> None:
+        super().__init__()
+        self.extra_value = extra_value
+"""
+        return code
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:

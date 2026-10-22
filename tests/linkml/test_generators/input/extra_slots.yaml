@@ -3,6 +3,10 @@ name: extra_slots
 title: extra_slots
 description: |
   Test cases for `extra_slots`
+prefixes:
+  linkml: https://w3id.org/linkml/
+  extra_slots: https://example.org/extra_slots/
+default_prefix: extra_slots
 imports:
   - linkml:types
 
