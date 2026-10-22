@@ -1,159 +1,131 @@
-@prefix ex: <http://example.org/sample/example1/> .
-@prefix linkml: <https://w3id.org/linkml/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex: <http://example.org/sample/example1/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-ex:D2 a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "d2" ;
-    rdfs:subClassOf ex:C ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:E a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "e" ;
-    rdfs:subClassOf ex:D1 ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:D1 a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "d1" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:has_c ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom ex:C ;
-            owl:onProperty ex:has_c ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:has_c ],
-        ex:C ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
-
-ex:A a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "a" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:id ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:len ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:name ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:len ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom ex:unitcode ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty ex:id ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:name ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:name ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:id ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Integer ;
-            owl:onProperty ex:len ] ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:B a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "b" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ex:A ;
-            owl:onProperty ex:has_a ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:has_a ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:has_a ],
-        ex:A ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:has_a a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has a" ;
-    rdfs:range ex:A ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:has_b a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has b" ;
-    rdfs:range ex:B ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:has_c a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has c" ;
-    rdfs:range ex:C ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:id a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "id" ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:len a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "len" ;
-    rdfs:range linkml:Integer ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:name a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "name" ;
-    rdfs:range linkml:String ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:unit a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "unit" ;
-    rdfs:range ex:unitcode ;
-    skos:inScheme <http://example.org/sample/example1> .
-
-ex:unitcode a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange ex:unitcode ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] .
-
-ex:C a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "c" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:has_b ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:has_b ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom ex:B ;
-            owl:onProperty ex:has_b ],
-        ex:B ;
-    skos:inScheme <http://example.org/sample/example1> .
-
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix linkml: <https://w3id.org/linkml/> .
+ex:A a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "a" ;
+	rdfs:subClassOf _:c14n0 , _:c14n11 , _:c14n12 , _:c14n13 , _:c14n15 , _:c14n18 , _:c14n2 , _:c14n3 , _:c14n4 , _:c14n6 , _:c14n8 , _:c14n9 ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:B a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "b" ;
+	rdfs:subClassOf ex:A , _:c14n20 , _:c14n5 , _:c14n7 ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:C a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "c" ;
+	rdfs:subClassOf ex:B , _:c14n14 , _:c14n16 , _:c14n21 ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:D1 a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "d1" ;
+	rdfs:subClassOf ex:C , _:c14n1 , _:c14n17 , _:c14n19 ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:D2 a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "d2" ;
+	rdfs:subClassOf ex:C ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:E a owl:Class , linkml:ClassDefinition ;
+	rdfs:label "e" ;
+	rdfs:subClassOf ex:D1 ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:Unitcode a owl:Class , linkml:TypeDefinition ;
+	rdfs:subClassOf _:c14n10 .
+ex:has_a a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "has a" ;
+	rdfs:range ex:A ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:has_b a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "has b" ;
+	rdfs:range ex:B ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:has_c a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "has c" ;
+	rdfs:range ex:C ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:id a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "id" ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:len a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "len" ;
+	rdfs:range linkml:Integer ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:name a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "name" ;
+	rdfs:range linkml:String ;
+	skos:inScheme <http://example.org/sample/example1> .
+ex:unit a owl:ObjectProperty , linkml:SlotDefinition ;
+	rdfs:label "unit" ;
+	rdfs:range ex:Unitcode ;
+	skos:inScheme <http://example.org/sample/example1> .
 <http://example.org/sample/example1> a owl:Ontology ;
-    rdfs:label "example1" .
-
+	rdfs:label "example1" .
+linkml:topValue a owl:DatatypeProperty ;
+	rdfs:label "value" .
+_:c14n0 a owl:Restriction ;
+	owl:allValuesFrom linkml:Integer ;
+	owl:onProperty ex:len .
+_:c14n1 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:has_c .
+_:c14n10 a owl:Restriction ;
+	owl:onDataRange ex:Unitcode ;
+	owl:onProperty linkml:topValue ;
+	owl:qualifiedCardinality 1 .
+_:c14n11 a owl:Restriction ;
+	owl:allValuesFrom ex:Unitcode ;
+	owl:onProperty ex:unit .
+_:c14n12 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:name .
+_:c14n13 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:len .
+_:c14n14 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:has_b .
+_:c14n15 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty ex:name .
+_:c14n16 a owl:Restriction ;
+	owl:allValuesFrom ex:B ;
+	owl:onProperty ex:has_b .
+_:c14n17 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:has_c .
+_:c14n18 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:name .
+_:c14n19 a owl:Restriction ;
+	owl:allValuesFrom ex:C ;
+	owl:onProperty ex:has_c .
+_:c14n2 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty ex:id .
+_:c14n20 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:has_a .
+_:c14n21 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:has_b .
+_:c14n3 a owl:Restriction ;
+	owl:minCardinality 1 ;
+	owl:onProperty ex:id .
+_:c14n4 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:len .
+_:c14n5 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:has_a .
+_:c14n6 a owl:Restriction ;
+	owl:minCardinality 0 ;
+	owl:onProperty ex:unit .
+_:c14n7 a owl:Restriction ;
+	owl:allValuesFrom ex:A ;
+	owl:onProperty ex:has_a .
+_:c14n8 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:id .
+_:c14n9 a owl:Restriction ;
+	owl:maxCardinality 1 ;
+	owl:onProperty ex:unit .

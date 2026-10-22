@@ -13,8 +13,11 @@ with stable blank node labels and sorted triples.
    ``None``) rather than ``Literal("x", datatype=XSD.string)``.
 
 2. **Non-standard RDF**: Graphs with literal predicates (e.g. SHACL
-   annotation mode) are rejected by pyoxigraph.  This function falls
-   back to rdflib's serializer for such graphs.
+   annotation mode) or relative IRIs (e.g. the metamodel's
+   ``bibo:status <testing>``) are rejected by pyoxigraph.  This function
+   falls back to rdflib's serializer for such graphs, but still
+   canonicalizes blank-node labels (and sorts line-oriented formats) so
+   the fallback output remains deterministic across processes.
 
 3. **Numeric short forms**: pyoxigraph uses Turtle short forms for
    ``xsd:integer`` (``42``), ``xsd:boolean`` (``true``), and
@@ -39,6 +42,7 @@ import warnings
 
 import pyoxigraph as ox
 import rdflib
+from rdflib.compare import to_canonical_graph
 
 
 class RDFCanonicalizationWarning(UserWarning):
@@ -69,6 +73,51 @@ _FORMAT_MAP: dict[str, ox.RdfFormat] = {
 
 # Formats that support prefix declarations.
 _PREFIX_FORMATS = frozenset({ox.RdfFormat.TURTLE, ox.RdfFormat.TRIG, ox.RdfFormat.N3, ox.RdfFormat.RDF_XML})
+
+# Line-oriented formats (one triple/quad per line) whose fallback output must
+# be sorted, because rdflib does not emit them in a stable order even after
+# blank-node canonicalization.
+_LINE_ORIENTED_FORMATS = frozenset({"nt", "ntriples", "n-triples", "nt11", "nquads", "n-quads"})
+
+
+def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -> str:
+    """Serialize a graph that pyoxigraph cannot canonicalize, deterministically.
+
+    pyoxigraph rejects some graphs that rdflib accepts -- notably graphs
+    containing relative IRIs (e.g. the metamodel's ``bibo:status <testing>``)
+    or literal predicates (SHACL annotation mode).  A plain
+    ``graph.serialize()`` for such graphs is *not* reproducible across
+    processes: rdflib assigns blank-node labels non-deterministically, so the
+    structure and grouping of the output varies run to run.
+
+    To degrade gracefully instead of silently emitting non-deterministic
+    output, we canonicalize blank-node labels with rdflib's own
+    isomorphism-based canonicalization (:func:`rdflib.compare.to_canonical_graph`,
+    which uses a content-derived hash, not run-local ids) and preserve the
+    original prefix and base bindings that the canonical graph drops.  For
+    line-oriented formats we additionally sort the serialized lines, since
+    rdflib does not emit N-Triples/N-Quads in a stable order.
+
+    Relative IRIs are preserved verbatim (not resolved against the base): the
+    goal is deterministic output, and silently rewriting ``<testing>`` into an
+    absolute IRI would mask what is really a data problem in the source graph.
+
+    :param graph: The rdflib Graph that pyoxigraph could not parse.
+    :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :return: Deterministic string serialization of the graph.
+    """
+    canonical = to_canonical_graph(graph)
+    # to_canonical_graph builds a fresh graph without the source's namespace
+    # bindings; rebind them so the output does not fall back to rdflib's
+    # non-deterministic auto-generated ``ns1:``/``ns2:`` prefixes.
+    for prefix, namespace in graph.namespace_manager.namespaces():
+        canonical.namespace_manager.bind(prefix, namespace, replace=True)
+    canonical.base = graph.base
+    serialized = canonical.serialize(format=output_format)
+    if output_format.lower() in _LINE_ORIENTED_FORMATS:
+        lines = [line for line in serialized.splitlines() if line.strip()]
+        return "\n".join(sorted(lines)) + "\n"
+    return serialized
 
 
 # Characters that may appear escaped in a Turtle PN_LOCAL via PN_LOCAL_ESC.
@@ -238,6 +287,7 @@ def _is_safe_prefix_iri(iri: str) -> bool:
 def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
+    diff_stable: bool = False,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -251,8 +301,22 @@ def canonicalize_rdf_graph(
 
     :param graph: The rdflib Graph to serialize.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :param diff_stable: Use diffable-rdf labels to reduce blank-node churn across
+        edits. Requires the ``diff-stable`` extra; disabled by default. The
+        non-standard RDF fallback warns when it cannot apply these labels.
+        See https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control
     :return: Deterministic string serialization of the graph.
+    :raises ImportError: If diff-stable labels are requested without diffable-rdf.
     """
+    if diff_stable:
+        try:
+            from diffable_rdf import wl_relabel_quads
+        except ImportError as exc:
+            raise ImportError(
+                "diff_stable=True requires diffable-rdf. Install "
+                "'linkml-runtime[diff-stable]' or 'linkml[diff-stable]'."
+            ) from exc
+
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
         warnings.warn(
@@ -274,13 +338,24 @@ def canonicalize_rdf_graph(
         triples = list(ox.parse(io.BytesIO(nt_bytes), format=ox.RdfFormat.N_TRIPLES))
     except SyntaxError:
         warnings.warn(
-            "Graph contains non-standard RDF (e.g. literal predicates) that pyoxigraph "
-            "cannot parse; falling back to rdflib serializer. Output will not be "
-            "deterministically canonicalized.",
+            "Graph contains non-standard RDF (e.g. relative IRIs or literal predicates) "
+            "that pyoxigraph cannot parse; falling back to rdflib. Output is still "
+            "deterministic (blank-node labels are canonicalized via rdflib) but is not "
+            "canonicalized with pyoxigraph RDFC-1.0.",
             RDFCanonicalizationWarning,
             stacklevel=2,
         )
-        return graph.serialize(format=output_format)
+        if diff_stable:
+            warnings.warn(
+                "diff_stable=True was requested but this graph took the rdflib fallback, "
+                "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
+                "deterministic but NOT diff-stable: an unrelated edit may still renumber "
+                "blank nodes. Make the offending terms standard RDF (absolute IRIs, IRI "
+                "predicates) to get diff-stable labels.",
+                RDFCanonicalizationWarning,
+                stacklevel=2,
+            )
+        return _deterministic_fallback_serialize(graph, output_format)
 
     dataset = ox.Dataset()
     for triple in triples:
@@ -289,13 +364,17 @@ def canonicalize_rdf_graph(
     # 3. Canonicalize blank node labels with RDFC-1.0.
     dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
 
+    quads = list(dataset)
+
+    if diff_stable:
+        quads = wl_relabel_quads(quads)
+
     # 4. Sort triples for deterministic ordering.
     # RDFC-1.0 stabilizes blank-node labels but pyoxigraph's Dataset
     # iteration order is not sorted and varies across processes (verified
     # empirically against pyoxigraph 0.5.8). The explicit string-key sort
     # is load-bearing for byte-identical output across runs; see
     # tests/linkml_runtime/test_utils/test_rdf_canonicalize.py::test_sort_is_load_bearing.
-    quads = list(dataset)
     sorted_triples = sorted(
         (ox.Triple(q.subject, q.predicate, q.object) for q in quads),
         key=lambda t: (str(t.subject), str(t.predicate), str(t.object)),
