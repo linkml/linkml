@@ -20,7 +20,7 @@ from yaml import MappingNode, ScalarNode
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator, json_schema_types
 from linkml.generators.pydanticgen import PydanticGenerator
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, apply_config_defaults, read_generator_config, shared_arguments
 
 SUPPORTED_OPENAPI_VERSIONS = ["3.0.3", "3.1.0"]
 
@@ -123,6 +123,7 @@ class OpenApiGenerator(Generator):
     valid_formats = ["openapi"]
     file_extension = "yaml"
     uses_schemaloader = False
+    config_section_name = "openapi"
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
     keep_unreferenced: bool = False
@@ -732,11 +733,30 @@ class OpenApiGenerator(Generator):
     default=False,
     help="Inline enum subschemas into their parent schemas instead of generating separate schema entries",
 )
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {openapi: {template: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, template, keep_unreferenced, inline_enums, **args):
+@click.pass_context
+def cli(ctx, yamlfile, template, keep_unreferenced, inline_enums, config_file=None, **args):
     """Generate an OpenAPI YAML with resources modelled with LinkML.
     If no OpenAPI template is provided,
     a generic one with one exemplary class/type schema is printed out."""
+    config = read_generator_config(config_file, OpenApiGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    OpenApiGenerator.validate_generator_args(args)
+    # apply_config_defaults writes each option the config file sets into args, even an option
+    # that this function names as a parameter. Move those values to the parameters, so that the
+    # code below reads them there and passes no option to the generator twice.
+    template = args.pop("template", template)
+    keep_unreferenced = args.pop("keep_unreferenced", keep_unreferenced)
+    inline_enums = args.pop("inline_enums", inline_enums)
     # if no template provided, print out a generic one
     if not template:
         print(OpenApiGenerator(yamlfile, **args).printout_template())
