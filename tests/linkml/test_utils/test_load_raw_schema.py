@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 def _verify_schema1_content(
     schema: SchemaDefinition,
     source_file,
-    addl_checks: Callable[[SchemaDefinition], None] = None,
+    addl_checks: Callable[[SchemaDefinition], None] | None = None,
 ) -> None:
     expected = loads(
         f"""{{

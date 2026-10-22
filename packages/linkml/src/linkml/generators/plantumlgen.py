@@ -139,7 +139,7 @@ class PlantumlGenerator(Generator):
 
     def visit_schema(
         self,
-        classes: set[ClassDefinitionName] = None,
+        classes: set[ClassDefinitionName] | None = None,
         directory: str | None = None,
         **_,
     ) -> str | None:
@@ -392,7 +392,7 @@ class PlantumlGenerator(Generator):
         self,
         cn: ClassDefinitionName,
         all_slots: bool = True,
-        filtr: Callable[[SlotDefinition], bool] = None,
+        filtr: Callable[[SlotDefinition], bool] | None = None,
     ) -> list[SlotDefinition]:
         """Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned
         in defining order, with class slots returned last

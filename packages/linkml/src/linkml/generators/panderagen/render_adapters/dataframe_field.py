@@ -16,13 +16,13 @@ class DataframeField(OOField):
         default_value=None,
         annotations=None,
         source_slot=None,
-        inline_id_column_name: str = None,
-        inline_id_column_type: str = None,
-        inline_id_other_name: str = None,
-        inline_other_range: str = None,
-        reference_class: str = None,
-        inline_form: str = None,
-        permissible_values: list[str] = None,
+        inline_id_column_name: str | None = None,
+        inline_id_column_type: str | None = None,
+        inline_id_other_name: str | None = None,
+        inline_other_range: str | None = None,
+        reference_class: str | None = None,
+        inline_form: str | None = None,
+        permissible_values: list[str] | None = None,
     ):
         """information about schema fields for rendering in jinja2 template.
 

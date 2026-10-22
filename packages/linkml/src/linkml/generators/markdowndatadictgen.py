@@ -1408,7 +1408,7 @@ class MarkdownDataDictGen(Generator):
         self,
         obj: Element | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1451,7 +1451,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | TypeDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1461,7 +1461,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | SlotDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1476,7 +1476,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | ClassDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1491,7 +1491,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | ClassDefinition | TypeDefinition | EnumDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1512,7 +1512,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | EnumDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
         add_subset: bool = True,
     ) -> str:
@@ -1527,7 +1527,7 @@ class MarkdownDataDictGen(Generator):
         self,
         ref: str | SubsetDefinition | None,
         *,
-        after_link: str = None,
+        after_link: str | None = None,
         use_desc: bool = False,
     ) -> str:
         return self._link(

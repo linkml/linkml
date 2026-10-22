@@ -6,7 +6,7 @@ class DependencySorter:
     rather than for general use.
     """
 
-    def __init__(self, dependency_dict: dict[str, list[str]] = None, *, allow_cycles: bool = False):
+    def __init__(self, dependency_dict: dict[str, list[str]] | None = None, *, allow_cycles: bool = False):
         """
         Initialize the DependencySorter with a dictionary representing a dependency graph.
 
@@ -87,7 +87,7 @@ class DependencySorter:
 
         return result
 
-    def add_dependency(self, node: str, dependency: str = None):
+    def add_dependency(self, node: str, dependency: str | None = None):
         """
         Add a single dependency to the dependency dictionary.
         If dependency is not provided or is None the node is added with an empty

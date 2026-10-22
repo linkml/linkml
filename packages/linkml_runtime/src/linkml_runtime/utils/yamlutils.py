@@ -51,7 +51,7 @@ class YAMLRoot(JsonObj):
             msg += "\n".join(messages)
             raise ValueError(msg)
 
-    def _default(self, obj, filtr: Callable[[dict], dict] = None):
+    def _default(self, obj, filtr: Callable[[dict], dict] | None = None):
         """JSON serializer callback.
         1) Filter out empty values (None, {}, [] and False) and mangle the names
         2) Add ID entries for dictionary entries

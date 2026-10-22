@@ -341,7 +341,7 @@ class LogicalModelTransformer(ModelTransformer):
     If set, only reason over the specified metamodel slots.
     """
 
-    def transform(self, tgt_schema_name: str = None, simplify=True, force_any_of=False, **kwargs) -> Any:
+    def transform(self, tgt_schema_name: str | None = None, simplify=True, force_any_of=False, **kwargs) -> Any:
         """
         Transform the schema using logical reasoning, materializing entailed simple attributes.
 
@@ -750,7 +750,7 @@ class LogicalModelTransformer(ModelTransformer):
         self,
         attribute: SlotDefinition | AnonymousSlotExpression,
         root_slot: SlotDefinition = None,
-        stack: list = None,
+        stack: list | None = None,
     ) -> str:
         # Note: in future versions of the metamodel, multivalued may move to the expression
         if stack is None:
