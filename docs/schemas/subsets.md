@@ -14,3 +14,6 @@ The actual subset names are defined as part of the Schema definition.
 ```
 
 Here we define the slot `genetically interacts with` as part of the `translator_minimal` subset.
+
+You can restrict most generators to one subset with `--subset NAME`. The option keeps the subset's members and the
+elements they need. See [generators](../generators/index).
