@@ -87,8 +87,31 @@ classes:
         recommended: true
       telephone:
         recommended: true
+    attributes:
+      pet:
+        exactly_one_of:
+          - range: Dog
+          - range: Cat
+        inlined: true
     in_subset:
       - basic_subset
+
+  Dog:
+    is_a: NamedThing
+    attributes:
+      name:
+      breed:
+        range: string
+
+  Cat:
+    is_a: NamedThing
+    attributes:
+      name:
+      breed:
+        range: string
+      nip:
+        range: string
+        required: true
 
   HasAliases:
     description: >-
