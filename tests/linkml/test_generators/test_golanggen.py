@@ -377,15 +377,19 @@ classes:
       - demo_id
       - business_id
       - firstName
+      - birth-city
 
 slots:
   demo_id:
     range: string
-  business_id:
+  business-id:
     range: string
-    alias: demo-id
+    alias: bx-id
   firstName:
     range: string
+  birth-city:
+    range: string
+    alias: birth-city
 """
 
 
@@ -393,9 +397,12 @@ def test_json_tag_fallback_not_triggered_when_unchanged():
     """A slot whose snake-cased name equals its alias is emitted unchanged."""
     module = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).render()
     demo_id = module.structs["Thing"].fields["demo_id"]
+    birth_city = module.structs["Thing"].fields["birth-city"]
 
     # underscore("demo_id") == "demo_id" → fallback must not fire
     assert demo_id.json_name == "demo_id"
+    # underscore("birth-city") == "birth_city" != "birth_city" → alias equals name
+    assert birth_city.json_name == "birth-city"
 
 
 def test_json_tag_fallback_preserves_original_alias():
@@ -404,14 +411,14 @@ def test_json_tag_fallback_preserves_original_alias():
     This mirrors the Pydantic generator's `Field(alias=slot_alias)` behavior.
     """
     module = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).render()
-    business_id = module.structs["Thing"].fields["business_id"]
+    business_id = module.structs["Thing"].fields["business-id"]
 
-    # underscore("demo-id") == "demo_id" != "demo-id" → preserve the original alias
-    assert business_id.json_name == "demo-id"
+    # underscore("business-id") == "business_id" != "bx-id" → preserve the original alias
+    assert business_id.json_name == "bx-id"
 
     code = GolangGenerator(schema=JSON_TAG_FALLBACK_SCHEMA).serialize()
     assert 'json:"demo_id,omitempty"' in code
-    assert 'json:"demo-id,omitempty"' in code
+    assert 'json:"bx-id,omitempty"' in code
 
 
 def test_json_tag_legacy_names_unchanged():
