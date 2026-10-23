@@ -135,6 +135,56 @@ You can control enum and permissible value representation directly in your schem
             implements:
               - rdfs:Literal
 
+**Metaclass membership with ``instantiates``** - This LinkML field types a schema
+element itself; it does not add slots or type that element's data instances. The OWL
+generator maps each declared membership to ``rdf:type`` on the emitted resource.
+The mapping applies consistently to schemas, classes, slots, locally emitted types,
+enums, and non-literal permissible values. No additional option is required: the
+schema already declares the relationship.
+
+For example, a permissible value represented as a named individual can declare
+membership in an external vocabulary class:
+
+.. code-block:: yaml
+
+    enums:
+      LinkCategory:
+        implements:
+          - owl:NamedIndividual
+        permissible_values:
+          isLicense:
+            meaning: ex:isLicense
+            instantiates:
+              - vocab:LicenseCategory
+
+.. code-block:: turtle
+
+    ex:isLicense a owl:NamedIndividual, ex:LinkCategory, vocab:LicenseCategory .
+    vocab:LicenseCategory a owl:Class .
+
+The instantiated class is declared, as OWL 2 DL requires for every class a class
+assertion uses. For an enum of named individuals, its own class still uses ``owl:oneOf``; this does
+not close the external class. A permissible value rendered as an OWL class retains
+that representation and also participates as an individual in the membership
+assertion (OWL punning). Membership does not become ``rdfs:subClassOf`` and is not
+inherited by instances of the emitted class. ``instantiates`` is ignored, with a
+warning, on a permissible value rendered as a literal, because RDF literals cannot
+be subjects of ``rdf:type`` triples, on a resource in the OWL 2 reserved vocabulary,
+which cannot be an individual, and for a value that is neither a CURIE nor an IRI,
+which would become a relative IRI.
+
+``gen-rdf`` and ``gen-jsonld`` serialize the schema as metamodel data and retain
+``linkml:instantiates``. ``gen-owl`` translates that declaration into ontology
+membership. Instance validators such as JSON Schema and SHACL must not apply the
+schema element's metaclass to ordinary data instances.
+
+See the `LinkML instantiation guide
+<https://linkml.io/linkml/howtos/implements-instantiates-guide.html#instantiates-metamodel-extension>`_,
+the `instantiates metamodel definition
+<https://linkml.io/linkml-model/latest/docs/instantiates/>`_, and the OWL 2
+specifications for `metamodeling <https://www.w3.org/TR/owl2-syntax/#Metamodeling>`_
+and `mapping class assertions to RDF <https://www.w3.org/TR/owl2-mapping-to-rdf/>`_.
+
 **Using URIs vs. text for permissible values:**
 
 .. code-block:: yaml
