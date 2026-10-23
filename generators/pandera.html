@@ -611,6 +611,17 @@ the first priority is implementing models of literal and nested data types and c
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pandera-mergeimports">
+<span id="cmdoption-gen-pandera-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-pandera-mergeimports" title="Link to this definition">¶</a></dt>
+<dd><p>Merge imports into source file. Forwarded to the underlying <code class="docutils literal notranslate"><span class="pre">DataframeGenerator</span></code> (and the SchemaLoader used to materialize the metamodel) so <code class="docutils literal notranslate"><span class="pre">gen-pandera</span></code> accepts the same flag every other LinkML generator CLI does.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-pandera-generator-class">
 <span class="sig-name descname"><span class="pre">--generator-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;generator_class&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pandera-generator-class" title="Link to this definition">¶</a></dt>
 <dd><p>Generator class to use. Options: [‘PanderaDataframeGenerator’, ‘PolarsSchemaDataframeGenerator’] (not used with –package)</p>
