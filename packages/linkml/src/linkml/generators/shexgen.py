@@ -40,6 +40,9 @@ class ShExGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn in RDF output. See :ref:`rdf-in-version-control`."""
+
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
     shape: Shape | None = None  # Current shape being defined
@@ -177,7 +180,7 @@ class ShExGenerator(Generator):
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
-            shex = canonicalize_rdf_graph(g, output_format="turtle")
+            shex = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=self.diff_stable)
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)
@@ -257,6 +260,15 @@ class ShExGenerator(Generator):
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint "
     "values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits (--format rdf). See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
