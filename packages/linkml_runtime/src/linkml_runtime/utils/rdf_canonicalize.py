@@ -49,7 +49,6 @@ from rdflib.compare import to_canonical_graph
 from rdflib.namespace import RDF
 from rdflib.plugins.serializers.jsonld import from_rdf
 from rdflib.plugins.serializers.n3 import N3Serializer
-from rdflib.plugins.serializers.trig import TrigSerializer
 from rdflib.plugins.serializers.turtle import TurtleSerializer
 
 
@@ -128,11 +127,16 @@ def _without_shared_list_tails(serializer: type[TurtleSerializer]) -> type[Turtl
 
 
 # Fallback serializers for the Turtle family, which share rdflib's list writer.
+# TriG is written by the Turtle serializer: a Turtle document is a TriG document
+# whose triples are all in the default graph (TriG section 2.1), where the
+# pyoxigraph path puts them, while rdflib's TriG serializer names the graph
+# after a random blank node, so its output differs between runs.
+_TURTLE_SERIALIZER = _without_shared_list_tails(TurtleSerializer)
 _TURTLE_FAMILY_SERIALIZERS: dict[str, type[TurtleSerializer]] = {
-    "turtle": _without_shared_list_tails(TurtleSerializer),
-    "ttl": _without_shared_list_tails(TurtleSerializer),
+    "turtle": _TURTLE_SERIALIZER,
+    "ttl": _TURTLE_SERIALIZER,
     "n3": _without_shared_list_tails(N3Serializer),
-    "trig": _without_shared_list_tails(TrigSerializer),
+    "trig": _TURTLE_SERIALIZER,
 }
 
 
@@ -217,6 +221,40 @@ def _refuse_terms_line_formats_cannot_carry(graph: rdflib.Graph, output_format: 
                 )
 
 
+def _rdflib_serialize(graph: rdflib.Graph, output_format: str) -> str:
+    """Write ``graph`` with rdflib, declaring its base if it has one."""
+    serializer = _TURTLE_FAMILY_SERIALIZERS.get(output_format.lower())
+    if serializer is None:
+        return graph.serialize(format=output_format)
+    stream = io.BytesIO()
+    serializer(graph).serialize(stream, base=graph.base, encoding="utf-8")
+    return stream.getvalue().decode("utf-8")
+
+
+def _is_readable_rdf(graph: rdflib.Graph) -> bool:
+    """Whether every subject is an IRI or blank node and every predicate an IRI.
+
+    No RDF syntax can express a literal subject or predicate, so output
+    written for such a graph cannot be read back.
+    """
+    return all(isinstance(s, rdflib.URIRef | rdflib.BNode) and isinstance(p, rdflib.URIRef) for s, p, _ in graph)
+
+
+def _absolute_iris_survive(graph: rdflib.Graph, serialized: str, output_format: str) -> bool:
+    """Whether re-reading ``serialized`` yields every absolute IRI of ``graph``.
+
+    rdflib relativizes an IRI against the base by removing the base as a
+    string prefix, which is not the inverse of RFC 3986 section 5.2.2: against
+    a base ending in ``#``, the reference it writes resolves to a different
+    IRI.  Relative IRIs of ``graph`` are left out: on re-reading they resolve
+    against the base, which is what the base is for.
+    """
+    expected = {str(t) for triple in graph for t in triple if isinstance(t, rdflib.URIRef) and _ABSOLUTE_IRI.match(t)}
+    read_format = "turtle" if output_format.lower() in ("ttl", "trig") else output_format
+    reread = rdflib.Graph().parse(data=serialized, format=read_format)
+    return expected <= {str(t) for triple in reread for t in triple if isinstance(t, rdflib.URIRef)}
+
+
 def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -> str:
     """Serialize a graph that pyoxigraph cannot canonicalize, deterministically.
 
@@ -238,6 +276,8 @@ def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -
     goal is deterministic output, and silently rewriting ``<testing>`` into an
     absolute IRI would mask what is really a data problem in the source graph.
     N-Triples and N-Quads cannot carry them at all, so those formats refuse.
+    The base is kept only if the output reads back with the same absolute
+    IRIs, as on the pyoxigraph path; otherwise it is dropped with a warning.
 
     :param graph: The rdflib Graph that pyoxigraph could not parse.
     :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
@@ -254,12 +294,17 @@ def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str) -
         return "\n".join(sorted(lines)) + "\n"
     if fmt in _JSONLD_FORMATS:
         return _jsonld_in_sorted_order(canonical)
-    serializer = _TURTLE_FAMILY_SERIALIZERS.get(fmt)
-    if serializer is None:
-        return canonical.serialize(format=output_format)
-    stream = io.BytesIO()
-    serializer(canonical).serialize(stream, base=canonical.base, encoding="utf-8")
-    return stream.getvalue().decode("utf-8")
+    serialized = _rdflib_serialize(canonical, output_format)
+    if canonical.base and _is_readable_rdf(canonical) and not _absolute_iris_survive(canonical, serialized, fmt):
+        warnings.warn(
+            f"Writing IRIs relative to the base {str(canonical.base)!r} changes what they mean when read back; "
+            "serializing without the base.",
+            RDFCanonicalizationWarning,
+            stacklevel=3,
+        )
+        canonical.base = None
+        serialized = _rdflib_serialize(canonical, output_format)
+    return serialized
 
 
 # Characters that may appear escaped in a Turtle PN_LOCAL via PN_LOCAL_ESC.
