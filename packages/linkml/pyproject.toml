@@ -81,11 +81,22 @@ typing = [
 shacl = [
     "pyshacl>=0.40.1",
 ]
+notebooks = [
+  "ipykernel",
+  "ipython-genutils",
+  "jupyter",
+  "names",
+  "nbconvert",
+  "nbformat",
+  "pip",
+  "yamlmagic",
+]
 tests = [
   "linkml-runtime[diff-stable]",
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
+  { include-group = "notebooks" },
   "duckdb>=1.5.5",
   "sqlalchemy-bigquery>=1.17.2",
   "tomli-w>=1.2.0",
@@ -95,11 +106,6 @@ dev = [
   {include-group = "tests-extra" },
   {include-group = "pandera"},
   "chardet",
-  "ipykernel",
-  "ipython-genutils",
-  "jupyter",
-  "nbconvert",
-  "nbformat",
   "coverage>=7.16.2",
   "tox>=4.64.1",
   "tox-uv",
