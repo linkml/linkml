@@ -145,7 +145,10 @@ class JSONLDGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self._visit(cls)
-        cls.class_uri = self.namespaces.uri_for(cls.class_uri)
+        self._add_class_uri_exact_mapping(cls)
+        class_uri = cls.class_uri
+        expanded_class_uri = self.namespaces.uri_for(class_uri)
+        cls.class_uri = expanded_class_uri
         # Slot usage is a construction artifact
         # TODO: Figure out why this is here.  It isn't good form to alter a schema that may be used by other things
         cls.slot_usage = {}
