@@ -19,8 +19,8 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
-from linkml.generators.common.subproperty import is_xsd_anyuri_range
-from linkml.utils.deprecation import deprecation_warning
+from linkml.generators.common.annotations import declared_annotation
+from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime import SchemaView
@@ -44,6 +44,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import link_iri, type_term, value_term
 
 logger = logging.getLogger(__name__)
 
@@ -226,23 +227,9 @@ class OwlSchemaGenerator(Generator):
 
         return [value for value in values if value is not None]
 
-    xsd_anyuri_as_iri: bool = False
-    """Treat ``range: uri`` / ``range: uriorcurie`` slots as ``owl:ObjectProperty``
-    instead of ``owl:DatatypeProperty`` with ``rdfs:range xsd:anyURI``.
-
-    This aligns the OWL output with the SHACL generator (which emits
-    ``sh:nodeKind sh:IRI``) and the JSON-LD context generator (which emits
-    ``@type: @id`` when its own ``--xsd-anyuri-as-iri`` flag is set).
-
-    Without this flag, ``range: uri`` produces a semantic inconsistency:
-    OWL says the value is a literal (``DatatypeProperty``), while SHACL and
-    JSON-LD say it is an IRI node.  Enabling the flag makes all three
-    generators consistent.
-
-    When enabled, URI-range slots:
-    - become ``owl:ObjectProperty`` (not ``owl:DatatypeProperty``)
-    - have no ``rdfs:range`` restriction (any IRI is valid)
-    """
+    xsd_anyuri_as_iri: bool | None = None
+    """Deprecated and without effect: slots whose values are IRIs or blank nodes
+    (:func:`~linkml_runtime.utils.rdf_terms.type_term`) are always object properties."""
 
     default_language: str | None = None
     """Default BCP 47 language tag for human-readable string literals.
@@ -268,6 +255,8 @@ class OwlSchemaGenerator(Generator):
         # once here; per-element tags are validated lazily, with at most one
         # warning per distinct malformed tag.
         self._language_resolver = LanguageTagResolver(self.default_language)
+        if self.xsd_anyuri_as_iri is not None:
+            deprecation_warning(XSD_ANYURI_AS_IRI_OPTION, stack_level=4)
         super().__post_init__()
 
     def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
@@ -395,14 +384,7 @@ class OwlSchemaGenerator(Generator):
                 metaslot_value = [metaslot_value]
             for v in metaslot_value:
                 if metaslot_range in msv.all_types():
-                    if metaslot_range == "uri":
-                        obj = URIRef(v)
-                    elif metaslot_range == "uriorcurie":
-                        obj = URIRef(this_sv.expand_curie(v))
-                    elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
-                        obj = Literal(v, lang=lang)
-                    else:
-                        obj = Literal(v)
+                    obj = self._metaslot_term(metaslot_range, v, lang, f"{metaslot_name} of {uri}")
                 elif metaslot_range in msv.all_subsets():
                     obj = Literal(v)  # TODO
                 elif metaslot_range in msv.all_classes():
@@ -427,6 +409,10 @@ class OwlSchemaGenerator(Generator):
         for k, v in e.annotations.items():
             if isinstance(v, dict) or isinstance(v, list):
                 continue
+            declared = declared_annotation(this_sv, e, k, v.value, lang)
+            if declared is not None:
+                self.graph.add((uri, declared.predicate, declared.value))
+                continue
             if ":" not in k:
                 default_prefix = this_sv.schema.default_prefix
                 if default_prefix in this_sv.schema.prefixes:
@@ -443,6 +429,32 @@ class OwlSchemaGenerator(Generator):
                 else:
                     obj = Literal(v.value)
                 self.graph.add((uri, URIRef(k_uri), obj))
+
+    def _metaslot_term(
+        self, range_name: str, value: Any, language: str | None, origin: str
+    ) -> URIRef | BNode | Literal:
+        """Return the RDF term of a native metadata value according to the metamodel slot's range.
+
+        The term kind follows :func:`~linkml_runtime.utils.rdf_terms.value_term`, so
+        ``see_also`` and ``source`` values are IRIs and ``license`` values are
+        strings. A link's CURIE is expanded with the schema's prefixes, then with the
+        metamodel's. Human-readable text carries the resolved language. A link value
+        that is neither an IRI nor a CURIE, such as a bare element name in
+        ``see_also``, cannot be resolved; it is written as a plain literal, with a
+        warning, since a relative IRI would make the whole graph non-standard RDF
+        and OWL 2 admits a literal as an annotation value (Structural Specification
+        §10.1).
+        """
+        msv = self.metamodel_schemaview
+        if range_name in self._LANGUAGE_TAGGABLE_RANGES and language:
+            return Literal(value, lang=language)
+        if not type_term(msv, range_name).kind.is_node:
+            return value_term(msv, range_name, value)
+        link = self.schemaview.expand_curie(str(value))
+        if link_iri(msv, link) is None and not link.startswith("_:"):
+            logger.warning(f"{origin}: {value!r} is neither an IRI nor a CURIE; written as a literal")
+            return Literal(str(value))
+        return value_term(msv, range_name, link)
 
     def add_class(self, cls: ClassDefinition) -> None:
         """
@@ -801,7 +813,8 @@ class OwlSchemaGenerator(Generator):
         """
         Determine the OWL types of a named slot or slot expression
 
-        The OWL type is either OWL.Thing or RDFS.Datatype
+        The OWL type is either OWL.Thing or RDFS.Datatype. A type range gives OWL.Thing
+        when its values are IRIs or blank nodes (:meth:`_type_values_are_nodes`).
 
         :param slot:
         :param owning_class:
@@ -818,7 +831,7 @@ class OwlSchemaGenerator(Generator):
                 if not (range_class and range_class.class_uri == "linkml:Any"):
                     node_types.add(OWL.Thing)
             if slot.range in sv.all_types():
-                node_types.add(RDFS.Datatype)
+                node_types.add(OWL.Thing if self._type_values_are_nodes(slot.range) else RDFS.Datatype)
         for k in ["any_of", "all_of", "exactly_one_of", "none_of"]:
             subslots = getattr(slot, k, None)
             if not subslots:
@@ -905,7 +918,7 @@ class OwlSchemaGenerator(Generator):
         this_owl_types: set[OWL_TYPE] = set()
         if slot_range:
             if slot_range in sv.all_types(imports=True):
-                if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, slot_range):
+                if self._type_values_are_nodes(slot_range):
                     self.slot_is_literal_map[main_slot.name].add(False)
                     this_owl_types.add(OWL.Thing)
                 else:
@@ -1546,12 +1559,14 @@ class OwlSchemaGenerator(Generator):
             graph.add((node, RDF.type, RDFS.Datatype))
         return node
 
-    def _range_is_datatype(self, slot: SlotDefinition) -> bool:
-        if self.type_objects:
-            return False
-        if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(self.schemaview, slot.range):
-            return False
-        return slot.range in self.schema.types
+    def _type_values_are_nodes(self, type_name: str) -> bool:
+        """Whether values of the type *type_name* are IRIs or blank nodes rather than literals.
+
+        This follows :func:`~linkml_runtime.utils.rdf_terms.type_term`. With
+        :attr:`type_objects`, every typed value is an individual of the type's class
+        instead, so no type is treated differently.
+        """
+        return not self.type_objects and type_term(self.schemaview, type_name).kind.is_node
 
     def _range_uri(self, slot: SlotDefinition) -> URIRef:
         if slot.range in self.schema.types:
@@ -1699,7 +1714,7 @@ class OwlSchemaGenerator(Generator):
         elif slot_range in sv.all_enums():
             return OWL.ObjectProperty
         elif slot_range in sv.all_types():
-            if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, slot_range):
+            if self._type_values_are_nodes(slot_range):
                 return OWL.ObjectProperty
             return OWL.DatatypeProperty
         else:
@@ -1827,14 +1842,9 @@ class OwlSchemaGenerator(Generator):
 )
 @click.option(
     "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
-    default=False,
-    show_default=True,
-    help=(
-        "Treat range: uri / range: uriorcurie slots as owl:ObjectProperty (IRI node) "
-        "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
-        "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
-        "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
-    ),
+    default=None,
+    help="Deprecated and without effect: slots whose values are IRIs, such as uri and uriorcurie, are always "
+    "object properties.",
 )
 @click.option(
     "--default-language",

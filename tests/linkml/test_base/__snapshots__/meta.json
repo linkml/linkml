@@ -8951,7 +8951,7 @@
         "@id": "skos:prefLabel"
       },
       "contexts": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "contexts"
       },
       "predicate": {
@@ -8978,7 +8978,7 @@
         "@id": "allowed"
       },
       "source": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "dcterms:source"
       },
       "description": {
@@ -9031,11 +9031,11 @@
         "@id": "boolean_slot"
       },
       "broad_mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:broadMatch"
       },
       "categories": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "dcterms:subject"
       },
       "children_are_mutually_disjoint": {
@@ -9043,7 +9043,7 @@
         "@id": "children_are_mutually_disjoint"
       },
       "class_uri": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "class_uri"
       },
       "classes": {
@@ -9055,11 +9055,11 @@
         "@id": "classification_rules"
       },
       "close_mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:closeMatch"
       },
       "code_set": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "code_set"
       },
       "code_set_tag": {
@@ -9072,7 +9072,7 @@
         "@id": "skos:note"
       },
       "concepts": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "concepts"
       },
       "conforms_to": {
@@ -9083,11 +9083,11 @@
         "@id": "consider_nulls_inequal"
       },
       "contributors": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "dcterms:contributor"
       },
       "created_by": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "pav:createdBy"
       },
       "created_on": {
@@ -9113,18 +9113,18 @@
         "@id": "defining_slots"
       },
       "definition_uri": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "definition_uri"
       },
       "deprecated": {
         "@id": "deprecated"
       },
       "deprecated_element_has_exact_replacement": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "deprecated_element_has_exact_replacement"
       },
       "deprecated_element_has_possible_replacement": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "deprecated_element_has_possible_replacement"
       },
       "derivation": {
@@ -9165,7 +9165,7 @@
         "@id": "enum_range"
       },
       "enum_uri": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "enum_uri"
       },
       "enums": {
@@ -9190,7 +9190,7 @@
         "@id": "equals_string_in"
       },
       "exact_mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:exactMatch"
       },
       "exact_cardinality": {
@@ -9210,7 +9210,7 @@
         "@id": "examples"
       },
       "tag": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "tag"
       },
       "value": {
@@ -9232,7 +9232,7 @@
         "@id": "framework"
       },
       "from_schema": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:inScheme"
       },
       "generation_date": {
@@ -9244,11 +9244,11 @@
         "@id": "has_member"
       },
       "has_quantity_kind": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "qudt:hasQuantityKind"
       },
       "id": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "id"
       },
       "id_prefixes": {
@@ -9272,7 +9272,7 @@
         "@id": "ifabsent"
       },
       "implements": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "implements"
       },
       "implicit_prefix": {
@@ -9282,7 +9282,7 @@
         "@id": "import_as"
       },
       "import_from": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "import_from"
       },
       "import_map": {
@@ -9293,7 +9293,7 @@
         "@id": "imported_from"
       },
       "imports": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "imports"
       },
       "in_language": {
@@ -9336,7 +9336,7 @@
         "@id": "inlined_as_simple_dict"
       },
       "instantiates": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "instantiates"
       },
       "interpolated": {
@@ -9418,7 +9418,7 @@
         "@id": "type"
       },
       "mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:mappingRelation"
       },
       "matches": {
@@ -9437,7 +9437,7 @@
         "@id": "maximum_value"
       },
       "meaning": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "meaning"
       },
       "metamodel_version": {
@@ -9468,7 +9468,7 @@
         "@id": "mixins"
       },
       "modified_by": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "oslc:modifiedBy"
       },
       "multivalued": {
@@ -9477,7 +9477,7 @@
       },
       "name": "@id",
       "narrow_mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:narrowMatch"
       },
       "none_of": {
@@ -9500,7 +9500,7 @@
         "@id": "open_world"
       },
       "owned_by": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "owned_by"
       },
       "owner": {
@@ -9534,7 +9534,7 @@
         "@id": "sh:prefix"
       },
       "prefix_reference": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "sh:namespace"
       },
       "prefixes": {
@@ -9542,7 +9542,7 @@
         "@id": "sh:declare"
       },
       "publisher": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "dcterms:publisher"
       },
       "pv_formula": {
@@ -9585,7 +9585,7 @@
         "@id": "reflexive_transitive_form_of"
       },
       "related_mappings": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "skos:relatedMatch"
       },
       "relational_logical_characteristic": {
@@ -9601,7 +9601,7 @@
         "@id": "relational_role"
       },
       "relationship_types": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "relationship_types"
       },
       "repr": {
@@ -9627,7 +9627,7 @@
         "@id": "sh:rule"
       },
       "see_also": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "rdfs:seeAlso"
       },
       "setting_key": {
@@ -9664,7 +9664,7 @@
         "@id": "slot_names_unique"
       },
       "slot_uri": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "slot_uri"
       },
       "slot_usage": {
@@ -9683,11 +9683,11 @@
         "@id": "source_file_size"
       },
       "source_nodes": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "source_nodes"
       },
       "source_ontology": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "source_ontology"
       },
       "status": {
@@ -9709,7 +9709,7 @@
         "@id": "structured_pattern"
       },
       "subclass_of": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "subclass_of"
       },
       "subproperty_of": {
@@ -9762,7 +9762,7 @@
         "@id": "type_mappings"
       },
       "uri": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "uri"
       },
       "typeof": {
@@ -9814,7 +9814,7 @@
         "@id": "value_specification_constant"
       },
       "values_from": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "values_from"
       },
       "version": {
