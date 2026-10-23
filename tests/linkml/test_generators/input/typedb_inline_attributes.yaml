@@ -1,0 +1,45 @@
+id: https://example.org/gen-typedb-attributes-bug
+name: gen_typedb_attributes_bug
+description: >-
+  Minimal LinkML schema demonstrating that gen-typedb drops attribute
+  ownership for classes whose attributes are declared inline via
+  `attributes:` rather than via top-level `slots:` references.
+
+  Both ClassWithSlots and ClassWithAttributes should produce identical
+  `owns` declarations on their entity blocks.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/gen-typedb-attributes-bug/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+slots:
+  shared_name:
+    range: string
+    required: true
+  shared_description:
+    range: string
+
+classes:
+  ClassWithSlots:
+    description: Attributes declared via top-level `slots:` reference.
+    slots:
+      - shared_name
+      - shared_description
+
+  ClassWithAttributes:
+    description: Attributes declared inline. gen-typedb currently drops these.
+    attributes:
+      inline_name:
+        range: string
+        required: true
+      inline_description:
+        range: string
+      inline_owner:
+        description: Inline attribute with a class range, exercising the relates/plays path.
+        range: ClassWithSlots

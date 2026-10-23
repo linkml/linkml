@@ -1,15 +1,17 @@
 import logging
 import urllib
-from typing import Any, Optional, Union
+from typing import Any
 
 from curies import Converter
 from pydantic import BaseModel
 from rdflib import XSD, Graph, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
-from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition
+from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -28,9 +30,9 @@ class RDFLibDumper(Dumper):
 
     def as_rdf_graph(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         schemaview: SchemaView,
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
     ) -> Graph:
         """
         Dumps from element to an rdflib Graph,
@@ -42,6 +44,7 @@ class RDFLibDumper(Dumper):
         :return:
         """
         g = Graph()
+        schemaview.imports_closure()  # ensure all imported sub-schemas are in schema_map before namespaces() caches
         if isinstance(prefix_map, Converter):
             # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
@@ -85,11 +88,14 @@ class RDFLibDumper(Dumper):
         slot_name_map = schemaview.slot_name_mappings()
         logger.debug(f"CONVERT: {element} // {type(element)} // {target_type}")
         if target_type in schemaview.all_enums():
-            if isinstance(element, PermissibleValueText):
+            # Handle three cases for enum target types:
+            if isinstance(element, str):  # case 1: string, look up PermissibleValue
                 e = schemaview.get_enum(target_type)
                 element = e.permissible_values[element]
-            else:
+            elif not isinstance(element, PermissibleValue):  # case 3: EnumDefinitionImpl .code
                 element = element.code
+            # 3) do nothing, element is already PermissibleValue (PermissibleValueImpl.code)
+
             element: PermissibleValue
             if element.meaning is not None:
                 return URIRef(schemaview.expand_curie(element.meaning))
@@ -99,7 +105,7 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                if dt_uri == "rdfs:Resource":
+                if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
                     return URIRef(schemaview.expand_curie(element))
                 elif dt_uri == "xsd:string":
                     return Literal(element)
@@ -116,7 +122,14 @@ class RDFLibDumper(Dumper):
             return self._as_uri(element, id_slot, schemaview)
             # return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
-        cn = element_type.class_name
+        if hasattr(element_type, "class_name"):
+            cn = element_type.class_name
+        else:
+            nm = schemaview.class_name_mappings()
+            cls_name = element_type.__name__
+            if cls_name not in nm:
+                raise ValueError(f"Class {cls_name} not found in schema")
+            cn = nm[cls_name].name
         id_slot = schemaview.get_identifier_slot(cn)
         if id_slot is not None:
             element_id = getattr(element, id_slot.name)
@@ -128,34 +141,53 @@ class RDFLibDumper(Dumper):
             if isinstance(v_or_list, list):
                 vs = v_or_list
             elif isinstance(v_or_list, dict):
-                vs = v_or_list.values()
+                vs = list(v_or_list.values())
             else:
                 vs = [v_or_list]
+            vs = [v for v in vs if v is not None]
+            # Skip slots with no values before resolving the slot: an element may carry
+            # python attributes (e.g. defaults) that are not schema slots, and resolving
+            # those would raise. This mirrors the original per-value loop, which only
+            # touched the schema once it had a value to emit.
+            if not vs:
+                continue
+            if k in slot_name_map:
+                slot_name = slot_name_map[k].name
+            else:
+                logger.error(f"Slot {k} not in name map")
+                slot_name = k
+            slot = schemaview.induced_slot(slot_name, cn)
+            if slot.identifier:
+                continue
+            slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
+            if slot.multivalued and slot.list_elements_ordered:
+                # emit an ordered rdf:List (rdf:first/rdf:rest) so element order is part
+                # of the RDF semantics and survives canonicalization. This applies to
+                # both list- and dict-backed collections: ``vs`` is already in the
+                # correct (insertion) order for either form. See issue #3531.
+                nodes = [self.inject_triples(v, schemaview, graph, slot.range) for v in vs]
+                list_head = BNode()
+                Collection(graph, list_head, nodes)
+                graph.add((element_uri, slot_uri, list_head))
+                if slot.designates_type:
+                    type_added = True
+                continue
             for v in vs:
-                if v is None:
-                    continue
-                if k in slot_name_map:
-                    k = slot_name_map[k].name
-                else:
-                    logger.error(f"Slot {k} not in name map")
-                slot = schemaview.induced_slot(k, cn)
-                if not slot.identifier:
-                    slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
-                    v_node = self.inject_triples(v, schemaview, graph, slot.range)
-                    graph.add((element_uri, slot_uri, v_node))
-                    if slot.designates_type:
-                        type_added = True
+                v_node = self.inject_triples(v, schemaview, graph, slot.range)
+                graph.add((element_uri, slot_uri, v_node))
+                if slot.designates_type:
+                    type_added = True
         if not type_added:
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
 
     def dump(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         to_file: str,
         schemaview: SchemaView = None,
         fmt: str = "turtle",
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
         **args,
     ) -> None:
         """
@@ -172,10 +204,10 @@ class RDFLibDumper(Dumper):
 
     def dumps(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         schemaview: SchemaView = None,
-        fmt: Optional[str] = "turtle",
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        fmt: str | None = "turtle",
+        prefix_map: dict[str, str] | Converter | None = None,
     ) -> str:
         """
         Convert element into an RDF graph guided by the schema
@@ -186,9 +218,9 @@ class RDFLibDumper(Dumper):
         :param prefix_map:
         :return: serialization of rdflib Graph containing element
         """
-        return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).serialize(format=fmt)
+        return canonicalize_rdf_graph(self.as_rdf_graph(element, schemaview, prefix_map=prefix_map), output_format=fmt)
 
-    def _as_uri(self, element_id: str, id_slot: Optional[SlotDefinition], schemaview: SchemaView) -> URIRef:
+    def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:

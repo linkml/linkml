@@ -1,14 +1,16 @@
 import logging
 import os
+import warnings
 from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import Optional, TextIO, Union, cast
+from typing import Any, TextIO, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
 
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, slot_usage_name
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
@@ -36,16 +38,17 @@ lgr = logging.getLogger(__name__)
 class SchemaLoader:
     def __init__(
         self,
-        data: Union[str, TextIO, SchemaDefinition, dict, Path],
-        base_dir: Optional[str] = None,
-        namespaces: Optional[Namespaces] = None,
-        useuris: Optional[bool] = None,
-        importmap: Optional[Mapping[str, str]] = None,
-        logger: Optional[logging.Logger] = None,
-        mergeimports: Optional[bool] = True,
-        emit_metadata: Optional[bool] = True,
-        source_file_date: Optional[str] = None,
-        source_file_size: Optional[int] = None,
+        data: str | TextIO | SchemaDefinition | dict | Path,
+        base_dir: str | None = None,
+        namespaces: Namespaces | None = None,
+        useuris: bool | None = None,
+        importmap: Mapping[str, str | dict[str, Any]] | None = None,
+        logger: logging.Logger | None = None,
+        mergeimports: bool | None = True,
+        metadata: bool | None = True,
+        emit_metadata: bool | None = None,
+        source_file_date: str | None = None,
+        source_file_size: int | None = None,
     ) -> None:
         """Constructor - load and process a YAML or pre-processed schema
 
@@ -53,7 +56,9 @@ class SchemaLoader:
         :param base_dir: base directory or URL where Schema came from
         :param namespaces: namespaces collector
         :param useuris: True means class_uri and slot_uri are identifiers.  False means they are mappings.
-        :param importmap: A map from import entries to URI or file name.
+        :param importmap: A map from import entries to URI, file name, or an
+            in-memory schema dict. Dict values are loaded directly without
+            source-file metadata derivation.
         :param logger: Target Logger, if any
         :param mergeimports: True means combine imports into single package. False means separate packages
         :param emit_metadata: True means include source file, size and date
@@ -81,11 +86,36 @@ class SchemaLoader:
         self.importmap = parse_import_map(importmap, self.base_dir) if importmap is not None else dict()
         self.source_file_date = source_file_date
         self.source_file_size = source_file_size
-        self.synopsis: Optional[SchemaSynopsis] = None
-        self.schema_location: Optional[str] = None
+        self.synopsis: SchemaSynopsis | None = None
+        self.schema_location: str | None = None
         self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
-        self.emit_metadata = emit_metadata
+        self.metadata = metadata
+        if emit_metadata is not None:
+            deprecation_warning("metadata-flag")
+            warnings.warn(
+                f"Value of flag `emit_metadata` (='{emit_metadata}') will overwrite value of flag `metadata`!"
+            )
+            self.metadata = emit_metadata
+
+    def _resolve_string_import(self, mapped: str) -> "str | dict[str, Any]":
+        """Expand CURIEs and re-apply the importmap to a string import target.
+
+        Returns either a normalized string path/URI, or a dict if the second
+        importmap lookup chains into an in-memory schema entry.
+        """
+        # Skip CURIE expansion if we already have a local file name with drive letter (windows)
+        if not os.path.splitdrive(mapped)[0] and ":" in mapped:
+            toks = mapped.split(":")
+            pfx = toks[0]
+            pfx_target = self.importmap.get(pfx)
+            if isinstance(pfx_target, str):
+                # Map prefix to a folder/directory
+                mapped = os.path.join(pfx_target, ":".join(toks[1:]))
+            else:
+                mapped = str(self.namespaces.uri_for(mapped))
+        # Second lookup: importmap may also key by URI or expanded form
+        return self.importmap.get(mapped, mapped)
 
     def resolve(self) -> SchemaDefinition:
         """Reconcile a loaded schema, applying is_a, mixins, apply_to's and other such things.  Also validate the
@@ -108,25 +138,29 @@ class SchemaLoader:
 
         # Process imports
         for imp in self.schema.imports:
-            sname = self.importmap.get(str(imp), imp)  # Import map may use CURIE
-            # substitute CURIE only if we don't have a local file name with drive letter (windows)
-            if not os.path.splitdrive(sname)[0]:
-                if ":" in sname:
-                    # allow mapping of a prefix to a folder/directory
-                    toks = sname.split(":")
-                    pfx = toks[0]
-                    if pfx in self.importmap:
-                        sname = os.path.join(self.importmap[pfx], ":".join(toks[1:]))
-                    else:
-                        sname = self.namespaces.uri_for(sname)
-            sname = self.importmap.get(str(sname), sname)  # It may also use URI or other forms
-            import_schemadefinition = load_raw_schema(
-                sname + ".yaml",
-                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
-                merge_modules=self.merge_modules,
-                emit_metadata=self.emit_metadata,
-            )
-            loaded_schema = (str(sname), import_schemadefinition.version)
+            mapped = self.importmap.get(str(imp), imp)  # Import map may use CURIE
+            # Path/CURIE manipulation only applies to string values; dict values are
+            # in-memory schemas passed straight to the raw loader.
+            if isinstance(mapped, str):
+                mapped = self._resolve_string_import(mapped)
+
+            if isinstance(mapped, dict):
+                # In-memory schemas have no source file; skip metadata derivation
+                # so we don't overwrite any fields the caller set on the dict.
+                import_schemadefinition = load_raw_schema(
+                    mapped,
+                    merge_modules=self.merge_modules,
+                    metadata=False,
+                )
+                loaded_schema = (str(imp), import_schemadefinition.version)
+            else:
+                import_schemadefinition = load_raw_schema(
+                    mapped + ".yaml",
+                    base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
+                    merge_modules=self.merge_modules,
+                    metadata=self.metadata,
+                )
+                loaded_schema = (str(mapped), import_schemadefinition.version)
             if import_schemadefinition.id in self.loaded:
                 # If we've already loaded this, make sure that we've got the same version
                 if self.loaded[import_schemadefinition.id][1] != loaded_schema[1]:
@@ -251,9 +285,9 @@ class SchemaLoader:
                         f'Class "{cls.name}" unknown apply_to target: {apply_to_cls}',
                         apply_to_cls,
                     )
-            # Class URI's also count as (trivial) mappings
-            if cls.class_uri is not None:
-                cls.mappings.insert(0, cls.class_uri)
+            # class_uri is the final URI identifying the class and must not be None.
+            # Generators may add it to exact_mappings when it differs from
+            # definition_uri; that derived mapping does not belong in the loader.
             if cls.class_uri is None or not self.useuris:
                 from_schema = cls.from_schema
                 if from_schema is None:
@@ -893,12 +927,49 @@ class SchemaLoader:
             if parent_slot is not None:
                 new_slot.is_a = parent_slot.name
                 merge_slots(new_slot, parent_slot)
-                # This situation occurs when we are doing chained overrides.  Kludgy, but it works...
+                # Each class keeps an ordered list of slot *names* in cls.slots.
+                # Replace the inherited slot name with the new mangled name.
+                # Support multiple levels of inheritance for slot usage.
+                #
+                # Example: Mammal defines slot "sound", Canine refines it via
+                #   slot_usage, and Dog refines it again via slot_usage. By the
+                #   time we reach Dog (whose slots contain *bare* name "sound"),
+                #   the parent_slot is already mangled to "Canine_sound", so
+                #   looking at parent_slot.name is not enough - we need to walk!
+                #
+                # Logic: if parent_slot.name is not in cls.slots, walk up parent_slot's
+                # own is_a chain until we find a name that IS in cls.slots, then swap
+                # that one.  Fall back to the bare slot name as a last resort.
+
+                ancestor_in_cls: str | None = None
                 if parent_slot.name in cls.slots:
+                    # Happy path: the proximal parent name is already in the list.
+                    ancestor_in_cls = parent_slot.name
+                else:
+                    # Walk up the is_a chain of the parent slot, looking for any
+                    # ancestor whose name is present in cls.slots.
+                    probe = parent_slot
+                    while probe.is_a and ancestor_in_cls is None:
+                        probe = self.schema.slots.get(probe.is_a)
+                        if probe is None:
+                            break  # give up and fall through to append
+                        if probe.name in cls.slots:
+                            ancestor_in_cls = probe.name
+                    # Last resort: try the original bare slot name (e.g. "sound").
+                    # This handles the case where the class listed the slot explicitly
+                    # in its schema-level slots: list rather than inheriting it.
+                    if ancestor_in_cls is None and slotname in cls.slots:
+                        ancestor_in_cls = slotname
+
+                if ancestor_in_cls is not None:
+                    # Swap: remove any pre-existing entry for child_name first to
+                    # avoid duplicates, then replace the ancestor entry in-place so
+                    # slot ordering is preserved.
                     if child_name in cls.slots:
                         del cls.slots[cls.slots.index(child_name)]
-                    cls.slots[cls.slots.index(parent_slot.name)] = child_name
+                    cls.slots[cls.slots.index(ancestor_in_cls)] = child_name
                 elif child_name not in cls.slots:
+                    # No ancestor found in the list at all — just append.
                     cls.slots.append(child_name)
             elif not new_slot.range:
                 new_slot.range = self.schema.default_range
@@ -935,7 +1006,7 @@ class SchemaLoader:
     def schema_errors(self) -> list[str]:
         return self.synopsis.errors() if self.synopsis else ["resolve() must be run before error check"]
 
-    def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> Optional[SlotDefinition]:
+    def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> SlotDefinition | None:
         """Find the most proximal definition for slotname in the context of cls"""
         if cls.is_a:
             if cls.is_a not in self.schema.classes:
@@ -1011,11 +1082,11 @@ class SchemaLoader:
         return underscore(slot.alias if slot.alias else slot.name)
 
     @staticmethod
-    def raise_value_error(error: str, loc_str: Optional[Union[TypedNode, str]] = None) -> None:
+    def raise_value_error(error: str, loc_str: TypedNode | str | None = None) -> None:
         SchemaLoader.raise_value_errors(error, loc_str)
 
     @staticmethod
-    def raise_value_errors(error: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
+    def raise_value_errors(error: str, loc_str: str | TypedNode | Iterator[TypedNode] | None) -> None:
         if isinstance(loc_str, list):
             locs = "\n".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             raise ValueError(f"{locs} {error}")
@@ -1025,7 +1096,7 @@ class SchemaLoader:
     def logger_warning(
         self,
         warning: str,
-        loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]],
+        loc_str: str | TypedNode | Iterator[TypedNode] | None,
     ) -> None:
         if isinstance(loc_str, list):
             locs = "\n\t".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
@@ -1033,7 +1104,7 @@ class SchemaLoader:
         else:
             self.logger.warning(f"{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix='')}")
 
-    def _get_base_dir(self, stated_base: str) -> Optional[str]:
+    def _get_base_dir(self, stated_base: str) -> str | None:
         if stated_base:
             return stated_base
         elif self.schema.source_file:

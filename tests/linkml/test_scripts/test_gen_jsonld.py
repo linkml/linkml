@@ -7,6 +7,7 @@ from rdflib import Graph, URIRef
 from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator, cli
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from tests.conftest import KITCHEN_SINK_PATH
 
 
@@ -48,19 +49,55 @@ def test_metamodel_invalid_calls():
 def test_simple_uris(input_path, snapshot):
     """Test a simple schema that needs both LinkML AND Specific prefixes"""
     # Generate all of the required contexts
-    output = ContextGenerator(input_path("includes/simple_types.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("includes/simple_types.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/includes/simple_types.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_slots.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("simple_slots.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/simple_slots.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_uri_test.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("simple_uri_test.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/simple_uri_test.context.jsonld")
 
     runner = CliRunner()
     result = runner.invoke(cli, [str(input_path("simple_uri_test.yaml"))])
     assert result.exit_code == 0
     assert result.output == snapshot("genjsonld/simple_uri_test.jsonld")
+
+
+@pytest.mark.parametrize(
+    "arguments,mock_context_paths, context",
+    [
+        (
+            ["-f", "jsonld"],
+            ["context.jsonld", "just_another.context.jsonld"],
+            [
+                "context.jsonld",
+                "just_another.context.jsonld",
+                "https://w3id.org/linkml/extensions.context.jsonld",
+                "simple_slots.context.jsonld",
+                "includes/simple_types.context.jsonld",
+                "https://w3id.org/linkml/types.context.jsonld",
+                {
+                    "@base": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+                },
+            ],
+        ),
+    ],
+)
+def test_context(input_path, arguments, mock_context_paths, context):
+    """Test @context assembly when multiple --context files are passed."""
+
+    if mock_context_paths:
+        context_opt = "--context"
+        context_args = [x for pair in zip([context_opt] * len(mock_context_paths), mock_context_paths) for x in pair]
+        extended_arguments = arguments + context_args + [str(input_path("simple_uri_test.yaml"))]
+    else:
+        extended_arguments = arguments + [str(input_path("simple_uri_test.yaml"))]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, extended_arguments)
+    assert result.exit_code == 0
+    assert json.loads(result.output)["@context"] == context
 
 
 def check_size(
@@ -132,9 +169,10 @@ def test_meta_output(tmp_path_factory):
     # Convert JSON to TTL
     g = Graph()
     g.load(tmp_jsonld_path, format="json-ld")
-    g.serialize(tmp_rdf_path, format="ttl")
+    with open(tmp_rdf_path, "w", encoding="utf-8") as f:
+        f.write(canonicalize_rdf_graph(g, output_format="turtle"))
     g.bind("meta", METAMODEL_NAMESPACE)
-    new_ttl = g.serialize(format="turtle")
+    new_ttl = canonicalize_rdf_graph(g, output_format="turtle")
 
     # Make sure that the generated TTL matches the JSON-LD (probably not really needed, as this is more of a test
     # of rdflib than our tooling but it doesn't hurt

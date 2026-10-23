@@ -1,0 +1,2 @@
+[ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
+[ERROR] [bad-data.yaml/0] 'full_name' is a required property in /persons/1

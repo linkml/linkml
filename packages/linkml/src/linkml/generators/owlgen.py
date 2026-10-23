@@ -3,11 +3,11 @@
 import logging
 import os
 from collections import defaultdict
-from collections.abc import Mapping
+from collections.abc import Iterable, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, Optional, Union
+from typing import Any, ClassVar, TypeAlias, TypeVar
 
 import click
 import rdflib
@@ -19,7 +19,10 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.subproperty import is_xsd_anyuri_range
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -40,10 +43,14 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 logger = logging.getLogger(__name__)
 
-OWL_TYPE = URIRef  ## RDFS.Literal or OWL.Thing
+OWL_TYPE: TypeAlias = URIRef  ## RDFS.Literal or OWL.Thing
+OWL_EXPRESSION: TypeAlias = BNode | URIRef
+OWL_VALUE: TypeAlias = OWL_EXPRESSION | Literal
+_T = TypeVar("_T")
 
 SWRL = rdflib.Namespace("http://www.w3.org/2003/11/swrl#")
 SWRLB = rdflib.Namespace("http://www.w3.org/2003/11/swrlb#")
@@ -65,7 +72,7 @@ class MetadataProfile(Enum):
     ols = "ols"
 
     @staticmethod
-    def list():
+    def list() -> list[str]:
         return list(map(lambda c: c.value, MetadataProfile))
 
 
@@ -82,8 +89,8 @@ class OWLProfile(Enum):
     """May include punning (metaclasses)."""
 
     @staticmethod
-    def list():
-        return list(map(lambda c: c.value, MetadataProfile))
+    def list() -> list[str]:
+        return list(map(lambda c: c.value, OWLProfile))
 
 
 @dataclass
@@ -111,11 +118,14 @@ class OwlSchemaGenerator(Generator):
     file_extension = "owl"
     uses_schemaloader = False
 
-    ontology_uri_suffix: str = None
+    ontology_uri_suffix: str | None = None
     """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
 
     # ObjectVars
-    metadata_profile: MetadataProfile = None
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
+    metadata_profile: MetadataProfile | None = None
     """Deprecated - use metadata_profiles."""
 
     metadata_profiles: list[MetadataProfile] = field(default_factory=lambda: [])
@@ -128,10 +138,14 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
-    graph: Optional[Graph] = None
-    """Mutable graph that is being built up during OWL generation."""
 
-    top_value_uri: Optional[URIRef] = None
+    graph: Graph = field(default_factory=Graph)
+    """Mutable graph that is being built up during OWL generation.
+
+    The graph is reinitialized in ``as_graph`` for each generation run.
+    """
+
+    top_value_uri: URIRef | None = None
     """If metaclasses=True, then this property is used to connect object shadows to literals"""
 
     type_objects: bool = True
@@ -147,15 +161,15 @@ class OwlSchemaGenerator(Generator):
     use_native_uris: bool = True
     """If True, use the definition_uris, otherwise use class_uris."""
 
-    mixins_as_expressions: bool = None
+    mixins_as_expressions: bool | None = None
     """EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins"""
 
-    default_permissible_value_type: Union[str, URIRef] = field(default_factory=lambda: OWL.Class)
+    default_permissible_value_type: str | URIRef = field(default_factory=lambda: OWL.Class)
 
-    slot_is_literal_map: Mapping[str, set[bool]] = field(default_factory=lambda: defaultdict(set))
+    slot_is_literal_map: defaultdict[str, set[bool]] = field(default_factory=lambda: defaultdict(set))
     """DEPRECATED: use node_owltypes"""
 
-    node_owltypes: Mapping[Union[BNode, URIRef], set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
+    node_owltypes: defaultdict[OWL_EXPRESSION, set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
 
     simplify: bool = True
@@ -174,13 +188,124 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
+    skip_vacuous_min_zero_cardinality_axioms: bool | None = None
+    """If True, suppress owl:minCardinality 0 restrictions. Such axioms are vacuously
+    satisfied by every individual and never carry information.
+    Defaults to False; will change to True in a future release."""
+
+    skip_vacuous_local_range_axioms: bool | None = None
+    """If True, suppress owl:allValuesFrom restrictions whose filler is either owl:Thing
+    or the same URI as the property's globally declared rdfs:range (entailed, hence
+    vacuous in context). Attribute slots, which have no global rdfs:range, are
+    unaffected.
+    Defaults to False; will change to True in a future release."""
+
+    consolidate_cardinality_axioms: bool | None = None
+    """If True, emit a single owl:cardinality restriction when minimum_cardinality equals
+    maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality.
+    Defaults to False; will change to True in a future release."""
+
+    enum_inherits_as_subclass_of: bool = False
+    """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
+
+    skip_abstract_class_as_unionof_subclasses: bool = False
+    """If True, suppress the generation of ``rdfs:subClassOf owl:unionOf(subclasses)`` covering axioms
+    for abstract classes.  By default such axioms are emitted: for every abstract class that has at least
+    one direct ``is_a`` child, the generator adds
+    ``AbstractClass rdfs:subClassOf (Child1 or Child2 or …)``, expressing the open-world covering
+    constraint that every instance of the abstract class must also be an instance of one of its
+    direct subclasses.
+
+    .. note:: An info message is emitted when an abstract class has no children (no axiom generated).
+       A warning is emitted when there is only one child (covering axiom degenerates to equivalence
+       Parent ≡ Child).  Use this flag to suppress covering axioms entirely if equivalence is undesired."""
+
+    @staticmethod
+    def _present(values: Iterable[_T | None]) -> list[_T]:
+        """Return only the non-null values from *values* while preserving order."""
+
+        return [value for value in values if value is not None]
+
+    xsd_anyuri_as_iri: bool = False
+    """Treat ``range: uri`` / ``range: uriorcurie`` slots as ``owl:ObjectProperty``
+    instead of ``owl:DatatypeProperty`` with ``rdfs:range xsd:anyURI``.
+
+    This aligns the OWL output with the SHACL generator (which emits
+    ``sh:nodeKind sh:IRI``) and the JSON-LD context generator (which emits
+    ``@type: @id`` when its own ``--xsd-anyuri-as-iri`` flag is set).
+
+    Without this flag, ``range: uri`` produces a semantic inconsistency:
+    OWL says the value is a literal (``DatatypeProperty``), while SHACL and
+    JSON-LD say it is an IRI node.  Enabling the flag makes all three
+    generators consistent.
+
+    When enabled, URI-range slots:
+    - become ``owl:ObjectProperty`` (not ``owl:DatatypeProperty``)
+    - have no ``rdfs:range`` restriction (any IRI is valid)
+    """
+
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``rdfs:label``, ``rdfs:comment``, ``skos:definition``,
+    ``dcterms:title``, and other annotation literals are emitted with the
+    specified language tag (e.g. ``"Person"@en``).  An element-level
+    ``in_language`` value overrides this default for that element.
+
+    Technical literals (URIs, numeric constraints, XSD facets) are never
+    language-tagged.  Conforms to :rfc:`5646` (BCP 47).
+    """
+
+    # Metaslot ranges that represent human-readable text (eligible for language tags).
+    # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, enums, …)
+    # is technical and must never be language-tagged.
+    _LANGUAGE_TAGGABLE_RANGES: ClassVar[frozenset[str]] = frozenset({"string", "ncname"})
+
+    def __post_init__(self) -> None:
+        # Resolver must be assigned before ``super().__post_init__()`` so that
+        # any hook the parent invokes during initialisation can safely call
+        # ``_resolve_language``. The resolver also validates the default tag
+        # once here; per-element tags are validated lazily, with at most one
+        # warning per distinct malformed tag.
+        self._language_resolver = LanguageTagResolver(self.default_language)
+        super().__post_init__()
+
+    def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.
+        Resolution order is element-level ``in_language`` first, then the
+        generator-level default.
+        """
+        return self._language_resolver.resolve(element)
+
+    def _literal(self, value: str, element: "Definition | PermissibleValue | None" = None) -> Literal:
+        """Create a language-tagged ``Literal`` for a human-readable string.
+
+        If no language tag is resolved, falls back to a plain literal.
+        """
+        lang = self._resolve_language(element)
+        return Literal(value, lang=lang) if lang else Literal(value)
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
 
         :return:
         """
+        if self.skip_vacuous_min_zero_cardinality_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-min-zero-cardinality-default")
+            self.skip_vacuous_min_zero_cardinality_axioms = False
+        if self.skip_vacuous_local_range_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-local-range-default")
+            self.skip_vacuous_local_range_axioms = False
+        if self.consolidate_cardinality_axioms is None:
+            deprecation_warning("owlgen-consolidate-cardinality-axioms-default")
+            self.consolidate_cardinality_axioms = False
+
         sv = self.schemaview
+        sv.imports_closure()  # populate schema_map with all imported sub-schemas
+        sv.namespaces.cache_clear()  # ensure namespace cache is rebuilt with the full schema_map
         schema = sv.schema
         owl_id = schema.id
         if self.ontology_uri_suffix:
@@ -204,9 +329,13 @@ class OwlSchemaGenerator(Generator):
         for slot in sv.all_slots(imports=mergeimports, attributes=False).values():
             self.add_slot(slot, attribute=False)
         for typ in sv.all_types(imports=mergeimports).values():
-            self.add_type(typ)
+            # Type constraints are inherited, so emit the effective type rather
+            # than the asserted definition from the schema.
+            self.add_type(sv.induced_type(typ.name))
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
+        for cls in sv.all_classes(imports=mergeimports).values():
+            self._add_disjoint_children(cls)
 
         if not mergeimports:
             for imp in schema.imports:
@@ -218,7 +347,7 @@ class OwlSchemaGenerator(Generator):
         self.add_metadata(schema, base)
         return graph
 
-    def serialize(self, **kwargs) -> str:
+    def serialize(self, **kwargs: Any) -> str:
         """
         Serialize the OWL triple graph to a standard RDF serialization format.
 
@@ -226,14 +355,16 @@ class OwlSchemaGenerator(Generator):
         :return:
         """
         self.as_graph()
-        data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
-        return data
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
 
-    def add_metadata(self, e: Union[Definition, PermissibleValue], uri: URIRef) -> None:
+    def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
         Add annotation properties.
 
         Set the profile attribute to the appropriate OWL profile.
+        Human-readable string literals are language-tagged when
+        ``default_language`` is set or the element has ``in_language``.
 
         :param e: schema element
         :param uri: URI representation of schema element
@@ -243,6 +374,7 @@ class OwlSchemaGenerator(Generator):
         msv = self.metamodel_schemaview
         this_sv = self.schemaview
         sn_mappings = msv.slot_name_mappings()
+        lang = self._resolve_language(e)
 
         # iterate through all the assigned metamodel slots
         for metaslot_name, metaslot_value in vars(e).items():
@@ -267,6 +399,8 @@ class OwlSchemaGenerator(Generator):
                         obj = URIRef(v)
                     elif metaslot_range == "uriorcurie":
                         obj = URIRef(this_sv.expand_curie(v))
+                    elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
+                        obj = Literal(v, lang=lang)
                     else:
                         obj = Literal(v)
                 elif metaslot_range in msv.all_subsets():
@@ -278,6 +412,15 @@ class OwlSchemaGenerator(Generator):
                     # else:
                     #    logger.debug(f"Skipping {uri} {metaslot_uri} => {v}")
                 else:
+                    # Catch-all for ranges that are not types, subsets, or
+                    # classes -- in practice these are enum-ranged metaslots
+                    # such as ``pv_formula`` (range ``pv_formula_options``) on
+                    # a PermissibleValue or ``obligation_level`` (range
+                    # ``obligation_level_enum``) on a SlotDefinition. Their
+                    # values are permissible-value identifiers, i.e. constraint
+                    # data, not labels: tagging them would shift the datatype
+                    # from ``xsd:string`` to ``rdf:langString`` and break
+                    # downstream string equality / SHACL ``sh:in`` matching.
                     obj = Literal(v)
                 self.graph.add((uri, metaslot_uri, obj))
 
@@ -295,7 +438,11 @@ class OwlSchemaGenerator(Generator):
                 if k_uri == k:
                     k_uri = None
             if k_uri:
-                self.graph.add((uri, URIRef(k_uri), Literal(v.value)))
+                if isinstance(v.value, str):
+                    obj = self._literal(v.value, e)
+                else:
+                    obj = Literal(v.value)
+                self.graph.add((uri, URIRef(k_uri), obj))
 
     def add_class(self, cls: ClassDefinition) -> None:
         """
@@ -343,8 +490,14 @@ class OwlSchemaGenerator(Generator):
             # If user selects add_root_classes, then all classes will be subclasses of LinkML:ClassDefinition
             if cls.mixin and self.mixins_as_expressions:
                 self.graph.add((cls_uri, RDFS.subClassOf, self._mixin_grouping_class_uri()))
+                self._declare_grouping_class(
+                    self._mixin_grouping_class_uri(),
+                    label="mixin",
+                    description="Grouping class for LinkML mixins referenced via add_root_classes.",
+                )
             else:
                 self.graph.add((cls_uri, RDFS.subClassOf, URIRef(ClassDefinition.class_class_uri)))
+                self._declare_grouping_class(URIRef(ClassDefinition.class_class_uri), ClassDefinition.class_name)
         if self.has_profile(MetadataProfile.ols):
             # Add annotations for browser hints. See https://www.ebi.ac.uk/ols/docs/installation-guide
             if cls.is_a is None:
@@ -383,7 +536,7 @@ class OwlSchemaGenerator(Generator):
                 Collection(self.graph, uk_props_listnode, uk_props)
                 self.graph.add((subject_expr, OWL.hasKey, uk_props_listnode))
 
-        def condition_to_bnode(expr: AnonymousClassExpression) -> Optional[BNode]:
+        def condition_to_bnode(expr: AnonymousClassExpression) -> OWL_EXPRESSION | None:
             # inner function: translate a LinkML class expression to an OWL class expression.
             ixn_listnode = self.transform_class_expression(expr, quantifier_predicate=OWL.someValuesFrom)
             if not ixn_listnode:
@@ -405,6 +558,8 @@ class OwlSchemaGenerator(Generator):
         # classification rules yield OWL GCI subClassOf axioms
         for expr in cls.classification_rules:
             ixn_listnode = condition_to_bnode(expr)
+            if not ixn_listnode:
+                continue
             self.graph.add((ixn_listnode, RDFS.subClassOf, subject_expr))
         # Other axioms, including those from anonymous expressions
         superclass_expr = self.transform_class_expression(cls)
@@ -425,8 +580,37 @@ class OwlSchemaGenerator(Generator):
                 self.graph.remove((superclass_expr, OWL.intersectionOf, ixn_listnodes[0]))
             else:
                 self.graph.add((subject_expr, RDFS.subClassOf, superclass_expr))
+        # Abstract covering axiom: abstract class rdfs:subClassOf (child1 or child2 or …)
+        # This expresses the open-world constraint that every instance of the abstract class
+        # must be an instance of at least one of its direct subclasses.
+        if cls.abstract and not self.skip_abstract_class_as_unionof_subclasses:
+            children = sorted(sv.class_children(cls.name, imports=self.mergeimports, mixins=False, is_a=True))
+            if not children:
+                logger.info(
+                    "Abstract class '%s' has no children. No covering axiom will be generated.",
+                    cls.name,
+                )
+            elif len(children) == 1:
+                # Warn: with one child C, the covering axiom degenerates to
+                # Parent ⊑ C which, combined with C ⊑ Parent (from is_a),
+                # creates Parent ≡ C (equivalence).  This is semantically
+                # correct per OWL 2 but may be surprising for extensible
+                # ontologies where more children are added later.
+                logger.warning(
+                    "Abstract class '%s' has only 1 direct child ('%s'). "
+                    "The covering axiom makes them equivalent (%s ≡ %s). "
+                    "Use --skip-abstract-class-as-unionof-subclasses to suppress.",
+                    cls.name,
+                    children[0],
+                    cls.name,
+                    children[0],
+                )
+            if children:
+                child_uris = [self._class_uri(child) for child in children]
+                union_node = self._union_of(child_uris)
+                self.graph.add((cls_uri, RDFS.subClassOf, union_node))
 
-    def get_own_slots(self, cls: Union[ClassDefinition, AnonymousClassExpression]) -> list[SlotDefinition]:
+    def get_own_slots(self, cls: ClassDefinition | AnonymousClassExpression) -> list[SlotDefinition]:
         """
         Get the slots that are defined on a class, excluding those that are inherited.
 
@@ -435,9 +619,7 @@ class OwlSchemaGenerator(Generator):
         """
         sv = self.schemaview
         if isinstance(cls, ClassDefinition):
-            own_slots = (
-                list(cls.slot_usage.values()) + list(cls.attributes.values()) + list(cls.slot_conditions.values())
-            )
+            own_slots = list(cls.slot_usage.values()) + list(cls.attributes.values())
             for slot_name in cls.slots:
                 # if slot_name not in cls.slot_usage:
                 slot = sv.get_slot(slot_name)
@@ -449,7 +631,7 @@ class OwlSchemaGenerator(Generator):
             own_slots = []
         own_slots.extend(cls.slot_conditions.values())
         # merge slots with the same name
-        slot_map = {}
+        slot_map: dict[str, dict[str, Any]] = {}
         for slot in own_slots:
             if slot.name in slot_map:
                 for k, v in slot.__dict__.items():
@@ -465,9 +647,9 @@ class OwlSchemaGenerator(Generator):
 
     def transform_class_expression(
         self,
-        cls: Union[ClassDefinition, AnonymousClassExpression],
+        cls: ClassDefinition | AnonymousClassExpression | None,
         quantifier_predicate: URIRef = OWL.allValuesFrom,
-    ) -> BNode:
+    ) -> OWL_EXPRESSION | None:
         """
         Transform a LinkML class expression into an OWL expression.
 
@@ -484,29 +666,43 @@ class OwlSchemaGenerator(Generator):
         graph = self.graph
         sv = self.schemaview
         own_slots = self.get_own_slots(cls)
-        owl_exprs = []
+        owl_exprs: list[OWL_EXPRESSION] = []
         if cls.any_of:
-            owl_exprs.append(self._union_of([self.transform_class_expression(x) for x in cls.any_of]))
+            any_of_expr = self._union_of([self.transform_class_expression(x) for x in cls.any_of])
+            if any_of_expr:
+                owl_exprs.append(any_of_expr)
         if cls.exactly_one_of:
-            sub_exprs = [self.transform_class_expression(x) for x in cls.exactly_one_of]
+            sub_exprs: list[OWL_EXPRESSION] = self._present(
+                self.transform_class_expression(x) for x in cls.exactly_one_of
+            )
             if isinstance(cls, ClassDefinition):
                 cls_uri = self._class_uri(cls.name)
                 listnode = BNode()
                 Collection(graph, listnode, sub_exprs)
                 graph.add((cls_uri, OWL.disjointUnionOf, listnode))
             else:
-                sub_sub_exprs = []
+                sub_sub_exprs: list[OWL_EXPRESSION] = []
                 for i, x in enumerate(cls.exactly_one_of):
+                    operand_expr = self.transform_class_expression(x)
+                    if not operand_expr:
+                        continue
                     rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
                     neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
-                    pos_expr = self._intersection_of([self.transform_class_expression(x), neg_expr])
-                    sub_sub_exprs.append(pos_expr)
-                owl_exprs.append(self._union_of(sub_sub_exprs))
+                    pos_expr = self._intersection_of([operand_expr, neg_expr])
+                    if pos_expr:
+                        sub_sub_exprs.append(pos_expr)
+                union_expr = self._union_of(sub_sub_exprs)
+                if union_expr:
+                    owl_exprs.append(union_expr)
                 # owl_exprs.extend(sub_exprs)
         if cls.all_of:
-            owl_exprs.append(self._intersection_of([self.transform_class_expression(x) for x in cls.all_of]))
+            all_of_expr = self._intersection_of([self.transform_class_expression(x) for x in cls.all_of])
+            if all_of_expr:
+                owl_exprs.append(all_of_expr)
         if cls.none_of:
-            owl_exprs.append(self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of]))
+            none_of_expr = self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of])
+            if none_of_expr:
+                owl_exprs.append(none_of_expr)
         for slot in own_slots:
             if slot.name:
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
@@ -532,26 +728,65 @@ class OwlSchemaGenerator(Generator):
                 top_slot = sv.get_slot(slot.name)
             else:
                 top_slot = slot
-            avf = BNode()
-            graph.add((avf, RDF.type, OWL.Restriction))
-            graph.add((avf, quantifier_predicate, x))
-            graph.add((avf, OWL.onProperty, slot_uri))
-            owl_exprs.append(avf)
+            if not (
+                quantifier_predicate == OWL.allValuesFrom
+                and self.skip_vacuous_local_range_axioms
+                and self._is_vacuous_avf_filler(top_slot, x)
+            ):
+                avf = BNode()
+                graph.add((avf, RDF.type, OWL.Restriction))
+                graph.add((avf, quantifier_predicate, x))
+                graph.add((avf, OWL.onProperty, slot_uri))
+                owl_exprs.append(avf)
             if isinstance(cls, AnonymousClassExpression):
                 # cardinality constraints only belong at the top level
                 continue
-            min_card_expr = BNode()
-            owl_exprs.append(min_card_expr)
-            min_card = 1 if slot.required or top_slot.required else 0
-            graph.add((min_card_expr, RDF.type, OWL.Restriction))
-            graph.add((min_card_expr, OWL.minCardinality, Literal(min_card)))
-            graph.add((min_card_expr, OWL.onProperty, slot_uri))
-            if not slot.multivalued and not top_slot.multivalued:
-                max_card_expr = BNode()
-                owl_exprs.append(max_card_expr)
-                graph.add((max_card_expr, RDF.type, OWL.Restriction))
-                graph.add((max_card_expr, OWL.maxCardinality, Literal(1)))
-                graph.add((max_card_expr, OWL.onProperty, slot_uri))
+
+            ### Cardinality axioms
+            # determine min_card
+            if slot.minimum_cardinality is not None:
+                min_card = slot.minimum_cardinality
+            elif top_slot.minimum_cardinality is not None:
+                min_card = top_slot.minimum_cardinality
+            elif (
+                slot.required or top_slot.required or slot.identifier or slot.key or top_slot.identifier or top_slot.key
+            ):
+                min_card = 1
+            else:
+                min_card = 0
+            # determine max_card
+            if slot.maximum_cardinality is not None:
+                max_card = slot.maximum_cardinality
+            elif top_slot.maximum_cardinality is not None:
+                max_card = top_slot.maximum_cardinality
+            elif not slot.multivalued and not top_slot.multivalued:
+                max_card = 1
+            else:
+                max_card = None  # unbounded
+            # warn if explicit cardinality bounds are set without multivalued
+            if (
+                (
+                    slot.minimum_cardinality is not None
+                    or slot.maximum_cardinality is not None
+                    or top_slot.minimum_cardinality is not None
+                    or top_slot.maximum_cardinality is not None
+                )
+                and not slot.multivalued
+                and not top_slot.multivalued
+            ):
+                logger.warning(
+                    f"Slot '{slot.name}' has minimum_cardinality or maximum_cardinality set "
+                    f"but multivalued is not set; assuming multivalued=True."
+                )
+            # generate axioms
+            if self.consolidate_cardinality_axioms and min_card is not None and min_card == max_card:
+                owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.cardinality, min_card))
+            else:
+                if not (self.skip_vacuous_min_zero_cardinality_axioms and min_card == 0):
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.minCardinality, min_card))
+                if max_card is not None:
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
+
             if slot.has_member:
                 has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
                 if has_member_expr:
@@ -560,9 +795,9 @@ class OwlSchemaGenerator(Generator):
 
     def slot_node_owltypes(
         self,
-        slot: Union[SlotDefinition, AnonymousSlotExpression],
-        owning_class: Optional[Union[ClassDefinition, AnonymousClassExpression]] = None,
-    ) -> set[URIRef]:
+        slot: SlotDefinition | AnonymousSlotExpression,
+        owning_class: ClassDefinition | AnonymousClassExpression | None = None,
+    ) -> set[OWL_TYPE]:
         """
         Determine the OWL types of a named slot or slot expression
 
@@ -573,7 +808,7 @@ class OwlSchemaGenerator(Generator):
         :return:
         """
         sv = self.schemaview
-        node_types = set()
+        node_types: set[OWL_TYPE] = set()
         if isinstance(slot, SlotDefinition):
             slot_range = slot.range
             if isinstance(owning_class, ClassDefinition):
@@ -585,18 +820,20 @@ class OwlSchemaGenerator(Generator):
             if slot.range in sv.all_types():
                 node_types.add(RDFS.Datatype)
         for k in ["any_of", "all_of", "exactly_one_of", "none_of"]:
-            subslot = getattr(slot, k, None)
-            if subslot:
+            subslots = getattr(slot, k, None)
+            if not subslots:
+                continue
+            for subslot in subslots:
                 node_types.update(self.slot_node_owltypes(subslot, owning_class=owning_class))
         return node_types
 
     def transform_class_slot_expression(
         self,
-        cls: Optional[Union[ClassDefinition, AnonymousClassExpression]],
-        slot: Union[SlotDefinition, AnonymousSlotExpression],
-        main_slot: SlotDefinition = None,
-        owl_types: set[OWL_TYPE] = None,
-    ) -> Optional[Union[BNode, URIRef]]:
+        cls: ClassDefinition | AnonymousClassExpression | None,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        main_slot: SlotDefinition | None = None,
+        owl_types: set[OWL_TYPE] | None = None,
+    ) -> OWL_EXPRESSION | None:
         """
         Take a ClassExpression and SlotExpression combination and transform to a node.
 
@@ -612,66 +849,79 @@ class OwlSchemaGenerator(Generator):
                 raise ValueError(f"Must pass main slot for {slot}")
             main_slot = slot
 
-        owl_exprs = []
+        owl_exprs: list[OWL_EXPRESSION] = []
+
+        if slot.range_expression:
+            if isinstance(slot.range_expression, AnonymousClassExpression):
+                range_expr = self.transform_class_expression(slot.range_expression)
+                if range_expr:
+                    owl_exprs.append(range_expr)
 
         if slot.all_members:
-            owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
+            all_members_expr = self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types)
+            if all_members_expr:
+                owl_exprs.append(all_members_expr)
 
-        if slot.any_of:
-            owl_exprs.append(
-                self._union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.any_of]
-                )
+        def _get_slot_nodes(
+            slot_definitions: Sequence[SlotDefinition | AnonymousSlotExpression] | None,
+        ) -> list[OWL_EXPRESSION] | None:
+            if not slot_definitions:
+                return None
+            rdflib_nodes: list[OWL_EXPRESSION] = self._present(
+                self.transform_class_slot_expression(cls, slot_expression, main_slot, owl_types)
+                for slot_expression in slot_definitions
             )
-        if slot.all_of:
-            owl_exprs.append(
-                self._intersection_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.all_of]
-                )
-            )
-        if slot.none_of:
-            owl_exprs.append(
-                self._complement_of_union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.none_of]
-                )
-            )
+            return rdflib_nodes or None
+
+        if any_of_rdflib_nodes := _get_slot_nodes(slot.any_of):
+            owl_exprs.append(self._union_of(any_of_rdflib_nodes))
+        if all_of_rdflib_nodes := _get_slot_nodes(slot.all_of):
+            owl_exprs.append(self._intersection_of(all_of_rdflib_nodes))
+        if none_of_rdflib_nodes := _get_slot_nodes(slot.none_of):
+            owl_exprs.append(self._complement_of_union_of(none_of_rdflib_nodes))
         if slot.exactly_one_of:
-            disj_exprs = []
+            disj_exprs: list[OWL_EXPRESSION] = []
             for i, operand in enumerate(slot.exactly_one_of):
+                operand_expr = self.transform_class_slot_expression(cls, operand, main_slot, owl_types)
+                if not operand_expr:
+                    continue
                 rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
                 neg_expr = self._complement_of_union_of(
                     [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
                     owl_types=owl_types,
                 )
                 pos_expr = self._intersection_of(
-                    [self.transform_class_slot_expression(cls, operand, main_slot, owl_types), neg_expr],
+                    [operand_expr, neg_expr],
                     owl_types=owl_types,
                 )
-                disj_exprs.append(pos_expr)
-            owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
-        range = slot.range
+                if pos_expr:
+                    disj_exprs.append(pos_expr)
+            exactly_one_expr = self._union_of(disj_exprs, owl_types=owl_types)
+            if exactly_one_expr:
+                owl_exprs.append(exactly_one_expr)
+        slot_range = slot.range
         # if not range and not owl_exprs:
         #    range = sv.schema.default_range
-        this_owl_types = set()
-        if range:
-            if range in sv.all_types(imports=True):
-                self.slot_is_literal_map[main_slot.name].add(True)
-                this_owl_types.add(RDFS.Literal)
-                typ = sv.get_type(range)
-                if self.type_objects:
-                    # TODO
-                    owl_exprs.append(self._type_uri(typ.name))
+        this_owl_types: set[OWL_TYPE] = set()
+        if slot_range:
+            if slot_range in sv.all_types(imports=True):
+                if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, slot_range):
+                    self.slot_is_literal_map[main_slot.name].add(False)
+                    this_owl_types.add(OWL.Thing)
                 else:
+                    self.slot_is_literal_map[main_slot.name].add(True)
+                    this_owl_types.add(RDFS.Literal)
+                    typ = sv.get_type(slot_range)
                     owl_exprs.append(self._type_uri(typ.name))
-            elif range in sv.all_enums(imports=True):
+            elif slot_range in sv.all_enums(imports=True):
                 # TODO: enums fill this in
-                owl_exprs.append(self._enum_uri(EnumDefinitionName(range)))
-            elif range in sv.all_classes(imports=True):
+                owl_exprs.append(self._enum_uri(EnumDefinitionName(slot_range)))
+            elif slot_range in sv.all_classes(imports=True):
                 this_owl_types.add(OWL.Thing)
                 self.slot_is_literal_map[main_slot.name].add(False)
-                owl_exprs.append(self._class_uri(ClassDefinitionName(range)))
+                owl_exprs.append(self._class_uri(ClassDefinitionName(slot_range)))
             else:
-                raise ValueError(f"Unknown range {range}")
+                raise ValueError(f"Unknown range {slot_range}")
         is_literal = None
         if owl_types:
             is_literal = RDFS.Datatype in owl_types
@@ -679,21 +929,22 @@ class OwlSchemaGenerator(Generator):
         this_owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)
         this_expr = self._intersection_of(owl_exprs, owl_types=this_owl_types)
-        self.node_owltypes[this_expr].update(self._get_owltypes(this_owl_types, owl_exprs))
+        if this_expr:
+            self.node_owltypes[this_expr].update(self._get_owltypes(this_owl_types, owl_exprs))
         return this_expr
 
     def add_constraints(
         self,
-        element: Union[SlotDefinition, AnonymousSlotExpression, TypeDefinition, AnonymousTypeExpression],
-        is_literal: Optional[bool] = None,
-    ) -> tuple[list[BNode], set[OWL_TYPE]]:
-        owl_types = set()
-        owl_exprs = []
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+        is_literal: bool | None = None,
+    ) -> tuple[list[OWL_EXPRESSION], set[OWL_TYPE]]:
+        owl_types: set[OWL_TYPE] = set()
+        owl_exprs: list[OWL_EXPRESSION] = []
         graph = self.graph
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: element.pattern,  # TODO: map between ECMAScript and XSD regular expressions
+            XSD.pattern: self._structured_pattern_as_xsd(element),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -701,7 +952,16 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string is not None:
             equals_string = element.equals_string
             if is_literal is None:
-                logger.warning(f"ignoring equals_string={equals_string} as unable to tell if literal")
+                # Enum-ranged slots sit between literals and URIs in OWL.
+                # Build a proper "owl:oneOf" datatype so that rules like
+                # `none_of: [{equals_string: "X"}]` produce a valid
+                # owl:datatypeComplementOf instead of being silently dropped.
+                one_of_expr = self._boolean_expression(
+                    [Literal(equals_string)], OWL.oneOf, node=BNode(), owl_types={RDFS.Literal}
+                )
+                if one_of_expr:
+                    owl_exprs.append(one_of_expr)
+                    owl_types.add(RDFS.Literal)
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
@@ -710,9 +970,10 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
             literals = [Literal(s) for s in equals_string_in]
-            one_of_expr = self._boolean_expression(literals, OWL.oneOf, owl_types={RDFS.Literal})
-            owl_exprs.append(one_of_expr)
-            owl_types.add(RDFS.Literal)
+            one_of_expr = self._boolean_expression(literals, OWL.oneOf, node=BNode(), owl_types={RDFS.Literal})
+            if one_of_expr:
+                owl_exprs.append(one_of_expr)
+                owl_types.add(RDFS.Literal)
         for constraint_prop, constraint_val in constraints.items():
             if is_literal is not None and not is_literal:
                 # In LinkML, it is permissible to have a literal constraints on slots that refer to
@@ -740,7 +1001,30 @@ class OwlSchemaGenerator(Generator):
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
 
-    def add_slot(self, slot: SlotDefinition, attribute=False) -> None:
+    def _structured_pattern_as_xsd(
+        self,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+    ) -> str | None:
+        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
+        pattern = element.pattern
+        structured_pattern = element.structured_pattern
+        # OWL also processes anonymous expressions, which cannot be induced.
+        # Named definitions that reach this point without a pattern are raw
+        # schema elements, so resolve them locally without mutating the schema.
+        if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
+            pattern = self.schemaview.resolve_pattern(element)
+        if pattern is None or structured_pattern is None:
+            return pattern
+        inner = pattern
+        if inner.startswith("^(?:") and inner.endswith(")$"):
+            inner = inner[4:-2]
+        if inner.startswith("^") and inner.endswith("$"):
+            inner = inner[1:-1]
+        if structured_pattern.partial_match:
+            return f".*({inner}).*"
+        return inner
+
+    def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
         # the meaning of the slot is context-specific and should not be used for
         # global properties
@@ -847,9 +1131,9 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((type_uri, OWL.equivalentClass, ixn))
 
     def _get_metatype(
-        self, element: Union[Definition, PermissibleValue], default_value: Optional[Union[str, URIRef]] = None
-    ) -> Optional[URIRef]:
-        impls = []
+        self, element: Definition | PermissibleValue, default_value: str | URIRef | None = None
+    ) -> URIRef | None:
+        impls: list[str] = []
         if isinstance(element, Definition):
             impls.extend(element.implements)
         if isinstance(element, PermissibleValue):
@@ -890,8 +1174,12 @@ class OwlSchemaGenerator(Generator):
             else:
                 has_parent = True
             self.graph.add((enum_uri, RDFS.subClassOf, parent))
+        if self.enum_inherits_as_subclass_of:
+            for parent_name in e.inherits:
+                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
+            self._declare_grouping_class(URIRef(EnumDefinition.class_class_uri), EnumDefinition.class_name)
         if self.metaclasses:
             g.add(
                 (
@@ -900,8 +1188,8 @@ class OwlSchemaGenerator(Generator):
                     URIRef(EnumDefinition.class_class_uri),
                 )
             )
-        pv_uris = []
-        owl_types = []
+        pv_uris: list[OWL_VALUE] = []
+        owl_types: list[URIRef | None] = []
         enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
 
         for pv in e.permissible_values.values():
@@ -924,7 +1212,7 @@ class OwlSchemaGenerator(Generator):
             if not isinstance(pv_node, Literal):
                 self.add_metadata(pv, pv_node)
                 g.add((pv_node, RDF.type, pv_owl_type))
-                g.add((pv_node, RDFS.label, Literal(pv.text)))
+                g.add((pv_node, RDFS.label, self._literal(pv.text, pv)))
                 # TODO: make this configurable
                 # self._add_element_properties(pv_uri, pv)
                 if self.metaclasses:
@@ -942,6 +1230,7 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
+                    self._declare_grouping_class(URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name)
         if all([pv is not None for pv in pv_uris]):
             # every single PV in the enum is not-null
             all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
@@ -963,37 +1252,102 @@ class OwlSchemaGenerator(Generator):
                     # self._object_one_of(pv_uris, node=enum_uri)
                     sub_pred = RDF.type
                 if combo_pred:
-                    self._boolean_expression(pv_uris, combo_pred, enum_uri, owl_types=set(owl_types))
+                    self._boolean_expression(
+                        pv_uris,
+                        combo_pred,
+                        enum_uri,
+                        owl_types={owl_type for owl_type in owl_types if owl_type is not None},
+                    )
             for pv_node in pv_uris:
                 # this would normally be entailed, but we assert here so it is visible
                 # without reasoning
                 if not isinstance(pv_node, Literal):
                     g.add((pv_node, sub_pred, enum_uri))
 
-    def _add_rule(self, subject: Union[URIRef, BNode], rule: ClassRule, cls: ClassDefinition):
+    def _is_vacuous_avf_filler(self, top_slot: SlotDefinition, x: URIRef | BNode) -> bool:
+        """Return True when an ``owl:allValuesFrom x`` restriction is vacuous.
+
+        Two cases are considered vacuous:
+
+        1. ``x`` is ``owl:Thing`` — trivially satisfied by every individual.
+        2. ``x`` is a plain URI equal to the globally declared ``rdfs:range`` of the
+           property.  Top-level (non-attribute) slots have their range emitted as a
+           global ``rdfs:range`` axiom by ``add_slot``; a local ``allValuesFrom``
+           with the same filler is then fully entailed and adds nothing new.
+           Attribute slots do *not* get a global ``rdfs:range``, so for those the
+           ``allValuesFrom`` is the only range declaration and must be kept.
+        """
+        if x == OWL.Thing:
+            return True
+        if not isinstance(x, URIRef):
+            # BNode means additional constraints beyond a plain range — never vacuous.
+            return False
+        sv = self.schemaview
+        # Attributes have no globally declared rdfs:range, so their allValuesFrom
+        # carries information and must not be dropped.
+        # Use attributes=False so that class-level attribute slots are excluded;
+        # sv.all_slots(attributes=True) would include them and give a false positive.
+        if top_slot.name not in sv.all_slots(imports=True, attributes=False):
+            return False
+        ts = sv.get_slot(top_slot.name)
+        range_name = (ts.range if ts else None) or sv.schema.default_range
+        if not range_name:
+            return False
+        if range_name in sv.all_types(imports=True):
+            return x == self._type_uri(range_name)
+        elif range_name in sv.all_enums(imports=True):
+            return x == self._enum_uri(EnumDefinitionName(range_name))
+        elif range_name in sv.all_classes(imports=True):
+            return x == self._class_uri(range_name)
+        return False
+
+    def _add_disjoint_children(self, cls: ClassDefinition) -> None:
+        """Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*
+        when ``children_are_mutually_disjoint`` is set on the class.
+
+        The axiom is suppressed when fewer than two qualifying children exist.
+        """
+        if not cls.children_are_mutually_disjoint:
+            return
+        sv = self.schemaview
+        children = sorted(
+            [c for c in sv.all_classes(imports=self.mergeimports).values() if c.is_a == cls.name],
+            key=lambda c: c.name,
+        )
+        if len(children) < 2:
+            return
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.AllDisjointClasses))
+        listnode = BNode()
+        Collection(self.graph, listnode, [self._class_uri(c.name) for c in children])
+        self.graph.add((node, OWL.members, listnode))
+
+    def _add_rule(self, subject: URIRef | BNode, rule: ClassRule, cls: ClassDefinition) -> None:
         if not self.use_swrl:
             return
         logger.warning("SWRL support is experimental and incomplete")
-        head = []
-        body = []
+        head: list[BNode] = []
+        body: list[BNode] = []
         for pre in rule.preconditions:
             head.extend(self._add_rule_condition(subject, pre, cls))
         for post in rule.postconditions:
             body.extend(self._add_rule_condition(subject, post, cls))
-        self._swrl_rule(subject, body, head)
+        self._swrl_rule(body, head)
 
     def _add_rule_condition(
         self,
-        subject: Union[URIRef, BNode],
+        subject: URIRef | BNode,
         condition: AnonymousClassExpression,
         cls: ClassDefinition,
     ) -> list[BNode]:
+        del subject, cls
         for slot_name, expr in condition.slot_conditions.items():
             var = self._swrl_var(slot_name)
             if expr.maximum_value is not None:
                 self.graph.add((var, SWRLB.lessThanOrEqual, Literal(expr.maximum_value)))
+        return []
 
-    def has_profile(self, profile: MetadataProfile, default=False) -> bool:
+    def has_profile(self, profile: MetadataProfile, default: bool = False) -> bool:
         """
         Determine if a metadata profile is active.
 
@@ -1005,7 +1359,7 @@ class OwlSchemaGenerator(Generator):
             return True
         return profile in self.metadata_profiles or profile == self.metadata_profile
 
-    def _get_owltypes(self, current: set[OWL_TYPE], exprs: list[Union[BNode, URIRef]]) -> set[OWL_TYPE]:
+    def _get_owltypes(self, current: set[OWL_TYPE], exprs: Sequence[OWL_VALUE]) -> set[OWL_TYPE]:
         """
         Gets the OWL types of specified expressions plus current owl types.
 
@@ -1015,6 +1369,8 @@ class OwlSchemaGenerator(Generator):
         """
         owltypes = set()
         for x in exprs:
+            if isinstance(x, Literal):
+                continue
             x_owltypes = self.node_owltypes.get(x, None)
             if x_owltypes:
                 owltypes.update(x_owltypes)
@@ -1036,36 +1392,45 @@ class OwlSchemaGenerator(Generator):
             if isinstance(obj, BNode):
                 triples.extend(graph.triples((obj, None, None)))
 
-    def _some_values_from(self, property: URIRef, filler: Union[URIRef, BNode]) -> BNode:
-        if not property:
+    def _some_values_from(self, property_uri: URIRef, filler: OWL_EXPRESSION) -> BNode:
+        if not property_uri:
             raise ValueError(f"Property is required, filler: {filler}")
         if not filler:
-            raise ValueError(f"Filler is required, property: {property}")
+            raise ValueError(f"Filler is required, property: {property_uri}")
         node = BNode()
         self.graph.add((node, RDF.type, OWL.Restriction))
-        self.graph.add((node, OWL.onProperty, property))
+        self.graph.add((node, OWL.onProperty, property_uri))
         self.graph.add((node, OWL.someValuesFrom, filler))
         return node
 
-    def _has_value(self, property: URIRef, filler: Union[URIRef, BNode, Literal]) -> BNode:
+    def _has_value(self, property_uri: URIRef, filler: OWL_VALUE) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, OWL.Restriction))
-        self.graph.add((node, OWL.onProperty, property))
+        self.graph.add((node, OWL.onProperty, property_uri))
         self.graph.add((node, OWL.hasValue, filler))
+        return node
+
+    def _add_cardinality_restriction(
+        self, property_uri: URIRef, cardinality_property: URIRef, cardinality: int
+    ) -> BNode:
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.Restriction))
+        self.graph.add((node, cardinality_property, Literal(cardinality)))
+        self.graph.add((node, OWL.onProperty, property_uri))
         return node
 
     @staticmethod
     def _swrl_var(var: str) -> URIRef:
         return URIRef(var)
 
-    def _swrl_class_atom(self, cls_ref: Union[BNode, URIRef], var: str) -> BNode:
+    def _swrl_class_atom(self, cls_ref: BNode | URIRef, var: str) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, SWRL.ClassAtom))
         self.graph.add((node, SWRL.classPredicate, cls_ref))
         self.graph.add((node, SWRL.argument1, self._swrl_var(var)))
         return node
 
-    def _swrl_abox_atom(self, pred_ref: Union[BNode, URIRef], arg1: str, arg2: str) -> BNode:
+    def _swrl_abox_atom(self, pred_ref: OWL_EXPRESSION, arg1: str, arg2: str) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, SWRL.IndividualPropertyAtom))
         self.graph.add((node, SWRL.classPredicate, pred_ref))
@@ -1073,11 +1438,15 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, SWRL.argument2, self._swrl_var(arg2)))
         return node
 
-    def _swrl_rule(self, body, head) -> BNode:
+    def _swrl_rule(self, body: Sequence[BNode], head: Sequence[BNode]) -> BNode:
         node = BNode()
+        body_list = BNode()
+        head_list = BNode()
+        Collection(self.graph, body_list, body)
+        Collection(self.graph, head_list, head)
         self.graph.add((node, RDF.type, SWRL.Imp))
-        self.graph.add((node, SWRL.body, body))
-        self.graph.add((node, SWRL.head, head))
+        self.graph.add((node, SWRL.body, body_list))
+        self.graph.add((node, SWRL.head, head_list))
         return node
 
     @staticmethod
@@ -1085,44 +1454,53 @@ class OwlSchemaGenerator(Generator):
         return URIRef("https://w3id.org/linkml/" + name)
 
     def _complement_of_union_of(
-        self, exprs: list[Union[BNode, URIRef]], owl_types: set[OWL_TYPE] = None, **kwargs
-    ) -> Optional[Union[BNode, URIRef]]:
-        if not exprs:
-            raise ValueError("Must pass at least one")
+        self,
+        exprs: Sequence[OWL_EXPRESSION | None],
+        owl_types: set[OWL_TYPE] | None = None,
+        **kwargs: Any,
+    ) -> OWL_EXPRESSION | None:
+        expr_list: list[OWL_EXPRESSION] = self._present(exprs)
+        if not expr_list:
+            logger.warning("All operands in complement expression resolved to None; skipping")
+            return None
         neg_expr = BNode()
         if not owl_types:
-            owl_types = self._get_owltypes(set(), exprs)
+            owl_types = self._get_owltypes(set(), expr_list)
         complement_predicate = OWL.complementOf
         if len(owl_types) == 1:
             if RDFS.Literal in owl_types:
                 self.graph.add((neg_expr, RDF.type, RDFS.Datatype))
                 complement_predicate = OWL.datatypeComplementOf
-        self.graph.add((neg_expr, complement_predicate, self._union_of(exprs)), **kwargs)
+        union_expr = self._union_of(expr_list)
+        if union_expr is None:
+            return None
+        self.graph.add((neg_expr, complement_predicate, union_expr), **kwargs)
 
         return neg_expr
 
-    def _intersection_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _intersection_of(self, exprs: Sequence[OWL_VALUE | None], **kwargs: Any) -> OWL_VALUE | None:
         return self._boolean_expression(exprs, OWL.intersectionOf, **kwargs)
 
-    def _union_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _union_of(self, exprs: Sequence[OWL_VALUE | None], **kwargs: Any) -> OWL_VALUE | None:
         return self._boolean_expression(exprs, OWL.unionOf, **kwargs)
 
-    def _object_one_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _object_one_of(self, exprs: Sequence[OWL_VALUE | None], **kwargs: Any) -> OWL_VALUE | None:
         return self._boolean_expression(exprs, OWL.oneOf, **kwargs)
 
-    def _exactly_one_of(self, exprs: list[Union[BNode, URIRef]]) -> Optional[Union[BNode, URIRef]]:
-        if not exprs:
+    def _exactly_one_of(self, exprs: Sequence[OWL_EXPRESSION | None]) -> OWL_EXPRESSION | None:
+        expr_list: list[OWL_EXPRESSION] = self._present(exprs)
+        if not expr_list:
             raise ValueError("Must pass at least one")
-        if len(exprs) == 1:
-            return exprs[0]
-        sub_exprs = []
-        for i, x in enumerate(exprs):
-            rest = exprs[0:i] + exprs[i + 1 :]
+        if len(expr_list) == 1:
+            return expr_list[0]
+        sub_exprs: list[OWL_VALUE] = []
+        for i, x in enumerate(expr_list):
+            rest = expr_list[0:i] + expr_list[i + 1 :]
             neg_expr = self._complement_of_union_of(rest)
             sub_exprs.append(self._intersection_of([x, neg_expr]))
         return self._union_of(sub_exprs)
 
-    def _datatype_restriction(self, datatype: URIRef, facets: list[Union[BNode, URIRef]]) -> BNode:
+    def _datatype_restriction(self, datatype: URIRef, facets: Sequence[OWL_EXPRESSION]) -> BNode:
         node = BNode()
         graph = self.graph
         graph.add((node, RDF.type, RDFS.Datatype))
@@ -1132,7 +1510,7 @@ class OwlSchemaGenerator(Generator):
         graph.add((node, OWL.withRestrictions, listnode))
         return node
 
-    def _facet(self, typ: URIRef, val: Union[Literal, Any]):
+    def _facet(self, typ: URIRef, val: Literal | Any) -> BNode:
         if not isinstance(val, Literal):
             val = Literal(val)
         node = BNode()
@@ -1141,38 +1519,39 @@ class OwlSchemaGenerator(Generator):
 
     def _boolean_expression(
         self,
-        exprs: list[Union[BNode, URIRef, Literal]],
+        exprs: Sequence[OWL_VALUE | None],
         predicate: URIRef,
-        node: Optional[URIRef] = None,
-        owl_types: set[OWL_TYPE] = None,
-    ) -> Optional[Union[BNode, URIRef]]:
+        node: URIRef | None = None,
+        owl_types: set[OWL_TYPE] | None = None,
+    ) -> OWL_VALUE | None:
         graph = self.graph
-        if [x for x in exprs if x is None]:
+        expr_list: list[OWL_VALUE] = self._present(exprs)
+        if len(expr_list) != len(exprs):
             logger.warning(f"Null expr in: {exprs} for {predicate} {node}")
-            exprs = [x for x in exprs if x is not None]
-        if len(exprs) == 0:
+        if len(expr_list) == 0:
             return None
-        elif len(exprs) == 1:
-            return exprs[0]
-        else:
-            if node is None:
-                node = BNode()
-            listnode = BNode()
-            Collection(graph, listnode, exprs)
-            graph.add((node, predicate, listnode))
-            if owl_types is None:
-                owl_types = set()
-            owl_types = owl_types.union(self._get_owltypes(set(), exprs))
-            if len(owl_types) == 1:
-                if RDFS.Literal in owl_types:
-                    graph.add((node, RDF.type, RDFS.Datatype))
-            return node
+        if len(expr_list) == 1 and predicate != OWL.oneOf:
+            # owl:oneOf always requires a list structure (even for one member), so
+            # we do not stop it here.
+            return expr_list[0]
+        if node is None:
+            node = BNode()
+        listnode = BNode()
+        Collection(graph, listnode, expr_list)
+        graph.add((node, predicate, listnode))
+        if owl_types is None:
+            owl_types = set()
+        owl_types = owl_types.union(self._get_owltypes(set(), expr_list))
+        if len(owl_types) == 1 and RDFS.Literal in owl_types:
+            graph.add((node, RDF.type, RDFS.Datatype))
+        return node
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
         if self.type_objects:
             return False
-        else:
-            return slot.range in self.schema.types
+        if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(self.schemaview, slot.range):
+            return False
+        return slot.range in self.schema.types
 
     def _range_uri(self, slot: SlotDefinition) -> URIRef:
         if slot.range in self.schema.types:
@@ -1180,7 +1559,7 @@ class OwlSchemaGenerator(Generator):
             if self.type_objects:
                 return self._type_uri(typ.name)
             else:
-                return self.namespaces.uri_for(typ.uri)
+                return URIRef(self.schemaview.get_uri(typ, expand=True))
         elif slot.range in self.schema.enums:
             # TODO: enums fill this in
             return self._enum_uri(EnumDefinitionName(slot.range))
@@ -1188,14 +1567,51 @@ class OwlSchemaGenerator(Generator):
             return self._class_uri(ClassDefinitionName(slot.range))
 
     @staticmethod
-    def _mixin_grouping_class_uri():
+    def _mixin_grouping_class_uri() -> URIRef:
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
-    def _class_uri(self, cn: Union[str, ClassDefinitionName]) -> URIRef:
+    def _declare_grouping_class(
+        self,
+        uri: URIRef,
+        metamodel_class_name: str | None = None,
+        label: str | None = None,
+        description: str | None = None,
+    ) -> None:
+        """Declare a metamodel grouping class referenced by ``add_root_classes`` as an ``owl:Class``.
+
+        When ``add_root_classes`` is set, schema elements are made ``rdfs:subClassOf`` metamodel
+        classes such as ``linkml:EnumDefinition``. Those parent classes were referenced but never
+        declared, so RDF-only consumers (for example OLS) treat the parent as a dangling reference
+        and drop the grouping from the class hierarchy. This emits a minimal ``owl:Class``
+        declaration with an ``rdfs:label`` and ``skos:definition`` sourced from the metamodel,
+        making the grouping renderable without a reasoning step. Idempotent.
+
+        :param uri: URI of the grouping class to declare
+        :param metamodel_class_name: name of the metamodel class to source label/definition from
+        :param label: explicit label, used when the URI has no corresponding metamodel class
+        :param description: explicit definition, used as a fallback
+        """
+        if (uri, RDF.type, OWL.Class) in self.graph:
+            return
+        self.graph.add((uri, RDF.type, OWL.Class))
+        if metamodel_class_name is not None:
+            meta_class = self.metamodel_schemaview.get_class(metamodel_class_name)
+            if meta_class is not None:
+                # Prefer a metamodel title; otherwise use the UpperCamelCase form of the
+                # metamodel name (matching the class IRI local name and the LinkML model
+                # docs, e.g. "EnumDefinition"), not the raw snake_case name.
+                label = meta_class.title or camelcase(meta_class.name) or label
+                description = meta_class.description or description
+        if label is not None:
+            self.graph.add((uri, RDFS.label, Literal(label)))
+        if description is not None:
+            self.graph.add((uri, SKOS.definition, Literal(description)))
+
+    def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)
         return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
 
-    def _enum_uri(self, en: Union[str, EnumDefinitionName]) -> URIRef:
+    def _enum_uri(self, en: str | EnumDefinitionName) -> URIRef:
         sv = self.schemaview
         e = sv.get_enum(en, strict=True)
         uri = e.enum_uri
@@ -1204,7 +1620,7 @@ class OwlSchemaGenerator(Generator):
         # TODO: allow control over URIs
         return URIRef(self.schemaview.expand_curie(uri))
 
-    def _prop_uri(self, pn: Union[SlotDefinition, SlotDefinitionName]) -> URIRef:
+    def _prop_uri(self, pn: SlotDefinition | SlotDefinitionName) -> URIRef:
         if isinstance(pn, SlotDefinition):
             p = pn
         else:
@@ -1218,25 +1634,17 @@ class OwlSchemaGenerator(Generator):
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
 
-    def _schema_uri(self, scn: Union[str, SchemaDefinitionName]) -> URIRef:
+    def _schema_uri(self, scn: str | SchemaDefinitionName) -> URIRef:
         if ":" in scn:
             return URIRef(self.schemaview.expand_curie(scn))
         else:
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{scn}"))
 
-    def _type_uri(self, tn: TypeDefinitionName, native: bool = None) -> URIRef:
+    def _type_uri(self, tn: TypeDefinitionName, native: bool | None = None) -> URIRef:
         if native is None:
             # never use native unless type shadowing with objects is enabled
             native = self.type_objects
-        if native:
-            # UGLY HACK: Currently schemaview does not camelcase types
-            e = self.schemaview.get_element(tn, imports=True)
-            if e.from_schema is not None:
-                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
-                pfx = schema.default_prefix
-                if pfx == "linkml":
-                    return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
         expanded = self.schemaview.get_uri(t, expand=True, native=native)
         if expanded.startswith("xsd:"):
@@ -1245,7 +1653,7 @@ class OwlSchemaGenerator(Generator):
         return URIRef(expanded)
 
     def _permissible_value_uri(
-        self, pv: Union[str, PermissibleValue], enum_uri: str, enum_def: EnumDefinition = None
+        self, pv: str | PermissibleValue, enum_uri: str, enum_def: EnumDefinition | None = None
     ) -> URIRef:
         if isinstance(pv, str):
             pv_name = pv
@@ -1270,15 +1678,15 @@ class OwlSchemaGenerator(Generator):
                 if t in slot.implements:
                     return OWL[t.replace("owl:", "")]
         if slot.range is None:
-            range = self.schemaview.schema.default_range
+            slot_range = self.schemaview.schema.default_range
         else:
-            range = slot.range
+            slot_range = slot.range
         if self.type_objects:
             return OWL.ObjectProperty
         is_literal_vals = self.slot_is_literal_map[slot.name]
         if len(is_literal_vals) > 1:
             logger.warning(f"Ambiguous type for: {slot.name}")
-        if range is None:
+        if slot_range is None:
             if not is_literal_vals:
                 logger.warning(f"Guessing type for {slot.name}")
                 return OWL.ObjectProperty
@@ -1286,11 +1694,13 @@ class OwlSchemaGenerator(Generator):
                 return OWL.DatatypeProperty
             else:
                 return OWL.ObjectProperty
-        elif range in sv.all_classes():
+        elif slot_range in sv.all_classes():
             return OWL.ObjectProperty
-        elif range in sv.all_enums():
+        elif slot_range in sv.all_enums():
             return OWL.ObjectProperty
-        elif range in sv.all_types():
+        elif slot_range in sv.all_types():
+            if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, slot_range):
+                return OWL.ObjectProperty
             return OWL.DatatypeProperty
         else:
             raise Exception(f"Unknown range: {slot.range}")
@@ -1367,8 +1777,87 @@ class OwlSchemaGenerator(Generator):
     show_default=True,
     help="IRI separator for enums.",
 )
+@click.option(
+    "--skip-vacuous-local-range-axioms/--no-skip-vacuous-local-range-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, suppress owl:allValuesFrom restrictions whose filler is owl:Thing "
+        "or the same URI as the property's globally declared rdfs:range, as these are "
+        "entailed and carry no additional information. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--skip-vacuous-min-zero-cardinality-axioms/--no-skip-vacuous-min-zero-cardinality-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, suppress owl:minCardinality 0 restrictions. "
+        "Such axioms are vacuously satisfied by every individual and never carry information. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--consolidate-cardinality-axioms/--no-consolidate-cardinality-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, emit a single owl:cardinality restriction when minimum_cardinality equals "
+        "maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
+    default=False,
+    show_default=True,
+    help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
+)
+@click.option(
+    "--skip-abstract-class-as-unionof-subclasses/--no-skip-abstract-class-as-unionof-subclasses",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. "
+        "By default such axioms are emitted for every abstract class that has direct is_a children. "
+        "Note: an info message is logged for abstract classes with zero children (no axiom); "
+        "a warning is emitted for one child (equivalence)."
+    ),
+)
+@click.option(
+    "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
+    default=False,
+    show_default=True,
+    help=(
+        "Treat range: uri / range: uriorcurie slots as owl:ObjectProperty (IRI node) "
+        "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
+        "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
+        "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
+    ),
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
+        "skos:definition and other text annotations are emitted with the "
+        "specified language tag.  Element-level in_language overrides this."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
+    ),
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, metadata_profile: str, **kwargs):
+def cli(yamlfile: str, metadata_profile: str, **kwargs: Any) -> None:
     """Generate an OWL representation of a LinkML model
 
     Generate OWL using default parameters:

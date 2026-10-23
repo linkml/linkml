@@ -3,7 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Optional, Union, cast
+from typing import cast
 from urllib.parse import urlparse
 
 from rdflib import URIRef
@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 def merge_schemas(
     target: SchemaDefinition,
     mergee: SchemaDefinition,
-    imported_from: Optional[str] = None,
-    namespaces: Optional[Namespaces] = None,
+    imported_from: str | None = None,
+    namespaces: Namespaces | None = None,
     merge_imports: bool = True,
 ) -> None:
     """Merge mergee into target"""
@@ -128,6 +128,28 @@ def set_from_schema(schema: SchemaDefinition) -> None:
             t[k].definition_uri = f"{ns}{fragment}"
 
 
+# Fields that carry per-schema provenance rather than structural meaning. Two
+# element declarations that differ only in these fields describe the same
+# element re-exported from sibling schemas and should be merged silently.
+_PROVENANCE_FIELDS: frozenset[str] = frozenset(
+    {
+        "from_schema",
+        "imported_from",
+        "definition_uri",
+        "source_file",
+        "source_file_date",
+        "source_file_size",
+    }
+)
+
+
+def _structurally_equal(a: Element, b: Element) -> bool:
+    """Return True if two metamodel elements are equal ignoring provenance fields."""
+    a_dict = {k: v for k, v in dataclasses.asdict(a).items() if k not in _PROVENANCE_FIELDS}
+    b_dict = {k: v for k, v in dataclasses.asdict(b).items() if k not in _PROVENANCE_FIELDS}
+    return a_dict == b_dict
+
+
 def merge_dicts(
     target: dict[str, Element],
     source: dict[str, Element],
@@ -137,6 +159,16 @@ def merge_dicts(
 ) -> None:
     for k, v in source.items():
         if k in target and source[k].from_schema != target[k].from_schema:
+            if _structurally_equal(source[k], target[k]):
+                # Same element redeclared in a sibling import; keep the existing
+                # target entry (with its original provenance) and skip overwriting.
+                logger.debug(
+                    "Element '%s' is redeclared identically in %s and %s; treating as a single element.",
+                    k,
+                    target[k].from_schema,
+                    source[k].from_schema,
+                )
+                continue
             raise ValueError(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
         target[k] = deepcopy(v)
         # currently all imports closures are merged into main schema, EXCEPT
@@ -152,9 +184,9 @@ def merge_dicts(
 
 
 def merge_slots(
-    target: Union[SlotDefinition, TypeDefinition],
-    source: Union[SlotDefinition, TypeDefinition],
-    skip: list[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    target: SlotDefinition | TypeDefinition,
+    source: SlotDefinition | TypeDefinition,
+    skip: list[SlotDefinitionName | TypeDefinitionName] = None,
     inheriting: bool = True,
 ) -> None:
     """
@@ -187,11 +219,11 @@ def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinitio
     return SlotDefinitionName(extended_str.concat(owning_class.name, "_", usage_name))
 
 
-def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> Optional[SlotDefinitionName]:
-    """Return the ultimate alias of a slot"""
+def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> SlotDefinitionName | None:
+    """Return the ultimate alias of a slot."""
     alias = schema.slots[slotname].alias if slotname in schema.slots else None
     if alias and alias == slotname:
-        raise ValueError("Error: Slot {slotname} is aliased to itself.")
+        return slotname  # self-alias is semantically "no alias"
     return alias_root(schema, cast(SlotDefinitionName, alias)) if alias else slotname
 
 
@@ -238,8 +270,78 @@ def merge_enums(
     pass
 
 
+def merge_class_rules(
+    target: ClassDefinition,
+    source: ClassDefinition,
+) -> None:
+    """Additively merge ``rules`` and ``classification_rules`` from source into target.
+
+    :param target: The base class to merge into.
+    :param source: The overlay class whose rules are appended.
+    """
+    for rule in source.rules:
+        target.rules.append(deepcopy(rule))
+    for cr in source.classification_rules:
+        target.classification_rules.append(deepcopy(cr))
+
+
+def merge_includes(
+    target: SchemaDefinition,
+    include: SchemaDefinition,
+) -> None:
+    """Merge an included schema into a target schema with additive class-level composition.
+
+    For classes that exist in both schemas, list-valued fields (rules,
+    classification_rules) are appended from the include onto the target.
+    Classes that exist only in the include are added to the target.
+    New slots, types, enums, and subsets from the include are also added.
+
+    Dict-valued class fields (``slot_usage``, ``attributes``) are not yet
+    composed and will require conflict-resolution policies — see #3402.
+
+    This function performs only the structural merge. It does not merge or
+    resolve ``include.imports`` into ``target.imports``. Callers that need the
+    included schema's import dependencies must invoke
+    :func:`resolve_merged_imports` separately before calling this function.
+
+    :param target: The base schema to merge into (modified in place).
+    :param include: The schema to include.
+    """
+    for class_name, include_class in include.classes.items():
+        if class_name in target.classes:
+            merge_class_rules(target.classes[class_name], include_class)
+        else:
+            target.classes[class_name] = deepcopy(include_class)
+
+    for slot_name, slot_def in include.slots.items():
+        if slot_name not in target.slots:
+            target.slots[slot_name] = deepcopy(slot_def)
+
+    for type_name, type_def in include.types.items():
+        if type_name not in target.types:
+            target.types[type_name] = deepcopy(type_def)
+
+    for enum_name, enum_def in include.enums.items():
+        if enum_name not in target.enums:
+            target.enums[enum_name] = deepcopy(enum_def)
+
+    for subset_name, subset_def in include.subsets.items():
+        if subset_name not in target.subsets:
+            target.subsets[subset_name] = deepcopy(subset_def)
+
+    for prefix in include.prefixes.values():
+        if prefix.prefix_prefix not in target.prefixes:
+            target.prefixes[prefix.prefix_prefix] = deepcopy(prefix)
+        elif target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference:
+            raise ValueError(
+                f"Conflicting prefix '{prefix.prefix_prefix}': "
+                f"target has '{target.prefixes[prefix.prefix_prefix].prefix_reference}' "
+                f"but include has '{prefix.prefix_reference}'"
+            )
+
+
 def resolve_merged_imports(
-    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None
+    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: str | None = None
 ) -> None:
     """Merge the imports in source into target
 

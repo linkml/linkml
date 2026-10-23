@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from click.testing import CliRunner
 
 from linkml.generators import golrgen
@@ -14,7 +16,14 @@ def test_metamodel_valid_call(tmp_path, snapshot):
     runner = CliRunner()
     result = runner.invoke(golrgen.cli, ["-d", tmp_path, KITCHEN_SINK_PATH])
     assert result.exit_code == 0
-    assert tmp_path == snapshot("gengolr/meta")
+    parts = []
+    for yaml_file in sorted(Path(tmp_path).rglob("*.yaml"), key=lambda p: p.name.casefold()):
+        parts.append(f"# --- {yaml_file.name} ---\n")
+        parts.append(yaml_file.read_text(encoding="utf-8"))
+        if not parts[-1].endswith("\n"):
+            parts[-1] += "\n"
+    concatenated = "".join(parts)
+    assert concatenated == snapshot("gengolr_meta.yaml")
 
 
 def test_metamodel_invalid_call(tmp_path):

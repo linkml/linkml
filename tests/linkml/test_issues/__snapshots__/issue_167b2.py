@@ -1,7 +1,3 @@
-# Auto generated from issue_167b.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: annotations_test
-#
 # id: http://example.org/tests/issue167b
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -58,7 +54,7 @@ from rdflib import (
 
 
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces

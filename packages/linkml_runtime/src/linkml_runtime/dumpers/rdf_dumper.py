@@ -1,5 +1,4 @@
 import json
-from typing import Optional, Union
 
 from hbreader import hbread
 from pydantic import BaseModel
@@ -8,12 +7,13 @@ from rdflib import Graph
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.context_utils import CONTEXT_TYPE, CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 class RDFDumper(Dumper):
     def as_rdf_graph(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None
+        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None
     ) -> Graph:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
@@ -68,7 +68,7 @@ class RDFDumper(Dumper):
 
     def dump(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         to_file: str,
         contexts: CONTEXTS_PARAM_TYPE = None,
         fmt: str = "turtle",
@@ -91,7 +91,7 @@ class RDFDumper(Dumper):
         super().dump(element, to_file, contexts=contexts, fmt=fmt)
 
     def dumps(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = "turtle"
+        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, fmt: str | None = "turtle"
     ) -> str:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
@@ -102,4 +102,6 @@ class RDFDumper(Dumper):
         """
         if isinstance(element, BaseModel):
             element = element.model_dump()
-        return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).serialize(format=fmt)
+        return canonicalize_rdf_graph(
+            self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts), output_format=fmt
+        )

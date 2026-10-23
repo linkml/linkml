@@ -6,7 +6,7 @@ This specification provides a grammar for a **functional syntax** for expressing
 
 This syntax is not intended for data exchange, but instead for unambiguous describing data in LinkML in a way that is independent of any particular syntax.
 
-[Section 6](../06mapping) specifies how the instance model is serialized as JSON, YAML, and RDF, and guidelines for mapping to object-oriented programming representations.
+[Section 6](06mapping.md) specifies how the instance model is serialized as JSON, YAML, and RDF, and guidelines for mapping to object-oriented programming representations.
 
 This section uses BNF to define the structure of the LinkML instance abstract model.
 We also include UML-style diagrams for informative purposes.
@@ -27,39 +27,25 @@ classDiagram
     AtomicInstance <|-- InstanceOfType
     AtomicInstance <|-- InstanceOfEnum
     Instance <|-- CollectionInstance
-    Instance <|-- None
+    Instance <-- None
 
 ```
 
 ### Definition Types and Names
 
-Definition names are used to unambiguously indicate *elements* specified in a **Schema** (described in [Part 3](../03schemas)):
+Definition names are used to unambiguously indicate *elements* specified in a **Schema** (described in [Part 3](03schemas.md)):
 
-> **ClassDefinitionName** := **ElementName** | **Unspecified**
+> **ClassDefinitionName** := **ElementName**
 
-> **TypeDefinitionName** := **ElementName** | **Unspecified**
+> **TypeDefinitionName** := **ElementName**
 
-> **EnumDefinitionName** := **ElementName** | **Unspecified**
+> **EnumDefinitionName** := **ElementName**
 
 > **SlotDefinitionName** := **ElementName**
 
-> **ElementName** := **LocalName** | **PrefixedName** | **IRI**
+> **ElementName** := *a finite sequence of characters matching the PN_LOCAL production of [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) and not matching any of the keyword terminals of the syntax*
 
-> **LocalName** := *a finite sequence of characters matching the PN_LOCAL production of [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) and not matching any of the keyword terminals of the syntax*
-
-> **PrefixedName** := **Prefix** ':' **LocalName**
-
-> **IRI** := '<' *a valid IRI* '>'
-
-> **Unspecified** := '?'
-
-Names SHOULD NOT be shared across definition types.
-
-The **Unspecified** name is used to indicate that the name of the class, type, or enum
-is unknown. An instance that uses **Unspecified** as a name anywhere in its tree is
-called *uncommitted*. Uncommitted trees may be generated when parsing from tree-serializations
-such as JSON or the JSON-equivalent of YAML. They may be replaced with names as
-part of an **Inference Procedure** (see [Part 5](../05validation)).
+Names MUST NOT be shared across definition types
 
 ### Instances of Classes (Objects)
 
@@ -73,8 +59,8 @@ assignment is a key-value pair of a **SlotName** and an **Instance** value.
 ```mermaid
 classDiagram
     Instance <|-- InstanceOfClass
-    InstanceOfClass "1" --> "1..*" Assignment : assignments
-    Assignment "1" --> Instance : value
+    InstanceOfClass "1" --> "1..*" Assignment
+    Assignment "1" --> Instance
 
     class InstanceOfClass {
       +ClassDefinitionName type
@@ -236,9 +222,8 @@ Examples of collections:
 * `[Person(name=..., ...), Person(name=..., ...)]` -- a list of class instances
 * `[Person(name=..., ...), Integer^5, None]` -- a heterogeneous collection
 * `[]` -- an empty collection
-* `[[Integer^1,Integer^2], [Integer^3, Integer^4]]` -- a list of lists
 
-Note that collections can be serialized in different ways depending on the target syntax, for examples, lists vs dictionaries. See section [6](../06mapping) for details of serializations.
+Note that collections can be serialized in different ways depending on the target syntax, for examples, lists vs dictionaries. See section [6](06mapping.md) for details of serializations.
 
 ### None (Null) instances
 

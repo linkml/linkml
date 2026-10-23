@@ -38,3 +38,36 @@ def test_enum():
     reconstituted = json_loader.loads(json_dumper.dumps(i), target_class=Organism)
     print(f"RECONSTITUTED = {reconstituted}")
     assert reconstituted.state.code == StateEnum.LIVING
+
+
+def test_as_value():
+    """Test that _as_value() returns a plain string, not a PermissibleValue.
+
+    This is the fix for https://github.com/linkml/linkml/issues/2382:
+    enum values must serialize as simple strings, not as dicts like ``{'text': 'LIVING'}``.
+    """
+    enum_val = StateEnum("LIVING")
+    result = enum_val._as_value()
+    assert result == "LIVING"
+    assert isinstance(result, str)
+
+
+def test_enum_serializes_as_string_not_dict():
+    """Verify that enum-valued slots serialize as plain strings in both JSON and YAML.
+
+    Regression test for https://github.com/linkml/linkml/issues/2382
+    where PermissibleValue('infant') serialized as ``{'text': 'infant'}`` instead of ``'infant'``.
+    """
+    i = Organism(state="DEAD")
+
+    # JSON serialization should produce a plain string value, not a dict
+    json_str = json_dumper.dumps(i)
+    obj = json.loads(json_str)
+    assert obj["state"] == "DEAD"
+    assert isinstance(obj["state"], str), f"Expected str, got {type(obj['state'])}: {obj['state']}"
+
+    # YAML serialization should produce a plain string value, not a mapping
+    yaml_str = yaml_dumper.dumps(i)
+    obj = yaml.safe_load(yaml_str)
+    assert obj["state"] == "DEAD"
+    assert isinstance(obj["state"], str), f"Expected str, got {type(obj['state'])}: {obj['state']}"

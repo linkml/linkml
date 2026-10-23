@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 
@@ -130,7 +130,7 @@ class SlotHandlerBase(ABC):
         (True, True, True, True, True): FORM_INLINED_LIST_DICT,
     }
 
-    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> SlotDefinition | None:
         sv = self.generator.schemaview
 
         if cn not in sv.all_classes():
@@ -219,6 +219,9 @@ class SlotHandlerBase(ABC):
         )
 
         field.inline_id_column_name = range_id_slot.name
+        field.inline_id_column_type = self.generator.map_type(
+            self.generator.schemaview.all_types().get(range_id_slot.range)
+        )
         field.inline_other_column_name = range_simple_dict_value_slot.name
 
         other_range = range_simple_dict_value_slot.range

@@ -40,6 +40,36 @@ Some projects may opt to manage their data alongside the schema in the same repo
 for "registry" style projects, but in other cases the data may be best managed separately in a dedicated
 store or a repository like Zenodo or Figshare.
 
+(rdf-in-version-control)=
+### Keep generated RDF diffs small
+
+When you track generated RDF in Git, adding a class or property can change many
+blank-node labels. The default RDFC-1.0 numbering is repeatable for the same graph,
+but an insertion can renumber existing nodes and obscure the actual schema edit.
+
+The optional `--diff-stable` flag uses
+[diffable-rdf](https://github.com/ASCS-eV/diffable-rdf) to reduce this label churn.
+In a uv project containing your schema, install LinkML with the extra and generate
+SHACL as follows (using a release that includes this option):
+
+```bash
+uv add 'linkml[diff-stable]'
+uv run gen-shacl --diff-stable schema.yaml > schema.shacl.ttl
+```
+
+The flag also works with `gen-owl`, `gen-rdf`, and `gen-shex --format rdf`.
+Python callers of `canonicalize_rdf_graph(..., diff_stable=True)` can install
+`linkml-runtime[diff-stable]`. The feature is disabled by default; enabling it
+changes existing labels once, so keep that regeneration separate from schema edits.
+
+Labels depend on blank-node neighborhoods. Edits within connected structures or
+among symmetric nodes can still affect other labels; minimum diffs are not
+guaranteed. Keep tool versions consistent when comparing generated files.
+The relabeled output is not the standard RDFC canonical representation.
+ShExC, ShEx JSON and instance-data conversion are outside this option's scope.
+Non-standard RDF takes the existing fallback path, which warns that it cannot
+apply diff-stable labels.
+
 ### Permissively License Your Code and Data
 
 (adapted from [O3 guidelines](https://osf.io/vuzt3/))
@@ -57,7 +87,7 @@ CC0 and CC BY are good for non-code resources; code should be licensed with a pe
 Automating quality control, generation of artifacts, releases, and deployment helps in maintaining and contributing to projects.
 This includes using continuous integration for quality checks, automating the generation of data views, and packaging data and code for easy deployment.
 
-The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template for a project that
+The [LinkML Project Copier](https://github.com/linkml/linkml-project-copier) template provides a template for a project that
 includes a number of automation features using GitHub actions.
 
 Implementing social workflows through tools like GitHub enhances community engagement.
@@ -81,6 +111,7 @@ You may wish to use an existing governance model or community documents as a sta
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
 - [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
+- LinkML [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) - norms for AI-assisted contributions
 
 Some things the governance model should cover:
 
@@ -95,8 +126,8 @@ Some things the governance model should cover:
 
 Detailed contribution guidelines, offering various ways to contribute, and hosting projects in neutral spaces increase contributor engagement and recruitment. Projects should be accessible and welcoming to new contributors to ensure longevity and development.
 
-The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template
-for project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md` file that can be
+The [LinkML Project Copier](https://github.com/linkml/linkml-project-copier) template provides
+project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md` file that can be
 adapted for your project.
 
 The core schema developers should be familiar with existing best practice for contribution.

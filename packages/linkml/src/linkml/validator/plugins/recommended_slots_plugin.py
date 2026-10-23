@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from typing import Optional
 
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
@@ -11,7 +10,7 @@ class RecommendedSlotsPlugin(ValidationPlugin):
 
     def process(self, instance: dict, context: ValidationContext) -> Iterator[ValidationResult]:
         def _do_process(
-            instance: dict, class_name: str, location: Optional[list[str]] = None
+            instance: dict, class_name: str, location: list[str] | None = None
         ) -> Iterator[ValidationResult]:
             if not isinstance(instance, dict):
                 return
@@ -32,7 +31,9 @@ class RecommendedSlotsPlugin(ValidationPlugin):
                 if slot_range_class is not None and slot_value is not None:
                     slot_location = location + [slot_def.name]
                     if slot_def.multivalued:
-                        if slot_def.inlined and isinstance(slot_value, dict):
+                        # only if the slot is not inlined as a list, otherwise we are checking the
+                        # range class for the list itself, which is not what we want.
+                        if slot_def.inlined and not slot_def.inlined_as_list and isinstance(slot_value, dict):
                             for k, v in slot_value.items():
                                 yield from _do_process(v, slot_range_class.name, slot_location + [k])
                         elif slot_def.inlined_as_list and isinstance(slot_value, list):

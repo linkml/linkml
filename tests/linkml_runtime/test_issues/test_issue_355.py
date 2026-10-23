@@ -47,7 +47,7 @@ class Container(YAMLRoot):
     )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if not isinstance(self.entry, (list, dict, JsonObj)):
+        if not isinstance(self.entry, list | dict | JsonObj):
             self.entry = [self.entry]
         self._normalize_inlined_as_dict(slot_name="entry", slot_type=Containee, key_name="id", keyed=True)
 

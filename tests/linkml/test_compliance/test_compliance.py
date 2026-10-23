@@ -14,6 +14,7 @@ from tests.linkml.test_compliance.helper import (
     PYTHON_DATACLASSES,
     SHACL,
     SHEX,
+    SQL_DDL_BIGQUERY,
     SQL_DDL_POSTGRES,
     SQL_DDL_SQLITE,
 )
@@ -78,5 +79,6 @@ CORE_FRAMEWORKS = [
     #    SQL_ALCHEMY_DECLARATIVE,
     pytest.param(SQL_DDL_SQLITE, marks=[pytest.mark.sqlddlgen]),
     pytest.param(SQL_DDL_POSTGRES, marks=[pytest.mark.sqlddlpostgresgen]),
+    pytest.param(SQL_DDL_BIGQUERY, marks=[pytest.mark.sqlddlbigquerygen]),
     pytest.param(OWL, marks=[pytest.mark.owlgen]),
 ]

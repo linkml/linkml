@@ -25,9 +25,9 @@ See:
 
 ## Which packages do I need to install?
 
-If you want to generate Python dataclasses, then you need the full [linkml](https://github.com/linkml/linkml) package.
+If you want to generate Python dataclasses, then you need the full [linkml](https://pypi.org/project/linkml/) package.
 
-However, your code doesn't need this at *runtime*. Once you have generated your project files your only dependency will be on the more lightweight [linkml-runtime](https://github.com/linkml/linkml-runtime) package.
+However, your code doesn't need this at *runtime*. Once you have generated your project files your only dependency will be on the more lightweight [linkml-runtime](https://pypi.org/project/linkml-runtime/) package.
 
 *Note* you don't need to install [linkml-model](https://github.com/linkml/linkml-model), the metamodel is included as part of the runtime
 

@@ -1,7 +1,6 @@
 import importlib
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 
@@ -41,7 +40,7 @@ class DataframeGeneratorCli:
 
     generator: DataframeGenerator
     template_path: str = DEFAULT_TEMPLATE_PATH
-    template_file: Optional[str] = None
+    template_file: str | None = None
 
     def read_validator_helper(self) -> str:
         """
@@ -62,7 +61,7 @@ class DataframeGeneratorCli:
             logger.warning(f"Unable to read linkml_pandera_validator module: {e}")
             return None
 
-    def serialize(self, directory: Optional[str] = None, rendered_module: Optional[OODocument] = None) -> str:
+    def serialize(self, directory: str | None = None, rendered_module: OODocument | None = None) -> str:
         """
         Serialize the dataframe schema to a Python module as a string
         """
@@ -145,6 +144,17 @@ DATAFRAME_GROUP = [
     help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())} (not used with --package)",
     default="PanderaDataframeGenerator",
 )
+@click.option(
+    "--mergeimports/--no-mergeimports",
+    default=True,
+    show_default=True,
+    help=(
+        "Merge imports into source file. Forwarded to the underlying "
+        "``DataframeGenerator`` (and the SchemaLoader used to materialize the "
+        "metamodel) so ``gen-pandera`` accepts the same flag every other "
+        "LinkML generator CLI does."
+    ),
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("yamlfile")
 @click.command(name="gen-pandera")
@@ -154,6 +164,7 @@ def cli(
     template_path=None,
     template_file=None,
     generator_class=None,
+    mergeimports=True,
     **args,
 ):
     """Generate Pandera classes to represent a LinkML model"""
@@ -177,12 +188,13 @@ def cli(
     generator: DataframeGenerator = gen_class(
         yamlfile,
         package=package,
+        mergeimports=mergeimports,
         **args,
     )
 
     if package is not None:
         DataframeGenerator.compile_package_from_specification(
-            PANDERA_GROUP, package, yamlfile, directory=package, **args
+            PANDERA_GROUP, package, yamlfile, directory=package, mergeimports=mergeimports, **args
         )
     else:
         cli_wrapper = DataframeGeneratorCli(

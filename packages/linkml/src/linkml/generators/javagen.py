@@ -1,133 +1,282 @@
-import importlib.util
+import logging
 import os
-from dataclasses import dataclass
-from typing import Optional
+from collections.abc import Mapping
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
 
 import click
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import Template
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.utils.generator import shared_arguments
-from linkml_runtime.linkml_model.meta import TypeDefinition
+from linkml.generators.oocodegen import OOCodeGenerator, OODocument
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
+from linkml.utils.generator import apply_config_defaults, read_generator_config, shared_arguments
+from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
+from linkml_runtime.utils.formatutils import camelcase
 
-default_template = """
-{#-
+logger = logging.getLogger(__name__)
 
-  Jinja2 Template for a Java class with Lombok @Data annotation
-  Annotation details at https://projectlombok.org
--#}
-package {{ doc.package }};
-
-{% if metamodel_version -%}
-/* metamodel_version: {{metamodel_version}} */
-{% endif -%}
-{% if model_version -%}
-/* version: {{model_version}} */
-{% endif -%}
-
-{% if cls -%}
-import java.util.List;
-import lombok.*;
-
-{%   if cls.source_class.description -%}
-/**
-  {{ cls.source_class.description }}
-**/
-{%   endif -%}
-@Data
-@EqualsAndHashCode(callSuper=false)
-public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
-{%   for f in cls.fields %}
-  private {{f.range}} {{ f.name }};
-{%-  endfor %}
-
-{% elif enum -%}
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-
-{% if enum.description %}/**
- * {{ enum.description }}
- */
-{% endif -%}
-public enum {{ enum.name }} {
-{%- for value in enum.values[0:-1] %}
-{% if value.description %}
-  /**
-   * {{ value.description }}
-   */
-{%- endif %}
-  {{ value.label|upper }}("{{ value.text }}"),
-{%- endfor %}
-{%- if enum.values %}
-{% if enum.values[-1].description %}
-  /**
-   * {{ enum.values[-1].description }}
-   */
-{%- endif %}
-  {{ enum.values[-1].label|upper }}("{{ enum.values[-1].text }}");
-  {%- else %}
-  ;{% endif %}
-
-  private final static Map<String, {{ enum.name }}> MAP;
-
-  static {
-    Map<String, {{ enum.name }}> map = new HashMap<String, {{ enum.name }}>();
-    for ( {{ enum.name }} value : {{ enum.name }}.values() ) {
-      map.put(value.toString(), value);
-    }
-
-    MAP = Collections.unmodifiableMap(map);
-  }
-
-  private final String repr;
-
-  {{ enum.name }}(String repr) {
-    this.repr = repr;
-  }
-
-  @Override
-  public String toString() {
-    return repr;
-  }
-
-  @JsonCreator
-  public static {{ enum.name }} fromString(String v) {
-    return MAP.get(v);
-  }
-
-{% endif -%}
-}"""  # noqa: E501
+DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
 
 TYPEMAP = {
     "xsd:string": "String",
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "boolean",
+    "xsd:boolean": "Boolean",
     "xsd:dateTime": "ZonedDateTime",
     "xsd:date": "LocalDate",
-    "xsd:time": "Instant",
-    "xsd:anyURI": "String",
+    "xsd:time": "LocalTime",
+    "xsd:anyURI": "URI",
     "xsd:decimal": "BigDecimal",
 }
+
+JAVA_KEYWORDS = [
+    "abstract",
+    "assert",
+    "boolean",
+    "break",
+    "byte",
+    "case",
+    "catch",
+    "char",
+    "class",
+    "const",
+    "continue",
+    "default",
+    "do",
+    "double",
+    "else",
+    "enum",
+    "extends",
+    "false",
+    "final",
+    "finally",
+    "float",
+    "for",
+    "goto",
+    "if",
+    "implements",
+    "import",
+    "instanceof",
+    "int",
+    "interface",
+    "long",
+    "native",
+    "new",
+    "null",
+    "package",
+    "private",
+    "protected",
+    "public",
+    "return",
+    "short",
+    "static",
+    "strictfp",
+    "super",
+    "switch",
+    "synchronized",
+    "this",
+    "throw",
+    "throws",
+    "transient",
+    "true",
+    "try",
+    "void",
+    "volatile",
+    "while",
+]
 
 TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
 
 
+def _is_valid_java_package(package_name: str) -> bool:
+    """Return True if ``package_name`` is a dot-separated list of legal Java identifiers.
+
+    Each name segment must be a valid Java identifier (letter/underscore/dollar start,
+    followed by letters/digits/underscore/dollar) and not a reserved keyword.
+    """
+    segments = package_name.split(".")
+    for segment in segments:
+        if not segment or not (segment[0].isalpha() or segment[0] in "_$"):
+            return False
+        if any(not (ch.isalnum() or ch in "_$") for ch in segment):
+            return False
+        if segment in JAVA_KEYWORDS:
+            return False
+    return True
+
+
+@dataclass
+class OOCustomDocument(OODocument):
+    """A document that represents something else than a class or an enum."""
+
+    type: str = None
+
+
+@dataclass
+class OOVisitorDocument(OOCustomDocument):
+    """A document representing a visitor interface."""
+
+    visited_object: str = None
+
+    def __post_init__(self):
+        self.type = "_visitor"
+
+
+@dataclass
+class JavaBundle:
+    """In-memory result of rendering a LinkML schema to Java source.
+
+    A ``JavaBundle`` is the output of :meth:`JavaGenerator.render`. It carries
+    the rendered Java source for every file that would be written to disk by
+    :meth:`JavaGenerator.serialize`, keyed by filename.
+
+    Mirrors render/serialize split used by `rustgen.RustGenerator` (FileResult /
+    CrateResult) and `pydanticgen.PydanticGenerator` (PydanticModule).
+    """
+
+    files: dict[str, str] = field(default_factory=dict)
+    """Rendered Java source, keyed by filename (e.g. ``"Address.java"``)."""
+
+    package: str = ""
+    """Java package name the rendered files belong to (informational)."""
+
+
+class TemplateCache:
+    """Cache for template objects.
+
+    The purpose of this class is twofold:
+
+    * It implements the logic needed to find the correct template based on (1)
+      which templates are available, (2) which type of object is a template
+      required for, (3) whether a specific “variant“ of templates has been
+      requested.
+    * It keeps templates that have already been read from disk in memory, so
+      that we don’t have to read them over again when the same template is used
+      many times (which should be the typical case).
+    """
+
+    def __init__(self):
+        self.files: dict[str, Path] = {}
+        self.templates: dict[Path, Template] = {}
+
+    def add_directory(self, template_dir: Path) -> None:
+        """Adds all templates in the specified directory to the cache."""
+
+        for file in [f for f in template_dir.iterdir() if not f.is_dir()]:
+            self.files[file.name] = file
+
+    def force_template(self, template_file: Path) -> None:
+        """Sets the template to systematically use for all objects.
+
+        This method is used to implement the `--template-file` option, allowing
+        users to forcibly use one specific template file, regardless of the
+        contents of the templates directory.
+        """
+
+        self.files["__FORCE__"] = template_file
+
+    def get_template(self, name: str, fallback: str = "class", variant: str | None = None) -> Template | None:
+        """Finds the template for a given object.
+
+        :param name: The name of the object for which a template is required.
+        :param fallback: The name of the fallback template to use if there is
+            no specific template for the given object name.
+        :param variant: The name of an optional template variant.
+        :return: The requested template, or None if no suitable template is
+            available.
+        """
+
+        candidate: Path | None = None
+
+        candidate = self.files.get("__FORCE__")
+        if candidate is None:
+            candidate = self._get_file(name, fallback=fallback, variant=variant, suffix=".jinja2")
+        if candidate is None:
+            return None
+
+        if candidate not in self.templates:
+            with candidate.open("r") as f:
+                self.templates[candidate] = Template(f.read())
+        return self.templates[candidate]
+
+    def get_file(self, name, variant: str | None = None) -> Path | None:
+        """Finds a (non-template) file.
+
+        :param name: The basename of the file to find.
+        :param variant: The name of an optional template variant.
+        :return: The requested file, or None if there is no corresponding file
+            in any of the template directories.
+        """
+        f = Path(name)
+        return self._get_file(f.stem, variant=variant, suffix=f.suffix)
+
+    def _get_file(
+        self, name: str, fallback: str | None = None, variant: str | None = None, suffix: str = ""
+    ) -> Path | None:
+        """Shared logic for the get_template and get_file methods.
+
+        :param name: The basename of the file to find.
+        :param fallback: Another file to look up for if the specified file
+            cannot be found.
+        :param variant: The name of an optional template variant.
+        :param suffix: The suffix of the file to look for (e.g. `.jinja2` for
+            a template file).
+        :return: The path to the requested file, or None if the file (or the
+            fallback) could not be found.
+        """
+        candidate: Path | None = None
+
+        if variant is not None:
+            candidate = self.files.get(name + "-" + variant + suffix)
+            if candidate is None and fallback is not None:
+                candidate = self.files.get(fallback + "-" + variant + suffix)
+
+        if candidate is None:
+            candidate = self.files.get(name + suffix)
+        if candidate is None and fallback is not None:
+            candidate = self.files.get(fallback + suffix)
+
+        return candidate
+
+
+def _find_root_schemas(schema_directory: Path, importmap: str | Mapping[str, str] | None = None) -> list[Path]:
+    """Finds all the root schemas in the specified directory.
+
+    A root schema, in the context of this method, in a schema that is not
+    imported by any other schema found under the specified directory.
+
+    :param schema_directory: The directory where to search for schemas.
+    :param importmap: The import map to use, if any.
+    :return: A list of paths to root schemas.
+    """
+
+    # This is woefully inefficient as we have to load each schema
+    # through SchemaView, but this is necessary to ensure that we
+    # use the very same import resolution logic as the generator.
+    imported_ids: dict[str, int] = {}
+    schema_ids: dict[Path, str] = {}
+    for schema_path in schema_directory.glob("**/*.yaml"):
+        view = SchemaView(schema_path, importmap=importmap)
+        schema_ids[schema_path] = view.schema.id
+        for s in view.all_schema():
+            if s.id != view.schema.id:
+                imported_ids[s.id] = 1
+    root_schemas = [p for p, i in schema_ids.items() if i not in imported_ids]
+    return root_schemas
+
+
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class JavaGenerator(OOCodeGenerator):
     """
     Generates java code from a LinkML schema.
 
-    Two styles are supported:
-
-    - java classes, using lombok annotations
-    - java records
+    This generators supports an arbitrary number of different styles through
+    the use of “template variants“.
     """
 
     # ClassVars
@@ -135,26 +284,75 @@ class JavaGenerator(OOCodeGenerator):
     generatorversion = "0.0.1"
     valid_formats = ["java"]
     file_extension = "java"
+    config_section_name = "java"
 
     # ObjectVars
-    generate_records: bool = False
-    """If True then use java records (introduced in java 14) rather than classes"""
+    template_file: str | None = None
+    template_dir: Path | None = None
+    template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
+    custom_type_map: dict[str, str] = field(default_factory=lambda: dict())
 
-    template_file: Optional[str] = None
+    def __post_init__(self) -> None:
+        self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
+        if self.template_dir is not None:
+            self.template_cache.add_directory(self.template_dir)
+        if self.template_file is not None:
+            self.template_cache.force_template(Path(self.template_file))
+        super().__post_init__()
+        if self.package in (None, ""):
+            self.package = "example"
+        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        if not _is_valid_java_package(str(self.package)):
+            raise ValueError(f"{self.package!r} is not a valid Java package name")
 
-    gen_classvars: bool = True
-    gen_slots: bool = True
-    genmeta: bool = False
-    emit_metadata: bool = True
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        package = args.get("package")
+        if package not in (None, "") and not _is_valid_java_package(str(package)):
+            raise click.UsageError(f"{package!r} is not a valid Java package name")
 
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
 
+    def map_class(self, c: ClassDefinition) -> str:
+        # A slot intended to accept anything is represented in Java as
+        # an Object-typed slot
+        if c.class_uri == "linkml:Any":
+            return "Object"
+        else:
+            return super().map_class(c)
+
+    def map_name(self, name: str) -> str:
+        if name in JAVA_KEYWORDS:
+            return name + "_"
+        return name
+
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
-        if t.uri:
-            # only return a Integer, Double Float when required == false
+        typ: str | None = None
+
+        # For looking up in the custom type map, we try with the
+        # "native" URI first, and then the "declared" URI. This is
+        # because declared URIs may not be enough to unambiguously
+        # distinguish between types (for example, both linkml:uri and
+        # linkml:uriorcurie have the same declared URI xsd:anyURI;
+        # likewise, linkml:string, linkml:curie, and linkml:ncname all
+        # share the same declared URI xsd:string).
+        uri = self.schemaview.get_uri(t, expand=True, native=True)
+        typ = self.custom_type_map.get(uri)
+        if typ is None:
+            # Try again with the declared URI
+            uri = self.schemaview.get_uri(t, expand=True, native=False)
+            typ = self.custom_type_map.get(uri)
+        if typ is None and t.uri:
+            # Fallback to the static map
             typ = TYPEMAP.get(t.uri)
-            if required and (typ == "Double" or typ == "Float"):
+        if typ:
+            # We use "boxed" types (Boolean, Integer, Double, Float) by
+            # default because we need to represent the case where a
+            # value has not explicitly been set. But that requirement no
+            # longer holds when required == true, so in that case we can
+            # use primitive types (boolean, int, double, float) instead.
+            if required and (typ == "Boolean" or typ == "Double" or typ == "Float"):
                 typ = typ.lower()
             elif required and typ == "Integer":
                 typ = "int"
@@ -164,44 +362,234 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
-    def serialize(self, directory: str, **kwargs) -> None:
-        if self.generate_records:
-            package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
-            javagen_folder = os.path.join(package_dir, "javagen", "")
-            loader = FileSystemLoader(javagen_folder)
-            env = Environment(loader=loader)
-            template_obj = env.get_template("java_record_template.jinja2")
-        elif self.template_file is not None:
-            with open(self.template_file) as template_file:
-                template_obj = Template(template_file.read())
-        else:
-            template_obj = Template(default_template)
+    def get_custom_type_uri(self, name: str) -> str | None:
+        """Gets the URI of a custom-mapped type.
 
+        :param name: The name of a LinkML element.
+        :return: If the given name is the name of a LinkML type for which a
+            custom mapping to a Java type exists, this returns the URI of the
+            type. Otherwise this returns None.
+        """
+        if name in self.schemaview.all_types():
+            # Same logic as for map_type: we query using the native URI
+            # first, then fallback to the declared URI
+            uri = self.schemaview.get_uri(name, expand=True, native=True)
+            if uri in self.custom_type_map:
+                return uri
+            uri = self.schemaview.get_uri(name, expand=True, native=False)
+            if uri in self.custom_type_map:
+                return uri
+        return None
+
+    def _read_custom_type_map(self, variant: str | None = None) -> None:
+        """Parses the variant-specific type map, if present."""
+        self.custom_type_map.clear()
+        mapfile = self.template_cache.get_file("_types.map", variant=variant)
+        if mapfile is not None and mapfile.exists():
+            with mapfile.open("r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("#"):
+                        continue
+                    items = line.split()
+                    if len(items) == 2:
+                        self.custom_type_map[items[0]] = items[1]
+
+    def render(
+        self,
+        template_variant: str | None = None,
+        extra_templates: list[str] | None = None,
+        visitors: list[str] | None = None,
+    ) -> JavaBundle:
+        """Render the schema to an in-memory :class:`JavaBundle`.
+
+        Pure counterpart of :meth:`serialize`: returns the rendered Java
+        source for every file without touching the filesystem.
+
+        :param template_variant: The name of the template variant to use, if any.
+        :param extra_templates: A list of additional templates from which to generate
+            additional code files. For example, if set to `[Foo,Bar]`, this will
+            generate two additional files `Foo.java` and `Bar.java` (assuming the
+            template directory contains the required templates `Foo.jinja2` and
+            `Bar.jinja2`). Users can exploit such additional files to generate any
+            code they might need in addition to the code generated for each class
+            and each enum in the model.
+        :param visitors: A list of class names for which to generate a visitor
+            interface. For example, if set to `[Foo]`, this will generate a
+            `IFooVisitor` interface, and the generated code for both the `Foo`
+            class and all its descendants will include a `accept(IFooVisitor)`
+            method.
+        :return: A :class:`JavaBundle` whose ``files`` maps each output filename
+            (e.g. ``"Address.java"``) to its rendered source.
+        """
+        self._read_custom_type_map(variant=template_variant)
         oodocs = self.create_documents()
-        self.directory = directory
+        # Create additional documents for additional templates and visitors
+        if extra_templates:
+            for extra_template in extra_templates:
+                oodocs.append(OOCustomDocument(name=extra_template, package=self.package, type=extra_template))
+        if visitors is not None:
+            for visitor in visitors:
+                visited_name = visitor
+                if self.schemaview.get_class(visited_name) is None:
+                    logger.warning(f"{visited_name} does not appear to be a valid name for a class to visit")
+                visitor_name = "I" + camelcase(visited_name) + "Visitor"
+                oodocs.append(OOVisitorDocument(name=visitor_name, package=self.package, visited_object=visited_name))
+        else:
+            visitors = []
+
+        files: dict[str, str] = {}
         for oodoc in oodocs:
+            cls = None
+            enum = None
             if oodoc.classes:
                 cls = oodoc.classes[0]
-                enum = None
-            else:
-                cls = None
+                type = "class"
+            elif oodoc.enums:
                 enum = oodoc.enums[0]
-            code = template_obj.render(
+                type = "enum"
+            else:
+                # Should be a OOCustomDocument
+                type = oodoc.type
+            template = self.template_cache.get_template(oodoc.name, type, template_variant)
+            if template is None:
+                raise Exception(f"Missing template for {oodoc.name}")
+
+            code = template.render(
                 doc=oodoc,
                 cls=cls,
                 enum=enum,
+                gen=self,
+                visitors=visitors,
                 metamodel_version=self.schema.metamodel_version,
                 model_version=self.schema.version,
             )
 
-            os.makedirs(directory, exist_ok=True)
-            filename = f"{oodoc.name}.java"
+            files[f"{oodoc.name}.java"] = code
+
+        return JavaBundle(files=files, package=self.package)
+
+    def serialize(
+        self,
+        directory: str | Path,
+        template_variant: str | None = None,
+        extra_templates: list[str] | None = None,
+        visitors: list[str] | None = None,
+        rendered_module: JavaBundle | None = None,
+        **kwargs,
+    ) -> None:
+        """Generate the Java code and write it to ``directory``, one file per class.
+
+        Java requires one public class per file, so there is no meaningful
+        single-string serialization of a schema; callers that want the
+        generated code in memory should use :meth:`render` and work from the
+        returned :class:`JavaBundle` instead.
+
+        :param directory: The directory where to write the code files.
+        :param template_variant: The name of the template variant to use, if any.
+            Ignored when ``rendered_module`` is provided.
+        :param extra_templates: A list of additional templates from which to generate
+            additional code files. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
+        :param visitors: A list of class names for which to generate a visitor
+            interface. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
+        :param rendered_module: Optional pre-computed :class:`JavaBundle` to
+            write instead of calling :meth:`render` afresh. Allows caller to
+            render once and inspect/write multiple times. When supplied,
+            ``template_variant``, ``extra_templates``, and ``visitors``
+            are ignored (the bundle is used as-is).
+        """
+        bundle = (
+            rendered_module
+            if rendered_module is not None
+            else self.render(
+                template_variant=template_variant,
+                extra_templates=extra_templates,
+                visitors=visitors,
+            )
+        )
+        os.makedirs(directory, exist_ok=True)
+        for filename, code in bundle.files.items():
             path = os.path.join(directory, filename)
             with open(path, "w", encoding="UTF-8") as stream:
                 stream.write(code)
 
+    # The following methods are intended to be used from within a code
+    # template.
 
-@shared_arguments(JavaGenerator)
+    def has_ancestor(self, cls: ClassDefinition, name: str) -> bool:
+        """Checks for an ancestor in a class inheritance tree.
+
+        :param cls: A ClassDefinition object.
+        :param name: A class name.
+        :returns: True if cls has any ancestor with the specified name.
+        """
+        return name in self.schemaview.class_ancestors(cls.name, mixins=False, reflexive=False)
+
+    def get_descendants(self, name: str) -> list[str]:
+        """Gets all the descendants of a class.
+
+        :param name: A class name.
+        :returns: A flat list of the names of all classes that inherit from
+            the named class.
+        """
+        return self.schemaview.class_descendants(name, mixins=False, reflexive=False)
+
+    def get_class_name(self, name: str) -> str:
+        """Converts a LinkML class name to a Java class name."""
+        return camelcase(name)
+
+    def get_write_accessor_name(self, slot: SlotDefinition) -> str:
+        """Gets the name of the write accessor for the given slot.
+
+        This is to allow templates to generate their own write accessors,
+        should they prefer not to use Lombok.
+        """
+        name = self.get_slot_actual_name(slot)
+        if slot.range == "boolean" and slot.required:
+            # This replicates the logic used by Lombok for boolean-typed fields:
+            # - foo -> setFoo() (general case)
+            # - isFoo -> setFoo() (special case to avoid setIsFoo())
+            if len(name) > 2 and name[:2] == "is" and not name[2].islower():
+                return "set" + camelcase(name[2:])
+        return "set" + camelcase(name)
+
+    def get_read_accessor_name(self, slot: SlotDefinition) -> str:
+        """Gets the name of the read accessor for the given slot."""
+        name = self.get_slot_actual_name(slot)
+        if slot.range == "boolean" and slot.required:
+            # This replicates the logic used by Lombok for boolean-typed fields
+            # - foo -> isFoo() (general case)
+            # - isFoo -> isFoo() (special case to avoid isIsFoo())
+            if len(name) > 2 and name[:2] == "is" and not name[2].islower():
+                return self.get_slot_name(name)
+            else:
+                return "is" + camelcase(name)
+        else:
+            return "get" + camelcase(name)
+
+    def get_slot_actual_name(self, slot: SlotDefinition) -> str:
+        return slot.alias if slot.alias and self.use_aliases else slot.name
+
+    def needs_extra_slots(self, klass: ClassDefinition) -> bool:
+        """Indicates whether a class requires handling of extra slots.
+
+        A Java class representing a LinkML class requires special code to
+        handle extra slots if (1) the LinkML class is configured to allow
+        extra slots and (2) none of its parent classes are already
+        configured to allow extra slots.
+        """
+        if klass.extra_slots is None or not klass.extra_slots.allowed:
+            return False
+        for ancestor in self.schemaview.class_ancestors(klass.name, mixins=False, reflexive=False):
+            ancestor_extra_slots = self.schemaview.get_class(ancestor).extra_slots
+            if ancestor_extra_slots is not None and ancestor_extra_slots.allowed:
+                return False
+        return True
+
+
+@shared_arguments(JavaGenerator, accepts_directory_input=True)
 @click.option(
     "--output-directory",
     default="output",
@@ -209,42 +597,135 @@ class JavaGenerator(OOCodeGenerator):
     help="Output directory for individually generated class files",
 )
 @click.option("--package", help="Package name where relevant for generated class files")
-@click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {java: {package: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file.",
+)
+@click.option(
+    "--template-dir",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    help="Directory containing the Jinja2 templates to use",
+)
+@click.option("--template-variant", help="Use the specified template variant")
+@click.option(
+    "--template-file",
+    type=click.Path(exists=True, dir_okay=False),
+    help="""Optional jinja2 template to use for class generation
+            (takes precedence over --template-dir)""",
+)
 @click.option(
     "--generate-records/--no-generate-records",
     default=False,
-    help="Optional Java 17 record implementation",
+    help="""Optional Java 17 record implementation
+            (deprecated, use --template-variant=records instead)""",
 )
+@click.option("--extra-template", multiple=True, help="Name of an additional, arbitrary template to use")
+@click.option("--visitor", multiple=True, help="Generate a visitor interface for the specified class")
 @click.option("--true-enums/--no-true-enums", default=False, help="Treat enums as distinct types rather than strings")
+@click.option("--use-aliases/--no-use-aliases", default=False, help="Use aliases when available to name fields")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
+@click.pass_context
 def cli(
+    ctx,
     yamlfile,
     output_directory=None,
-    package=None,
+    config_file=None,
+    template_dir=None,
+    template_variant=None,
     template_file=None,
     generate_records=False,
-    head=True,
-    emit_metadata=False,
-    genmeta=False,
-    classvars=True,
-    slots=True,
+    head=None,
+    emit_metadata=None,
     true_enums=False,
+    use_aliases=False,
+    extra_template=[],
+    visitor=[],
+    importmap=None,
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
-    JavaGenerator(
+    # --package now consumed from **args so config overlay can fill, and it reaches the generator
+    config = read_generator_config(config_file, JavaGenerator.config_section_name)
+    apply_config_defaults(ctx, config, args)
+    JavaGenerator.validate_generator_args(args)
+    # rebind named locals so overlaid config values are honored and never collide with **args below
+    output_directory = args.pop("output_directory", output_directory)
+    template_dir = args.pop("template_dir", template_dir)
+    template_variant = args.pop("template_variant", template_variant)
+    template_file = args.pop("template_file", template_file)
+    generate_records = args.pop("generate_records", generate_records)
+    true_enums = args.pop("true_enums", true_enums)
+    use_aliases = args.pop("use_aliases", use_aliases)
+    extra_template = args.pop("extra_template", extra_template)
+    visitor = args.pop("visitor", visitor)
+    if generate_records:
+        template_variant = "records"
+    if template_file is not None:
+        if template_dir is not None or template_variant is not None:
+            logging.warning("--template-file will take precedence over --template-dir and --template-variant")
+
+    # default is adding metadata to the generated code
+    if "metadata" not in args:
+        args["metadata"] = True
+    # deprecated arguments are replaced, head overwrites emit_metadata
+    if emit_metadata is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = emit_metadata
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
+
+    if yamlfile.is_dir():
+        args.pop("package", None)  # inferred per schema from the directory layout
+        # Generate code for all root schemas under the specified directory,
+        # inferring the package name from the directory hierarchy
+        schemas: list[tuple[Path, Path, str]] = []
+        for schema_path in _find_root_schemas(yamlfile, importmap):
+            package_dir = schema_path.relative_to(yamlfile).parent
+            package_name = package_dir.as_posix().replace("/", ".")
+            if not _is_valid_java_package(package_name):
+                raise ValueError(
+                    f"Inferred package name {package_name} is not a valid Java package name, aborting directory mode"
+                )
+            output_dir = Path(output_directory) / package_dir
+            schemas.append((schema_path, output_dir, package_name))
+        for schema_path, output_dir, package_name in schemas:
+            JavaGenerator(
+                schema_path,
+                importmap=importmap,
+                package=package_name,
+                template_dir=template_dir,
+                template_file=template_file,
+                true_enums=true_enums,
+                use_aliases=use_aliases,
+                **args,
+            ).serialize(
+                output_dir, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
+            )
+        return
+
+    # The package was already validated above; a ValueError raised while actually
+    # constructing the generator here is therefore a genuine failure (e.g. an
+    # unloadable schema), not a bad package name, and is left to propagate with
+    # its own traceback rather than being caught and mistaken for one.
+    generator = JavaGenerator(
         yamlfile,
-        package=package,
+        template_dir=template_dir,
         template_file=template_file,
-        generate_records=generate_records,
-        emit_metadata=head,
-        genmeta=genmeta,
-        gen_classvars=classvars,
-        gen_slots=slots,
         true_enums=true_enums,
+        use_aliases=use_aliases,
+        importmap=importmap,
         **args,
-    ).serialize(output_directory, **args)
+    )
+    generator.serialize(
+        output_directory, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
+    )
 
 
 if __name__ == "__main__":

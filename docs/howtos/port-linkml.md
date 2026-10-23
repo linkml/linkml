@@ -90,11 +90,13 @@ However, if you are aiming for a more powerful library, then this has a number o
 
 ## Overview of Python Framework
 
-Currently there are 3 core repos:
+Currently there are 2 core repos:
 
-- [linkml-model](https://github.com/linkml/linkml-model) This holds the Source of Truth for the *metamodel*
-- [linkml-runtime](https://github.com/linkml/linkml-runtime) A runtime library that is depended on by schema-specific generated python dataclass libraries
-- [linkml](https://github.com/linkml/linkml) The core tooling, including [generators](https://linkml.io/linkml/generators/index.html)
+- [linkml-model](https://github.com/linkml/linkml-model) This holds the Source of Truth for the *metamodel* and its documentation
+- [linkml/linkml](https://github.com/linkml/linkml) A monorepo that contains:
+  - [linkml](https://pypi.org/project/linkml/) - Python package with tooling, including [generators](https://linkml.io/linkml/generators/index.html)
+  - [linkml-runtime](https://pypi.org/project/linkml-runtime/) Python package providing a runtime library for the schema-specific generated python dataclass libraries.
+  - [documentation](https://linkml.io/linkml/)
 
 This guide assumes familiarity with all of the above
 
@@ -347,7 +349,7 @@ By this stage you can load and dump schema objects in a type-safe way. It may be
 However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under "Derived Schemas". You can do this simply by implementing the spec in your target language,
 but a more pragmatic approach is to port the python class SchemaView
 
-SchemaView is a class in linkml-runtime here: https://github.com/linkml/linkml-runtime
+SchemaView is a class in linkml-runtime here: <https://github.com/linkml/linkml/blob/main/packages/linkml_runtime/src/linkml_runtime/utils/schemaview.py>
 
 Note that you may only need to implement this for a simple profile of linkml before moving to the next step. As an example, see the SchemaView.js class in linkml-runtime.js
 

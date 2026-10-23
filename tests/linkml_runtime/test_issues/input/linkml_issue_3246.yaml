@@ -1,0 +1,24 @@
+id: https://w3id/org/linkml/issues/3246
+name: issue3246
+description: >-
+  An example of a schema that makes use of `linkml:Any` to mark a class
+  as being a placeholder for arbitrary, unspecified data.
+imports:
+- linkml:types
+prefixes:
+- linkml: https://w3id.org/linkml/
+default_range: string
+
+classes:
+  Anything:
+    class_uri: linkml:Any
+
+  Foo:
+    tree_root: true
+    attributes:
+      name:
+      extra:
+        range: Anything
+      extras:
+        range: Anything
+        multivalued: true

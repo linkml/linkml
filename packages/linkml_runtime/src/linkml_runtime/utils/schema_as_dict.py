@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 
@@ -6,7 +6,7 @@ from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 
-def _remove_names(obj: Any, parent: Optional[str]) -> Any:
+def _remove_names(obj: Any, parent: str | None) -> Any:
     """
     Remove `name` keys from dictionary objects, where that dictionary is already keyed by name
 

@@ -4,7 +4,7 @@ import re
 import pytest
 
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import cli
+from linkml.generators.panderagen import PanderaDataframeGenerator, cli
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 np = pytest.importorskip("numpy", reason="NumPY not installed")
@@ -28,6 +28,21 @@ MODEL_COLUMNS = [
     "any_type_column",
 ]
 
+MATERIALIZED_LENGTH_PATTERN = r'str_contains=r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"'
+
+
+def test_structured_patterns_are_resolved_without_modifying_schema(test_inputs_dir) -> None:
+    """Generate regular patterns from structured patterns without modifying the schema."""
+    generator = PanderaDataframeGenerator(str(test_inputs_dir / "pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
+
+    assert height_slot.pattern is None
+
+    code = generator.serialize()
+
+    assert MATERIALIZED_LENGTH_PATTERN in code
+    assert height_slot.pattern is None
+
 
 def test_pandera_basic_class_based(synthetic_pandera_schema):
     """
@@ -46,7 +61,13 @@ def test_pandera_basic_class_based(synthetic_pandera_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = ["AnyType", "ColumnType", "SimpleDictType", "PanderaSyntheticTable"]
+    expected_classes = [
+        "AnyType",
+        "ColumnType",
+        "SimpleDictType",
+        "PanderaSyntheticTableEfficient",
+        "PanderaSyntheticTable",
+    ]
 
     assert sorted(expected_classes) == sorted(classes)
 
@@ -150,29 +171,35 @@ def test_synthetic_dataframe_boolean_error(
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
 
 
-@pytest.mark.skipif(True, reason="will re-enable when polars support is enabled")
 def test_inlined_object_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_column_type_instances
+    N, compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_column_type_instances
 ):
     """Change the object column values from Int64 to Float64"""
     df_with_nested_object_type_error = big_synthetic_dataframe.with_columns(
-        invalid_column_type_instances[0].alias("inlined_as_object_column")
+        pl.Series(
+            [
+                invalid_column_type_instances[0],
+            ]
+            * N
+        ).alias("inlined_as_object_column")
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_object_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_object_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_as_object_column"
     assert error_details["check"] == "check_nested_struct_inlined_as_object_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.xfail(reason="floats are getting coerced to ints")
 def test_inlined_simple_dict_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_simple_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -180,7 +207,7 @@ def test_inlined_simple_dict_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
             df_with_nested_simple_dict_type_error, lazy=True
         )
 
@@ -189,12 +216,12 @@ def test_inlined_simple_dict_nested_range_type_error(
 
     assert error_details["column"] == "inlined_simple_dict_column"
     assert error_details["check"] == "check_nested_struct_inlined_simple_dict_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.skipif(True, reason="New PolaRS schema generator doesn't support loading collection dicts.")
 def test_inlined_dict_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
 ):
     """Change the inlined dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -202,19 +229,21 @@ def test_inlined_dict_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_dict_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_class_column"
     assert error_details["check"] == "check_nested_struct_inlined_class_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.skipif(True, reason="will re-enable when polars support is added")
 def test_inlined_list_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -222,14 +251,17 @@ def test_inlined_list_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_dict_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_as_list_column"
     assert error_details["check"] == "check_nested_struct_inlined_as_list_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
 @pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])
@@ -266,3 +298,24 @@ def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class,
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output
+
+
+@pytest.mark.parametrize("flag", ["--mergeimports", "--no-mergeimports"])
+def test_cli_accepts_mergeimports_flag(cli_runner, test_inputs_dir, flag):
+    """``gen-pandera`` must accept the standard ``--mergeimports/--no-mergeimports`` flag.
+
+    Regression: every other LinkML generator CLI declares this option via
+    ``shared_arguments``, but ``gen-pandera`` rolls its own decorator stack
+    and used to omit it. A user passing ``--mergeimports`` would hit
+    ``Error: No such option: --mergeimports`` even though the underlying
+    ``DataframeGenerator`` (via the ``Generator`` dataclass field) accepts
+    the kwarg perfectly well. Both polarities of the flag are exercised so
+    a future refactor that drops one side is caught.
+    """
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    result = cli_runner.invoke(cli, [flag, schema_path])
+
+    assert result.exit_code == 0, result.output
+    # Sanity-check that the run produced real output, not just a clean
+    # parse-and-exit. ``Organization`` is the canonical class in this fixture.
+    assert "class Organization(" in result.output

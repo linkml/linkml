@@ -5,10 +5,12 @@ import click
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
+from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.utils.formatutils import be, split_line
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class NamespaceGenerator(PythonGenerator):
     generatorname = os.path.basename(__file__)
@@ -27,13 +29,13 @@ class NamespaceGenerator(PythonGenerator):
 
     def gen_schema(self) -> str:
         split_descripton = "\n#              ".join(split_line(be(self.schema.description), split_len=100))
+        # The generation_date line is omitted when the timestamp is suppressed, but the rest
+        # of the metadata banner is still emitted.
+        generation_date = f"# Generation date: {self.schema.generation_date}\n" if self.schema.generation_date else ""
         head = (
-            f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
-# Generation date: {self.schema.generation_date}
-# Schema: {self.schema.name}
-#"""
-            if self.schema.generation_date
-            else ""
+            f"# Auto generated from {self.schema.source_file} by "
+            f"{self.generatorname} version: {self.generatorversion}\n"
+            f"{generation_date}# Schema: {self.schema.name}\n#"
         )
 
         return f'''{head}

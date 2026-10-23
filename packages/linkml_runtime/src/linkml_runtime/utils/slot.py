@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from re import Pattern
-from typing import Any, Optional
+from typing import Any
 
 from rdflib import URIRef
 
@@ -11,10 +11,10 @@ class Slot:
 
     uri: URIRef
     name: str
-    curie: Optional[str]
+    curie: str | None
     model_uri: URIRef
 
-    domain: Optional[type]
+    domain: type | None
     range: Any
-    mappings: Optional[list[URIRef]] = None
-    pattern: Optional[Pattern] = None
+    mappings: list[URIRef] | None = None
+    pattern: Pattern | None = None

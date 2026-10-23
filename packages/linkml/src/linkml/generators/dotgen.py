@@ -3,8 +3,8 @@ Generate dotfiles
 """
 
 import os
-from dataclasses import dataclass
-from typing import Optional
+from concurrent.futures import ThreadPoolExecutor, wait
+from dataclasses import dataclass, field
 
 import click
 from deprecated.classic import deprecated
@@ -18,7 +18,7 @@ from linkml_runtime.utils.formatutils import underscore
 valid_formats = sorted(list(FORMATS))
 
 
-@deprecated("Replaced by yuml/mermaid")
+@deprecated("Replaced by mermaid")
 @dataclass
 class DotGenerator(Generator):
     """
@@ -35,21 +35,22 @@ class DotGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    classnames: Optional[list[str]] = None
-    filename: Optional[str] = None
-    dirname: Optional[str] = None
-    filedot: Optional[Digraph] = None
-    classdot: Optional[Digraph] = None
-    cls_subj: Optional[SlotDefinition] = None
-    cls_obj: Optional[SlotDefinition] = None
-    classname: Optional[list[str]] = None
-    directory: Optional[str] = None
+    classnames: list[str] | None = None
+    filename: str | None = None
+    dirname: str | None = None
+    filedot: Digraph | None = None
+    classdot: Digraph | None = None
+    classdots: dict[str, Digraph] = field(default_factory=dict)
+    cls_subj: SlotDefinition | None = None
+    cls_obj: SlotDefinition | None = None
+    classname: list[str] | None = None
+    directory: str | None = None
 
     def visit_schema(
         self,
-        classname: Optional[list[str]] = None,
-        directory: Optional[str] = None,
-        filename: Optional[str] = None,
+        classname: list[str] | None = None,
+        directory: str | None = None,
+        filename: str | None = None,
         **_,
     ) -> None:
         self.classnames = [] if classname is None else list(classname)
@@ -72,6 +73,18 @@ class DotGenerator(Generator):
                 cleanup=True,
                 format=self.format,
             )
+        elif self.classdots:
+            # only need threads for concurrency here because graphviz calls out to a subprocess already
+            with ThreadPoolExecutor() as executor:
+                futures = [
+                    executor.submit(
+                        lambda name, cls: cls.render(name, self.dirname, view=False, cleanup=True, format=self.format),
+                        name,
+                        cls,
+                    )
+                    for name, cls in self.classdots.items()
+                ]
+                wait(futures)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.classnames and cls.name not in self.classnames:
@@ -97,13 +110,8 @@ class DotGenerator(Generator):
             self.edge(self.aliased_slot_name(self.cls_subj), rnode, style="dotted")
             self.edge(self.aliased_slot_name(self.cls_obj), rnode, style="dotted")
         if self.classdot:
-            self.classdot.render(
-                underscore(cls.name),
-                self.dirname,
-                view=False,
-                cleanup=True,
-                format=self.format,
-            )
+            self.classdots[underscore(cls.name)] = self.classdot
+            self.classdot = None
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition):
         if aliased_slot_name == "subject":

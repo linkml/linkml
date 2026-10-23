@@ -71,7 +71,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import Boolean, Date, Decimal, Integer, String
 from linkml_runtime.utils.metamodelcore import Bool, Decimal, XSDDate
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces
@@ -90,6 +90,7 @@ LEGO = CurieNamespace('lego', 'http://geneontology.org/lego/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
+QUDT = CurieNamespace('qudt', 'http://qudt.org/vocab/quantitykind/')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
@@ -161,11 +162,19 @@ class AnyOfSimpleType(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfSimpleType"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfSimpleType
 
-    attribute1: Optional[str] = None
+    attribute1: Optional[Union[str, int]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute1 is not None and not isinstance(self.attribute1, str):
-            self.attribute1 = str(self.attribute1)
+        if self.attribute1 is not None and not isinstance(self.attribute1, (str, int)):
+            value = self.attribute1
+            for _coerce in (lambda: str(value), lambda: int(value)):
+                try:
+                    self.attribute1 = _coerce()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[str, int] could be constructed from {value!r} for slot attribute1")
 
         super().__post_init__(**kwargs)
 
@@ -179,11 +188,19 @@ class AnyOfClasses(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfClasses"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfClasses
 
-    attribute2: Optional[str] = None
+    attribute2: Optional[Union[str, PersonId, OrganizationId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute2 is not None and not isinstance(self.attribute2, str):
-            self.attribute2 = str(self.attribute2)
+        if self.attribute2 is not None and not isinstance(self.attribute2, (PersonId, OrganizationId)):
+            value = self.attribute2
+            for _coerce in (lambda: PersonId(value), lambda: OrganizationId(value)):
+                try:
+                    self.attribute2 = _coerce()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[PersonId, OrganizationId] could be constructed from {value!r} for slot attribute2")
 
         super().__post_init__(**kwargs)
 
@@ -197,11 +214,19 @@ class AnyOfEnums(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfEnums"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfEnums
 
-    attribute3: Optional[str] = None
+    attribute3: Optional[Union[str, "DiagnosisType", "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute3 is not None and not isinstance(self.attribute3, str):
-            self.attribute3 = str(self.attribute3)
+        if self.attribute3 is not None and not isinstance(self.attribute3, (DiagnosisType, EmploymentEventType)):
+            value = self.attribute3
+            for _coerce in (lambda: DiagnosisType(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.attribute3 = _coerce()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[DiagnosisType, EmploymentEventType] could be constructed from {value!r} for slot attribute3")
 
         super().__post_init__(**kwargs)
 
@@ -215,11 +240,19 @@ class AnyOfMix(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfMix"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfMix
 
-    attribute4: Optional[str] = None
+    attribute4: Optional[Union[int, str, PersonId, "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute4 is not None and not isinstance(self.attribute4, str):
-            self.attribute4 = str(self.attribute4)
+        if self.attribute4 is not None and not isinstance(self.attribute4, (int, PersonId, EmploymentEventType)):
+            value = self.attribute4
+            for _coerce in (lambda: int(value), lambda: PersonId(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.attribute4 = _coerce()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[int, PersonId, EmploymentEventType] could be constructed from {value!r} for slot attribute4")
 
         super().__post_init__(**kwargs)
 
@@ -335,9 +368,7 @@ class Person(YAMLRoot):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        if not isinstance(self.has_familial_relationships, list):
-            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
-        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
+        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -605,7 +636,7 @@ class FamilialRelationship(Relationship):
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
-    cordialness: Optional[str] = None
+    cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
@@ -617,9 +648,6 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
-
-        if self.cordialness is not None and not isinstance(self.cordialness, str):
-            self.cordialness = str(self.cordialness)
 
         if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
             self.cordialness = CordialnessEnum(self.cordialness)
@@ -655,14 +683,22 @@ class EmploymentEvent(Event):
     class_model_uri: ClassVar[URIRef] = KS.EmploymentEvent
 
     employed_at: Optional[Union[str, CompanyId]] = None
-    type: Optional[str] = None
+    type: Optional[Union[str, "CordialnessEnum", "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.employed_at is not None and not isinstance(self.employed_at, CompanyId):
             self.employed_at = CompanyId(self.employed_at)
 
-        if self.type is not None and not isinstance(self.type, str):
-            self.type = str(self.type)
+        if self.type is not None and not isinstance(self.type, (CordialnessEnum, EmploymentEventType)):
+            value = self.type
+            for _coerce in (lambda: CordialnessEnum(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.type = _coerce()
+                    break
+                except (ValueError, TypeError):
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[CordialnessEnum, EmploymentEventType] could be constructed from {value!r} for slot type")
 
         super().__post_init__(**kwargs)
 
@@ -768,6 +804,7 @@ class CodeSystem(YAMLRoot):
 
     id: Union[str, CodeSystemId] = None
     name: Optional[str] = None
+    long_id: Optional[Union[str, "LongEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -777,6 +814,9 @@ class CodeSystem(YAMLRoot):
 
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
+
+        if self.long_id is not None and not isinstance(self.long_id, LongEnum):
+            self.long_id = LongEnum(self.long_id)
 
         super().__post_init__(**kwargs)
 
@@ -1044,6 +1084,33 @@ class CordialnessEnum(EnumDefinitionImpl):
         name="CordialnessEnum",
     )
 
+class LongEnum(EnumDefinitionImpl):
+    """
+    An example enum whose joined values will exceed 255 characters.
+    """
+    AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern = PermissibleValue(text="AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern")
+    BetaSequenceIdentifier02_LongPatternLongPatternLongPattern = PermissibleValue(text="BetaSequenceIdentifier02_LongPatternLongPatternLongPattern")
+    GammaSequenceIdentifier03_LongPatternLongPatternLongPattern = PermissibleValue(text="GammaSequenceIdentifier03_LongPatternLongPatternLongPattern")
+    DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern = PermissibleValue(text="DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern")
+    EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern = PermissibleValue(text="EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern")
+    ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern = PermissibleValue(text="ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern")
+    EtaSequenceIdentifier07_LongPatternLongPatternLongPattern = PermissibleValue(text="EtaSequenceIdentifier07_LongPatternLongPatternLongPattern")
+    ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern = PermissibleValue(text="ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern")
+    IotaSequenceIdentifier09_LongPatternLongPatternLongPattern = PermissibleValue(text="IotaSequenceIdentifier09_LongPatternLongPatternLongPattern")
+    KappaSequenceIdentifier10_LongPatternLongPatternLongPattern = PermissibleValue(text="KappaSequenceIdentifier10_LongPatternLongPatternLongPattern")
+    LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern = PermissibleValue(text="LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern")
+    MuSequenceIdentifier12_LongPatternLongPatternLongPattern = PermissibleValue(text="MuSequenceIdentifier12_LongPatternLongPatternLongPattern")
+    NuSequenceIdentifier13_LongPatternLongPatternLongPattern = PermissibleValue(text="NuSequenceIdentifier13_LongPatternLongPatternLongPattern")
+    XiSequenceIdentifier14_LongPatternLongPatternLongPattern = PermissibleValue(text="XiSequenceIdentifier14_LongPatternLongPatternLongPattern")
+    OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern = PermissibleValue(text="OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern")
+    PiSequenceIdentifier16_LongPatternLongPatternLongPattern = PermissibleValue(text="PiSequenceIdentifier16_LongPatternLongPatternLongPattern")
+    RhoSequenceIdentifier17_LongPatternLongPatternLongPattern = PermissibleValue(text="RhoSequenceIdentifier17_LongPatternLongPatternLongPattern")
+
+    _defn = EnumDefinition(
+        name="LongEnum",
+        description="An example enum whose joined values will exceed 255 characters.",
+    )
+
 class KitchenStatus(EnumDefinitionImpl):
 
     DIRTY = PermissibleValue(text="DIRTY")
@@ -1083,6 +1150,9 @@ slots.in_location = Slot(uri=KS.in_location, name="in location", curie=KS.curie(
 
 slots.diagnosis = Slot(uri=KS.diagnosis, name="diagnosis", curie=KS.curie('diagnosis'),
                    model_uri=KS.diagnosis, domain=None, range=Optional[Union[dict, DiagnosisConcept]])
+
+slots.long_id = Slot(uri=KS.long_id, name="long_id", curie=KS.curie('long_id'),
+                   model_uri=KS.long_id, domain=None, range=Optional[Union[str, "LongEnum"]])
 
 slots.procedure = Slot(uri=KS.procedure, name="procedure", curie=KS.curie('procedure'),
                    model_uri=KS.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])
@@ -1179,16 +1249,16 @@ slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('a
                    model_uri=KS.agent_set, domain=None, range=Optional[Union[dict[Union[str, AgentId], Union[dict, Agent]], list[Union[dict, Agent]]]])
 
 slots.anyOfSimpleType__attribute1 = Slot(uri=KS.attribute1, name="anyOfSimpleType__attribute1", curie=KS.curie('attribute1'),
-                   model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[Union[str, int]])
 
 slots.anyOfClasses__attribute2 = Slot(uri=KS.attribute2, name="anyOfClasses__attribute2", curie=KS.curie('attribute2'),
-                   model_uri=KS.anyOfClasses__attribute2, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfClasses__attribute2, domain=None, range=Optional[Union[str, PersonId, OrganizationId]])
 
 slots.anyOfEnums__attribute3 = Slot(uri=KS.attribute3, name="anyOfEnums__attribute3", curie=KS.curie('attribute3'),
-                   model_uri=KS.anyOfEnums__attribute3, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfEnums__attribute3, domain=None, range=Optional[Union[str, "DiagnosisType", "EmploymentEventType"]])
 
 slots.anyOfMix__attribute4 = Slot(uri=KS.attribute4, name="anyOfMix__attribute4", curie=KS.curie('attribute4'),
-                   model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[Union[int, str, PersonId, "EmploymentEventType"]])
 
 slots.equalsString__attribute5 = Slot(uri=KS.attribute5, name="equalsString__attribute5", curie=KS.curie('attribute5'),
                    model_uri=KS.equalsString__attribute5, domain=None, range=Optional[str])
@@ -1250,5 +1320,5 @@ slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="Familial
                    model_uri=KS.FamilialRelationship_cordialness, domain=FamilialRelationship, range=Optional[Union[str, "CordialnessEnum"]])
 
 slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
-                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[str])
+                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[Union[str, "CordialnessEnum", "EmploymentEventType"]])
 

@@ -1,6 +1,7 @@
 id: https://w3id.org/linkml/meta
 title: LinkML Schema Metamodel
 name: meta
+metamodel_version: 1.12.0
 description: |-
   The metamodel for schemas defined using the Linked Data Modeling Language framework.
 
@@ -49,6 +50,9 @@ prefixes:
   qudt: http://qudt.org/schema/qudt/
   cdisc: http://rdf.cdisc.org/mms#
   SIO: http://semanticscience.org/resource/SIO_
+  dcterms: http://purl.org/dc/terms/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 
 default_prefix: linkml
 default_range: string
@@ -192,7 +196,7 @@ slots:
     description: >-
       An element in another schema which this element instantiates.
     multivalued: true
-      
+
   categories:
     range: uriorcurie
     singular_name: category
@@ -277,7 +281,7 @@ slots:
       A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
     see_also:
       - linkml:aliases
-      
+
   aliases:
     aliases:
       - synonyms
@@ -433,11 +437,13 @@ slots:
     aliases:
       - workflow status
     domain: element
-    range: uriorcurie
+    range: string
     description: status of the element
-    slot_uri: bibo:status
+    close_mappings:
+      - bibo:status
     examples:
-      - value: "bibo:draft"
+      - value: "testing"
+      - value: "unstable"
     see_also:
       - https://www.hl7.org/fhir/valueset-publication-status.html  ## Draft, Active, Retired, Unknown
       - https://www.hl7.org/fhir/versions.html#std-process  ## Draft, Trial Use, Normative, Informative, Deprecated
@@ -1032,7 +1038,7 @@ slots:
     description: the refinement of a slot in the context of the containing class definition.
     comments:
       - >-
-        Many slots may be re-used across different classes, but the meaning of the slot may be refined by context.
+        Many slots may be reused across different classes, but the meaning of the slot may be refined by context.
         For example, a generic association model may use slots subject/predicate/object with generic semantics and
         minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may
         specify both local naming (e.g. subject=disease) and local constraints
@@ -1308,7 +1314,15 @@ slots:
     range: unique_key
     multivalued: true
     inlined: true
-    description: A collection of named unique keys for this class. Unique keys may be singular or compound.
+    description: >-
+      A collection of named unique keys for this class. Such unique keys may be spread over several slots, which is why they
+      are also called "compound keys". A unique key uniquely identifies instances of the class within a given container, meaning
+      there cannot be two (or more) instances of the class with the same values for all the slots that make up the unique key.
+    comments:
+      - >
+        Not to be confused with a "singular unique key", which is defined by means of the `key` slot, or with an "identifier",
+        which is defined by means of the "identifier" slot. Compound keys, singular unique keys, and identifiers all create a
+        unicity constraint, but singular unique keys and identifiers have additional effects that compound keys do not have.
     exact_mappings:
       - owl:hasKey
     in_subset:
@@ -1316,7 +1330,9 @@ slots:
       - BasicSubset
       - RelationalModelProfile
     see_also:
-      - https://linkml.io/linkml/schemas/constraints.html#unique-key
+      - https://linkml.io/linkml/schemas/constraints.html#unique-keys
+      - linkml:key
+      - linkml:identifier
 
   unique_key_name:
     domain: unique_key
@@ -1351,7 +1367,72 @@ slots:
     range: boolean
     description: if true then induced/mangled slot names are not created for class_usage and attributes
     status: testing
-    
+
+  extra_slots:
+    description: |
+      How a class instance handles extra data not specified in the class definition.
+      Note that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.
+
+      Possible values:
+      - `allowed: true` - allow all additional data
+      - `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+        forbid all additional data (default)
+      - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
+    domain: class_definition
+    range: extra_slots_expression
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    examples:
+      - object:
+          allowed: true
+        description: Allow all additional data
+      - object:
+          allowed: false
+        description: Forbid any additional data
+      - object:
+          range_expression:
+            range: string
+        description: Allow additional data that are strings
+      - object:
+          range_expression:
+            range: AClassDefinition
+        description: Allow additional data if they are instances of the class definition "AClassDefinition"
+      - object:
+          range_expression:
+            any_of:
+              - range: string
+              - range: integer
+        description: allow additional data if they are either strings or integers
+      - object:
+          range_expression:
+            range: integer
+            multivalued: true
+            maximum_cardinality: 5
+        description: |
+          Allow additional data if they are lists of integers of at most length 5.
+          Note that this does *not* mean that a maximum of 5 extra slots are allowed.
+      - object:
+          range_expression:
+            range: integer
+            required: true
+        description: |
+          Allow additional data if they are integers.
+          `required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
+      - object:
+          allowed: false
+          range_expression:
+            range: string
+        description: |
+          A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the
+          `anonymous_slot_expression` will be ignored.
+
+  allowed:
+    description: Whether or not something is allowed. Usage defined by context.
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
 
   # -----------------------------------
   # Slot definition slots
@@ -1382,6 +1463,7 @@ slots:
     inherited: true
     comments:
       - range is underspecified, as not all elements can appear as the range of a slot.
+      - to use a URI or CURIE as the range, create a class with the URI or curie as the class_uri
     description: |
       defines the type of the object of the slot.  Given the following slot definition
         S1:
@@ -1410,6 +1492,7 @@ slots:
       URI of the class that provides a semantic interpretation of the slot in a linked data context. The URI may come from any namespace and may be shared between schemas.
     comments:
       - Assigning slot_uris can provide additional hooks for interoperation, indicating a common conceptual model
+      - To use a URI or CURIE as a range, create a class with the URI or CURIE as the class_uri
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -1792,18 +1875,24 @@ slots:
     range: boolean
     inherited: true
     description: >-
-      True means that the key slot(s) uniquely identify the elements within a single container
+      True means that the slot is the "singular unique key" (also known more simply as the "key slot") of its class. Such a slot
+      uniquely identifies instances of the class within a single container, meaning there cannot be two (or more) instances of
+      the class (or instances of any of its descendants) with the same value for the key slot within the container.
     comments:
-      - key is inherited
-      - a given domain can have at most one key slot (restriction to be removed in the future)
-      - identifiers and keys are mutually exclusive.  A given domain cannot have both
-      - a key slot is automatically required.  Keys cannot be optional
+      - The key slot is inherited.
+      - A domain can have at most one key slot OR one identifier slot. However a domain can have both a key slot and any number
+        of compound keys.
+      - A key slot is automatically required. Singular unique keys cannot be optional.
+      - The presence of a key slot makes a class eligible for inlining as a dictionary.
     in_subset:
       - SpecificationSubset
       - BasicSubset
       - RelationalModelProfile
     see_also:
+      - https://linkml.io/linkml/schemas/constraints.html#singular-unique-keys
+      - https://linkml.io/linkml/schemas/inlining.html
       - linkml:unique_keys
+      - linkml:identifier
 
   identifier:
     rank: 5
@@ -1811,8 +1900,16 @@ slots:
     range: boolean
     inherited: true
     description: >-
-      True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per
-      container
+      True means that the slot is the identifier slot of its class. Such a slot uniquely identifies instances of the class
+      throughout an entire document, meaning there cannot be two (or more) instances of the class (or instances of any of its
+      descendants) with the same value for the identifier slot anywhere in the document.
+    comments:
+      - The identifier slot is inherited.
+      - A domain can have at most one identifier slot OR a key slot. However a domain can have both an identifier slot and any
+        number of compound keys.
+      - An identifier slot is automatically required. Identifiers cannot be optional.
+      - The presence of an identifier slot makes a class eligible for inlining as a dictionary.
+      - The presence of an identifier slot makes a class eligible for being referenced rather than inlined.
     aliases:
       - primary key
       - ID
@@ -1820,12 +1917,10 @@ slots:
       - code
     see_also:
       - https://en.wikipedia.org/wiki/Identifier
+      - https://linkml.io/linkml/schemas/constraints.html#unique-keys
+      - https://linkml.io/linkml/schemas/inlining.html
       - linkml:unique_keys
-    comments:
-      - identifier is inherited
-      - a key slot is automatically required.  Identifiers cannot be optional
-      - a given domain can have at most one identifier
-      - identifiers and keys are mutually exclusive.  A given domain cannot have both
+      - linkml:key
     in_subset:
       - SpecificationSubset
       - MinimalSubset
@@ -2091,7 +2186,7 @@ slots:
       expansion.
 
       Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations
-      by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of
+      by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of
       complex objects
 
       For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot
@@ -2145,7 +2240,7 @@ slots:
       A collection of type mappings that specify how a slot's range should be mapped or
       serialized in different frameworks
     multivalued: true
-      
+
   framework_key:
     range: string
     alias: framework
@@ -2154,7 +2249,7 @@ slots:
       The name of a format that can be used to serialize LinkML data.
       The string value should be a code from the LinkML frameworks vocabulary,
       but this is not strictly enforced
-    
+
   mapped_type:
     range: type_definition
     alias: type
@@ -2481,7 +2576,7 @@ classes:
 
   Anything:
     class_uri: linkml:Any
-  
+
   common_metadata:
     description: Generic metadata shared across definitions
     mixin: true
@@ -2756,7 +2851,7 @@ classes:
 
   match_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that
       matches on properties of the external concepts.
     slots:
       - identifier_pattern
@@ -2766,7 +2861,7 @@ classes:
 
   reachability_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
       set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology
@@ -2880,6 +2975,7 @@ classes:
       - exactly_one_of
       - any_of
       - all_of
+      - array
     slot_usage:
       any_of:
         range: anonymous_slot_expression
@@ -2915,7 +3011,6 @@ classes:
       - singular_name
       - domain
       - slot_uri
-      - array
       - inherited
       - readonly
       - ifabsent
@@ -2994,6 +3089,10 @@ classes:
       - class_expression
     slots:
       - is_a
+    slot_usage:
+      is_a:
+        range: class_definition
+        description: A class that any instance satisfying this expression must also be an instance of
 
   class_definition:
     rank: 2
@@ -3023,6 +3122,8 @@ classes:
       - represents_relationship
       - disjoint_with
       - children_are_mutually_disjoint
+      - extra_slots
+      - alias
     slot_usage:
       is_a:
         range: class_definition
@@ -3225,6 +3326,21 @@ classes:
       - string_serialization
     in_subset:
       - SpecificationSubset
+
+  extra_slots_expression:
+    description: |
+      An expression that defines how to handle additional data in an instance of class
+      beyond the slots/attributes defined for that class.
+      See `extra_slots` for usage examples.
+    mixins:
+      - expression
+    slots:
+      - allowed
+      - range_expression
+    slot_usage:
+      range_expression:
+        range: anonymous_slot_expression
+
 
 # ==================================
 # Enumerations                     #

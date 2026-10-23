@@ -53,12 +53,11 @@ SCHEMA_WITH_IMPORTS = INPUT_DIR_PATH / "kitchen_sink.yaml"
 SCHEMA_CORE = INPUT_DIR_PATH / "core.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
+SCHEMA_RULES_IMPORT = INPUT_DIR_PATH / "rules_import" / "base.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
-CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc"
-CREATURE_SCHEMA_RAW_URL = (
-    "https://github.com/linkml/linkml-runtime/raw/main/tests/test_utils/input/mcc/creature_schema.yaml"
-)
+CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
+CREATURE_SCHEMA_RAW_URL = "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
 
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
@@ -479,6 +478,21 @@ def test_imports_overrides(sv_import_tree: SchemaView) -> None:
     assert defaults == target
 
 
+def test_imports_rules_merge() -> None:
+    """Rules from imported schemas should be additively merged onto same-named classes.
+
+    When a base schema imports a rules-only schema that defines rules on a class
+    also defined in the base, the rules should accumulate rather than being silently
+    dropped by the import merge.
+    """
+    sv = SchemaView(SCHEMA_RULES_IMPORT)
+    org = sv.get_class("Organization")
+    descriptions = {r.description for r in org.rules}
+    assert "base rule" in descriptions, "Base schema's own rules should be preserved"
+    assert "imported rule" in descriptions, "Imported schema's rules should be merged in"
+    assert len(org.rules) == 2
+
+
 def test_imports_relative() -> None:
     """Relative imports from relative imports should evaluate relative to the *importing* schema."""
     sv = SchemaView(SCHEMA_RELATIVE_IMPORT_TREE)
@@ -522,6 +536,7 @@ def test_imports_relative_load() -> None:
     sv.imports_closure(imports=True)
 
 
+@pytest.mark.network
 def test_imports_direct_remote_imports() -> None:
     """Tests that building a SchemaView directly from a remote URL works."""
     view = SchemaView("https://w3id.org/linkml/meta.yaml")
@@ -535,11 +550,12 @@ def test_imports_direct_remote_imports() -> None:
         assert c not in view.all_classes(imports=False)
 
 
+@pytest.mark.network
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
-        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
-        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+        "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/"
+        "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml"
     )
     sv = SchemaView(url)
     assert sv.schema.name == "kitchen_sink"
@@ -600,6 +616,105 @@ def test_import_map(importmap: dict[str, Any]) -> None:
     # ensure that ACTIVITY only appears in all_classes if imports are enabled
     assert ACTIVITY in view.all_classes()
     assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict() -> None:
+    """An importmap value may be an in-memory schema dict, loaded without filesystem access."""
+    core_dict = YAMLLoader().load_as_dict(str(SCHEMA_CORE))
+    view = SchemaView(SCHEMA_WITH_IMPORTS, importmap={"core": core_dict})
+    view.all_classes()
+    # ensure that all imports have loaded from the in-memory dict
+    assert set(view.imports_closure()) == {"kitchen_sink", "core", "linkml:types"}
+    # ACTIVITY is only defined in the imported core schema, so its presence proves the
+    # dict-valued import was resolved and merged
+    assert ACTIVITY in view.all_classes()
+    assert ACTIVITY not in view.all_classes(imports=False)
+
+
+def test_import_map_in_memory_dict_transitive(tmp_path: Path) -> None:
+    """A dict-valued import whose own imports are also dict-valued resolves transitively."""
+    leaf = {
+        "id": "https://example.org/leaf",
+        "name": "leaf",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "classes": {"LeafClass": {"attributes": {"leaf_attr": {"range": "string"}}}},
+    }
+    middle = {
+        "id": "https://example.org/middle",
+        "name": "middle",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types", "https://example.org/leaf"],
+        "classes": {"MiddleClass": {"is_a": "LeafClass"}},
+    }
+    root = SchemaDefinition(
+        id="https://example.org/root",
+        name="root",
+        imports=["linkml:types", "https://example.org/middle"],
+        classes=[ClassDefinition(name="RootClass", is_a="MiddleClass")],
+    )
+    importmap = {
+        "https://example.org/middle": middle,
+        "https://example.org/leaf": leaf,
+    }
+    view = SchemaView(root, importmap=importmap)
+    all_classes = view.all_classes()
+    assert {"RootClass", "MiddleClass", "LeafClass"} <= set(all_classes)
+    # the transitively-imported leaf attribute is inducible on RootClass
+    assert view.induced_slot("leaf_attr", "RootClass").range == "string"
+
+
+def _write_redirect_tree(tmp_path: Path, sub_imports: list[str]) -> Path:
+    """``root_dir/main.yaml`` imports ``sub``, which an importmap redirects to
+    ``elsewhere/sub.yaml``; ``sub``'s own imports must resolve next to it, not next to ``main``.
+    Returns the path to ``main.yaml``."""
+    root_dir = tmp_path / "root_dir"
+    elsewhere = tmp_path / "elsewhere"
+    root_dir.mkdir()
+    elsewhere.mkdir()
+    (root_dir / "main.yaml").write_text(
+        "id: https://example.org/main\nname: main\ndefault_range: string\nimports: [sub]\n"
+        "classes:\n  Thing:\n    slots: [sub_slot]\n"
+    )
+    (elsewhere / "sub.yaml").write_text(
+        f"id: https://example.org/sub\nname: sub\ndefault_range: string\nimports: {sub_imports}\nslots:\n  sub_slot:\n"
+    )
+    (elsewhere / "leaf.yaml").write_text(
+        "id: https://example.org/leaf\nname: leaf\ndefault_range: string\nslots:\n  leaf_slot:\n"
+    )
+    return root_dir / "main.yaml"
+
+
+@pytest.mark.parametrize("importmap_value", ["../elsewhere/sub", "ABSOLUTE"])
+def test_importmap_redirected_schema_resolves_own_relative_imports(tmp_path: Path, importmap_value: str) -> None:
+    """A schema redirected outside the root tree by an importmap resolves its own relative
+    imports next to itself, not in the root schema's directory (#3499)."""
+    main = _write_redirect_tree(tmp_path, sub_imports=["./leaf"])
+    if importmap_value == "ABSOLUTE":
+        importmap_value = str(tmp_path / "elsewhere" / "sub")
+
+    view = SchemaView(str(main), importmap={"sub": importmap_value})
+    slots = view.all_slots(imports=True)
+    assert "sub_slot" in slots
+    assert "leaf_slot" in slots
+
+
+def test_importmap_redirected_schema_resolves_nested_relative_imports(tmp_path: Path) -> None:
+    """Relative imports resolve against the importing schema at every depth below a redirect."""
+    main = _write_redirect_tree(tmp_path, sub_imports=["./nested/deep"])
+    nested = tmp_path / "elsewhere" / "nested"
+    nested.mkdir()
+    (nested / "deep.yaml").write_text(
+        "id: https://example.org/deep\nname: deep\ndefault_range: string\nimports: [./deepest]\nslots:\n  deep_slot:\n"
+    )
+    (nested / "deepest.yaml").write_text(
+        "id: https://example.org/deepest\nname: deepest\ndefault_range: string\nslots:\n  deepest_slot:\n"
+    )
+
+    view = SchemaView(str(main), importmap={"sub": "../elsewhere/sub"})
+    slots = view.all_slots(imports=True)
+    assert "deep_slot" in slots
+    assert "deepest_slot" in slots
 
 
 def test_merge_imports_kwargs(schema_view_with_imports: SchemaView, sv_merged_imports_keyword: SchemaView) -> None:
@@ -963,7 +1078,14 @@ for value in CREATURE_EXPECTED.values():
 
 
 @pytest.mark.parametrize(
-    "schema", ["creature_view", "creature_view_remote", "creature_view_local", "creature_view_direct_url"]
+    "schema",
+    [
+        "creature_view",
+        # network: these load the schema over https to exercise URL imports
+        pytest.param("creature_view_remote", marks=pytest.mark.network),
+        "creature_view_local",
+        pytest.param("creature_view_direct_url", marks=pytest.mark.network),
+    ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
 def test_creature_schema_entities_with_without_imports(
@@ -1609,6 +1731,55 @@ def test_all_enums(schema_view_with_imports: SchemaView) -> None:
             assert e.from_schema == "https://w3id.org/linkml/tests/core"
 
 
+def _write_shared_attribute_tree(tmp_path: Path) -> Path:
+    """Two modules, each declaring the same attribute name, imported as ./child_a and ./child_b."""
+    for suffix in ("a", "b"):
+        (tmp_path / f"child_{suffix}.yaml").write_text(
+            f"id: https://example.org/child_{suffix}\n"
+            f"name: child_{suffix}\n"
+            "prefixes: {linkml: 'https://w3id.org/linkml/', ex: 'https://example.org/'}\n"
+            "default_prefix: ex\n"
+            "default_range: string\n"
+            "imports: [linkml:types]\n"
+            "classes:\n"
+            f"  Child{suffix}:\n"
+            "    is_a: Parent\n"
+            "    attributes:\n"
+            "      shared_attribute:\n"
+            "        range: string\n"
+        )
+    main = tmp_path / "main.yaml"
+    main.write_text(
+        "id: https://example.org/main\n"
+        "name: main\n"
+        "prefixes: {linkml: 'https://w3id.org/linkml/', ex: 'https://example.org/'}\n"
+        "default_prefix: ex\n"
+        "default_range: string\n"
+        "imports: [linkml:types, ./child_a, ./child_b]\n"
+        "classes:\n"
+        "  Parent:\n"
+        "    description: parent class, defined in the importing schema\n"
+    )
+    return main
+
+
+def test_get_uri_element_defined_in_relatively_imported_schema(tmp_path: Path) -> None:
+    """get_uri resolves an element whose schema was imported under a relative path.
+
+    ``schema_map`` is keyed by the import as written (``./child_b``) while ``in_schema()``
+    reports the schema's name (``child_b``). An attribute declared in more than one class
+    has no ``from_schema``, so the lookup falls back to the key and must tolerate the
+    difference. This is what makes ``gen-shacl`` fail on modular schemas (#3878).
+    """
+    main = _write_shared_attribute_tree(tmp_path)
+    view = SchemaView(str(main))
+
+    # precondition: the attribute is declared in more than one class, so it has no
+    # from_schema and get_uri has to locate its schema rather than being handed it
+    assert view.get_element("shared_attribute").from_schema is None
+    assert view.get_uri("shared_attribute", expand=True) == "https://example.org/shared_attribute"
+
+
 def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     """Test the get_uri function."""
     view = schema_view_with_imports
@@ -1631,6 +1802,20 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     assert view.get_uri("name", use_element_type=True) == "core:slot/name"
 
     assert view.get_uri("string") == "xsd:string"
+
+    # SubsetDefinition: multi-word names are camelcased when building the native URI.
+    # "subset A" -> "SubsetA"; the transformation is directly observable.
+    assert view.get_uri("subset A") == "ks:SubsetA"
+    assert view.get_uri("subset A", expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/SubsetA"
+    assert view.get_uri("subset B") == "ks:SubsetB"
+
+    # TypeDefinition and EnumDefinition: add multi-word names to the kitchen_sink schema
+    # so the camelcase transformation is directly observable (the fixture is function-scoped).
+    view.add_type(TypeDefinition(name="my custom type"))
+    assert view.get_uri("my custom type") == "ks:MyCustomType"
+
+    view.add_enum(EnumDefinition(name="relationship type"))
+    assert view.get_uri("relationship type") == "ks:RelationshipType"
 
 
 def test_uris_without_default_prefix() -> None:
@@ -1675,17 +1860,34 @@ def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
 def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     """Tests the alias slot.
 
-    The induced slot alias should always be populated. For induced slots, it should default to the
-    name field if not present.
+    The induced slot alias should only be populated when it differs from the slot name.
+    See https://github.com/linkml/linkml/issues/2911
     """
     view = schema_view_no_imports
-    for c in view.all_classes().values():
-        for s in view.class_induced_slots(c.name):
-            assert s.alias is not None  # Assert that alias is not None
 
+    # Test explicit alias that differs from name
     postal_code_slot = view.induced_slot("postal code", "Address")
-    assert postal_code_slot.name == "postal code"  # Assert name is 'postal code'
-    assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
+    assert postal_code_slot.name == "postal code"
+    assert postal_code_slot.alias == "zip"
+
+    # Test that alias is None when it would equal the name (after underscoring)
+    aliases_slot = view.induced_slot("aliases", "HasAliases")
+    assert aliases_slot.name == "aliases"
+    assert aliases_slot.alias is None  # Not set because underscore("aliases") == "aliases"
+
+
+def test_induced_slot_underscored_name(schema_view_no_imports: SchemaView) -> None:
+    """induced_slot must accept the underscore-normalised form of a slot name."""
+    view = schema_view_no_imports
+
+    # "postal code" in the schema → callers pass "postal_code"
+    slot = view.induced_slot("postal_code", "Address")
+    assert slot.name == "postal code"
+
+    # When the slot name already has no special characters the exact-match path
+    # still works and the fallback is not triggered.
+    slot_direct = view.induced_slot("aliases", "HasAliases")
+    assert slot_direct.name == "aliases"
 
 
 """Tests of SchemaView range-related functions.
@@ -2900,15 +3102,310 @@ def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
     assert sorted(actual_result) == sorted(expected_result)
 
 
+@pytest.mark.parametrize(
+    ("interpolated", "partial_match", "expected_pattern"),
+    [
+        (True, True, r"[a-z]+"),
+        (True, False, r"^(?:[a-z]+)$"),
+        (False, True, r"\{word\}"),
+        (False, False, r"^(?:\{word\})$"),
+    ],
+)
+def test_resolve_pattern_does_not_modify_definition(
+    interpolated: bool, partial_match: bool, expected_pattern: str
+) -> None:
+    """Verify that all structured_pattern options are taken into account when resolving
+    to a pattern and that the original slot definition is not modified."""
+    view = SchemaView(
+        f"""
+id: https://example.org/pattern-options
+name: pattern_options
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: {str(interpolated).lower()}
+      partial_match: {str(partial_match).lower()}
+"""
+    )
+    value_slot = view.get_slot("value")
+
+    assert value_slot is not None
+    assert view.resolve_pattern(value_slot) == expected_pattern
+    assert value_slot.pattern is None
+    assert view.modifications == 0
+
+
+def test_resolve_pattern_returns_asserted_pattern() -> None:
+    """Verify that resolve_pattern returns the slot's pattern unmodified when no
+    structured_pattern is asserted."""
+    view = SchemaView(
+        """
+id: https://example.org/plain-pattern
+name: plain_pattern
+slots:
+  value:
+    pattern: "[a-z]+"
+"""
+    )
+    value_slot = view.get_slot("value")
+
+    assert value_slot is not None
+    assert view.resolve_pattern(value_slot) == "[a-z]+"
+
+
+def test_induced_slot_resolves_inherited_imported_slot_usage(tmp_path: Path) -> None:
+    """Verify that the defining schema's settings are used for inherited imported slot
+    usage when resolving patterns."""
+    imported_schema = tmp_path / "imported.yaml"
+    imported_schema.write_text(
+        """
+id: https://example.org/imported
+name: imported
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    range: string
+classes:
+  ImportedParent:
+    slots:
+      - value
+    slot_usage:
+      value:
+        structured_pattern:
+          syntax: "{word}{word}"
+          interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+classes:
+  RootChild:
+    is_a: ImportedParent
+"""
+    )
+    view = SchemaView(root_schema)
+
+    induced_slot = view.induced_slot("value", "RootChild")
+
+    assert induced_slot.pattern == r"^(?:[a-z]+[a-z]+)$"
+    imported_slot_usage = view.get_class("ImportedParent").slot_usage["value"]
+    assert imported_slot_usage.pattern is None
+    assert view.modifications == 0
+
+
+def test_induced_attribute_resolves_pattern_without_schema_slot() -> None:
+    """Verify that pattern resolution works on an attribute when no schema-level slot
+    definition exists."""
+    view = SchemaView(
+        """
+id: https://example.org/attribute-pattern
+name: attribute_pattern
+settings:
+  word: "[a-z]+"
+classes:
+  Container:
+    attributes:
+      value:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+"""
+    )
+
+    induced_attribute = view.induced_slot("value")
+
+    assert induced_attribute.pattern == r"^(?:[a-z]+)$"
+    assert view.get_class("Container").attributes["value"].pattern is None
+
+
+def test_induced_type_propagates_all_inherited_metaslots() -> None:
+    """Verify that all inheritable TypeDefinition metalots are propagated to the induced
+    slot and that structured_patterns are resolved."""
+    view = SchemaView(
+        """
+id: https://example.org/type-patterns
+name: type_patterns
+settings:
+  word: "[a-z]+"
+types:
+  ParentType:
+    base: str
+    uri: xsd:string
+    repr: str
+    minimum_value: 1
+    maximum_value: 10
+    equals_string_in:
+      - alpha
+      - beta
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+  ChildType:
+    typeof: ParentType
+    maximum_value: 5
+"""
+    )
+
+    induced_type = view.induced_type("ChildType")
+
+    assert induced_type.base == "str"
+    assert induced_type.uri == "xsd:string"
+    assert induced_type.repr == "str"
+    assert induced_type.minimum_value == 1
+    assert induced_type.maximum_value == 5
+    assert induced_type.equals_string_in == ["alpha", "beta"]
+    assert induced_type.pattern == r"^(?:[a-z]+)$"
+    assert view.get_type("ParentType").pattern is None
+    assert view.modifications == 0
+
+
 def test_materialize_patterns(sv_structured_patterns: SchemaView) -> None:
-    """Test pattern materialization."""
-    sv_structured_patterns.materialize_patterns()
+    """Retain pattern materialization while warning callers that it mutates the schema."""
+    with pytest.warns(DeprecationWarning, match="resolve_pattern"):
+        sv_structured_patterns.materialize_patterns()
 
     height_slot = sv_structured_patterns.get_slot("height")
     weight_slot = sv_structured_patterns.get_slot("weight")
+    email_string_type = sv_structured_patterns.get_type("EmailString")
 
-    assert height_slot.pattern == r"\d+[\.\d+] (centimeter|meter|inch)"
-    assert weight_slot.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert height_slot.pattern == r"^(?:\d+[\.\d+] (centimeter|meter|inch))$"
+    assert weight_slot.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
+    assert email_string_type.pattern == r"^(?:\S+@\S+{\.\w}+)$"
+
+
+@pytest.mark.parametrize(
+    ("interpolated", "partial_match", "expected_pattern"),
+    [
+        (True, True, r"[a-z]+"),
+        (True, False, r"^(?:[a-z]+)$"),
+        (False, True, r"\{word\}"),
+        (False, False, r"^(?:\{word\})$"),
+    ],
+)
+def test_materialize_patterns_expression_options(
+    interpolated: bool, partial_match: bool, expected_pattern: str
+) -> None:
+    """Honor interpolation and whole-string matching options."""
+    view = SchemaView(
+        f"""
+id: https://example.org/pattern-options
+name: pattern_options
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{{word}}"
+      interpolated: {str(interpolated).lower()}
+      partial_match: {str(partial_match).lower()}
+"""
+    )
+
+    view.materialize_patterns()
+
+    assert view.get_slot("value").pattern == expected_pattern
+
+
+def test_materialize_patterns_invalidates_cached_induced_slots() -> None:
+    """Refresh derived values once when pattern materialization changes the schema."""
+    view = SchemaView(
+        """
+id: https://example.org/pattern-cache
+name: pattern_cache
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  Container:
+    slots:
+      - value
+"""
+    )
+    assert view.induced_slot("value", "Container").pattern == r"^(?:[a-z]+)$"
+    assert view.get_slot("value").pattern is None
+    assert view.modifications == 0
+
+    view.materialize_patterns()
+
+    assert view.induced_slot("value", "Container").pattern == r"^(?:[a-z]+)$"
+    assert view.modifications == 1
+
+    view.materialize_patterns()
+
+    assert view.modifications == 1
+
+
+def test_materialize_patterns_uses_defining_schema_settings(tmp_path: Path) -> None:
+    """Resolve imported structured patterns with settings from their defining schema."""
+    imported_schema = tmp_path / "imported.yaml"
+    imported_schema.write_text(
+        """
+id: https://example.org/imported
+name: imported
+settings:
+  word: "[a-z]+"
+slots:
+  imported_slot:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+classes:
+  ImportedClass:
+    slots:
+      - imported_slot
+    slot_usage:
+      imported_slot:
+        structured_pattern:
+          syntax: "{word}{word}"
+          interpolated: true
+    attributes:
+      imported_attribute:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+types:
+  ImportedType:
+    base: str
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+"""
+    )
+    view = SchemaView(str(root_schema))
+
+    view.materialize_patterns()
+
+    assert view.get_slot("imported_slot").pattern == r"^(?:[a-z]+)$"
+    imported_class = view.get_class("ImportedClass")
+    assert imported_class.slot_usage["imported_slot"].pattern == r"^(?:[a-z]+[a-z]+)$"
+    assert imported_class.attributes["imported_attribute"].pattern == r"^(?:[a-z]+)$"
+    assert view.get_type("ImportedType").pattern == r"^(?:[a-z]+)$"
 
 
 def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
@@ -2916,7 +3413,7 @@ def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> 
     sv_structured_patterns.materialize_patterns()
 
     name_slot_usage = sv_structured_patterns.get_class("FancyPersonInfo").slot_usage["name"]
-    assert name_slot_usage.pattern == r"\S+ \S+-\S+"
+    assert name_slot_usage.pattern == r"^(?:\S+ \S+-\S+)$"
 
 
 def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> None:
@@ -2924,7 +3421,7 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
     sv_structured_patterns.materialize_patterns()
 
     weight_attribute = sv_structured_patterns.get_class("ClassWithAttributes").attributes["weight"]
-    assert weight_attribute.pattern == r"\d+[\.\d+] (kg|g|lbs|stone)"
+    assert weight_attribute.pattern == r"^(?:\d+[\.\d+] (kg|g|lbs|stone))$"
 
 
 @pytest.mark.parametrize(
@@ -2939,6 +3436,15 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
+        # Slots that inherit inlined/inlined_as_list via is_a without redeclaring it.
+        # Regression test for https://github.com/linkml/linkml/issues/3695:
+        # is_inlined() must traverse the slot's is_a chain, not only check the slot itself.
+        ("child_of_inlined_thing_with_id", True),
+        ("child_of_inlined_as_list_thing_with_id", True),
+        # Slots that inherit inlined/inlined_as_list via mixins without redeclaring it.
+        # is_inlined() must also traverse mixin ancestry, not only is_a chains.
+        ("child_via_inlined_mixin", True),
+        ("child_via_inlined_as_list_mixin", True),
     ],
 )
 def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
@@ -3304,3 +3810,206 @@ def test_add_delete_get_entity(
     # expect that retrieving the entity will return an error if strict mode is on
     with pytest.raises(ValueError, match=f"No such {type_for_methods}"):
         getattr(view, get_method)(entity_name, strict=True)
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "expected_alias"),
+    [
+        ("my_slot", None),  # underscore("my_slot") == "my_slot" == name → no alias
+        ("mySlot", None),  # underscore("mySlot") == "mySlot" == name → no alias
+        ("my slot", "my_slot"),  # underscore("my slot") == "my_slot" != name → alias set
+    ],
+)
+def test_induced_slot_alias_not_equal_to_name(slot_name: str, expected_alias: str | None) -> None:
+    """Test that induced_slot does not set alias when it equals slot name.
+
+    See https://github.com/linkml/linkml/issues/2911
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("MyClass", slots=[slot_name]))
+    view.add_slot(SlotDefinition(slot_name, range="string"))
+
+    induced = view.induced_slot(slot_name, "MyClass")
+
+    assert induced.alias == expected_alias, (
+        f"Expected alias={expected_alias!r} but got {induced.alias!r}. Alias should not equal the slot name."
+    )
+
+
+# Tests for _closure optimisation (rv_set + visited as sets)
+
+
+def test_closure_reflexive_includes_start() -> None:
+    """With reflexive=True the start node is the first element."""
+    result = graph_closure(lambda _: [], "A", reflexive=True)
+    assert result == ["A"]
+
+
+def test_closure_non_reflexive_excludes_start() -> None:
+    """With reflexive=False the start node is excluded."""
+    result = graph_closure(lambda _: [], "A", reflexive=False)
+    assert result == []
+
+
+def test_closure_linear_chain() -> None:
+    """A linear A→B→C→D chain returns all nodes in depth-first order."""
+    graph = {"A": ["B"], "B": ["C"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result == ["A", "B", "C", "D"]
+
+
+def test_closure_no_duplicates_diamond() -> None:
+    """Diamond graph A→{B,C}→D: D must appear exactly once."""
+    graph = {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result.count("D") == 1
+
+
+def test_closure_no_duplicates_with_cycle() -> None:
+    """Cycles must not produce infinite loops or duplicate entries."""
+    # A→B→C→A cycle; starting from A with reflexive=True
+    graph = {"A": ["B"], "B": ["C"], "C": ["A"]}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    # Every node appears exactly once
+    assert sorted(result) == ["A", "B", "C"]
+    assert len(result) == len(set(result))
+
+
+def test_closure_none_returning_function() -> None:
+    """A neighbour function that returns None should not crash."""
+    result = graph_closure(lambda _: None, "X", reflexive=True)
+    assert result == ["X"]
+
+
+# Tests for _slot_class_map and domain_of population in induced_slot
+
+
+def test_slot_class_map_slots() -> None:
+    """_slot_class_map maps slot names to the classes that declare them."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1", "s2"]))
+    view.add_class(ClassDefinition("B", slots=["s2", "s3"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+    view.add_slot(SlotDefinition("s2", range="string"))
+    view.add_slot(SlotDefinition("s3", range="string"))
+
+    m = view._slot_class_map()
+    assert set(m["s1"]) == {"A"}
+    assert set(m["s2"]) == {"A", "B"}
+    assert set(m["s3"]) == {"B"}
+
+
+def test_slot_class_map_attributes() -> None:
+    """_slot_class_map must also pick up inline attribute declarations."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("MyClass")
+    cls.attributes["attr1"] = SlotDefinition("attr1")
+    view.add_class(cls)
+
+    m = view._slot_class_map()
+    assert "MyClass" in m.get("attr1", [])
+
+
+def test_slot_class_map_invalidated_after_set_modified() -> None:
+    """_slot_class_map cache is re-built after schema modification."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    m_before = view._slot_class_map()
+    assert "s1" in m_before
+
+    # Modify: add a new class that also declares s1
+    view.add_class(ClassDefinition("B", slots=["s1"]))
+
+    m_after = view._slot_class_map()
+    assert set(m_after["s1"]) == {"A", "B"}
+
+
+def test_induced_slot_domain_of_populated() -> None:
+    """induced_slot must populate domain_of with every class that declares the slot."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["shared"]))
+    view.add_class(ClassDefinition("B", slots=["shared"]))
+    view.add_slot(SlotDefinition("shared", range="string"))
+
+    induced = view.induced_slot("shared", "A")
+    assert set(induced.domain_of) >= {"A", "B"}
+
+
+def test_induced_slot_domain_of_no_duplicates() -> None:
+    """domain_of must not contain duplicates even if a slot appears in both slots and attributes."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("A", slots=["s1"])
+    cls.attributes["s1"] = SlotDefinition("s1")
+    view.add_class(cls)
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    induced = view.induced_slot("s1", "A")
+    assert induced.domain_of.count("A") == 1
+
+
+def test_annotation_dict_for_induced_slot() -> None:
+    """annotation_dict() can return annotation for induced slots."""
+
+    schema = """
+id: https://example.org/induced-slot-annotations
+name: induced-slot-annotations
+slots:
+  foo:
+    annotations:
+      bar: some value
+classes:
+  TestClass:
+    slots:
+      - foo
+    slot_usage:
+      foo:
+        annotations:
+          bar: some other value
+"""
+
+    sv = SchemaView(schema)
+    original_annots = sv.annotation_dict("foo")
+    assert original_annots["bar"] == "some value"
+    induced_annots = sv.annotation_dict("foo", class_name="TestClass")
+    assert induced_annots["bar"] == "some other value"
+
+
+def test_relative_import_in_url_imported_schema(tmp_path: Path) -> None:
+    """A relative import inside a schema imported by URL resolves against that URL.
+
+    The importing schema's key is an absolute URL, which must not be normalised as a
+    filesystem path: doing so collapses the ``//`` of the scheme and the result is then
+    mistaken for a CURIE (#3499).
+    """
+    modules = tmp_path / "modules"
+    modules.mkdir()
+    (modules / "leaf.yaml").write_text(
+        "id: https://example.org/leaf\nname: leaf\ndefault_range: string\nslots:\n  leaf_slot:\n"
+    )
+    (modules / "middle.yaml").write_text(
+        "id: https://example.org/middle\nname: middle\ndefault_range: string\n"
+        "imports: [./leaf]\nslots:\n  middle_slot:\n"
+    )
+    consumer = tmp_path / "consumer"
+    consumer.mkdir()
+    root = consumer / "root.yaml"
+    # as_uri() rather than an f-string: on Windows a bare path yields backslashes and only
+    # two slashes after the scheme, which is not a valid URIorCURIE and is rejected when the
+    # importing schema is loaded
+    middle_url = (modules / "middle").as_uri()
+    root.write_text(
+        "id: https://example.org/root\nname: root\ndefault_range: string\n"
+        f"imports: ['{middle_url}']\nclasses:\n  Thing:\n    slots: [middle_slot]\n"
+    )
+
+    slots = SchemaView(str(root)).all_slots(imports=True)
+    assert "middle_slot" in slots
+    assert "leaf_slot" in slots

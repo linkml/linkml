@@ -1,7 +1,3 @@
-# Auto generated from timepoint.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: timepoint
-#
 # id: http://example.org/tests/timepoint
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -59,7 +55,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import String, Time
 from linkml_runtime.utils.metamodelcore import XSDTime
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces

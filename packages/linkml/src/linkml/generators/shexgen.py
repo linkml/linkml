@@ -3,7 +3,6 @@
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -27,6 +26,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @dataclass
@@ -40,9 +40,12 @@ class ShExGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn in RDF output. See :ref:`rdf-in-version-control`."""
+
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
-    shape: Optional[Shape] = None  # Current shape being defined
+    shape: Shape | None = None  # Current shape being defined
     list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to NodeConstraint value lists with slot descendants"""
@@ -170,14 +173,14 @@ class ShExGenerator(Generator):
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: Optional[str] = None, **_) -> str:
+    def end_schema(self, output: str | None = None, **_) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
-            shex = g.serialize(format="turtle")
+            shex = canonicalize_rdf_graph(g, output_format="turtle", diff_stable=self.diff_stable)
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)
@@ -190,11 +193,11 @@ class ShExGenerator(Generator):
 
     def _class_or_type_uri(
         self,
-        item: Union[TypeDefinition, ClassDefinition, ElementName],
-        suffix: Optional[str] = "",
+        item: TypeDefinition | ClassDefinition | ElementName,
+        suffix: str | None = "",
     ) -> URIorCURIE:
         # TODO: enums - figure this out
-        if isinstance(item, (TypeDefinition, ClassDefinition, EnumDefinition)):
+        if isinstance(item, TypeDefinition | ClassDefinition | EnumDefinition):
             cls_or_type = item
         else:
             cls_or_type = self.class_or_type_for(item)
@@ -205,7 +208,7 @@ class ShExGenerator(Generator):
             )
         )
 
-    def _slot_uri(self, name: str, suffix: Optional[str] = "") -> URIorCURIE:
+    def _slot_uri(self, name: str, suffix: str | None = "") -> URIorCURIE:
         slot = self.schema.slots[name]
         return self.namespaces.uri_for(
             self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix)
@@ -257,6 +260,15 @@ class ShExGenerator(Generator):
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint "
     "values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits (--format rdf). See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

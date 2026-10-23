@@ -128,26 +128,33 @@ In the above example, you can think of a `Car` having *two* constraints on the `
 Rather than the first overriding the second, the two constraints are combined, and the first becomes redundant
 (because `CarPart` is a subclass of `VehiclePart`)
 
-## Identifiers
+## Keys & Identifiers
 
+A slot can be declared as a “key slot” by marking it with [`key: true`](https://w3id.org/linkml/key). This has the following
+consequences:
 
-If a slot is declared as an [identifier](https://w3id.org/linkml/identifier)
-then it serves as a unique key for members of that class. It can also
-be used for [inlining](inlining) as a dict in JSON serializations.
+- it makes the slot automatically _required_;
+- it makes the class holding such a slot eligible for [inlining as a dictionary](inlining.md) in JSON serializations;
+- it creates a unicity constraint that there cannot be two instances of the class with the same value for the key slot in any
+given container.
 
+Alternatively, a slot can be declared as an “identifier slot” by marking it with
+[`identifier: true`](https://w3id.org/linkml/identifier). This has the following consequences:
 
-```yaml
-slots:
-  id:
-    identifier: true
-```
+- it makes the slot automatically _required_;
+- it makes the class holding such a slot eligible for [inlining as a dictionary](inlining.md) in JSON serializations;
+- it makes the class holding such a slot eligible for _referencing_ rather than _inlining_;
+- it creates a unicity constraint that there cannot be two instances with the same value for the identifier slot _anywhere_.
 
-the range of an identifier can be any type, but it is a good idea to have these be of type [Uriorcurie](https://w3id.org/linkml/Uriorcurie)
+The range of a key or identifier slot can be any type, but it is a good idea to have these be of type
+[Uriorcurie](https://w3id.org/linkml/Uriorcurie).
 
-A class must not have more than one identifier (asserted or derived). `identifier` marks the *primary* identifier.
+A class can have at most _one_ key slot or identifier slot (asserted or inherited from a parent class). It cannot have both a
+key slot and an identifier slot.
 
 If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
-`unique_keys` (see the [constraints](constraints.md) section of the docs).
+[`unique_keys`](https://w3id.org/linkml/unique_keys) instead (referred to as [“compound keys”](constraints.md#compound-keys) in
+this documentation).
 
 ## Type designator
 

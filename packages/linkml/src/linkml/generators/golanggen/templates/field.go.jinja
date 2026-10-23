@@ -1,0 +1,2 @@
+{% if description %}{{ description | go_comment("\t") }}
+{% endif %}	{{ go_name }} {{ type }} `json:"{{ json_name }}{% if omitempty and not required and not identifier and not key %},omitempty{% endif %}{% if omitzero %},omitzero{% endif %}"`

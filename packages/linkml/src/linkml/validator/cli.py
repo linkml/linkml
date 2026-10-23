@@ -3,25 +3,27 @@ import sys
 from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 import yaml
 from pydantic import BaseModel, Field
 
 from linkml._version import __version__
-from linkml.utils import datautils
+from linkml.utils.mergeutils import merge_includes, resolve_merged_imports
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader, default_loader_for_file
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 class Config(BaseModel):
-    schema_path: Union[str, Path] = Field(alias="schema")
-    target_class: Optional[str] = None
-    data_sources: Iterable[Union[str, dict[str, dict[str, str]]]] = []
-    plugins: Optional[dict[str, Optional[dict[str, Any]]]] = {"JsonschemaValidationPlugin": {"closed": True}}
+    schema_path: str | Path | None = Field(alias="schema", default=None)
+    target_class: str | None = None
+    data_sources: Iterable[str | dict[str, dict[str, str]]] = []
+    plugins: dict[str, dict[str, Any] | None] | None = {"JsonschemaValidationPlugin": {"closed": True}}
 
 
 def _resolve_class(full_class_name: str, default_package: str, **kwargs):
@@ -46,11 +48,16 @@ def _resolve_plugins(plugin_config: dict[str, dict[str, Any]]) -> list[Validatio
     return plugins
 
 
-def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]]]]) -> list[Loader]:
+def _resolve_loaders(
+    loader_config: Iterable[str | dict[str, dict[str, str]]],
+    *,
+    schema_path: str | Path | None = None,
+    target_class: str | None = None,
+) -> list[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
-            loader = default_loader_for_file(entry)
+            loader = default_loader_for_file(entry, schema_path=schema_path, target_class=target_class)
         elif isinstance(entry, dict):
             if len(entry) > 1:
                 raise click.ClickException(f"Invalid config. Dictionary entries should only have one key: {entry}")
@@ -62,20 +69,111 @@ def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]
     return loaders
 
 
-DEPRECATED = "[DEPRECATED: only used in legacy mode]"
+def _validate_schema_against_metamodel(schema_paths: tuple[str]) -> int:
+    """Validate one or more schema files against the LinkML metamodel.
+
+    :return: number of errors found
+    """
+    from linkml.linter.linter import Linter
+
+    error_count = 0
+    for schema_path in schema_paths:
+        for problem in Linter.validate_schema(schema_path):
+            error_count += 1
+            click.echo(f"[ERROR] [{schema_path}] {problem.message}", err=True)
+    return error_count
+
+
+_FIX_SUPPORTED_EXTENSIONS = {".yaml", ".yml", ".json"}
+
+
+def _normalize_and_validate(
+    data_path: str,
+    schema: SchemaDefinition,
+    target_class: str | None,
+    plugins: list[ValidationPlugin],
+    exit_on_first_failure: bool,
+    include_context: bool,
+) -> Counter:
+    """Run ReferenceValidator to normalize data, then validate the result
+    using the standard Validator path.
+
+    Normalized YAML is written to stdout.  All diagnostics go to stderr.
+
+    :return: severity counter from validation of normalized output
+    """
+    from linkml_runtime import SchemaView
+    from linkml_runtime.processing.referencevalidator import ReferenceValidator, Report
+
+    suffix = Path(data_path).suffix.lower()
+    if suffix not in _FIX_SUPPORTED_EXTENSIONS:
+        raise click.ClickException(
+            f"--fix only supports YAML and JSON files, got '{suffix}'. "
+            f"Use 'linkml validate -s schema.yaml {data_path}' without --fix for other formats."
+        )
+
+    sv = SchemaView(schema)
+    normalizer = ReferenceValidator(sv)
+
+    with open(data_path) as f:
+        input_object = yaml.safe_load(f)
+
+    report = Report()
+    output_object = normalizer.normalize(input_object, target=target_class, report=report)
+
+    severity_counter = Counter()
+
+    # Report normalization actions (diagnostics go to stderr)
+    for r in report.normalized_results():
+        click.echo(f"[FIXED] [{data_path}] {r.type}: {r.instantiates} ({r.info or ''})", err=True)
+
+    for r in report.warnings():
+        severity_counter[Severity.WARNING] += 1
+        click.echo(f"[WARN] [{data_path}] {r.type}: {r.instantiates}", err=True)
+
+    for r in report.errors():
+        severity_counter[Severity.ERROR] += 1
+        click.echo(f"[ERROR] [{data_path}] {r.type}: {r.instantiates}", err=True)
+
+    # Write normalized output to stdout
+    click.echo(yaml.dump(output_object, sort_keys=False))
+
+    # Validate normalized output using the standard Validator path
+    validator = Validator(sv.schema, validation_plugins=plugins, strict=exit_on_first_failure)
+    for result in validator.iter_results(output_object, target_class):
+        severity_counter[result.severity] += 1
+        click.echo(f"[{result.severity.value}] [{data_path}/{result.instance_index}] {result.message}", err=True)
+        if include_context:
+            for ctx in result.context:
+                click.echo(f"[CONTEXT] {ctx}", err=True)
+
+    return severity_counter
+
+
+class SchemaSource(click.ParamType):
+    """A schema given as a local file path or an ``http(s)://`` URL.
+
+    URLs are passed through unchanged for the runtime to fetch; local paths are
+    validated like ``click.Path(exists=True, dir_okay=False)``.
+    """
+
+    name = "schema"
+    _path_type = click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path)
+
+    def convert(self, value: Any, param: click.Parameter | None, ctx: click.Context | None) -> str | Path:
+        """Return URLs as-is and local paths as resolved, existence-checked ``Path`` objects."""
+        if isinstance(value, str) and value.startswith(("http://", "https://")):
+            return value
+        return self._path_type.convert(value, param, ctx)
 
 
 @click.command(name="validate")
 @click.option(
     "-s",
     "--schema",
-    help="Schema file to validate data against",
-    type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
-)
-@click.option(
-    "-r",
-    "--schema-remote",
-    help="A remote Schema file to validate data against",
+    help="Schema file or URL to validate data against. When omitted, positional arguments "
+    "are treated as schemas and validated against the LinkML metamodel.",
+    type=SchemaSource(),
 )
 @click.option(
     "-C",
@@ -94,96 +192,71 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
 )
 @click.option(
-    "--legacy-mode",
-    is_flag=True,
-    default=False,
-    help="Use legacy linkml-validate behavior.",
-)
-@click.option("--module", "-m", help=f"{DEPRECATED} Path to python datamodel module")
-@click.option(
-    "--input-format",
-    "-f",
-    type=click.Choice(list(datautils.dumpers_loaders.keys())),
-    help=f"{DEPRECATED} Input format. Inferred from input suffix if not specified",
-)
-@click.option("--index-slot", "-S", help=f"{DEPRECATED} top level slot. Required for CSV dumping/loading")
-@click.option(
-    "--include-range-class-descendants/--no-range-class-descendants",
-    default=False,
-    show_default=False,
-    help=f"{DEPRECATED} When handling range constraints, include all descendants of the range "
-    "class instead of just the range class",
-)
-@click.option(
     "--include-context/--no-include-context",
     "-D",
     default=False,
     show_default=True,
     help="Include additional context when reporting of validation errors.",
 )
+@click.option(
+    "--allow-null-for-optional-enums",
+    is_flag=True,
+    default=False,
+    help="Downgrade enum validation errors to warnings when the value is "
+    "null/empty and the slot is not required. Prevents 'None is not "
+    "one of [...]' and \"'' is not one of [...]\" errors for optional "
+    "enum slots.",
+)
+@click.option(
+    "--include",
+    multiple=True,
+    type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
+    help="Additional schema files to include. Rules and classification rules "
+    "from these schemas are additively merged onto matching classes in the "
+    "base schema. May be specified multiple times.",
+)
+@click.option(
+    "--fix",
+    is_flag=True,
+    default=False,
+    help="Normalize a YAML/JSON data file to conform to the schema (type coercion, "
+    "collection form restructuring) and write the corrected data to stdout. "
+    "Diagnostics go to stderr. The normalized output is then validated to "
+    "report any remaining issues.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
-@click.pass_context
 def cli(
-    context: click.Context,
-    schema: Optional[Path],
-    schema_remote: Optional[str],
-    target_class: Optional[str],
-    config: Optional[str],
-    data_sources: tuple[str],
+    schema: str | Path | None,
+    target_class: str | None,
+    config: str | None,
+    include: tuple[Path, ...],
+    data_sources: tuple[str, ...],
     exit_on_first_failure: bool,
-    legacy_mode: bool,
-    module: Optional[str],
-    input_format: Optional[str],
-    index_slot: Optional[str],
-    include_range_class_descendants: bool,
     include_context: bool,
+    allow_null_for_optional_enums: bool,
+    fix: bool,
 ):
+    """Validate data against a LinkML schema, or validate a schema against the metamodel.
+
+    When -s/--schema is provided, positional arguments are data files to validate
+    against that schema.
+
+    When -s/--schema is omitted, positional arguments are treated as schema files
+    and validated against the LinkML metamodel.
     """
-    Validate data according to a LinkML Schema
-    """
-    if legacy_mode:
-        from linkml.validators import jsonschemavalidator
+    # Schema-against-metamodel mode: no -s flag
+    if schema is None and not config:
+        if not data_sources:
+            raise click.ClickException("No files specified.")
+        error_count = _validate_schema_against_metamodel(data_sources)
+        if error_count == 0:
+            click.echo("No issues found")
+        sys.exit(1 if error_count > 0 else 0)
 
-        return context.invoke(
-            jsonschemavalidator.cli,
-            input=data_sources[0] if len(data_sources) > 0 else None,
-            module=module,
-            target_class=target_class,
-            input_format=input_format,
-            schema=str(schema) if schema else None,
-            index_slot=index_slot,
-            exit_on_first_failure=exit_on_first_failure,
-            include_range_class_descendants=include_range_class_descendants,
-        )
-
-    if module is not None:
-        click.secho("Warning: the -m/--module option is deprecated except in legacy mode.", fg="yellow")
-    if input_format is not None:
-        click.secho(
-            "Warning: the -f/--input-format option is deprecated except in legacy mode. By "
-            "default source loaders are automatically chosen based on file extension. If a loader "
-            "needs to manually specified use the data_sources section of a custom config file.",
-            fg="yellow",
-        )
-    if index_slot is not None:
-        click.secho("Warning: the -S/--index-slot option is deprecated except in legacy mode.", fg="yellow")
-    if include_range_class_descendants:
-        click.secho(
-            "Warning: the --include-range-class-descendants deprecated except in legacy mode. "
-            "This behavior is now the default of the JsonschemaValidationPlugin. If you need to "
-            "disable it use the plugins section of a custom config file.",
-            fg="yellow",
-        )
-
-    if schema is not None and schema_remote is not None:
-        raise click.ClickException(
-            "Both a remote and a local schema were provided. Please use either the -s/--schema "
-            "option or the -r/--schema-remote option to define a schema, not both."
-        )
-
+    # Data validation mode: -s flag or config provided
     config_args = {
-        "schema": schema if schema is not None else schema_remote,
+        "schema": schema,
         "target_class": target_class,
         "data_sources": data_sources,
     }
@@ -195,25 +268,66 @@ def cli(
     if config_args.get("schema") is None:
         raise click.ClickException(
             "No schema specified. Path to schema must be specified by either "
-            "the -s/--schema option or the -r/--schema-remote option "
-            "as an argument or in a config file."
+            "the -s/--schema option or in a config file."
+        )
+    cfg = Config(**config_args)
+
+    # Pass allow_null_for_optional_enums through to JsonschemaValidationPlugin
+    if allow_null_for_optional_enums and cfg.plugins and "JsonschemaValidationPlugin" in cfg.plugins:
+        if cfg.plugins["JsonschemaValidationPlugin"] is None:
+            cfg.plugins["JsonschemaValidationPlugin"] = {}
+        cfg.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
+
+    if not data_sources and not list(cfg.data_sources):
+        raise click.ClickException(
+            "No data files specified.\n\n"
+            "  Validate a schema:  linkml validate schema.yaml\n"
+            "  Validate data:      linkml validate -s schema.yaml data.yaml"
         )
 
-    config = Config(**config_args)
+    plugins = _resolve_plugins(cfg.plugins) if cfg.plugins else []
 
-    plugins = _resolve_plugins(config.plugins) if config.plugins else []
-    loaders = _resolve_loaders(config.data_sources)
-    validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
+    # Load schema and merge any --include overlays
+    schema_def = yaml_loader.load(str(cfg.schema_path), SchemaDefinition)
+    schema_source = str(cfg.schema_path)
+    if "\n" not in schema_source:
+        schema_def.source_file = schema_source
+    for include_path in include:
+        include_source = str(include_path)
+        include_schema = yaml_loader.load(include_source, SchemaDefinition)
+        include_schema.source_file = include_source
+        try:
+            resolve_merged_imports(schema_def, include_schema, imported_from=include_source)
+            merge_includes(schema_def, include_schema)
+        except ValueError as e:
+            raise click.ClickException(str(e)) from e
+
     severity_counter = Counter()
-    for loader in loaders:
-        for result in validator.iter_results_from_source(loader, config.target_class):
-            severity_counter[result.severity] += 1
-            click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
-            if include_context:
-                for ctx in result.context:
-                    click.echo(f"[CONTEXT] {ctx}")
 
-    if sum(severity_counter.values()) == 0:
+    if fix:
+        if len(data_sources) > 1:
+            raise click.ClickException("--fix supports a single data file at a time.")
+        severity_counter += _normalize_and_validate(
+            data_sources[0],
+            schema_def,
+            cfg.target_class,
+            plugins,
+            exit_on_first_failure,
+            include_context,
+        )
+    else:
+        loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
+        validator = Validator(schema_def, validation_plugins=plugins, strict=exit_on_first_failure)
+
+        for loader in loaders:
+            for result in validator.iter_results_from_source(loader, cfg.target_class):
+                severity_counter[result.severity] += 1
+                click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
+                if include_context:
+                    for ctx in result.context:
+                        click.echo(f"[CONTEXT] {ctx}")
+
+    if sum(severity_counter.values()) == 0 and not fix:
         click.echo("No issues found")
 
     exit_code = 1 if severity_counter[Severity.ERROR] > 0 else 0

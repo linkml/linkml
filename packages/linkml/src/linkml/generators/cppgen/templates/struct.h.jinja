@@ -1,0 +1,17 @@
+{% if is_type_alias %}
+{% if description %}
+{{ description | cpp_comment }}
+{% endif %}
+using {{ name }} = {{ type_alias_value }};
+{% else %}
+{% if description %}
+{{ description | cpp_comment }}
+{% endif %}
+struct {{ name }}{% if base_classes %} : {% for base in base_classes %}public {{ base }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %} {
+{% if fields %}
+{% for field in fields.values() %}
+{{ field }}
+{% endfor %}
+{% endif %}
+};
+{% endif %}

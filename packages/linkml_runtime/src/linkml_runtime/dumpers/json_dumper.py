@@ -1,7 +1,6 @@
 import json
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Union
 
 from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj
@@ -15,9 +14,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
 
 
 class JSONDumper(Dumper):
-    def dump(
-        self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs
-    ) -> None:
+    def dump(self, element: BaseModel | YAMLRoot, to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs) -> None:
         """
         Write element as json to to_file
         :param element: LinkML object to be serialized as YAML
@@ -34,7 +31,7 @@ class JSONDumper(Dumper):
             element = element.model_dump()
         super().dump(element, to_file, contexts=contexts, **kwargs)
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
+    def dumps(self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
         """
         Return element as a JSON or a JSON-LD string
         :param element: LinkML object to be emitted
@@ -57,7 +54,7 @@ class JSONDumper(Dumper):
             elif isinstance(o, Decimal):
                 # https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
                 return str(o)
-            elif isinstance(o, (datetime, date)):
+            elif isinstance(o, datetime | date):
                 return str(o)
             else:
                 return json.JSONDecoder().decode(o)
@@ -83,7 +80,7 @@ class JSONDumper(Dumper):
         return formatutils.remove_empty_items(obj, hide_protected_keys=True)
 
     def to_json_object(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True
+        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True
     ) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
@@ -101,7 +98,7 @@ class JSONDumper(Dumper):
         """
         return as_json_object(element, contexts, inject_type=inject_type)
 
-    def to_dict(self, element: Union[BaseModel, YAMLRoot], **kwargs) -> JsonObj:
+    def to_dict(self, element: BaseModel | YAMLRoot, **kwargs) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
 

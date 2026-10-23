@@ -5,22 +5,65 @@ Generate a JSON LD representation of the model
 
 """
 
+import json
 import os
 import urllib.parse as urlparse
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
-from linkml import METAMODEL_CONTEXT_URI
+from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
+#: ``@context`` string entries whose URI scheme is in this set are kept when
+#: ``RDFGenerator`` strips relative per-module refs before handing the JSON-LD
+#: to rdflib. ``http``/``https`` cover published context documents (e.g.
+#: ``https://w3id.org/linkml/types.context.jsonld``); ``file`` covers the
+#: vendored metamodel context absolutized by ``JSONLDGenerator.end_schema``.
+_RESOLVABLE_CONTEXT_URI_SCHEMES = frozenset({"http", "https", "file"})
+
+
+def _strip_relative_context_refs(jsonld_str: str) -> str:
+    """Drop relative-path string entries from the JSON-LD ``@context`` array.
+
+    ``JSONLDGenerator.end_schema`` appends one ``<import>.context.jsonld``
+    string per loaded import. For sibling-relative imports these refs have no
+    URI scheme (e.g. ``./base.context.jsonld``) and rdflib resolves them
+    against ``@base`` — typically an ``https://`` schema URI — producing
+    HTTP 404s because no such context file is published.
+
+    ``gen-rdf`` always merges imports into the working schema before
+    serialization, so the prefix bindings and class definitions those
+    per-module refs would otherwise contribute are already inlined. Filtering
+    the unresolvable refs is safe and converts the failure into a no-op.
+
+    Absolute URIs (``http``/``https``/``file``) and inline ``@context``
+    dicts (including the ``@base`` directive emitted by ``JSONLDGenerator``)
+    are preserved unchanged.
+    """
+    doc = json.loads(jsonld_str)
+    context = doc.get("@context")
+    if not isinstance(context, list):
+        return jsonld_str
+
+    def _is_resolvable(entry):
+        if not isinstance(entry, str):
+            return True
+        return urlparse.urlparse(entry).scheme in _RESOLVABLE_CONTEXT_URI_SCHEMES
+
+    filtered = [entry for entry in context if _is_resolvable(entry)]
+    if len(filtered) == len(context):
+        return jsonld_str
+    doc["@context"] = filtered
+    return json.dumps(doc)
 
 
 @dataclass
@@ -35,6 +78,9 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     emit_metadata: bool = False
     context: list[str] = None
     original_schema: SchemaDefinition = None
@@ -45,20 +91,28 @@ class RDFGenerator(Generator):
         super().__post_init__()
 
     def _data(self, g: Graph) -> str:
-        return g.serialize(format="turtle" if self.format == "ttl" else self.format)
+        fmt = "turtle" if self.format == "ttl" else self.format
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
-    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> str:
+    def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
             metadata=self.emit_metadata,
+            include_generation_date=self.include_generation_date,
             importmap=self.importmap,
+            metamodel_context=LOCAL_METAMODEL_LDCONTEXT_FILE,
         )
         # Iterate over permissible text strings making them URI compatible
         for e in gen.schema.enums.values():
             for pv in e.permissible_values.values():
                 pv.text = urlparse.quote(pv.text)
         jsonld_str = gen.serialize(context=context)
+
+        # Drop unresolvable per-module ``@context`` refs that
+        # ``JSONLDGenerator`` adds for each loaded import (e.g.
+        # ``./base.context.jsonld``); see ``_strip_relative_context_refs``.
+        jsonld_str = _strip_relative_context_refs(jsonld_str)
 
         graph = Graph()
         graph.parse(
@@ -68,15 +122,7 @@ class RDFGenerator(Generator):
             prefix=True,
         )
         if output:
-            # Binary-safe when -o/--output is used:
-            # delegate to RDFLib (Graph.serialize(destination=..., format=...)).
-            # Serializers that produce bytes write directly to the file; stdout stays empty.
-            fmt = "turtle" if self.format == "ttl" else self.format
-            try:
-                out = graph.serialize(format=fmt)
-            except UnicodeDecodeError:
-                graph.serialize(destination=output, format=fmt)
-                return ""
+            out = self._data(graph)
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(out)
             return out
@@ -89,10 +135,19 @@ class RDFGenerator(Generator):
 @click.option("-o", "--output", help="Output file name")
 @click.option(
     "--context",
-    default=[METAMODEL_CONTEXT_URI],
+    default=[LOCAL_METAMODEL_LDCONTEXT_FILE],
     show_default=True,
     multiple=True,
-    help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})",
+    help="JSONLD context file (default: vendored meta.context.jsonld)",
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

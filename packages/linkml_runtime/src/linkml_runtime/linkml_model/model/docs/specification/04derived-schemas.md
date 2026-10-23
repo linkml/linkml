@@ -152,14 +152,13 @@ The one with the shortest reference is chosen as the canonical.
 The function **Resolve** takes as input a **InstanceOfReference** and returns an **InstanceOfClass**
 that is the referenced object.
 
-| *i*                    | **Resolve**(*i*)                            |
-|------------------------|---------------------------------------------|
-| `SlotDefinition&<V>`   | `m.slots[<V>]`                              |
-| `ClassDefinition&<V>`  | `m.classes[<V>]`                            |
-| `EnumDefinition&<V>`   | `m.enums[<V>]`                              |
-| `TypeDefinition&<V>`   | `m.types[<V>]`                              |
-| `SchemaDefinition&<V>` | see below                                   |
-| [*i1*, *i2*, ...]      | [**Resolve**(*i1*), **Resolve**(*i2*), ...] |
+| *i*                    | **Resolve**(*i*) |
+|------------------------|------------------|
+| `SlotDefinition&<V>`   | `m.slots[<V>]`   |
+| `ClassDefinition&<V>`  | `m.classes[<V>]` |
+| `EnumDefinition&<V>`   | `m.enums[<V>]`   |
+| `TypeDefinition&<V>`   | `m.types[<V>]`   |
+| `SchemaDefinition&<V>` | see below        |
 
 The rules for schema resolution are as follows:
 
@@ -212,13 +211,13 @@ The ancestors function **A** returns the **Closure** of the **Parents** function
 
 The function **ReflexiveAncestors** **A*** uses the **ReflexiveClosure**.
 
-> **A**`*`(*e*) = **C**`*`(*e*, **P**)
+> **A***(*e*) = **C***(*e*, **P**)
 
 ### Function: Imports Closure
 
 The imports closure function **I** returns the reflexive **ReferenceClosure** of the direct imports.
 
-> **I**(*s*) = **C**`*`(*s*, **s.imports**)
+> **I**(*s*) = **C***(*s*, **s.imports**)
 
 ### Function: Element CURIEs and URIs
 
@@ -489,7 +488,7 @@ Each `c` in *m<sup>D</sup>*`.classes` must conform to the rules below:
 - `c` may have parent ClassDefinitions defined via `c.is_a` and `c.mixins`
     - the value of `c.is_a` must be a ClassDefinitionReference
     - the value of `c.mixins` must be a collection of ClassDefinitonReferences
-   - For any parent `p` of `c`, if `p.mixin` is True, then `c.mixin` SHOULD be True
+    - for any direct `is_a` parent `p` of `c`, if `p.mixin` is True, then `c.mixin` SHOULD be True
 - `c` includes additional rules in `c.rules` and `c.classificiation_rules`
 - `c` may have any number of additional slot-value assignments consistent with the validation rules provided here with the metamodel `MM`
 
@@ -506,7 +505,7 @@ Each `s` in *m<sup>D</sup>*`.slots` must conform to the rules below:
 - `s` may have parent SlotDefinitions defined via `s.is_a` and `s.mixins`
     - the value of `s.is_a` must be a **SlotDefinitionReference**
     - the value of `s.mixins` must be a collection of **SlotDefinitionReference**s
-    - For any parent `p` of `s`, if `p.mixin` is True, then `s.mixin` SHOULD be True
+    - for any direct `is_a` parent `p` of `s`, if `p.mixin` is True, then `s.mixin` SHOULD be True
 - `s` may have any number of additional slot-value assignments consistent with the validation rules provided here with the metamodel `MM`
 
 ### TypeDefinition Structural Conformance Rules

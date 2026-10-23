@@ -10,7 +10,9 @@ from linkml.validator.cli import cli
 VALID_PERSON_1 = {"id": "id:1", "name": "John Doe", "age": 35}
 VALID_PERSON_2 = {"id": "id:2", "name": "Jane Smith", "age": 25, "telephone": "555-555-5550"}
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
-REMOTE_SCHEMA = "https://w3id.org/linkml/meta.yaml"
+REMOTE_PERSONINFO_SCHEMA = (
+    "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml/test_validator/input/personinfo.yaml"
+)
 
 
 @pytest.fixture
@@ -48,7 +50,7 @@ def test_valid_csv_file(cli_runner, csv_data_file):
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exception is None
     assert result.exit_code == 0
 
@@ -59,7 +61,7 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
@@ -70,24 +72,179 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
-def test_no_schema_provided(cli_runner):
-    """Verify a useful message is emitted when a schema is not specified via options or config"""
+@pytest.mark.network
+def test_valid_json_file_remote_schema(cli_runner, json_data_file):
+    """Verify that -s/--schema accepts a URL"""
+
+    data_path = json_data_file(VALID_PERSON_1)
+
+    result = cli_runner.invoke(cli, ["-s", REMOTE_PERSONINFO_SCHEMA, "-C", "Person", data_path])
+    assert result.exception is None
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_missing_local_schema(cli_runner, json_data_file):
+    """Verify that a nonexistent local -s/--schema path is still rejected up front"""
+
+    data_path = json_data_file(VALID_PERSON_1)
+
+    result = cli_runner.invoke(cli, ["-s", "does-not-exist.yaml", data_path])
+    assert "does not exist" in result.output
+    assert result.exit_code == 2
+
+
+def test_no_files_provided(cli_runner):
+    """Verify a useful message is emitted when no files are specified."""
 
     result = cli_runner.invoke(cli, [])
-    assert "No schema specified" in result.output
+    assert "No files specified" in result.output
     assert result.exit_code == 1
 
 
-def test_two_schema_provided(cli_runner):
-    """Verify a useful message is emitted when both a local and a remote schema were specified via options or config"""
+def test_schema_against_metamodel_valid(cli_runner):
+    """Valid schema passes metamodel validation when no -s flag is given."""
 
-    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-r", REMOTE_SCHEMA])
-    assert "Both a remote and a local" in result.output
+    result = cli_runner.invoke(cli, [PERSONINFO_SCHEMA])
+    assert result.exit_code == 0
+    assert "No issues found" in result.output
+
+
+def test_schema_against_metamodel_invalid(cli_runner, tmp_path):
+    """Invalid schema reports errors when no -s flag is given."""
+
+    schema_path = tmp_path / "bad_schema.yaml"
+    schema_path.write_text(
+        """
+id: not_a_uri
+classes:
+  Thing:
+    attributes:
+      foo:
+        description: test
+"""
+    )
+    result = cli_runner.invoke(cli, [str(schema_path)])
     assert result.exit_code == 1
+    assert "[ERROR]" in result.output
+
+
+def test_fix_coerces_types(cli_runner, tmp_path):
+    """--fix normalizes data types and validates the result."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test class.
+    attributes:
+      name:
+        identifier: true
+        description: The name.
+      count:
+        range: integer
+        description: A count.
+"""
+    )
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text('name: foo\ncount: "5"\n')
+
+    # Without --fix: type error
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), str(data_path)])
+    assert result.exit_code == 1
+    assert "[ERROR]" in result.output
+
+    # With --fix: coerced and valid
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 0
+    assert "count: 5" in result.output
+    assert "[ERROR]" not in result.output
+
+
+def test_fix_output_is_clean_yaml(cli_runner, tmp_path):
+    """--fix stdout is valid YAML with no diagnostic pollution."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test class.
+    attributes:
+      name:
+        identifier: true
+        description: The name.
+      count:
+        range: integer
+        description: A count.
+"""
+    )
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("name: foo\ncount: 5\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 0
+    # Normalized output should contain the data and no banner pollution
+    assert "name: foo" in result.output
+    assert "count: 5" in result.output
+    assert "No issues found" not in result.output
+    assert "[ERROR]" not in result.output
+
+
+def test_fix_rejects_unsupported_extension(cli_runner, tmp_path):
+    """--fix errors clearly on non-YAML/JSON files."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test.
+    attributes:
+      name:
+        description: Test.
+"""
+    )
+    data_path = tmp_path / "data.csv"
+    data_path.write_text("name\nfoo\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 1
+    assert ".csv" in result.output
+    assert "--fix only supports" in result.output
 
 
 def test_invalid_json(cli_runner, json_data_file):
@@ -155,42 +312,221 @@ data_sources:
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
     print(str(result.exception))
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
-def test_legacy_mode(csv_data_file, cli_runner):
-    """Test that validation is delegated to the old module when the --legacy-mode flag is passed"""
-    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
+# --- tests for --allow-null-for-optional-enums  ---
+# Uses the existing personinfo.yaml schema which has:
+#   - gender slot: range=GenderType enum, required=false (optional) ← perfect for our test
+
+
+def test_allow_null_for_optional_enums_without_flag(cli_runner, json_data_file):
+    """
+    Without the flag, empty string in an optional enum slot should be ERROR.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    Verifies backward compatibility — default behavior is unchanged.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — ERROR without flag
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+
+    assert "[ERROR]" in result.output
+    assert "'' is not one of" in result.output
+    assert result.exit_code == 1
+
+
+def test_allow_null_for_optional_enums_empty_string(cli_runner, json_data_file):
+    """
+    With the flag, empty string in an optional enum slot is downgraded to WARN.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty string — WARN with flag
+    ]
+    data_path = json_data_file(data)
     result = cli_runner.invoke(
-        cli, ["--legacy-mode", "--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Container", data_path]
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
     )
+
     assert result.exception is None
-    assert result.output == "✓ No problems found\n"
+    assert "[WARN]" in result.output
+    assert "[ERROR]" not in result.output
     assert result.exit_code == 0
 
 
-def test_deprecated_arguments(csv_data_file, cli_runner):
-    """Test that a warning is issued when deprecated args are used without --legacy-mode"""
-    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
-    result = cli_runner.invoke(cli, ["--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.exception is None
-    assert "Warning" in result.output
-    assert "-S/--index-slot" in result.output
+def test_allow_null_for_optional_enums_none_value(cli_runner, json_data_file):
+    """
+    None (JSON null) in an optional enum slot passes cleanly — the JSON Schema
+    validator does not raise an error for null on an optional slot, so no
+    downgrade is needed.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": None},  # null — passes cleanly
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
+    )
 
-    result = cli_runner.invoke(cli, ["--module", "foo", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert "Warning" in result.output
-    assert "-m/--module" in result.output
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
 
-    result = cli_runner.invoke(cli, ["--input-format", "yaml", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+
+def test_include_overlay_with_rules(tmp_path, cli_runner, json_data_file):
+    """Verify that --include merges rules from an overlay schema and violations are caught."""
+    overlay_yaml = """\
+id: https://w3id.org/test/overlay
+name: overlay
+classes:
+  Organization:
+    rules:
+      - description: low-salary orgs must have low score
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay_path = tmp_path / "overlay.yaml"
+    overlay_path.write_text(overlay_yaml)
+
+    # This org violates the overlay rule: min_salary=40000 (<= 50000) but score=3 (> 1)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": 3}],
+    }
+    data_path = json_data_file(data)
+
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "--include", str(overlay_path), data_path])
+    assert "[ERROR]" in result.output
+    assert "score" in result.output
+    assert result.exit_code == 1
+
+
+def test_include_overlay_no_violation(tmp_path, cli_runner, json_data_file):
+    """Verify that --include with conforming data passes cleanly."""
+    overlay_yaml = """\
+id: https://w3id.org/test/overlay
+name: overlay
+classes:
+  Organization:
+    rules:
+      - description: low-salary orgs must have low score
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay_path = tmp_path / "overlay.yaml"
+    overlay_path.write_text(overlay_yaml)
+
+    # This org satisfies both rules: base rule (salary<=80000 → score<=0) and overlay (salary<=50000 → score<=1)
+    # score=0 satisfies both rule postconditions and the base slot constraint (minimum_value: 0.0)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": 0}],
+    }
+    data_path = json_data_file(data)
+
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "--include", str(overlay_path), data_path])
     assert result.exception is None
-    assert "Warning" in result.output
-    assert "-f/--input-format" in result.output
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_include_multiple_overlays(tmp_path, cli_runner, json_data_file):
+    """Verify that multiple --include flags compose additively."""
+    overlay1_yaml = """\
+id: https://w3id.org/test/overlay1
+name: overlay1
+classes:
+  Organization:
+    rules:
+      - description: rule from overlay 1
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay2_yaml = """\
+id: https://w3id.org/test/overlay2
+name: overlay2
+classes:
+  Organization:
+    rules:
+      - description: rule from overlay 2
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 100000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 3
+"""
+    overlay1_path = tmp_path / "overlay1.yaml"
+    overlay1_path.write_text(overlay1_yaml)
+    overlay2_path = tmp_path / "overlay2.yaml"
+    overlay2_path.write_text(overlay2_yaml)
+
+    # This org: min_salary=40000, score=4 — violates overlay1 (score must be <= 1) AND overlay2 (score must be <= 3)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "Test Org", "min_salary": 40000, "score": 4}],
+    }
+    data_path = json_data_file(data)
 
     result = cli_runner.invoke(
-        cli, ["--include-range-class-descendants", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path]
+        cli,
+        [
+            "-s",
+            PERSONINFO_SCHEMA,
+            "--include",
+            str(overlay1_path),
+            "--include",
+            str(overlay2_path),
+            data_path,
+        ],
     )
+    assert result.output.count("[ERROR]") >= 2
+    assert result.exit_code == 1
+
+
+def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_data_file):
+    """
+    With the flag, valid enum values should still pass with no issues.
+    Ensures the flag does not suppress legitimate validation.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": "cisgender man"},
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
+    )
+
     assert result.exception is None
-    assert "Warning" in result.output
-    assert "--include-range-class-descendants" in result.output
+    assert "No issues found" in result.output
+    assert result.exit_code == 0

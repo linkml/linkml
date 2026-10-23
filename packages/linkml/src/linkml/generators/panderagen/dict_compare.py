@@ -66,7 +66,7 @@ def deep_compare_dicts(dict1: dict[str, Any], dict2: dict[str, Any], float_toler
 
 def _compare_values(val1: Any, val2: Any, float_tolerance: float) -> bool:
     """Compare two values with float tolerance."""
-    if isinstance(val1, (int, float)) and isinstance(val2, (int, float)):
+    if isinstance(val1, int | float) and isinstance(val2, int | float):
         return math.isclose(val1, val2, abs_tol=float_tolerance)
 
     return val1 == val2

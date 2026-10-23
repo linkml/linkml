@@ -13,6 +13,7 @@ from tests.linkml.test_compliance.helper import (
     SHEX,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CORE_FRAMEWORKS
@@ -29,6 +30,7 @@ SLOT_PREDICATE = "predicate"
 CLASS_ASSOCIATION = "Association"
 
 
+@feature_category("Inheritance & Refinement", "Subproperty value constraint")
 @pytest.mark.parametrize(
     "description,predicate_value,is_valid",
     [
@@ -112,6 +114,7 @@ def test_subproperty_of_value_constraint(framework, description, predicate_value
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty range formatting")
 @pytest.mark.parametrize(
     "description,range_type,predicate_value,is_valid",
     [
@@ -177,6 +180,7 @@ def test_subproperty_of_range_formatting(framework, description, range_type, pre
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty deep hierarchy")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA, SHACL, SHEX])
 def test_subproperty_of_deep_hierarchy(framework):
     """
@@ -242,6 +246,7 @@ def test_subproperty_of_deep_hierarchy(framework):
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty slot_usage narrowing")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA])
 def test_subproperty_of_slot_usage_narrowing(framework):
     """
@@ -315,6 +320,7 @@ def test_subproperty_of_slot_usage_narrowing(framework):
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty multivalued")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA])
 def test_subproperty_of_multivalued(framework):
     """
@@ -370,4 +376,72 @@ def test_subproperty_of_multivalued(framework):
         target_class=CLASS_ASSOCIATION,
         expected_behavior=ValidationBehavior.IMPLEMENTS,
         description="one_invalid",
+    )
+
+
+@feature_category("Inheritance & Refinement", "Subproperty class range")
+@pytest.mark.parametrize("framework", [PYDANTIC])
+def test_subproperty_of_class_range(framework):
+    """
+    Tests that subproperty_of does not override class range with Literal type.
+
+    When a slot has subproperty_of AND range pointing to a class,
+    the class range should take priority. The subproperty_of Literal
+    expansion only applies to string-like ranges (string, uri, uriorcurie).
+
+    Regression test for https://github.com/linkml/linkml/issues/3184
+    """
+    slots = {
+        "mayHaveAbility": {"range": "Ability", "multivalued": True},
+        "mayHaveHiddenAbility": {
+            "is_a": "mayHaveAbility",
+            "range": "Ability",
+            "multivalued": True,
+            "subproperty_of": "mayHaveAbility",
+        },
+    }
+    classes = {
+        "Ability": {
+            "attributes": {
+                "name": {"range": "string", "identifier": True},
+            },
+        },
+        "Species": {
+            "tree_root": True,
+            "slots": ["mayHaveAbility", "mayHaveHiddenAbility"],
+        },
+    }
+    schema = validated_schema(
+        test_subproperty_of_class_range,
+        "class_range",
+        framework,
+        slots=slots,
+        classes=classes,
+        core_elements=["subproperty_of"],
+    )
+
+    # Ability has an identifier slot, so Pydantic represents references as strings.
+    # With the fix, mayHaveHiddenAbility accepts any valid Ability identifier string.
+    # Without the fix, it would only accept Literal["mayHaveAbility"].
+    check_data(
+        schema,
+        "valid_ability_ref",
+        framework,
+        {"mayHaveAbility": ["Overgrow"], "mayHaveHiddenAbility": ["Chlorophyll"]},
+        True,
+        target_class="Species",
+        expected_behavior=ValidationBehavior.IMPLEMENTS,
+        description="valid_ability_ref",
+    )
+
+    # Verify mayHaveAbility itself also works (parent slot, no subproperty_of issue)
+    check_data(
+        schema,
+        "valid_parent_slot",
+        framework,
+        {"mayHaveAbility": ["Overgrow", "Blaze"]},
+        True,
+        target_class="Species",
+        expected_behavior=ValidationBehavior.IMPLEMENTS,
+        description="valid_parent_slot",
     )

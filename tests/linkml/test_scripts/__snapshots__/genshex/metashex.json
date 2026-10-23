@@ -503,12 +503,45 @@
             "type": "EachOf",
             "expressions": [
                {
-                  "type": "TripleConstraint",
+                  "type": "EachOf",
                   "id": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes",
-                  "predicate": "https://w3id.org/linkml/tests/core/name",
-                  "valueExpr": "https://w3id.org/linkml/String",
-                  "min": 0,
-                  "max": 1
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/core/name",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/long_id",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#BetaSequenceIdentifier02_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EtaSequenceIdentifier07_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#IotaSequenceIdentifier09_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#KappaSequenceIdentifier10_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#MuSequenceIdentifier12_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#NuSequenceIdentifier13_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#XiSequenceIdentifier14_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#PiSequenceIdentifier16_LongPatternLongPatternLongPattern",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LongEnum#RhoSequenceIdentifier17_LongPatternLongPatternLongPattern"
+                           ]
+                        },
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
                },
                {
                   "type": "TripleConstraint",
@@ -949,7 +982,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/tests/kitchen_sink/cordialness",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt",
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful",
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },

@@ -1,12 +1,10 @@
 """
-The ``linkml.validator`` package contains a new LinkML validation framework that is more flexible
-than the ``linkml.validators`` package. While that package still exists, it may become deprecated
-in the future.
+The ``linkml.validator`` package contains the LinkML validation framework.
 """
 
 import os
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
@@ -17,16 +15,32 @@ from linkml_runtime.loaders import yaml_loader
 
 
 def _get_default_validator(
-    schema: Union[str, dict, Path, SchemaDefinition],
+    schema: str | dict | Path | SchemaDefinition,
     *,
     strict: bool = False,
+    closed: bool = True,
+    config: str | Path | dict | None = None,
 ) -> Validator:
+    """Build the default :class:`Validator` for a schema.
+
+    :param schema: The schema to validate against.
+    :param strict: Stop after the first validation failure when ``True``.
+    :param closed: When ``True`` (default), the bundled
+        :class:`JsonschemaValidationPlugin` rejects undeclared slots
+        (closed-world validation). Set to ``False`` to allow extra
+        properties. Ignored if ``config`` provides an explicit ``plugins``
+        section.
+    :param config: Optional project-level validation config - either a path
+        to a ``linkml-validate``-style YAML file or a pre-parsed mapping.
+        When the mapping contains a ``plugins:`` key, those plugins are
+        used in place of the default and ``closed`` is ignored.
+    """
     try:
-        if isinstance(schema, Path):
-            schema = str(schema)
         if isinstance(schema, dict):
             schema = SchemaDefinition(**schema)
-        elif isinstance(schema, str):
+        elif isinstance(schema, str | Path):
+            # The loader records ``source_file`` on the schema when ``schema`` is a path,
+            # which is needed to resolve relative imports.
             schema = yaml_loader.load(schema, target_class=SchemaDefinition)
 
         if not isinstance(schema, SchemaDefinition):
@@ -34,15 +48,47 @@ def _get_default_validator(
     except ValueError as e:
         raise ValueError(f"Invalid schema: {schema}") from e
 
-    validation_plugins = [JsonschemaValidationPlugin(closed=True)]
+    validation_plugins = _resolve_default_plugins(closed=closed, config=config)
 
     return Validator(schema, validation_plugins=validation_plugins, strict=strict)
 
 
+def _resolve_default_plugins(
+    *,
+    closed: bool = True,
+    config: str | Path | dict | None = None,
+) -> list:
+    """Resolve the list of plugins for :func:`_get_default_validator`.
+
+    Honors an optional project-level ``linkml-validate``-style config that
+    may override the default ``JsonschemaValidationPlugin(closed=...)``.
+    """
+    if config is not None:
+        # Lazy import to avoid a circular dependency with "linkml.validator.cli".
+        import yaml
+
+        from linkml.validator.cli import Config as _CliConfig
+        from linkml.validator.cli import _resolve_plugins
+
+        if isinstance(config, str | Path):
+            with open(config) as cfg_file:
+                config_data = yaml.safe_load(cfg_file) or {}
+        else:
+            config_data = dict(config)
+        # ``Config.schema`` is optional; drop ``data_sources`` if present
+        # since it has no meaning here.
+        config_data.pop("data_sources", None)
+        cfg = _CliConfig(**config_data)
+        if cfg.plugins:
+            return _resolve_plugins(cfg.plugins)
+
+    return [JsonschemaValidationPlugin(closed=closed)]
+
+
 def validate(
     instance: Any,
-    schema: Union[str, dict, SchemaDefinition],
-    target_class: Optional[str] = None,
+    schema: str | dict | SchemaDefinition,
+    target_class: str | None = None,
     *,
     strict: bool = False,
 ) -> ValidationReport:
@@ -63,8 +109,7 @@ def validate(
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
-    :raises ValueError: If a valid ``SchemaDefinition`` cannot be constructed
-        from the ``schema`` parameter.
+    :raises ValidationError: If requested to raise and validation errors are found.
     :return: A validation report
     :rtype: ValidationReport
     """
@@ -73,9 +118,9 @@ def validate(
 
 
 def validate_file(
-    file: Union[str, bytes, os.PathLike],
-    schema: Union[str, dict, SchemaDefinition],
-    target_class: Optional[str] = None,
+    file: str | bytes | os.PathLike,
+    schema: str | dict | SchemaDefinition,
+    target_class: str | None = None,
     *,
     strict: bool = False,
 ) -> ValidationReport:
@@ -105,7 +150,8 @@ def validate_file(
     :return: A validation report
     :rtype: ValidationReport
     """
-    loader = default_loader_for_file(file)
+    schema_path = schema if isinstance(schema, str | Path) else None
+    loader = default_loader_for_file(file, schema_path=schema_path, target_class=target_class)
     validator = _get_default_validator(schema, strict=strict)
     return validator.validate_source(loader, target_class)
 

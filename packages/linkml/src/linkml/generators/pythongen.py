@@ -2,12 +2,11 @@ import keyword
 import logging
 import os
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Optional, Union
 
 import click
 from rdflib import URIRef
@@ -16,10 +15,12 @@ import linkml
 from linkml._version import __version__
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.meta import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
     DefinitionName,
@@ -33,10 +34,12 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
+from linkml_runtime.utils.namespaces import _prefix_to_python_var as _safe_python_identifier
 
 logger = logging.getLogger(__name__)
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class PythonGenerator(Generator):
     """
@@ -56,8 +59,8 @@ class PythonGenerator(Generator):
     # ObjectVars
     gen_classvars: bool = True
     gen_slots: bool = True
+
     genmeta: bool = False
-    emit_metadata: bool = True
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
@@ -73,7 +76,10 @@ class PythonGenerator(Generator):
         if isinstance(self.schema, Path):
             self.schema = str(self.schema)
         self.sourcefile = self.schema
-        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
+        # Forward importmap so URI-style imports (e.g. ``ex:schema/core`` backed
+        # by ``--importmap``) resolve to local files instead of falling through
+        # to HTTP on the first lazy access via ``PythonIfAbsentProcessor``.
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
         self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
         super().__post_init__()
         if self.format is None:
@@ -82,6 +88,18 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+
+    def slot_name(self, name: str) -> str:
+        """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
+        if the underscored name collides with a Python reserved keyword, so
+        that emissions like ``self.class`` become ``self.class_``. The
+        original slot name is preserved on the runtime ``Slot(name=...)``
+        argument, so schema lookups and URI resolution are unaffected.
+        """
+        pyname = super().slot_name(name)
+        if keyword.iskeyword(pyname):
+            pyname += "_"
+        return pyname
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -240,17 +258,19 @@ class PythonGenerator(Generator):
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(d for d in self.schema.description.split("\n") if d is not None)
+        # The generation_date line is omitted when the timestamp is suppressed, but the rest
+        # of the metadata banner is still emitted.
+        generation_date = f"# Generation date: {self.schema.generation_date}\n" if self.schema.generation_date else ""
         head = (
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
-# Generation date: {self.schema.generation_date}
-# Schema: {self.schema.name}
-#"""
-            if self.emit_metadata and self.schema.generation_date
+{generation_date}# Schema: {self.schema.name}
+#
+"""
+            if self.metadata
             else ""
         )
 
-        return f"""{head}
-# id: {self.schema.id}
+        return f"""{head}# id: {self.schema.id}
 # description: {split_description}
 # license: {be(self.schema.license)}
 
@@ -273,7 +293,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 # Enumerations
 {self.gen_enumerations()}
-
+{self.gen_post_enum_references()}
 # Slots
 {self.gen_slotdefs()}"""
 
@@ -300,7 +320,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 if e.imported_from:
                     self.add_entry(e.imported_from, camelcase(e.name))
 
-            def add_entry(innerself, path: Union[str, URIRef], name: str) -> None:
+            def add_entry(innerself, path: str | URIRef, name: str) -> None:
                 path = str(self.namespaces.uri_for(path) if ":" in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
                     model_base = "." if self.genmeta else "linkml_runtime.linkml_model."
@@ -332,23 +352,37 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         def add_enum_ref(e: EnumDefinition) -> None:
             rval.add_element(e)
 
+        def add_one_range(range_name: str, inlined: bool) -> None:
+            if not range_name:
+                return
+            if range_name in self.schema.types:
+                add_type_ref(self.schema.types[range_name])
+            elif range_name in self.schema.enums:
+                add_enum_ref(self.schema.enums[range_name])
+            else:
+                cls = self.schema.classes[range_name]
+                if cls.imported_from:
+                    if self.class_identifier(cls):
+                        identifier_range = self.class_identifier_path(cls, False)[-1]
+                        if identifier_range in self.schema.types:
+                            add_type_ref(TypeDefinition(identifier_range))
+                        else:
+                            rval.add_entry(cls.imported_from, identifier_range)
+                    if inlined:
+                        rval.add_element(cls)
+
         def add_slot_range(slot: SlotDefinition) -> None:
-            if slot.range:
-                if slot.range in self.schema.types:
-                    add_type_ref(self.schema.types[slot.range])
-                elif slot.range in self.schema.enums:
-                    add_enum_ref(self.schema.enums[slot.range])
-                else:
-                    cls = self.schema.classes[slot.range]
-                    if cls.imported_from:
-                        if self.class_identifier(cls):
-                            identifier_range = self.class_identifier_path(cls, False)[-1]
-                            if identifier_range in self.schema.types:
-                                add_type_ref(TypeDefinition(identifier_range))
-                            else:
-                                rval.add_entry(cls.imported_from, identifier_range)
-                        if slot.inlined:
-                            rval.add_element(cls)
+            add_one_range(slot.range, bool(slot.inlined))
+            # any_of/exactly_one_of branches can each declare their own range (e.g. a
+            # boolean branch needing `Bool` from linkml_runtime.utils.metamodelcore),
+            # which the bare `slot.range` check above never sees. Each branch's own
+            # inlined status is resolved via the same priority rules as the
+            # postinit/annotation codegen (_resolve_branch_inlined), so the two
+            # can't end up importing a class that the generated code never
+            # actually references (or vice versa).
+            for branch in list(slot.any_of) + list(slot.exactly_one_of):
+                branch_range = branch.range if branch.range else slot.range
+                add_one_range(branch_range, self._resolve_branch_inlined(branch, branch_range))
 
         rval = ImportList(self.schema_location)
         for typ in self.schema.types.values():
@@ -387,7 +421,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         dflt = f"CurieNamespace('', '{sfx(dflt_prefix)}')" if ":/" in dflt_prefix else dflt_prefix.upper()
         curienamespace_defs = [
             {
-                "variable": f"{pfx.upper().replace('.', '_').replace('-', '_')}",
+                "variable": _safe_python_identifier(pfx),
                 "value": f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')",
             }
             for pfx in sorted(self.emit_prefixes)
@@ -404,17 +438,64 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         return curienamespace_declarations + catalog_declaration
 
     def gen_references(self) -> str:
-        """Generate python type declarations for all identifiers (primary keys)"""
-        rval = []
+        """Generate python type declarations for all identifiers (primary keys).
+
+        Each class with a key or identifier slot gets a small wrapper class, e.g.
+        ``Thing`` with identifier ``pid`` produces::
+
+            class ThingPid(URIorCURIE):
+                pass
+
+        When ``AnnotationTag`` is a subclass of ``Thing`` it inherits the same
+        identifier, so its wrapper must extend the parent's wrapper::
+
+            class AnnotationTagPid(ThingPid):   # ThingPid must be defined first
+                pass
+
+        Order matters: "_sort_classes" puts every data class after its parent
+        but is ignorant of wrapper-class inheritance, so wrappers can still come
+        out in the wrong order, causing a ``NameError`` on import. Collection
+        (:meth:`_collect_references`) and dependency-ordered emission
+        (:meth:`_render_references`) keep parents ahead of their children.
+
+        Wrappers whose ultimate base is an enum are deferred and emitted by
+        :meth:`gen_post_enum_references` after the Enumerations section, since
+        enum classes are defined later in the generated file.
+        """
+        return self._render_references(enum_rooted=False)
+
+    def gen_post_enum_references(self) -> str:
+        """Emit class-reference wrappers whose ultimate base is an enum.
+
+        These must be emitted after the Enumerations section because the wrapper
+        "class FooBar(BarEnum): pass" requires "BarEnum" to already exist.
+        See :meth:`gen_references` for the general wrapper mechanism.
+        """
+        return self._render_references(enum_rooted=True)
+
+    def _collect_references(self) -> tuple[dict[str, tuple[str, str]], list[str], set[str]]:
+        """Walk classes in sorted order and record each wrapper class plus its parent.
+
+        No output is written here; emission is deferred to :meth:`_render_references`
+        so that parents can be written before children.
+
+        :return: tuple of (ref_info, emit_order, enum_names) where
+            ref_info maps wrapper name -> (parent name, source line to emit),
+            emit_order preserves discovery order, and
+            enum_names is the set of camelcased enum names defined in this schema.
+        """
+        ref_info: dict[str, tuple[str, str]] = {}
+        emit_order: list[str] = []
+        enum_names = {camelcase(e.name) for e in self.schema.enums.values() if not e.imported_from}
+
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
                 if pkeys:
                     for pk in pkeys:
                         classname = camelcase(cls.name) + camelcase(self.aliased_slot_name(pk))
-                        # If we've got a parent slot and the range of the parent is the range of the child, the
-                        # child slot is a subclass of the parent.  Otherwise, the child range has been overridden,
-                        # so the inheritance chain has been broken
+                        # Inherit from parent's wrapper when parent has a compatible
+                        # identifier; otherwise fall back to the slot's own range path
                         parent_pk = self.class_identifier(cls.is_a) if cls.is_a else None
                         parent_pk_slot = self.schema.slots[parent_pk] if parent_pk else None
                         pk_slot = self.schema.slots[pk]
@@ -422,12 +503,71 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                             parents = self.class_identifier_path(cls.is_a, False)
                         else:
                             parents = self.slot_range_path(pk_slot)
+                        # Plain Python types (str/float/int) need linkml-runtime "extended_" wrapper
                         parent_cls = (
                             "extended_" + parents[-1] if parents[-1] in ["str", "float", "int"] else parents[-1]
                         )
-                        rval.append(f"class {classname}({parent_cls}):\n\tpass")
-                        break  # We only do the first primary key
-        return "\n\n\n".join(rval)
+                        ref_info[classname] = (parent_cls, f"class {classname}({parent_cls}):\n\tpass")
+                        emit_order.append(classname)
+                        break  # Only the first primary key matters.
+
+        return ref_info, emit_order, enum_names
+
+    def _render_references(self, enum_rooted: bool) -> str:
+        """Render wrappers collected by :meth:`_collect_references`, partitioned
+        by whether their root base is an enum.
+
+        Each wrapper is written only after its parent has been written. If the
+        parent is an imported type (e.g. URIorCURIE) or a locally-defined
+        enum it is already available and the recursion stops.
+
+        :param enum_rooted: when True, emit only wrappers whose transitive base is
+            a locally-defined enum; when False, emit all other wrappers.
+        """
+        ref_info, emit_order, enum_names = self._collect_references()
+
+        def _root_base(name: str) -> str:
+            """Walk parent chain to find the ultimate (non-wrapper) base name."""
+            seen: set[str] = set()
+            current = name
+            while current in ref_info and current not in seen:
+                seen.add(current)
+                current = ref_info[current][0]
+            return current
+
+        emitted: set[str] = set()
+        in_progress: set[str] = set()
+        rval: list[str] = []
+
+        def _emit(name: str) -> None:
+            if name in emitted or name not in ref_info:
+                return  # Already written, or imported/enum type - nothing to do.
+            if name in in_progress:
+                raise ValueError(f"Cyclic wrapper inheritance at {name}")
+            in_progress.add(name)
+            parent_cls, line = ref_info[name]
+            try:
+                # Treat parent as external (do not recurse) when it is an enum
+                # defined locally, even if a wrapper happens to share its name.
+                if parent_cls not in enum_names:
+                    _emit(parent_cls)  # Write the parent first.
+            finally:
+                in_progress.discard(name)
+            emitted.add(name)
+            rval.append(line)
+
+        for name in emit_order:
+            is_enum_rooted = _root_base(name) in enum_names
+            if is_enum_rooted != enum_rooted:
+                continue
+            _emit(name)
+
+        if not rval:
+            return ""
+        body = "\n\n\n".join(rval)
+        # When emitting post-enum wrappers, frame with surrounding blank lines so
+        # the section is separated from the Enumerations and Slots sections.
+        return f"\n\n{body}\n" if enum_rooted else body
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
@@ -529,7 +669,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             class_model_uri = f'URIRef("{class_model_uri}")'
         else:
             ns, ln = class_model_uri.split(":", 1)
-            class_model_uri = f"{ns.upper()}.{ln}"
+            class_model_uri = f"{_safe_python_identifier(ns)}.{ln}"
 
         vars = [
             f"class_class_uri: ClassVar[URIRef] = {class_class_uri}",
@@ -555,8 +695,8 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             type_model_uri = f'URIRef("{type_model_uri}")'
         else:
             ns, ln = type_model_uri.split(":", 1)
-            ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
-            type_model_uri = f"{ns.upper()}{ln_suffix}"
+            ln_suffix = f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f'["{ln}"]'
+            type_model_uri = f"{_safe_python_identifier(ns)}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
             f"type_class_curie = {type_class_curie}",
@@ -628,9 +768,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     def range_cardinality(
         self,
         slot: SlotDefinition,
-        cls: Optional[ClassDefinition],
+        cls: ClassDefinition | None,
         positional_allowed: bool,
-    ) -> tuple[str, Optional[str]]:
+    ) -> tuple[str, str | None]:
         """
         Return the range type including initializers, etc.
         Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,
@@ -689,7 +829,79 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         else:
             return f"Optional[{range_type}]", "None"
 
-    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> tuple[str, str, str]:
+    def _boolean_combinator_branch_slots(
+        self, slot: SlotDefinition, branches: list[AnonymousSlotExpression]
+    ) -> list[SlotDefinition] | None:
+        """
+        Expand `any_of`/`exactly_one_of` branches into synthetic single-range slots.
+
+        For a single-valued slot with a non-empty `branches` list (`slot.any_of` or
+        `slot.exactly_one_of`), return one synthetic SlotDefinition per branch: a
+        shallow copy of `slot` with `.range` replaced by the branch's own range (or
+        the parent's range if a branch omits one) and `.any_of`/`.exactly_one_of`
+        cleared, so it can be fed back into `class_reference_type`/`gen_postinit`
+        without infinite recursion.
+
+        Returns None (falling back to today's single-range behavior) if the slot is
+        multivalued (multivalued any_of/exactly_one_of is a separate, larger
+        undertaking), `branches` is empty, or a branch's range can't be resolved.
+        """
+        if slot.multivalued or not branches:
+            return None
+        branch_slots = []
+        for branch in branches:
+            branch_range = branch.range if branch.range else slot.range
+            if not branch_range:
+                return None
+            bslot = copy(slot)
+            bslot.range = branch_range
+            bslot.any_of = []
+            bslot.exactly_one_of = []
+            bslot.inlined = self._resolve_branch_inlined(branch, branch_range)
+            branch_slots.append(bslot)
+        return branch_slots
+
+    def _resolve_branch_inlined(self, branch: AnonymousSlotExpression, branch_range: str) -> bool:
+        """
+        Whether an any_of/exactly_one_of branch's class range should be treated as
+        inlined (embedded) rather than referenced by identifier.
+
+        Deliberately does NOT just inherit the container slot's own `.inlined`.
+        SchemaLoader.resolve() auto-forces a slot's `.inlined` to True whenever its
+        OWN declared range (e.g. an abstract `Any`/`Anything` placeholder class used
+        to hold the any_of/exactly_one_of union) has no identifier slot --
+        regardless of whether the schema author ever asked for embedding. That
+        forced value says nothing about whether THIS branch's concrete class should
+        be embedded or referenced by identifier, so blindly copying it would wrongly
+        force every identifier-bearing branch (e.g. a class meant to be referenced
+        by ID, matching a bare string value) into dict-embedding coercion instead.
+
+        Priority, mirroring the analogous jsonschemagen fix in PR #3688:
+        1. the branch's own explicit `inlined` (e.g. `any_of: [{range: X,
+           inlined: true}, ...]`), if the schema author set one directly;
+        2. otherwise, a class range with no identifier slot at all MUST be
+           inlined, since there is no identifier to reference it by;
+        3. otherwise, default to not-inlined (reference by identifier).
+
+        This is the single source of truth for the decision, shared by
+        `_boolean_combinator_branch_slots` (annotation/coercion codegen) and
+        `gen_import_list` (import collection), so the two can't disagree about
+        whether a given branch's class needs to be imported for embedding.
+        """
+        if branch.inlined is not None:
+            return branch.inlined
+        return branch_range in self.schema.classes and not self.class_identifier(branch_range)
+
+    @staticmethod
+    def _flatten_boolean_combinator_range(range_str: str) -> list[str]:
+        """Flatten a `Union[A, B]`-shaped string (as produced by class_identifier_path
+        for a non-inlined-by-default range) into its component type names, so that
+        joining multiple branches doesn't nest as `Union[Union[dict, D], int]`."""
+        if range_str.startswith("Union[") and range_str.endswith("]"):
+            return [p.strip() for p in range_str[len("Union[") : -1].split(",")]
+        return [range_str]
+
+    def class_reference_type(self, slot: SlotDefinition, cls: ClassDefinition | None) -> tuple[str, str, str]:
         """
         Return the type of slot referencing a class
 
@@ -697,6 +909,24 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         :param cls: owning class.  Used for generating key references
         :return: Python class reference type, most proximal type, most proximal type name
         """
+        if not slot.multivalued:
+            branch_slots = self._boolean_combinator_branch_slots(
+                slot, list(slot.any_of) if slot.any_of else list(slot.exactly_one_of)
+            )
+            if branch_slots is not None:
+                branch_results = [self.class_reference_type(bslot, cls) for bslot in branch_slots]
+                flat: list[str] = []
+                for range_str, _, _ in branch_results:
+                    for part in self._flatten_boolean_combinator_range(range_str):
+                        if part not in flat:
+                            flat.append(part)
+                combined = flat[0] if len(flat) == 1 else f"Union[{', '.join(flat)}]"
+                # prox_type/prox_type_name aren't well-defined for a multi-branch
+                # union; gen_postinit resolves per-branch names itself (it never
+                # consumes these for any_of/exactly_one_of slots), so return the
+                # first branch's values defensively for any other caller.
+                return combined, branch_results[0][1], branch_results[0][2]
+
         rangelist = (
             self.class_identifier_path(cls, False) if slot.key or slot.identifier else self.slot_range_path(slot)
         )
@@ -771,22 +1001,22 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     @staticmethod
     def _sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
         clist = list(clist)
-        slist = []  # sorted
+        slist: list[ClassDefinition] = []  # sorted
+        slist_names: set[str] = set()
         while len(clist) > 0:
             for i in range(len(clist)):
                 candidate = clist[i]
                 can_add = False
-                if candidate.is_a is None:
+                # Class can be added if no parent, or parent already in sorted list.
+                if candidate.is_a is None or candidate.is_a in slist_names:
                     can_add = True
-                else:
-                    if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
                 if can_add:
-                    slist = slist + [candidate]
+                    slist.append(candidate)
+                    slist_names.add(candidate.name)
                     del clist[i]
                     break
             if not can_add:
-                raise (f"could not find suitable element in {clist} that does not ref {slist}")
+                raise ValueError(f"Cyclic or unresolved class inheritance in {clist}; emitted={slist}")
         return slist
 
     def is_key_value_class(self, range_name: DefinitionName) -> bool:
@@ -810,7 +1040,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 return self._roll_up_type(t.typeof)
         return typ_name
 
-    def gen_constructor(self, cls: ClassDefinition) -> Optional[str]:
+    def gen_constructor(self, cls: ClassDefinition) -> str | None:
         """
         Generate python constructor for class
 
@@ -869,9 +1099,152 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append("")
         return ("\n\t" if len(rlines) > 0 else "") + "\n\t".join(rlines)
 
-    def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
+    def _boolean_combinator_coercion_expr(self, bslot: SlotDefinition, bname: str) -> str:
+        """
+        Mirrors the per-range classification in gen_postinit's single-range coercion
+        (empty-class / identifier-or-type-or-enum / embedded-dict) for ONE any_of or
+        exactly_one_of branch, producing a constructor expression that coerces a
+        local variable named `value` into `bname`.
+        """
+        branch_range = bslot.range
+        if branch_range in self.schema.classes and not self.schema.classes[branch_range].slots:
+            return f"{bname}()"
+        elif (
+            (self.class_identifier(branch_range) and not bslot.inlined)
+            or branch_range in self.schema.types
+            or branch_range in self.schema.enums
+        ):
+            return f"{bname}(value)"
+        else:
+            return f"{bname}(**as_dict(value))"
+
+    def _gen_boolean_combinator_postinit(
+        self,
+        cls: ClassDefinition,
+        slot: SlotDefinition,
+        branch_slots: list[SlotDefinition],
+        require_exactly_one: bool,
+    ) -> str:
+        """
+        Generate the __post_init__ coercion block for a single-valued slot ranged
+        over `any_of` (require_exactly_one=False) or `exactly_one_of`
+        (require_exactly_one=True).
+
+        any_of: candidates are tried in declared order; the first one that can be
+        constructed from the raw value wins. This is a deliberate, documented
+        tie-break for genuinely ambiguous data (e.g. a dict that structurally
+        satisfies more than one candidate's required fields) -- not an attempt to
+        guess the "best" match.
+
+        exactly_one_of: every candidate must be tried (no early exit), since
+        detecting a violation (0 or 2+ matches) requires knowing how many candidates
+        actually succeed, not just whether one did.
+        """
+        aliased_slot_name = self.slot_name(slot.name)
+        rlines: list[str] = []
+
+        if slot.required:
+            rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
+            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
+
+        # Resolve each branch's runtime (unquoted) type name via the same single-range
+        # call class_reference_type already makes for a plain slot, then de-dup by that
+        # name, preserving declared order -- this *is* the tie-break. Branches without
+        # their own `range` (e.g. constraint-only exactly_one_of options) can resolve to
+        # the same runtime type; deduping the lambdas themselves (not just the isinstance
+        # guard/label) keeps exactly_one_of from treating two identical candidates as two
+        # independent matches.
+        branch_names = [self.class_reference_type(bslot, cls)[2] for bslot in branch_slots]
+        seen_names: set[str] = set()
+        dedup_branch_slots: list[SlotDefinition] = []
+        dedup_names: list[str] = []
+        for bslot, bname in zip(branch_slots, branch_names):
+            if bname not in seen_names:
+                seen_names.add(bname)
+                dedup_branch_slots.append(bslot)
+                dedup_names.append(bname)
+        tuple_str = ", ".join(dedup_names) + ("," if len(dedup_names) == 1 else "")
+        union_label = f"Union[{', '.join(dedup_names)}]" if len(dedup_names) > 1 else dedup_names[0]
+
+        guard = (
+            f"if not isinstance(self.{aliased_slot_name}, ({tuple_str})):"
+            if slot.required
+            else f"if self.{aliased_slot_name} is not None and not isinstance(self.{aliased_slot_name}, ({tuple_str})):"
+        )
+        lambdas = ", ".join(
+            f"lambda: {self._boolean_combinator_coercion_expr(bslot, bname)}"
+            for bslot, bname in zip(dedup_branch_slots, dedup_names)
+        )
+        if len(dedup_branch_slots) == 1:
+            # A single-element parenthesized expression is not a tuple in Python --
+            # `(lambda: ...)` is just the lambda itself, not a 1-tuple containing it --
+            # so `for _coerce in (...)` would try to iterate the function object.
+            lambdas += ","
+
+        rlines.append(guard)
+        rlines.append(f"\tvalue = self.{aliased_slot_name}")
+        if not require_exactly_one:
+            rlines.append(f"\tfor _coerce in ({lambdas}):")
+            rlines.append("\t\ttry:")
+            rlines.append(f"\t\t\tself.{aliased_slot_name} = _coerce()")
+            rlines.append("\t\t\tbreak")
+            rlines.append("\t\texcept (ValueError, TypeError):")
+            rlines.append("\t\t\tcontinue")
+            rlines.append("\telse:")
+            rlines.append(
+                f'\t\traise ValueError(f"None of the candidate types {union_label} could be constructed '
+                f'from {{value!r}} for slot {aliased_slot_name}")'
+            )
+        else:
+            rlines.append("\t_matches = []")
+            rlines.append(f"\tfor _coerce in ({lambdas}):")
+            rlines.append("\t\ttry:")
+            rlines.append("\t\t\t_matches.append(_coerce())")
+            rlines.append("\t\texcept (ValueError, TypeError):")
+            rlines.append("\t\t\tcontinue")
+            rlines.append("\tif len(_matches) == 1:")
+            rlines.append(f"\t\tself.{aliased_slot_name} = _matches[0]")
+            rlines.append("\telif len(_matches) == 0:")
+            rlines.append(
+                f'\t\traise ValueError(f"None of the candidate types {union_label} could be constructed '
+                f'from {{value!r}} for slot {aliased_slot_name}")'
+            )
+            rlines.append("\telse:")
+            rlines.append(
+                f'\t\traise ValueError(f"Value {{value!r}} for slot {aliased_slot_name} ambiguously matches '
+                f"{{len(_matches)}} candidate types in exactly_one_of (expected exactly 1): "
+                f'{{[type(_m).__name__ for _m in _matches]}}")'
+            )
+        rlines.append("")
+        return "\n\t\t".join(rlines)
+
+    def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> str | None:
         """Generate python post init rules for slot in class"""
         rlines: list[str] = []
+
+        # default_ns: initialize slot from the schema id at runtime, but only
+        # when the containing class has an 'id' slot (e.g. SchemaDefinition).
+        if slot.ifabsent == "default_ns" and any(s == "id" for s in cls.slots):
+            aliased_slot_name = self.slot_name(slot.name)
+            rlines.append(f"if self.{aliased_slot_name} is None:")
+            rlines.append(f"\tself.{aliased_slot_name} = sfx(str(self.id))")
+            rlines.append("")
+            return "\n\t\t".join(rlines)
+
+        # any_of/exactly_one_of range unions: this must be checked before the
+        # is_class_unconstrained short-circuit below, since a slot like
+        # `range: Any, any_of: [ClassA, ClassB]` (range Any's class_uri is
+        # linkml:Any) would otherwise be treated as unconstrained and get zero
+        # coercion at all -- exactly the pattern that needs this fix the most.
+        if not slot.multivalued and not slot.designates_type:
+            if slot.any_of:
+                branch_slots = self._boolean_combinator_branch_slots(slot, list(slot.any_of))
+                if branch_slots is not None:
+                    return self._gen_boolean_combinator_postinit(cls, slot, branch_slots, require_exactly_one=False)
+            elif slot.exactly_one_of:
+                branch_slots = self._boolean_combinator_branch_slots(slot, list(slot.exactly_one_of))
+                if branch_slots is not None:
+                    return self._gen_boolean_combinator_postinit(cls, slot, branch_slots, require_exactly_one=True)
 
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
@@ -906,29 +1279,23 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if slot.designates_type:
                 slot_range = self._roll_up_type(slot.range)
                 if slot_range == "string":
-                    td_value_classvar = "class_name"
+                    td_value_expression = "self.class_name"
                 elif slot_range == "uri":
-                    td_value_classvar = "class_model_uri"
+                    td_value_expression = "self.class_model_uri"
                 elif slot_range == "uriorcurie":
-                    td_value_classvar = "class_class_curie"
+                    td_value_expression = (
+                        "self.class_class_curie if self.class_class_curie is not None else self.class_class_uri"
+                    )
                 else:
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
-                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+                rlines.append(f"self.{aliased_slot_name} = str({td_value_expression})")
             elif (
                 # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes and not self.schema.classes[slot.range].slots
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
-                if slot.range in self.schema.enums and slot.ifabsent:
-                    # `ifabsent` for an enumeration cannot be assigned to
-                    # the dataclass field default, because it would be a
-                    # mutable. `python_ifabsent_processor.py` can specify
-                    # the default as string and here that string gets
-                    # converted into an object attribute invocation
-                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
-                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
-                elif (
+                if (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
                     or slot.range in self.schema.enums
@@ -936,22 +1303,17 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
-        elif slot.inlined:
+        elif slot.inlined and slot.range in self.schema.classes:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier, and we are expecting to be inlined first class elements
-            # (inlined_as_list is not True), we will use the first required field as the key.
-            #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
-            #  True
-            if not identifier and not slot.inlined_as_list:
+            if not identifier:
                 for range_slot_name in slot_range_cls.slots:
                     range_slot = self.schema.slots[range_slot_name]
-                    if range_slot.required:
+                    if range_slot.required and range_slot.range not in self.schema.classes:
                         identifier = range_slot.name
                         break
                 keyed = False
             else:
-                # Place for future expansion
                 keyed = True
             if identifier:
                 if not slot.inlined_as_list:
@@ -1023,7 +1385,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if self.schema.slots[slot_name].key or self.schema.slots[slot_name].identifier
         ]
 
-    def key_name_for(self, class_name: ClassDefinitionName) -> Optional[str]:
+    def key_name_for(self, class_name: ClassDefinitionName) -> str | None:
         for slot_name in self.primary_keys_for(self.schema.classes[class_name]):
             return self.formatted_element_name(class_name, True) + camelcase(slot_name)
         return None
@@ -1058,7 +1420,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 return False  # Occurs before
         return True
 
-    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> tuple[str, Optional[str]]:
+    def python_uri_for(self, uriorcurie: str | URIRef) -> tuple[str, str | None]:
         """Return the python form of uriorcurie
         :param uriorcurie:
         :return: URI and CURIE form
@@ -1068,9 +1430,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             ns = "DEFAULT_"
         if ns is None:
             return '"str(uriorcurie)"', None
+        safe_ns = _safe_python_identifier(ns)
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
-            ns.upper() + f".curie('{ln}')",
+            safe_ns + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
+            safe_ns + f".curie('{ln}')",
         )
 
     def gen_slotdefs(self) -> str:
@@ -1083,6 +1446,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_slot(self, slot: SlotDefinition) -> str:
         python_slot_name = underscore(slot.name)
+        # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
+        # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
+        if keyword.iskeyword(python_slot_name):
+            python_slot_name = python_slot_name + "_"
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)
@@ -1105,7 +1472,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             mappings = ", mappings = [" + ", ".join(map_texts) + "]"
         else:
             mappings = ""
-        pattern = f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
+        # Global slot definitions are emitted directly rather than through
+        # induced_slot(), so resolve structured patterns explicitly here
+        # without changing the source SlotDefinition.
+        resolved_pattern = self.schemaview.resolve_pattern(slot)
+        pattern = f",\n                   pattern=re.compile(r'{resolved_pattern}')" if resolved_pattern else ""
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 
@@ -1265,7 +1636,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
-@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
+@click.option("--head/--no-head", default=None, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
@@ -1293,7 +1664,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
-    head=True,
+    head=None,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1301,9 +1672,12 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
+    # if specified, `head` determine the value of `metadata`
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
     gen = PythonGenerator(
         yamlfile,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1312,7 +1686,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(emit_metadata=head, **args))
+    print(gen.serialize(**args))
 
 
 if __name__ == "__main__":

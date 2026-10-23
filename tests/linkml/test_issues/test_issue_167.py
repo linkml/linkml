@@ -24,14 +24,14 @@ def test_issue_167b_python(input_path, snapshot):
     """Annotations python example"""
     output = PythonGenerator(
         input_path("issue_167b.yaml"),
-        emit_metadata=False,
+        metadata=False,
     ).serialize()
     assert output == snapshot("issue_167b.py")
 
     output = PythonGenerator(
         input_path("issue_167b.yaml"),
         mergeimports=False,
-        emit_metadata=False,
+        metadata=False,
     ).serialize()
     assert output == snapshot("issue_167b2.py")
 

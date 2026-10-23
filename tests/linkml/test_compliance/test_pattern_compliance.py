@@ -16,11 +16,13 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
 
 
+@feature_category("Value Constraints", "Regex pattern")
 @pytest.mark.parametrize(
     "schema_name,range,pattern,data_name,value",
     [
@@ -104,6 +106,7 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
 
 
 # pattern is {word}{ws}{word} and defined in settings above
+@feature_category("Value Constraints", "Structured pattern")
 @pytest.mark.parametrize(
     "interpolated,partial_match,value,is_valid",
     [
@@ -111,13 +114,13 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
         (True, False, "abc", False),
         (True, False, "abc def ghi", False),
         (True, True, "abc def ghi", True),
+        (True, True, "123 abc def", True),
         (False, False, "abc def", False),
         (False, True, "abc def", False),
         (False, False, "{word}{ws}{word}", True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-@pytest.mark.skip(reason="https://github.com/linkml/linkml/issues/1557")
 def test_structured_pattern(framework, interpolated, partial_match, value: str, is_valid):
     """
     Tests behavior of structured pattern slots.
@@ -173,7 +176,7 @@ def test_structured_pattern(framework, interpolated, partial_match, value: str, 
         core_elements=["structured_pattern"],
     )
     implementation_status = ValidationBehavior.IMPLEMENTS
-    if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
     check_data(
@@ -188,6 +191,7 @@ def test_structured_pattern(framework, interpolated, partial_match, value: str, 
     )
 
 
+@feature_category("Value Constraints", "ID prefix")
 @pytest.mark.parametrize(
     "value,is_valid",
     [

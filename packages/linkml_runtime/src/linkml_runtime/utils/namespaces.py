@@ -1,5 +1,7 @@
+import builtins
+import keyword
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from prefixcommons import curie_util
 from prefixmaps.io.parser import load_context
@@ -9,6 +11,29 @@ from requests.structures import CaseInsensitiveDict
 
 from linkml_runtime.utils.uri_validator import validate_uri
 from linkml_runtime.utils.yamlutils import TypedNode
+
+
+def _prefix_to_python_var(prefix: str) -> str:
+    """Return a safe module-level Python variable name for a CURIE prefix.
+    Uppercases and replaces ``.`` / ``-`` with ``_``, appends ``_NS`` on
+    keyword/builtin clashes, prepends ``NS_`` on leading-digit prefixes."""
+
+    name = prefix.upper().replace(".", "_").replace("-", "_")
+    lower = name.lower()
+    clashes = (
+        keyword.iskeyword(name)
+        or keyword.iskeyword(lower)
+        or keyword.issoftkeyword(name)
+        or keyword.issoftkeyword(lower)
+    )
+    if not clashes:
+        clashes = hasattr(builtins, name) or hasattr(builtins, lower)
+    if clashes:
+        name = f"{name}_NS"
+    if name and not name[0].isalpha() and name[0] != "_":
+        name = f"NS_{name}"
+    return name
+
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
@@ -61,7 +86,7 @@ class Namespaces(CaseInsensitiveDict):
     _bnodes = {}  # BNode to BNode map
     _empty_bnode = BNode()  # Node for '_:'
 
-    def __init__(self, g: Optional[Graph] = None, *args, **kwargs):
+    def __init__(self, g: Graph | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if g is not None:
             self.from_graph(g)
@@ -101,7 +126,7 @@ class Namespaces(CaseInsensitiveDict):
         return self._store.get(key.lower(), (key,))[0] if key else key
 
     @property
-    def _default(self) -> Optional[URIRef]:
+    def _default(self) -> URIRef | None:
         return self.get(self._default_key, None)
 
     @_default.setter
@@ -118,7 +143,7 @@ class Namespaces(CaseInsensitiveDict):
         super().__delitem__(self._default_key)
 
     @property
-    def _base(self) -> Optional[URIRef]:
+    def _base(self) -> URIRef | None:
         return self.get(self._base_key, None)
 
     @_base.setter
@@ -134,7 +159,7 @@ class Namespaces(CaseInsensitiveDict):
     def _base(self) -> None:
         super().__delitem__(self._base_key)
 
-    def curie_for(self, uri: Any, default_ok: bool = True, pythonform: bool = False) -> Optional[str]:
+    def curie_for(self, uri: Any, default_ok: bool = True, pythonform: bool = False) -> str | None:
         """
         Return the most appropriate CURIE for URI.  The first longest matching prefix used, if any.  If no CURIE is
         present, None is returned.
@@ -150,7 +175,7 @@ class Namespaces(CaseInsensitiveDict):
 
         if pythonform:
             default_ok = False
-        match: tuple[str, Optional[Namespace]] = ("", None)  # match string / prefix
+        match: tuple[str, Namespace | None] = ("", None)  # match string / prefix
         uri_string = str(uri)
 
         # Find the longest match for the URI, self.items() is a list of (prefix/namespace, uri base prefix) tuples
@@ -169,15 +194,11 @@ class Namespaces(CaseInsensitiveDict):
         # that matches the start of the URI coming into the method
         if len(match[0]):
             if pythonform:
-                # uppercase the namespace
-                namespace = match[1].upper()
+                namespace = _prefix_to_python_var(match[1])
                 # match[0] is the URI base string, so we remove that from the incoming URI
                 leftover_uri = uri_string.replace((match[0]), "")
                 if not leftover_uri:
                     return f"URIRef(str({namespace}))"
-                # why?
-                # elif leftover_uri.isidentifier():
-                #    return f"{namespace}.{leftover_uri}"
                 else:
                     return f'{namespace}["{leftover_uri}"]'
             else:
@@ -189,10 +210,10 @@ class Namespaces(CaseInsensitiveDict):
                     return uri_string.replace(match[0], match[1] + ":")
         return None
 
-    def prefix_for(self, uri_or_curie: Any, case_shift: bool = True) -> Optional[str]:
+    def prefix_for(self, uri_or_curie: Any, case_shift: bool = True) -> str | None:
         return self.prefix_suffix(uri_or_curie, case_shift)[0]
 
-    def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> tuple[Optional[str], Optional[str]]:
+    def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> tuple[str | None, str | None]:
         uri_or_curie = str(uri_or_curie)
         if "://" in uri_or_curie:
             uri_or_curie = self.curie_for(uri_or_curie)
@@ -229,7 +250,7 @@ class Namespaces(CaseInsensitiveDict):
             raise ValueError(f"{TypedNode.yaml_loc(uri_or_curie)}Unknown CURIE prefix: {prefix}")
         return URIRef(self.join(self[prefix], local))
 
-    def uri_or_curie_for(self, prefix: Union[str, URIRef], suffix: str) -> str:
+    def uri_or_curie_for(self, prefix: str | URIRef, suffix: str) -> str:
         """Return a CURIE for prefix/suffix if possible, else a URI"""
         if isinstance(prefix, URIRef) or ":/" in str(prefix):
             prefix_as_uri = str(prefix)
@@ -305,9 +326,9 @@ class Namespaces(CaseInsensitiveDict):
                     pass
 
 
-def base_namespace(nsm: Namespaces) -> Optional[str]:
+def base_namespace(nsm: Namespaces) -> str | None:
     return nsm._base
 
 
-def default_namespace(nsm: Namespaces) -> Optional[str]:
+def default_namespace(nsm: Namespaces) -> str | None:
     return nsm._default

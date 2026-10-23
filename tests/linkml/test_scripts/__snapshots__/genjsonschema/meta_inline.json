@@ -18,10 +18,7 @@
                     ]
                 },
                 "id": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "started_at_time": {
                     "format": "date",
@@ -129,13 +126,9 @@
                             "type": "string"
                         },
                         {
-                            "type": "string"
-                        },
-                        {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfClasses",
@@ -156,8 +149,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfEnums",
@@ -181,8 +173,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfMix",
@@ -203,8 +194,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfSimpleType",
@@ -275,6 +265,16 @@
             "properties": {
                 "id": {
                     "type": "string"
+                },
+                "long_id": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LongEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "type": [
@@ -501,8 +501,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "EmploymentEvent",
@@ -610,7 +609,14 @@
             "description": "",
             "properties": {
                 "cordialness": {
-                    "$ref": "#/$defs/CordialnessEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CordialnessEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
@@ -650,6 +656,37 @@
             "title": "FamilialRelationshipType",
             "type": "string"
         },
+        "Friend": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Friend",
+            "type": "object"
+        },
+        "HasAliases": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "title": "HasAliases",
+            "type": "object"
+        },
         "KitchenStatus": {
             "description": "",
             "enum": [
@@ -667,6 +704,30 @@
                 "UNKNOWN"
             ],
             "title": "LifeStatusEnum",
+            "type": "string"
+        },
+        "LongEnum": {
+            "description": "An example enum whose joined values will exceed 255 characters.",
+            "enum": [
+                "AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern",
+                "BetaSequenceIdentifier02_LongPatternLongPatternLongPattern",
+                "GammaSequenceIdentifier03_LongPatternLongPatternLongPattern",
+                "DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern",
+                "EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern",
+                "ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern",
+                "EtaSequenceIdentifier07_LongPatternLongPatternLongPattern",
+                "ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern",
+                "IotaSequenceIdentifier09_LongPatternLongPatternLongPattern",
+                "KappaSequenceIdentifier10_LongPatternLongPatternLongPattern",
+                "LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern",
+                "MuSequenceIdentifier12_LongPatternLongPatternLongPattern",
+                "NuSequenceIdentifier13_LongPatternLongPatternLongPattern",
+                "XiSequenceIdentifier14_LongPatternLongPatternLongPattern",
+                "OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern",
+                "PiSequenceIdentifier16_LongPatternLongPatternLongPattern",
+                "RhoSequenceIdentifier17_LongPatternLongPatternLongPattern"
+            ],
+            "title": "LongEnum",
             "type": "string"
         },
         "MarriageEvent": {
@@ -894,7 +955,14 @@
                     "type": "string"
                 },
                 "is_living": {
-                    "$ref": "#/$defs/LifeStatusEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LifeStatusEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "name": {
                     "pattern": "^\\S+ \\S+$",
@@ -985,7 +1053,14 @@
             "description": "",
             "properties": {
                 "cordialness": {
-                    "$ref": "#/$defs/CordialnessEnum"
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CordialnessEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "ended_at_time": {
                     "format": "date",
@@ -1088,13 +1163,27 @@
             },
             "title": "TubSubClass1",
             "type": "object"
+        },
+        "WithLocation": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "in_location": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "WithLocation",
+            "type": "object"
         }
     },
     "$id": "https://w3id.org/linkml/tests/kitchen_sink",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "",
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.12.0",
     "properties": {
         "activities": {
             "items": {

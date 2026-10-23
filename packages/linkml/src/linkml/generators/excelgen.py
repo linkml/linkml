@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,7 +28,11 @@ class ExcelGenerator(Generator):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema)
+        # Forward importmap/base_dir; the call to ``super().__post_init__``
+        # above built a ``self.schemaview`` with these honoured, and this
+        # overwrite must not drop them or URI-style imports resolved via
+        # ``--importmap`` will fall through to HTTP.
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
 
     @staticmethod
     def create_workbook(workbook_path: Path) -> Workbook:
@@ -41,7 +46,7 @@ class ExcelGenerator(Generator):
         workbook.save(workbook_path)
         return workbook
 
-    def create_workbook_and_worksheets(self, output_path: Path, classes: list[str]) -> None:
+    def _create_workbook_and_worksheets(self, output_path: Path, classes: list[str]) -> None:
         """
         Creates a workbook with worksheets for each class.
 
@@ -52,18 +57,28 @@ class ExcelGenerator(Generator):
         workbook.remove(workbook.active)
         sv = self.schemaview
 
+        # Compute enum lookup before next inner loop
+        enum_set = set(sv.all_enums(imports=self.mergeimports).keys())
+
+        used_titles: set[str] = set()
         for cls_name in classes:
-            workbook.create_sheet(cls_name)
+            title = self._safe_sheet_title(cls_name, used_titles)
+            if title != cls_name:
+                self.logger.warning(
+                    f"Class name '{cls_name}' exceeds Excel's 31-character sheet title limit; "
+                    f"using '{title}' as the worksheet name."
+                )
+            workbook.create_sheet(title)
 
             # Add columns to the worksheet for the current class
-            slots = [s.name for s in sv.class_induced_slots(cls_name, self.mergeimports)]
-            self.add_columns_to_worksheet(workbook, cls_name, slots)
-            workbook.save(output_path)
+            # (call class_induced_slots, reuse for heading/enum validation)
+            induced_slots = list(sv.class_induced_slots(cls_name, self.mergeimports))
+            slot_names = [s.name for s in induced_slots]
+            self.add_columns_to_worksheet(workbook, title, slot_names)
 
             # Add enum validation for columns with enum types
-            enum_list = list(sv.all_enums(imports=self.mergeimports).keys())
-            for s in sv.class_induced_slots(cls_name, self.mergeimports):
-                if s.range in enum_list:
+            for s in induced_slots:
+                if s.range in enum_set:
                     pv_list = list(sv.get_enum(s.range).permissible_values.keys())
 
                     # Data Validation formula to be applied to the column and
@@ -74,18 +89,42 @@ class ExcelGenerator(Generator):
                     # including the separators is <= 255 characters
                     enum_length = len(dv_formula)
                     if enum_length <= 255:
-                        self.column_enum_validation(workbook, cls_name, s.name, dv_formula)
+                        self.column_enum_validation(workbook, title, s.name, dv_formula)
                     else:
                         self.logger.warning(
                             f"'{s.range}' has permissible values with total "
                             "length > 255 characters. Dropdowns may not work properly "
                             f"in {output_path}"
                         )
-                workbook.save(output_path)
 
         workbook.save(output_path)
         if self.split_workbook_by_class:
             self.logger.info(f"The Excel workbooks have been written to {output_path}")
+
+    @staticmethod
+    def _safe_sheet_title(cls_name: str, used: set) -> str:
+        """Return a valid Excel sheet title for *cls_name* (≤ 31 chars, unique).
+
+        Excel limits worksheet titles to 31 characters.  When *cls_name* is
+        longer, a deterministic 6-hex-char SHA-1 suffix is appended so the
+        title is still traceable to the class name.
+
+        :param cls_name: The LinkML class name.
+        :param used: Set of already-allocated titles; updated in place.
+        :return: A deterministic, collision-free sheet title ≤ 31 characters.
+        """
+        if len(cls_name) <= 31:
+            title = cls_name
+        else:
+            h = hashlib.sha1(cls_name.encode("utf-8")).hexdigest()[:6]
+            title = f"{cls_name[:24]}_{h}"  # 24 + 1 + 6 = 31
+        base, n = title, 1
+        while title in used:
+            suffix = f"~{n}"
+            title = base[: 31 - len(suffix)] + suffix
+            n += 1
+        used.add(title)
+        return title
 
     @staticmethod
     def add_columns_to_worksheet(workbook: Workbook, worksheet_name: str, sheet_headings: list[str]) -> None:
@@ -132,19 +171,44 @@ class ExcelGenerator(Generator):
 
         dv.add(f"{column_letter}2:{column_letter}1048576")
 
-    def serialize(self, **kwargs) -> str:
+    def serialize(self, **kwargs) -> None:
         sv = self.schemaview
+        all_classes = sv.all_classes(imports=self.mergeimports)
+
+        if not all_classes:
+            raise ValueError(
+                "No classes defined in the schema. "
+                "Excel generation requires at least one non-abstract class to create worksheets."
+            )
+
+        abstract_classes = [name for name, cls in all_classes.items() if cls.abstract]
+        mixin_classes = [name for name, cls in all_classes.items() if cls.mixin and not cls.abstract]
 
         if self.include_mixins:
-            classes_to_process = [
-                cls_name for cls_name, cls in sv.all_classes(imports=self.mergeimports).items() if not cls.abstract
-            ]
+            classes_to_process = [cls_name for cls_name, cls in all_classes.items() if not cls.abstract]
         else:
             classes_to_process = [
-                cls_name
-                for cls_name, cls in sv.all_classes(imports=self.mergeimports).items()
-                if not cls.mixin and not cls.abstract
+                cls_name for cls_name, cls in all_classes.items() if not cls.mixin and not cls.abstract
             ]
+
+        if not classes_to_process:
+            if abstract_classes and not mixin_classes:
+                raise ValueError(
+                    f"Schema contains only abstract classes: {', '.join(sorted(abstract_classes))}. "
+                    "Excel generation requires at least one non-abstract class to create worksheets."
+                )
+            if mixin_classes and not self.include_mixins:
+                if not abstract_classes:
+                    raise ValueError(
+                        f"Schema contains only mixin classes: {', '.join(sorted(mixin_classes))}. "
+                        "Use --include-mixins flag to generate worksheets for mixin classes."
+                    )
+                else:
+                    raise ValueError(
+                        f"Schema contains only abstract classes ({', '.join(sorted(abstract_classes))}) "
+                        f"and mixin classes ({', '.join(sorted(mixin_classes))}). "
+                        "Use --include-mixins flag to generate worksheets for mixin classes."
+                    )
 
         if self.split_workbook_by_class:
             output_path = Path(self.schema.name + "_worksheets") if not self.output else Path(self.output)
@@ -155,13 +219,13 @@ class ExcelGenerator(Generator):
 
             for cls_name in classes_to_process:
                 cls_output_path = output_path.joinpath(f"{cls_name}.xlsx")
-                self.create_workbook_and_worksheets(cls_output_path, [cls_name])
+                self._create_workbook_and_worksheets(cls_output_path, [cls_name])
                 self.logger.info(f"The Excel workbook for class '{cls_name}' has been written to {cls_output_path}")
         else:
             output_path = Path(self.schema.name + ".xlsx") if not self.output else Path(self.output)
             output_path = output_path.absolute()
 
-            self.create_workbook_and_worksheets(output_path, classes_to_process)
+            self._create_workbook_and_worksheets(output_path, classes_to_process)
             self.logger.info(f"The Excel workbook has been written to {output_path}")
 
 

@@ -58,8 +58,8 @@ For small schemas with limited inheritance, it should be possible to mentally pi
 
 There are a few strategies:
 
-* Use [gen-doc](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
-    * note you get this "for free" if you set up your project using the LinkML cookiecutter
+* Use [gen-doc](https://linkml.io/linkml/generators/docgen) to make markdown that can be viewed using mkdocs
+    * note you get this "for free" if you set up your project using the LinkML project copier template
 * Use [gen-owl](https://linkml.io/linkml/generators/owl) to make an OWL ontology, which can be browsed:
     * Using an ontology editing tool like Protege
     * By publishing the ontology with an ontology repository (e.g. BioPortal or a member of the OntoPortal alliance) and using a web ontology browser
@@ -68,6 +68,25 @@ There are a few strategies:
 ## How can I check my schema is valid?
 
 You can use any of the generator tools distributed as part of linkml to check for errors in your schema.
+
+## Is there a master list of which generators or validators support which LinkML features?
+
+There is no separately curated, complete matrix of every generator and validator against every metamodel slot.
+
+The closest source of truth is the [Generator Feature Dashboard](../generators/dashboard). It is generated from the [compliance test suite](https://github.com/linkml/linkml/tree/main/tests/linkml/test_compliance) and shows which metamodel features each tested generator implements, partially implements, ignores, or has not yet been tested for.
+
+That dashboard is the outcome of [issue 2333](https://github.com/linkml/linkml/issues/2333) (Generator Support Matrix). It is not exhaustive:
+
+* Only generators that participate in the compliance suite appear as columns.
+* Cells can be unknown or partial; a result reflects the current tests, not a guarantee of every edge case.
+* There is no equivalent complete matrix for validators such as JSON Schema, Pydantic, SHACL, or ShEx. Those validators typically consume generated artifacts, so generator coverage on the dashboard is the relevant proxy.
+
+For more detail, see:
+
+* [Generators](../generators/index) and the individual generator pages (JSON Schema, Pydantic, SHACL, ShEx, and others)
+* [Validating data](../data/validating-data) for validation strategies and plugins
+
+If a feature you need is missing or marked unknown, please open an issue or add a compliance test rather than treating the dashboard as a finished catalog.
 
 ## Is there a linter for LinkML?
 
@@ -187,7 +206,7 @@ See the [tool developer guide](https://linkml.io/linkml/developers/tool-develope
 
 Yes!
 
-See the [markdown generator](https://linkml.io/linkml/generators/markdown) for details.
+See the [markdown generator](https://linkml.io/linkml/generators/docgen) for details.
 
 If you run:
 
@@ -236,15 +255,13 @@ gen-doc --dialect myst ...
 
 ## Can I customize the Markdown generation for my schema site?
 
-For some purposes, the generic schema documentation provided by `gen-markdown` may look too... generic.
-
 You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.
 
 The protocol is:
 
 1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen) to your own repo in a folder `templates`
 2. customize these templates
-3. run `gen-docs --template-directory templates -d docs my_schema.yaml`
+3. run `gen-doc --template-directory templates -d docs my_schema.yaml`
 4. run `mkdocs serve` to test locally
 5. iterate until they look how you want, then deploy (e.g. `mkdocs gh-deploy`)
 

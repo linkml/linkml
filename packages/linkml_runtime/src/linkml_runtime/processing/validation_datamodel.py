@@ -1,5 +1,5 @@
-# Auto generated from validation_datamodel.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-01-27T10:37:33
+# Auto generated from validation_datamodel.yaml by pythongen.py version: 0.0.1
+# Generation date: 2026-04-29T20:44:01
 # Schema: validaton-results
 #
 # id: https://w3id.org/linkml/validation_results
@@ -12,17 +12,12 @@ from typing import Any, ClassVar, Optional, Union
 from jsonasobj2 import as_dict
 from rdflib import URIRef
 
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-)
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-)
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 metamodel_version = "1.7.0"
 version = None
@@ -57,18 +52,18 @@ class TypeSeverityKeyValueType(URIorCURIE):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class ConstraintCheck(YAMLRoot):
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.ConstraintCheck
+    class_class_uri: ClassVar[URIRef] = VM["ConstraintCheck"]
     class_class_curie: ClassVar[str] = "vm:ConstraintCheck"
     class_name: ClassVar[str] = "ConstraintCheck"
     class_model_uri: ClassVar[URIRef] = VM.ConstraintCheck
 
     id: Union[str, ConstraintCheckId] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ConstraintCheckId):
@@ -77,18 +72,18 @@ class ConstraintCheck(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Node(YAMLRoot):
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.Node
+    class_class_uri: ClassVar[URIRef] = VM["Node"]
     class_class_curie: ClassVar[str] = "vm:Node"
     class_name: ClassVar[str] = "Node"
     class_model_uri: ClassVar[URIRef] = VM.Node
 
     id: Union[str, NodeId] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, NodeId):
@@ -97,7 +92,7 @@ class Node(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ValidationConfiguration(YAMLRoot):
     """
     Configuration parameters for execution of a validation report
@@ -105,7 +100,7 @@ class ValidationConfiguration(YAMLRoot):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.ValidationConfiguration
+    class_class_uri: ClassVar[URIRef] = VM["ValidationConfiguration"]
     class_class_curie: ClassVar[str] = "vm:ValidationConfiguration"
     class_name: ClassVar[str] = "ValidationConfiguration"
     class_model_uri: ClassVar[URIRef] = VM.ValidationConfiguration
@@ -113,29 +108,23 @@ class ValidationConfiguration(YAMLRoot):
     max_number_results_per_type: Optional[int] = None
     type_severity_map: Optional[
         Union[
-            dict[
-                Union[str, TypeSeverityKeyValueType],
-                Union[dict, "TypeSeverityKeyValue"],
-            ],
+            dict[Union[str, TypeSeverityKeyValueType], Union[dict, "TypeSeverityKeyValue"]],
             list[Union[dict, "TypeSeverityKeyValue"]],
         ]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.max_number_results_per_type is not None and not isinstance(self.max_number_results_per_type, int):
             self.max_number_results_per_type = int(self.max_number_results_per_type)
 
         self._normalize_inlined_as_dict(
-            slot_name="type_severity_map",
-            slot_type=TypeSeverityKeyValue,
-            key_name="type",
-            keyed=True,
+            slot_name="type_severity_map", slot_type=TypeSeverityKeyValue, key_name="type", keyed=True
         )
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RepairConfiguration(YAMLRoot):
     """
     Configuration parameters for execution of validation repairs
@@ -143,7 +132,7 @@ class RepairConfiguration(YAMLRoot):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.RepairConfiguration
+    class_class_uri: ClassVar[URIRef] = VM["RepairConfiguration"]
     class_class_curie: ClassVar[str] = "vm:RepairConfiguration"
     class_name: ClassVar[str] = "RepairConfiguration"
     class_model_uri: ClassVar[URIRef] = VM.RepairConfiguration
@@ -151,7 +140,7 @@ class RepairConfiguration(YAMLRoot):
     validation_configuration: Optional[Union[dict, ValidationConfiguration]] = None
     dry_run: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.validation_configuration is not None and not isinstance(
             self.validation_configuration, ValidationConfiguration
         ):
@@ -163,7 +152,7 @@ class RepairConfiguration(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TypeSeverityKeyValue(YAMLRoot):
     """
     key-value pair that maps a validation result type to a severity setting, for overriding default severity
@@ -171,7 +160,7 @@ class TypeSeverityKeyValue(YAMLRoot):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.TypeSeverityKeyValue
+    class_class_uri: ClassVar[URIRef] = VM["TypeSeverityKeyValue"]
     class_class_curie: ClassVar[str] = "vm:TypeSeverityKeyValue"
     class_name: ClassVar[str] = "TypeSeverityKeyValue"
     class_model_uri: ClassVar[URIRef] = VM.TypeSeverityKeyValue
@@ -179,7 +168,7 @@ class TypeSeverityKeyValue(YAMLRoot):
     type: Union[str, TypeSeverityKeyValueType] = None
     severity: Optional[Union[str, "SeverityType"]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
         if not isinstance(self.type, TypeSeverityKeyValueType):
@@ -191,7 +180,7 @@ class TypeSeverityKeyValue(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Report(YAMLRoot):
     """
     A report object that is a holder to multiple report results
@@ -199,14 +188,14 @@ class Report(YAMLRoot):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.Report
+    class_class_uri: ClassVar[URIRef] = VM["Report"]
     class_class_curie: ClassVar[str] = "vm:Report"
     class_name: ClassVar[str] = "Report"
     class_model_uri: ClassVar[URIRef] = VM.Report
 
     results: Optional[Union[Union[dict, "Result"], list[Union[dict, "Result"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [v if isinstance(v, Result) else Result(**as_dict(v)) for v in self.results]
@@ -214,7 +203,7 @@ class Report(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ValidationReport(Report):
     """
     A report that consists of validation results
@@ -222,22 +211,20 @@ class ValidationReport(Report):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SH.ValidationReport
+    class_class_uri: ClassVar[URIRef] = SH["ValidationReport"]
     class_class_curie: ClassVar[str] = "sh:ValidationReport"
     class_name: ClassVar[str] = "ValidationReport"
     class_model_uri: ClassVar[URIRef] = VM.ValidationReport
 
     results: Optional[Union[Union[dict, "ValidationResult"], list[Union[dict, "ValidationResult"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if not isinstance(self.results, list):
-            self.results = [self.results] if self.results is not None else []
-        self.results = [v if isinstance(v, ValidationResult) else ValidationResult(**as_dict(v)) for v in self.results]
+    def __post_init__(self, *_: str, **kwargs: Any):
+        self._normalize_inlined_as_list(slot_name="results", slot_type=ValidationResult, key_name="type", keyed=False)
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RepairReport(Report):
     """
     A report that consists of repair operation results
@@ -245,14 +232,14 @@ class RepairReport(Report):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.RepairReport
+    class_class_uri: ClassVar[URIRef] = VM["RepairReport"]
     class_class_curie: ClassVar[str] = "vm:RepairReport"
     class_name: ClassVar[str] = "RepairReport"
     class_model_uri: ClassVar[URIRef] = VM.RepairReport
 
     results: Optional[Union[Union[dict, "RepairOperation"], list[Union[dict, "RepairOperation"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [v if isinstance(v, RepairOperation) else RepairOperation(**as_dict(v)) for v in self.results]
@@ -267,13 +254,13 @@ class Result(YAMLRoot):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.Result
+    class_class_uri: ClassVar[URIRef] = VM["Result"]
     class_class_curie: ClassVar[str] = "vm:Result"
     class_name: ClassVar[str] = "Result"
     class_model_uri: ClassVar[URIRef] = VM.Result
 
 
-@dataclass
+@dataclass(repr=False)
 class ValidationResult(Result):
     """
     An individual result arising from validation of a data instance using a particular rule
@@ -281,7 +268,7 @@ class ValidationResult(Result):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SH.ValidationResult
+    class_class_uri: ClassVar[URIRef] = SH["ValidationResult"]
     class_class_curie: ClassVar[str] = "sh:ValidationResult"
     class_name: ClassVar[str] = "ValidationResult"
     class_model_uri: ClassVar[URIRef] = VM.ValidationResult
@@ -301,7 +288,7 @@ class ValidationResult(Result):
     source_column_number: Optional[int] = None
     source_location: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
         if not isinstance(self.type, ConstraintType):
@@ -349,7 +336,7 @@ class ValidationResult(Result):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class RepairOperation(Result):
     """
     The result of performing an individual repair
@@ -357,7 +344,7 @@ class RepairOperation(Result):
 
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VM.RepairOperation
+    class_class_uri: ClassVar[URIRef] = VM["RepairOperation"]
     class_class_curie: ClassVar[str] = "vm:RepairOperation"
     class_name: ClassVar[str] = "RepairOperation"
     class_model_uri: ClassVar[URIRef] = VM.RepairOperation
@@ -367,7 +354,7 @@ class RepairOperation(Result):
     successful: Optional[Union[bool, Bool]] = None
     info: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.repairs is not None and not isinstance(self.repairs, ValidationResult):
             self.repairs = ValidationResult(**as_dict(self.repairs))
 
@@ -386,9 +373,9 @@ class RepairOperation(Result):
 # Enumerations
 class SeverityType(EnumDefinitionImpl):
     FATAL = PermissibleValue(text="FATAL")
-    ERROR = PermissibleValue(text="ERROR", meaning=SH.Violation)
-    WARNING = PermissibleValue(text="WARNING", meaning=SH.Warning)
-    INFO = PermissibleValue(text="INFO", meaning=SH.Info)
+    ERROR = PermissibleValue(text="ERROR", meaning=SH["Violation"])
+    WARNING = PermissibleValue(text="WARNING", meaning=SH["Warning"])
+    INFO = PermissibleValue(text="INFO", meaning=SH["Info"])
 
     _defn = EnumDefinition(
         name="SeverityType",
@@ -399,68 +386,66 @@ class ConstraintType(EnumDefinitionImpl):
     TypeConstraint = PermissibleValue(
         text="TypeConstraint",
         description="constraint in which the range is a type, and the slot value must conform to the type",
-        meaning=SH.DatatypeConstraintComponent,
+        meaning=SH["DatatypeConstraintComponent"],
     )
     MinCountConstraint = PermissibleValue(
         text="MinCountConstraint",
-        description="cardinality constraint where the number of values of the slot must be greater or equal to a specified minimum",
-        meaning=SH.MinCountConstraintComponent,
+        description="""cardinality constraint where the number of values of the slot must be greater or equal to a specified minimum""",
+        meaning=SH["MinCountConstraintComponent"],
     )
     RequiredConstraint = PermissibleValue(
         text="RequiredConstraint",
         description="cardinality constraint where there MUST be at least one value of the slot",
-        meaning=SH.MinCountConstraintComponent,
+        meaning=SH["MinCountConstraintComponent"],
     )
     RecommendedConstraint = PermissibleValue(
         text="RecommendedConstraint",
         description="cardinality constraint where there SHOULD be at least one value of the slot",
-        meaning=SH.MinCountConstraintComponent,
+        meaning=SH["MinCountConstraintComponent"],
     )
     MaxCountConstraint = PermissibleValue(
         text="MaxCountConstraint",
-        description="cardinality constraint where the number of values of the slot must be less than or equal to a specified maximum",
-        meaning=SH.MaxCountConstraintComponent,
+        description="""cardinality constraint where the number of values of the slot must be less than or equal to a specified maximum""",
+        meaning=SH["MaxCountConstraintComponent"],
     )
     SingleValuedConstraint = PermissibleValue(
-        text="SingleValuedConstraint",
-        description="the value of the slot must be atomic and not a collection",
+        text="SingleValuedConstraint", description="the value of the slot must be atomic and not a collection"
     )
     MultiValuedConstraint = PermissibleValue(
-        text="MultiValuedConstraint",
-        description="the value of the slot must be a collection and not atomic",
+        text="MultiValuedConstraint", description="the value of the slot must be a collection and not atomic"
     )
     DeprecatedProperty = PermissibleValue(
         text="DeprecatedProperty",
         description="constraint where the instance slot should not be deprecated",
-        meaning=VM.DeprecatedProperty,
+        meaning=VM["DeprecatedProperty"],
     )
     MaxLengthConstraint = PermissibleValue(
         text="MaxLengthConstraint",
         description="constraint where the slot value must have a length equal to or less than a specified maximum",
-        meaning=SH.MaxLengthConstraintComponent,
+        meaning=SH["MaxLengthConstraintComponent"],
     )
     MinLengthConstraint = PermissibleValue(
         text="MinLengthConstraint",
         description="constraint where the slot value must have a length equal to or less than a specified maximum",
-        meaning=SH.MinLengthConstraintComponent,
+        meaning=SH["MinLengthConstraintComponent"],
     )
     PatternConstraint = PermissibleValue(
         text="PatternConstraint",
         description="constraint where the slot value must match a given regular expression pattern",
-        meaning=SH.PatternConstraintComponent,
+        meaning=SH["PatternConstraintComponent"],
     )
     ClosedClassConstraint = PermissibleValue(
         text="ClosedClassConstraint",
         description="constraint where the slot value must be allowable for the instantiated class",
-        meaning=SH.ClosedConstraintComponent,
+        meaning=SH["ClosedConstraintComponent"],
     )
     DesignatesTypeConstraint = PermissibleValue(text="DesignatesTypeConstraint")
-    InstanceConstraint = PermissibleValue(text="InstanceConstraint", meaning=SH.NodeConstraintComponent)
-    SlotConstraint = PermissibleValue(text="SlotConstraint", meaning=SH.PropertyConstraintComponent)
+    InstanceConstraint = PermissibleValue(text="InstanceConstraint", meaning=SH["NodeConstraintComponent"])
+    SlotConstraint = PermissibleValue(text="SlotConstraint", meaning=SH["PropertyConstraintComponent"])
     PermissibleValueConstraint = PermissibleValue(
         text="PermissibleValueConstraint",
         description="constraint where the slot value must be one of a set of permissible values",
-        meaning=SH.InConstraintComponent,
+        meaning=SH["InConstraintComponent"],
     )
     UndeclaredSlotConstraint = PermissibleValue(text="UndeclaredSlotConstraint")
     RuleConstraint = PermissibleValue(
@@ -469,25 +454,26 @@ class ConstraintType(EnumDefinitionImpl):
     )
     ExpressionConstraint = PermissibleValue(text="ExpressionConstraint")
     EqualsExpressionConstraint = PermissibleValue(
-        text="EqualsExpressionConstraint", meaning=SH.EqualsConstraintComponent
+        text="EqualsExpressionConstraint", meaning=SH["EqualsConstraintComponent"]
     )
     LessThanExpressionConstraint = PermissibleValue(
-        text="LessThanExpressionConstraint", meaning=SH.LessThanConstraintComponent
+        text="LessThanExpressionConstraint", meaning=SH["LessThanConstraintComponent"]
     )
     LessThanOrEqualsExpressionConstraint = PermissibleValue(
-        text="LessThanOrEqualsExpressionConstraint",
-        meaning=SH.LessThanOrEqualsComponent,
+        text="LessThanOrEqualsExpressionConstraint", meaning=SH["LessThanOrEqualsComponent"]
     )
-    DisjointConstraint = PermissibleValue(text="DisjointConstraint", meaning=SH.DisjointConstraintComponent)
-    MinimumValueConstraint = PermissibleValue(text="MinimumValueConstraint", meaning=SH.MinInclusiveConstraintComponent)
-    MaximumValueConstraint = PermissibleValue(text="MaximumValueConstraint", meaning=SH.MaxInclusiveConstraintComponent)
+    DisjointConstraint = PermissibleValue(text="DisjointConstraint", meaning=SH["DisjointConstraintComponent"])
+    MinimumValueConstraint = PermissibleValue(
+        text="MinimumValueConstraint", meaning=SH["MinInclusiveConstraintComponent"]
+    )
+    MaximumValueConstraint = PermissibleValue(
+        text="MaximumValueConstraint", meaning=SH["MaxInclusiveConstraintComponent"]
+    )
     MinimumExclusiveValueConstraint = PermissibleValue(
-        text="MinimumExclusiveValueConstraint",
-        meaning=SH.MinExclusiveInclusiveConstraintComponent,
+        text="MinimumExclusiveValueConstraint", meaning=SH["MinExclusiveInclusiveConstraintComponent"]
     )
     MaximumExclusiveValueConstraint = PermissibleValue(
-        text="MaximumExclusiveValueConstraint",
-        meaning=SH.MaxExclusiveInclusiveConstraintComponent,
+        text="MaximumExclusiveValueConstraint", meaning=SH["MaxExclusiveInclusiveConstraintComponent"]
     )
     CollectionFormConstraint = PermissibleValue(text="CollectionFormConstraint")
     ListCollectionFormConstraint = PermissibleValue(text="ListCollectionFormConstraint")
@@ -561,12 +547,7 @@ slots.object_str = Slot(
 )
 
 slots.source = Slot(
-    uri=VM.source,
-    name="source",
-    curie=VM.curie("source"),
-    model_uri=VM.source,
-    domain=None,
-    range=Optional[str],
+    uri=VM.source, name="source", curie=VM.curie("source"), model_uri=VM.source, domain=None, range=Optional[str]
 )
 
 slots.severity = Slot(
@@ -651,12 +632,7 @@ slots.constraintCheck__id = Slot(
 )
 
 slots.node__id = Slot(
-    uri=VM.id,
-    name="node__id",
-    curie=VM.curie("id"),
-    model_uri=VM.node__id,
-    domain=None,
-    range=URIRef,
+    uri=VM.id, name="node__id", curie=VM.curie("id"), model_uri=VM.node__id, domain=None, range=URIRef
 )
 
 slots.validationConfiguration__max_number_results_per_type = Slot(

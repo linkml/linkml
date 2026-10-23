@@ -2,13 +2,14 @@ import logging
 import os
 import pathlib
 import sys
+from typing import TYPE_CHECKING
 
 import click
 import yaml
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils import datautils, validation
+from linkml.utils import datautils
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -19,11 +20,16 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml.validator import validate as run_validation
+from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.inference_utils import infer_all_slot_values
 from linkml_runtime.utils.schemaview import SchemaView
+
+if TYPE_CHECKING:
+    from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +77,51 @@ logger = logging.getLogger(__name__)
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.option(
+    "--list-wrapper",
+    type=click.Choice(["square", "curly", "paren", "none"]),
+    default=None,
+    help="Wrapper style for multivalued fields in CSV/TSV: 'square' [a|b], 'curly' {a|b}, "
+    "'paren' (a|b), 'none' a|b. Overrides schema annotation if set.",
+)
+@click.option(
+    "--list-delimiter",
+    default=None,
+    help="Delimiter between list items in CSV/TSV (default: pipe character). Overrides schema annotation if set.",
+)
+@click.option(
+    "--list-strip-whitespace/--no-list-strip-whitespace",
+    default=None,
+    help="Strip whitespace around list delimiters when loading and dumping CSV/TSV (default: strip). "
+    "Overrides schema annotation if set.",
+)
+@click.option(
+    "--refuse-delimiter-in-data/--no-refuse-delimiter-in-data",
+    default=None,
+    help="Raise an error if any multivalued field value contains the list delimiter character. "
+    "Prevents silent data corruption during round-tripping. Overrides schema annotation if set.",
+)
+@click.option(
+    "--boolean-output",
+    type=click.Choice(["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"]),
+    default=None,
+    help="How to write booleans in CSV/TSV output (default: true/false). "
+    "Overrides the boolean_output schema annotation.",
+)
+@click.option(
+    "--boolean-truthy",
+    default=None,
+    help="Additional truthy values to accept when loading booleans from CSV/TSV "
+    "(comma-separated, e.g. 'yes,on,1'). Added to the defaults (T, TRUE) "
+    "and any boolean_truthy schema annotation.",
+)
+@click.option(
+    "--boolean-falsy",
+    default=None,
+    help="Additional falsy values to accept when loading booleans from CSV/TSV "
+    "(comma-separated, e.g. 'no,off,0'). Added to the defaults (F, FALSE) "
+    "and any boolean_falsy schema annotation.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -88,6 +139,13 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
+    list_wrapper=None,
+    list_delimiter=None,
+    list_strip_whitespace=None,
+    refuse_delimiter_in_data=None,
+    boolean_output=None,
+    boolean_truthy=None,
+    boolean_falsy=None,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -143,7 +201,7 @@ def cli(
         target_class = infer_root_class(sv)
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
-    py_target_class = python_module.__dict__[target_class]
+    py_target_class: YAMLRoot = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
 
@@ -161,6 +219,19 @@ def cli(
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
+        # Pass list formatting options (override schema annotations if set)
+        if list_wrapper is not None:
+            inargs["list_wrapper"] = list_wrapper
+        if list_delimiter is not None:
+            inargs["list_delimiter"] = list_delimiter
+        if list_strip_whitespace is not None:
+            inargs["list_strip_whitespace"] = list_strip_whitespace
+        # refuse_delimiter_in_data only applies to dumping (output), not loading
+        # Pass additional truthy/falsy values for loading
+        if boolean_truthy is not None:
+            inargs["boolean_truthy"] = frozenset(v.strip().lower() for v in boolean_truthy.split(",") if v.strip())
+        if boolean_falsy is not None:
+            inargs["boolean_falsy"] = frozenset(v.strip().lower() for v in boolean_falsy.split(",") if v.strip())
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if infer:
         infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
@@ -168,8 +239,9 @@ def cli(
     if validate:
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
+        obj_dict = json_dumper.to_dict(obj)
+        report = run_validation(obj_dict, schema, target_class)
+        report.raise_for_results()
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":
@@ -190,6 +262,18 @@ def cli(
                 raise Exception("--index-slot is required for CSV output")
         outargs["index_slot"] = index_slot
         outargs["schema"] = schema
+        # Pass list formatting options (override schema annotations if set)
+        if list_wrapper is not None:
+            outargs["list_wrapper"] = list_wrapper
+        if list_delimiter is not None:
+            outargs["list_delimiter"] = list_delimiter
+        if list_strip_whitespace is not None:
+            outargs["list_strip_whitespace"] = list_strip_whitespace
+        if refuse_delimiter_in_data is not None:
+            outargs["refuse_delimiter_in_data"] = refuse_delimiter_in_data
+        # Pass boolean output format (override schema annotation if set)
+        if boolean_output is not None:
+            outargs["boolean_output"] = boolean_output
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)

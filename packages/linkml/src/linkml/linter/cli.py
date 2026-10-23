@@ -10,6 +10,7 @@ from linkml._version import __version__
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
 from linkml.linter.linter import Linter
+from linkml.utils.deprecation import deprecation_warning
 
 YAML_SUFFIXES = [".yml", ".yaml"]
 DEFAULT_CONFIG_FILES = [".linkmllint.yaml", ".linkmllint.yml"]
@@ -56,13 +57,11 @@ def get_yaml_files(root: Path, accept_dot_files: bool) -> Iterable[str]:
     "--validate",
     is_flag=True,
     default=False,
-    help="Validate the schema against the LinkML Metamodel before linting.",
+    deprecated=True,
+    help="Metamodel validation now always runs. This flag has no effect.",
 )
 @click.option(
-    "--validate-only",
-    is_flag=True,
-    default=False,
-    help="Validate the schema against the LinkML Metamodel and then exit without checking linter rules.",
+    "--validate-only", is_flag=True, default=False, deprecated=True, help="Use 'linkml validate schema.yaml' instead."
 )
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("-o", "--output", type=click.File("w"), default="-", help="Report file name.")
@@ -98,6 +97,11 @@ def main(
 
     SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
     every YAML file found in the directory (recursively) will be linted."""
+    if validate:
+        deprecation_warning("lint-validate-flag")
+    if validate_only:
+        deprecation_warning("lint-validate-only-flag")
+
     config_file = None
     if config:
         config_file = config

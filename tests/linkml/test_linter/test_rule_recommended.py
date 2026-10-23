@@ -1,8 +1,8 @@
 from linkml.linter.config.datamodel.config import RecommendedRuleConfig, RuleLevel
 from linkml.linter.rules import RecommendedRule
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 def test_missing_descriptions():

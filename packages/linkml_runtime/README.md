@@ -1,11 +1,11 @@
 # linkml-runtime
 [![Pyversions](https://img.shields.io/pypi/pyversions/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml-runtime)
-![](https://github.com/linkml/linkml-runtime/workflows/Build/badge.svg)
-[![badge](https://img.shields.io/badge/launch-binder-579ACA.svg)](https://mybinder.org/v2/gh/linkml/linkml-runtime/main?filepath=notebooks)
-[![PyPi](https://img.shields.io/pypi/v/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml)
+![](https://github.com/linkml/linkml/workflows/Build/badge.svg)
+[![badge](https://img.shields.io/badge/launch-binder-579ACA.svg)](https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks)
+[![PyPi](https://img.shields.io/pypi/v/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml-runtime)
 [![PyPIDownloadsTotal](https://pepy.tech/badge/linkml-runtime)](https://pepy.tech/project/linkml-runtime)
 [![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/linkml-runtime?logo=PyPI&color=blue)](https://pypi.org/project/linkml-runtime)
-[![codecov](https://codecov.io/gh/linkml/linkml-runtime/branch/main/graph/badge.svg?token=FOBHNSK5WG)](https://codecov.io/gh/linkml/linkml-runtime)
+[![codecov](https://codecov.io/gh/linkml/linkml/branch/main/graph/badge.svg?token=FOBHNSK5WG)](https://codecov.io/gh/linkml/linkml)
 
 Runtime support for linkml generated data classes.
 
@@ -28,4 +28,4 @@ It also includes the [SchemaView](https://linkml.io/linkml/developers/manipulati
 
 ## Notebooks
 
-See the [notebooks](https://github.com/linkml/linkml-runtime/tree/main/notebooks) folder for examples.
+See the [notebooks](https://github.com/linkml/linkml/tree/main/packages/linkml_runtime/notebooks) folder for examples.

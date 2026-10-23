@@ -2,12 +2,13 @@ import logging
 import urllib
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 from curies import Converter
 from hbreader import FileInfo
 from pydantic import BaseModel
 from rdflib import Graph, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal
 
@@ -27,7 +28,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 logger = logging.getLogger(__name__)
 
 
-VALID_SUBJECT = Union[URIRef, BNode]
+VALID_SUBJECT = URIRef | BNode
 ANYDICT = dict[str, Any]
 
 
@@ -47,12 +48,12 @@ class RDFLibLoader(Loader):
         self,
         graph: Graph,
         schemaview: SchemaView,
-        target_class: type[Union[BaseModel, YAMLRoot]],
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        target_class: type[BaseModel | YAMLRoot],
+        prefix_map: dict[str, str] | Converter | None = None,
         cast_literals: bool = True,
         allow_unprocessed_triples: bool = True,
         ignore_unmapped_predicates: bool = False,
-    ) -> list[Union[BaseModel, YAMLRoot]]:
+    ) -> list[BaseModel | YAMLRoot]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
@@ -64,6 +65,7 @@ class RDFLibLoader(Loader):
         :param ignore_unmapped_predicates: if True then a predicate that has no mapping to a slot does not raise an error
         :return: all instances of target class type
         """
+        schemaview.imports_closure()  # ensure all imported sub-schemas are in schema_map before namespaces() caches
         namespaces = schemaview.namespaces()
         uri_to_class_map = {}
         for cn, c in schemaview.all_classes().items():
@@ -81,8 +83,11 @@ class RDFLibLoader(Loader):
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
         if prefix_map:
             for k, v in prefix_map.items():
-                namespaces[k] = v
-                graph.namespace_manager.bind(k, URIRef(v))
+                if k == "@base":
+                    namespaces._base = v
+                else:
+                    namespaces[k] = v
+                    graph.namespace_manager.bind(k, URIRef(v))
         # Step 1: Create stub root dict-objects
         target_class_uriref: URIRef = target_class.class_class_uri
         root_dicts: list[ANYDICT] = []
@@ -134,56 +139,43 @@ class RDFLibLoader(Loader):
                     range_applicable_elements = schemaview.slot_applicable_range_elements(slot)
                     is_inlined = schemaview.is_inlined(slot)
                     slot_name = underscore(slot.name)
-                    if isinstance(o, Literal):
-                        if EnumDefinition.class_name in range_applicable_elements:
-                            logger.debug(f"Assuming no meaning assigned for value {o} for Enum {slot.range}")
-                        elif TypeDefinition.class_name not in range_applicable_elements:
-                            raise ValueError(
-                                f"Cannot map Literal {o} to a slot {slot.name} whose range {slot.range} is not a type;"
+                    # An ordered multivalued slot is serialized as an rdf:List (see issue #3531);
+                    # the object of the triple is the list head, which we traverse in order.
+                    # Only probe the graph for a list head on ordered slots -- the membership
+                    # check runs for every object of every slot otherwise.
+                    is_list_head = (
+                        slot.multivalued
+                        and slot.list_elements_ordered
+                        and (o == RDF.nil or (o, RDF.first, None) in graph)
+                    )
+                    if is_list_head:
+                        members = list(Collection(graph, o))
+                        # mark the rdf:List spine (rdf:first/rdf:rest triples) as processed
+                        spine = o
+                        while spine and spine != RDF.nil:
+                            for spine_triple in graph.triples((spine, None, None)):
+                                processed_triples.add(spine_triple)
+                            spine = graph.value(spine, RDF.rest)
+                        if slot_name not in dict_obj:
+                            dict_obj[slot_name] = []
+                        for member in members:
+                            v = self._object_to_value(
+                                member,
+                                slot,
+                                range_applicable_elements,
+                                is_inlined,
+                                namespaces,
+                                schemaview,
+                                cast_literals,
+                                subject,
                             )
-                        v = o.value
-                    elif isinstance(o, BNode):
-                        if not is_inlined:
-                            logger.error(f"blank nodes should be inlined; {slot_name}={o} in {subject}")
-                        v = Pointer(o)
-                    else:
-                        if ClassDefinition.class_name in range_applicable_elements:
-                            if slot.range in schemaview.all_classes():
-                                id_slot = schemaview.get_identifier_slot(slot.range)
-                                v = self._uri_to_id(o, id_slot, schemaview)
-                            else:
-                                v = namespaces.curie_for(o)
-                            if v is None:
-                                logger.debug(f"No CURIE for {p}={o} in {subject} [{subject_class}]")
-                                v = str(o)
-                        elif EnumDefinition.class_name in range_applicable_elements:
-                            range_union_elements = schemaview.slot_range_as_union(slot)
-                            enum_names = [e for e in range_union_elements if e in schemaview.all_enums()]
-                            # if a PV has a meaning URI declared, map this
-                            # back to a text representation
-                            v = namespaces.curie_for(o)
-                            for enum_name in enum_names:
-                                e = schemaview.get_enum(enum_name)
-                                if e is None:
-                                    raise ValueError(f"no enum found for {slot.range}: {o} (ns={v})")
-                                for pv in e.permissible_values.values():
-                                    if v == pv.meaning or str(o) == pv.meaning:
-                                        v = pv.text
-                                        break
-                        elif TypeDefinition.class_name in range_applicable_elements:
-                            if cast_literals:
-                                v = namespaces.curie_for(o)
-                                if v is None:
-                                    v = str(o)
-                                logger.debug(f"Casting {o} to string")
-                            else:
-                                raise ValueError(
-                                    f"Expected literal value ({range_applicable_elements}) for {slot_name}={o}"
-                                )
-                        if is_inlined:
-                            # the object of the triple may not yet be processed;
-                            # we store a pointer to o, and then replace this later
-                            v = Pointer(o)
+                            dict_obj[slot_name].append(v)
+                            if member not in processed and slot.range in schemaview.all_classes():
+                                node_tuples_to_visit.append((member, ClassDefinitionName(slot.range)))
+                        continue
+                    v = self._object_to_value(
+                        o, slot, range_applicable_elements, is_inlined, namespaces, schemaview, cast_literals, subject
+                    )
                     if slot.multivalued:
                         if slot_name not in dict_obj:
                             dict_obj[slot_name] = []
@@ -242,6 +234,81 @@ class RDFLibLoader(Loader):
         # Final step: translate dicts into instances of target_class
         return [target_class(**x) for x in root_dicts]
 
+    def _object_to_value(
+        self,
+        o: Any,
+        slot: SlotDefinition,
+        range_applicable_elements: list,
+        is_inlined: bool,
+        namespaces: Any,
+        schemaview: SchemaView,
+        cast_literals: bool,
+        subject: VALID_SUBJECT = None,
+    ) -> Any:
+        """
+        Convert a single RDF object node into the Python value for a slot.
+
+        :param o: the RDF object node (Literal, URIRef, or BNode)
+        :param slot: the slot the value is being assigned to
+        :param range_applicable_elements: metamodel elements applicable to the slot range
+        :param is_inlined: whether the slot is inlined
+        :param namespaces: schema namespaces, used to resolve CURIEs
+        :param schemaview: schema view guiding interpretation
+        :param cast_literals: if True, cast unexpected literals/URIs to strings
+        :param subject: the RDF subject the value belongs to, used only for diagnostics
+        :return: the Python value (scalar, id reference, or a Pointer to an inlined object)
+        """
+        slot_name = underscore(slot.name)
+        if isinstance(o, Literal):
+            if EnumDefinition.class_name in range_applicable_elements:
+                logger.debug(f"Assuming no meaning assigned for value {o} for Enum {slot.range}")
+            elif TypeDefinition.class_name not in range_applicable_elements:
+                raise ValueError(
+                    f"Cannot map Literal {o} to a slot {slot.name} whose range {slot.range} is not a type;"
+                )
+            return o.value
+        elif isinstance(o, BNode):
+            if not is_inlined:
+                logger.error(f"blank nodes should be inlined; {slot_name}={o} in {subject}")
+            return Pointer(o)
+        else:
+            if ClassDefinition.class_name in range_applicable_elements:
+                if slot.range in schemaview.all_classes():
+                    id_slot = schemaview.get_identifier_slot(slot.range)
+                    v = self._uri_to_id(o, id_slot, schemaview)
+                else:
+                    v = namespaces.curie_for(o)
+                if v is None:
+                    logger.debug(f"No CURIE for {slot_name}={o} in {subject}")
+                    v = str(o)
+            elif EnumDefinition.class_name in range_applicable_elements:
+                range_union_elements = schemaview.slot_range_as_union(slot)
+                enum_names = [e for e in range_union_elements if e in schemaview.all_enums()]
+                # if a PV has a meaning URI declared, map this
+                # back to a text representation
+                v = namespaces.curie_for(o)
+                for enum_name in enum_names:
+                    e = schemaview.get_enum(enum_name)
+                    if e is None:
+                        raise ValueError(f"no enum found for {slot.range}: {o} (ns={v})")
+                    for pv in e.permissible_values.values():
+                        if v == pv.meaning or str(o) == pv.meaning:
+                            v = pv.text
+                            break
+            elif TypeDefinition.class_name in range_applicable_elements:
+                if cast_literals:
+                    v = namespaces.curie_for(o)
+                    if v is None:
+                        v = str(o)
+                    logger.debug(f"Casting {o} to string")
+                else:
+                    raise ValueError(f"Expected literal value ({range_applicable_elements}) for {slot_name}={o}")
+            if is_inlined:
+                # the object of the triple may not yet be processed;
+                # we store a pointer to o, and then replace this later
+                v = Pointer(o)
+            return v
+
     def _get_id_dict(self, node: VALID_SUBJECT, schemaview: SchemaView, cn: ClassDefinitionName) -> ANYDICT:
         id_slot = schemaview.get_identifier_slot(cn)
         if not isinstance(node, BNode):
@@ -265,15 +332,15 @@ class RDFLibLoader(Loader):
 
     def load(
         self,
-        source: Union[str, TextIO, Graph],
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        source: str | TextIO | Graph,
+        target_class: type[BaseModel | YAMLRoot],
         *,
         schemaview: SchemaView = None,
-        prefix_map: Union[dict[str, str], Converter, None] = None,
-        fmt: Optional[str] = "turtle",
-        metadata: Optional[FileInfo] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
+        fmt: str | None = "turtle",
+        metadata: FileInfo | None = None,
         **kwargs,
-    ) -> Union[BaseModel, YAMLRoot]:
+    ) -> BaseModel | YAMLRoot:
         """
         Load the RDF in source into the python target_class structure
 
@@ -302,8 +369,8 @@ class RDFLibLoader(Loader):
             raise DataNotFoundError(f"Got {len(objs)} of type {target_class} from source, expected exactly 1")
         return objs[0]
 
-    def loads(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot]:
+    def loads(self, source: str, **kwargs) -> BaseModel | YAMLRoot:
         return self.load(source, **kwargs)
 
-    def load_any(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def load_any(self, source: str, **kwargs) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         return self.load(source, **kwargs)

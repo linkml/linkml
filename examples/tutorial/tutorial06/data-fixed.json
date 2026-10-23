@@ -1,0 +1,17 @@
+{
+  "persons": [
+    {
+      "id": "ORCID:1234",
+      "full_name": "Clark Kent",
+      "phone": "555-555-5555",
+      "age": 33,
+      "status": "ALIVE"
+    },
+    {
+      "id": "ORCID:2222",
+      "full_name": "Count Dracula",
+      "status": "UNKNOWN"
+    }
+  ],
+  "@type": "Container"
+}

@@ -26,7 +26,6 @@ def test_metamodel_projectgen(metamodel_path, tmp_path):
     # Validate key outputs contain expected content
     check_contains("CREATE TABLE", "sqlschema", "meta.sql")
     check_contains("linkml:SchemaDefinition a owl:Class", "owl", "meta.owl.ttl")
-    check_contains("SchemaDefinition", "docs", "SchemaDefinition.md")
     check_contains('"$defs"', "jsonschema", "meta.schema.json")
 
 

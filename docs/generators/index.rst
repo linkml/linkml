@@ -25,6 +25,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    json-schema
    protobuf
    graphql
+   openapi
 
 
 Linked Data Standards
@@ -59,10 +60,8 @@ published on static hosting sites.
    :maxdepth: 1
    :caption: Contents:
 
-   markdown
    docgen
    erdiagram
-   yuml
    plantumlgen
    project-generator
 
@@ -80,13 +79,14 @@ languages such as Python, Javascript, or Java.
    python
    pydantic
    java
+   golang
    typescript
    rust
 
 Database
 --------
 
-Generators specific to database frameworks. Currently only SQL databases.
+Generators specific to database frameworks, including SQL and graph databases.
 
 .. toctree::
    :maxdepth: 1
@@ -94,6 +94,9 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
+   sqlvalidation
+   bigquery
+   typedb
 
 Others
 ------
@@ -110,6 +113,16 @@ Others
    csv
    yaml
    pandera
+
+Feature Dashboard
+-----------------
+
+See which metamodel features each generator supports at a glance.
+
+.. toctree::
+   :maxdepth: 1
+
+   dashboard
 
 Common
 ------

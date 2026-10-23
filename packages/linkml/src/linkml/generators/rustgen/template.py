@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field, computed_field, field_validator
@@ -17,13 +17,13 @@ class ContainerType(Enum):
 
 class RustRange(BaseModel):
     optional: bool = False
-    containerType: Optional[ContainerType] = None
+    containerType: ContainerType | None = None
     has_default: bool = False
     is_class_range: bool = False
     is_reference: bool = False
     box_needed: bool = False
     has_class_subtypes: bool = False
-    child_ranges: Optional[list["RustRange"]] = None
+    child_ranges: list["RustRange"] | None = None
     type_: str
 
     def type_name(self) -> str:
@@ -111,7 +111,7 @@ class RustRange(BaseModel):
             return f"{var_name}.map(|v| v.into_inner())"
         return f"{var_name}.into_inner()"
 
-    def type_for_trait(self, crateref: Optional[str], setter: bool = False):
+    def type_for_trait(self, crateref: str | None, setter: bool = False):
         """Signature type for trait getters/setters over this range.
 
         - For getters (setter=False):
@@ -164,7 +164,7 @@ class RustRange(BaseModel):
             tp = "&'a str"
         return tp
 
-    def type_for_trait_value(self, crateref: Optional[str]) -> str:
+    def type_for_trait_value(self, crateref: str | None) -> str:
         """By-value getter type for trait methods.
 
         Used when the trait returns a canonical union or otherwise needs owned
@@ -189,7 +189,7 @@ class RustRange(BaseModel):
             tp = f"Option<{tp}>"
         return tp
 
-    def type_bound_for_setter(self, crateref: Optional[str]) -> Optional[str]:
+    def type_bound_for_setter(self, crateref: str | None) -> str | None:
         """Generic bound to accept convertible values in setter signatures.
 
         For class ranges, setters use a type parameter `E` constrained as
@@ -297,12 +297,12 @@ class PolyContainersFile(RustTemplateModel):
 class Import(Import_, RustTemplateModel):
     template: ClassVar[str] = "import.rs.jinja"
 
-    version: Optional[str] = None
+    version: str | None = None
     """Version specifier to use in Cargo.toml"""
-    features: Optional[list[str]] = None
+    features: list[str] | None = None
     """Features to require in Cargo.toml"""
     ## whether this import should be behind a feature flag
-    feature_flag: Optional[str] = None
+    feature_flag: str | None = None
     feature_dependencies: list[str] = Field(default_factory=list)
     """Additional crate features to enable alongside the optional dependency."""
 
@@ -318,7 +318,7 @@ class RustProperty(RustTemplateModel):
 
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
-    alias: Optional[str] = None
+    alias: str | None = None
     generate_merge: bool = False
     container_mode: str
     name: str
@@ -336,12 +336,17 @@ class RustProperty(RustTemplateModel):
 
     @computed_field
     def merge_strategy(self) -> str:
-        if self.type_.optional:
+        if self.type_.containerType == ContainerType.MAPPING:
+            # Maps merge per-key so an override (e.g. slot_usage annotations)
+            # folds into the inherited map instead of replacing it wholesale.
+            # Optional maps need a helper that handles the outer Option.
+            if self.type_.optional:
+                return "strategy = option_map_overwrite"
+            return "strategy = merge::hashmap::overwrite"
+        elif self.type_.optional:
             return "strategy = overwrite_except_none"
         elif self.type_.containerType == ContainerType.LIST:
             return "skip"
-        elif self.type_.containerType == ContainerType.MAPPING:
-            return "strategy = merge::hashmap::overwrite"
         else:
             return "skip"
 
@@ -356,6 +361,23 @@ class RustProperty(RustTemplateModel):
     def hasdefault(self) -> bool:
         return self.multivalued or not self.required
 
+    @computed_field
+    def skip_serializing_if(self) -> str | None:
+        """Serde predicate for omitting this field on serialization.
+
+        Optional (``Option<...>``) fields are skipped when ``None``; list and
+        mapping fields are skipped when empty. This keeps generated JSON/YAML
+        compact without changing the data model. Returns ``None`` for required
+        scalars, which must always serialize.
+        """
+        if self.type_.optional:
+            return "Option::is_none"
+        if self.type_.containerType == ContainerType.LIST:
+            return "Vec::is_empty"
+        if self.type_.containerType == ContainerType.MAPPING:
+            return "HashMap::is_empty"
+        return None
+
 
 class AsKeyValue(RustTemplateModel):
     """
@@ -366,6 +388,7 @@ class AsKeyValue(RustTemplateModel):
     name: str
     key_property_name: str
     key_property_type: str
+    key_property_aliases: list[str] = []
     value_property_name: str
     value_property_type: str
     can_convert_from_primitive: bool = False
@@ -378,8 +401,8 @@ class RustStructOrSubtypeEnum(RustTemplateModel):
     enum_name: str
     struct_names: list[str]
     as_key_value: bool = False
-    type_designator_field: Optional[str] = None
-    type_designators: dict[str, str]
+    type_designator_field: str | None = None
+    type_designators: dict[str, list[str]]
     key_property_type: str = "String"
 
 
@@ -407,18 +430,18 @@ class RustStruct(RustTemplateModel):
 
     template: ClassVar[str] = "struct.rs.jinja"
     special_case_enabled: bool = False
-    class_module: Optional[RustClassModule] = None
+    class_module: RustClassModule | None = None
 
     name: str
-    bases: Optional[list[str]] = None
+    bases: list[str] | None = None
     """
     Base classes to inherit from - must have entire MRO, just just immediate ancestor
     """
     properties: list[RustProperty] = Field(default_factory=list)
     unsendable: bool = False
     generate_merge: bool = False
-    as_key_value: Optional[AsKeyValue] = None
-    struct_or_subtype_enum: Optional[RustStructOrSubtypeEnum] = None
+    as_key_value: AsKeyValue | None = None
+    struct_or_subtype_enum: RustStructOrSubtypeEnum | None = None
 
     @computed_field()
     def property_names_and_types(self) -> dict[str, str]:
@@ -510,10 +533,10 @@ class RustTypeAlias(RustTemplateModel):
 
     name: str
     type_: str
-    description: Optional[str] = None
-    multivalued: Optional[bool] = False
+    description: str | None = None
+    multivalued: bool | None = False
     class_range: bool = False
-    slot_range_as_union: Optional[SlotRangeAsUnion] = None
+    slot_range_as_union: SlotRangeAsUnion | None = None
 
     @field_validator("attributes", mode="before")
     @classmethod
@@ -580,7 +603,7 @@ class PolyTraitProperty(RustTemplateModel):
         return self.range.type_for_trait(setter=True, crateref="crate")
 
     @computed_field
-    def type_bound(self) -> Optional[str]:
+    def type_bound(self) -> str | None:
         """
         The type bound for the setter method
         """
@@ -668,7 +691,7 @@ class PolyTraitPropertyImpl(RustTemplateModel):
         return self.definition_range.type_for_trait(setter=True, crateref="crate")
 
     @computed_field
-    def type_bound(self) -> Optional[str]:
+    def type_bound(self) -> str | None:
         """
         The type bound for the setter method
         """
@@ -792,8 +815,8 @@ class RustFile(RustTemplateModel):
     # Single-file generation knobs
     inline_serde_utils: bool = False
     emit_poly: bool = True
-    serde_utils: Optional[SerdeUtilsFile] = None
-    root_struct_name: Optional[str] = None
+    serde_utils: SerdeUtilsFile | None = None
+    root_struct_name: str | None = None
 
     @computed_field
     def struct_names(self) -> list[str]:
@@ -818,6 +841,15 @@ class RustFile(RustTemplateModel):
     def needs_overwrite_except_none(self) -> bool:
         """Whether any struct uses the custom merge helper."""
         return any(s.generate_merge for s in self.structs)
+
+    @computed_field
+    def needs_option_map_overwrite(self) -> bool:
+        """Whether any merged optional map field needs the per-key helper."""
+        return any(
+            p.generate_merge and p.type_.optional and p.type_.containerType == ContainerType.MAPPING
+            for s in self.structs
+            for p in s.properties
+        )
 
 
 class RangeEnum(RustTemplateModel):
@@ -865,7 +897,7 @@ class RustCargo(RustTemplateModel):
     def snake_case_name(cls, value: str) -> str:
         return underscore(value)
 
-    def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
+    def render(self, environment: Environment | None = None, **kwargs) -> str:
         if environment is None:
             environment = RustTemplateModel.environment()
 
@@ -906,5 +938,5 @@ class RustLibShim(RustTemplateModel):
 
     template: ClassVar[str] = "lib_shim.rs.jinja"
     module_name: str
-    root_struct_name: Optional[str] = None
-    root_struct_fn_snake: Optional[str] = None
+    root_struct_name: str | None = None
+    root_struct_fn_snake: str | None = None

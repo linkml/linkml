@@ -27,8 +27,17 @@ and Go. Some language features may be unsupported in some toolchains.
 
 ## How is LinkML licensed?
 
-All aspects of LinkML, from the core language itself to the toolchain
-are in the public domain through a CC-0 waiver.
+LinkML is committed to openness and unrestricted use. All LinkML repositories follow standard open source practices with clear LICENSE files in each repository root, making it easy to understand the terms of use.
+
+For most software components (including the main [linkml framework](https://github.com/linkml/linkml)), we use the **Apache 2.0** license. For data assets like the [linkml-model](https://github.com/linkml/linkml-model) (the LinkML metamodel), we use the **CC0** public domain dedication to maximize reusability.
+
+As examples:
+* The [linkml](https://github.com/linkml/linkml) repository (software framework) uses Apache 2.0
+* The [linkml-model](https://github.com/linkml/linkml-model) repository (metamodel/schema) uses CC0
+
+Note: For historical reasons, some older repositories may still use BSD-3-Clause or MIT licenses, but these are all permissive open source licenses that allow unrestricted use.
+
+You can always find the specific license for any LinkML repository in the LICENSE file at the repository root.
 
 ## Who uses LinkML?
 
@@ -136,4 +145,7 @@ serializations such as HDF5 and Zarr.
 
 ## How do I cite LinkML?
 
-A paper is in progress, for now, cite the GitHub repo
+Moxon SAT, et al. **LinkML: an open data modeling framework**. _GigaScience_. 2026;15:giaf152. doi: [10.1093/gigascience/giaf152](https://doi.org/10.1093/gigascience/giaf152)
+
+You can also cite the main GitHub repo Zotero archive doi:
+[10.5281/zenodo.5703670](https://doi.org/10.5281/zenodo.5703670).

@@ -705,7 +705,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -30799,10 +30799,9 @@
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
-        "subject",
+        "drug_to_entity_association_mixin_subject",
         "predicate",
-        "object",
-        "drug_to_entity_association_mixin_subject"
+        "object"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/biolink/vocab/DrugToEntityAssociationMixin",
@@ -30819,10 +30818,9 @@
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
-        "subject",
+        "chemical_to_entity_association_mixin_subject",
         "predicate",
-        "object",
-        "chemical_to_entity_association_mixin_subject"
+        "object"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/biolink/vocab/ChemicalToEntityAssociationMixin",
@@ -35988,7 +35986,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.12.0",
   "source_file": "biolink-model.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,
@@ -38549,7 +38547,21 @@
         "@id": "CellularOrganism"
       },
       "ChemicalAffectsGeneAssociation": {
-        "@id": "ChemicalAffectsGeneAssociation"
+        "@id": "ChemicalAffectsGeneAssociation",
+        "@context": {
+          "subject_context_qualifier": {
+            "@id": "subject_context_qualifier",
+            "@type": "@id"
+          },
+          "object_context_qualifier": {
+            "@id": "object_context_qualifier",
+            "@type": "@id"
+          },
+          "anatomical_context_qualifier": {
+            "@id": "anatomical_context_qualifier",
+            "@type": "@id"
+          }
+        }
       },
       "ChemicalEntity": {
         "@id": "ChemicalEntity"
@@ -38573,7 +38585,21 @@
         "@id": "ChemicalExposure"
       },
       "ChemicalGeneInteractionAssociation": {
-        "@id": "ChemicalGeneInteractionAssociation"
+        "@id": "ChemicalGeneInteractionAssociation",
+        "@context": {
+          "subject_context_qualifier": {
+            "@id": "subject_context_qualifier",
+            "@type": "@id"
+          },
+          "object_context_qualifier": {
+            "@id": "object_context_qualifier",
+            "@type": "@id"
+          },
+          "anatomical_context_qualifier": {
+            "@id": "anatomical_context_qualifier",
+            "@type": "@id"
+          }
+        }
       },
       "ChemicalMixture": {
         "@id": "ChemicalMixture"
@@ -38726,7 +38752,12 @@
         "@id": "DrugToGeneInteractionExposure"
       },
       "DruggableGeneToDiseaseAssociation": {
-        "@id": "DruggableGeneToDiseaseAssociation"
+        "@id": "DruggableGeneToDiseaseAssociation",
+        "@context": {
+          "has_evidence": {
+            "@id": "has_evidence"
+          }
+        }
       },
       "Entity": {
         "@id": "Entity"
@@ -38819,7 +38850,21 @@
         "@id": "Gene"
       },
       "GeneAffectsChemicalAssociation": {
-        "@id": "GeneAffectsChemicalAssociation"
+        "@id": "GeneAffectsChemicalAssociation",
+        "@context": {
+          "subject_context_qualifier": {
+            "@id": "subject_context_qualifier",
+            "@type": "@id"
+          },
+          "object_context_qualifier": {
+            "@id": "object_context_qualifier",
+            "@type": "@id"
+          },
+          "anatomical_context_qualifier": {
+            "@id": "anatomical_context_qualifier",
+            "@type": "@id"
+          }
+        }
       },
       "GeneAsAModelOfDiseaseAssociation": {
         "@id": "GeneAsAModelOfDiseaseAssociation"
@@ -39038,7 +39083,17 @@
         "@id": "NamedThing"
       },
       "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation": {
-        "@id": "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
+        "@id": "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation",
+        "@context": {
+          "subject_context_qualifier": {
+            "@id": "subject_context_qualifier",
+            "@type": "@id"
+          },
+          "object_context_qualifier": {
+            "@id": "object_context_qualifier",
+            "@type": "@id"
+          }
+        }
       },
       "NoncodingRNAProduct": {
         "@id": "NoncodingRNAProduct"

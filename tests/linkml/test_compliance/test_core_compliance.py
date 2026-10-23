@@ -1,6 +1,5 @@
 """Compliance tests for core constructs."""
 
-import sys
 import unicodedata
 from _decimal import Decimal
 
@@ -22,6 +21,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     metamodel_schemaview,
     validated_schema,
 )
@@ -39,6 +39,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Core Structure", "Attributes")
 @pytest.mark.parametrize(
     "description,object,is_valid",
     [
@@ -129,6 +130,7 @@ def test_attributes(framework, description, object, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Primitive type ranges")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4")])
 @pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -180,7 +182,7 @@ def test_type_range(framework, linkml_type, example_value):
     schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
-    is_valid = isinstance(v, (type_py_cls, type(None)))
+    is_valid = isinstance(v, type_py_cls | type(None))
     bool2int = isinstance(v, bool) and linkml_type == "integer"
     if bool2int:
         is_valid = False
@@ -192,11 +194,7 @@ def test_type_range(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
-            # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
-            # what their docs say should happen or why it only affects older Python version.
-            expected_behavior = ValidationBehavior.COERCES
-        elif linkml_type == "boolean" and not isinstance(v, int) and v != "1":
+        if linkml_type == "boolean" and not isinstance(v, int) and v != "1":
             pass
         else:
             if framework in [PYDANTIC, PYTHON_DATACLASSES]:
@@ -227,6 +225,7 @@ def test_type_range(framework, linkml_type, example_value):
     )
 
 
+@feature_category("Value Constraints", "Min/max value")
 @pytest.mark.parametrize(
     "name,range,minimum,maximum,value,valid",
     [
@@ -283,6 +282,7 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Any type")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_any_type(framework, example_value):
@@ -331,6 +331,7 @@ def test_any_type(framework, example_value):
     )
 
 
+@feature_category("Slot Typing & Ranges", "URI types")
 @pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
@@ -392,6 +393,7 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Date/datetime types")
 @pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
@@ -504,6 +506,7 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
     )
 
 
+@feature_category("Cardinality & Presence", "Required / multivalued")
 @pytest.mark.parametrize(
     "data_name,value",
     [
@@ -563,7 +566,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    min_val = 1 if required else 0
+    owl_max = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_card = f"[ a owl:Restriction ; owl:minCardinality {min_val} ; owl:onProperty ex:s1 ],{owl_max}"
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -573,10 +578,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
         "ex:C a owl:Class ;"
         'rdfs:label "C" ;'
-        "rdfs:subClassOf [ a owl:Restriction ;"
-        f"    owl:minCardinality {1 if required else 0} ;"
-        "    owl:onProperty ex:s1 ],"
-        f"{owl_mv}"
+        f"rdfs:subClassOf {owl_card}"
         "    [ a owl:Restriction ;"
         "    owl:allValuesFrom xsd:string ;"
         "   owl:onProperty ex:s1 ] ."
@@ -668,6 +670,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     )
 
 
+@feature_category("Cardinality & Presence", "Identifier implies required")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize("required_asserted", [None, True])
 @pytest.mark.parametrize(
@@ -738,6 +741,7 @@ def ensafeify(name: str):
     return safe_label
 
 
+@feature_category("Schema-Level", "Non-standard names")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "class_name,safe_class_name,slot_name,safe_slot_name,type_name",
@@ -805,6 +809,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
     )
 
 
+@feature_category("Enumerations", "Non-standard enum names")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "enum_name,pv_name",

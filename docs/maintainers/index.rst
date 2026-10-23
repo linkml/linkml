@@ -13,5 +13,8 @@ If you are looking for documentation on how to use LinkML to build schemas, see 
 
    contributing
    organization
+   contributor-hierarchy
+   codeowners
    deprecation
    code-of-conduct
+   generator-governance

@@ -1,7 +1,9 @@
+import pytest
 import yaml
 from click.testing import CliRunner
 
 from linkml.generators.linkmlgen import LinkmlGenerator, cli
+from linkml.utils.deprecation import EMITTED
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -21,8 +23,30 @@ def test_linkmlgen_prefixes():
     lml_gen = LinkmlGenerator(schema=schema, format="yaml")
     yaml_text = lml_gen.serialize()
 
-    with open("output.yaml", "w") as f:
-        f.write(yaml_text)
+    parsed = yaml.safe_load(yaml_text)
+    assert parsed["name"] == "EquipmentSchema"
+    assert "equipment_schema" in parsed["prefixes"]
+
+
+def test_schemaview_generator_namespaces_access_warns(kitchen_sink_path):
+    """Accessing self.namespaces on a uses_schemaloader=False generator must
+    emit a UserWarning and still return a usable Namespaces object.
+
+    self.namespaces is a SchemaLoader-era artifact.  SchemaView-based generators
+    should use self.schemaview.namespaces() directly.  The warning flags any
+    hybrid use so that it can be migrated to the correct API.
+    """
+    gen = LinkmlGenerator(kitchen_sink_path, format="yaml")
+    assert not gen.uses_schemaloader
+
+    with pytest.warns(UserWarning, match="self.namespaces.*SchemaLoader-era"):
+        ns = gen.namespaces
+
+    # The returned value must still be a functional Namespaces object
+    # forwarded from self.schemaview.namespaces() so that existing callers
+    # continue to work while being migrated.
+    assert ns is not None
+    assert ns == gen.schemaview.namespaces()
 
 
 def test_generate(kitchen_sink_path):
@@ -66,19 +90,21 @@ def test_generate(kitchen_sink_path):
 def test_structured_pattern(input_path):
     # test that structured patterns are being expanded
     # and populated into the pattern property on a class
+    EMITTED.discard("materialize-patterns-generator-option")
     pattern_gen = LinkmlGenerator(
         str(input_path("pattern-example.yaml")),
         materialize_patterns=True,
         format="yaml",
     )
+    assert "materialize-patterns-generator-option" in EMITTED
 
     pattern_gen.serialize()
     # log yaml_filename so developers can look at its contents
     assert pattern_gen.schemaview.get_slot("id").pattern == r"^P\d{7}"
     assert pattern_gen.schemaview.get_slot("name").pattern == r"^[A-Z0-9]\w+.*$"
     assert pattern_gen.schemaview.get_slot("nicknames").pattern == r"^[A-Z0-9]\w+.*$"
-    assert pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert pattern_gen.schemaview.get_slot("weight").pattern == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert pattern_gen.schemaview.get_slot("height").pattern == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert pattern_gen.schemaview.get_slot("weight").pattern == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_true(input_path, tmp_path):
@@ -111,7 +137,9 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
         "Command failed when `--materialize` is True but user also used "
         "`--no-materialize-attributes` and `--no-materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
+
     assert "pattern" not in yobj["slots"]["height"]
     assert "pattern" not in yobj["slots"]["weight"]
 
@@ -133,9 +161,11 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
         "Command failed when `--materialize` is True and user also used "
         "`--materialize-attributes` and `--materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
+
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
 
 def test_default_pattern_materialization_false(input_path, tmp_path):
@@ -169,9 +199,10 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
         "Command failed when `--no-materialize` is True but user also used "
         "`--materialize-attributes` and `--materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
-    assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
+    assert yobj["slots"]["height"]["pattern"] == "^(?:\\d+[\\.\\d+] (centimeter|meter|inch))$"
+    assert yobj["slots"]["weight"]["pattern"] == "^(?:\\d+[\\.\\d+] (kg|g|lbs|stone))$"
 
     # Scenario 2: User sets `--no-materialize` AND also explicitly sets
     # `--no-materialize-attributes` and `--no-materialize-patterns`.
@@ -191,6 +222,7 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
         "Command failed when `--no-materialize` is True and user also used "
         "`--no-materialize-attributes` and `--no-materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
     assert "pattern" not in yobj["slots"]["height"]
     assert "pattern" not in yobj["slots"]["weight"]

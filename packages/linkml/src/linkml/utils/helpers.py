@@ -1,6 +1,5 @@
 import re
 from functools import lru_cache
-from typing import Union
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -28,7 +27,7 @@ def convert_to_snake_case(str):
 @lru_cache(None)
 def get_range_associated_slots(
     schemaview: SchemaView, range_class: ClassDefinition
-) -> tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[list[SlotDefinition], None]]:
+) -> tuple[SlotDefinition | None, SlotDefinition | None, list[SlotDefinition] | None]:
     if isinstance(range_class, ElementName):
         range_class = schemaview.get_class(range_class)
     if range_class is None:

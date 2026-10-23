@@ -42,7 +42,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -430,11 +430,9 @@
       "name": "Model",
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/Model",
       "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
-      "mappings": [
-        "foo:model"
-      ],
       "exact_mappings": [
-        "bar:whaoo"
+        "bar:whaoo",
+        "foo:model"
       ],
       "slots": [
         "state"
@@ -448,7 +446,7 @@
       "definition_uri": "https://w3id.org/linkml/AnyValue",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
@@ -485,7 +483,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.12.0",
   "source_file": "simple_uri_test.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

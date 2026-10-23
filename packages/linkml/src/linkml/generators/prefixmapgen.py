@@ -5,7 +5,6 @@ Generate JSON-LD contexts
 
 import os
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -34,14 +33,14 @@ class PrefixGenerator(Generator):
     default_ns: str = None
     context_body: dict = field(default_factory=lambda: dict())
     slot_class_maps: dict = field(default_factory=lambda: dict())
-    base: Optional[Union[str, Namespace]] = None
+    base: str | Namespace | None = None
 
     def __post_init__(self):
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
-    def visit_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_):
+    def visit_schema(self, base: str | None = None, output: str | None = None, **_):
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -58,7 +57,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> str:
+    def end_schema(self, base: str | Namespace | None = None, output: str | None = None, **_) -> str:
         context = JsonObj()
         if base:
             base = str(base)

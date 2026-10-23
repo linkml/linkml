@@ -71,6 +71,10 @@
     {
       "prefix_prefix": "schema",
       "prefix_reference": "http://schema.org/"
+    },
+    {
+      "prefix_prefix": "qudt",
+      "prefix_reference": "http://qudt.org/vocab/quantitykind/"
     }
   ],
   "default_curi_maps": [
@@ -118,7 +122,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -436,6 +440,11 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "base": "int",
       "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "TypeDefinition"
     }
   ],
@@ -544,6 +553,65 @@
         {
           "text": "indifferent",
           "description": "not overly friendly nor obnoxiously spiteful"
+        }
+      ]
+    },
+    {
+      "name": "LongEnum",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/LongEnum",
+      "description": "An example enum whose joined values will exceed 255 characters.",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "BetaSequenceIdentifier02_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "GammaSequenceIdentifier03_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "EtaSequenceIdentifier07_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "IotaSequenceIdentifier09_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "KappaSequenceIdentifier10_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "MuSequenceIdentifier12_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "NuSequenceIdentifier13_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "XiSequenceIdentifier14_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "PiSequenceIdentifier16_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "RhoSequenceIdentifier17_LongPatternLongPatternLongPattern"
         }
       ]
     },
@@ -706,6 +774,18 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "long_id",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/long_id",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/long_id",
+      "owner": "CodeSystem",
+      "domain_of": [
+        "CodeSystem"
+      ],
+      "range": "LongEnum",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "procedure",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
@@ -750,6 +830,12 @@
       "range": "integer",
       "minimum_value": 0,
       "maximum_value": 999,
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "has_quantity_kind": "qudt:Time",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "SlotDefinition"
     },
     {
@@ -1932,10 +2018,9 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "cordialness",
+        "FamilialRelationship_cordialness",
         "FamilialRelationship_type",
-        "FamilialRelationship_related_to",
-        "FamilialRelationship_cordialness"
+        "FamilialRelationship_related_to"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship",
@@ -2054,7 +2139,8 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slots": [
         "id",
-        "name"
+        "name",
+        "long_id"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
@@ -2197,7 +2283,7 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
       "description": "Example of unconstrained class",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
@@ -2230,7 +2316,7 @@
       "definition_uri": "https://w3id.org/linkml/tests/core/Agent",
       "description": "a provence-generating agent",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "mappings": [
+      "exact_mappings": [
         "prov:Agent"
       ],
       "slots": [
@@ -2243,7 +2329,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.12.0",
   "source_file": "kitchen_sink.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

@@ -5,11 +5,13 @@ from tests.linkml.test_compliance.helper import (
     SHACL,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID
 
 
+@feature_category("Other", "JSON Pointer")
 @pytest.mark.parametrize(
     "data_name,data,invalid_reason",
     [

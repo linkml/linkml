@@ -2,7 +2,7 @@ import yaml
 
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import Linter
-from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 def test_rule_level_error():

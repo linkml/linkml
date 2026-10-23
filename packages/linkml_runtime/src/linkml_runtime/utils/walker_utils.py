@@ -2,8 +2,9 @@
 Utilities for walking object trees
 """
 
+from collections.abc import Callable
 from copy import deepcopy
-from typing import Any, Callable, Union
+from typing import Any
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -21,7 +22,7 @@ def traverse_object_tree(obj: YAMLRoot, func: Callable, mutate: bool = True) -> 
 
 
 # implementation for traverse_object_tree, but also accepts lists, dicts
-def _traverse_object_tree_1(obj: Union[YAMLRoot, list, dict], func: Callable, mutate: bool = True) -> Any:
+def _traverse_object_tree_1(obj: YAMLRoot | list | dict, func: Callable, mutate: bool = True) -> Any:
     if isinstance(obj, list):
         return [_traverse_object_tree_1(x, func, mutate) for x in obj]
     elif isinstance(obj, dict):

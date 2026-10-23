@@ -3,7 +3,6 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import click
 from jinja2 import Environment, FileSystemLoader
@@ -32,8 +31,8 @@ class MermaidClassDiagramGenerator(Generator):
     uses_schemaloader = False
     requires_metamodel = False
 
-    directory: Optional[str] = None  # output directory with generated markdown files
-    template_file: Optional[str] = None  # custom/default jinja template for class diagrams
+    directory: str | None = None  # output directory with generated markdown files
+    template_file: str | None = None  # custom/default jinja template for class diagrams
     classes: list[str] = field(default_factory=list)  # optional subset of classes
     preserve_names: bool = False  # preserve original LinkML names in diagram output
 

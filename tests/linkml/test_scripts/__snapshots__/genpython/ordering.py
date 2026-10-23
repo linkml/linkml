@@ -1,7 +1,3 @@
-# Auto generated from ordering.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: test_inherited_id
-#
 # id: https://example.org/inheritedid
 # description: Test
 # license: https://creativecommons.org/publicdomain/zero/1.0/
@@ -58,7 +54,7 @@ from rdflib import (
 
 from linkml_runtime.utils.metamodelcore import URI
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces

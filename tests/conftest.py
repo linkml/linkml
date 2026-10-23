@@ -1,22 +1,25 @@
+import difflib
 import os
 import re
 import shutil
 import sys
+import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
 from pathlib import Path
-from typing import Callable, Optional, Union
 
 import docker
 import pytest
 import requests_cache
-from _pytest.assertion.util import _diff_text
 
 import tests
+from linkml.utils.deprecation import EMITTED
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
+from tests.offline_network import install as install_offline_network
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
@@ -58,9 +61,9 @@ class Snapshot(ABC):
 
 
 class SnapshotFile(Snapshot):
-    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: Optional[str] = None) -> None:
+    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: str | None = None) -> None:
         super().__init__(path, config)
-        self.rdf_format: Optional[bool] = rdf_format
+        self.rdf_format: bool | None = rdf_format
 
     def __repr__(self):
         with open(self.path, encoding="utf-8") as snapshot_file:
@@ -99,11 +102,12 @@ class SnapshotFile(Snapshot):
         else:
             is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
-                # TODO: probably better to use something other than this pytest
-                # private method. See https://docs.python.org/3/library/difflib.html
-                # highlighter is a no-op function for pytest 8.4+ compatibility
                 self.eq_state = "\n".join(
-                    _diff_text(actual, expected, lambda x, **kwargs: x, verbose=self.config.getoption("verbose"))
+                    line.rstrip("\r\n")
+                    for line in difflib.ndiff(
+                        expected.splitlines(keepends=True),
+                        normalize_line_endings(actual).splitlines(keepends=True),
+                    )
                 )
             return is_eq
 
@@ -132,15 +136,15 @@ class SnapshotDirectory(Snapshot):
 
 
 @pytest.fixture
-def snapshot_path(request) -> Callable[[Union[str, Path]], Path]:
-    def get_path(relative_path: Union[str, Path]):
+def snapshot_path(request) -> Callable[[str | Path], Path]:
+    def get_path(relative_path: str | Path):
         return request.path.parent / "__snapshots__" / relative_path
 
     return get_path
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, Path]], Snapshot]:
+def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str | Path], Snapshot]:
     # Patching SchemaDefinition's setter here prevents metadata that can be variable
     # between systems from entering the snapshot files. This could be part of its own
     # fixture but it's not clear if it would be useful outside of tests that
@@ -158,7 +162,7 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, P
 
     monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
 
-    def get_snapshot(relative_path: Union[str, Path], **kwargs):
+    def get_snapshot(relative_path: str | Path, **kwargs):
         path = snapshot_path(relative_path)
         if not path.suffix:
             return SnapshotDirectory(path, pytestconfig)
@@ -224,7 +228,10 @@ def clear_package_schemaview_cache(request):
 
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER", "")
     base = Path(request.path.parent) / "temp"
+    if worker_id:
+        base = base / worker_id
     test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
@@ -239,7 +246,16 @@ def pytest_addoption(parser):
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
-    parser.addoption("--with-network", action="store_true", help="include tests marked network")
+    parser.addoption(
+        "--with-network",
+        action="store_true",
+        help="run tests marked network against the live network instead of local stubs",
+    )
+    parser.addoption(
+        "--with-upstream",
+        action="store_true",
+        help="include tests marked upstream, which check the real outside world (weekly workflow)",
+    )
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
@@ -250,6 +266,7 @@ def pytest_addoption(parser):
     )
 
 
+@pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
@@ -270,11 +287,21 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("rustgen"):
                 item.add_marker(skip_rustgen)
 
-    if not config.getoption("--with-network"):
-        skip_network = pytest.mark.skip(reason="need --with-network option to run")
+    # Tests marked `network` are NOT skipped: they always run, served from local
+    # stubs by default and live under --with-network. Only `upstream` tests --
+    # whose assertions are about the real outside world -- are gated, because
+    # running them against stubs would be vacuous.
+    if not config.getoption("--with-upstream"):
+        skip_upstream = pytest.mark.skip(reason="need --with-upstream option to run")
         for item in items:
-            if item.get_closest_marker("network"):
-                item.add_marker(skip_network)
+            if item.get_closest_marker("upstream"):
+                item.add_marker(skip_upstream)
+
+    # Group compliance tests on a single xdist worker - they share
+    # mutable module-level caches in helper.py that are not safe to split.
+    for item in items:
+        if "test_compliance" in str(item.path):
+            item.add_marker(pytest.mark.xdist_group("compliance"))
 
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]
@@ -282,9 +309,8 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         items.remove(test_deps[0])
         items.append(test_deps[0])
 
-    # numpydantic only supported python>=3.9
-    if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
-        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
+    if version("pydantic").startswith("1"):
+        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported for pydantic>=2")
         for item in items:
             if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
@@ -312,32 +338,53 @@ def pytest_sessionstart(session: pytest.Session):
     if session.config.getoption("--generate-snapshots"):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
-    _monkeypatch_pyshex()
+    # Clear all warning registries at session start
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
 
 
-def _monkeypatch_pyshex():
-    import sys
-    import typing
-    from importlib.metadata import version
-    from types import ModuleType
-    from typing import TextIO
+def pytest_runtest_setup(item):
+    # Clear warning registries before each test
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
 
-    if version("pyshexc") != "0.9.1":
-        raise RuntimeError(
-            "Pyshex has been updated, remove this monkeypatch:\n"
-            "- remove this function\n"
-            "- remove the call to `_monkeypatch_pyshex in `pytest_sessionstart`\n"
-            "- remove the skipif mark on test_notebooks/test_nodebooks.py:test_redo_notebook\n"
-        )
-    typing_io = ModuleType("io")
-    typing_io.TextIO = TextIO
-    typing.io = typing_io
-    sys.modules["typing.io"] = typing_io
+    warnings.simplefilter("always")
 
 
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+@pytest.fixture(autouse=True)
+def network_guard(request):
+    """Enforce the network rules; see :mod:`tests.offline_network` for the design.
+
+    - ``upstream``-marked tests run live; they only run at all under
+      ``--with-upstream`` (enforced at collection time).
+    - ``network``-marked tests are served from local stubs, or run live under
+      ``--with-network``.
+    - Everything else must not touch the network, at any layer.
+    """
+    if request.node.get_closest_marker("upstream"):
+        yield
+        return
+    if request.node.get_closest_marker("network"):
+        if request.config.getoption("--with-network"):
+            yield
+            return
+        uninstall = install_offline_network("stub")
+    else:
+        uninstall = install_offline_network("block")
+    try:
+        yield
+    finally:
+        uninstall()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -349,15 +396,22 @@ def patch_requests_cache(pytestconfig):
     if pytestconfig.getoption("--without-cache"):
         yield
         return
-    cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER", "")
+    cache_name = f"requests-cache-{worker_id}.sqlite" if worker_id else "requests-cache.sqlite"
+    cache_file = Path(__file__).parent / "output" / cache_name
     requests_cache.install_cache(
         str(cache_file),
         backend="sqlite",
         urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
     )
     requests_cache.clear()
-    with requests_cache.enabled():
-        yield
+    yield
+    # Close the SQLite backend before uninstalling so the file handle is released
+    import requests
+
+    session = requests.Session()
+    if hasattr(session, "cache"):
+        session.cache.close()
     requests_cache.uninstall_cache()
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):
@@ -368,7 +422,8 @@ class MockImportErrorFinder(MetaPathFinder):
     """
     Fake like we don't have a module when we really do.
 
-    see the ``mock_black_import`` fixture for example usage.
+    see the ``mock_missing_import`` fixture to hide any module, or ``mock_black_import``
+    for a single-purpose example.
 
     .. note::
 
@@ -389,6 +444,40 @@ class MockImportErrorFinder(MetaPathFinder):
 
 
 @pytest.fixture(scope="function")
+def mock_missing_import():
+    """Pretend an optional dependency is not installed, for any module.
+
+    Yields a callable taking a module name, so a test for one optional
+    dependency does not need a fixture of its own::
+
+        def test_requires_the_extra(mock_missing_import):
+            mock_missing_import("diffable_rdf")
+            with pytest.raises(ImportError, match="linkml-runtime[diff-stable]"):
+                ...
+
+    See :class:`MockImportErrorFinder` for the caveat about reimporting
+    modules that already imported the one being hidden.
+    """
+    removed = {}
+    finders = []
+
+    def hide(module: str) -> None:
+        for name, loaded in list(sys.modules.items()):
+            if name.startswith(module):
+                removed[name] = loaded
+                del sys.modules[name]
+        finder = MockImportErrorFinder(module)
+        finders.append(finder)
+        sys.meta_path.insert(0, finder)
+
+    yield hide
+
+    sys.modules.update(removed)
+    for finder in finders:
+        sys.meta_path.remove(finder)
+
+
+@pytest.fixture(scope="function")
 def mock_black_import():
     """
     Pretend like we don't have black even if we do
@@ -406,6 +495,27 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+@pytest.fixture(autouse=True)
+def reset_warnings():
+    """Reset warnings for each test."""
+    # Pre-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+    EMITTED.clear()
+
+    yield
+
+    # Post-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+    EMITTED.clear()
 
 
 # --------------------------------------------------

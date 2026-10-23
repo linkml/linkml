@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from linkml_runtime.utils.formatutils import camelcase
@@ -13,6 +11,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     metamodel_schemaview,
     validated_schema,
 )
@@ -20,6 +19,7 @@ from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORK
 
 
 # TODO: consider merging into normal type test
+@feature_category("Slot Typing & Ranges", "Custom types (typeof)")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False])
 @pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -74,7 +74,7 @@ def test_typeof(framework, linkml_type, example_value):
     )
     expected_behavior = None
     v = example_value
-    is_valid = isinstance(v, (type_py_cls, type(None)))
+    is_valid = isinstance(v, type_py_cls | type(None))
     bool2int = isinstance(v, bool) and linkml_type == "integer"
     if bool2int:
         is_valid = False
@@ -86,11 +86,7 @@ def test_typeof(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
-            # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
-            # what their docs say should happen or why it only affects older Python version.
-            expected_behavior = ValidationBehavior.COERCES
-        elif linkml_type == "boolean" and not isinstance(v, int) and v != "1":
+        if linkml_type == "boolean" and not isinstance(v, int) and v != "1":
             pass
         else:
             if framework in [PYDANTIC, PYTHON_DATACLASSES]:

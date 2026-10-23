@@ -1,7 +1,3 @@
-# Auto generated from testtypes.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: types
-#
 # id: http://example.org/tests/types
 # description:
 # license:
@@ -58,7 +54,7 @@ from rdflib import (
 
 from linkml_runtime.utils.metamodelcore import Bool
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.12.0"
 version = None
 
 # Namespaces

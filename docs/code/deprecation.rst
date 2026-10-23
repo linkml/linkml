@@ -3,7 +3,7 @@
 Deprecation Log
 ---------------------
 
-See `Deprecation Guide <../maintainers/deprecation.md>`_
+See :ref:`deprecation-guide`
 
 .. plot:: plots/deprecation_plot.py
 
@@ -11,7 +11,7 @@ See `Deprecation Guide <../maintainers/deprecation.md>`_
 
     {% for dep in deprecations %}
     {{ dep.name }}
-    ==============
+    {{ '=' * (dep.name | length) }}
 
     {% if dep.removed %}
     .. admonition:: Removed

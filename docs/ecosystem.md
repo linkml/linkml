@@ -51,6 +51,7 @@ from the LinkML community meeting.
 ### Data Rendering
 
  - [linkml-renderer](https://github.com/linkml/linkml-renderer) allows linkml data to be rendered as markdowm or HTML.
+ - [plugin-link](https://github.com/plugin-healthcare/plugin-link) allows linkml to be viewed interactively using Svelte Flow.
 
 ### Semantic DSL
 

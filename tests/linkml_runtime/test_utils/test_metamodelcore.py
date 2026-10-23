@@ -5,6 +5,7 @@ import pytest
 from jsonasobj2 import as_json
 from rdflib import RDF, XSD, Graph, Literal, Namespace
 
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.metamodelcore import (
     URI,
     Bool,
@@ -296,7 +297,7 @@ def test_nodeidentifier():
     rdfs:object "http://example.org/tests/child2" ;
     rdfs:subject "http://example.org/tests/descendant1" .
 
-""" == as_rdf(y, context).serialize(format="turtle")
+""" == canonicalize_rdf_graph(as_rdf(y, context), output_format="turtle")
     with pytest.raises(ValueError):
         y = Pair(s, s)
 

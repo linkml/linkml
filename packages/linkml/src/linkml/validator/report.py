@@ -1,7 +1,11 @@
+import textwrap
 from enum import Enum
-from typing import Any, Optional
+from pprint import pformat
+from typing import Any
 
 from pydantic import BaseModel, Field
+
+from linkml.utils.exceptions import ValidationError
 
 
 class Severity(str, Enum):
@@ -25,13 +29,16 @@ class ValidationResult(BaseModel):
     type: str
     severity: Severity
     message: str
-    instance: Optional[Any] = None
-    instance_index: Optional[int] = None
-    instantiates: Optional[str] = None
+    instance: Any | None = None
+    instance_index: int | None = None
+    instantiates: str | None = None
     context: list[str] = []
 
     # The source object that caused this validation result
     source: Any = Field(None, description="The source of this validation result", exclude=True)
+
+    def __str__(self) -> str:
+        return pformat(self.model_dump(exclude_none=True, exclude_unset=True))
 
 
 class ValidationReport(BaseModel):
@@ -42,3 +49,14 @@ class ValidationReport(BaseModel):
     """
 
     results: list[ValidationResult]
+
+    def raise_for_results(self) -> None:
+        """
+        If any results, raise them as a :class:`.ValidationError`
+
+        :raises ValidationError: if any validation results are present
+        """
+        if self.results:
+            res = textwrap.indent("\n".join(str(res) for res in self.results), "  ")
+            msg = f"Error(s) validating data: \n{res}"
+            raise ValidationError(msg)

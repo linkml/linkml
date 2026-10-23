@@ -104,3 +104,7 @@ Currently data validation using OWL is off by default, and data tests pass.
 In order to run the OWL tests, you should have ROBOT in your path. The unit test
 suite will then generate turtle files containing both ontology and data, and
 use HermiT to validate. Note this is currently slow.
+
+If ROBOT is not available, OWL coherency checks are marked `UNTESTED` and the
+test run now emits a pytest warning so the reduced validation coverage is
+visible in local runs and CI logs.

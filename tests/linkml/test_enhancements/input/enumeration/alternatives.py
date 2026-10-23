@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Union
 
 from rdflib import URIRef
 
@@ -47,15 +47,15 @@ class AllEnums(YAMLRoot):
     class_name: ClassVar[str] = "all_enums"
     class_model_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
 
-    entry_name: Union[str, AllEnumsEntryName] = None
-    code_1: Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]] = None
-    code_2: Optional[Union[str, "ConstrainedEnum2"]] = None
-    code_3: Optional[Union[str, "ConstrainedEnum3"]] = None
-    code_4: Optional[Union[str, "ConstrainedEnum4"]] = None
-    code_5: Optional[Union[str, "ConstrainedEnum4"]] = None
-    code_6: Optional[Union[str, "ConstrainedEnum4"]] = None
-    code_7: Optional[Union[str, "ConstrainedEvidence"]] = None
-    code_8: Optional[Union[str, "MappedEvidence"]] = None
+    entry_name: str | AllEnumsEntryName = None
+    code_1: Union[str, "OpenEnum"] | list[Union[str, "OpenEnum"]] = None
+    code_2: Union[str, "ConstrainedEnum2"] | None = None
+    code_3: Union[str, "ConstrainedEnum3"] | None = None
+    code_4: Union[str, "ConstrainedEnum4"] | None = None
+    code_5: Union[str, "ConstrainedEnum4"] | None = None
+    code_6: Union[str, "ConstrainedEnum4"] | None = None
+    code_7: Union[str, "ConstrainedEvidence"] | None = None
+    code_8: Union[str, "MappedEvidence"] | None = None
 
     def __post_init__(self, **kwargs: dict[str, Any]):
         if self.entry_name is None:
@@ -254,7 +254,7 @@ slots.allEnums__code_1 = Slot(
     curie=EVIDENCE.curie("code_1"),
     model_uri=EVIDENCE.allEnums__code_1,
     domain=None,
-    range=Union[Union[str, "OpenEnum"], list[Union[str, "OpenEnum"]]],
+    range=str | "OpenEnum" | list[str | "OpenEnum"],
 )
 
 slots.allEnums__code_2 = Slot(
@@ -263,7 +263,7 @@ slots.allEnums__code_2 = Slot(
     curie=EVIDENCE.curie("code_2"),
     model_uri=EVIDENCE.allEnums__code_2,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEnum2"]],
+    range=Union[str, "ConstrainedEnum2"] | None,
 )
 
 slots.allEnums__code_3 = Slot(
@@ -272,7 +272,7 @@ slots.allEnums__code_3 = Slot(
     curie=EVIDENCE.curie("code_3"),
     model_uri=EVIDENCE.allEnums__code_3,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEnum3"]],
+    range=Union[str, "ConstrainedEnum3"] | None,
 )
 
 slots.allEnums__code_4 = Slot(
@@ -281,7 +281,7 @@ slots.allEnums__code_4 = Slot(
     curie=EVIDENCE.curie("code_4"),
     model_uri=EVIDENCE.allEnums__code_4,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEnum4"]],
+    range=Union[str, "ConstrainedEnum4"] | None,
 )
 
 slots.allEnums__code_5 = Slot(
@@ -290,7 +290,7 @@ slots.allEnums__code_5 = Slot(
     curie=EVIDENCE.curie("code_5"),
     model_uri=EVIDENCE.allEnums__code_5,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEnum4"]],
+    range=Union[str, "ConstrainedEnum4"] | None,
 )
 
 slots.allEnums__code_6 = Slot(
@@ -299,7 +299,7 @@ slots.allEnums__code_6 = Slot(
     curie=EVIDENCE.curie("code_6"),
     model_uri=EVIDENCE.allEnums__code_6,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEnum4"]],
+    range=Union[str, "ConstrainedEnum4"] | None,
 )
 
 slots.allEnums__code_7 = Slot(
@@ -308,7 +308,7 @@ slots.allEnums__code_7 = Slot(
     curie=EVIDENCE.curie("code_7"),
     model_uri=EVIDENCE.allEnums__code_7,
     domain=None,
-    range=Optional[Union[str, "ConstrainedEvidence"]],
+    range=Union[str, "ConstrainedEvidence"] | None,
 )
 
 slots.allEnums__code_8 = Slot(
@@ -317,5 +317,5 @@ slots.allEnums__code_8 = Slot(
     curie=EVIDENCE.curie("code_8"),
     model_uri=EVIDENCE.allEnums__code_8,
     domain=None,
-    range=Optional[Union[str, "MappedEvidence"]],
+    range=Union[str, "MappedEvidence"] | None,
 )
