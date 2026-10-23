@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from contextlib import nullcontext
 from copy import deepcopy
 from pathlib import Path
@@ -3406,6 +3407,196 @@ settings:
     assert imported_class.slot_usage["imported_slot"].pattern == r"^(?:[a-z]+[a-z]+)$"
     assert imported_class.attributes["imported_attribute"].pattern == r"^(?:[a-z]+)$"
     assert view.get_type("ImportedType").pattern == r"^(?:[a-z]+)$"
+
+
+def _write_import_pair(tmp_path: Path, imported_settings: str, root_settings: str) -> Path:
+    """Write a root schema that imports a module holding a slot, slot_usage, attribute and type pattern."""
+    (tmp_path / "imported.yaml").write_text(
+        f"""
+id: https://example.org/imported
+name: imported
+{imported_settings}
+slots:
+  imported_slot:
+    structured_pattern:
+      syntax: "{{word}}-{{num}}"
+      interpolated: true
+classes:
+  ImportedClass:
+    slots:
+      - imported_slot
+    slot_usage:
+      imported_slot:
+        structured_pattern:
+          syntax: "{{word}}{{word}}-{{num}}"
+          interpolated: true
+    attributes:
+      imported_attribute:
+        structured_pattern:
+          syntax: "{{num}}"
+          interpolated: true
+types:
+  ImportedType:
+    base: str
+    structured_pattern:
+      syntax: "{{num}}"
+      interpolated: true
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        f"""
+id: https://example.org/root
+name: root
+imports:
+  - imported
+{root_settings}
+"""
+    )
+    return root_schema
+
+
+ROOT_SETTINGS = 'settings:\n  word: "[a-z]+"\n  num: "[0-9]+"'
+
+
+def test_induced_patterns_fall_back_to_root_settings(tmp_path: Path) -> None:
+    """A module with no settings of its own uses the root schema's settings (issue 4135)."""
+    view = SchemaView(str(_write_import_pair(tmp_path, "", ROOT_SETTINGS)))
+
+    assert view.induced_slot("imported_slot").pattern == r"^(?:[a-z]+-[0-9]+)$"
+    assert view.induced_slot("imported_slot", "ImportedClass").pattern == r"^(?:[a-z]+[a-z]+-[0-9]+)$"
+    assert view.induced_slot("imported_attribute", "ImportedClass").pattern == r"^(?:[0-9]+)$"
+    assert view.induced_type("ImportedType").pattern == r"^(?:[0-9]+)$"
+
+
+def test_defining_schema_setting_wins_over_root_setting(tmp_path: Path) -> None:
+    """Only the keys the defining schema lacks come from the root schema."""
+    imported_settings = 'settings:\n  word: "[A-Z]+"'
+    view = SchemaView(str(_write_import_pair(tmp_path, imported_settings, ROOT_SETTINGS)))
+
+    assert view.induced_slot("imported_slot").pattern == r"^(?:[A-Z]+-[0-9]+)$"
+    assert view.induced_slot("imported_slot", "ImportedClass").pattern == r"^(?:[A-Z]+[A-Z]+-[0-9]+)$"
+
+
+def test_resolve_pattern_falls_back_to_root_settings(tmp_path: Path) -> None:
+    view = SchemaView(str(_write_import_pair(tmp_path, "", ROOT_SETTINGS)))
+
+    assert view.resolve_pattern(view.get_slot("imported_slot")) == r"^(?:[a-z]+-[0-9]+)$"
+    assert view.resolve_pattern(view.get_type("ImportedType")) == r"^(?:[0-9]+)$"
+
+
+def test_materialize_patterns_falls_back_to_root_settings(tmp_path: Path) -> None:
+    """The deprecated in-place path resolves the same way as induced_slot."""
+    view = SchemaView(str(_write_import_pair(tmp_path, "", ROOT_SETTINGS)))
+
+    view.materialize_patterns()
+
+    assert view.get_slot("imported_slot").pattern == r"^(?:[a-z]+-[0-9]+)$"
+    imported_class = view.get_class("ImportedClass")
+    assert imported_class.slot_usage["imported_slot"].pattern == r"^(?:[a-z]+[a-z]+-[0-9]+)$"
+    assert imported_class.attributes["imported_attribute"].pattern == r"^(?:[0-9]+)$"
+    assert view.get_type("ImportedType").pattern == r"^(?:[0-9]+)$"
+
+
+def test_fallback_does_not_modify_the_imported_schema(tmp_path: Path) -> None:
+    view = SchemaView(str(_write_import_pair(tmp_path, "", ROOT_SETTINGS)))
+
+    view.induced_slot("imported_slot")
+    imported = next(schema for schema in view.all_schema() if schema.name == "imported")
+
+    assert not imported.settings
+
+
+def test_placeholder_without_any_setting_stays_literal(tmp_path: Path) -> None:
+    """Neither schema declares num, so it is left as text, as before."""
+    root_settings = 'settings:\n  word: "[a-z]+"'
+    view = SchemaView(str(_write_import_pair(tmp_path, "", root_settings)))
+
+    assert view.induced_slot("imported_slot").pattern == r"^(?:[a-z]+-{num})$"
+
+
+def test_fallback_uses_the_root_of_the_view(tmp_path: Path) -> None:
+    """Loaded on its own, the imported module has no root settings to fall back to."""
+    _write_import_pair(tmp_path, "", ROOT_SETTINGS)
+    view = SchemaView(str(tmp_path / "imported.yaml"))
+
+    assert view.induced_slot("imported_slot").pattern == r"^(?:{word}-{num})$"
+
+
+def test_root_settings_do_not_escape_uninterpolated_patterns(tmp_path: Path) -> None:
+    """A root setting must not change a non-interpolated pattern in a module without that setting."""
+    (tmp_path / "imported.yaml").write_text(
+        r"""
+id: https://example.org/imported
+name: imported
+slots:
+  spaced:
+    structured_pattern:
+      syntax: '^a\N{SPACE}b$'
+types:
+  Spaced:
+    base: str
+    structured_pattern:
+      syntax: '^a\N{SPACE}b$'
+"""
+    )
+    (tmp_path / "root.yaml").write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - imported
+settings:
+  SPACE: "x"
+"""
+    )
+    view = SchemaView(str(tmp_path / "root.yaml"))
+
+    expected = r"^(?:^a\N{SPACE}b$)$"
+    assert view.induced_slot("spaced").pattern == expected
+    assert view.induced_type("Spaced").pattern == expected
+    assert re.fullmatch(expected, "a b")
+    view.materialize_patterns()
+    assert view.get_slot("spaced").pattern == expected
+    assert view.get_type("Spaced").pattern == expected
+
+
+def test_fallback_skips_intermediate_imports(tmp_path: Path) -> None:
+    """In root -> middle -> leaf, leaf falls back to root's settings, not middle's."""
+    (tmp_path / "leaf.yaml").write_text(
+        """
+id: https://example.org/leaf
+name: leaf
+slots:
+  leaf_slot:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+"""
+    )
+    (tmp_path / "middle.yaml").write_text(
+        """
+id: https://example.org/middle
+name: middle
+imports:
+  - leaf
+settings:
+  word: "middle"
+"""
+    )
+    (tmp_path / "root.yaml").write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - middle
+settings:
+  word: "root"
+"""
+    )
+    view = SchemaView(str(tmp_path / "root.yaml"))
+
+    assert view.induced_slot("leaf_slot").pattern == r"^(?:root)$"
 
 
 def test_materialize_patterns_slot_usage(sv_structured_patterns: SchemaView) -> None:
