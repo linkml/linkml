@@ -26,7 +26,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import IO, Any, ClassVar, TextIO, Union, cast
+from typing import IO, TYPE_CHECKING, Any, ClassVar, TextIO, Union, cast
 
 import click
 import yaml
@@ -60,6 +60,9 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 
+if TYPE_CHECKING:
+    from rdflib import Graph
+
 logger = logging.getLogger(__name__)
 
 
@@ -78,6 +81,136 @@ def _resolved_metamodel(mergeimports):
     )
     metamodel.resolve()
     return metamodel
+
+
+def well_known_prefix_map() -> dict[str, str]:
+    """Return a mapping from namespace URI to standard prefix name.
+
+    Primary source: the ``linked_data`` context from `prefixmaps
+    <https://github.com/linkml/prefixmaps>`_ — the canonical curated
+    registry maintained by the LinkML team.  This context provides
+    correct, community-consensus prefix names (e.g. ``sh`` not ``shacl``,
+    ``schema`` not ``sdo``).
+
+    Secondary source: the ``merged`` context from prefixmaps, which
+    combines prefix.cc, bioregistry, and other sources for broad coverage.
+
+    Third source, taking precedence: the names rdflib binds by default
+    (``Graph(bind_namespaces="rdflib")``), which these generators serialize
+    with.  ``http://schema.org/`` gets ``schema`` from prefixmaps and
+    ``https://schema.org/`` from rdflib, so both forms map to ``schema``.
+
+    .. note::
+       Requires ``prefixmaps >= 0.2.7``.  For entries added in
+       linkml/prefixmaps#81 (W3C/OGC standard prefixes), pin to
+       ``prefixmaps @ git+https://github.com/linkml/prefixmaps@75435150``
+       until v0.2.8 is released.
+    """
+    return dict(_cached_well_known_prefix_map())
+
+
+@lru_cache(maxsize=1)
+def _cached_well_known_prefix_map() -> dict[str, str]:
+    """Internal cached builder for well_known_prefix_map()."""
+    from prefixmaps import load_context
+
+    # Layer 1: merged context (broad coverage, first-seen-wins for duplicates).
+    merged = load_context("merged")
+    ns_to_prefix: dict[str, str] = {}
+    for rec in merged.prefix_expansions:
+        if rec.namespace not in ns_to_prefix:
+            ns_to_prefix[rec.namespace] = rec.prefix
+
+    # Layer 2: linked_data context (curated, correct names) overrides merged.
+    ld = load_context("linked_data")
+    for rec in ld.prefix_expansions:
+        ns_to_prefix[rec.namespace] = rec.prefix
+
+    # Layer 3: the names rdflib binds by default.  These generators serialize with
+    # rdflib, so its names are the ones an unprefixed namespace already gets, and
+    # they take precedence where prefixmaps differs (``geosparql`` vs ``geo``,
+    # ``sc`` vs ``schema``, ``WGS84`` vs ``wgs``).
+    from rdflib import Graph
+
+    for prefix, namespace in Graph(bind_namespaces="rdflib").namespaces():
+        if str(prefix):
+            ns_to_prefix[str(namespace)] = str(prefix)
+
+    return ns_to_prefix
+
+
+def normalize_graph_prefixes(graph: "Graph", schema_prefixes: dict[str, str]) -> None:
+    """Normalise non-standard prefix aliases in an rdflib Graph.
+
+    For each prefix bound in *schema_prefixes* (mapping prefix name →
+    namespace URI), check whether ``well_known_prefix_map()`` knows a
+    standard name for that URI.  If the standard name differs from the
+    schema-declared name, rebind the namespace to the standard name.
+
+    This is the **shared implementation** used by the OWL and SHACL
+    generators, and (via a different code-path) the JSON-LD context generator,
+    so that all serialisation formats agree on prefix names when
+    ``--normalize-prefixes`` is active.
+
+    :param graph: rdflib Graph whose namespace bindings should be adjusted.
+    :param schema_prefixes: mapping of prefix name → namespace URI string,
+        typically from ``schema.prefixes``.
+    """
+    from rdflib import Namespace
+
+    wk = well_known_prefix_map()
+
+    # Phase 1: normalise schema-declared prefixes.
+    for old_pfx, ns_uri in schema_prefixes.items():
+        ns_str = str(ns_uri)
+        std_pfx = wk.get(ns_str)
+        if not std_pfx or std_pfx == old_pfx:
+            continue
+        # Collision: the user explicitly declared std_pfx for a different
+        # namespace — do not clobber their binding.
+        if std_pfx in schema_prefixes and schema_prefixes[std_pfx] != ns_str:
+            logger.warning(
+                "Prefix collision: cannot rename '%s' to '%s' because '%s' is already "
+                "declared for <%s>; skipping normalisation for <%s>",
+                old_pfx,
+                std_pfx,
+                std_pfx,
+                schema_prefixes[std_pfx],
+                ns_str,
+            )
+            continue
+        # Rebind: remove old prefix, add standard prefix.
+        # ``replace=True`` forces the new prefix even if the prefix name
+        # is already bound to a different namespace.
+        graph.bind(std_pfx, Namespace(ns_str), override=True, replace=True)
+
+    # Phase 2: normalise runtime-injected bindings (e.g. metamodel defaults).
+    # The linkml-runtime / rdflib may inject well-known namespaces under
+    # non-standard prefix names.  After Phase 1 rebinds schema-declared
+    # prefixes, orphaned runtime bindings can appear as ``schema1``, ``dc0``,
+    # etc.  Scan the graph's current bindings and fix any that map to a
+    # well-known namespace under a non-standard name, provided the standard
+    # name isn't already claimed by the user for a different namespace.
+    #
+    # Guard: if Phase 1 already bound std_pfx to a different URI (e.g.
+    # ``schema`` → ``https://schema.org/``), do not clobber it with the
+    # HTTP variant (``http://schema.org/``).  Build a snapshot of the
+    # current bindings after Phase 1 to detect this.
+    current_bindings = {str(p): str(n) for p, n in graph.namespaces()}
+    for pfx, ns in list(graph.namespaces()):
+        pfx_str, ns_str = str(pfx), str(ns)
+        std_pfx = wk.get(ns_str)
+        if not std_pfx or std_pfx == pfx_str:
+            continue
+        # Same collision check as Phase 1: respect user-declared prefixes.
+        if std_pfx in schema_prefixes and schema_prefixes[std_pfx] != ns_str:
+            continue
+        # Guard: if std_pfx is already bound to a different (correct) URI
+        # by Phase 1, do not overwrite it.  This prevents the HTTP variant
+        # of schema.org from clobbering the HTTPS binding.
+        if std_pfx in current_bindings and current_bindings[std_pfx] != ns_str:
+            continue
+        graph.bind(std_pfx, Namespace(ns_str), override=True, replace=True)
 
 
 @dataclass
@@ -1250,3 +1383,13 @@ def apply_config_defaults(ctx: click.Context, config: Mapping[str, Any], args: d
             # convert as click would, so e.g. `template_dir: /tmp` arrives as a Path
             args[key] = param.type_cast_value(ctx, value)
     return args
+
+
+def normalize_prefixes_option(f: Callable) -> Callable:
+    """Add ``--normalize-prefixes`` to the command line of a generator that honours it."""
+    return click.option(
+        "--normalize-prefixes/--no-normalize-prefixes",
+        default=False,
+        show_default=True,
+        help="Rename non-standard prefix aliases to well-known names (e.g. sdo → schema for https://schema.org/).",
+    )(f)

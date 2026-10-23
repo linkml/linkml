@@ -14,7 +14,7 @@ from linkml._version import __version__
 from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, normalize_graph_prefixes, normalize_prefixes_option, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
 from linkml_runtime.utils.formatutils import underscore
@@ -142,6 +142,10 @@ class ShaclGenerator(Generator):
     ignores any per-slot ``in_language``.
     """
 
+    normalize_prefixes: bool = False
+    """Rename non-standard prefix aliases to the well-known names of
+    :func:`~linkml.utils.generator.well_known_prefix_map`, e.g. ``sdo`` → ``schema``."""
+
     diff_stable: bool = False
     """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
 
@@ -210,6 +214,10 @@ class ShaclGenerator(Generator):
 
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
+        if self.normalize_prefixes:
+            normalize_graph_prefixes(
+                g, {str(v.prefix_prefix): str(v.prefix_reference) for v in self.schema.prefixes.values()}
+            )
 
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
@@ -972,6 +980,7 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate SHACL turtle from a LinkML model"""

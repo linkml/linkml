@@ -14,7 +14,7 @@ from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.deprecation import deprecated_fields
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, normalize_prefixes_option, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -63,6 +63,10 @@ class JSONLDGenerator(Generator):
 
     context: str | list[str] | None = None
     """Path to a JSONLD context file"""
+
+    normalize_prefixes: bool = False
+    """Rename non-standard prefix aliases to the well-known names of
+    :func:`~linkml.utils.generator.well_known_prefix_map`, e.g. ``sdo`` → ``schema``."""
 
     metamodel_context: str | None = None
     """Override for metamodel context URI/path. When None, uses METAMODEL_CONTEXT_URI."""
@@ -211,6 +215,8 @@ class JSONLDGenerator(Generator):
             # directory twice.
             context_kwargs.setdefault("importmap", self.importmap)
             context_kwargs.setdefault("base_dir", self.original_base_dir)
+            # Forward prefix normalisation into the inline @context.
+            context_kwargs.setdefault("normalize_prefixes", self.normalize_prefixes)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
@@ -276,6 +282,7 @@ class JSONLDGenerator(Generator):
     "The `emit_metadata` value is forced to be False.\n\n"
     "multiple kwargs like `-k {key} {value}` can be passed",
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, context_kwargs: tuple[tuple[str, bool], ...], context: tuple[str, ...], **kwargs):
     """Generate JSONLD file from LinkML schema.
