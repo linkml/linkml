@@ -33,8 +33,10 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     PydanticTemplateModel,
 )
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ElementName,
     SchemaDefinition,
@@ -76,6 +78,7 @@ DEFAULT_IMPORTS = (
     + Import(
         module="typing",
         objects=[
+            ObjectImport(name="Annotated"),
             ObjectImport(name="Any"),
             ObjectImport(name="ClassVar"),
             ObjectImport(name="Literal"),
@@ -238,7 +241,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     for each class. If a matching template is not found in the override directory,
     the default templates will be used.
     """
-    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    extra_fields: Literal["allow", "forbid", "ignore"] | None = None
+    """
+    How to handle extra fields in Pydantic models. Sets the default for all classes;
+    individual classes can override this via their ``extra_slots`` metadata.
+    """
     gen_mixin_inheritance: bool = True
     injected_classes: list[type | str] | None = None
     """
@@ -408,6 +415,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
     def __post_init__(self):
         super().__post_init__()
+        if self.extra_fields is not None:
+            deprecation_warning("pydanticgen-extra-fields")
+        else:
+            # preserve prior behavior until removal
+            self.extra_fields = "forbid"
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -475,21 +487,100 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
+    @staticmethod
+    def _extra_slots_setting(cls: ClassDefinition) -> bool | AnonymousSlotExpression | None:
+        """
+        Read the class's own ``extra_slots`` in the metamodel's terms: ``True`` or ``False``
+        when it allows or forbids extra data, its ``range_expression`` when that gives the
+        values extra data may take, or ``None`` when the class has no ``extra_slots``.
+
+        :meth:`._get_extra_for_class` reads this setting for the class and for each of its
+        ancestors. The metamodel does not pass ``extra_slots`` down to subclasses, but
+        Pydantic does pass a parent's ``model_config`` and ``__pydantic_extra__`` down, so
+        the generator compares the class's setting with its ancestors' to decide when the
+        class must state its own. The ancestors need the setting itself rather than a
+        generated slot, which is why this is a separate method.
+
+        This follows :meth:`.JsonSchemaGenerator.get_additional_properties`. ``allowed``
+        takes precedence over ``range_expression``, as the metamodel says that
+        ``allowed: false`` forbids extra data even beside a ``range_expression``. The
+        metamodel also treats an ``extra_slots`` with neither, such as ``extra_slots: {}``,
+        as forbidding extra data.
+        """
+        if not cls.extra_slots:
+            return None
+        elif cls.extra_slots.allowed is not None:
+            return cls.extra_slots.allowed
+        elif cls.extra_slots.range_expression:
+            return cls.extra_slots.range_expression
+        else:
+            return False
+
+    def _get_extra_for_class(self, cls: ClassDefinition) -> Literal["allow", "forbid", "ignore"] | SlotResult | None:
+        """
+        Translate the class's ``extra_slots`` into the ``extra`` setting of Pydantic's ``ConfigDict``.
+
+        The metamodel says whether a class allows extra data, and which values that data
+        may take. Pydantic's ``extra`` setting takes ``"allow"``, ``"forbid"`` or ``"ignore"``
+        instead, so ``allowed: true`` becomes ``"allow"`` and ``allowed: false`` becomes
+        ``"forbid"``. A ``range_expression`` becomes a :class:`.SlotResult` whose attribute
+        types Pydantic's ``__pydantic_extra__``, so that :meth:`.generate_class` can merge
+        its imports.
+
+        A class without ``extra_slots`` follows the generator-wide :attr:`.extra_fields`,
+        as in :class:`.JsonSchemaGenerator`, even when an ancestor has ``extra_slots``.
+        Pydantic would carry the ancestor's setting into the subclass, so the class
+        states the default again in that case.
+
+        Returns ``None`` if the class does not override the generator-wide default,
+        so the inherited base-model configuration is used.
+        """
+        setting = self._extra_slots_setting(cls)
+        if isinstance(setting, AnonymousSlotExpression):
+            return self.generate_slot(setting, cls)
+
+        ancestors = self.schemaview.class_ancestors(cls.name, mixins=self.gen_mixin_inheritance, reflexive=False)
+        ancestor_settings = [self._extra_slots_setting(self.schemaview.get_class(ancestor)) for ancestor in ancestors]
+        typed_ancestor = any(isinstance(a, AnonymousSlotExpression) for a in ancestor_settings)
+        if setting is None:
+            ancestors_extra = {"allow" if a else "forbid" for a in ancestor_settings if isinstance(a, bool)}
+            if not typed_ancestor and ancestors_extra <= {self.extra_fields}:
+                return None
+            extra = self.extra_fields
+        else:
+            extra = "allow" if setting else "forbid"
+        if extra == "allow" and typed_ancestor:
+            # An ancestor's typed __pydantic_extra__ would still limit the extra values,
+            # so this class accepts values of any type, as an empty expression does.
+            return SlotResult(
+                attribute=PydanticAttribute(name="__anonymous__", range="Any", as_annotated=True),
+                source=AnonymousSlotExpression(),
+            )
+        return extra
+
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         # Handle union_of classes by creating a type alias instead of a class
         if cls.union_of:
             return self._generate_union_class(cls)
 
         class_python_name = self._get_class_python_name(cls.name)
+        extra = self._get_extra_for_class(cls)
+        typed_extra = isinstance(extra, SlotResult)
         pyclass = PydanticClass(
             name=class_python_name,
             bases=self.class_bases.get(class_python_name, PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
+            # Pydantic keeps typed extra values only when extra data is allowed.
+            extra="allow" if typed_extra else extra,
+            pydantic_extra=extra.attribute if typed_extra else None,
         )
 
         imports = self._get_imports(cls) if self.split else None
 
         result = ClassResult(cls=pyclass, source=cls, imports=imports)
+        if typed_extra:
+            # Brings in the imports for any class that types the extra data.
+            result = result.merge(extra)
 
         # Gather slots
         slots = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
@@ -565,31 +656,43 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         return result
 
-    def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
+    def generate_slot(self, slot: SlotDefinition | AnonymousSlotExpression, cls: ClassDefinition) -> SlotResult:
+        """
+        Generate the template representation of a slot.
+
+        If slot is a SlotDefinition, renders as a pydantic field,
+        if an AnonymousSlotExpression, renders as an annotated type.
+        """
         slot_args = {
             k: getattr(slot, k, None)
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
         slot_args["empty_list_for_multivalued_slots"] = self.empty_list_for_multivalued_slots
-        slot_alias = slot.alias if slot.alias else slot.name
 
-        # Create a valid Python identifier for the field name
-        python_field_name = make_valid_python_identifier(underscore(slot_alias))
-        slot_args["name"] = python_field_name
-
-        # If the original name is different from the Python identifier, set an alias
-        if slot_alias != python_field_name:
-            slot_args["alias"] = slot_alias
+        if isinstance(slot, AnonymousSlotExpression):
+            slot_args["name"] = "__anonymous__"
+            slot_args["as_annotated"] = True
         else:
-            # Remove any existing alias if the names are the same
-            if "alias" in slot_args:
-                del slot_args["alias"]
+            slot_alias = slot.alias if slot.alias else slot.name
+
+            # Create a valid Python identifier for the field name
+            python_field_name = make_valid_python_identifier(underscore(slot_alias))
+            slot_args["name"] = python_field_name
+
+            # If the original name is different from the Python identifier, set an alias
+            if slot_alias != python_field_name:
+                slot_args["alias"] = slot_alias
+            else:
+                # Remove any existing alias if the names are the same
+                if "alias" in slot_args:
+                    del slot_args["alias"]
+
+            predef = self.predefined_slot_values.get(self._get_class_python_name(cls.name), {}).get(slot.name, None)
+            if predef is not None:
+                slot_args["predefined"] = str(predef)
 
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(self._get_class_python_name(cls.name), {}).get(slot.name, None)
-        if predef is not None:
-            slot_args["predefined"] = str(predef)
 
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
@@ -650,8 +753,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     result.attribute.range = f"dict[str, {simple_dict_value}]"
                 else:
                     result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
-        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
+
+        if isinstance(slot, AnonymousSlotExpression):
+            if not slot.required:
+                result.attribute.range = f"Optional[{result.attribute.range}]"
+        elif not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
+
         return result
 
     @property
@@ -807,7 +915,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         sv = self.schemaview
 
-        if slot_def.designates_type:
+        if getattr(slot_def, "designates_type", False):
             pyrange = (
                 "Literal["
                 + ",".join(['"' + x + '"' for x in get_accepted_type_designator_values(sv, slot_def, class_def)])
@@ -819,7 +927,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
         elif (
             self.expand_subproperty_of
-            and slot_def.subproperty_of
+            and getattr(slot_def, "subproperty_of", False)
             and slot_range not in sv.all_classes()
             and slot_range not in sv.all_enums()
         ):
@@ -1019,7 +1127,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         model.meta = meta
         return model
 
-    def _get_imports(self, element: ClassDefinition | SlotDefinition | None = None) -> Imports:
+    def _get_imports(
+        self, element: ClassDefinition | SlotDefinition | AnonymousSlotExpression | None = None
+    ) -> Imports:
         """
         Get imports that are implied by their usage in slots or classes
         (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
@@ -1036,8 +1146,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         where we will need to revise our expectations of what is imported when.
 
         Args:
-            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` , None): The element
-                to get import for. If ``None`` , get all needed imports (see :attr:`.split_mode`
+            element (:class:`.ClassDefinition` , :class:`.SlotDefinition` ,
+                :class:`.AnonymousSlotExpression` , None): The element to get imports for.
+                If ``None`` , get all needed imports (see :attr:`.split_mode` )
         """
         # import from local references, rather than serializing every class in every file
         if not self.split or (self.split_mode == SplitMode.FULL and element is not None):
@@ -1060,7 +1171,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if element.mixins:
                 needed_classes.extend(element.mixins)
 
-        elif isinstance(element, SlotDefinition):
+        elif isinstance(element, SlotDefinition | AnonymousSlotExpression):
             # collapses `slot.range`, `slot.any_of`, and `slot.one_of` to a list
             slot_ranges = self.schemaview.slot_range_as_union(element)
             needed_classes.extend([a_range for a_range in slot_ranges if a_range in all_classes])
@@ -1070,7 +1181,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             needed_classes.extend([cls for cls in all_classes if cls not in local_classes])
 
         else:
-            raise ValueError(f"Unsupported type of element to get imports from: f{type(element)}")
+            raise ValueError(f"Unsupported type of element to get imports from: {type(element)}")
 
         # SPECIAL CASE: classes that are not generated for structural reasons.
         # TODO: Do we want to have a general means of skipping class generation?
@@ -1371,7 +1482,7 @@ Available templates to override:
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
     default="forbid",
-    help="How to handle extra fields in BaseModel.",
+    help="How to handle extra fields in BaseModel (default for all classes; per-class overrides via extra_slots).",
 )
 @click.option(
     "--black",
