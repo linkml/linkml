@@ -704,7 +704,7 @@
 
 <span class="s2"># Enumerations</span>
 <span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enumerations</span><span class="p">()</span><span class="si">}</span>
-
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_post_enum_references</span><span class="p">()</span><span class="si">}</span>
 <span class="s2"># Slots</span>
 <span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_slotdefs</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
 
@@ -863,22 +863,41 @@
 <span class="sd">            class AnnotationTagPid(ThingPid):   # ThingPid must be defined first</span>
 <span class="sd">                pass</span>
 
-<span class="sd">        Order matters: because ``_sort_classes`` puts every data class after its parent,</span>
-<span class="sd">        but is ignorant about wrapper-class inheritance, so wrappers can still come out</span>
-<span class="sd">        in the wrong order, causing a ``NameError`` on import.</span>
+<span class="sd">        Order matters: &quot;_sort_classes&quot; puts every data class after its parent</span>
+<span class="sd">        but is ignorant of wrapper-class inheritance, so wrappers can still come</span>
+<span class="sd">        out in the wrong order, causing a ``NameError`` on import. Collection</span>
+<span class="sd">        (:meth:`_collect_references`) and dependency-ordered emission</span>
+<span class="sd">        (:meth:`_render_references`) keep parents ahead of their children.</span>
 
-<span class="sd">        Approach: collect first, then emit in dependency order</span>
-<span class="sd">        -------------------------------------------------</span>
-<span class="sd">        1. Walk classes in sorted order and record each wrapper class plus its parent.</span>
-<span class="sd">        2. Before writing any wrapper, recursively write its parent first.</span>
-<span class="sd">           If the parent is an imported type (e.g. ``URIorCURIE``) it is already</span>
-<span class="sd">           available so stop immediately.</span>
+<span class="sd">        Wrappers whose ultimate base is an enum are deferred and emitted by</span>
+<span class="sd">        :meth:`gen_post_enum_references` after the Enumerations section, since</span>
+<span class="sd">        enum classes are defined later in the generated file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Step 1: record every wrapper class without writing anything yet.</span>
-        <span class="c1"># ref_info: name -&gt; (parent name, source line to emit)</span>
-        <span class="c1"># emit_order: original iteration order, used as sibling tie-breaker</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_references</span><span class="p">(</span><span class="n">enum_rooted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen_post_enum_references</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit class-reference wrappers whose ultimate base is an enum.</span>
+
+<span class="sd">        These must be emitted after the Enumerations section because the wrapper</span>
+<span class="sd">        &quot;class FooBar(BarEnum): pass&quot; requires &quot;BarEnum&quot; to already exist.</span>
+<span class="sd">        See :meth:`gen_references` for the general wrapper mechanism.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render_references</span><span class="p">(</span><span class="n">enum_rooted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_references</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Walk classes in sorted order and record each wrapper class plus its parent.</span>
+
+<span class="sd">        No output is written here; emission is deferred to :meth:`_render_references`</span>
+<span class="sd">        so that parents can be written before children.</span>
+
+<span class="sd">        :return: tuple of (ref_info, emit_order, enum_names) where</span>
+<span class="sd">            ref_info maps wrapper name -&gt; (parent name, source line to emit),</span>
+<span class="sd">            emit_order preserves discovery order, and</span>
+<span class="sd">            enum_names is the set of camelcased enum names defined in this schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ref_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">emit_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">enum_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">imported_from</span><span class="p">}</span>
 
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
@@ -903,29 +922,63 @@
                         <span class="n">emit_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">classname</span><span class="p">)</span>
                         <span class="k">break</span>  <span class="c1"># Only the first primary key matters.</span>
 
-        <span class="c1"># Step 2: write each wrapper only after its parent has been written.</span>
+        <span class="k">return</span> <span class="n">ref_info</span><span class="p">,</span> <span class="n">emit_order</span><span class="p">,</span> <span class="n">enum_names</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_render_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_rooted</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render wrappers collected by :meth:`_collect_references`, partitioned</span>
+<span class="sd">        by whether their root base is an enum.</span>
+
+<span class="sd">        Each wrapper is written only after its parent has been written. If the</span>
+<span class="sd">        parent is an imported type (e.g. URIorCURIE) or a locally-defined</span>
+<span class="sd">        enum it is already available and the recursion stops.</span>
+
+<span class="sd">        :param enum_rooted: when True, emit only wrappers whose transitive base is</span>
+<span class="sd">            a locally-defined enum; when False, emit all other wrappers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ref_info</span><span class="p">,</span> <span class="n">emit_order</span><span class="p">,</span> <span class="n">enum_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_references</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_root_base</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Walk parent chain to find the ultimate (non-wrapper) base name.&quot;&quot;&quot;</span>
+            <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">while</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">ref_info</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">ref_info</span><span class="p">[</span><span class="n">current</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">current</span>
+
         <span class="n">emitted</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">in_progress</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">rval</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_emit</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">emitted</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ref_info</span><span class="p">:</span>
-                <span class="k">return</span>  <span class="c1"># Already written, or imported type — nothing to do.</span>
+                <span class="k">return</span>  <span class="c1"># Already written, or imported/enum type - nothing to do.</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">in_progress</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cyclic wrapper inheritance at </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">in_progress</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">parent_cls</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">ref_info</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">_emit</span><span class="p">(</span><span class="n">parent_cls</span><span class="p">)</span>  <span class="c1"># Write the parent first.</span>
+                <span class="c1"># Treat parent as external (do not recurse) when it is an enum</span>
+                <span class="c1"># defined locally, even if a wrapper happens to share its name.</span>
+                <span class="k">if</span> <span class="n">parent_cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">enum_names</span><span class="p">:</span>
+                    <span class="n">_emit</span><span class="p">(</span><span class="n">parent_cls</span><span class="p">)</span>  <span class="c1"># Write the parent first.</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="n">in_progress</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">emitted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">rval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">emit_order</span><span class="p">:</span>
+            <span class="n">is_enum_rooted</span> <span class="o">=</span> <span class="n">_root_base</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">enum_names</span>
+            <span class="k">if</span> <span class="n">is_enum_rooted</span> <span class="o">!=</span> <span class="n">enum_rooted</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="n">_emit</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rval</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
+        <span class="c1"># When emitting post-enum wrappers, frame with surrounding blank lines so</span>
+        <span class="c1"># the section is separated from the Enumerations and Slots sections.</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">enum_rooted</span> <span class="k">else</span> <span class="n">body</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_typedefs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all defined types&quot;&quot;&quot;</span>
