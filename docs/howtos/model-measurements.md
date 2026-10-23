@@ -570,6 +570,61 @@ However, the use of strings means values must be parsed.
 
 ### QUDT
 
+[QUDT](https://qudt.org/) (Quantities, Units, Dimensions and Types) is an RDF vocabulary
+for units and quantity kinds. Every unit has an IRI (e.g. `unit:KiloGM`, `unit:M`) and
+links to a quantity kind (e.g. `quantitykind:Mass`) and a dimension vector, so
+conversion factors and dimensional consistency can be looked up rather than hard-coded.
+
+A measured value is a `qudt:QuantityValue` with a `qudt:numericValue` and a `qudt:unit`.
+This maps directly onto the *Flexible Unit Nested Measurement Pattern* above. Use
+`class_uri` and `slot_uri` to anchor it in QUDT:
+
+```yaml
+prefixes:
+  unit: http://qudt.org/vocab/unit/
+  quantitykind: http://qudt.org/vocab/quantitykind/
+
+classes:
+  Subject:
+    attributes:
+      id:
+        identifier: true
+      mass:
+        range: QuantityValue
+      height:
+        range: QuantityValue
+  QuantityValue:
+    class_uri: qudt:QuantityValue
+    attributes:
+      has_quantity_kind:
+        slot_uri: qudt:hasQuantityKind
+        range: uriorcurie
+      numeric_value:
+        slot_uri: qudt:numericValue
+        range: decimal
+      unit:
+        slot_uri: qudt:unit
+        range: uriorcurie
+```
+
+Example data in YAML/JSON:
+
+```yaml
+- id: P001
+  mass:
+    has_quantity_kind: quantitykind:Mass
+    numeric_value: 70.0
+    unit: unit:KiloGM
+  height:
+    has_quantity_kind: quantitykind:Height
+    numeric_value: 1.53
+    unit: unit:M
+```
+
+For the scalar patterns, where the unit is fixed in the schema, you can still point to QUDT
+from the [unit](https://w3id.org/linkml/unit) annotation, using `exact_mappings`
+(e.g. `exact_mappings: [unit:KiloGM]`) alongside `ucum_code`.
+
 ### OBI
 
 ![img](https://ddooley.github.io/assets/images/docs/data_john_bmi_vs.png)
@@ -607,10 +662,68 @@ Concepts:
 
 ![img](https://ars.els-cdn.com/content/image/1-s2.0-S1574954107000362-gr1.jpg)
 
+In OBOE the measurement is not attached to the subject directly. An `Observation` is
+`ofEntity` some entity and `hasMeasurement` one or more `Measurement`s. Each measurement
+is `ofCharacteristic` some characteristic, `usesStandard` some unit or scale, and `hasValue`
+some value. This puts per-measurement metadata (protocol, time, who measured it) on the
+observation, at the cost of an extra level of nesting compared to the
+*Generic Quantity Type Pattern*:
+
+```yaml
+prefixes:
+  oboe: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#
+
+classes:
+  Observation:
+    class_uri: oboe:Observation
+    attributes:
+      of_entity:
+        slot_uri: oboe:ofEntity
+        range: uriorcurie
+      has_measurement:
+        slot_uri: oboe:hasMeasurement
+        range: Measurement
+        multivalued: true
+        inlined_as_list: true
+  Measurement:
+    class_uri: oboe:Measurement
+    attributes:
+      of_characteristic:
+        slot_uri: oboe:ofCharacteristic
+        range: uriorcurie
+      uses_standard:
+        slot_uri: oboe:usesStandard
+        range: uriorcurie
+      has_value:
+        slot_uri: oboe:hasValue
+        range: decimal
+```
+
+Example data in YAML/JSON:
+
+```yaml
+- of_entity: P001
+  has_measurement:
+    - of_characteristic: PATO:0000125  ## mass
+      uses_standard: UO:0000009        ## kilogram
+      has_value: 70.0
+    - of_characteristic: PATO:0000119  ## height
+      uses_standard: UO:0000008        ## meter
+      has_value: 1.53
+```
+
 ### CF
+
+The [Climate and Forecast (CF) conventions](https://cfconventions.org/) are used for netCDF
+files in the earth sciences. Each variable carries a `units` attribute (a string parseable
+by [UDUNITS](https://www.unidata.ucar.edu/software/udunits/)) and a `standard_name` drawn
+from the CF Standard Name Table, which plays the role of the quantity kind. This is
+close to the *Simple Implicit Scalar Pattern*. The units are carried as metadata next to the
+data array, not in each value, so the file stays safe as long as variables and attributes travel together.
 
 
 ## Further Reading
 
+- Units and quantities tutorial, OBO Academy (similar patterns, aimed at the ontology community), https://oboacademy.github.io/obook/tutorial/units/
 - Measurement in Science, Stanford Encyclopedia of Philosophy, https://plato.stanford.edu/entries/measurement-science/
 - OBO Core Values, James Overton, https://docs.google.com/document/d/14qqp0M2dgefDFMvB4mmwpxrhoo4UGwd1KLZcoWCcqss/edit?usp=sharing
