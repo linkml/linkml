@@ -637,8 +637,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             else:
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                result.attribute.range = f"list[{result.attribute.range}]"
+                result.attribute.collection = "list"
             else:
+                result.attribute.collection = "dict"
+                result.attribute.collection_key = collection_key
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
@@ -646,12 +648,17 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
                     if simple_dict_value != result.attribute.range:
-                        simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
-                    result.attribute.range = f"dict[str, {simple_dict_value}]"
-                else:
-                    result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
+                        result.attribute.object_range = result.attribute.range
+                    result.attribute.range = simple_dict_value
+                    result.attribute.collection_key = "str"
+            if result.attribute.constrain_values:
+                annotated = Import(module="typing", objects=[ObjectImport(name="Annotated")])
+                result.imports = (result.imports if result.imports is not None else Imports()) + annotated
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            result.attribute.range = f"Optional[{result.attribute.range}]"
+            if slot.array is None:
+                result.attribute.optional = True
+            else:
+                result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
 
     @property

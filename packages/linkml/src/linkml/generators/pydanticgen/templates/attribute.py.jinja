@@ -1,12 +1,36 @@
-{{name}}: {{ range }} = Field(default={{ field }}
+{%- macro value_constraints() -%}
+{%- if equals_number != None -%}
+le={{equals_number}}, ge={{equals_number}}
+{%- else -%}
+{%- if minimum_value != None -%}ge={{minimum_value}}{%- endif -%}
+{%- if minimum_value != None and maximum_value != None -%}, {% endif -%}
+{%- if maximum_value != None -%}le={{maximum_value}}{%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+{%- if constrain_values -%}
+{%- set value_range = "Annotated[" ~ range ~ ", Field(" ~ value_constraints() ~ ")]" -%}
+{%- else -%}
+{%- set value_range = range -%}
+{%- endif -%}
+{%- if object_range -%}
+{%- set value_range = "Union[" ~ value_range ~ ", " ~ object_range ~ "]" -%}
+{%- endif -%}
+{%- if collection == "list" -%}
+{%- set annotation = "list[" ~ value_range ~ "]" -%}
+{%- elif collection == "dict" -%}
+{%- set annotation = "dict[" ~ collection_key ~ ", " ~ value_range ~ "]" -%}
+{%- else -%}
+{%- set annotation = value_range -%}
+{%- endif -%}
+{%- if optional -%}
+{%- set annotation = "Optional[" ~ annotation ~ "]" -%}
+{%- endif -%}
+{{name}}: {{ annotation }} = Field(default={{ field }}
 {%- if alias %}, alias="{{alias}}"{% endif -%}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
-{%- if equals_number != None %}
-    , le={{equals_number}}, ge={{equals_number}}
-{%- else -%}
-    {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
-    {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
+{%- if not constrain_values and (equals_number != None or minimum_value != None or maximum_value != None) -%}
+, {{ value_constraints() }}
 {%- endif -%}
 {%- if multivalued and exact_cardinality != None -%}
     , min_length={{exact_cardinality}}, max_length={{exact_cardinality}}
