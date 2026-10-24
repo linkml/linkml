@@ -36,7 +36,7 @@ def compare_python(expected: str, actual: str, expected_path: str | None = None)
     return msg
 
 
-def validate_python(text: str, fail_on_error: bool = False, expected_path: str = None) -> str | None:
+def validate_python(text: str, fail_on_error: bool = False, expected_path: str | None = None) -> str | None:
     """
     Validate the python in text
     :param text: Input python

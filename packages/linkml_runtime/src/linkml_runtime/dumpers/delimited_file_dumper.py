@@ -32,11 +32,11 @@ class DelimitedFileDumper(Dumper, ABC):
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView | None = None,
-        list_wrapper: str = None,
-        list_delimiter: str = None,
-        list_strip_whitespace: bool = None,
-        refuse_delimiter_in_data: bool = None,
-        boolean_output: str = None,
+        list_wrapper: str | None = None,
+        list_delimiter: str | None = None,
+        list_strip_whitespace: bool | None = None,
+        refuse_delimiter_in_data: bool | None = None,
+        boolean_output: str | None = None,
         **kwargs,
     ) -> str:
         """Return element formatted as CSV lines

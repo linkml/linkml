@@ -94,7 +94,7 @@ class RDFGenerator(Generator):
         fmt = "turtle" if self.format == "ttl" else self.format
         return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
-    def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
+    def end_schema(self, output: str | None = None, context: str | None = None, **_) -> str:
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],

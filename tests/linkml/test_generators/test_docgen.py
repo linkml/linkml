@@ -28,8 +28,8 @@ def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
 def assert_mdfile_contains(
     filename,
     text,
-    after: str = None,
-    followed_by: list[str] = None,
+    after: str | None = None,
+    followed_by: list[str] | None = None,
     invert=False,
 ) -> None:
     found = False

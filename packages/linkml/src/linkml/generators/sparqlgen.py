@@ -151,7 +151,7 @@ class SparqlGenerator(Generator):
         self.schema = self.schemaview.schema
         self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
-    def generate_sparql(self, named_graphs=None, limit: int = None):
+    def generate_sparql(self, named_graphs=None, limit: int | None = None):
         template_obj = Template(template)
         extra = ""
         if named_graphs is not None:
