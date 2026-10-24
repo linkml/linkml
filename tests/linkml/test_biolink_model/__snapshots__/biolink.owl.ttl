@@ -71,6 +71,19 @@
 @prefix CTD: <http://ctdbase.org/> .
 @prefix schema1: <http://schema.org/> .
 @prefix doi: <https://doi.org/> .
+dct:license a owl:AnnotationProperty .
+pav:version a owl:AnnotationProperty .
+skos:altLabel a owl:AnnotationProperty .
+skos:broadMatch a owl:AnnotationProperty .
+skos:closeMatch a owl:AnnotationProperty .
+skos:definition a owl:AnnotationProperty .
+skos:editorialNote a owl:AnnotationProperty .
+skos:exactMatch a owl:AnnotationProperty .
+skos:inScheme a owl:AnnotationProperty .
+skos:mappingRelation a owl:AnnotationProperty .
+skos:narrowMatch a owl:AnnotationProperty .
+skos:note a owl:AnnotationProperty .
+skos:relatedMatch a owl:AnnotationProperty .
 os:AllSomeInterpretation a owl:Class , biolink:LogicalInterpretationEnum ;
 	rdfs:label "all_some" ;
 	rdfs:subClassOf biolink:LogicalInterpretationEnum ;
@@ -2883,6 +2896,7 @@ biolink:can_be_carried_out_by a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:subPropertyOf biolink:actively_involves ;
 	owl:inverseOf biolink:capable_of ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> .
+biolink:canonical_predicate a owl:AnnotationProperty .
 biolink:capable_of a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain biolink:NamedThing ;
 	rdfs:label "capable of" ;
@@ -3202,6 +3216,7 @@ biolink:decreases_response_to a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:narrowMatch CTD:decreases_response_to_substance ;
 	biolink:canonical_predicate true ;
 	biolink:opposite_of "increases response to" .
+biolink:denormalized a owl:AnnotationProperty .
 biolink:deprecated a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "deprecated" ;
 	rdfs:range linkml:Boolean ;
@@ -5902,6 +5917,7 @@ biolink:xref a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:definition "A database cross reference or alternative identifier for a NamedThing or edge between two NamedThings.  This property should point to a database record or webpage that supports the existence of the edge, or gives more detail about the edge. This property can be used on a node or edge to provide multiple URIs or CURIE cross references." ;
 	skos:inScheme <https://w3id.org/biolink/biolink-model> ;
 	skos:narrowMatch gff3:Dbxref , gpi:DB_Xrefs .
+linkml:permissible_values a owl:AnnotationProperty .
 linkml:topValue a owl:DatatypeProperty ;
 	rdfs:label "value" .
 _:c14n0 a owl:Restriction ;

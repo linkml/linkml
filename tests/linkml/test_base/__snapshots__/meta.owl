@@ -19,6 +19,9 @@
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix vann1: <https://vocab.org/vann/> .
 @prefix schema1: <http://schema.org/> .
+dcterms:conformsTo a owl:AnnotationProperty .
+dcterms:license a owl:AnnotationProperty .
+dcterms:title a owl:AnnotationProperty .
 rdf:object a owl:Class , linkml:RelationalRoleEnum ;
 	rdfs:label "OBJECT" ;
 	rdfs:subClassOf linkml:RelationalRoleEnum ;
@@ -34,18 +37,27 @@ rdf:subject a owl:Class , linkml:RelationalRoleEnum ;
 	rdfs:subClassOf linkml:RelationalRoleEnum ;
 	skos:definition "a slot with this role connects a relationship to its subject/source node" ;
 	skos:exactMatch owl:annotatedSource .
+skos:altLabel a owl:AnnotationProperty .
 skos:broaderMatch a owl:Class , linkml:AliasPredicateEnum ;
 	rdfs:label "BROAD_SYNONYM" ;
 	rdfs:subClassOf linkml:AliasPredicateEnum .
-skos:exactMatch a owl:Class , linkml:AliasPredicateEnum ;
+skos:closeMatch a owl:AnnotationProperty .
+skos:definition a owl:AnnotationProperty .
+skos:editorialNote a owl:AnnotationProperty .
+skos:exactMatch a owl:AnnotationProperty , owl:Class , linkml:AliasPredicateEnum ;
 	rdfs:label "EXACT_SYNONYM" ;
 	rdfs:subClassOf linkml:AliasPredicateEnum .
+skos:inScheme a owl:AnnotationProperty .
+skos:mappingRelation a owl:AnnotationProperty .
 skos:narrowerMatch a owl:Class , linkml:AliasPredicateEnum ;
 	rdfs:label "NARROW_SYNONYM" ;
 	rdfs:subClassOf linkml:AliasPredicateEnum .
+skos:note a owl:AnnotationProperty .
+skos:prefLabel a owl:AnnotationProperty .
 skos:relatedMatch a owl:Class , linkml:AliasPredicateEnum ;
 	rdfs:label "RELATED_SYNONYM" ;
 	rdfs:subClassOf linkml:AliasPredicateEnum .
+sh:order a owl:AnnotationProperty .
 linkml:AliasPredicateEnum a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "alias_predicate_enum" ;
 	owl:unionOf _:c14n349 ;
@@ -1633,6 +1645,7 @@ linkml:shared a owl:ObjectProperty , linkml:SlotDefinition ;
 	skos:altLabel "inverse functional" , "many to one or many" ;
 	skos:definition "If True, then the relationship between the slot domain and range is many to one or many to many" ;
 	skos:inScheme linkml:meta .
+linkml:simple_dict_value a owl:AnnotationProperty .
 linkml:singular_name a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain linkml:SlotDefinition ;
 	rdfs:label "singular_name" ;

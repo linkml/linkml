@@ -22,6 +22,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.rdf_terms import TermKind, link_root, type_term
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -268,6 +269,8 @@ class RDFLibLoader(Loader):
                 )
             return o.value
         elif isinstance(o, BNode):
+            if self._range_term_kind(slot, schemaview) in (TermKind.BLANK_NODE, TermKind.BLANK_NODE_OR_IRI):
+                return f"_:{o}"
             if not is_inlined:
                 logger.error(f"blank nodes should be inlined; {slot_name}={o} in {subject}")
             return Pointer(o)
@@ -296,8 +299,11 @@ class RDFLibLoader(Loader):
                             v = pv.text
                             break
             elif TypeDefinition.class_name in range_applicable_elements:
-                if cast_literals:
-                    v = namespaces.curie_for(o)
+                range_kind = self._range_term_kind(slot, schemaview)
+                if cast_literals or (range_kind is not None and range_kind.is_node):
+                    # A uri value is a complete URI; values of other types may be written as CURIEs.
+                    keep_iri = range_kind is not None and link_root(schemaview, slot.range) == "uri"
+                    v = None if keep_iri else namespaces.curie_for(o)
                     if v is None:
                         v = str(o)
                     logger.debug(f"Casting {o} to string")
@@ -323,6 +329,13 @@ class RDFLibLoader(Loader):
             if id_slot is not None:
                 raise Exception(f"Unexpected blank node {node}, type {cn} expects {id_slot.name} identifier")
             return {}
+
+    @staticmethod
+    def _range_term_kind(slot: SlotDefinition, schemaview: SchemaView) -> TermKind | None:
+        """Return the RDF term kind of the slot's values if its range is a type, else ``None``."""
+        if slot.range in schemaview.all_types():
+            return type_term(schemaview, slot.range).kind
+        return None
 
     def _uri_to_id(self, node: VALID_SUBJECT, id_slot: SlotDefinition, schemaview: SchemaView) -> str:
         if schemaview.is_slot_percent_encoded(id_slot):

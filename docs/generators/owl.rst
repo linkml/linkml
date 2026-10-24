@@ -33,6 +33,9 @@ Mapping
 * Each LinkML slot maps to an OWL property
 
     - if the range of the slot is class, then an ObjectProperty is used
+    - an ObjectProperty is also used when the range is a type whose values are IRIs or blank
+      nodes: ``uri``, ``uriorcurie`` and the types derived from them, ``objectidentifier`` and
+      ``nodeidentifier`` (see :ref:`links-and-uri-references`)
     - otherwise DataProperty is used
     - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used;
       instead of having ranges of type be mapped to literals, these map to class-shadows of
@@ -66,6 +69,52 @@ Mapping
 
 
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
+
+Annotation values
+^^^^^^^^^^^^^^^^^
+
+Native metadata takes the RDF term of its metamodel range: ``see_also`` and ``source``
+values are IRIs, ``license`` and ``description`` values are strings, and ``created_on``
+is an ``xsd:dateTime`` literal. A link value that is neither an IRI nor a CURIE, such as
+a bare element name in ``see_also``, is written as a plain literal, with a warning. An annotation
+whose tag a metaclass declares through ``instantiates`` takes the term of that slot's
+range in the same way (see :ref:`annotations-in-rdf`); any other annotation value is a
+string.
+
+.. literalinclude:: ../examples/owl-dcmi-agent-annotations.yaml
+    :language: yaml
+
+The ontology header then carries ``dcterms:creator <https://orcid.org/0000-0002-1825-0097>``
+and ``dcterms:rights "Copyright 2026 The Example Team"``, and the two predicates are
+declared as annotation properties (see below).
+
+Annotation properties
+^^^^^^^^^^^^^^^^^^^^^
+
+A slot that ``implements`` ``owl:AnnotationProperty`` is an annotation property
+(`OWL 2 §5.5 <https://www.w3.org/TR/owl2-syntax/#Annotation_Properties>`__), and so is
+a slot whose property IRI is one of the nine built-in annotation properties, such as a
+slot with ``slot_uri: rdfs:label`` emitted with ``--no-use-native-uris``. An annotation
+property has no logical meaning (`§10.1 <https://www.w3.org/TR/owl2-syntax/#Annotations>`__),
+so the generator emits no class restriction for it: a class that uses the slot gets no
+``owl:allValuesFrom`` or cardinality axiom on it. Its domain, a datatype or class range
+and its super-properties are emitted as the annotation axioms of
+`§10.2 <https://www.w3.org/TR/owl2-syntax/#Annotation_Axioms>`__; a range that is a node
+type such as ``nodeidentifier`` gives no range axiom. Built-in annotation properties are
+not declared, as OWL 2 reserves them.
+
+An IRI is an annotation, an object or a data property, not two of these
+(`§5.8.1 <https://www.w3.org/TR/owl2-syntax/#Typing_Constraints_of_OWL_2_DL>`__), so a slot
+that implements two roles is an error, as is a logical use of an annotation property: an
+inverse or a property characteristic, a unique key, a type designator, or a condition in
+a rule or class expression. A super-property (``is_a`` or a mixin) must have the same
+role as its sub-property, since a sub-property axiom relates two annotation properties
+or two logical properties. Every other predicate the generator writes outside the
+reserved vocabulary, such as ``skos:definition`` and ``skos:inScheme`` for element
+metadata, is declared as an annotation property, as OWL 2 DL requires a declaration
+for each property (§5.8.1). Slots without the role keep their object or data property
+projection, also when a metaclass declares them; LinkML then puns the annotated element
+as an individual, as it does for all metadata.
 
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
