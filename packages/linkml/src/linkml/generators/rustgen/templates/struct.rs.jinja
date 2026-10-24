@@ -11,7 +11,7 @@ pub type AnyValue = Anything;
 {% if stubgen %}
 #[cfg_attr(feature = "stubgen", gen_stub_pyclass)]
 {% endif %}
-#[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]
+#[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all, from_py_object))]
 {% if generate_merge %}
 #[derive(Merge)]
 {% endif %}
@@ -52,8 +52,9 @@ impl<'py> IntoPyObject<'py> for Box<{{ name }}>
 }
 
 #[cfg(feature = "pyo3")]
-impl<'py> FromPyObject<'py> for Box<{{ name }}> {
-    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for Box<{{ name }}> {
+    type Error = PyErr;
+    fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
         if let Ok(val) = ob.extract::<{{ name }}>() {
             return Ok(Box::new(val));
         }
