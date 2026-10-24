@@ -646,19 +646,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
-                    # so we specify either that identifier or the range itself
-                    if simple_dict_value != result.attribute.range:
-                        result.attribute.object_range = result.attribute.range
-                    result.attribute.range = simple_dict_value
+                    # so the template accepts either that identifier or the range itself
+                    result.attribute.simple_dict_value = simple_dict_value
                     result.attribute.collection_key = "str"
-            if result.attribute.constrain_values:
+            if result.attribute.annotated_field:
                 annotated = Import(module="typing", objects=[ObjectImport(name="Annotated")])
                 result.imports = (result.imports if result.imports is not None else Imports()) + annotated
-        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            if slot.array is None:
-                result.attribute.optional = True
-            else:
-                result.attribute.range = f"Optional[{result.attribute.range}]"
+        if slot.designates_type:
+            # a type designator always holds its predefined value, so it is never rendered as Optional
+            result.attribute.required = True
         return result
 
     @property
