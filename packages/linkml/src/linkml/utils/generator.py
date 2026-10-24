@@ -809,6 +809,60 @@ class Generator(metaclass=abc.ABCMeta):
             slot = self.schema.slots[cast(SlotDefinitionName, slot)]
         return slot.alias if slot.alias else slot.name
 
+    def _curie(self, element: Element) -> str:
+        """Return the CURIE for a schema element using the generator's schema source.
+
+        SchemaView-based generators use their initialized view. SchemaLoader-based
+        generators may not have one, so construct a view from the schema source,
+        preserving relative-source, import-map, and base-directory handling.
+        """
+        if self.schemaview is not None:
+            schemaview = self.schemaview
+        else:
+            source = self.schema.source_file or self.schema
+            if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
+                source = str(Path(self.base_dir) / source)
+            schemaview = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
+        return schemaview.get_curie(element)
+
+    def serialized_slot_name(
+        self,
+        slot: SlotDefinition,
+        *,
+        use_curies: bool,
+        alias_name: str,
+        identifier_name: str | None = None,
+    ) -> str:
+        """Resolve the serialized property name for a slot.
+
+        This name is used for JSON-LD context terms, JSON Schema properties, and
+        Go JSON tags.
+
+        Identifier naming takes precedence over CURIE naming. A non-identifier
+        slot mapped to the expanded RDF ``type`` predicate is serialized under
+        its normalized alias, matching the JSON-LD keyword alias convention.
+        Other slots retain the calling generator's existing alias/CURIE policy.
+        """
+        if slot.identifier:
+            return identifier_name if identifier_name is not None else alias_name
+        if self.is_rdf_type_slot(slot):
+            return underscore(self.aliased_slot_name(slot))
+        if use_curies:
+            return self._curie(slot)
+        return alias_name
+
+    def is_rdf_type_slot(self, slot: SlotDefinition) -> bool:
+        """Return whether *slot* maps to RDF type, resolving prefixes first."""
+        if not slot.slot_uri:
+            return False
+        if self.schemaview is not None:
+            expanded_uri = self.schemaview.get_uri(slot, expand=True)
+        elif self.namespaces is not None:
+            expanded_uri = self.namespaces.uri_for(slot.slot_uri)
+        else:
+            expanded_uri = slot.slot_uri
+        return str(expanded_uri) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
     def class_or_type_for(self, name: str) -> Element | None:
         """
         Return the corresponding class or type for name
