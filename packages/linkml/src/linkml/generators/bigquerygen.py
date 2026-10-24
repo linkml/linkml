@@ -1,5 +1,6 @@
 import logging
 import os
+from contextvars import ContextVar, Token
 from dataclasses import dataclass
 
 import click
@@ -26,6 +27,7 @@ from linkml.generators.sqltablegen import (  # noqa: F401 — used in generate_d
 from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
+_INLINED_STRUCT_STACK: ContextVar[set[str] | None] = ContextVar("bigquery_inlined_struct_stack", default=None)
 
 # Module-level stubs so the file is importable without sqlalchemy-bigquery installed.
 _BQ_AVAILABLE = False
@@ -269,12 +271,33 @@ class BigQueryGenerator(SQLTableGenerator):
         return BQ_TYPEMAP.get(base, String())
 
     def _build_struct(self, class_name, sv):
-        """Build a STRUCT<...> type from the induced slots of class_name."""
+        """Build a STRUCT<...> type from the induced slots of class_name.
+
+        BigQuery RECORD types cannot nest directly on themselves (an infinite
+        STRUCT is not representable), so a slot whose class range is currently
+        being resolved — a self-referential inlined nest — collapses to a
+        STRING (the inlined object is stored as JSON).
+        """
         _require_bq()
-        fields = {}
-        for slot in sv.class_induced_slots(class_name):
-            fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv)
-        return STRUCT(**fields)
+        stack = _INLINED_STRUCT_STACK.get()
+        token: Token[set[str] | None] | None = None
+        if stack is None:
+            stack = set()
+            token = _INLINED_STRUCT_STACK.set(stack)
+        if class_name in stack:
+            return String()
+        stack.add(class_name)
+        try:
+            fields = {}
+            for slot in sv.class_induced_slots(class_name):
+                # Dispatch through the public method without private recursion arguments so
+                # subclasses overriding the historical get_sql_range signature remain valid.
+                fields[slot.name.replace(" ", "_")] = self.get_sql_range(slot, sv=sv)
+            return STRUCT(**fields)
+        finally:
+            stack.discard(class_name)
+            if token is not None:
+                _INLINED_STRUCT_STACK.reset(token)
 
     def _resolve_type_override(self, type_str):
         """Return the BQ SQLAlchemy type for a bigquery_type annotation value."""
