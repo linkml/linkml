@@ -1427,10 +1427,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if lax_key in defs:
                 continue
             cls = self.before_generate_class(classes[key], self.schemaview)
-            lax_cls = deepcopy(self._class_subschema(cls))
+            # A subschema built for this copy alone, so it needs no deepcopy. The required list
+            # is replaced rather than edited, in case a class hook shares it with another subschema.
+            lax_cls = self._class_subschema(cls)
+            # Titled by its key, as add_def titles the definition it is a copy of.
             lax_cls.setdefault("title", key)
             if identifier_name in lax_cls.get("required", []):
-                lax_cls["required"].remove(identifier_name)
+                lax_cls["required"] = [name for name in lax_cls["required"] if name != identifier_name]
             defs[lax_key] = lax_cls
 
     def _rewrite_external_refs(self) -> None:
