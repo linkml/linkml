@@ -86,6 +86,25 @@ def test_directory_arg_scoped_per_generator_not_globally_stripped(kitchen_sink_p
     assert captured["directory"] == "passthrough-value"
 
 
+def test_projectgen_writes_split_json_schema_documents(input_path, tmp_path):
+    """With ``split`` in generator_args, gen-project writes the document of every module, named after its URI."""
+    config = ProjectConfiguration()
+    config.directory = tmp_path
+    config.includes = ["jsonschema"]
+    config.generator_args["jsonschema"] = {
+        "split": True,
+        "split_pattern": "https://example.org/meta/{{ schema.name }}.schema.json",
+    }
+    ProjectGenerator().generate(input_path("jsonschema_split/core.yaml"), config)
+
+    assert sorted(p.name for p in (tmp_path / "jsonschema").iterdir()) == [
+        "control.schema.json",
+        "core.schema.json",
+        "units.schema.json",
+        "vendor.schema.json",
+    ]
+
+
 def test_projectgen_java_default_package_without_config(kitchen_sink_path, tmp_path):
     """Without generator_args for java, the normal package precedence (schema annotation, then
     the `example` default) still applies via gen-project, unaffected by the constructor/serialize

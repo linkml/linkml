@@ -472,6 +472,12 @@ variables for the template. Before writing anything, both check that each file
 name is a plain name on every platform, that no two modules share a file, and
 that every ``$ref`` between the documents names a definition.
 
+In ``gen-project``, ``split: true`` under ``generator_args`` for ``jsonschema``
+writes the document of every module to ``jsonschema/``, named after its URI. A
+``split_pattern`` such as
+``https://example.org/meta/{{ schema.name }}.schema.json`` keeps the file
+names that ``gen-project`` gives without split.
+
 A validator resolves the references between documents by ``$id``. With the
 ``referencing`` library that ``jsonschema`` uses, register each document under
 its ``$id`` and validate against the root document:
