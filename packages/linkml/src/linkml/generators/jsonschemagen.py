@@ -4,7 +4,7 @@ import logging
 import os
 import posixpath
 import re
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -170,6 +170,34 @@ def _relative_ref_base(target: str, base: str) -> str:
     ):
         return name
     return target
+
+
+# Keywords whose values map names to subschemas, so a key there is a name, not a keyword.
+_SUBSCHEMA_MAP_KEYWORDS = frozenset({"$defs", "dependentSchemas", "patternProperties", "properties"})
+# Keywords whose values are instances, which can look like subschemas without being any.
+_INSTANCE_KEYWORDS = frozenset({"const", "default", "enum", "examples"})
+
+
+def _subschemas_with_ref(schema: Any) -> Iterator[dict]:
+    """Every subschema of *schema* that has a ``$ref``, leaving out instances such as ``examples``.
+
+    Examples:
+        >>> schema = {"properties": {"examples": {"$ref": "#/$defs/A"}}, "examples": [{"$ref": "#/$defs/B"}]}
+        >>> [subschema["$ref"] for subschema in _subschemas_with_ref(schema)]
+        ['#/$defs/A']
+    """
+    if isinstance(schema, list):
+        for item in schema:
+            yield from _subschemas_with_ref(item)
+    elif isinstance(schema, dict):
+        if isinstance(schema.get("$ref"), str):
+            yield schema
+        for keyword, value in schema.items():
+            if keyword in _SUBSCHEMA_MAP_KEYWORDS and isinstance(value, dict):
+                for subschema in value.values():
+                    yield from _subschemas_with_ref(subschema)
+            elif keyword not in _INSTANCE_KEYWORDS:
+                yield from _subschemas_with_ref(value)
 
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
@@ -1354,7 +1382,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         """Point each ``$ref`` to an element of another module at that module's document.
 
         The ``$ref`` becomes the other document's URI, relative where it can be (see
-        :func:`_relative_ref_base`), followed by the same ``#/$defs/`` pointer.
+        :func:`_relative_ref_base`), followed by the same ``#/$defs/`` pointer. A
+        ``$ref`` inside instance data, such as an example, is left as it is.
         """
         local_prefix = "#/$defs/"
         local_keys = set(self.top_level_schema.get("$defs", {}))
@@ -1365,22 +1394,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         schemas_by_id = {s.id: s for s in self.schemaview.all_schema()}
         own_uri = self.module_uri(self.schema)
 
-        def rewrite(node: Any) -> None:
-            if isinstance(node, dict):
-                ref = node.get("$ref")
-                if isinstance(ref, str) and ref.startswith(local_prefix) and ref[len(local_prefix) :] not in local_keys:
-                    key = ref[len(local_prefix) :]
-                    if key not in elements:
-                        raise ValueError(f"{ref} in {own_uri} names no class or enum of the schema or its imports")
-                    target_uri = self.module_uri(schemas_by_id[elements[key].from_schema])
-                    node["$ref"] = f"{_relative_ref_base(target_uri, own_uri)}{local_prefix}{key}"
-                for value in node.values():
-                    rewrite(value)
-            elif isinstance(node, list):
-                for value in node:
-                    rewrite(value)
-
-        rewrite(self.top_level_schema)
+        for subschema in _subschemas_with_ref(self.top_level_schema):
+            ref = subschema["$ref"]
+            key = ref.removeprefix(local_prefix)
+            if not ref.startswith(local_prefix) or key in local_keys:
+                continue
+            if key not in elements:
+                raise ValueError(f"{ref} in {own_uri} names no class or enum of the schema or its imports")
+            target_uri = self.module_uri(schemas_by_id[elements[key].from_schema])
+            subschema["$ref"] = f"{_relative_ref_base(target_uri, own_uri)}{local_prefix}{key}"
 
     def generate(self) -> JsonSchema:
         self._apply_naming()

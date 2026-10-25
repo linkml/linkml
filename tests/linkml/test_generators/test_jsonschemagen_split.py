@@ -22,6 +22,51 @@ VALID_ARCHITECTURE = {
 }
 
 
+# Small modules for cases the fixtures in input/jsonschema_split/ leave out, written to tmp_path.
+UNITS_MODULE = """
+id: https://example.org/spec/units
+name: units
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+enums:
+  TimeUnit:
+    permissible_values:
+      day:
+      week:
+"""
+
+EXAMPLES_MODULE = """
+id: https://example.org/spec/core
+name: core
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - units
+default_range: string
+classes:
+  Pattern:
+    tree_root: true
+    examples:
+      - object:
+          body:
+            $ref: "#/$defs/TimeUnit"
+          other:
+            $ref: "#/$defs/Unknown"
+    attributes:
+      body:
+        range: Anything
+      other:
+        range: Anything
+      examples:
+        range: TimeUnit
+  Anything:
+    class_uri: linkml:Any
+"""
+
+
 @pytest.fixture
 def core(input_path) -> str:
     return input_path("jsonschema_split/core.yaml")
@@ -138,6 +183,16 @@ def test_split_with_def_name_style(core):
         "evidence__identifier_optional",
     }
     assert generated["$defs"]["node"]["properties"]["check_interval"]["anyOf"][0] == {"$ref": "units#/$defs/time-unit"}
+
+
+def test_split_leaves_instance_data_alone(tmp_path):
+    """A ``$ref`` inside an example is data and stays as written; a property named ``examples`` is rewritten."""
+    (tmp_path / "units.yaml").write_text(UNITS_MODULE)
+    (tmp_path / "core.yaml").write_text(EXAMPLES_MODULE)
+    pattern = json.loads(JsonSchemaGenerator(str(tmp_path / "core.yaml"), split=True).serialize())["$defs"]["Pattern"]
+
+    assert pattern["examples"] == [{"body": {"$ref": "#/$defs/TimeUnit"}, "other": {"$ref": "#/$defs/Unknown"}}]
+    assert pattern["properties"]["examples"]["anyOf"][0] == {"$ref": "units#/$defs/TimeUnit"}
 
 
 def test_generate_split_writes_one_file_per_module(core, tmp_path):
