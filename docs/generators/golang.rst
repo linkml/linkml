@@ -63,9 +63,11 @@ project-wide ``config.yaml`` can be shared between them. ``package`` lives under
       golang:
         package: mypackage
 
-``gen-golang`` only ever reads ``generator_args.golang.package`` out of this file --
-every other key is ignored, so a full multi-generator project ``config.yaml`` can be
-passed as-is without modification.
+``gen-golang`` reads only the ``generator_args.golang`` section of this file, so a full
+multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-golang`` option
+can be set there, under its name with each dash written as an underscore. Options given
+on the command line take precedence. A key that is not an option gets a warning and is
+ignored.
 
 Deprecation note
 ----------------
