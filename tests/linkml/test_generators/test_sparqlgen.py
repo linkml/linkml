@@ -124,5 +124,4 @@ def test_sparqlgen_no_mergeimports_skips_imported_classes(tmp_path):
     gen = SparqlGenerator(str(main), mergeimports=False)
     gen.serialize(directory=str(out_dir))
 
-    out_dir.mkdir(exist_ok=True)
     assert list(out_dir.glob("*.rq")) == []
