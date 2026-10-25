@@ -10,7 +10,7 @@ import jsonschema
 import pytest
 from referencing import Registry, Resource
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator, _relative_ref_base
+from linkml.generators.jsonschemagen import JsonSchemaGenerator, _check_cross_document_refs, _relative_ref_base
 
 pytestmark = pytest.mark.jsonschemagen
 
@@ -346,6 +346,57 @@ def test_generate_split_with_default_pattern_validates(core, tmp_path):
     assert _validator(documents, "https://example.org/spec/core").is_valid(VALID_ARCHITECTURE)
 
 
-def test_generate_split_rejects_two_modules_in_one_file(core, tmp_path):
+@pytest.mark.parametrize(
+    "split_pattern",
+    ["https://example.org/{{ 'same' }}", "https://example.org/{{ 'Same' if schema.name == 'core' else 'same' }}"],
+)
+def test_generate_split_rejects_two_modules_in_one_file(core, tmp_path, split_pattern):
+    """Two modules may not share a file, nor two files differ in case alone; nothing is written then."""
     with pytest.raises(ValueError, match="would both be written to same.json"):
-        JsonSchemaGenerator.generate_split(core, tmp_path, split_pattern="https://example.org/{{ 'same' }}")
+        JsonSchemaGenerator.generate_split(core, tmp_path, split_pattern=split_pattern)
+    assert not any(tmp_path.iterdir())
+
+
+def test_generate_split_rejects_two_modules_of_one_name_in_one_file(tmp_path):
+    """Two modules that share a name but not an ``id`` still may not share a file."""
+    for folder, enum in (("a", "TimeUnit"), ("b", "SizeUnit")):
+        (tmp_path / folder).mkdir()
+        (tmp_path / folder / "units.yaml").write_text(
+            UNITS_MODULE.replace("spec/units", f"spec/{folder}/units").replace("TimeUnit", enum)
+        )
+    (tmp_path / "core.yaml").write_text(
+        URN_CORE_MODULE.replace("urn:example:core", "https://example.org/spec/core").replace(
+            "  - units\n", "  - a/units\n  - b/units\n"
+        )
+    )
+    with pytest.raises(ValueError, match="Modules units and units would both be written to units.json"):
+        JsonSchemaGenerator.generate_split(str(tmp_path / "core.yaml"), tmp_path / "out")
+    assert not (tmp_path / "out").exists()
+
+
+@pytest.mark.parametrize(
+    "split_pattern",
+    [
+        "https://example.org/{{ schema.name }}\\..\\..\\outside",
+        "https://example.org/C:{{ schema.name }}",
+        "urn:example:{{ schema.name }}",
+    ],
+)
+def test_generate_split_rejects_file_names_that_are_not_plain(core, tmp_path, split_pattern):
+    """A module URI cannot name a file outside the output directory, or one that some platforms cannot hold."""
+    with pytest.raises(ValueError, match="not a plain file name"):
+        JsonSchemaGenerator.generate_split(core, tmp_path, split_pattern=split_pattern)
+    assert not any(tmp_path.iterdir())
+
+
+def test_check_cross_document_refs():
+    """A ``$ref`` into another of the generated documents must name one of its definitions."""
+    documents = {
+        "https://example.org/spec/core": {"properties": {"every": {"$ref": "units#/$defs/Missing"}}},
+        "https://example.org/spec/units": {"$defs": {"TimeUnit": {}}},
+    }
+    with pytest.raises(ValueError, match=r"units#/\$defs/Missing in https://example.org/spec/core names no definition"):
+        _check_cross_document_refs(documents)
+
+    documents["https://example.org/spec/core"]["properties"]["every"]["$ref"] = "units#/$defs/TimeUnit"
+    _check_cross_document_refs(documents)

@@ -7,9 +7,9 @@ import re
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, cast
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urldefrag, urljoin, urlsplit
 
 import click
 from jinja2 import Template
@@ -196,6 +196,48 @@ def _subschemas_with_ref(schema: Any) -> Iterator[dict]:
                     yield from _subschemas_with_ref(subschema)
             elif keyword not in _INSTANCE_KEYWORDS:
                 yield from _subschemas_with_ref(value)
+
+
+def _split_file_name(uri: str, module_name: str) -> str:
+    """The name of the file that :meth:`.JsonSchemaGenerator.generate_split` writes the document at *uri* to.
+
+    It is the last path segment of *uri*, with ``.json`` added when the segment does
+    not end in it. It must be a plain file name on every platform, so that a module's
+    ``id`` cannot place a file outside the output directory.
+
+    Examples:
+        >>> _split_file_name("https://example.org/spec/core", "core")
+        'core.json'
+        >>> _split_file_name("https://example.org/meta/core.json", "core")
+        'core.json'
+    """
+    file_name = posixpath.basename(urlsplit(uri).path.rstrip("/"))
+    if not file_name:
+        raise ValueError(f"The URI {uri!r} of module {module_name} has no last path segment to name a file")
+    if not file_name.endswith(".json"):
+        file_name += ".json"
+    # A backslash or a drive letter makes a path on Windows, and a colon names a stream.
+    if ":" in file_name or PureWindowsPath(file_name).name != file_name:
+        raise ValueError(
+            f"The URI {uri!r} of module {module_name} gives {file_name!r}, which is not a plain file name "
+            "on every platform; choose a split_pattern whose last path segment is one"
+        )
+    return file_name
+
+
+def _check_cross_document_refs(documents: dict[str, dict]) -> None:
+    """Raise if a ``$ref`` from one of *documents* into another names no definition of it.
+
+    *documents* maps the ``$id`` of each document to the document. References to other
+    documents than these are left alone.
+    """
+    for uri, document in documents.items():
+        for subschema in _subschemas_with_ref(document):
+            target, pointer = urldefrag(urljoin(uri, subschema["$ref"]))
+            if target == uri or target not in documents or not pointer.startswith("/$defs/"):
+                continue
+            if pointer.removeprefix("/$defs/") not in documents[target].get("$defs", {}):
+                raise ValueError(f"{subschema['$ref']} in {uri} names no definition of {target}")
 
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
@@ -1489,7 +1531,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             The documents written, the starting schema's first
 
         Raises:
-            ValueError: if two modules would be written to the same file
+            ValueError: if two modules would be written to the same file, if a URI does
+                not give a plain file name, or if a ``$ref`` from one document names no
+                definition of the other. Nothing is written then.
         """
         output_dir = Path(output_dir)
         gen_kwargs = {**kwargs, "split": True, "split_context": split_context}
@@ -1505,28 +1549,26 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if module is not main_schema and (module.classes or module.enums)
         ]
 
-        results = []
-        written: dict[str, str] = {}
-        output_dir.mkdir(parents=True, exist_ok=True)
+        # Name every file before generating any document, and generate and check every
+        # document before writing any, so that an error leaves nothing behind.
+        planned = []
+        modules_by_file: dict[str, str] = {}
         for generator in generators:
             uri = generator.module_uri(generator.schema)
-            file_name = posixpath.basename(urlsplit(uri).path.rstrip("/"))
-            if not file_name:
+            file_name = _split_file_name(uri, generator.schema.name)
+            # Case-insensitive, as on the default file systems of macOS and Windows.
+            file_key = file_name.casefold()
+            if file_key in modules_by_file:
                 raise ValueError(
-                    f"The URI {uri!r} of module {generator.schema.name} has no last path segment to name a file"
+                    f"Modules {modules_by_file[file_key]} and {generator.schema.name} would both be written to "
+                    f"{file_name}; choose a split_pattern that gives each module a distinct last path segment"
                 )
-            if not file_name.endswith(".json"):
-                file_name += ".json"
-            if file_name in written:
-                raise ValueError(
-                    f"Modules {written[file_name]} and {generator.schema.name} would both be written to {file_name}; "
-                    "choose a split_pattern that gives each module a distinct last path segment"
-                )
-            written[file_name] = generator.schema.name
+            modules_by_file[file_key] = generator.schema.name
+            planned.append((generator, uri, output_dir / file_name))
 
+        results = []
+        for generator, uri, path in planned:
             document = generator.generate()
-            path = output_dir / file_name
-            path.write_text(generator._serialize_document(document), encoding="utf-8")
             results.append(
                 SplitResult(
                     source=generator.schema,
@@ -1536,6 +1578,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     uri=uri,
                 )
             )
+        _check_cross_document_refs({result.uri: result.schema_ for result in results})
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for (generator, _, _), result in zip(planned, results):
+            result.path.write_text(generator._serialize_document(result.schema_), encoding="utf-8")
         return results
 
 

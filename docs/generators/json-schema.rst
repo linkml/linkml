@@ -467,7 +467,9 @@ its URI:
 Without ``--output-directory``, ``--split`` prints the input module's
 document only. From Python, ``JsonSchemaGenerator.generate_split`` writes the
 documents and also accepts ``split_context``, a dictionary of further
-variables for the template.
+variables for the template. Before writing anything, both check that each file
+name is a plain name on every platform, that no two modules share a file, and
+that every ``$ref`` between the documents names a definition.
 
 A validator resolves the references between documents by ``$id``. With the
 ``referencing`` library that ``jsonschema`` uses, register each document under
