@@ -1405,6 +1405,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             for e in [*self.schemaview.all_enums().values(), *self.schemaview.all_classes().values()]
         }
         schemas_by_id = {s.id: s for s in self.schemaview.all_schema()}
+        # Rendered once per module: compiling the template for every $ref is slow.
+        uris = {schema_id: self.module_uri(schema) for schema_id, schema in schemas_by_id.items()}
         own_uri = self.module_uri(self.schema)
 
         for subschema in _subschemas_with_ref(self.top_level_schema):
@@ -1414,7 +1416,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 continue
             if key not in elements:
                 raise ValueError(f"{ref} in {own_uri} names no class or enum of the schema or its imports")
-            target_uri = self.module_uri(schemas_by_id[elements[key].from_schema])
+            target_uri = uris[elements[key].from_schema]
             subschema["$ref"] = f"{_relative_ref_base(target_uri, own_uri)}{local_prefix}{key}"
 
     def generate(self) -> JsonSchema:
