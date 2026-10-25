@@ -14,5 +14,8 @@ class {{ name }}(str{% if values %}, Enum{% endif %}):
         {% endif %}
     {% endfor %}
 {% else %}
-    pass
+{# A bare str_schema() would return a plain str; the after-validator turns it into an instance of this class. #}
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler) -> core_schema.CoreSchema:
+        return core_schema.no_info_after_validator_function(cls, handler(str))
 {% endif %}
