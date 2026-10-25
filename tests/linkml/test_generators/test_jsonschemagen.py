@@ -25,6 +25,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders import yaml_loader
 from tests.linkml.test_generators.test_pythongen import make_python
+from tests.linkml.utils.jsonschema_refs import all_refs
 
 logger = logging.getLogger(__name__)
 
@@ -2193,15 +2194,6 @@ enums:
 """
 
 
-def _refs(node) -> list[str]:
-    """Every ``$ref`` value in a generated document."""
-    if isinstance(node, dict):
-        return [v for k, v in node.items() if k == "$ref"] + [r for v in node.values() for r in _refs(v)]
-    if isinstance(node, list):
-        return [r for v in node for r in _refs(v)]
-    return []
-
-
 @pytest.mark.parametrize(
     "style,expected",
     [
@@ -2220,7 +2212,7 @@ def test_def_name_style_keys_and_refs_agree(tmp_path, style, expected):
 
     lax_key = expected[0] + JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX
     assert sorted(generated["$defs"]) == sorted(expected + [lax_key])
-    refs = _refs(generated)
+    refs = all_refs(generated)
     assert f"#/$defs/{lax_key}" in refs
     for ref in refs:
         assert ref.removeprefix("#/$defs/") in generated["$defs"]
@@ -2264,7 +2256,7 @@ def test_def_name_style_with_use_curies(tmp_path, style, enum_keys):
     generated = json.loads(JsonSchemaGenerator(str(schema_file), use_curies=True, def_name_style=style).serialize())
 
     assert {"ex:ControlDetail", "ex:ControlRequirement", "ex:NodeInterface"} | enum_keys <= set(generated["$defs"])
-    for ref in _refs(generated):
+    for ref in all_refs(generated):
         assert ref.removeprefix("#/$defs/") in generated["$defs"]
 
 
