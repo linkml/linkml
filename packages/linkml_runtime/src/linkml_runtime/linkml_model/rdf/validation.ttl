@@ -10,6 +10,7 @@ linkml:ValidationReport a linkml:ClassDefinition ;
 	skos:exactMatch "sh:ValidationReport"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/reporting"^^xsd:anyURI ;
 	linkml:attributes linkml:results ;
+	linkml:class_uri "https://w3id.org/shacl/ValidationReport"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/reportValidationReport"^^xsd:anyURI ;
 	linkml:description "A report object" ;
 	linkml:slot_usage _:c14n2 ;
@@ -18,6 +19,7 @@ linkml:ValidationReport a linkml:ClassDefinition ;
 linkml:ValidationResult a linkml:ClassDefinition ;
 	skos:exactMatch "sh:ValidationResult"^^xsd:anyURI ;
 	skos:inScheme "https://w3id.org/linkml/reporting"^^xsd:anyURI ;
+	linkml:class_uri "https://w3id.org/shacl/ValidationResult"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/reportValidationResult"^^xsd:anyURI ;
 	linkml:description "An individual result arising from validation of a data instance using a particular rule" ;
 	linkml:slot_usage _:c14n7 ;
@@ -222,10 +224,10 @@ linkml:reporting dcterms:license "https://creativecommons.org/publicdomain/zero/
 	linkml:enums linkml:problem_type , linkml:severity_options ;
 	linkml:id "https://w3id.org/linkml/reporting"^^xsd:anyURI ;
 	linkml:imports "linkml:types"^^xsd:anyURI ;
-	linkml:metamodel_version "1.11.0" ;
+	linkml:metamodel_version "1.12.0" ;
 	linkml:slots linkml:info , linkml:instantiates , linkml:node_source , linkml:object , linkml:object_str , linkml:predicate , linkml:severity , linkml:subject , linkml:type , linkml:validationReport__results ;
 	linkml:source_file "validation.yaml" ;
-	linkml:source_file_date "2026-09-16T16:32:44"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
 	linkml:source_file_size 2959 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:results a linkml:SlotDefinition ;

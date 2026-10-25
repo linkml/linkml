@@ -521,6 +521,27 @@ def test_cli_config_file_typed_option_is_converted(tmp_path):
     assert_file_contains(out_dir / "Thing.java", "public class Thing", after="package org.example")
 
 
+@pytest.mark.parametrize("via_config", [False, True])
+def test_cli_missing_template_file_is_a_usage_error(tmp_path, via_config):
+    """A --template-file that doesn't exist is reported like a missing --template-dir: a
+    usage error naming the option, not a FileNotFoundError traceback. A config-file value
+    goes through the same click type, so it is checked the same way."""
+    schema_path = _write_minimal_schema(tmp_path / "pkg.yaml")
+    missing = tmp_path / "missing.jinja2"
+    if via_config:
+        config_path = tmp_path / "myconfig.yaml"
+        config_path.write_text(f"generator_args:\n  java:\n    template_file: {missing}\n")
+        extra = ["--config-file", str(config_path)]
+    else:
+        extra = ["--template-file", str(missing)]
+
+    result = CliRunner().invoke(cli, [*extra, "--output-directory", str(tmp_path / "out"), str(schema_path)])
+
+    assert result.exit_code == 2
+    assert "--template-file" in result.output
+    assert "does not exist" in result.output
+
+
 def test_cli_config_file_unknown_key_is_warned_not_injected(tmp_path, caplog):
     """A key click never exposes (`version`, from --version) is a config typo: warn and
     skip it, rather than passing a kwarg the generator's __init__ would reject."""

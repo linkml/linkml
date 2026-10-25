@@ -614,6 +614,7 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--template-variant", help="Use the specified template variant")
 @click.option(
     "--template-file",
+    type=click.Path(exists=True, dir_okay=False),
     help="""Optional jinja2 template to use for class generation
             (takes precedence over --template-dir)""",
 )

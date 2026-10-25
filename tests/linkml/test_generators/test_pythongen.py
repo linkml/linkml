@@ -524,6 +524,45 @@ def test_slot_aliases_imported_only_when_needed():
     assert "slot_aliases" in PythonGenerator(_KEYWORD_SLOT_SCHEMA.format(kw="from")).serialize()
 
 
+@pytest.mark.parametrize("inlined_as_list", [False, True])
+def test_multivalued_inlined_primitive_range(inlined_as_list):
+    """A multivalued slot with ``inlined: true`` and a primitive range must not crash.
+
+    Inlining is only meaningful for class-typed ranges; for primitive ranges
+    (e.g. ``string``) it has no effect. Previously pythongen unconditionally did
+    ``self.schema.classes[slot.range]`` in the inlined branch, raising
+    ``KeyError: 'string'``.
+
+    Regression test for https://github.com/linkml/linkml/issues/3564
+    (originally fixed in https://github.com/linkml/linkml/pull/3568).
+    """
+    yaml = f"""
+id: https://example.org/issue3564
+name: issue3564
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/issue3564/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  MyData:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      items:
+        multivalued: true
+        inlined: true
+        inlined_as_list: {str(inlined_as_list).lower()}
+"""
+    module = make_python(yaml)
+    obj = module.MyData(id="foo", items=["item #1", "item #2", "item #3"])
+    assert obj.items == ["item #1", "item #2", "item #3"]
+
+
 def test_permissible_values():
     """
     Test that permissible values are generated correctly
@@ -636,6 +675,7 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
     generator.schema = SimpleNamespace(
         classes={"a": class_a, "b": class_b},
         slots={"id": SlotDefinition(name="id", identifier=True, range="string")},
+        enums={},
     )
 
     monkeypatch.setattr(generator, "_sort_classes", lambda _classes: [class_a, class_b])
@@ -1156,3 +1196,218 @@ def test_exactly_one_of_ambiguous_matches_raises_distinct_message():
     py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
     with pytest.raises(ValueError, match="ambiguously matches"):
         py_module.Top(thing={"a": "hi"})
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for enum-ranged identifier slots.
+#
+# Tests for correct ordering and emission of class-reference wrappers for enum-rooted identifiers:
+# Ensures wrappers are defined after their referenced enum classes, compile without NameError,
+# and maintain correct dependency order in generated Python code.
+# ---------------------------------------------------------------------------
+
+
+_ENUM_ID_SCHEMA = """
+id: https://example.org/enum_id
+name: enum_id
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/enum_id/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  FIXDatatypeName:
+    permissible_values:
+      INT:
+      STRING:
+
+classes:
+  FIXDatatype:
+    attributes:
+      datatype_name:
+        range: FIXDatatypeName
+        identifier: true
+        required: true
+"""
+
+
+_ENUM_ID_SCHEMA_NAME_COLLISION = """
+id: https://example.org/bug_collision
+name: bug_collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/bug_collision/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  ColorName:
+    permissible_values:
+      RED:
+      GREEN:
+      BLUE:
+
+classes:
+  Color:
+    attributes:
+      name:
+        range: ColorName
+        identifier: true
+        required: true
+"""
+
+
+_ENUM_ID_SCHEMA_SUBCLASS = """
+id: https://example.org/enum_id_sub
+name: enum_id_sub
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/enum_id_sub/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  FIXDatatypeName:
+    permissible_values:
+      INT:
+      STRING:
+
+classes:
+  FIXDatatype:
+    attributes:
+      datatype_name:
+        range: FIXDatatypeName
+        identifier: true
+        required: true
+  IntDatatype:
+    is_a: FIXDatatype
+"""
+
+
+def _ref_class_positions(output: str) -> dict[str, int]:
+    """Return a mapping from wrapper class name to line number in ``output``."""
+    positions: dict[str, int] = {}
+    for lineno, line in enumerate(output.splitlines(), start=1):
+        match = re.match(r"^class (\w+)\((\w+)\):\s*$", line)
+        if match:
+            positions[match.group(1)] = lineno
+    return positions
+
+
+def test_enum_ranged_identifier_imports():
+    """Wrapper for an enum-ranged identifier must compile and import cleanly.
+
+    Regression test for the ``NameError: name 'FIXDatatypeName' is not defined``
+    raised by generated modules when an identifier slot ranged over an enum.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA).serialize())
+
+    # Must compile and expose both the enum and its wrapper.
+    module = compile_python(output)
+    assert hasattr(module, "FIXDatatypeName")
+    assert hasattr(module, "FIXDatatypeDatatypeName")
+    assert issubclass(module.FIXDatatypeDatatypeName, module.FIXDatatypeName)
+    # The enum's permissible values must still resolve through the wrapper's MRO.
+    assert module.FIXDatatypeName.INT.text == "INT"
+
+
+def test_enum_ranged_identifier_wrapper_after_enum():
+    """The wrapper class must be emitted after the enum it inherits from."""
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA).serialize())
+
+    positions = _ref_class_positions(output)
+    # Find the enum class declaration line.
+    enum_match = re.search(r"^class FIXDatatypeName\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    assert enum_match is not None, "enum class declaration not found"
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    assert "FIXDatatypeDatatypeName" in positions, "wrapper class not emitted"
+    assert positions["FIXDatatypeDatatypeName"] > enum_lineno, (
+        "wrapper class must appear after the enum it inherits from"
+    )
+
+
+def test_enum_ranged_identifier_name_collision():
+    """Wrapper whose name collides with the enum it inherits from must still import.
+
+    When ``class Color`` declares identifier ``name`` ranged on enum ``ColorName``,
+    the wrapper name (``Color`` + ``Name`` = ``ColorName``) collides with the enum
+    name. The generated code must still be valid Python.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA_NAME_COLLISION).serialize())
+
+    module = compile_python(output)
+    # Module-level ``ColorName`` is rebound by the wrapper subclass; verify it is
+    # still a subclass of the original enum and exposes its permissible values.
+    assert hasattr(module, "ColorName")
+    assert module.ColorName.RED.text == "RED"
+
+
+def test_enum_ranged_identifier_subclass_chain_ordering():
+    """An ``is_a`` chain whose identifier is enum-rooted must emit wrappers in order.
+
+    ``IntDatatype is_a FIXDatatype`` inherits the enum-ranged identifier, so
+    its wrapper ``IntDatatypeDatatypeName`` extends ``FIXDatatypeDatatypeName``,
+    which extends ``FIXDatatypeName``. All three must be defined in dependency
+    order, after the enum.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA_SUBCLASS).serialize())
+
+    module = compile_python(output)
+    assert issubclass(module.FIXDatatypeDatatypeName, module.FIXDatatypeName)
+    assert issubclass(module.IntDatatypeDatatypeName, module.FIXDatatypeDatatypeName)
+
+    positions = _ref_class_positions(output)
+    enum_match = re.search(r"^class FIXDatatypeName\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    assert enum_lineno < positions["FIXDatatypeDatatypeName"] < positions["IntDatatypeDatatypeName"]
+
+
+def test_non_enum_identifier_wrapper_emitted_before_enums():
+    """String-ranged identifier wrappers must still be emitted in the pre-enum section.
+
+    Guards against regression where deferring enum-rooted wrappers accidentally
+    deferred all wrappers.
+    """
+    yaml = """
+id: https://example.org/mixed
+name: mixed
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/mixed/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  ColorEnum:
+    permissible_values:
+      RED:
+
+classes:
+  Thing:
+    attributes:
+      pid:
+        identifier: true
+        required: true
+      color:
+        range: ColorEnum
+"""
+    output = str(PythonGenerator(yaml).serialize())
+
+    positions = _ref_class_positions(output)
+    enum_match = re.search(r"^class ColorEnum\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    # ``ThingPid`` is a string-ranged identifier — must appear BEFORE the enum.
+    assert "ThingPid" in positions
+    assert positions["ThingPid"] < enum_lineno
