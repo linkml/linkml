@@ -1458,7 +1458,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 continue
             if key not in elements:
                 raise ValueError(f"{ref} in {own_uri} names no class or enum of the schema or its imports")
-            target_uri = uris[elements[key].from_schema]
+            module_id = elements[key].from_schema
+            if module_id == self.schema.id:
+                # This module's own element, left out of $defs as by a hook, stays a local reference.
+                continue
+            target_uri = uris[module_id]
+            if target_uri == own_uri:
+                raise ValueError(
+                    f"split_pattern gives the modules {self.schema.name} and {schemas_by_id[module_id].name} "
+                    f"the same URI {own_uri}"
+                )
             subschema["$ref"] = f"{_relative_ref_base(target_uri, own_uri)}{local_prefix}{key}"
 
     def generate(self) -> JsonSchema:

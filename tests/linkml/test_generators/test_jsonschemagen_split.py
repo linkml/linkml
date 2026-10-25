@@ -261,6 +261,11 @@ def test_split_pattern_with_context(core):
     assert node["vendor"]["anyOf"][0] == {"$ref": "vendor.json#/$defs/VendorInfo"}
 
 
+def test_split_pattern_giving_two_modules_one_uri_raises(core):
+    with pytest.raises(ValueError, match="the same URI https://example.org/same.json"):
+        JsonSchemaGenerator(core, split=True, split_pattern="https://example.org/same.json").serialize()
+
+
 def test_split_with_def_name_style(core):
     """Definition keys follow ``def_name_style`` in every document and in every ``$ref`` between them."""
     generated = json.loads(JsonSchemaGenerator(core, split=True, def_name_style="kebab-case").serialize())
