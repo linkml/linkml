@@ -2303,3 +2303,13 @@ def test_def_name_style_collision_raises(tmp_path, style):
     assert {"HttpServer", "HTTPServer"} <= set(json.loads(JsonSchemaGenerator(str(schema_file)).serialize())["$defs"])
     with pytest.raises(ValueError, match=r"'HttpServer' and 'HTTPServer' would share the \$defs key"):
         JsonSchemaGenerator(str(schema_file), def_name_style=style).serialize()
+
+
+def test_def_name_style_survives_another_generator(tmp_path):
+    """Naming options apply when generating, so a generator constructed in between cannot change them."""
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
+    kebab = JsonSchemaGenerator(str(schema_file), def_name_style="kebab-case")
+    JsonSchemaGenerator(str(schema_file), preserve_names=True)
+
+    assert "control-detail" in json.loads(kebab.serialize())["$defs"]

@@ -585,16 +585,23 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         super().__post_init__()
 
-        # Set the class variable for JsonSchema to use
+        self._apply_naming()
+
+        if self.top_class:
+            if self.schemaview.get_class(self.top_class) is None:
+                logger.warning(f"No class in schema named {self.top_class}")
+
+    def _apply_naming(self) -> None:
+        """Set this generator's naming options on :class:`JsonSchema`, which reads them as class variables.
+
+        :meth:`generate` calls this again, so a generator constructed in between, with
+        other options, cannot change the names this one writes.
+        """
         JsonSchema.PRESERVE_NAMES = self.preserve_names
         # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
         # pre-converted to CURIEs, so they must not be camelcased again.
         JsonSchema.USE_CURIES = self.use_curies
         JsonSchema.DEF_NAME_STYLE = self.def_name_style or ("preserve" if self.preserve_names else "CamelCase")
-
-        if self.top_class:
-            if self.schemaview.get_class(self.top_class) is None:
-                logger.warning(f"No class in schema named {self.top_class}")
 
     def _names_match(self, a: str, b: str) -> bool:
         """Compare class names the way ``--top-class`` has always been matched.
@@ -1199,6 +1206,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return result.schema_
 
     def generate(self) -> JsonSchema:
+        self._apply_naming()
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
 
