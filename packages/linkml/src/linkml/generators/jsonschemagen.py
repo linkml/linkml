@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import re
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, cast
@@ -120,6 +121,22 @@ def style_def_name(name: str, style: str) -> str:
     if style == "kebab-case":
         return "-".join(word.lower() for word in words)
     raise ValueError(f"Unknown definition name style {style!r}; expected one of {list(DEF_NAME_STYLES)}")
+
+
+def _option_error(draft: str, def_name_style: str | None) -> str | None:
+    """The message for an unknown ``draft`` or ``def_name_style``, or ``None`` when both are known.
+
+    Examples:
+        >>> _option_error("2020-12", "kebab-case") is None
+        True
+        >>> _option_error("draft-07", None)
+        "Unknown JSON Schema draft 'draft-07'; expected one of ['2019-09', '2020-12']"
+    """
+    if draft not in JSON_SCHEMA_DRAFTS:
+        return f"Unknown JSON Schema draft {draft!r}; expected one of {list(JSON_SCHEMA_DRAFTS)}"
+    if def_name_style is not None and def_name_style not in DEF_NAME_STYLES:
+        return f"Unknown definition name style {def_name_style!r}; expected one of {list(DEF_NAME_STYLES)}"
+    return None
 
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
@@ -576,12 +593,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.materialize_patterns is not None:
             deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
 
-        if self.draft not in JSON_SCHEMA_DRAFTS:
-            raise ValueError(f"Unknown JSON Schema draft {self.draft!r}; expected one of {list(JSON_SCHEMA_DRAFTS)}")
-        if self.def_name_style is not None and self.def_name_style not in DEF_NAME_STYLES:
-            raise ValueError(
-                f"Unknown definition name style {self.def_name_style!r}; expected one of {list(DEF_NAME_STYLES)}"
-            )
+        if message := _option_error(self.draft, self.def_name_style):
+            raise ValueError(message)
 
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -594,6 +607,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Check ``draft`` and ``def_name_style``, so gen-project refuses an unknown value before generating."""
+        if message := _option_error(args.get("draft", cls.draft), args.get("def_name_style")):
+            raise click.UsageError(message)
 
     def _apply_naming(self) -> None:
         """Set this generator's naming options on :class:`JsonSchema`, which reads them as class variables.
