@@ -427,6 +427,63 @@ from the slot name or its ``alias``, under the rules of ``--preserve-names``. Un
 ``--use-curies``, class definitions are keyed by CURIE whatever the style.
 
 
+One document per module
+^^^^^^^^^^^^^^^^^^^^^^^
+
+By default the generator writes one document that covers the schema and
+everything it imports. With ``--split``, it writes one document per schema
+module instead, so the output follows the structure of the model. Published
+specifications are often a set of JSON Schema files that refer to each other,
+and a modular LinkML schema can reproduce that layout.
+
+In split mode:
+
+* each class and enum is written to the document of the module that defines it;
+* each document's ``$id`` is the module's URI, given by ``--split-pattern``,
+  which defaults to the module's ``id``;
+* a ``$ref`` to an element of another module points at that module's URI,
+  as a relative reference when both URIs share scheme, host and parent path
+  (``control.json#/$defs/ControlDetail``), and in full otherwise;
+* each document takes its root class from the module's own ``tree_root``;
+* a class from another module that is the range of a slot inlined as a
+  dictionary gets a private copy, without a required identifier, in the
+  referring document.
+
+``--split-pattern`` is a jinja template that is given each module's schema
+definition as ``schema``. ``--output-directory`` writes the document of every
+module that defines a class or an enum, named after the last path segment of
+its URI:
+
+.. code:: bash
+
+   gen-json-schema --split --draft 2020-12 \
+     --split-pattern 'https://example.org/release/1.3/meta/{{ schema.name }}.json' \
+     --output-directory meta/ \
+     core.yaml
+
+Without ``--output-directory``, ``--split`` prints the input module's
+document only. From Python, ``JsonSchemaGenerator.generate_split`` writes the
+documents and also accepts ``split_context``, a dictionary of further
+variables for the template.
+
+A validator resolves the references between documents by ``$id``. With the
+``referencing`` library that ``jsonschema`` uses, register each document under
+its ``$id`` and validate against the root document:
+
+.. code:: python
+
+   import json
+   from pathlib import Path
+
+   from jsonschema import Draft202012Validator
+   from referencing import Registry, Resource
+
+   documents = [json.loads(p.read_text()) for p in Path("meta").glob("*.json")]
+   registry = Registry().with_resources((d["$id"], Resource.from_contents(d)) for d in documents)
+   core = next(d for d in documents if d["$id"].endswith("/core.json"))
+   Draft202012Validator(core, registry=registry).validate(instance)
+
+
 Patterns
 ^^^^^^^^
 

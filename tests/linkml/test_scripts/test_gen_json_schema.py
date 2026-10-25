@@ -1,5 +1,6 @@
 import json
 import re
+from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
@@ -148,3 +149,41 @@ def test_def_name_style_option(input_path):
     defs = json.loads(result.output)["$defs"]
     assert defs
     assert all(key == key.lower() and "_" not in key for key in defs)
+
+
+SPLIT_CORE = str(Path(__file__).parents[1] / "test_generators" / "input" / "jsonschema_split" / "core.yaml")
+
+
+def test_split_option_prints_the_input_module():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--split", SPLIT_CORE])
+    assert result.exit_code == 0
+    generated = json.loads(result.output)
+    assert generated["$id"] == "https://example.org/spec/core"
+    assert "TimeUnit" not in generated["$defs"]
+
+
+def test_split_option_writes_every_module(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--split",
+            "--split-pattern",
+            "https://example.org/meta/{{ schema.name }}.json",
+            "--output-directory",
+            str(tmp_path),
+            SPLIT_CORE,
+        ],
+    )
+    assert result.exit_code == 0
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["control.json", "core.json", "units.json", "vendor.json"]
+    assert result.output.splitlines()[0] == str(tmp_path / "core.json")
+    assert json.loads((tmp_path / "units.json").read_text())["$id"] == "https://example.org/meta/units.json"
+
+
+def test_output_directory_requires_split(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--output-directory", str(tmp_path), SPLIT_CORE])
+    assert result.exit_code != 0
+    assert "--output-directory requires --split" in result.output

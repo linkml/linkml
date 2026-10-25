@@ -2,13 +2,17 @@ import ast
 import json
 import logging
 import os
+import posixpath
 import re
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, cast
+from urllib.parse import urlsplit
 
 import click
+from jinja2 import Template
 from jsonasobj2 import as_dict
 from pydantic import Field
 
@@ -38,6 +42,7 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValue,
     PermissibleValueText,
     PresenceEnum,
+    SchemaDefinition,
     SlotDefinition,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
@@ -137,6 +142,34 @@ def _option_error(draft: str, def_name_style: str | None) -> str | None:
     if def_name_style is not None and def_name_style not in DEF_NAME_STYLES:
         return f"Unknown definition name style {def_name_style!r}; expected one of {list(DEF_NAME_STYLES)}"
     return None
+
+
+def _relative_ref_base(target: str, base: str) -> str:
+    """The URI to write in a ``$ref`` from the document at *base* to the document at *target*.
+
+    When both URIs share scheme, authority and parent path, this is the relative
+    reference of RFC 3986, the last path segment of *target*, which resolves against
+    the referring document's ``$id``. Otherwise it is *target* itself.
+
+    Examples:
+        >>> _relative_ref_base("https://example.org/meta/control.json", "https://example.org/meta/core.json")
+        'control.json'
+        >>> _relative_ref_base("https://example.org/units", "https://example.org/meta/core.json")
+        'https://example.org/units'
+        >>> _relative_ref_base("http://example.org/meta/a.json", "https://example.org/meta/b.json")
+        'http://example.org/meta/a.json'
+    """
+    target_parts = urlsplit(target)
+    base_parts = urlsplit(base)
+    name = posixpath.basename(target_parts.path)
+    if (
+        name
+        and not target_parts.query
+        and (target_parts.scheme, target_parts.netloc) == (base_parts.scheme, base_parts.netloc)
+        and posixpath.dirname(target_parts.path) == posixpath.dirname(base_parts.path)
+    ):
+        return name
+    return target
 
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
@@ -452,6 +485,17 @@ class SchemaResult(build.SchemaResult):
     schema_: JsonSchema
 
 
+class SplitResult(SchemaResult):
+    """One document written by :meth:`.JsonSchemaGenerator.generate_split`"""
+
+    main: bool = False
+    """Whether this is the document of the schema the split started from"""
+    path: Path
+    """Where the document was written"""
+    uri: str
+    """The document's ``$id``"""
+
+
 class EnumResult(build.EnumResult):
     """A single built enum"""
 
@@ -590,6 +634,36 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     such as ``linkml-validate``, then check instances with the matching dialect.
     """
 
+    split: bool = False
+    """Generate the document of the input schema module alone, referring to elements of
+    imported modules by ``$ref`` to their own documents, instead of one document that
+    covers the whole import closure (default, ``False``).
+
+    In split mode an element is written to the document of the module that defines
+    it, as with :attr:`.PydanticGenerator.split`. :meth:`.generate_split` writes the
+    documents of every module in the import closure.
+    """
+
+    split_pattern: str = "{{ schema.id }}"
+    """In split mode, the URI of each module's document: a jinja template that is given
+    the module's ``SchemaDefinition`` as ``schema``, plus :attr:`split_context`.
+
+    The rendered URI is the document's ``$id``. A ``$ref`` to an element of another
+    module names that module's URI, as a relative reference when both URIs share
+    scheme, authority and parent path. :meth:`.generate_split` names each file after
+    the last path segment of the URI.
+
+    Examples:
+
+        ``"{{ schema.id }}"`` (the default) keeps each module's own ``id``.
+
+        ``"https://example.org/release/{{ version }}/{{ schema.name }}.json"`` with
+        ``split_context={"version": "1.3"}`` puts every module under one release.
+    """
+
+    split_context: dict | None = None
+    """Additional variables for :attr:`split_pattern`, passed in as ``**kwargs``."""
+
     def __post_init__(self):
         if self.materialize_patterns is not None:
             deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
@@ -643,7 +717,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         A schema may carry more than one ``tree_root`` (biolink-model does), so the
         first is taken; the point is that every use site agrees on which it is.
         """
-        classes = self.schemaview.all_classes().values()
+        # In split mode each module's document has its own root, among the module's own classes.
+        classes = self.schemaview.all_classes(imports=not self.split).values()
         if self.top_class:
             return next((c for c in classes if self._names_match(self.top_class, c.name)), None)
         return next((c for c in classes if c.tree_root), None)
@@ -674,7 +749,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         self.top_level_schema = JsonSchema(
             {
                 "$schema": JSON_SCHEMA_DRAFTS[self.draft],
-                "$id": self.schema.id,
+                "$id": self.module_uri(self.schema) if self.split else self.schema.id,
                 "metamodel_version": self.schema.metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
@@ -686,9 +761,29 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def _curie(self, element: Element) -> str:
         return self.schemaview.get_curie(element)
 
+    def module_uri(self, schema: SchemaDefinition) -> str:
+        """The URI of *schema*'s document in split mode, from :attr:`split_pattern`."""
+        return Template(self.split_pattern).render(schema=schema, **(self.split_context or {}))
+
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
+        class_subschema = self._class_subschema(cls)
 
+        if self.use_curies:
+            self.top_level_schema.add_def(self._curie(cls), class_subschema, True)
+        else:
+            self.top_level_schema.add_def(cls.name, class_subschema)
+
+        if self._is_root_class(cls):
+            for key, value in class_subschema.items():
+                # check this first to ensure we don't overwrite things like additionalProperties
+                # or description on the root. But we do want to copy over properties, required,
+                # if, then, etc.
+                if key not in self.top_level_schema:
+                    self.top_level_schema[key] = value
+
+    def _class_subschema(self, cls: ClassDefinition) -> JsonSchema:
+        """The subschema of *cls*, before it is added to ``$defs``."""
         subschema_type = "object"
         if self.is_class_unconstrained(cls):
             subschema_type = ["null", "boolean", "object", "number", "string"]
@@ -791,18 +886,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
 
-        if self.use_curies:
-            self.top_level_schema.add_def(self._curie(cls), class_subschema, True)
-        else:
-            self.top_level_schema.add_def(cls.name, class_subschema)
-
-        if self._is_root_class(cls):
-            for key, value in class_subschema.items():
-                # check this first to ensure we don't overwrite things like additionalProperties
-                # or description on the root. But we do want to copy over properties, required,
-                # if, then, etc.
-                if key not in self.top_level_schema:
-                    self.top_level_schema[key] = value
+        return class_subschema
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
@@ -1230,18 +1314,89 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             self.top_level_schema.add_def(name, top_def, preserve_name=True)
         return result.schema_
 
+    def _ref_key(self, element: ClassDefinition | EnumDefinition) -> str:
+        """The ``$defs`` key that a ``$ref`` to *element* names, as :meth:`JsonSchema.ref_for` writes it."""
+        if isinstance(element, ClassDefinition):
+            return self._curie(element) if self.use_curies else JsonSchema.def_key(element.name)
+        return JsonSchema.def_key(element.name)
+
+    def _materialise_external_lax_defs(self) -> None:
+        """Add a private copy, without a required identifier, of each class from another module
+        that this document uses as the range of a slot inlined as a dictionary.
+
+        The ``__identifier_optional`` variant of a class is written beside the class,
+        and in split mode that is another module's document. Copying it here keeps
+        every document self-contained apart from ``$ref`` to the elements themselves.
+        The class hooks of :class:`.LifecycleMixin` run for the copy, as they do for
+        the class in its own document.
+        """
+        classes = {self._ref_key(c): c for c in self.schemaview.all_classes().values()}
+        defs = self.top_level_schema.setdefault("$defs", {})
+        pending = self.top_level_schema._lax_forward_refs
+        while pending:
+            key, identifier_name = pending.popitem()
+            lax_key = key + JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX
+            if lax_key in defs:
+                continue
+            cls = self.before_generate_class(classes[key], self.schemaview)
+            lax_cls = deepcopy(self._class_subschema(cls))
+            lax_cls.setdefault("title", key)
+            if identifier_name in lax_cls.get("required", []):
+                lax_cls["required"].remove(identifier_name)
+            defs[lax_key] = lax_cls
+
+    def _rewrite_external_refs(self) -> None:
+        """Point each ``$ref`` to an element of another module at that module's document.
+
+        The ``$ref`` becomes the other document's URI, relative where it can be (see
+        :func:`_relative_ref_base`), followed by the same ``#/$defs/`` pointer.
+        """
+        local_prefix = "#/$defs/"
+        local_keys = set(self.top_level_schema.get("$defs", {}))
+        elements = {
+            self._ref_key(e): e
+            for e in [*self.schemaview.all_enums().values(), *self.schemaview.all_classes().values()]
+        }
+        schemas_by_id = {s.id: s for s in self.schemaview.all_schema()}
+        own_uri = self.module_uri(self.schema)
+
+        def rewrite(node: Any) -> None:
+            if isinstance(node, dict):
+                ref = node.get("$ref")
+                if isinstance(ref, str) and ref.startswith(local_prefix) and ref[len(local_prefix) :] not in local_keys:
+                    key = ref[len(local_prefix) :]
+                    if key not in elements:
+                        raise ValueError(f"{ref} in {own_uri} names no class or enum of the schema or its imports")
+                    target_uri = self.module_uri(schemas_by_id[elements[key].from_schema])
+                    node["$ref"] = f"{_relative_ref_base(target_uri, own_uri)}{local_prefix}{key}"
+                for value in node.values():
+                    rewrite(value)
+            elif isinstance(node, list):
+                for value in node:
+                    rewrite(value)
+
+        rewrite(self.top_level_schema)
+
     def generate(self) -> JsonSchema:
         self._apply_naming()
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
 
-        all_enums = self.before_generate_enums(self.schemaview.all_enums().values(), self.schemaview)
+        # In split mode only the module's own elements are generated; the rest are referenced.
+        imports = not self.split
+        all_enums = self.before_generate_enums(self.schemaview.all_enums(imports=imports).values(), self.schemaview)
         for enum_definition in all_enums:
             self.handle_enum(enum_definition)
 
-        all_classes = self.before_generate_classes(self.schemaview.all_classes().values(), self.schemaview)
+        all_classes = self.before_generate_classes(
+            self.schemaview.all_classes(imports=imports).values(), self.schemaview
+        )
         for class_definition in all_classes:
             self.handle_class(class_definition)
+
+        if self.split:
+            self._materialise_external_lax_defs()
+            self._rewrite_external_refs()
 
         self.top_level_schema = self.after_generate_schema(
             SchemaResult.model_construct(schema_=self.top_level_schema, source=self.schema), self.schemaview
@@ -1249,8 +1404,92 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
+        return self._serialize_document(self.generate())
+
+    def _serialize_document(self, document: JsonSchema) -> str:
+        result = document.to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
+
+    @classmethod
+    def generate_split(
+        cls,
+        schema: str | Path | SchemaDefinition,
+        output_dir: str | Path = Path("."),
+        split_pattern: str | None = None,
+        split_context: dict | None = None,
+        **kwargs,
+    ) -> list[SplitResult]:
+        """Write one JSON Schema document per module of *schema*'s import closure.
+
+        Every module that defines a class or an enum gets a document, generated in
+        :attr:`split` mode, with the URI from :attr:`split_pattern` as its ``$id``.
+        The file is named after the last path segment of that URI, with ``.json``
+        added when the segment does not end in it.
+
+        For example, with ``split_pattern`` set to
+        ``"https://example.org/meta/{{ schema.name }}.json"``, a schema ``core``
+        that imports ``control`` gives ``core.json`` and ``control.json`` in
+        *output_dir*, and a ``$ref`` in ``core.json`` to the class ``Control``
+        reads ``control.json#/$defs/Control``.
+
+        Args:
+            schema: The schema to start from
+            output_dir: Directory to write the documents to
+            split_pattern: Template for each module's URI, see :attr:`split_pattern`
+            split_context: Additional variables for ``split_pattern``
+            **kwargs: Passed to each generator
+
+        Returns:
+            The documents written, the starting schema's first
+
+        Raises:
+            ValueError: if two modules would be written to the same file
+        """
+        output_dir = Path(output_dir)
+        gen_kwargs = {**kwargs, "split": True, "split_context": split_context}
+        if split_pattern is not None:
+            gen_kwargs["split_pattern"] = split_pattern
+
+        main_generator = cls(schema, **gen_kwargs)
+        main_schema = main_generator.schemaview.schema
+        generators = [main_generator] + [
+            cls(deepcopy(module), **gen_kwargs)
+            for module in main_generator.schemaview.all_schema()
+            if module is not main_schema and (module.classes or module.enums)
+        ]
+
+        results = []
+        written: dict[str, str] = {}
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for generator in generators:
+            uri = generator.module_uri(generator.schema)
+            file_name = posixpath.basename(urlsplit(uri).path.rstrip("/"))
+            if not file_name:
+                raise ValueError(
+                    f"The URI {uri!r} of module {generator.schema.name} has no last path segment to name a file"
+                )
+            if not file_name.endswith(".json"):
+                file_name += ".json"
+            if file_name in written:
+                raise ValueError(
+                    f"Modules {written[file_name]} and {generator.schema.name} would both be written to {file_name}; "
+                    "choose a split_pattern that gives each module a distinct last path segment"
+                )
+            written[file_name] = generator.schema.name
+
+            document = generator.generate()
+            path = output_dir / file_name
+            path.write_text(generator._serialize_document(document), encoding="utf-8")
+            results.append(
+                SplitResult(
+                    source=generator.schema,
+                    schema_=document,
+                    main=generator is main_generator,
+                    path=path,
+                    uri=uri,
+                )
+            )
+        return results
 
 
 class ArrayRangeResult(RangeResult):
@@ -1496,9 +1735,34 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     show_default=True,
     help="JSON Schema dialect the document declares in $schema.",
 )
+@click.option(
+    "--split/--no-split",
+    default=False,
+    show_default=True,
+    help="Generate one document per schema module, each with its own $id, referring to elements of other "
+    "modules by $ref. Without --output-directory, print the input module's document only.",
+)
+@click.option(
+    "--split-pattern",
+    default="{{ schema.id }}",
+    show_default=True,
+    help="With --split, a jinja template over each module's schema definition giving the URI of its document, "
+    "used as its $id and as the target of $ref from other modules.",
+)
+@click.option(
+    "--output-directory",
+    type=click.Path(file_okay=False),
+    help="With --split, write the document of every module in the import closure to this directory.",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, **kwargs):
+def cli(yamlfile, output_directory=None, **kwargs):
     """Generate JSON Schema representation of a LinkML model"""
+    if output_directory:
+        if not kwargs.pop("split"):
+            raise click.UsageError("--output-directory requires --split")
+        for result in JsonSchemaGenerator.generate_split(yamlfile, output_directory, **kwargs):
+            print(result.path)
+        return
     print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 
