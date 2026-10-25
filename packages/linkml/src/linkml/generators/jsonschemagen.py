@@ -880,7 +880,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             base = schema_type.base.lower() if schema_type.base else ""
             (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
-            reference = slot.range
+            # Under --use-curies, ref_for keeps names as given, because class references
+            # arrive as CURIEs. Enums are keyed by name, so give the reference that key here.
+            reference = JsonSchema.def_key(slot.range) if self.use_curies else slot.range
         elif slot.range in self.schemaview.all_classes().keys():
             if slot_is_inlined:
                 descendants = [

@@ -2248,15 +2248,24 @@ def test_def_name_style_unset_follows_preserve_names(tmp_path, preserve_names, e
     assert unset == explicit
 
 
-def test_def_name_style_with_use_curies(tmp_path):
-    """Class definitions stay keyed by CURIE under ``use_curies``; enums take the style."""
+@pytest.mark.parametrize(
+    "style,enum_keys",
+    [(None, {"RateUnit", "IntervalKind"}), ("kebab-case", {"rate-unit", "interval-kind"})],
+)
+def test_def_name_style_with_use_curies(tmp_path, style, enum_keys):
+    """Class definitions stay keyed by CURIE under ``use_curies``; enums take the style, refs included."""
     schema_file = tmp_path / "def_name_style.yaml"
-    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
-    generated = json.loads(
-        JsonSchemaGenerator(str(schema_file), use_curies=True, def_name_style="kebab-case").serialize()
+    schema_file.write_text(
+        DEF_NAME_STYLE_SCHEMA.replace(
+            "        range: RateUnit\n", "        range: RateUnit\n      kind:\n        range: interval_kind\n"
+        )
+        + "  interval_kind:\n    permissible_values:\n      fixed:\n"
     )
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), use_curies=True, def_name_style=style).serialize())
 
-    assert {"ex:ControlDetail", "ex:ControlRequirement", "ex:NodeInterface", "rate-unit"} <= set(generated["$defs"])
+    assert {"ex:ControlDetail", "ex:ControlRequirement", "ex:NodeInterface"} | enum_keys <= set(generated["$defs"])
+    for ref in _refs(generated):
+        assert ref.removeprefix("#/$defs/") in generated["$defs"]
 
 
 def test_def_name_style_unknown_value_raises(tmp_path):
