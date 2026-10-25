@@ -20,4 +20,4 @@ Fixes #
 
 ## AI Assistance
 
-If you used AI tools while preparing this PR, you are still the author and responsible for understanding, verifying, and defending your submission. Please engage with reviewers personally rather than through your agent during feedback and revisions. See our [AI Covenant](AI_COVENANT.md) for details.
+If you used AI tools while preparing this PR, you are still the author and responsible for understanding, verifying, and defending your submission. Please engage with reviewers personally rather than through your agent during feedback and revisions. See our [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) for details.
