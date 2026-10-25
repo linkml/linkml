@@ -95,6 +95,24 @@ def test_split_root_class_is_the_modules_own(input_path):
     assert units["additionalProperties"] is True
 
 
+def test_generate_split_top_class_names_the_input_modules_root(core, tmp_path, caplog):
+    """``top_class`` sets the root of the input module's document; the others keep their own ``tree_root``."""
+    results = JsonSchemaGenerator.generate_split(core, tmp_path, top_class="Node")
+    by_file = {r.path.name: r.schema_ for r in results}
+
+    assert set(by_file["core.json"]["properties"]) == {"unique_id", "check_interval", "vendor", "note"}
+    assert by_file["control.json"]["required"] == ["name"]
+    assert "No class in schema named" not in caplog.text
+
+
+def test_split_top_class_from_another_module_warns(core, caplog):
+    """A ``top_class`` that another module defines leaves the input module's document without a root."""
+    generated = json.loads(JsonSchemaGenerator(core, split=True, top_class="ControlRequirement").serialize())
+
+    assert "properties" not in generated
+    assert "ControlRequirement is defined in an imported module" in caplog.text
+
+
 def test_split_pattern_with_context(core):
     """``split_pattern`` renders each module's URI, with ``split_context`` available to the template."""
     generated = json.loads(

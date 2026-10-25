@@ -682,6 +682,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
+            elif self.split and self._root_class() is None:
+                logger.warning(
+                    f"{self.top_class} is defined in an imported module, so in split mode "
+                    f"the document of {self.schema.name} has no root class"
+                )
 
     @classmethod
     def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
@@ -1432,12 +1437,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         *output_dir*, and a ``$ref`` in ``core.json`` to the class ``Control``
         reads ``control.json#/$defs/Control``.
 
+        ``top_class`` names the root of the starting schema's document. Every other
+        document takes its root from its module's own ``tree_root``.
+
         Args:
             schema: The schema to start from
             output_dir: Directory to write the documents to
             split_pattern: Template for each module's URI, see :attr:`split_pattern`
             split_context: Additional variables for ``split_pattern``
-            **kwargs: Passed to each generator
+            **kwargs: Passed to each generator, except ``top_class``, which only the
+                starting schema's generator is given
 
         Returns:
             The documents written, the starting schema's first
@@ -1452,8 +1461,9 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         main_generator = cls(schema, **gen_kwargs)
         main_schema = main_generator.schemaview.schema
+        module_kwargs = {key: value for key, value in gen_kwargs.items() if key not in ("top_class", "topClass")}
         generators = [main_generator] + [
-            cls(deepcopy(module), **gen_kwargs)
+            cls(deepcopy(module), **module_kwargs)
             for module in main_generator.schemaview.all_schema()
             if module is not main_schema and (module.classes or module.enums)
         ]
