@@ -286,7 +286,8 @@ class ProjectGenerator:
             logger.info(f"Generating: {gen_name}")
             if gen_config.generator is JsonSchemaGenerator and all_gen_args.get("split"):
                 # In split mode the JSON Schema generator writes the document of every module of
-                # the import closure itself, each named after its URI, so it runs once from the root.
+                # the import closure itself, each named after its URI, so gen-project runs it once,
+                # from the root schema.
                 split_args = {key: value for key, value in all_gen_args.items() if key != "split"}
                 JsonSchemaGenerator.generate_split(
                     schema_path, output_dir / Path(gen_config.path_fstring).parent, **split_args

@@ -453,7 +453,7 @@ In split mode:
   referring document.
 
 ``--split-pattern`` is a jinja template that is given each module's schema
-definition as ``schema``; without ``--split`` it has no effect, and the
+definition as ``schema``. Without ``--split`` it has no effect, and the
 generator warns. ``--output-directory`` writes the document of every
 module that defines a class or an enum, named after the last path segment of
 its URI:
@@ -468,9 +468,10 @@ its URI:
 Without ``--output-directory``, ``--split`` prints the input module's
 document only. From Python, ``JsonSchemaGenerator.generate_split`` writes the
 documents and also accepts ``split_context``, a dictionary of further
-variables for the template. Before writing anything, both check that each file
-name is a plain name on every platform, that no two modules share a file, and
-that every ``$ref`` between the documents names a definition.
+variables for the template. Before writing anything, ``--output-directory`` and
+``generate_split`` check that each file name is a plain name on every platform,
+that no two modules share a file, and that every ``$ref`` between the documents
+names a definition.
 
 In ``gen-project``, ``split: true`` under ``generator_args`` for ``jsonschema``
 writes the document of every module to ``jsonschema/``, named after its URI. A

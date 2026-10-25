@@ -1,6 +1,6 @@
 """Tests for the split mode of the JSON Schema generator: one document per schema module.
 
-The modules are in ``input/jsonschema_split/``; its README says what each one is for.
+The fixture modules are in ``input/jsonschema_split/``, whose README says what each one is for.
 """
 
 import json
@@ -11,6 +11,7 @@ import pytest
 from referencing import Registry, Resource
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator, _check_cross_document_refs, _relative_ref_base
+from tests.linkml.utils.jsonschema_refs import all_refs
 
 pytestmark = pytest.mark.jsonschemagen
 
@@ -22,7 +23,7 @@ VALID_ARCHITECTURE = {
 }
 
 
-# Small modules for cases the fixtures in input/jsonschema_split/ leave out, written to tmp_path.
+# Small modules for cases that the fixtures in input/jsonschema_split/ leave out. The tests write them to tmp_path.
 UNITS_MODULE = """
 id: https://example.org/spec/units
 name: units
@@ -128,17 +129,8 @@ def core(input_path) -> str:
     return input_path("jsonschema_split/core.yaml")
 
 
-def _refs(node) -> list[str]:
-    """Every ``$ref`` value in a generated document."""
-    if isinstance(node, dict):
-        return [v for k, v in node.items() if k == "$ref"] + [r for v in node.values() for r in _refs(v)]
-    if isinstance(node, list):
-        return [r for v in node for r in _refs(v)]
-    return []
-
-
 def _validator(documents: list[dict], root_id: str, validator_class=jsonschema.Draft201909Validator):
-    """A validator for the document *root_id* that resolves ``$ref`` across *documents* by ``$id``."""
+    """Return a validator for the document *root_id* that resolves ``$ref`` across *documents* by ``$id``."""
     registry = Registry().with_resources((doc["$id"], Resource.from_contents(doc)) for doc in documents)
     root = next(doc for doc in documents if doc["$id"] == root_id)
     return validator_class(root, registry=registry)
@@ -168,7 +160,7 @@ def test_split_refs_are_relative_under_the_same_parent(core):
     assert node["check_interval"]["anyOf"][0] == {"$ref": "units#/$defs/TimeUnit"}
     assert node["vendor"]["anyOf"][0] == {"$ref": "https://vendor.example.com/schemas/vendor#/$defs/VendorInfo"}
     assert generated["properties"]["nodes"]["items"] == {"$ref": "#/$defs/Node"}
-    for ref in _refs(generated):
+    for ref in all_refs(generated):
         if ref.startswith("#"):
             assert ref.removeprefix("#/$defs/") in generated["$defs"]
 
@@ -200,14 +192,14 @@ def test_split_refs_between_urns_are_absolute(tmp_path):
         for name in ("core", "units")
     ]
 
-    assert set(_refs(documents[0])) == {"urn:example:units#/$defs/TimeUnit"}
+    assert set(all_refs(documents[0])) == {"urn:example:units#/$defs/TimeUnit"}
     validator = _validator(documents, "urn:example:core")
     assert validator.is_valid({"every": "day"})
     assert not validator.is_valid({"every": "hour"})
 
 
 def test_split_off_keeps_one_document(core, caplog):
-    """Without ``split`` the document covers the import closure, and ``split_pattern`` is not used but warned about."""
+    """Without ``split`` the document covers the import closure. ``split_pattern`` is ignored, with a warning."""
     default = JsonSchemaGenerator(core).serialize()
     assert "apply only in split mode" not in caplog.text
     patterned = JsonSchemaGenerator(core, split_pattern=RELEASE_PATTERN, split_context={"version": "1"}).serialize()
@@ -217,7 +209,7 @@ def test_split_off_keeps_one_document(core, caplog):
     assert "split_pattern and split_context apply only in split mode" in caplog.text
     assert generated["$id"] == "https://example.org/spec/core"
     assert {"Architecture", "ControlDetail", "Evidence", "TimeUnit", "VendorInfo"} <= set(generated["$defs"])
-    assert all(ref.startswith("#/$defs/") for ref in _refs(generated))
+    assert all(ref.startswith("#/$defs/") for ref in all_refs(generated))
 
 
 def test_split_root_class_is_the_modules_own(input_path):
@@ -232,7 +224,7 @@ def test_split_root_class_is_the_modules_own(input_path):
 
 
 def test_generate_split_top_class_names_the_input_modules_root(core, tmp_path, caplog):
-    """``top_class`` sets the root of the input module's document; the others keep their own ``tree_root``."""
+    """``top_class`` sets the root of the input module's document. The other documents keep their own ``tree_root``."""
     results = JsonSchemaGenerator.generate_split(core, tmp_path, top_class="Node")
     by_file = {r.path.name: r.schema_ for r in results}
 
@@ -282,18 +274,18 @@ def test_split_with_def_name_style(core):
 
 
 def test_split_curies_use_the_defining_modules_prefixes(tmp_path):
-    """Under ``use_curies`` both documents key a class with the prefixes of the module that defines it."""
+    """Under ``use_curies``, both documents key a class with the prefixes of the module that defines it."""
     (tmp_path / "core.yaml").write_text(CURIES_CORE_MODULE)
     (tmp_path / "control.yaml").write_text(CURIES_CONTROL_MODULE)
     results = JsonSchemaGenerator.generate_split(str(tmp_path / "core.yaml"), tmp_path / "out", use_curies=True)
     core, control = (result.schema_ for result in results)
 
     assert "ctl:ControlDetail" in control["$defs"]
-    assert set(_refs(core)) == {"control#/$defs/ctl:ControlDetail"}
+    assert set(all_refs(core)) == {"control#/$defs/ctl:ControlDetail"}
 
 
 def test_split_leaves_instance_data_alone(tmp_path):
-    """A ``$ref`` inside an example is data and stays as written; a property named ``examples`` is rewritten."""
+    """A ``$ref`` inside an example is data and stays as written. One in a property named ``examples`` is rewritten."""
     (tmp_path / "units.yaml").write_text(UNITS_MODULE)
     (tmp_path / "core.yaml").write_text(EXAMPLES_MODULE)
     pattern = json.loads(JsonSchemaGenerator(str(tmp_path / "core.yaml"), split=True).serialize())["$defs"]["Pattern"]
@@ -303,7 +295,7 @@ def test_split_leaves_instance_data_alone(tmp_path):
 
 
 def test_generate_split_writes_one_file_per_module(core, tmp_path):
-    """Modules with a class or an enum get a file named after their URI; type-only modules get none."""
+    """Modules with a class or an enum get a file named after their URI. A module of types alone gets none."""
     results = JsonSchemaGenerator.generate_split(
         core, tmp_path, split_pattern=RELEASE_PATTERN, split_context={"version": "1.3"}
     )
@@ -339,7 +331,7 @@ def test_generate_split_documents_validate_together(core, tmp_path, draft, valid
 
 
 def test_generate_split_with_default_pattern_validates(core, tmp_path):
-    """With the default pattern the ``$id`` of each document is its module's ``id``."""
+    """With the default pattern, the ``$id`` of each document is its module's ``id``."""
     results = JsonSchemaGenerator.generate_split(core, tmp_path)
     documents = [r.schema_ for r in results]
 
@@ -358,7 +350,7 @@ def test_generate_split_with_default_pattern_validates(core, tmp_path):
     ["https://example.org/{{ 'same' }}", "https://example.org/{{ 'Same' if schema.name == 'core' else 'same' }}"],
 )
 def test_generate_split_rejects_two_modules_in_one_file(core, tmp_path, split_pattern):
-    """Two modules may not share a file, nor two files differ in case alone; nothing is written then."""
+    """Two modules may not share a file, nor may two file names differ in case alone. Nothing is written on error."""
     with pytest.raises(ValueError, match="would both be written to same.json"):
         JsonSchemaGenerator.generate_split(core, tmp_path, split_pattern=split_pattern)
     assert not any(tmp_path.iterdir())
