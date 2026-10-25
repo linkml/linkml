@@ -83,6 +83,45 @@ classes:
         range: TimeUnit
 """
 
+# Two modules that give the control namespace different prefix names.
+CURIES_CORE_MODULE = """
+id: https://example.org/spec/core
+name: core
+prefixes:
+  linkml: https://w3id.org/linkml/
+  core: https://example.org/spec/core/
+  c: https://example.org/spec/control/
+default_prefix: core
+imports:
+  - linkml:types
+  - control
+default_range: string
+classes:
+  Architecture:
+    tree_root: true
+    attributes:
+      detail:
+        range: ControlDetail
+        inlined: true
+"""
+
+CURIES_CONTROL_MODULE = """
+id: https://example.org/spec/control
+name: control
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ctl: https://example.org/spec/control/
+default_prefix: ctl
+imports:
+  - linkml:types
+default_range: string
+classes:
+  ControlDetail:
+    class_uri: https://example.org/spec/control/ControlDetail
+    attributes:
+      text:
+"""
+
 
 @pytest.fixture
 def core(input_path) -> str:
@@ -233,6 +272,17 @@ def test_split_with_def_name_style(core):
         "evidence__identifier_optional",
     }
     assert generated["$defs"]["node"]["properties"]["check_interval"]["anyOf"][0] == {"$ref": "units#/$defs/time-unit"}
+
+
+def test_split_curies_use_the_defining_modules_prefixes(tmp_path):
+    """Under ``use_curies`` both documents key a class with the prefixes of the module that defines it."""
+    (tmp_path / "core.yaml").write_text(CURIES_CORE_MODULE)
+    (tmp_path / "control.yaml").write_text(CURIES_CONTROL_MODULE)
+    results = JsonSchemaGenerator.generate_split(str(tmp_path / "core.yaml"), tmp_path / "out", use_curies=True)
+    core, control = (result.schema_ for result in results)
+
+    assert "ctl:ControlDetail" in control["$defs"]
+    assert set(_refs(core)) == {"control#/$defs/ctl:ControlDetail"}
 
 
 def test_split_leaves_instance_data_alone(tmp_path):

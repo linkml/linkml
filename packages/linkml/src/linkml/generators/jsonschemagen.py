@@ -790,6 +790,21 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
 
     def _curie(self, element: Element) -> str:
+        """The CURIE of *element*, which keys classes and names properties under ``use_curies``.
+
+        In split mode a full URI is shortened with the prefixes of the module that
+        defines the element, when one of them matches, so that the documents of every
+        module that uses the element give it the same CURIE. Otherwise the prefixes of
+        the whole import closure shorten it, and these differ between modules that name
+        one namespace differently.
+        """
+        if self.split:
+            uri = self.schemaview.get_uri(element)
+            module = next((s for s in self.schemaview.all_schema() if s.id == element.from_schema), None)
+            if "://" in uri and module is not None:
+                for prefix in sorted(module.prefixes.values(), key=lambda p: len(p.prefix_reference), reverse=True):
+                    if uri.startswith(prefix.prefix_reference) and uri != prefix.prefix_reference:
+                        return f"{prefix.prefix_prefix}:{uri.removeprefix(prefix.prefix_reference)}"
         return self.schemaview.get_curie(element)
 
     def module_uri(self, schema: SchemaDefinition) -> str:

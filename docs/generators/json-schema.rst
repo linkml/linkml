@@ -444,6 +444,8 @@ In split mode:
 * a ``$ref`` to an element of another module points at that module's URI,
   as a relative reference when both URIs share scheme, host and parent path
   (``control.json#/$defs/ControlDetail``), and in full otherwise;
+* under ``--use-curies``, a URI is shortened with the prefixes of the module
+  that defines the element, so every document gives the element the same key;
 * each document takes its root class from the module's own ``tree_root``,
   except that ``--top-class`` names the root of the input module's document;
 * a class from another module that is the range of a slot inlined as a
