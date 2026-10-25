@@ -8,6 +8,7 @@ from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import Any, ClassVar, TypeAlias, TypeVar
+from urllib.parse import urlparse
 
 import click
 import rdflib
@@ -358,6 +359,48 @@ class OwlSchemaGenerator(Generator):
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
         return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
 
+    def _default_namespace_iri(self, local_name: str) -> str:
+        """Place a bare name in the schema's default namespace.
+
+        This is how LinkML reads a bare class or slot name, and how
+        :meth:`add_metadata` already reads an annotation tag without a colon.
+
+        :param local_name: a name with no scheme or prefix, such as ``testing``
+        :return: the absolute IRI as a string
+        """
+        sv = self.schemaview
+        namespace = sv.schema.default_prefix
+        if namespace in sv.schema.prefixes:
+            namespace = sv.schema.prefixes[namespace].prefix_reference
+        return sv.expand_curie(namespace + local_name)
+
+    def _reference_iri(self, value: str, metaslot_name: str) -> URIRef:
+        """Turn the value of a ``uri`` or ``uriorcurie`` metaslot into an absolute IRI.
+
+        The method keeps a value with a scheme as it is, whether a full URI
+        such as ``https://...`` or a CURIE whose prefix is not declared, such
+        as ``foo:bar``. A bare value such as ``see_also: README`` has no
+        scheme, so rdflib would serialize it as the relative IRI ``<README>``.
+        That is not valid OWL without a base, and pyoxigraph and most OWL tools
+        reject it. The method places such a value in the schema's default
+        namespace instead, and warns with the slot's name, so the data problem
+        stays visible.
+
+        :param value: the metaslot value, with any CURIE already expanded
+        :param metaslot_name: the metaslot the value came from, for the warning
+        :return: the absolute IRI
+        """
+        if urlparse(value).scheme:
+            return URIRef(value)
+        iri = self._default_namespace_iri(value)
+        logger.warning(
+            "%s value %r is neither a URI nor a CURIE; emitting it as <%s> in the schema's default namespace",
+            metaslot_name,
+            value,
+            iri,
+        )
+        return URIRef(iri)
+
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
         Add annotation properties.
@@ -396,9 +439,9 @@ class OwlSchemaGenerator(Generator):
             for v in metaslot_value:
                 if metaslot_range in msv.all_types():
                     if metaslot_range == "uri":
-                        obj = URIRef(v)
+                        obj = self._reference_iri(v, metaslot_name)
                     elif metaslot_range == "uriorcurie":
-                        obj = URIRef(this_sv.expand_curie(v))
+                        obj = self._reference_iri(this_sv.expand_curie(v), metaslot_name)
                     elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
                         obj = Literal(v, lang=lang)
                     else:
@@ -428,11 +471,7 @@ class OwlSchemaGenerator(Generator):
             if isinstance(v, dict) or isinstance(v, list):
                 continue
             if ":" not in k:
-                default_prefix = this_sv.schema.default_prefix
-                if default_prefix in this_sv.schema.prefixes:
-                    default_prefix = this_sv.schema.prefixes[default_prefix].prefix_reference
-                k = default_prefix + k
-                k_uri = this_sv.expand_curie(k)
+                k_uri = self._default_namespace_iri(k)
             else:
                 k_uri = this_sv.expand_curie(k)
                 if k_uri == k:
