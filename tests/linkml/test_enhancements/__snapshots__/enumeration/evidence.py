@@ -65,6 +65,9 @@ version = None
 CLUE = CurieNamespace('CLUE', 'http://example.org/clue/')
 EVIDENCE = CurieNamespace('evidence', 'http://example.org/test/evidence/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = EVIDENCE
 
 

@@ -14,5 +14,8 @@ pav	http://purl.org/pav/
 prefixtest	https://w3id.org/linkml/tests/prefixtest/
 rdf	http://www.w3.org/1999/02/22-rdf-syntax-ns#
 rdfs	http://www.w3.org/2000/01/rdf-schema#
+schema	http://schema.org/
 sdo	http://schema.org/
+shex	http://www.w3.org/ns/shex#
 wd	https://www.wikidata.org/wiki/
+xsd	http://www.w3.org/2001/XMLSchema#

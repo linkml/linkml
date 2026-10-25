@@ -136,7 +136,9 @@ class SchemaLoader:
         for cmap in self.schema.default_curi_maps:
             self.namespaces.add_prefixmap(cmap, include_defaults=False)
 
-        # Process imports
+        # Process imports. Prefix conflicts are collected across all imports and
+        # raised together, so that one run reports every conflict.
+        prefix_conflicts: list[str] = []
         for imp in self.schema.imports:
             mapped = self.importmap.get(str(imp), imp)  # Import map may use CURIE
             # Path/CURIE manipulation only applies to string values; dict values are
@@ -185,8 +187,15 @@ class SchemaLoader:
                     imp,
                     self.namespaces,
                     merge_imports=self.merge_modules,
+                    prefix_conflicts=prefix_conflicts,
                 )
                 self.schema_defaults[import_schemadefinition.id] = import_schemadefinition.default_prefix
+        if prefix_conflicts:
+            count = len(prefix_conflicts)
+            raise ValueError(
+                f"{count} prefix conflict{'' if count == 1 else 's'} in the imports of {self.schema.name}:\n"
+                + "\n".join(prefix_conflicts)
+            )
 
         if not self.namespaces._default:
             if "://" in self.schema.default_prefix:

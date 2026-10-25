@@ -177,9 +177,8 @@ def test_importmap_in_memory_dict_not_mutated():
     assert base_dict == snapshot_before
 
 
-def test_importmap_mixes_dict_and_path_values(input_path):
-    """A single importmap can contain both a dict and a file-path entry."""
-    main_dict = {
+def _mixed_main_schema_dict() -> dict:
+    return {
         "id": "http://example.org/main_mixed",
         "name": "main_mixed",
         "prefixes": {"main": "http://example.org/main_mixed/"},
@@ -191,11 +190,73 @@ def test_importmap_mixes_dict_and_path_values(input_path):
         ],
         "classes": {"Leaf": {"is_a": "Parent"}},
     }
-    file_path = input_path("import_test_4.yaml").removesuffix(".yaml")
-    importmap = {
-        "http://example.org/base": _base_schema_dict(),
-        "http://example.org/import_test_4": file_path,
+
+
+def _mixed_importmap(input_path, base_dict: dict) -> dict:
+    """Return an importmap with a dict entry for base and a file-path entry for import_test_4."""
+    return {
+        "http://example.org/base": base_dict,
+        "http://example.org/import_test_4": input_path("import_test_4.yaml").removesuffix(".yaml"),
     }
-    resolved = SchemaLoader(main_dict, importmap=importmap).resolve()
+
+
+def test_importmap_mixes_dict_and_path_values(input_path):
+    """A single importmap can contain both a dict and a file-path entry.
+
+    Both entries declare ``base`` with different references, so loading fails, and
+    the error shows the definitions read from the dict and from the file.
+    """
+    importmap = _mixed_importmap(input_path, _base_schema_dict())
+    with pytest.raises(ValueError) as excinfo:
+        SchemaLoader(_mixed_main_schema_dict(), importmap=importmap).resolve()
+    assert str(excinfo.value) == (
+        "1 prefix conflict in the imports of main_mixed:\n"
+        "Prefix: base mismatch between main_mixed and import_test_4: "
+        "main_mixed has http://example.org/base/, import_test_4 has http://example.org/"
+    )
+
+
+def test_importmap_mixes_agreeing_dict_and_path_values(input_path):
+    """Dict and file-path entries load together when their prefixes agree."""
+    base_dict = _base_schema_dict()
+    base_dict["prefixes"]["base"] = "http://example.org/"  # as import_test_4.yaml declares it
+    importmap = _mixed_importmap(input_path, base_dict)
+    resolved = SchemaLoader(_mixed_main_schema_dict(), importmap=importmap).resolve()
     assert "Parent" in resolved.classes  # from dict import
     assert "class_4" in resolved.classes  # from file import
+
+
+def test_prefix_conflicts_in_imports_are_reported_together():
+    """Every prefix conflict across the imports is reported in one error.
+
+    ``own`` is declared by the importing schema and contradicted by c1. ``shared`` is
+    declared only by the imports, and c1 and c2 disagree on it.
+    """
+    main_dict = {
+        "id": "http://example.org/top",
+        "name": "top",
+        "prefixes": {"top": "http://example.org/top/", "own": "http://example.org/own/"},
+        "default_prefix": "top",
+        "imports": ["http://example.org/c1", "http://example.org/c2"],
+    }
+    importmap = {
+        "http://example.org/c1": {
+            "id": "http://example.org/c1",
+            "name": "c1",
+            "prefixes": {"own": "http://example.org/own-c1/", "shared": "http://example.org/shared-c1/"},
+        },
+        "http://example.org/c2": {
+            "id": "http://example.org/c2",
+            "name": "c2",
+            "prefixes": {"shared": "http://example.org/shared-c2/"},
+        },
+    }
+    with pytest.raises(ValueError) as excinfo:
+        SchemaLoader(main_dict, importmap=importmap).resolve()
+    assert str(excinfo.value) == (
+        "2 prefix conflicts in the imports of top:\n"
+        "Prefix: own mismatch between top and c1: "
+        "top has http://example.org/own/, c1 has http://example.org/own-c1/\n"
+        "Prefix: shared mismatch between top and c2: "
+        "top has http://example.org/shared-c1/, c2 has http://example.org/shared-c2/"
+    )
