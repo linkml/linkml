@@ -11,6 +11,7 @@ from pathlib import Path
 import pyoxigraph as ox
 import pytest
 import rdflib
+import rdflib.compare
 from rdflib import BNode, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, SH, XSD
 
@@ -516,21 +517,20 @@ def test_fallback_is_deterministic_across_processes(output_format):
     )
 
 
-def _make_pathological_graph(n_pairs: int) -> Graph:
+def _make_symmetric_graph(n_pairs: int) -> Graph:
     """Build a graph with ``n_pairs`` disjoint symmetric blank-node pairs.
 
     Under local hashing, each pair ``(b1, p, b2), (b2, p, b1)`` is
-    indistinguishable from every other pair. This structural pattern is what
-    makes ``rdflib.compare.to_canonical_graph`` take an unbounded amount of
-    time. In one measurement with rdflib 7.6.0, 6 pairs took 1.4 seconds, 7
-    pairs took 28 seconds, and 8 pairs ran for more than 2 minutes. The real
-    LinkML metamodel's OWL graph, which has hundreds of similarly ambiguous
-    ``owl:Restriction`` and ``rdf:List`` blank nodes, runs for more than 20
-    minutes without finishing.
+    indistinguishable from every other pair. This structural pattern makes
+    ``rdflib.compare.to_canonical_graph``, which an earlier fallback used,
+    take an unbounded amount of time: with rdflib 7.6.0, 7 pairs took 28
+    seconds and 8 pairs ran for more than 2 minutes. RDFC-1.0 resolves the
+    ties by its hash-N-degree step and labels 1000 pairs in well under a
+    second.
 
-    The function also adds one literal-predicate triple, so that pyoxigraph
-    rejects the graph and ``canonicalize_rdf_graph`` takes the rdflib
-    fallback.
+    The function also adds one literal-predicate triple, so that pyoxigraph's
+    parser rejects the graph and ``canonicalize_rdf_graph`` takes the
+    non-standard RDF fallback.
     """
     g = Graph()
     g.bind("ex", "http://example.com/")
@@ -539,50 +539,73 @@ def _make_pathological_graph(n_pairs: int) -> Graph:
         b1, b2 = BNode(), BNode()
         g.add((b1, p, b2))
         g.add((b2, p, b1))
-    # pyoxigraph raises SyntaxError on a literal predicate, so the rdflib fallback runs.
     g.add((URIRef("http://example.com/s"), Literal("not_a_predicate"), Literal("value")))
     return g
 
 
-def test_fallback_timeout_prevents_hang_on_pathological_graph():
-    """A pathologically symmetric blank-node graph must not hang ``canonicalize_rdf_graph``.
+@pytest.mark.parametrize("output_format", ["turtle", "nt"])
+def test_fallback_canonicalizes_symmetric_blank_nodes(output_format: str) -> None:
+    """A highly symmetric blank-node graph is canonicalized on the fallback without hanging.
 
-    Regression test for the OWL metamodel hang. The graph's 8 disjoint
-    symmetric blank-node pairs reliably exceed a short ``fallback_timeout``.
-    The canonicalization subprocess is then killed, and the function degrades
-    to non-canonical serialization instead of hanging.
+    Regression test for the OWL metamodel hang: the fallback once used
+    ``rdflib.compare.to_canonical_graph``, which never finished on graphs like
+    this one. The output must be identical across calls, and must still hold
+    every triple of the source graph.
     """
-    g = _make_pathological_graph(8)
+    g = _make_symmetric_graph(1000)
 
-    with pytest.warns(RDFCanonicalizationWarning, match="did not complete within"):
-        result = canonicalize_rdf_graph(g, output_format="turtle", fallback_timeout=1.0)
-
-    # The result is still valid, parseable RDF, but it is not canonicalized.
-    parsed = Graph()
-    parsed.parse(data=result, format="turtle")
-    assert len(parsed) == len(g)
-
-
-def test_fallback_timeout_does_not_affect_small_graphs():
-    """Small non-pathological graphs still canonicalize fully within the default timeout.
-
-    This test guards against a timeout so short that ordinary fallback graphs,
-    such as the shape in ``test_fallback_on_invalid_rdf``, degrade to
-    non-canonical output.
-    """
-    g = _make_pathological_graph(2)
-
-    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF") as record:
-        result = canonicalize_rdf_graph(g, output_format="turtle")
-
-    # The timeout warning must not be issued as well.
-    assert not [w for w in record if "did not complete within" in str(w.message)]
-
-    # The result is fully canonical, and therefore deterministic across
-    # repeated calls.
     with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
-        result_again = canonicalize_rdf_graph(g, output_format="turtle")
+        result = canonicalize_rdf_graph(g, output_format=output_format)
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result_again = canonicalize_rdf_graph(g, output_format=output_format)
+
     assert result == result_again
+    # rdflib's parsers reject the literal predicate, so count the sorted
+    # N-Triples lines instead of re-parsing.
+    if output_format == "nt":
+        assert len(result.splitlines()) == len(g)
+
+
+def test_fallback_names_the_offending_terms() -> None:
+    """The fallback warning says which terms are not standard RDF."""
+    g = Graph()
+    g.add((URIRef("http://example.com/s"), URIRef("http://purl.org/ontology/bibo/status"), URIRef("testing")))
+    g.add((URIRef("http://example.com/s"), Literal("not_a_predicate"), Literal("value")))
+    with pytest.warns(RDFCanonicalizationWarning, match=r'"not_a_predicate", <testing>'):
+        canonicalize_rdf_graph(g, output_format="nt")
+
+
+def test_fallback_restores_literal_predicate_with_datatype() -> None:
+    """A typed literal predicate comes back with its datatype, as SHACL annotation mode emits it."""
+    g = Graph()
+    g.bind("ex", "http://example.com/")
+    g.add((URIRef("http://example.com/s"), Literal("tag", datatype=XSD.string), Literal("v", datatype=XSD.string)))
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result = canonicalize_rdf_graph(g, output_format="nt")
+    assert result == (
+        '<http://example.com/s> "tag"^^<http://www.w3.org/2001/XMLSchema#string> '
+        '"v"^^<http://www.w3.org/2001/XMLSchema#string> .\n'
+    )
+
+
+def test_fallback_keeps_one_of_two_rdf11_equal_literals() -> None:
+    """``"x"`` and ``"x"^^xsd:string`` are one literal in RDF 1.1. The fallback keeps the plain form."""
+    g = Graph()
+    s = URIRef("http://example.com/s")
+    g.add((s, URIRef("testing"), Literal("x")))
+    g.add((s, URIRef("testing"), Literal("x", datatype=XSD.string)))
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        result = canonicalize_rdf_graph(g, output_format="nt")
+    assert result == '<http://example.com/s> <testing> "x" .\n'
+
+
+def test_fallback_with_blank_node_predicate_warns_and_serializes() -> None:
+    """A blank node in predicate position cannot be canonicalized. The output is still valid for rdflib."""
+    g = Graph()
+    g.add((URIRef("http://example.com/s"), BNode(), Literal("v")))
+    with pytest.warns(RDFCanonicalizationWarning, match="blank node in predicate position"):
+        result = canonicalize_rdf_graph(g, output_format="nt")
+    assert len(result.splitlines()) == 1
 
 
 def _shapes_graph(count: int, extra: bool = False) -> Graph:
@@ -815,12 +838,23 @@ def test_diff_stable_reaches_every_rdf_generator(
 
 
 @pytest.mark.diffable_rdf
-def test_diff_stable_warns_instead_of_silently_no_opping_on_the_fallback() -> None:
-    """A relative IRI requires the fallback and a warning that labels cannot apply."""
-    graph = _make_graph_with_bnodes()
-    graph.add((URIRef("testing"), URIRef("http://example.com/p"), Literal("v")))
-    with pytest.warns(RDFCanonicalizationWarning, match="NOT diff-stable"):
-        stable = canonicalize_rdf_graph(graph, diff_stable=True)
-    with pytest.warns(RDFCanonicalizationWarning):
-        plain = canonicalize_rdf_graph(graph, diff_stable=False)
-    assert stable == plain
+@pytest.mark.diffable_rdf
+def test_diff_stable_applies_on_the_fallback() -> None:
+    """A relative IRI takes the fallback, and diff-stable labels still confine an insertion.
+
+    The test uses N-Triples because it shows every blank-node label. rdflib's
+    Turtle serializer inlines single-use blank nodes, so label churn would not
+    be visible there.
+    """
+    before, after = _shapes_graph(20), _shapes_graph(20, extra=True)
+    for graph in (before, after):
+        graph.add((URIRef("http://example.com/Shape00"), URIRef("http://example.com/status"), URIRef("testing")))
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        baseline = _changed_line_count(
+            canonicalize_rdf_graph(before, output_format="nt"), canonicalize_rdf_graph(after, output_format="nt")
+        )
+        stable = _changed_line_count(
+            canonicalize_rdf_graph(before, output_format="nt", diff_stable=True),
+            canonicalize_rdf_graph(after, output_format="nt", diff_stable=True),
+        )
+    assert stable < baseline / 4, f"expected diff-stable output to churn far less; got {stable} vs baseline {baseline}"

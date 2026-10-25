@@ -12,12 +12,16 @@ with stable blank node labels and sorted triples.
    re-parses the output with rdflib will see ``Literal("x")`` (datatype
    ``None``) rather than ``Literal("x", datatype=XSD.string)``.
 
-2. **Non-standard RDF**: Graphs with literal predicates (e.g. SHACL
-   annotation mode) or relative IRIs (e.g. the metamodel's
-   ``bibo:status <testing>``) are rejected by pyoxigraph.  This function
-   falls back to rdflib's serializer for such graphs, but still
-   canonicalizes blank-node labels (and sorts line-oriented formats) so
-   the fallback output remains deterministic across processes.
+2. **Non-standard RDF**: pyoxigraph's parser rejects a graph with literal
+   predicates (for example, SHACL annotation mode) or relative IRIs (for
+   example, a ``uriorcurie`` slot holding a bare value such as ``testing``).
+   This function then replaces each rejected term with a placeholder IRI
+   derived from the term's content, canonicalizes the result with RDFC-1.0,
+   restores the original terms and serializes with rdflib, sorting
+   line-oriented formats. The output is deterministic, but it is not
+   standard RDF, and OWL or SHACL tools may reject it. A graph with a blank
+   node in predicate position cannot be encoded this way, so it is serialized
+   non-canonically with a warning.
 
 3. **Numeric short forms**: pyoxigraph uses Turtle short forms for
    ``xsd:integer`` (``42``), ``xsd:boolean`` (``true``), and
@@ -35,83 +39,15 @@ with stable blank node labels and sorted triples.
    it because it conflicts with the statement-terminator dot.  We
    post-process the output to expand such CURIEs to full ``<IRI>`` form.
 
-6. **Pathological blank-node structure**: ``rdflib.compare.to_canonical_graph``
-   (used for the fallback in limitation 2) has no complexity bound. It can
-   take an unbounded amount of time on a graph with highly symmetric
-   blank-node structure, for example many structurally similar
-   ``owl:Restriction`` and ``rdf:List`` nodes. This canonicalization step
-   therefore runs in a subprocess with a timeout (``fallback_timeout``,
-   default :data:`DEFAULT_FALLBACK_TIMEOUT_SECONDS`), so that
-   ``canonicalize_rdf_graph`` always returns. If the step does not finish in
-   time, the subprocess is killed, a warning is issued, and the graph is
-   serialized non-canonically, with no blank-node canonicalization. The
-   output is still valid RDF, but it is not guaranteed to be deterministic
-   across runs.
 """
 
+import hashlib
 import io
-import multiprocessing
 import re
 import warnings
 
 import pyoxigraph as ox
 import rdflib
-from rdflib.compare import to_canonical_graph
-
-#: Default timeout, in seconds, for the rdflib fallback canonicalization (see
-#: limitation 6 above). When it expires, the fallback serializes non-canonically.
-DEFAULT_FALLBACK_TIMEOUT_SECONDS = 30.0
-
-
-def _canonicalize_worker(graph: rdflib.Graph, result_queue: "multiprocessing.Queue") -> None:
-    """Run ``to_canonical_graph`` and put the result on the queue for the parent process.
-
-    The worker runs in a spawned subprocess, so that the parent can terminate
-    it forcibly if it does not finish in time. ``to_canonical_graph`` is pure
-    Python and CPU-bound, with no hook for cooperative cancellation, so there
-    is no way to interrupt it safely in-process.
-    """
-    canonical = rdflib.Graph()
-    canonical += to_canonical_graph(graph)
-    result_queue.put(canonical)
-
-
-def _canonicalize_with_timeout(graph: rdflib.Graph, timeout: float) -> rdflib.Graph | None:
-    """Run ``to_canonical_graph`` on ``graph`` with a wall-clock timeout.
-
-    Any failure here degrades the same way a timeout does, so that
-    ``canonicalize_rdf_graph`` always returns rather than hanging or crashing.
-
-    :param graph: The rdflib Graph to canonicalize.
-    :param timeout: Maximum time to wait, in seconds.
-    :return: The canonicalized graph. ``None`` if the canonicalization did not
-        finish in time, or if the subprocess could not be created or
-        communicated with (for example, when the host is out of file
-        descriptors or processes).
-    """
-    ctx = multiprocessing.get_context("spawn")
-    try:
-        result_queue: multiprocessing.Queue = ctx.Queue()
-        process = ctx.Process(target=_canonicalize_worker, args=(graph, result_queue))
-        process.start()
-    except OSError:
-        return None
-    try:
-        # Read the queue before joining the worker. A worker that has put a
-        # result larger than the pipe buffer cannot exit until the parent
-        # reads that result.
-        return result_queue.get(timeout=timeout)
-    except Exception:
-        # The canonicalization timed out, the worker exited without putting a
-        # result on the queue, or process management itself failed (for
-        # example, an OSError from resource exhaustion).
-        return None
-    finally:
-        if process.is_alive():
-            process.terminate()
-        process.join()
-        result_queue.close()
-        result_queue.cancel_join_thread()
 
 
 class RDFCanonicalizationWarning(UserWarning):
@@ -149,57 +85,165 @@ _PREFIX_FORMATS = frozenset({ox.RdfFormat.TURTLE, ox.RdfFormat.TRIG, ox.RdfForma
 _LINE_ORIENTED_FORMATS = frozenset({"nt", "ntriples", "n-triples", "nt11", "nquads", "n-quads"})
 
 
-def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str, fallback_timeout: float) -> str:
-    """Serialize a graph that pyoxigraph cannot canonicalize, deterministically unless canonicalization times out.
+#: Namespace of the placeholder IRIs that stand in for terms pyoxigraph
+#: rejects while the fallback canonicalizes a graph.
+_PLACEHOLDER_NS = "urn:x-linkml-nonstandard:"
 
-    pyoxigraph rejects some graphs that rdflib accepts -- notably graphs
-    containing relative IRIs (e.g. the metamodel's ``bibo:status <testing>``)
-    or literal predicates (SHACL annotation mode).  A plain
-    ``graph.serialize()`` for such graphs is *not* reproducible across
-    processes: rdflib assigns blank-node labels non-deterministically, so the
-    structure and grouping of the output varies run to run.
 
-    To degrade gracefully instead of silently emitting non-deterministic
-    output, we canonicalize blank-node labels with rdflib's own
-    isomorphism-based canonicalization (:func:`rdflib.compare.to_canonical_graph`,
-    which uses a content-derived hash, not run-local ids) and preserve the
-    original prefix and base bindings that the canonical graph drops.  For
-    line-oriented formats we additionally sort the serialized lines, since
-    rdflib does not emit N-Triples/N-Quads in a stable order.
+def _placeholder_iri(term: rdflib.term.Node) -> str:
+    """Return a placeholder IRI for ``term``, derived from its N3 form.
 
-    ``to_canonical_graph`` runs in a subprocess with a timeout of
-    ``fallback_timeout`` seconds, because it has no complexity bound and can
-    take an unbounded amount of time on a graph with highly symmetric
-    blank-node structure (see module docstring, limitation 6). If it does not
-    finish in time, we warn and serialize the graph non-canonically. The
-    output is valid RDF, but it is not guaranteed to be deterministic across
-    runs.
+    The content-derived name keeps the canonicalization deterministic: the
+    same relative IRI or literal predicate gets the same placeholder in every
+    process.
+    """
+    return _PLACEHOLDER_NS + hashlib.sha256(term.n3().encode("utf-8")).hexdigest()
+
+
+def _is_encodable(graph: rdflib.Graph) -> bool:
+    """Check whether the fallback can represent ``graph`` in pyoxigraph.
+
+    A blank node in predicate position has no stand-in: RDFC-1.0 labels blank
+    nodes in subject and object position only. An IRI already in the
+    placeholder namespace would collide with the stand-ins.
+    """
+    for _, predicate, _ in graph:
+        if isinstance(predicate, rdflib.BNode):
+            return False
+    return not any(isinstance(term, rdflib.URIRef) and term.startswith(_PLACEHOLDER_NS) for term in graph.all_nodes())
+
+
+def _encode_for_pyoxigraph(
+    graph: rdflib.Graph,
+) -> tuple[ox.Dataset, dict[str, rdflib.term.Node], dict[ox.Literal, rdflib.Literal]]:
+    """Copy ``graph`` into a pyoxigraph Dataset, with placeholders for the terms pyoxigraph rejects.
+
+    Relative IRIs, and literals in subject or predicate position, become
+    placeholder IRIs (see :func:`_placeholder_iri`). Blank nodes become fresh
+    pyoxigraph blank nodes. Literals in object position become pyoxigraph
+    literals. One that pyoxigraph rejects also gets a placeholder.
+
+    :return: The dataset, the placeholder IRIs mapped to the terms they stand
+        for, and the pyoxigraph literals mapped to the rdflib literals to
+        restore. pyoxigraph follows RDF 1.1 and identifies ``"x"`` with
+        ``"x"^^xsd:string``. When a graph holds both, the one with the smaller
+        N3 form is kept, so the choice is deterministic.
+    """
+    bnodes: dict[rdflib.BNode, ox.BlankNode] = {}
+    placeholders: dict[str, rdflib.term.Node] = {}
+    literals: dict[ox.Literal, rdflib.Literal] = {}
+
+    def placeholder(term: rdflib.term.Node) -> ox.NamedNode:
+        iri = _placeholder_iri(term)
+        placeholders[iri] = term
+        return ox.NamedNode(iri)
+
+    def resource(term: rdflib.term.Node) -> ox.NamedNode | ox.BlankNode:
+        if isinstance(term, rdflib.BNode):
+            return bnodes.setdefault(term, ox.BlankNode())
+        if isinstance(term, rdflib.URIRef):
+            try:
+                return ox.NamedNode(str(term))
+            except ValueError:
+                # pyoxigraph rejects the IRI (it is relative or malformed).
+                return placeholder(term)
+        return placeholder(term)
+
+    def value(term: rdflib.term.Node) -> ox.NamedNode | ox.BlankNode | ox.Literal:
+        if not isinstance(term, rdflib.Literal):
+            return resource(term)
+        try:
+            literal = ox.Literal(
+                str(term),
+                language=term.language,
+                datatype=ox.NamedNode(str(term.datatype)) if term.datatype else None,
+            )
+        except ValueError:
+            return placeholder(term)
+        kept = literals.get(literal)
+        if kept is None or term.n3() < kept.n3():
+            literals[literal] = term
+        return literal
+
+    dataset = ox.Dataset(ox.Quad(resource(s), resource(p), value(o), ox.DefaultGraph()) for s, p, o in graph)
+    return dataset, placeholders, literals
+
+
+def _decode_term(
+    term: ox.NamedNode | ox.BlankNode | ox.Literal,
+    placeholders: dict[str, rdflib.term.Node],
+    literals: dict[ox.Literal, rdflib.Literal],
+) -> rdflib.term.Node:
+    """Map a canonicalized pyoxigraph term back to the rdflib term it stands for."""
+    if isinstance(term, ox.BlankNode):
+        return rdflib.BNode(term.value)
+    if isinstance(term, ox.NamedNode):
+        return placeholders.get(term.value) or rdflib.URIRef(term.value)
+    return literals[term]
+
+
+def _deterministic_fallback_serialize(graph: rdflib.Graph, output_format: str, diff_stable: bool) -> str:
+    """Serialize a graph that pyoxigraph's parser rejects, deterministically.
+
+    pyoxigraph rejects some graphs that rdflib accepts, notably graphs
+    containing relative IRIs (for example, ``bibo:status <testing>``) or
+    literal predicates (SHACL annotation mode). A plain ``graph.serialize()`` for
+    such graphs is *not* reproducible across processes: rdflib assigns
+    blank-node labels non-deterministically, so the structure and grouping
+    of the output varies run to run.
+
+    The fallback replaces the rejected terms with placeholder IRIs,
+    canonicalizes the graph with RDFC-1.0 like any other graph, and restores
+    the original terms. rdflib then serializes the result with the source
+    graph's prefix and base bindings. For line-oriented formats the fallback
+    sorts the serialized lines, since rdflib does not emit N-Triples/N-Quads
+    in a stable order.
 
     Relative IRIs are preserved verbatim (not resolved against the base): the
     goal is deterministic output, and silently rewriting ``<testing>`` into an
     absolute IRI would mask what is really a data problem in the source graph.
 
     :param graph: The rdflib Graph that pyoxigraph could not parse.
-    :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
-    :param fallback_timeout: Maximum time, in seconds, to spend on blank-node
-        canonicalization before giving up and serializing non-canonically.
-    :return: String serialization of the graph, canonical if
-        ``to_canonical_graph`` finished within the timeout.
+    :param output_format: Target serialization format (for example, ``"turtle"`` or ``"nt"``).
+    :param diff_stable: Apply diffable-rdf labels after RDFC-1.0 canonicalization.
+    :return: Deterministic string serialization of the graph, unless the graph
+        has a blank node in predicate position, which cannot be canonicalized.
     """
-    canonical = _canonicalize_with_timeout(graph, fallback_timeout)
-    if canonical is None:
+    if not _is_encodable(graph):
         warnings.warn(
-            f"rdflib fallback canonicalization did not complete within {fallback_timeout}s "
-            "(graph has too much symmetric blank-node structure); falling back to "
-            "non-canonical serialization. Output is valid RDF but blank-node labels "
+            "Graph has a blank node in predicate position, which RDFC-1.0 cannot label; "
+            "serializing non-canonically. Output is valid for rdflib but blank-node labels "
             "and triple ordering are not guaranteed stable across runs.",
             RDFCanonicalizationWarning,
             stacklevel=3,
         )
         serialized = graph.serialize(format=output_format)
     else:
-        # to_canonical_graph builds a fresh graph without the source's namespace
-        # bindings; rebind them so the output does not fall back to rdflib's
+        dataset, placeholders, literals = _encode_for_pyoxigraph(graph)
+        offending = sorted(term.n3() for term in placeholders.values())
+        warnings.warn(
+            f"Graph contains non-standard RDF ({', '.join(offending[:3])}"
+            f"{', ...' if len(offending) > 3 else ''}) that pyoxigraph cannot parse; "
+            "OWL and SHACL tools may reject it. Output is canonicalized with RDFC-1.0 over "
+            "placeholder IRIs for these terms and serialized by rdflib.",
+            RDFCanonicalizationWarning,
+            stacklevel=3,
+        )
+        dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
+        quads = list(dataset)
+        if diff_stable:
+            from diffable_rdf import wl_relabel_quads
+
+            quads = wl_relabel_quads(quads)
+        canonical = rdflib.Graph()
+        for quad in quads:
+            canonical.add(
+                tuple(
+                    _decode_term(term, placeholders, literals) for term in (quad.subject, quad.predicate, quad.object)
+                )
+            )
+        # The canonical graph starts without the source's namespace bindings.
+        # Rebind them so the output does not fall back to rdflib's
         # non-deterministic auto-generated ``ns1:``/``ns2:`` prefixes.
         for prefix, namespace in graph.namespace_manager.namespaces():
             canonical.namespace_manager.bind(prefix, namespace, replace=True)
@@ -379,7 +423,6 @@ def canonicalize_rdf_graph(
     graph: rdflib.Graph,
     output_format: str = "turtle",
     diff_stable: bool = False,
-    fallback_timeout: float = DEFAULT_FALLBACK_TIMEOUT_SECONDS,
 ) -> str:
     """Serialize an rdflib Graph deterministically using RDFC-1.0 canonicalization.
 
@@ -388,24 +431,17 @@ def canonicalize_rdf_graph(
     Prefix bindings from the rdflib Graph are preserved in the output
     for formats that support them (Turtle, TriG, N3, RDF/XML).
 
-    Falls back to plain rdflib serialization for unsupported formats or
-    graphs containing non-standard RDF (for example, literal predicates).
-    ``fallback_timeout`` bounds the blank-node canonicalization in the
-    non-standard RDF fallback (see module docstring, limitation 6), so this
-    function always returns rather than hanging.
+    Falls back to plain rdflib serialization for unsupported formats. A graph
+    containing non-standard RDF (for example, literal predicates or relative
+    IRIs) is canonicalized over placeholder IRIs and serialized by rdflib
+    (see module docstring, limitation 2).
 
     :param graph: The rdflib Graph to serialize.
-    :param output_format: Target serialization format (e.g. ``"turtle"``, ``"nt"``).
+    :param output_format: Target serialization format (for example, ``"turtle"`` or ``"nt"``).
     :param diff_stable: Use diffable-rdf labels to reduce blank-node churn across
-        edits. Requires the ``diff-stable`` extra; disabled by default. The
-        non-standard RDF fallback warns when it cannot apply these labels.
+        edits. Requires the ``diff-stable`` extra; disabled by default.
         See https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control
-    :param fallback_timeout: Maximum time, in seconds, the non-standard RDF
-        fallback may spend on blank-node canonicalization before giving up and
-        serializing non-canonically.
-    :return: Deterministic string serialization of the graph. If the
-        canonicalization in the non-standard RDF fallback timed out, a valid
-        but non-deterministic serialization.
+    :return: Deterministic string serialization of the graph.
     :raises ImportError: If diff-stable labels are requested without diffable-rdf.
     """
     if diff_stable:
@@ -437,25 +473,7 @@ def canonicalize_rdf_graph(
     try:
         triples = list(ox.parse(io.BytesIO(nt_bytes), format=ox.RdfFormat.N_TRIPLES))
     except SyntaxError:
-        warnings.warn(
-            "Graph contains non-standard RDF (e.g. relative IRIs or literal predicates) "
-            "that pyoxigraph cannot parse; falling back to rdflib. Output is still "
-            "deterministic (blank-node labels are canonicalized via rdflib) but is not "
-            "canonicalized with pyoxigraph RDFC-1.0.",
-            RDFCanonicalizationWarning,
-            stacklevel=2,
-        )
-        if diff_stable:
-            warnings.warn(
-                "diff_stable=True was requested but this graph took the rdflib fallback, "
-                "which cannot apply Weisfeiler-Lehman blank-node labels. Output is "
-                "deterministic but NOT diff-stable: an unrelated edit may still renumber "
-                "blank nodes. Make the offending terms standard RDF (absolute IRIs, IRI "
-                "predicates) to get diff-stable labels.",
-                RDFCanonicalizationWarning,
-                stacklevel=2,
-            )
-        return _deterministic_fallback_serialize(graph, output_format, fallback_timeout)
+        return _deterministic_fallback_serialize(graph, output_format, diff_stable)
 
     dataset = ox.Dataset()
     for triple in triples:

@@ -7,9 +7,9 @@ def _pathological_ttl(n_pairs: int) -> str:
     """Turtle text with ``n_pairs`` disjoint symmetric blank-node pairs.
 
     ``tests/linkml_runtime/test_utils/test_rdf_canonicalize.py`` uses the
-    same structural pattern to reproduce the OWL metamodel hang. This shape
-    is what makes ``rdflib.compare.to_canonical_graph`` and ``graph_diff``
-    take an unbounded amount of time.
+    same structural pattern as a regression test for the OWL metamodel hang.
+    This shape is what makes ``rdflib.compare.to_canonical_graph`` and
+    ``graph_diff`` take an unbounded amount of time.
     """
     g = Graph()
     g.bind("ex", "http://example.com/")

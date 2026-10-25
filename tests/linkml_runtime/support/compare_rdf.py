@@ -88,11 +88,11 @@ def compare_rdf(expected: Union[Graph, str], actual: Union[Graph, str], fmt: Opt
     actual_graph = rem_metadata(to_graph(actual, fmt))
 
     # Check isomorphism by comparing canonical N-Triples from the canonicalizer
-    # the generators use: the fast pyoxigraph RDFC-1.0 path in the common case,
-    # and the rdflib fallback with its timeout otherwise (see
-    # rdf_canonicalize.py). This avoids rdflib.compare.graph_diff and
-    # to_isomorphic, which have no complexity bound and can hang on graphs
-    # with symmetric blank-node structure.
+    # the generators use (see rdf_canonicalize.py): the pyoxigraph RDFC-1.0
+    # path in the common case, and the placeholder fallback for non-standard
+    # RDF otherwise. This avoids rdflib.compare.graph_diff and to_isomorphic,
+    # which have no complexity bound and can hang on graphs with symmetric
+    # blank-node structure.
     expected_nt = canonicalize_rdf_graph(expected_graph, output_format="nt")
     actual_nt = canonicalize_rdf_graph(actual_graph, output_format="nt")
     if expected_nt == actual_nt:
