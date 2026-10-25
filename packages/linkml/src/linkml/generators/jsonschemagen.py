@@ -84,6 +84,9 @@ JSON_SCHEMA_DRAFTS: dict[str, str] = {
 # The naming styles for ``$defs`` keys, the values of the ``def_name_style`` option.
 DEF_NAME_STYLES: tuple[str, ...] = ("CamelCase", "camelCase", "snake_case", "kebab-case", "preserve")
 
+# The default of the ``split_pattern`` option: each module's document takes the module's ``id``.
+DEFAULT_SPLIT_PATTERN = "{{ schema.id }}"
+
 # This pattern splits a name into words at spaces, underscores and hyphens. It also
 # splits where a capital follows a lower-case letter or a digit, and where a word
 # follows an acronym, as in HTTPServer.
@@ -712,7 +715,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     documents of every module in the import closure.
     """
 
-    split_pattern: str = "{{ schema.id }}"
+    split_pattern: str = DEFAULT_SPLIT_PATTERN
     """In split mode, the URI of each module's document: a jinja template that is given
     the module's ``SchemaDefinition`` as ``schema``, plus :attr:`split_context`.
 
@@ -738,6 +741,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if message := _option_error(self.draft, self.def_name_style):
             raise ValueError(message)
+        if not self.split and (self.split_pattern != DEFAULT_SPLIT_PATTERN or self.split_context):
+            logger.warning("split_pattern and split_context apply only in split mode; set split to use them")
 
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -1850,7 +1855,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 )
 @click.option(
     "--split-pattern",
-    default="{{ schema.id }}",
+    default=DEFAULT_SPLIT_PATTERN,
     show_default=True,
     help="With --split, a jinja template over each module's schema definition giving the URI of its document, "
     "used as its $id and as the target of $ref from other modules.",

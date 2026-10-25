@@ -453,7 +453,8 @@ In split mode:
   referring document.
 
 ``--split-pattern`` is a jinja template that is given each module's schema
-definition as ``schema``. ``--output-directory`` writes the document of every
+definition as ``schema``; without ``--split`` it has no effect, and the
+generator warns. ``--output-directory`` writes the document of every
 module that defines a class or an enum, named after the last path segment of
 its URI:
 

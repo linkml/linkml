@@ -206,13 +206,15 @@ def test_split_refs_between_urns_are_absolute(tmp_path):
     assert not validator.is_valid({"every": "hour"})
 
 
-def test_split_off_keeps_one_document(core):
-    """Without ``split`` the document covers the import closure, and ``split_pattern`` is not used."""
+def test_split_off_keeps_one_document(core, caplog):
+    """Without ``split`` the document covers the import closure, and ``split_pattern`` is not used but warned about."""
     default = JsonSchemaGenerator(core).serialize()
+    assert "apply only in split mode" not in caplog.text
     patterned = JsonSchemaGenerator(core, split_pattern=RELEASE_PATTERN, split_context={"version": "1"}).serialize()
     generated = json.loads(default)
 
     assert default == patterned
+    assert "split_pattern and split_context apply only in split mode" in caplog.text
     assert generated["$id"] == "https://example.org/spec/core"
     assert {"Architecture", "ControlDetail", "Evidence", "TimeUnit", "VendorInfo"} <= set(generated["$defs"])
     assert all(ref.startswith("#/$defs/") for ref in _refs(generated))
