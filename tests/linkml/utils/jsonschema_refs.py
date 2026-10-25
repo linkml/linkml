@@ -4,7 +4,7 @@ from typing import Any
 
 
 def all_refs(node: Any) -> list[str]:
-    """Every ``$ref`` value in a generated JSON Schema document, examples included."""
+    """Return every ``$ref`` value in a generated JSON Schema document, examples included."""
     if isinstance(node, dict):
         return [value for key, value in node.items() if key == "$ref"] + [
             ref for value in node.values() for ref in all_refs(value)
