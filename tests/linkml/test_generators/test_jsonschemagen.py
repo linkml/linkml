@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 import yaml
 
-from linkml.generators.jsonschemagen import JsonSchema, JsonSchemaGenerator
+from linkml.generators.jsonschemagen import JsonSchema, JsonSchemaGenerator, style_def_name
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
@@ -2273,6 +2273,29 @@ def test_def_name_style_unknown_value_raises(tmp_path):
     schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
     with pytest.raises(ValueError, match="Unknown definition name style"):
         JsonSchemaGenerator(str(schema_file), def_name_style="Title Case")
+
+
+@pytest.mark.parametrize(
+    "name,style,expected",
+    [
+        ("control detail", "CamelCase", "ControlDetail"),
+        ("ControlDetail", "camelCase", "controlDetail"),
+        ("HTTP server", "camelCase", "httpServer"),
+        ("ControlID", "snake_case", "control_id"),
+        ("control detail", "snake_case", "control_detail"),
+        ("HTTPServer2Config", "kebab-case", "http-server2-config"),
+        ("node_interface", "kebab-case", "node-interface"),
+        ("node_interface", "preserve", "node_interface"),
+    ],
+)
+def test_style_def_name(name, style, expected):
+    """The styles split names into words at case changes, spaces, underscores and hyphens."""
+    assert style_def_name(name, style) == expected
+
+
+def test_style_def_name_unknown_style_raises():
+    with pytest.raises(ValueError, match="Unknown definition name style"):
+        style_def_name("ControlDetail", "Title Case")
 
 
 DEF_NAME_COLLISION_SCHEMA = """
