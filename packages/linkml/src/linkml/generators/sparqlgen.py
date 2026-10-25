@@ -143,9 +143,10 @@ class SparqlGenerator(Generator):
 
     def __post_init__(self):
         super().__post_init__()
-        # Materialization rewrites the schema (attributes -> slots, extra prefixes), so work on a
-        # copy: mutating the shared SchemaView corrupts the input for any generator that runs after
-        # us under gen-project (#3770). Copying the whole view preserves import-resolution context.
+        # Work on a copy, because materialization rewrites the schema: it moves attributes into slots
+        # and adds prefixes. Mutating the shared SchemaView corrupts the input for any generator that
+        # runs after this one under gen-project (#3770). Copying the whole view keeps what it needs to
+        # resolve imports.
         self.schemaview = deepcopy(self.schemaview)
         materialize_schema(self.schemaview)
         self.schema = self.schemaview.schema
