@@ -205,6 +205,10 @@ class IfAbsentProcessor(ABC):
 
         for enum_name, enum in self.schema_view.all_enums().items():
             if enum_name == slot.range:
+                # An enum that lists no permissible values, such as an open or a dynamic
+                # enum, has no values to check the default against.
+                if not enum.permissible_values:
+                    return self.map_enum_default_value(enum_name, ifabsent_default_value, slot, cls)
                 for permissible_value_name, permissible_value in enum.permissible_values.items():
                     if permissible_value_name == ifabsent_default_value:
                         return self.map_enum_default_value(enum_name, permissible_value_name, slot, cls)
