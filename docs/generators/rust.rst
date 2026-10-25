@@ -27,8 +27,8 @@ The Rust Generator produces a Rust crate with structs and enums from a LinkML mo
 It additionally generates a trait for every struct to provide polymorphic access, in the `poly.rs` file.
 
 For every class that has subclasses, an extra ``<Class>OrSubtype`` enum is generated with one variant per subclass,
-plus a last variant for the class itself unless it is abstract or a mixin. Variants are tried in that order when
-deserializing without a type designator, so subtypes are matched before the base class.
+plus a last variant for the class itself unless it is abstract or a mixin. Deserialization without a type designator
+tries the variants in that order, so subtypes are matched before the base class.
 All the enums implement the trait, so they can be (optionally) directly used without match statement.
 
 How to Generate a Rust Crate with Python Bindings
@@ -57,8 +57,8 @@ A convenient way to build pip packages for multiple python versions and libc alt
 
    The output directory contains ``Cargo.toml`` (with ``[lib]`` configured for both ``cdylib`` and ``rlib`` when PyO3 is
    requested), ``pyproject.toml`` with a ``maturin`` build-system section, ``src/bin/stub_gen.rs`` for type stubs, and a
-   ``src/generated`` tree that houses the regenerated code. A small ``src/lib.rs`` file is emitted on the first run only;
-   it re-exports everything from ``generated`` so you can regenerate safely.
+   ``src/generated`` tree that houses the regenerated code. A small ``src/lib.rs`` file is emitted on the first run only.
+   It re-exports everything from ``generated``, so you can regenerate safely.
 
 #. **Adjust what is exposed to Python** in ``src/lib.rs``. The file declares the PyO3 module and calls
    ``generated::register_pymodule``; edit it to add your own functions/classes. Because the shim is only created on the
@@ -96,24 +96,24 @@ runs.
 Crate Name Configuration
 ------------------------
 
-The generated crate name -- written to ``[package]`` and ``[lib]`` in ``Cargo.toml``,
-and naming the Python module -- is driven by the following precedence:
+The generated crate name is written to ``[package]`` and ``[lib]`` in ``Cargo.toml``,
+and it names the Python module. These sources set it, in order of precedence:
 
-1. ``--crate-name`` command-line option, or ``crate_name=...`` when using
-   ``RustGenerator`` programmatically
-2. ``generator_args.rust.crate_name`` set via ``--config-file``/``-C`` (see
-   :ref:`rust-configuration-file` below)
-3. Fallback: derived from the schema name, with any character outside
-   ``[A-Za-z0-9_]`` replaced by an underscore (e.g. a schema named ``person-info``
-   yields ``person_info``)
+1. The ``--crate-name`` command-line option, or ``crate_name=...`` when you use
+   ``RustGenerator`` from Python code.
+2. ``generator_args.rust.crate_name``, set through ``--config-file`` or ``-C`` (see
+   :ref:`rust-configuration-file` below).
+3. Otherwise, a name derived from the schema name, with each character outside
+   ``[A-Za-z0-9_]`` replaced by an underscore. For example, a schema named
+   ``person-info`` gives ``person_info``.
 
-The derived fallback is always a legal crate name: a name that collides with a Rust
-keyword, or with a name cargo reserves (``alloc``, ``core``, ``proc_macro``, ``std``,
-``test``), is suffixed with an underscore (``test`` produces ``test_``), and one that
-is still unusable -- for example, a schema name starting with a digit -- falls back to
-``example``. A ``--crate-name`` or config-file value, by contrast, is never rewritten:
-an invalid one (``my-crate``, ``fn``, ``std``) is reported as an error rather than
-silently corrected. Cargo accepts a hyphen in a package name, but not in a ``[lib]``
+The derived fallback is always a legal crate name. A name that collides with a Rust
+keyword, or with a name cargo reserves, gets a trailing underscore: ``test`` gives
+``test_``. Cargo reserves ``alloc``, ``core``, ``proc_macro``, ``std`` and ``test``. A
+name that is still unusable, such as a schema name that starts with a digit, falls back
+to ``example``. By contrast, a ``--crate-name`` or config-file value is never rewritten.
+An invalid one, such as ``my-crate``, ``fn`` or ``std``, is reported as an error rather
+than silently corrected. Cargo accepts a hyphen in a package name but not in a ``[lib]``
 name, so use ``my_crate``.
 
 .. _rust-configuration-file:
@@ -121,10 +121,10 @@ name, so use ``my_crate``.
 Configuration File
 ------------------
 
-As an alternative to ``--crate-name``, ``gen-rust`` accepts a ``--config-file``/``-C``
-YAML file -- the **same format** used by ``gen-project``'s own ``--config-file``
-(see :doc:`project-generator`) and by ``gen-java`` (see :doc:`java`), so a single
-project-wide ``config.yaml`` can be shared between them. ``crate_name`` lives under
+As an alternative to ``--crate-name``, ``gen-rust`` accepts a YAML file through
+``--config-file`` or ``-C``. The file has the **same format** as the ``--config-file``
+of ``gen-project`` (see :doc:`project-generator`) and of ``gen-java`` (see :doc:`java`),
+so one project-wide ``config.yaml`` can serve them all. ``crate_name`` goes under
 ``generator_args.rust``:
 
 .. code-block:: yaml
@@ -137,9 +137,10 @@ project-wide ``config.yaml`` can be shared between them. ``crate_name`` lives un
         serde: true
 
 ``gen-rust`` reads only the ``generator_args.rust`` section of this file, so a full
-multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-rust`` option
-can be set there, keyed by its name with dashes as underscores; command-line options
-take precedence, and a key that is not an option is reported as a warning and ignored.
+multi-generator project ``config.yaml`` can be passed as-is. Any ``gen-rust`` option can
+be set there, under its name with each dash written as an underscore. Options given on
+the command line take precedence. A key that is not an option gets a warning and is
+ignored.
 
 Feature Compliance
 ------------------
@@ -156,7 +157,8 @@ Supported
 - Fundamental scalar types: ``string``, ``integer``, ``bool``, and ``float`` map to native Rust types.
 - Temporal scalars: ``date`` and ``datetime`` map to ``chrono``'s ``NaiveDate`` and ``NaiveDateTime`` respectively.
 - Traits for polymorphic access to class hierarchies, along with enums for class-or-subtype containers.
-- Type designators: a class-or-subtype enum is (de)serialized as a tagged union on the ``designates_type`` slot.
+- Type designators: a class-or-subtype enum is serialized and deserialized as a tagged union on the
+  ``designates_type`` slot.
 - ``subproperty_of``: a slot whose values are constrained to a slot hierarchy is emitted as a Rust enum of the slot's
   descendants.
 - PyO3 bindings for the generated structs (behind a Cargo feature flag).
@@ -182,7 +184,7 @@ Not Yet Supported
 Example
 ^^^^^^^
 
-Given these event classes from ``examples/PersonSchema/personinfo.yaml`` (``NewsEvent`` omitted):
+Given these event classes from ``examples/PersonSchema/personinfo.yaml``, leaving out ``NewsEvent``:
 
 .. code-block:: yaml
 
@@ -249,8 +251,8 @@ The generated Rust looks like this (serde and pyo3 annotations omitted for brevi
         Event(Event)
     }
 
-polymorphic traits are implemented. Fields of ``Copy`` types such as ``f64`` and ``bool`` are returned by value, others
-by reference:
+Polymorphic traits are implemented. Fields of ``Copy`` types such as ``f64`` and ``bool`` are returned by value, and
+other fields by reference:
 
 
 .. code-block:: rust

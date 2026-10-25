@@ -33,9 +33,9 @@ _DATAFRAME_GENERATOR_VERSION = "0.2.0"
 def _is_valid_python_package(package: str) -> bool:
     """Return True if the directory ``package`` names can be imported as a Python package.
 
-    ``gen-pandera --package`` is the directory the package is written to, and the
-    generated modules import each other relatively, so its last path component must
-    be a Python identifier that is not a keyword.
+    ``gen-pandera --package`` names the directory the package is written to. The
+    generated modules import each other relatively, so the last component of that
+    path must be a Python identifier that is not a keyword.
 
         >>> _is_valid_python_package("out/my_models")
         True

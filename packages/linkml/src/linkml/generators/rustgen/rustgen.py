@@ -96,8 +96,9 @@ Mapping from python types to rust types.
 
 PROTECTED_NAMES = ("type", "typeof", "abstract")
 
-# Strict and reserved Rust keywords up to the 2021 edition the generated Cargo.toml
-# declares (so not `gen`, reserved only from 2024); none can name a crate.
+# The strict and reserved Rust keywords up to the 2021 edition, which the generated
+# Cargo.toml declares. The list leaves out `gen`, which is reserved only from the
+# 2024 edition. No keyword can name a crate.
 # https://doc.rust-lang.org/reference/keywords.html
 RUST_KEYWORDS = frozenset(
     {
@@ -234,11 +235,13 @@ def class_real_descendants(sv: SchemaView, class_name: str) -> list[str]:
 def class_subtype_variants(sv: SchemaView, class_name: str) -> list[str]:
     """Return the classes an ``<Class>OrSubtype`` enum has a variant for.
 
-    That is every real descendant, plus the class itself when it can be instantiated
-    (neither abstract nor a mixin), so a slot ranged on the class can hold a plain
-    instance of it. The class goes last because untagged serde, and the PyO3 and
-    ``InlinedPair`` extractors, try variants in order, and the base struct would
-    otherwise accept a subtype's data and drop its extra fields.
+    These are every real descendant, and the class itself when it can be instantiated:
+    when it is neither abstract nor a mixin. A slot ranged on the class can then hold
+    a plain instance of it.
+
+    The class goes last because untagged serde and the PyO3 and ``InlinedPair``
+    extractors try the variants in order. If the base struct came first, it would
+    accept a subtype's data and drop the subtype's extra fields.
     """
     variants = class_real_descendants(sv, class_name)
     cls = sv.get_class(class_name)
@@ -393,11 +396,11 @@ def get_rust_range_info(
 def _is_valid_rust_ident(crate_name: str) -> bool:
     """Return True if ``crate_name`` can name the generated crate.
 
-    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml and names the
-    ``#[pymodule]`` function, so it must be an ASCII Rust identifier that is neither a
-    keyword nor a name cargo reserves for Rust's own libraries. A hyphen is fine in a
-    cargo package name but not in a ``[lib]`` name or an identifier, so it is rejected
-    here; use an underscore instead.
+    The name is written to both ``[package]`` and ``[lib]`` in Cargo.toml, and it names
+    the ``#[pymodule]`` function. So it must be an ASCII Rust identifier that is neither
+    a keyword nor a name cargo reserves for Rust's own libraries. A cargo package name
+    may hold a hyphen, but a ``[lib]`` name or an identifier may not, so this check
+    rejects it. Use an underscore instead.
 
         >>> _is_valid_rust_ident("my_schema")
         True
@@ -422,10 +425,12 @@ def _derive_crate_name(schema_name: str) -> str:
     """Derive a legal crate name from a schema name.
 
     Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
-    characters cargo refuses in a ``[lib]`` name (a hyphen or dot, both legal in a
-    schema name) become underscores, a keyword or a name cargo reserves is suffixed
-    with ``_``, the same escape :func:`protect_name` applies, and anything still
-    unusable falls back to :data:`DEFAULT_CRATE_NAME`.
+
+    - Each character cargo refuses in a ``[lib]`` name becomes an underscore. A hyphen
+      and a dot are such characters, and both are legal in a schema name.
+    - A keyword or a name cargo reserves gets a trailing ``_``, the same escape
+      :func:`protect_name` applies.
+    - Anything still unusable falls back to :data:`DEFAULT_CRATE_NAME`.
 
         >>> _derive_crate_name("person-schema")
         'person_schema'
@@ -476,7 +481,7 @@ class RustGenerator(Generator, LifecycleMixin):
     uses_schemaloader = False
     config_section_name = "rust"
     crate_name: str | None = None
-    """Name of the generated crate and its ``#[pymodule]``. If None, derived from the schema name."""
+    """Name of the generated crate and its ``#[pymodule]``. If None, it is derived from the schema name."""
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -509,7 +514,8 @@ class RustGenerator(Generator, LifecycleMixin):
         super().__post_init__()
         if self.crate_name is None:
             self.crate_name = _derive_crate_name(self.schemaview.schema.name)
-        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        # str() guards against a value that is not a string, such as an unquoted number
+        # in the config file.
         elif not _is_valid_rust_ident(str(self.crate_name)):
             raise ValueError(f"{self.crate_name!r} is not a valid Rust crate name")
 

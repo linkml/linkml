@@ -302,12 +302,12 @@ def test_cli_package(cli_runner, test_inputs_dir, tmp_path):
     ],
 )
 def test_is_valid_python_package(package, valid):
-    """--package is a directory; its last component must be importable as a package."""
+    """--package names a directory, and its last component must be importable as a package."""
     assert _is_valid_python_package(package) is valid
 
 
-# --config-file tests follow the javagen/golanggen ones of the same names; --package here
-# is the output directory, so values are tmp_path-based paths.
+# These --config-file tests follow the javagen and golanggen tests of the same names.
+# Here --package is the output directory, so its values are paths under tmp_path.
 
 
 def test_cli_config_file_sets_package(cli_runner, test_inputs_dir, tmp_path):

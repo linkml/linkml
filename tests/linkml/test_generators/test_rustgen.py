@@ -1458,8 +1458,9 @@ def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
 
 
 def test_rustgen_type_designator_tagged_roundtrip_of_base_class(temp_dir):
-    """A plain instance of a concrete base class is its own ``*OrSubtype`` variant,
-    decoded by its designator value and round-tripped, not lost or mistaken for a subtype."""
+    """A plain instance of a concrete base class is its own ``*OrSubtype`` variant. It is
+    decoded by its designator value and round-tripped, and it is neither lost nor mistaken
+    for a subtype."""
     assert shutil.which("cargo"), "cargo is required for --with-rustgen tests"
     schema_path = Path(temp_dir) / "rustgen_type_designator_base.yaml"
     schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")

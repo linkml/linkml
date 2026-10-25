@@ -84,6 +84,7 @@ def cli(ctx: click.Context, yamlfile: Path, config_file=None, **kwargs):
     config = read_generator_config(config_file, RustGenerator.config_section_name)
     apply_config_defaults(ctx, config, kwargs)
     RustGenerator.validate_generator_args(kwargs)
-    # every option but --force is a constructor argument; --force is a serialize() one
+    # Every option except --force is a constructor argument. --force is an argument
+    # to serialize().
     force = kwargs.pop("force")
     RustGenerator(yamlfile, **kwargs).serialize(force=force)

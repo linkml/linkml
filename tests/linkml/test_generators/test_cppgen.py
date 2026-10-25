@@ -858,9 +858,9 @@ def test_cli_nonexistent_template_dir(tmp_path):
 # ---------------------------------------------------------------------------
 # Tests: namespace validation and --config-file
 #
-# The --config-file tests follow the javagen/golanggen ones (test_cli_config_file_sets_package,
-# test_cli_package_overrides_config_file, test_cli_invalid_config_package_errors), with
-# --namespace in place of --package.
+# The --config-file tests follow three javagen and golanggen tests, with --namespace in
+# place of --package: test_cli_config_file_sets_package,
+# test_cli_package_overrides_config_file and test_cli_invalid_config_package_errors.
 # ---------------------------------------------------------------------------
 
 
@@ -905,8 +905,8 @@ def test_derive_cpp_namespace(schema_name, expected):
 
 @pytest.mark.parametrize("schema_name,expected", [("my--schema", "my_schema"), ("template", "template_")])
 def test_derived_namespace_is_always_valid(schema_name, expected):
-    """A schema name deriving to a reserved identifier or a keyword is escaped rather than
-    emitting a header no compiler accepts."""
+    """A schema name that derives to a reserved identifier or a keyword is escaped, rather
+    than giving a header that no compiler accepts."""
     schema = SIMPLE_SCHEMA.replace("name: simple_test", f"name: {schema_name}")
     assert f"namespace {expected} {{" in CppGenerator(schema=schema).serialize()
 
@@ -914,7 +914,7 @@ def test_derived_namespace_is_always_valid(schema_name, expected):
 @pytest.mark.parametrize("namespace", ["my-schema", "a::class", 123])
 def test_constructor_invalid_namespace_errors(namespace):
     """An explicit namespace that cannot open a C++ namespace block is rejected, including
-    a non-string one such as an unquoted number from a config file."""
+    one that is not a string, such as an unquoted number from a config file."""
     with pytest.raises(ValueError, match="not a valid C\\+\\+ namespace"):
         CppGenerator(schema=SIMPLE_SCHEMA, namespace=namespace)
 

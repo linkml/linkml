@@ -81,8 +81,8 @@ TYPE_DEFAULTS: dict[str, str] = {
 }
 
 
-# C++ keywords "not available for re-definition or overloading. As an exception, they
-# are not considered reserved in attributes (excluding attribute argument lists)".
+# The C++ keywords. A keyword cannot be redefined or overloaded. The one exception is an
+# attribute: there a keyword is not reserved, except in the attribute's argument list.
 # https://en.cppreference.com/w/cpp/keyword
 CPP_KEYWORDS = frozenset(
     {
@@ -102,9 +102,9 @@ CPP_KEYWORDS = frozenset(
 
 _CPP_IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
-# "Identifiers that contain a double underscore or begin with an underscore followed
-# by an uppercase letter" are reserved in any scope. A bare leading underscore is
-# left alone because it's reserved only at global scope and in wide use.
+# An identifier that contains a double underscore, or that begins with an underscore
+# and then an uppercase letter, is reserved in any scope. A bare leading underscore is
+# allowed, because it is reserved only at global scope and is in wide use.
 # https://en.cppreference.com/w/cpp/language/identifiers
 _CPP_RESERVED_IDENT = re.compile(r"__|^_[A-Z]")
 
@@ -115,9 +115,10 @@ DEFAULT_CPP_NAMESPACE = "example"
 def _is_valid_cpp_namespace(namespace: str) -> bool:
     """Return True if ``namespace`` is a ``::``-separated list of legal C++ identifiers.
 
-    The generated header opens it with a (since C++17) nested namespace definition
-    (``namespace a::b {``), so each segment must be an identifier that is not a
-    keyword or reserved to the implementations. See comment in next section.
+    The generated header opens it with a nested namespace definition,
+    ``namespace a::b {``, which C++17 introduced. So each segment must be an
+    identifier that is neither a keyword nor reserved to the implementation, as the
+    comment on ``_CPP_RESERVED_IDENT`` describes.
 
         >>> _is_valid_cpp_namespace("game::ontology")
         True
@@ -142,10 +143,13 @@ def _derive_cpp_namespace(schema_name: str) -> str:
     """Derive a legal C++ namespace from a schema name.
 
     Mirrors ``GolangGenerator``'s guarantee that the derived name is always valid:
-    the name is lowercased, characters illegal in an identifier (a hyphen or dot,
-    both legal in a schema name) become underscores, runs of underscores collapse
-    so no reserved ``__`` is produced, a keyword is suffixed with ``_``, and
-    anything still unusable falls back to :data:`DEFAULT_CPP_NAMESPACE`.
+
+    - The name is lowercased.
+    - Each character an identifier cannot hold becomes an underscore. A hyphen and
+      a dot are such characters, and both are legal in a schema name.
+    - A run of underscores collapses to one, so no reserved ``__`` is produced.
+    - A keyword gets a trailing ``_``.
+    - Anything still unusable falls back to :data:`DEFAULT_CPP_NAMESPACE`.
 
         >>> _derive_cpp_namespace("My-Schema")
         'my_schema'
@@ -223,7 +227,8 @@ class CppGenerator(OOCodeGenerator):
 
     def __post_init__(self):
         super().__post_init__()
-        # str() guards against a non-string value, e.g. an unquoted number in config.yaml
+        # str() guards against a value that is not a string, such as an unquoted number
+        # in the config file.
         if self.namespace is not None and not _is_valid_cpp_namespace(str(self.namespace)):
             raise ValueError(f"{self.namespace!r} is not a valid C++ namespace")
 

@@ -1,7 +1,8 @@
-"""Tests for gen-rust output that only render the crate: crate-name validation,
---config-file and the ``<Class>OrSubtype`` enums.
+"""Tests for gen-rust that render the crate without building it: crate-name validation,
+--config-file, the derived crate name, --force and -f, the ``<Class>OrSubtype`` enums,
+the --output checks, --stubgen and --expand-subproperty-of.
 
-Unlike ``test_rustgen.py`` these need no Rust toolchain and are not gated behind
+Unlike the tests in ``test_rustgen.py``, these need no Rust toolchain and run without
 ``--with-rustgen``.
 """
 
@@ -56,7 +57,7 @@ def test_is_valid_rust_ident(crate_name, valid):
 @pytest.mark.parametrize("crate_name", ["my-crate", "fn", 123])
 def test_constructor_invalid_crate_name_errors(crate_name):
     """An explicit crate name that cannot be a cargo [lib] name is rejected, including
-    a non-string one such as an unquoted number from a config file."""
+    one that is not a string, such as an unquoted number from a config file."""
     with pytest.raises(ValueError, match="not a valid Rust crate name"):
         RustGenerator(SCHEMA, crate_name=crate_name)
 
@@ -68,13 +69,13 @@ def test_validate_generator_args():
         RustGenerator.validate_generator_args({"crate_name": "my-crate"})
 
 
-# --config-file tests follow the javagen/golanggen ones (test_cli_config_file_sets_package,
-# test_cli_package_overrides_config_file, test_cli_invalid_config_package_errors), with
-# --crate-name in place of --package.
+# These --config-file tests follow three javagen and golanggen tests, with --crate-name in
+# place of --package: test_cli_config_file_sets_package,
+# test_cli_package_overrides_config_file and test_cli_invalid_config_package_errors.
 
 
 def _rust_config(tmp_path, body: str):
-    """Write the schema, a config file with a `generator_args.rust` section, and an output dir."""
+    """Write the schema, a config file with a `generator_args.rust` section, and an output directory."""
     schema_file = tmp_path / "thing.yaml"
     schema_file.write_text(SCHEMA)
     config_file = tmp_path / "config.yaml"
@@ -107,7 +108,7 @@ def test_cli_crate_name_overrides_config_file(tmp_path):
 
 
 def test_cli_config_file_sets_mode(tmp_path):
-    """A non-name option is overlaid too: `mode: file` writes one .rs file, no Cargo.toml."""
+    """An option other than the name is overlaid too: `mode: file` writes one .rs file and no Cargo.toml."""
     schema_file, config_file, out_dir = _rust_config(tmp_path, "    mode: file\n")
     out_file = out_dir / "thing.rs"
 
@@ -168,8 +169,9 @@ def test_derived_crate_name_is_set_on_the_generator():
 
 
 def test_cli_derived_crate_name_is_usable_everywhere(tmp_path):
-    """A hyphenated schema name is folded in every place the crate name lands: Cargo.toml
-    (cargo refuses a hyphen in a [lib] name), the #[pymodule] function and the stub_gen path."""
+    """A hyphen in the schema name becomes an underscore everywhere the crate name is
+    written: Cargo.toml, the #[pymodule] function and the stub_gen path. Cargo refuses a
+    hyphen in a [lib] name."""
     schema_file, out_dir = _write_schema(tmp_path, HYPHEN_SCHEMA)
 
     result = CliRunner().invoke(cli, [str(schema_file), "-o", str(out_dir), "--pyo3"])
@@ -205,8 +207,8 @@ def test_cli_force_overwrites_a_non_empty_output_dir(tmp_path):
 
 
 def test_cli_short_f_is_the_shared_format_option(tmp_path):
-    """-f has always resolved to --format, as on every generator; --force no longer claims
-    it too, so click has nothing to warn about."""
+    """-f has always resolved to --format, as it does on every generator. --force no longer
+    claims it as well, so click has nothing to warn about."""
     schema_file, out_dir = _write_schema(tmp_path)
 
     with warnings.catch_warnings(record=True) as caught:
@@ -260,14 +262,15 @@ def _render_file(tmp_path) -> str:
 
 
 def _subtype_enum_variants(code: str, enum_name: str) -> list[str]:
-    """The variant names of ``enum_name`` in declaration order."""
+    """Return the variant names of ``enum_name`` in declaration order."""
     body = re.search(rf"pub enum {enum_name} \{{(.*?)\}}", code, re.S).group(1)
     return re.findall(r"(\w+)\(\w+\)", body)
 
 
 def test_subtype_enum_includes_a_concrete_base_class_last(tmp_path):
     """A slot ranged on a concrete class must be able to hold a plain instance of it, so
-    the base gets a variant; it goes last so untagged serde tries the subtypes first."""
+    the base class gets a variant. That variant goes last, so untagged serde tries the
+    subtypes first."""
     code = _render_file(tmp_path)
 
     assert _subtype_enum_variants(code, "EventOrSubtype") == ["MedicalEvent", "NewsEvent", "Event"]
@@ -281,7 +284,7 @@ def test_subtype_enum_excludes_an_abstract_base_class(tmp_path):
 
 
 def test_subtype_trait_impl_matches_every_variant(tmp_path):
-    """The trait impl on the enum must match the base variant too, or it doesn't compile."""
+    """The trait impl on the enum must match the base variant too, or the crate does not compile."""
     out_dir = tmp_path / "out"
     out_dir.mkdir()
     RustGenerator(SUBTYPE_SCHEMA, output=str(out_dir)).serialize()
@@ -321,8 +324,8 @@ classes:
 
 
 def test_cli_output_is_required(tmp_path):
-    """serialize() needs an output in both modes; asking for it up front gives a usage
-    error instead of a ValueError traceback."""
+    """serialize() needs an output in both modes. Requiring --output up front gives a
+    usage error in place of a ValueError traceback."""
     schema_file, _ = _write_schema(tmp_path)
 
     result = CliRunner().invoke(cli, [str(schema_file)])
@@ -362,8 +365,8 @@ def test_cli_config_file_disables_stubgen(tmp_path):
 
 @pytest.mark.parametrize("flag,expanded", [("--expand-subproperty-of", True), ("--no-expand-subproperty-of", False)])
 def test_cli_expand_subproperty_of(tmp_path, flag, expanded):
-    """With the flag on, a `subproperty_of` slot becomes an enum of its descendants;
-    off, it stays a plain String."""
+    """With the flag on, a `subproperty_of` slot becomes an enum of its descendants.
+    With the flag off, the slot stays a plain String."""
     schema_file, out_dir = _write_schema(tmp_path, SUBPROPERTY_SCHEMA)
     out_file = out_dir / "assoc.rs"
 
