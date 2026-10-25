@@ -16,8 +16,9 @@ def test_sparqlgen_does_not_mutate_input_schemaview(kitchen_sink_path):
     """
     Materialization must not mutate a caller-supplied schema.
 
-    Regression for #3770: sparqlgen moved ``attributes`` into ``slots`` on the shared schema, so a
-    later generator reusing the same SchemaView (e.g. under gen-project) saw its attributes gone.
+    Regression for #3770: sparqlgen moved ``attributes`` into ``slots`` on the shared schema. A later
+    generator that reused the same SchemaView, for example under gen-project, then found the attributes
+    missing.
     """
     sv = SchemaView(kitchen_sink_path)
     before = {cn: len(c.attributes) for cn, c in sv.all_classes().items()}
@@ -93,8 +94,8 @@ def test_sparqlgen_emits_queries_for_imported_classes(tmp_path):
     A root schema that only ``imports:`` other modules must still produce queries for the imported
     classes when ``mergeimports`` is enabled (the default).
 
-    Regression for the bug where ``SparqlGenerator`` built its queries from the unmaterialised root
-    ``schema.classes`` and left the output directory empty.
+    Regression for #3636: ``SparqlGenerator`` built its queries only from the root ``schema.classes``,
+    which holds no imported classes, and left the output directory empty.
     """
     main = _write_import_only_fixture(tmp_path)
     out_dir = tmp_path / "out"
