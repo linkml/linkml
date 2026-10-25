@@ -36,11 +36,11 @@ def _get_default_validator(
         used in place of the default and ``closed`` is ignored.
     """
     try:
-        if isinstance(schema, Path):
-            schema = str(schema)
         if isinstance(schema, dict):
             schema = SchemaDefinition(**schema)
-        elif isinstance(schema, str):
+        elif isinstance(schema, str | Path):
+            # The loader records ``source_file`` on the schema when ``schema`` is a path,
+            # which is needed to resolve relative imports.
             schema = yaml_loader.load(schema, target_class=SchemaDefinition)
 
         if not isinstance(schema, SchemaDefinition):

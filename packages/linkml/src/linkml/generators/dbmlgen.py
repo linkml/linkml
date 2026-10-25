@@ -4,7 +4,6 @@ import click
 
 from linkml.utils.generator import Generator
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 
 def _map_range_to_dbml_type(range_name: str) -> str:
@@ -33,11 +32,11 @@ class DBMLGenerator(Generator):
     generatorname = "dbmlgen"
     generatorversion = "0.2.0"
     valid_formats = ["dbml"]
+    uses_schemaloader = False
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
 
     def serialize(self) -> str:
         """
@@ -70,8 +69,7 @@ class DBMLGenerator(Generator):
         """
         dbml = [f"Table {camelcase(class_name)} {{"]
 
-        for slot_name in self.schemaview.class_induced_slots(class_name):
-            slot = self.schemaview.get_slot(slot_name.name)
+        for slot in self.schemaview.class_induced_slots(class_name):
             dbml.append(self._generate_column(slot))
 
         dbml.append("}\n")
@@ -108,23 +106,31 @@ class DBMLGenerator(Generator):
         """
         relationships = []
         for class_name, class_def in self.schemaview.all_classes().items():
-            for slot_name in self.schemaview.class_induced_slots(class_name):
-                slot = self.schemaview.get_slot(slot_name.name)
-
+            for slot in self.schemaview.class_induced_slots(class_name):
                 # Check if the slot references another class
                 if slot.range in self.schemaview.all_classes():
                     # Find the identifier slot of the referenced class
                     identifier_slot_name = next(
                         (
-                            slot_name.name
-                            for slot_name in self.schemaview.class_induced_slots(slot.range)
-                            if self.schemaview.get_slot(slot_name.name).identifier
+                            target_slot.name
+                            for target_slot in self.schemaview.class_induced_slots(slot.range)
+                            if target_slot.identifier
                         ),
                         None,
                     )
 
                     if identifier_slot_name is None:
-                        raise ValueError(f"Referenced class '{slot.range}' does not have an identifier slot.")
+                        # Inlined / embedded references — where the referenced
+                        # class has no identifier — are a legitimate LinkML
+                        # pattern. DBML supports them: the foreign-key column
+                        # simply has no ``Ref:`` line. Skip rather than raise.
+                        self.logger.debug(
+                            "Skipping DBML relationship for %s.%s -> %s: referenced class has no identifier slot.",
+                            class_name,
+                            slot.name,
+                            slot.range,
+                        )
+                        continue
 
                     # Generate the DBML relationship
                     relationships.append(
