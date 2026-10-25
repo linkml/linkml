@@ -402,6 +402,28 @@ the same in both drafts. ``linkml-validate`` reads ``$schema`` and validates
 with the matching dialect.
 
 
+Definition names
+^^^^^^^^^^^^^^^^
+
+Classes and enums become entries under ``$defs``, keyed in CamelCase by
+default (``node interface`` becomes ``NodeInterface``), or by the name as
+written under ``--preserve-names``. A published specification may name its
+definitions in another style. ``--def-name-style`` chooses the style of every
+key and of every ``$ref`` that points at one:
+
+.. code:: bash
+
+   gen-json-schema --def-name-style kebab-case personinfo.yaml
+
+The styles are ``CamelCase``, ``camelCase``, ``snake_case``, ``kebab-case``
+and ``preserve``. With ``kebab-case``, the class ``ControlDetail`` is keyed
+``control-detail`` and referenced as ``#/$defs/control-detail``.
+
+The option names definitions only. Property names still come from the slot
+name or its ``alias``, under the rules of ``--preserve-names``. Under
+``--use-curies``, class definitions are keyed by CURIE whatever the style.
+
+
 Patterns
 ^^^^^^^^
 

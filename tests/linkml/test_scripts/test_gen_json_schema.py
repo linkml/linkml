@@ -139,3 +139,12 @@ def test_draft_option_rejects_unknown(input_path):
     result = runner.invoke(cli, ["--draft", "draft-07", str(input_path("roottest.yaml"))])
     assert result.exit_code != 0
     assert "Invalid value for '--draft'" in result.output
+
+
+def test_def_name_style_option(input_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--def-name-style", "kebab-case", str(input_path("roottest.yaml"))])
+    assert result.exit_code == 0
+    defs = json.loads(result.output)["$defs"]
+    assert defs
+    assert all(key == key.lower() and "_" not in key for key in defs)
