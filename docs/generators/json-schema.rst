@@ -417,7 +417,10 @@ key and of every ``$ref`` that points at one:
 
 The styles are ``CamelCase``, ``camelCase``, ``snake_case``, ``kebab-case``
 and ``preserve``. With ``kebab-case``, the class ``ControlDetail`` is keyed
-``control-detail`` and referenced as ``#/$defs/control-detail``.
+``control-detail`` and referenced as ``#/$defs/control-detail``. If two names
+give the same key, as ``HttpServer`` and ``HTTPServer`` do in ``kebab-case``,
+the generator stops with an error instead of letting one definition replace
+the other.
 
 The option names definitions only. Property names still come from the slot
 name or its ``alias``, under the rules of ``--preserve-names``. Under

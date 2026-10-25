@@ -279,6 +279,8 @@ class JsonSchema(dict):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
+        # The name each $defs key was made from, so two names that give one key are caught.
+        self._def_names = {}
 
     @classmethod
     def def_key(cls, name: str, keep: bool = False) -> str:
@@ -292,6 +294,12 @@ class JsonSchema(dict):
 
     def add_def(self, name: str, subschema: "JsonSchema", is_curie: bool = False, preserve_name: bool = False) -> None:
         canonical_name = self.def_key(name, keep=preserve_name or is_curie)
+        defined_name = self._def_names.setdefault(canonical_name, name)
+        if defined_name != name:
+            raise ValueError(
+                f"{defined_name!r} and {name!r} would share the $defs key {canonical_name!r}; "
+                "rename one of them or choose another def_name_style"
+            )
 
         if "$defs" not in self:
             self["$defs"] = {}

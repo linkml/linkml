@@ -2273,3 +2273,33 @@ def test_def_name_style_unknown_value_raises(tmp_path):
     schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
     with pytest.raises(ValueError, match="Unknown definition name style"):
         JsonSchemaGenerator(str(schema_file), def_name_style="Title Case")
+
+
+DEF_NAME_COLLISION_SCHEMA = """
+id: https://example.org/def-name-collision
+name: def-name-collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  HttpServer:
+    attributes:
+      port:
+        range: integer
+  HTTPServer:
+    attributes:
+      host:
+"""
+
+
+@pytest.mark.parametrize("style", ["snake_case", "kebab-case"])
+def test_def_name_style_collision_raises(tmp_path, style):
+    """Two names that give one key raise, instead of one definition silently replacing the other."""
+    schema_file = tmp_path / "def_name_collision.yaml"
+    schema_file.write_text(DEF_NAME_COLLISION_SCHEMA)
+
+    assert {"HttpServer", "HTTPServer"} <= set(json.loads(JsonSchemaGenerator(str(schema_file)).serialize())["$defs"])
+    with pytest.raises(ValueError, match=r"'HttpServer' and 'HTTPServer' would share the \$defs key"):
+        JsonSchemaGenerator(str(schema_file), def_name_style=style).serialize()
