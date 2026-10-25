@@ -9,7 +9,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, cast
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 import click
 from jinja2 import Template
@@ -147,29 +147,27 @@ def _option_error(draft: str, def_name_style: str | None) -> str | None:
 def _relative_ref_base(target: str, base: str) -> str:
     """The URI to write in a ``$ref`` from the document at *base* to the document at *target*.
 
-    When both URIs share scheme, authority and parent path, this is the relative
-    reference of RFC 3986, the last path segment of *target*, which resolves against
-    the referring document's ``$id``. Otherwise it is *target* itself.
+    This is the last path segment of *target*, a relative reference of RFC 3986, when
+    it resolves against the referring document's ``$id`` back to *target*. That needs a
+    shared scheme, authority and parent path, and a scheme with hierarchical paths, as
+    ``https`` has and ``urn`` does not. A segment with a colon is written after ``./``,
+    so that it is not read as a scheme. Otherwise the reference is *target* itself.
 
     Examples:
         >>> _relative_ref_base("https://example.org/meta/control.json", "https://example.org/meta/core.json")
         'control.json'
+        >>> _relative_ref_base("https://example.org/meta/ex:units", "https://example.org/meta/core.json")
+        './ex:units'
         >>> _relative_ref_base("https://example.org/units", "https://example.org/meta/core.json")
         'https://example.org/units'
-        >>> _relative_ref_base("http://example.org/meta/a.json", "https://example.org/meta/b.json")
-        'http://example.org/meta/a.json'
+        >>> _relative_ref_base("urn:example:units", "urn:example:core")
+        'urn:example:units'
     """
-    target_parts = urlsplit(target)
-    base_parts = urlsplit(base)
-    name = posixpath.basename(target_parts.path)
-    if (
-        name
-        and not target_parts.query
-        and (target_parts.scheme, target_parts.netloc) == (base_parts.scheme, base_parts.netloc)
-        and posixpath.dirname(target_parts.path) == posixpath.dirname(base_parts.path)
-    ):
-        return name
-    return target
+    name = posixpath.basename(urlsplit(target).path)
+    if not name:
+        return target
+    relative = f"./{name}" if ":" in name else name
+    return relative if urljoin(base, relative) == target else target
 
 
 # Keywords whose values map names to subschemas, so a key there is a name, not a keyword.

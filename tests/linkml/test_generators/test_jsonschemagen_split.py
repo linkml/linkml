@@ -10,7 +10,7 @@ import jsonschema
 import pytest
 from referencing import Registry, Resource
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.jsonschemagen import JsonSchemaGenerator, _relative_ref_base
 
 pytestmark = pytest.mark.jsonschemagen
 
@@ -66,6 +66,23 @@ classes:
     class_uri: linkml:Any
 """
 
+URN_CORE_MODULE = """
+id: urn:example:core
+name: core
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - units
+default_range: string
+classes:
+  Architecture:
+    tree_root: true
+    attributes:
+      every:
+        range: TimeUnit
+"""
+
 
 @pytest.fixture
 def core(input_path) -> str:
@@ -115,6 +132,39 @@ def test_split_refs_are_relative_under_the_same_parent(core):
     for ref in _refs(generated):
         if ref.startswith("#"):
             assert ref.removeprefix("#/$defs/") in generated["$defs"]
+
+
+@pytest.mark.parametrize(
+    "target,expected",
+    [
+        ("https://example.org/meta/control.json", "control.json"),
+        ("https://example.org/meta/ex:units", "./ex:units"),
+        ("https://example.org/units", "https://example.org/units"),
+        ("http://example.org/meta/control.json", "http://example.org/meta/control.json"),
+        ("https://vendor.example.com/meta/vendor.json", "https://vendor.example.com/meta/vendor.json"),
+        ("https://example.org/meta/control.json?v=1", "https://example.org/meta/control.json?v=1"),
+        ("https://example.org/meta/control/", "https://example.org/meta/control/"),
+        ("urn:example:control", "urn:example:control"),
+    ],
+)
+def test_relative_ref_base(target, expected):
+    """A ``$ref`` is relative only when it resolves against the referring ``$id`` back to *target*."""
+    assert _relative_ref_base(target, "https://example.org/meta/core.json") == expected
+
+
+def test_split_refs_between_urns_are_absolute(tmp_path):
+    """A URN has no path to resolve a relative reference against, so a ``$ref`` to one is written in full."""
+    (tmp_path / "units.yaml").write_text(UNITS_MODULE.replace("https://example.org/spec/units", "urn:example:units"))
+    (tmp_path / "core.yaml").write_text(URN_CORE_MODULE)
+    documents = [
+        json.loads(JsonSchemaGenerator(str(tmp_path / f"{name}.yaml"), split=True).serialize())
+        for name in ("core", "units")
+    ]
+
+    assert set(_refs(documents[0])) == {"urn:example:units#/$defs/TimeUnit"}
+    validator = _validator(documents, "urn:example:core")
+    assert validator.is_valid({"every": "day"})
+    assert not validator.is_valid({"every": "hour"})
 
 
 def test_split_off_keeps_one_document(core):
