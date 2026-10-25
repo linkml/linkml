@@ -422,8 +422,8 @@ give the same key, as ``HttpServer`` and ``HTTPServer`` do in ``kebab-case``,
 the generator stops with an error instead of letting one definition replace
 the other.
 
-The option names definitions only. Property names still come from the slot
-name or its ``alias``, under the rules of ``--preserve-names``. Under
+The option sets the names of definitions only. Property names still come
+from the slot name or its ``alias``, under the rules of ``--preserve-names``. Under
 ``--use-curies``, class definitions are keyed by CURIE whatever the style.
 
 

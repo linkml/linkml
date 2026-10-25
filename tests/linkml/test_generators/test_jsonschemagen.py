@@ -25,6 +25,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders import yaml_loader
 from tests.linkml.test_generators.test_pythongen import make_python
+from tests.linkml.utils.jsonschema_refs import all_refs
 
 logger = logging.getLogger(__name__)
 
@@ -2193,15 +2194,6 @@ enums:
 """
 
 
-def _refs(node) -> list[str]:
-    """Every ``$ref`` value in a generated document."""
-    if isinstance(node, dict):
-        return [v for k, v in node.items() if k == "$ref"] + [r for v in node.values() for r in _refs(v)]
-    if isinstance(node, list):
-        return [r for v in node for r in _refs(v)]
-    return []
-
-
 @pytest.mark.parametrize(
     "style,expected",
     [
@@ -2220,7 +2212,7 @@ def test_def_name_style_keys_and_refs_agree(tmp_path, style, expected):
 
     lax_key = expected[0] + JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX
     assert sorted(generated["$defs"]) == sorted(expected + [lax_key])
-    refs = _refs(generated)
+    refs = all_refs(generated)
     assert f"#/$defs/{lax_key}" in refs
     for ref in refs:
         assert ref.removeprefix("#/$defs/") in generated["$defs"]
@@ -2237,7 +2229,7 @@ def test_def_name_style_keys_and_refs_agree(tmp_path, style, expected):
     [(False, "CamelCase"), (True, "preserve")],
 )
 def test_def_name_style_unset_follows_preserve_names(tmp_path, preserve_names, explicit_style):
-    """Unset, the style is CamelCase, or preserve under ``preserve_names``, so default output is unchanged."""
+    """With ``def_name_style`` unset, default output is unchanged: CamelCase, or preserve under ``preserve_names``."""
     schema_file = tmp_path / "def_name_style.yaml"
     schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
     unset = JsonSchemaGenerator(str(schema_file), preserve_names=preserve_names).serialize()
@@ -2253,7 +2245,7 @@ def test_def_name_style_unset_follows_preserve_names(tmp_path, preserve_names, e
     [(None, {"RateUnit", "IntervalKind"}), ("kebab-case", {"rate-unit", "interval-kind"})],
 )
 def test_def_name_style_with_use_curies(tmp_path, style, enum_keys):
-    """Class definitions stay keyed by CURIE under ``use_curies``; enums take the style, refs included."""
+    """Class definitions stay keyed by CURIE under ``use_curies``. Enums take the style, and so do refs to them."""
     schema_file = tmp_path / "def_name_style.yaml"
     schema_file.write_text(
         DEF_NAME_STYLE_SCHEMA.replace(
@@ -2264,7 +2256,7 @@ def test_def_name_style_with_use_curies(tmp_path, style, enum_keys):
     generated = json.loads(JsonSchemaGenerator(str(schema_file), use_curies=True, def_name_style=style).serialize())
 
     assert {"ex:ControlDetail", "ex:ControlRequirement", "ex:NodeInterface"} | enum_keys <= set(generated["$defs"])
-    for ref in _refs(generated):
+    for ref in all_refs(generated):
         assert ref.removeprefix("#/$defs/") in generated["$defs"]
 
 
@@ -2319,7 +2311,7 @@ classes:
 
 @pytest.mark.parametrize("style", ["snake_case", "kebab-case"])
 def test_def_name_style_collision_raises(tmp_path, style):
-    """Two names that give one key raise, instead of one definition silently replacing the other."""
+    """The generator raises when two names give one key, rather than let one definition silently replace the other."""
     schema_file = tmp_path / "def_name_collision.yaml"
     schema_file.write_text(DEF_NAME_COLLISION_SCHEMA)
 
