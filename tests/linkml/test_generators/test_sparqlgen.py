@@ -89,11 +89,13 @@ def _write_import_only_fixture(tmp_path):
 
 
 def test_sparqlgen_emits_queries_for_imported_classes(tmp_path):
-    """A root schema that only ``imports:`` other modules must still produce
-    queries for the imported classes when ``mergeimports`` is enabled
-    (the default). Regression for the bug where ``SparqlGenerator`` rendered
-    against the unmaterialised root ``schema.classes``, leaving the output
-    directory empty."""
+    """
+    A root schema that only ``imports:`` other modules must still produce queries for the imported
+    classes when ``mergeimports`` is enabled (the default).
+
+    Regression for the bug where ``SparqlGenerator`` built its queries from the unmaterialised root
+    ``schema.classes`` and left the output directory empty.
+    """
     main = _write_import_only_fixture(tmp_path)
     out_dir = tmp_path / "out"
 
@@ -110,9 +112,11 @@ def test_sparqlgen_emits_queries_for_imported_classes(tmp_path):
 
 
 def test_sparqlgen_no_mergeimports_skips_imported_classes(tmp_path):
-    """With ``--no-mergeimports`` the generator should restrict itself to
-    classes declared in the root schema. The import-only fixture defines no
-    direct classes, so no ``.rq`` files should be written."""
+    """
+    With ``--no-mergeimports``, the generator should use only the classes declared in the root schema.
+
+    The root schema of the import-only fixture declares no classes, so no ``.rq`` files should be written.
+    """
     main = _write_import_only_fixture(tmp_path)
     out_dir = tmp_path / "out"
 
