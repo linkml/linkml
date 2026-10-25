@@ -319,6 +319,8 @@ class RustProperty(RustTemplateModel):
     template: ClassVar[str] = "property.rs.jinja"
     inline_mode: str
     alias: str | None = None
+    rename: str | None = None
+    """The key for this property in serialized data, when it differs from the field name"""
     generate_merge: bool = False
     container_mode: str
     name: str
@@ -387,9 +389,11 @@ class AsKeyValue(RustTemplateModel):
     template: ClassVar[str] = "as_key_value.rs.jinja"
     name: str
     key_property_name: str
+    key_property_serde_name: str
     key_property_type: str
     key_property_aliases: list[str] = []
     value_property_name: str
+    value_property_serde_name: str
     value_property_type: str
     can_convert_from_primitive: bool = False
     can_convert_from_empty: bool = False
