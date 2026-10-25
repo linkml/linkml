@@ -5,7 +5,7 @@ from linkml_runtime import SchemaView
 
 
 def test_sparqlgen(kitchen_sink_path):
-    """Generate java classes"""
+    """Generate SPARQL queries for the kitchen sink schema."""
     gen = SparqlGenerator(kitchen_sink_path)
     sparql = gen.serialize()
     # TODO: add more checks
