@@ -68,7 +68,6 @@ def test_base_class_setattr_with_no_defn() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 (#723): PermissibleValue -> EnumDefinitionImpl promotion
 
 
 def test_member_is_enum_instance_not_permissible_value() -> None:
@@ -110,6 +109,7 @@ def test_permissible_value_remains_clean_dataclass() -> None:
         hash(pv)
 
 
+# ---------------------------------------------------------------------------
 # 1. Equality comparison
 # ---------------------------------------------------------------------------
 
@@ -230,3 +230,49 @@ def test_pattern_match_workaround_no_longer_needed() -> None:
     elif value == EnumValues.B:
         matched = "B"
     assert matched == "A"
+
+
+# ---------------------------------------------------------------------------
+# Only permissible-value entries resolve as codes
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", ["text", "code", "meaning", "_defn", "_addvals", "__init__"])
+def test_enum_class_attribute_names_are_not_codes(name: str) -> None:
+    """The metaclass walks the MRO; properties, methods and ``_defn`` must not match."""
+    assert name not in EnumValues
+    assert name not in EnumValuesWrapper
+    with pytest.raises(KeyError):
+        EnumValues[name]
+    with pytest.raises(ValueError, match="Unknown EnumValues enumeration code"):
+        EnumValues(name)
+
+
+# ---------------------------------------------------------------------------
+# _lookup hook (code_set enums): __setitem__ must be able to add a value
+# ---------------------------------------------------------------------------
+
+
+class LookupEnum(EnumDefinitionImpl):
+    """Resolves unknown codes through the documented ``_lookup`` hook."""
+
+    _defn = EnumDefinition(name="LookupEnum", code_set="http://example.org/codes")
+
+    A = PermissibleValue(text="A")
+
+    def _lookup(self, key: str) -> PermissibleValue | None:
+        return PermissibleValue(text=key, meaning=f"ex:{key}") if key.startswith("X") else None
+
+
+def test_lookup_hook_adds_value_to_class() -> None:
+    inst = LookupEnum("X1")
+    assert inst == "X1"
+    assert inst.meaning == "ex:X1"
+    assert "X1" in LookupEnum
+    assert LookupEnum["X1"].text == "X1"
+    assert LookupEnum("X1") == inst
+
+
+def test_lookup_hook_miss_still_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown LookupEnum enumeration code"):
+        LookupEnum("B")
