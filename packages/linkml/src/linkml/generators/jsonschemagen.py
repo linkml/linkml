@@ -304,6 +304,10 @@ class JsonSchema(dict):
         if "$defs" not in self:
             self["$defs"] = {}
 
+        # A definition without a title takes its key as the title, so def_name_style styles
+        # titles too: under kebab-case the title of ControlDetail is control-detail. This
+        # keeps the rule under which the title was the CamelCase key. Titling definitions
+        # by element name instead would change the titles of documents generated today.
         if "title" not in subschema:
             subschema["title"] = canonical_name
 
