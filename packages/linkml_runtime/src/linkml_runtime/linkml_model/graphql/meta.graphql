@@ -112,6 +112,7 @@ type AnonymousEnumExpression implements EnumExpression
     codeSetVersion: String
     pvFormula: PvFormulaOptions
     permissibleValues: [PermissibleValue]
+    isOpen: Boolean
     include: [AnonymousEnumExpression]
     minus: [AnonymousEnumExpression]
     inherits: [EnumDefinition]
@@ -708,6 +709,7 @@ type EnumDefinition implements EnumExpression
     codeSetVersion: String
     pvFormula: PvFormulaOptions
     permissibleValues: [PermissibleValue]
+    isOpen: Boolean
     include: [AnonymousEnumExpression]
     minus: [AnonymousEnumExpression]
     inherits: [EnumDefinition]
@@ -723,6 +725,7 @@ type EnumExpression
     codeSetVersion: String
     pvFormula: PvFormulaOptions
     permissibleValues: [PermissibleValue]
+    isOpen: Boolean
     include: [AnonymousEnumExpression]
     minus: [AnonymousEnumExpression]
     inherits: [EnumDefinition]
