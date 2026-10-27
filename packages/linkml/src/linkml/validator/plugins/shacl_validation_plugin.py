@@ -81,10 +81,15 @@ class ShaclValidationPlugin(ValidationPlugin):
                     )
                     return
         data_graph = rdflib_dumper.as_rdf_graph(instance, schemaview=context.schema_view)
+        # pyshacl 0.40 made data_graph a positional DataGraph and moved inference into
+        # options. Note that inference is currently inert: the data graph holds only
+        # instance triples, no RDFS axioms, and no ont_graph is supplied, so there is
+        # nothing to reason over. It is kept so the setting stays correct if an
+        # ont_graph is ever passed.
         validator = pyshacl.Validator(
+            pyshacl.graph_abstraction.DataGraph.from_rdflib_graph(data_graph),
             shacl_graph=shacl_graph,
-            data_graph=data_graph,
-            inference="rdfs",
+            options={"inference": "rdfs"},
         )
         conforms, report_graph, report_text = validator.run()
         for s, _, o in report_graph.triples((None, SH.result, None)):

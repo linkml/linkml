@@ -5,6 +5,6 @@ description: |
   Schema for testing remote imports via a prefix. This produces yields exactly the same schema
   as creature_schema.yaml, but pulls in the files via remote import.
 prefixes:
-  mcc: https://github.com/linkml/linkml/raw/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/
+  mcc: https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/
 imports:
   - mcc:creature_schema

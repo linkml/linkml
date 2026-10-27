@@ -9,6 +9,37 @@ class EnumDefinitionMeta(type):
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
         cls._addvals()
+        cls._promote_permissible_values()
+
+    def _promote_permissible_values(cls) -> None:
+        """Replace bare ``PermissibleValue`` class attributes with real enum instances.
+
+        So ``pythongen`` emits each enum member as a plain ``PermissibleValue``
+        class attribute, e.g. ``ALIVE = PermissibleValue(text="ALIVE")``.  On
+        its own that leaves ``MyEnum.ALIVE`` as a raw metamodel object rather
+        than a member of the enum (https://github.com/linkml/linkml/issues/723).
+
+        This method runs once per class at metaclass ``__init__`` time.  For
+        each such attribute it calls the enum constructor (``cls(pv)``) and
+        rebinds the name to the result, so ``MyEnum.ALIVE`` becomes an
+        ``EnumDefinitionImpl`` instance ("promotion").
+
+        Two cases are handled implicitly ("no permissible values"):
+
+        * ``EnumDefinitionImpl`` base class has ``_defn = None`` and is skipped.
+        * Identifier-wrapper subclasses (``class Wrapper(Parent): pass``) is
+          no-op. Lookups fall through the MRO to the parent's promoted instances.
+        """
+        if getattr(cls, "_defn", None) is None:
+            return
+        # Lazy import: ``linkml_runtime.linkml_model.meta`` depends on this
+        # module via ``EnumDefinitionImpl`` so the top-level import would be
+        # circular.
+        from linkml_runtime.linkml_model.meta import PermissibleValue
+
+        for name, attr in list(cls.__dict__.items()):
+            if isinstance(attr, PermissibleValue):
+                type.__setattr__(cls, name, cls(attr))
 
     def __getitem__(cls, item):
         for klass in cls.__mro__:
@@ -43,14 +74,8 @@ def isinstance_dt(cls: type, inst: str) -> bool:
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None  # Overridden by implementation
 
-    def __init__(self, code: "str | Curie | EnumDefinitionImpl") -> None:
-        # Fast-path: if code is already an EnumDefinitionImpl instance (e.g. a
-        # subclass enum passed through a duplicate cast in generated __post_init__
-        # code), extract its text and re-resolve in this class's namespace.  This
-        # makes the constructor idempotent across subclass-to-parent-class casts.
-        if isinstance(code, EnumDefinitionImpl):
-            key = code._code.text
-        elif isinstance_dt(code, "PermissibleValue"):
+    def __init__(self, code: str | Curie) -> None:
+        if isinstance_dt(code, "PermissibleValue"):
             key = code.text
         elif isinstance(code, Curie):
             key = str(code)
@@ -74,7 +99,14 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
             else:
                 self._code = code
         else:
-            self._code = self.__class__[key]
+            val = self.__class__[key]
+            # After promotion the class attribute is an ``EnumDefinitionImpl``;
+            # unwrap to its underlying ``PermissibleValue`` so ``self._code``
+            # always stores a PV.
+            if isinstance_dt(val, "EnumDefinitionImpl"):
+                self._code = val._code
+            else:
+                self._code = val
 
     def _lookup(self, key: str) -> Optional["PermissibleValue"]:
         """
@@ -94,6 +126,19 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     @code.setter
     def code(self, val):
         self._code = val
+
+    @property
+    def text(self):
+        """The permissible-value text (canonical short code)."""
+        return self._code.text
+
+    @property
+    def description(self):
+        return self._code.description
+
+    @property
+    def title(self):
+        return self._code.title
 
     @property
     def meaning(self):

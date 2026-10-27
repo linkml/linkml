@@ -10,4 +10,4 @@ class PydanticIfAbsentProcessor(PythonIfAbsentProcessor):
     def map_enum_default_value(
         self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
     ):
-        return f"{enum_name}.{permissible_value_name}"
+        return f'{enum_name}("{permissible_value_name}")'
