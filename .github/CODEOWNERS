@@ -1,11 +1,13 @@
 # LinkML CODEOWNERS — DRAFT (see linkml/linkml#3140)
 #
-# Opt-in model: no default (`*`) rule. Paths not listed here have no required
-# CODEOWNER and are reviewed normally. Rules only appear where someone has
-# explicitly volunteered to steward an area.
+# Default model: all paths require core-team approval unless a more specific
+# CODEOWNER rule applies. Later rules override earlier ones (last match wins),
+# so per-subsystem rules below take precedence over the default for their paths.
 #
 # Process for adding rules: docs/maintainers/codeowners.md
-# Later rules override earlier ones for matched paths.
+
+# --- Default: require core-team approval everywhere ---
+*  @linkml/core-team
 
 # --- CODEOWNERS and governance docs ---
 /.github/CODEOWNERS                         @linkml/core-team
@@ -13,13 +15,17 @@
 /docs/maintainers/codeowners.md             @linkml/core-team
 /docs/maintainers/generator-governance.md   @linkml/core-team
 
-# --- Per-subsystem ownership (opt-in) ---
+# --- Per-subsystem ownership (overrides the default for these paths) ---
 
 # javagen
-/docs/generators/java.rst                            @gouttegd
-/packages/linkml/src/linkml/generators/javagen.py    @gouttegd
-/packages/linkml/src/linkml/generators/javagen/      @gouttegd
-/tests/linkml/test_generators/test_javagen.py        @gouttegd
+#
+# EXPERIMENT: delegated self-contained area, see
+# docs/maintainers/codeowners.md#experiment-delegating-self-contained-areas
+
+/docs/generators/java.rst                            @gouttegd @noelmcloughlin
+/packages/linkml/src/linkml/generators/javagen.py    @gouttegd @noelmcloughlin
+/packages/linkml/src/linkml/generators/javagen/      @gouttegd @noelmcloughlin
+/tests/linkml/test_generators/test_javagen.py        @gouttegd @noelmcloughlin
 
 # pydanticgen:
 /packages/linkml/src/linkml/generators/pydanticgen/                  @sneakers-the-rat @kevinschaper
@@ -31,7 +37,21 @@
 /tests/linkml_runtime/test_loaders_dumpers/test_dumpers_pydantic.py  @sneakers-the-rat @kevinschaper
 /tests/linkml_runtime/test_loaders_dumpers/test_loaders_pydantic.py  @sneakers-the-rat @kevinschaper
 
-# yarrrml:
-/docs/generators/yarrrml.rst                          @Ostrzyciel @lapkinvladimir
-/packages/linkml/src/linkml/generators/yarrrmlgen.py  @Ostrzyciel @lapkinvladimir
-/tests/linkml/test_generators/test_yarrrmlgen.py      @Ostrzyciel @lapkinvladimir
+# openapigen:
+#
+# EXPERIMENT: delegated self-contained area, see
+# docs/maintainers/codeowners.md#experiment-delegating-self-contained-areas
+# @Silvanoc and @noelmcloughlin jointly own the OpenAPI generator and can
+# review each other's changes and merge them without core-team approval.
+
+/docs/generators/openapi.rst                             @Silvanoc @noelmcloughlin
+/packages/linkml/src/linkml/generators/openapigen.py     @Silvanoc @noelmcloughlin
+/tests/linkml/test_generators/test_openapigen.py         @Silvanoc @noelmcloughlin
+/tests/linkml/test_generators/input/openapi/             @Silvanoc @noelmcloughlin
+/tests/linkml/test_scripts/test_gen_openapi.py           @Silvanoc @noelmcloughlin
+
+# zodgen:
+/docs/generators/zod.rst                                          @linkml/core-team @noelmcloughlin
+/packages/linkml/src/linkml/generators/zodgen.py                  @linkml/core-team @noelmcloughlin
+/packages/linkml/src/linkml/generators/zod_ifabsent_processor.py  @linkml/core-team @noelmcloughlin
+/tests/linkml/test_generators/test_zodgen.py                      @linkml/core-team @noelmcloughlin

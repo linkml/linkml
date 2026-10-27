@@ -781,8 +781,7 @@
          "@id": "source_ontology"
       },
       "status": {
-         "@type": "xsd:anyURI",
-         "@id": "bibo:status"
+         "@id": "status"
       },
       "string_serialization": {
          "@id": "string_serialization"

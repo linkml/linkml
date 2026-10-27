@@ -383,6 +383,7 @@ class RustGenerator(Generator, LifecycleMixin):
     generatorversion = "0.0.2"
     valid_formats = ["rust"]
     file_extension = "rs"
+    uses_schemaloader = False
     crate_name: str | None = None
 
     pyo3: bool = True
@@ -412,7 +413,6 @@ class RustGenerator(Generator, LifecycleMixin):
     _subproperty_enums: dict = None  # Cache for generated subproperty enums
 
     def __post_init__(self):
-        self.schemaview: SchemaView = SchemaView(self.schema)
         self._subproperty_enums = {}  # Cache for generated subproperty enums
         super().__post_init__()
 

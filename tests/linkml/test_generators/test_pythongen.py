@@ -20,6 +20,19 @@ def make_python(infile) -> ModuleType:
     return kitchen_module
 
 
+def test_structured_patterns_are_resolved_without_modifying_schema(input_path) -> None:
+    """Generate regular patterns from structured patterns without modifying the schema."""
+    generator = PythonGenerator(input_path("pattern-example.yaml"))
+    height_slot = generator.schemaview.get_slot("height")
+
+    assert height_slot.pattern is None
+
+    output = generator.serialize()
+    materialized_pattern = r"pattern=re.compile(r'^(?:\d+[\.\d+] (centimeter|meter|inch))$')"
+    assert materialized_pattern in output
+    assert height_slot.pattern is None
+
+
 def test_pythongen(kitchen_sink_path):
     """python"""
     kitchen_module = make_python(kitchen_sink_path)
@@ -278,6 +291,45 @@ def test_keyword_named_slots_and_attributes(input_path):
     compile(output, "<generated>", "exec")
 
 
+@pytest.mark.parametrize("inlined_as_list", [False, True])
+def test_multivalued_inlined_primitive_range(inlined_as_list):
+    """A multivalued slot with ``inlined: true`` and a primitive range must not crash.
+
+    Inlining is only meaningful for class-typed ranges; for primitive ranges
+    (e.g. ``string``) it has no effect. Previously pythongen unconditionally did
+    ``self.schema.classes[slot.range]`` in the inlined branch, raising
+    ``KeyError: 'string'``.
+
+    Regression test for https://github.com/linkml/linkml/issues/3564
+    (originally fixed in https://github.com/linkml/linkml/pull/3568).
+    """
+    yaml = f"""
+id: https://example.org/issue3564
+name: issue3564
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/issue3564/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  MyData:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      items:
+        multivalued: true
+        inlined: true
+        inlined_as_list: {str(inlined_as_list).lower()}
+"""
+    module = make_python(yaml)
+    obj = module.MyData(id="foo", items=["item #1", "item #2", "item #3"])
+    assert obj.items == ["item #1", "item #2", "item #3"]
+
+
 def test_permissible_values():
     """
     Test that permissible values are generated correctly
@@ -390,6 +442,7 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
     generator.schema = SimpleNamespace(
         classes={"a": class_a, "b": class_b},
         slots={"id": SlotDefinition(name="id", identifier=True, range="string")},
+        enums={},
     )
 
     monkeypatch.setattr(generator, "_sort_classes", lambda _classes: [class_a, class_b])
@@ -405,3 +458,723 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
 
     with pytest.raises(ValueError, match="Cyclic wrapper inheritance"):
         generator.gen_references()
+
+
+# ---------------------------------------------------------------------------
+# any_of / exactly_one_of range-union support (issue #1813)
+# ---------------------------------------------------------------------------
+#
+# Prior to this fix, pythongen ignored `any_of` entirely: a slot's Python type
+# annotation was derived solely from `slot.range`, and no `__post_init__`
+# coercion logic existed to decide which candidate class/type a raw value
+# should become. See https://github.com/linkml/linkml/issues/1813,
+# https://github.com/linkml/linkml/issues/1521, and
+# https://github.com/linkml/linkml/issues/1483.
+
+_ANY_OF_SCHEMA = """id: https://example.org/any-of-test
+name: any-of-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+"""
+
+
+def test_any_of_union_annotation():
+    """The generated annotation should be a real Union of the any_of branches,
+    not the single generic type slot.range alone would produce."""
+    code = PythonGenerator(_ANY_OF_SCHEMA).serialize()
+    assert "s1: Optional[Union[dict, D, int]]" in code
+
+
+def test_any_of_coercion_picks_matching_candidate():
+    """A raw dict shaped for D becomes a D instance; a raw int stays an int."""
+    py_module = make_python(_ANY_OF_SCHEMA)
+    c = py_module.C(s1={"s2": "hello"})
+    assert isinstance(c.s1, py_module.D)
+    assert c.s1.s2 == "hello"
+
+    c2 = py_module.C(s1=1)
+    assert isinstance(c2.s1, int)
+    assert not isinstance(c2.s1, bool)
+
+
+def test_any_of_first_declared_candidate_wins_on_ambiguity():
+    """When a value could structurally satisfy more than one candidate, the
+    first one declared in any_of wins -- a deterministic, documented tie-break,
+    not an attempt to guess the 'best' match."""
+    schema = """id: https://example.org/any-of-tiebreak
+name: any-of-tiebreak
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  P:
+    attributes:
+      a:
+        range: string
+  Q:
+    attributes:
+      a:
+        range: string
+      b:
+        range: string
+  Top:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: P
+          - range: Q
+"""
+    py_module = make_python(schema)
+    # {"a": "x"} satisfies both P and Q's (both optional) fields; P is declared first.
+    t = py_module.Top(thing={"a": "x"})
+    assert isinstance(t.thing, py_module.P)
+
+
+def test_any_of_rdf_export_regression_1521():
+    """Regression test for the originally-reported symptom of issue #1521: a slot
+    coerced via any_of into an identifier-less embedded class used to stay an
+    untyped JsonObj at runtime, and exporting it to RDF crashed with
+    `ValueError: Class JsonObj not found in schema`. The compliance suite's
+    test_slot_any_of case runs with exclude_rdf=True, so nothing else in the suite
+    exercises this path."""
+    schema = """id: https://example.org/any-of-rdf
+name: any-of-rdf
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  Dataset:
+    attributes:
+      title:
+        range: string
+  Catalogue:
+    attributes:
+      label:
+        range: string
+  Container:
+    attributes:
+      cid:
+        identifier: true
+      item:
+        range: Any
+        any_of:
+          - range: Dataset
+          - range: Catalogue
+"""
+    py_module = make_python(schema)
+    c = py_module.Container(cid="ex:C1", item={"title": "T"})
+    assert isinstance(c.item, py_module.Dataset)
+
+    from linkml_runtime import SchemaView
+    from linkml_runtime.dumpers import rdflib_dumper
+
+    rdf = rdflib_dumper.dumps(c, schemaview=SchemaView(schema))
+    assert "ex:Dataset" in rdf
+
+
+def test_any_of_raises_value_error_when_no_candidate_fits():
+    py_module = make_python(_ANY_OF_SCHEMA)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.C(s1="abc")
+
+
+def test_any_of_with_any_type_and_default_range():
+    """Reproduces the use_any_type=True, use_default_range=True combination from
+    tests/linkml/test_compliance/test_boolean_slot_compliance.py::test_slot_any_of:
+    any_of must take priority over both the explicit `range: Any` and the
+    schema's default_range, not collapse to either."""
+    schema = """id: https://example.org/any-of-default-range
+name: any-of-default-range
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+"""
+    py_module = make_python(schema)
+    c = py_module.C(s1={"s2": "hi"})
+    assert isinstance(c.s1, py_module.D)
+    c2 = py_module.C(s1=1)
+    assert isinstance(c2.s1, int)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.C(s1="abc")
+
+
+def test_any_of_boolean_branch_compiles_and_coerces():
+    """Regression test: an any_of branch ranged over `boolean` must both compile
+    (no NameError/missing import for whatever runtime type the branch resolves
+    to) and correctly coerce a bool value. Mirrors the LinkML metamodel's own
+    `ArrayExpression.maximum_number_dimensions` slot shape
+    (`range: Anything, any_of: [integer, boolean]`)."""
+    schema = """id: https://example.org/any-of-boolean
+name: any-of-boolean
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: integer
+          - range: boolean
+"""
+    py_module = make_python(schema)
+    c = py_module.C(s1=True)
+    assert c.s1 is True
+    c2 = py_module.C(s1=5)
+    assert c2.s1 == 5
+
+
+def test_any_of_forward_reference_quotes_annotation():
+    """A branch class declared AFTER the slot's containing class, with no
+    identifier slot, must be quoted in the annotation (forward reference) and
+    still compile without NameError."""
+    schema = """id: https://example.org/any-of-forward-ref
+name: any-of-forward-ref
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+  D:
+    attributes:
+      s2:
+        range: string
+"""
+    code = PythonGenerator(schema).serialize()
+    assert '"D"' in code
+    py_module = make_python(schema)
+    c = py_module.C(s1={"s2": "hi"})
+    assert isinstance(c.s1, py_module.D)
+
+
+def test_any_of_multivalued_unchanged():
+    """Documents current scope: multivalued any_of slots are intentionally left
+    untouched by this fix (a separate, larger follow-up). This test pins
+    today's output so a future change to multivalued any_of support gets a
+    clear, intentional test failure to update, rather than silently changing
+    behavior."""
+    schema = """id: https://example.org/any-of-multivalued
+name: any-of-multivalued
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        multivalued: true
+        any_of:
+          - range: D
+          - range: integer
+"""
+    code = PythonGenerator(schema).serialize()
+    assert "s1: Optional[Union[Union[dict, Any], list[Union[dict, Any]]]] = empty_list()" in code
+    class_c_start = code.index("class C(")
+    class_c_end = code.index("\nclass ", class_c_start + 1)
+    class_c = code[class_c_start:class_c_end]
+    assert "__post_init__" not in class_c
+
+
+# --- Nested / recursive any_of -----------------------------------------------
+
+
+def test_any_of_nested_candidate_resolves_bottom_up():
+    """A slot whose any_of candidate class itself has its own any_of slot must
+    resolve correctly: constructing the outer candidate requires its nested
+    field to resolve first, via ordinary Python call-stack + exception
+    propagation -- no explicit recursive algorithm is needed."""
+    schema = """id: https://example.org/any-of-nested
+name: any-of-nested
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  X:
+    attributes:
+      a:
+        range: string
+        required: true
+  Y:
+    attributes:
+      b:
+        range: string
+        required: true
+  Inner:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: X
+          - range: Y
+  Top:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: Inner
+"""
+    py_module = make_python(schema)
+    t = py_module.Top(thing={"target": {"a": "hi"}})
+    assert isinstance(t.thing, py_module.Inner)
+    assert isinstance(t.thing.target, py_module.X)
+
+
+def test_any_of_deep_disambiguation_by_nested_shape():
+    """Two outer candidate classes that are structurally identical at their own
+    level, distinguishable only by what their respective nested any_of
+    accepts, must still resolve correctly -- because attempting to construct
+    a candidate *is* looking inside its nested fields."""
+    schema = """id: https://example.org/any-of-deep-disambiguation
+name: any-of-deep-disambiguation
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  LeafA:
+    attributes:
+      value_a:
+        range: string
+        required: true
+  LeafB:
+    attributes:
+      value_b:
+        range: string
+        required: true
+  P:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: LeafA
+  Q:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: LeafB
+  Root:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: P
+          - range: Q
+"""
+    py_module = make_python(schema)
+    r1 = py_module.Root(thing={"target": {"value_a": "x"}})
+    assert isinstance(r1.thing, py_module.P)
+    assert isinstance(r1.thing.target, py_module.LeafA)
+
+    r2 = py_module.Root(thing={"target": {"value_b": "y"}})
+    assert isinstance(r2.thing, py_module.Q)
+    assert isinstance(r2.thing.target, py_module.LeafB)
+
+
+def test_any_of_self_referential_tree():
+    """A modest-depth self-referential (tree-shaped) schema resolves correctly.
+    This does not attempt to test or guard against pathologically deep
+    (hundreds of levels) recursion hitting Python's own RecursionError -- that
+    is a pre-existing characteristic of LinkML's recursive object construction
+    in general, not something introduced by or specific to this fix."""
+    schema = """id: https://example.org/any-of-tree
+name: any-of-tree
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  Leaf:
+    attributes:
+      value:
+        range: string
+        required: true
+  Node:
+    attributes:
+      child:
+        range: Any
+        any_of:
+          - range: Leaf
+          - range: Node
+"""
+    py_module = make_python(schema)
+    depth = 25
+    data = {"value": "bottom"}
+    for _ in range(depth):
+        data = {"child": data}
+    root = py_module.Node(**data)
+    measured = 0
+    node = root
+    while isinstance(node, py_module.Node):
+        node = node.child
+        measured += 1
+    assert measured == depth
+    assert node.value == "bottom"
+
+
+# --- exactly_one_of type-union support ---------------------------------------
+
+_EXACTLY_ONE_OF_SCHEMA = """id: https://example.org/exactly-one-of-test
+name: exactly-one-of-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  X:
+    attributes:
+      a:
+        range: string
+        required: true
+  Y:
+    attributes:
+      b:
+        range: string
+        required: true
+  Z:
+    attributes:
+      a:
+        range: string
+        required: true
+  Top:
+    attributes:
+      thing:
+        range: Any
+        exactly_one_of:
+          - range: X
+          - range: Y
+          - range: Z
+"""
+
+
+def test_exactly_one_of_union_annotation():
+    code = PythonGenerator(_EXACTLY_ONE_OF_SCHEMA).serialize()
+    assert "thing: Optional[Union[dict, X, Y, Z]]" in code
+
+
+def test_exactly_one_of_single_match_succeeds():
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    t = py_module.Top(thing={"b": "hi"})
+    assert isinstance(t.thing, py_module.Y)
+
+
+def test_exactly_one_of_zero_matches_raises():
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.Top(thing={"c": "x"})
+
+
+def test_exactly_one_of_ambiguous_matches_raises_distinct_message():
+    """X and Z both have a required field named 'a', so a value with only
+    that field matches both -- a genuine exactly_one_of violation, which must
+    be reported distinctly from the "no candidate fits" case."""
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    with pytest.raises(ValueError, match="ambiguously matches"):
+        py_module.Top(thing={"a": "hi"})
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for enum-ranged identifier slots.
+#
+# Tests for correct ordering and emission of class-reference wrappers for enum-rooted identifiers:
+# Ensures wrappers are defined after their referenced enum classes, compile without NameError,
+# and maintain correct dependency order in generated Python code.
+# ---------------------------------------------------------------------------
+
+
+_ENUM_ID_SCHEMA = """
+id: https://example.org/enum_id
+name: enum_id
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/enum_id/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  FIXDatatypeName:
+    permissible_values:
+      INT:
+      STRING:
+
+classes:
+  FIXDatatype:
+    attributes:
+      datatype_name:
+        range: FIXDatatypeName
+        identifier: true
+        required: true
+"""
+
+
+_ENUM_ID_SCHEMA_NAME_COLLISION = """
+id: https://example.org/bug_collision
+name: bug_collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/bug_collision/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  ColorName:
+    permissible_values:
+      RED:
+      GREEN:
+      BLUE:
+
+classes:
+  Color:
+    attributes:
+      name:
+        range: ColorName
+        identifier: true
+        required: true
+"""
+
+
+_ENUM_ID_SCHEMA_SUBCLASS = """
+id: https://example.org/enum_id_sub
+name: enum_id_sub
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/enum_id_sub/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  FIXDatatypeName:
+    permissible_values:
+      INT:
+      STRING:
+
+classes:
+  FIXDatatype:
+    attributes:
+      datatype_name:
+        range: FIXDatatypeName
+        identifier: true
+        required: true
+  IntDatatype:
+    is_a: FIXDatatype
+"""
+
+
+def _ref_class_positions(output: str) -> dict[str, int]:
+    """Return a mapping from wrapper class name to line number in ``output``."""
+    positions: dict[str, int] = {}
+    for lineno, line in enumerate(output.splitlines(), start=1):
+        match = re.match(r"^class (\w+)\((\w+)\):\s*$", line)
+        if match:
+            positions[match.group(1)] = lineno
+    return positions
+
+
+def test_enum_ranged_identifier_imports():
+    """Wrapper for an enum-ranged identifier must compile and import cleanly.
+
+    Regression test for the ``NameError: name 'FIXDatatypeName' is not defined``
+    raised by generated modules when an identifier slot ranged over an enum.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA).serialize())
+
+    # Must compile and expose both the enum and its wrapper.
+    module = compile_python(output)
+    assert hasattr(module, "FIXDatatypeName")
+    assert hasattr(module, "FIXDatatypeDatatypeName")
+    assert issubclass(module.FIXDatatypeDatatypeName, module.FIXDatatypeName)
+    # The enum's permissible values must still resolve through the wrapper's MRO.
+    assert module.FIXDatatypeName.INT.text == "INT"
+
+
+def test_enum_ranged_identifier_wrapper_after_enum():
+    """The wrapper class must be emitted after the enum it inherits from."""
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA).serialize())
+
+    positions = _ref_class_positions(output)
+    # Find the enum class declaration line.
+    enum_match = re.search(r"^class FIXDatatypeName\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    assert enum_match is not None, "enum class declaration not found"
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    assert "FIXDatatypeDatatypeName" in positions, "wrapper class not emitted"
+    assert positions["FIXDatatypeDatatypeName"] > enum_lineno, (
+        "wrapper class must appear after the enum it inherits from"
+    )
+
+
+def test_enum_ranged_identifier_name_collision():
+    """Wrapper whose name collides with the enum it inherits from must still import.
+
+    When ``class Color`` declares identifier ``name`` ranged on enum ``ColorName``,
+    the wrapper name (``Color`` + ``Name`` = ``ColorName``) collides with the enum
+    name. The generated code must still be valid Python.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA_NAME_COLLISION).serialize())
+
+    module = compile_python(output)
+    # Module-level ``ColorName`` is rebound by the wrapper subclass; verify it is
+    # still a subclass of the original enum and exposes its permissible values.
+    assert hasattr(module, "ColorName")
+    assert module.ColorName.RED.text == "RED"
+
+
+def test_enum_ranged_identifier_subclass_chain_ordering():
+    """An ``is_a`` chain whose identifier is enum-rooted must emit wrappers in order.
+
+    ``IntDatatype is_a FIXDatatype`` inherits the enum-ranged identifier, so
+    its wrapper ``IntDatatypeDatatypeName`` extends ``FIXDatatypeDatatypeName``,
+    which extends ``FIXDatatypeName``. All three must be defined in dependency
+    order, after the enum.
+    """
+    output = str(PythonGenerator(_ENUM_ID_SCHEMA_SUBCLASS).serialize())
+
+    module = compile_python(output)
+    assert issubclass(module.FIXDatatypeDatatypeName, module.FIXDatatypeName)
+    assert issubclass(module.IntDatatypeDatatypeName, module.FIXDatatypeDatatypeName)
+
+    positions = _ref_class_positions(output)
+    enum_match = re.search(r"^class FIXDatatypeName\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    assert enum_lineno < positions["FIXDatatypeDatatypeName"] < positions["IntDatatypeDatatypeName"]
+
+
+def test_non_enum_identifier_wrapper_emitted_before_enums():
+    """String-ranged identifier wrappers must still be emitted in the pre-enum section.
+
+    Guards against regression where deferring enum-rooted wrappers accidentally
+    deferred all wrappers.
+    """
+    yaml = """
+id: https://example.org/mixed
+name: mixed
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/mixed/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+enums:
+  ColorEnum:
+    permissible_values:
+      RED:
+
+classes:
+  Thing:
+    attributes:
+      pid:
+        identifier: true
+        required: true
+      color:
+        range: ColorEnum
+"""
+    output = str(PythonGenerator(yaml).serialize())
+
+    positions = _ref_class_positions(output)
+    enum_match = re.search(r"^class ColorEnum\(EnumDefinitionImpl\):", output, re.MULTILINE)
+    enum_lineno = output[: enum_match.start()].count("\n") + 1
+
+    # ``ThingPid`` is a string-ranged identifier — must appear BEFORE the enum.
+    assert "ThingPid" in positions
+    assert positions["ThingPid"] < enum_lineno

@@ -94,6 +94,46 @@ def test_pattern_constraint(minimal_schema):
     assert "~" in queries or "REGEXP" in queries
 
 
+def test_structured_patterns_are_resolved_without_modifying_schema() -> None:
+    """Generate SQL pattern checks without modifying asserted slot definitions."""
+    generator = SQLValidationGenerator(
+        """
+id: https://example.org/pattern
+name: pattern
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+settings:
+  word: "[a-z]+"
+classes:
+  Container:
+    slots:
+      - id
+      - value
+slots:
+  id:
+    identifier: true
+  value:
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+""",
+        dialect="postgresql",
+        include_comments=False,
+    )
+    value_slot = generator.schemaview.get_slot("value")
+
+    assert value_slot.pattern is None
+
+    queries = generator.generate_validation_queries()
+
+    assert r"^(?:[a-z]+)$" in queries
+    assert value_slot.pattern is None
+
+
 def test_identifier_uniqueness(minimal_schema_queries):
     """Test generation of identifier uniqueness validation query."""
 
