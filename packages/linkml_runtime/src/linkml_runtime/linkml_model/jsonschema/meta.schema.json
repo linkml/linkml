@@ -401,6 +401,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -408,6 +409,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -431,7 +433,7 @@
                     ]
                 },
                 "is_a": {
-                    "description": "A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
+                    "description": "A class that any instance satisfying this expression must also be an instance of",
                     "type": [
                         "string",
                         "null"
@@ -555,6 +557,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -685,7 +691,14 @@
                     ]
                 },
                 "pv_formula": {
-                    "$ref": "#/$defs/PvFormulaOptions",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PvFormulaOptions"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Defines the specific formula to be used to generate the permissible values."
                 },
                 "reachable_from": {
@@ -887,6 +900,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -894,6 +908,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -1007,6 +1022,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -1338,6 +1357,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -1363,6 +1383,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -1582,6 +1603,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -1637,7 +1662,14 @@
                     "description": "an encoding of a unit"
                 },
                 "value_presence": {
-                    "$ref": "#/$defs/PresenceEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PresenceEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)"
                 }
             },
@@ -1999,6 +2031,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -2006,6 +2039,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -2140,6 +2174,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -2395,6 +2433,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -2495,11 +2534,61 @@
                             "type": "null"
                         }
                     ],
-                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
+                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
+                    "examples": [
+                        {
+                            "allowed": true
+                        },
+                        {
+                            "allowed": false
+                        },
+                        {
+                            "range_expression": {
+                                "range": "string"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "range": "AClassDefinition"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "any_of": [
+                                    {
+                                        "range": "string"
+                                    },
+                                    {
+                                        "range": "integer"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "maximum_cardinality": 5,
+                                "multivalued": true,
+                                "range": "integer"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "range": "integer",
+                                "required": true
+                            }
+                        },
+                        {
+                            "allowed": false,
+                            "range_expression": {
+                                "range": "string"
+                            }
+                        }
+                    ]
                 },
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -2535,6 +2624,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -2781,6 +2871,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -3101,6 +3195,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -3201,11 +3296,61 @@
                             "type": "null"
                         }
                     ],
-                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
+                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
+                    "examples": [
+                        {
+                            "allowed": true
+                        },
+                        {
+                            "allowed": false
+                        },
+                        {
+                            "range_expression": {
+                                "range": "string"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "range": "AClassDefinition"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "any_of": [
+                                    {
+                                        "range": "string"
+                                    },
+                                    {
+                                        "range": "integer"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "maximum_cardinality": 5,
+                                "multivalued": true,
+                                "range": "integer"
+                            }
+                        },
+                        {
+                            "range_expression": {
+                                "range": "integer",
+                                "required": true
+                            }
+                        },
+                        {
+                            "allowed": false,
+                            "range_expression": {
+                                "range": "string"
+                            }
+                        }
+                    ]
                 },
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -3241,6 +3386,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -3487,6 +3633,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -3866,6 +4016,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -3873,6 +4024,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4015,6 +4167,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -4199,6 +4355,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4206,6 +4363,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4319,6 +4477,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -4496,6 +4658,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4570,6 +4733,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4605,6 +4769,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -4773,6 +4938,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -5027,6 +5196,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5034,6 +5204,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5161,6 +5332,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -5321,6 +5496,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5395,6 +5571,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5430,6 +5607,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5574,6 +5752,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -5804,6 +5986,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5811,6 +5994,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -5889,11 +6073,25 @@
                     ]
                 },
                 "obligation_level": {
-                    "$ref": "#/$defs/ObligationLevelEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ObligationLevelEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "The level of obligation or recommendation strength for a metadata element"
                 },
                 "pv_formula": {
-                    "$ref": "#/$defs/PvFormulaOptions",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PvFormulaOptions"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Defines the specific formula to be used to generate the permissible values."
                 },
                 "range": {
@@ -5939,6 +6137,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -6147,6 +6349,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -6228,6 +6431,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -6263,6 +6467,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -6454,7 +6659,14 @@
                     ]
                 },
                 "pv_formula": {
-                    "$ref": "#/$defs/PvFormulaOptions",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PvFormulaOptions"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Defines the specific formula to be used to generate the permissible values."
                 },
                 "rank": {
@@ -6504,6 +6716,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -6732,6 +6948,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -6813,6 +7030,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -6848,6 +7066,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -7039,7 +7258,14 @@
                     ]
                 },
                 "pv_formula": {
-                    "$ref": "#/$defs/PvFormulaOptions",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PvFormulaOptions"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Defines the specific formula to be used to generate the permissible values."
                 },
                 "rank": {
@@ -7089,6 +7315,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -7237,7 +7467,14 @@
                     ]
                 },
                 "pv_formula": {
-                    "$ref": "#/$defs/PvFormulaOptions",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PvFormulaOptions"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "Defines the specific formula to be used to generate the permissible values."
                 },
                 "reachable_from": {
@@ -7605,6 +7842,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -7639,6 +7877,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -7752,6 +7991,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -8091,6 +8334,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8098,6 +8342,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8239,6 +8484,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -8466,6 +8715,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8473,6 +8723,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8600,6 +8851,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -8827,6 +9082,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8844,6 +9100,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -8991,6 +9248,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -9229,6 +9490,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9246,6 +9508,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9393,6 +9656,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -9753,6 +10020,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9855,6 +10123,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9863,6 +10132,7 @@
                 "generation_date": {
                     "description": "date and time that the schema was loaded/generated",
                     "format": "date-time",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9903,6 +10173,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -9999,6 +10270,7 @@
                 },
                 "metamodel_version": {
                     "description": "Version of the metamodel used to load the schema",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10133,6 +10405,7 @@
                 },
                 "source_file": {
                     "description": "name, uri or description of the source of the schema",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10141,6 +10414,7 @@
                 "source_file_date": {
                     "description": "modification date of the source of the schema",
                     "format": "date-time",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10148,6 +10422,7 @@
                 },
                 "source_file_size": {
                     "description": "size in bytes of the source of the schema",
+                    "readOnly": true,
                     "type": [
                         "integer",
                         "null"
@@ -10155,6 +10430,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -10491,6 +10770,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10553,6 +10833,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "readOnly": true,
                     "type": [
                         "array",
                         "null"
@@ -10658,6 +10939,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10725,6 +11007,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -10815,6 +11098,7 @@
                 },
                 "is_usage_slot": {
                     "description": "True means that this slot was defined in a slot_usage situation",
+                    "readOnly": true,
                     "type": [
                         "boolean",
                         "null"
@@ -10996,6 +11280,7 @@
                 },
                 "owner": {
                     "description": "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -11083,7 +11368,14 @@
                     ]
                 },
                 "relational_role": {
-                    "$ref": "#/$defs/RelationalRoleEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RelationalRoleEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the role a slot on a relationship class plays, for example, the subject, object or predicate roles"
                 },
                 "required": {
@@ -11154,6 +11446,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -11189,6 +11485,9 @@
                 },
                 "subproperty_of": {
                     "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
+                    "examples": [
+                        "RO:HOM0000001"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -11272,13 +11571,21 @@
                 },
                 "usage_slot_name": {
                     "description": "The name of the slot referenced in the slot_usage",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
                     ]
                 },
                 "value_presence": {
-                    "$ref": "#/$defs/PresenceEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PresenceEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)"
                 },
                 "values_from": {
@@ -11512,6 +11819,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -11574,6 +11882,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "readOnly": true,
                     "type": [
                         "array",
                         "null"
@@ -11679,6 +11988,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -11746,6 +12056,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -11836,6 +12147,7 @@
                 },
                 "is_usage_slot": {
                     "description": "True means that this slot was defined in a slot_usage situation",
+                    "readOnly": true,
                     "type": [
                         "boolean",
                         "null"
@@ -12017,6 +12329,7 @@
                 },
                 "owner": {
                     "description": "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -12104,7 +12417,14 @@
                     ]
                 },
                 "relational_role": {
-                    "$ref": "#/$defs/RelationalRoleEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RelationalRoleEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "the role a slot on a relationship class plays, for example, the subject, object or predicate roles"
                 },
                 "required": {
@@ -12175,6 +12495,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -12210,6 +12534,9 @@
                 },
                 "subproperty_of": {
                     "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
+                    "examples": [
+                        "RO:HOM0000001"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -12293,13 +12620,21 @@
                 },
                 "usage_slot_name": {
                     "description": "The name of the slot referenced in the slot_usage",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
                     ]
                 },
                 "value_presence": {
-                    "$ref": "#/$defs/PresenceEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PresenceEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)"
                 },
                 "values_from": {
@@ -12579,7 +12914,14 @@
                     "description": "an encoding of a unit"
                 },
                 "value_presence": {
-                    "$ref": "#/$defs/PresenceEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PresenceEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)"
                 }
             },
@@ -12648,6 +12990,11 @@
                 },
                 "categories": {
                     "description": "The category or categories of an alias. This can be drawn from any relevant vocabulary",
+                    "examples": [
+                        [
+                            "https://w3id.org/mod#acronym"
+                        ]
+                    ],
                     "items": {
                         "type": "string"
                     },
@@ -12781,6 +13128,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -12788,6 +13136,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -12870,7 +13219,14 @@
                     ]
                 },
                 "predicate": {
-                    "$ref": "#/$defs/AliasPredicateEnum",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AliasPredicateEnum"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
                     "description": "The relationship between an element and its alias."
                 },
                 "rank": {
@@ -12909,6 +13265,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -13072,6 +13432,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13146,6 +13507,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13181,6 +13543,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13325,6 +13688,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -13488,6 +13855,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13562,6 +13930,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13597,6 +13966,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -13741,6 +14111,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -13929,6 +14303,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14037,6 +14412,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14079,6 +14455,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14269,6 +14646,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -14505,6 +14886,7 @@
                 },
                 "definition_uri": {
                     "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14613,6 +14995,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14655,6 +15038,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -14845,6 +15229,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -15246,6 +15634,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -15253,6 +15642,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -15366,6 +15756,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -15607,6 +16001,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -15614,6 +16009,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -15727,6 +16123,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -15969,6 +16369,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -15976,6 +16377,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -16089,6 +16491,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -16331,6 +16737,7 @@
                 "from_schema": {
                     "description": "id of the schema that defined the element",
                     "format": "uri",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -16338,6 +16745,7 @@
                 },
                 "imported_from": {
                     "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "readOnly": true,
                     "type": [
                         "string",
                         "null"
@@ -16451,6 +16859,10 @@
                 },
                 "status": {
                     "description": "status of the element",
+                    "examples": [
+                        "testing",
+                        "unstable"
+                    ],
                     "type": [
                         "string",
                         "null"
@@ -16604,9 +17016,9 @@
     },
     "$id": "https://w3id.org/linkml/meta",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
-    "additionalProperties": true,
+    "additionalProperties": false,
     "description": "A collection of definitions that make up a schema or a data model.",
-    "metamodel_version": "1.11.0",
+    "metamodel_version": "1.12.0",
     "properties": {
         "aliases": {
             "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
@@ -16779,6 +17191,7 @@
         },
         "definition_uri": {
             "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -16881,6 +17294,7 @@
         "from_schema": {
             "description": "id of the schema that defined the element",
             "format": "uri",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -16889,6 +17303,7 @@
         "generation_date": {
             "description": "date and time that the schema was loaded/generated",
             "format": "date-time",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -16929,6 +17344,7 @@
         },
         "imported_from": {
             "description": "the imports entry that this element was derived from.  Empty means primary source",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -17025,6 +17441,7 @@
         },
         "metamodel_version": {
             "description": "Version of the metamodel used to load the schema",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -17159,6 +17576,7 @@
         },
         "source_file": {
             "description": "name, uri or description of the source of the schema",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -17167,6 +17585,7 @@
         "source_file_date": {
             "description": "modification date of the source of the schema",
             "format": "date-time",
+            "readOnly": true,
             "type": [
                 "string",
                 "null"
@@ -17174,6 +17593,7 @@
         },
         "source_file_size": {
             "description": "size in bytes of the source of the schema",
+            "readOnly": true,
             "type": [
                 "integer",
                 "null"
@@ -17181,6 +17601,10 @@
         },
         "status": {
             "description": "status of the element",
+            "examples": [
+                "testing",
+                "unstable"
+            ],
             "type": [
                 "string",
                 "null"

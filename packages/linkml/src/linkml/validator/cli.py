@@ -150,13 +150,30 @@ def _normalize_and_validate(
     return severity_counter
 
 
+class SchemaSource(click.ParamType):
+    """A schema given as a local file path or an ``http(s)://`` URL.
+
+    URLs are passed through unchanged for the runtime to fetch; local paths are
+    validated like ``click.Path(exists=True, dir_okay=False)``.
+    """
+
+    name = "schema"
+    _path_type = click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path)
+
+    def convert(self, value: Any, param: click.Parameter | None, ctx: click.Context | None) -> str | Path:
+        """Return URLs as-is and local paths as resolved, existence-checked ``Path`` objects."""
+        if isinstance(value, str) and value.startswith(("http://", "https://")):
+            return value
+        return self._path_type.convert(value, param, ctx)
+
+
 @click.command(name="validate")
 @click.option(
     "-s",
     "--schema",
-    help="Schema file to validate data against. When omitted, positional arguments "
+    help="Schema file or URL to validate data against. When omitted, positional arguments "
     "are treated as schemas and validated against the LinkML metamodel.",
-    type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
+    type=SchemaSource(),
 )
 @click.option(
     "-C",
@@ -210,7 +227,7 @@ def _normalize_and_validate(
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
-    schema: Path | None,
+    schema: str | Path | None,
     target_class: str | None,
     config: str | None,
     include: tuple[Path, ...],

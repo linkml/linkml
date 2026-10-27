@@ -3,8 +3,9 @@
 import os
 from collections.abc import Sequence
 from copy import deepcopy
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, TextIO
 
 import click
 from jsonasobj2 import as_json, items, loads
@@ -54,24 +55,37 @@ class JSONLDGenerator(Generator):
     file_extension = "jsonld"
 
     # ObjectVars
-    original_schema: SchemaDefinition = None
+    original_schema: str | TextIO | SchemaDefinition | Generator | Path = ""
     """See https://github.com/linkml/linkml/issues/871"""
 
-    context: Sequence[str] | None = field(default_factory=list)
+    original_base_dir: str | None = None
+    """The caller's base_dir, before SchemaLoader replaces it with one derived from the schema path"""
+
+    context: str | list[str] | None = None
     """Path to a JSONLD context file"""
 
-    metamodel_context: str = None
+    metamodel_context: str | None = None
     """Override for metamodel context URI/path. When None, uses METAMODEL_CONTEXT_URI."""
 
     def __post_init__(self) -> None:
         self.original_schema = deepcopy(self.schema)
+        self.original_base_dir = self.base_dir
         super().__post_init__()
 
-    def _add_type(self, node: YAMLRoot) -> dict:
+    def _add_type(self, node: YAMLRoot) -> dict | YAMLRoot:
+        """Add the JSON-LD ``@type`` field to *node* and return it as a plain dict or as-is.
+
+        In jsonld format: injects ``@type`` into ``node.__dict__`` (the live backing
+        store of the :class:`YAMLRoot` instance, so the mutation is visible on *node*
+        itself) and returns that :class:`dict` so callers can iterate and modify it
+        with standard dict operations.
+
+        In non-jsonld format: returns *node* unchanged as a :class:`YAMLRoot`, since
+        ``@type`` is not part of plain JSON output.
+        """
         if self.format == "jsonld":
-            typ = node.__class__.__name__
-            node = node.__dict__
-            node["@type"] = typ
+            node.__dict__["@type"] = node.__class__.__name__
+            return node.__dict__
         return node
 
     def _visit(self, node: Any) -> Any | None:
@@ -140,8 +154,10 @@ class JSONLDGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self._visit(cls)
-        if hasattr(cls, "class_uri"):
-            delattr(cls, "class_uri")
+        self._add_class_uri_exact_mapping(cls)
+        class_uri = cls.class_uri
+        expanded_class_uri = self.namespaces.uri_for(class_uri)
+        cls.class_uri = expanded_class_uri
         # Slot usage is a construction artifact
         # TODO: Figure out why this is here.  It isn't good form to alter a schema that may be used by other things
         cls.slot_usage = {}
@@ -167,7 +183,10 @@ class JSONLDGenerator(Generator):
         else:
             context_kwargs = {**default_context_kwargs, **context_kwargs}
 
-        self._add_type(self.schema)
+        if isinstance(self.schema, YAMLRoot):
+            self._add_type(self.schema)
+        else:
+            raise Exception(f"self.schema should be of type YAMLRoot, but it's of type {type(self.schema)}")
         base_prefix = self.default_prefix()
 
         # `context` can be a `str`, a `list[str]` or a `tuple[str]`
@@ -186,9 +205,12 @@ class JSONLDGenerator(Generator):
             context_kwargs["metadata"] = False
             # Forward importmap/base_dir so the spawned ContextGenerator can
             # re-resolve any URI-style imports in ``self.original_schema``
-            # through the same ``--importmap`` the caller supplied.
+            # through the same ``--importmap`` the caller supplied. Forward the
+            # caller's base_dir, not the one SchemaLoader derived from the schema
+            # path: the latter would resolve a relative path against its own
+            # directory twice.
             context_kwargs.setdefault("importmap", self.importmap)
-            context_kwargs.setdefault("base_dir", self.base_dir)
+            context_kwargs.setdefault("base_dir", self.original_base_dir)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
@@ -203,12 +225,14 @@ class JSONLDGenerator(Generator):
         for imp in list(self.loaded.values())[1:]:
             context_list.append(imp[0] + ".context.jsonld")
 
-        # Absolute file paths have to have a prefix
+        # Absolute local filesystem paths must be pre-expressed as file:// URIs.
+        # ``Path.as_uri`` handles both POSIX (``/x`` -> ``file:///x``) and bare
+        # Windows drive paths (``D:\x`` -> ``file:///D:/x``); URLs (anything
+        # with a ``://``) and relative refs are left untouched.
         for ci in range(0, len(context_list)):
-            if isinstance(context_list[ci], str) and context_list[ci].startswith(
-                "/"
-            ):  # TODO: how do we deal with absolute DOS paths?
-                context_list[ci] = "file://" + context_list[ci]
+            entry = context_list[ci]
+            if isinstance(entry, str) and "://" not in entry and os.path.isabs(entry):
+                context_list[ci] = Path(entry).as_uri()
 
         if self.format == "jsonld":
             self.schema["@context"] = context_list[0] if len(context_list) == 1 and not base_prefix else context_list
@@ -253,17 +277,17 @@ class JSONLDGenerator(Generator):
     "multiple kwargs like `-k {key} {value}` can be passed",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, context_kwargs: list[tuple[str, bool]], context: tuple[str], **kwargs):
+def cli(yamlfile, context_kwargs: tuple[tuple[str, bool], ...], context: tuple[str, ...], **kwargs):
     """Generate JSONLD file from LinkML schema.
 
     Status: incomplete
     """
-    if context_kwargs:
-        context_kwargs = dict(context_kwargs)
-    else:
-        context_kwargs = {}
 
-    print(JSONLDGenerator(yamlfile, **kwargs).serialize(context=context, context_kwargs=context_kwargs, **kwargs))
+    print(
+        JSONLDGenerator(yamlfile, **kwargs).serialize(
+            context=context, context_kwargs={kwarg[0]: kwarg[1] for kwarg in context_kwargs}, **kwargs
+        )
+    )
 
 
 if __name__ == "__main__":

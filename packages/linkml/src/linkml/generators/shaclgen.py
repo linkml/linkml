@@ -142,6 +142,9 @@ class ShaclGenerator(Generator):
     ignores any per-slot ``in_language``.
     """
 
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     emit_rules: bool = True
     """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
 
@@ -196,7 +199,7 @@ class ShaclGenerator(Generator):
     def serialize(self, **args) -> str:
         g = self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -269,7 +272,20 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
 
-                prop_pv(SH.path, slot_uri)
+                is_ordered_list = s.multivalued and s.list_elements_ordered
+                if is_ordered_list:
+                    # Ordered multivalued slots are serialized as an rdf:List (see issue #3531),
+                    # so the value constraints must apply to each list member rather than to the
+                    # list head. Use a SHACL sequence path that steps through the slot, walks the
+                    # rdf:rest spine, then reads each rdf:first:
+                    #   sh:path ( <slot> [ sh:zeroOrMorePath rdf:rest ] rdf:first )
+                    rest_path = BNode()
+                    g.add((rest_path, SH.zeroOrMorePath, RDF.rest))
+                    seq_path = BNode()
+                    Collection(g, seq_path, [slot_uri, rest_path, RDF.first])
+                    prop_pv(SH.path, seq_path)
+                else:
+                    prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
                 prop_pv_text(SH.name, s.title)
@@ -290,8 +306,17 @@ class ShaclGenerator(Generator):
                     ).strip()
                     if msg_text:
                         g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
+                # Cardinality. For an ordered list the path is a SHACL sequence path over
+                # rdf:List members; SHACL value nodes are a *set*, so sh:minCount/sh:maxCount
+                # would count distinct member values, not list length -- a false violation on
+                # (a a b) with minimum_cardinality 3, a false pass on (a a a a) with
+                # maximum_cardinality 3. We therefore only assert non-emptiness (sh:minCount 1)
+                # for ordered lists and skip length-based counts. See #3531 / PR #3693 review.
                 # minCount
-                if s.minimum_cardinality is not None:
+                if is_ordered_list:
+                    if s.required or s.minimum_cardinality or s.exact_cardinality:
+                        prop_pv_literal(SH.minCount, 1)
+                elif s.minimum_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
                 elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
@@ -300,8 +325,11 @@ class ShaclGenerator(Generator):
                 # would cause spurious violations on every instance.
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
-                # maxCount
-                if s.maximum_cardinality is not None:
+                # maxCount (skipped for ordered lists: list length is not expressible over a
+                # set-valued sequence path)
+                if is_ordered_list:
+                    pass
+                elif s.maximum_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.maximum_cardinality)
                 elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.exact_cardinality)
@@ -359,6 +387,11 @@ class ShaclGenerator(Generator):
 
                             add_simple_data_type(st_node_pv, r)
                             range_list.append(st_node)
+                        # Propagate pattern constraint to the branch node.
+                        # A branch may combine range + pattern (e.g. range: string
+                        # with pattern: "^...") or specify pattern alone (no range).
+                        if any.pattern:
+                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
@@ -386,8 +419,6 @@ class ShaclGenerator(Generator):
                         self._add_enum(g, prop_pv, r)
                     else:
                         add_simple_data_type(prop_pv, r)
-                    if s.pattern:
-                        prop_pv(SH.pattern, Literal(s.pattern))
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
@@ -397,6 +428,9 @@ class ShaclGenerator(Generator):
                     if self.expand_subproperty_of and s.subproperty_of:
                         # Map subproperty_of to sh:in with slot descendants
                         self._add_subproperty_constraint(g, prop_pv, s)
+
+                if s.pattern:
+                    prop_pv(SH.pattern, Literal(s.pattern))
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -639,25 +673,37 @@ class ShaclGenerator(Generator):
         return sv.expand_curie(f"{pfx}:{underscore(slot_name)}")
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
-        """Add an sh:class constraint for range class *r*.
+        """Add a class/shape constraint for range class *r*.
 
         Skips the constraint when *r* resolves to ``linkml:Any`` — the
-        LinkML meta-type representing an unconstrained range.  Emitting
-        ``sh:class linkml:Any`` in SHACL output is incorrect because the
-        ``linkml:Any`` class is never instantiated in real data; it would
-        cause every instance to fail validation.
+        LinkML meta-type representing an unconstrained range.
+
+        In default mode (``use_class_uri_names=True``): emits ``sh:class <class_uri>``
+        so validators check the RDF type hierarchy.
+
+        In native names mode (``use_class_uri_names=False``): emits ``sh:node <native_shape_uri>``
+        instead of ``sh:class``.  Using ``sh:class`` with a native shape URI (e.g.
+        ``dcatapplus:Resource``) is incorrect because data nodes are never typed as
+        that URI — it is a shape identifier, not an RDF class.  ``sh:node`` correctly
+        validates the referenced node against the named shape.
+
+        Because ``sh:node`` references a shape by its identifier, the ``suffix``
+        option has to be applied here too — otherwise the reference points at a
+        shape that was never emitted and the constraint silently passes.
         """
         sv = self.schemaview
         cls = sv.get_class(r)
         if cls and getattr(cls, "class_uri", None) == "linkml:Any":
             return
-        if self.use_class_uri_names:
-            range_ref = sv.get_uri(r, expand=True)
-        else:
-            range_ref = sv.get_uri(r, expand=True, native=True)
+        range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
         if range_ref == self.LINKML_ANY_URI:
             return
-        func(SH["class"], URIRef(range_ref))
+        if self.use_class_uri_names:
+            func(SH["class"], URIRef(range_ref))
+            return
+        if self.suffix:
+            range_ref += self.suffix
+        func(SH["node"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
@@ -915,6 +961,15 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
         "are translated into SHACL-SPARQL constraints on the corresponding "
         "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")
