@@ -144,6 +144,17 @@ DATAFRAME_GROUP = [
     help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())} (not used with --package)",
     default="PanderaDataframeGenerator",
 )
+@click.option(
+    "--mergeimports/--no-mergeimports",
+    default=True,
+    show_default=True,
+    help=(
+        "Merge imports into source file. Forwarded to the underlying "
+        "``DataframeGenerator`` (and the SchemaLoader used to materialize the "
+        "metamodel) so ``gen-pandera`` accepts the same flag every other "
+        "LinkML generator CLI does."
+    ),
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("yamlfile")
 @click.command(name="gen-pandera")
@@ -153,6 +164,7 @@ def cli(
     template_path=None,
     template_file=None,
     generator_class=None,
+    mergeimports=True,
     **args,
 ):
     """Generate Pandera classes to represent a LinkML model"""
@@ -176,12 +188,13 @@ def cli(
     generator: DataframeGenerator = gen_class(
         yamlfile,
         package=package,
+        mergeimports=mergeimports,
         **args,
     )
 
     if package is not None:
         DataframeGenerator.compile_package_from_specification(
-            PANDERA_GROUP, package, yamlfile, directory=package, **args
+            PANDERA_GROUP, package, yamlfile, directory=package, mergeimports=mergeimports, **args
         )
     else:
         cli_wrapper = DataframeGeneratorCli(
