@@ -1371,15 +1371,21 @@ _TYPE_DESIGNATOR_SCHEMA = textwrap.dedent(
 )
 
 
-def test_rustgen_type_designator_emits_serde_tag(temp_dir):
-    """A ``designates_type`` slot on a class with subtypes produces an internally
-    tagged ``*OrSubtype`` enum (``#[serde(tag = ...)]``), not an untagged one.
+def test_rustgen_type_designator_dispatches_on_designator(temp_dir):
+    """A ``designates_type`` slot on a class with subtypes discriminates the
+    ``*OrSubtype`` enum by the designator value, and does so through hand-written
+    serde impls rather than ``#[serde(tag = ...)]``.
+
+    An internally tagged derive *consumes* the designator key, which both emits it
+    twice (enum tag + the variant struct's own field) and strips it from the struct
+    on the way back in. The generated impls delegate serialization to the inner
+    struct and re-feed the buffered input -- designator included -- to it.
 
     Regression for two compounding bugs: ``type_designators`` was typed
     ``dict[str, str]`` while the generator supplies ``list[str]`` (which crashed
     generation with a ``ValidationError``), and the enum was built with a
     ``type_designator_name`` kwarg that did not match the model field
-    ``type_designator_field`` (silently dropped, so the tag was never emitted).
+    ``type_designator_field`` (silently dropped, so no dispatch was emitted).
     """
     schema_path = Path(temp_dir) / "rustgen_type_designator.yaml"
     schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
@@ -1397,13 +1403,116 @@ def test_rustgen_type_designator_emits_serde_tag(temp_dir):
 
     contents = out_file.read_text(encoding="utf-8")
 
-    # The designator slot drives an internally tagged enum.
-    assert 'serde(tag = "category")' in contents
-    # And the fall-back untagged form is no longer used for the OrSubtype enum.
+    # No enum-level tag: it would collide with the struct's own designator field.
+    assert 'serde(tag = "category")' not in contents
+    # Nor the fall-back untagged form, which cannot discriminate the variants.
     assert "serde(untagged)" not in contents
-    # Each subtype variant is renamed to the value carried by the designator.
-    assert 'serde(rename = "EmploymentEvent"' in contents
-    assert 'serde(rename = "MedicalEvent"' in contents
+
+    # Instead, hand-written impls that delegate to / from the variant structs.
+    assert "impl Serialize for EventOrSubtype" in contents
+    assert "impl<'de> Deserialize<'de> for EventOrSubtype" in contents
+    assert 'Value::String("category".to_string())' in contents
+
+    # Dispatch is keyed on the designator value of each subtype.
+    assert '"EmploymentEvent" => EmploymentEvent::deserialize' in contents
+    assert '"MedicalEvent" => MedicalEvent::deserialize' in contents
+
+    # And the designator remains an ordinary field on the variant structs, so the
+    # generated structs are still usable on their own.
+    assert contents.count("pub category: Option<String>") == 3
+
+
+def test_rustgen_type_designator_preserves_designator_on_variant(temp_dir):
+    """The designator value survives a round-trip *and* stays readable on the
+    variant struct itself.
+
+    Regression: the enum was internally tagged with ``#[serde(tag = ...)]`` while
+    the designator was also an ordinary field on every variant struct. Serializing
+    emitted the key twice (a literal duplicate key, which strict formats such as
+    ``serde_json`` reject), and deserializing consumed the tag before the struct
+    saw it, so ``inner.category`` came back ``None``.
+    """
+    schema_path = Path(temp_dir) / "rustgen_type_designator_keep.yaml"
+    schema_path.write_text(_TYPE_DESIGNATOR_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "type_designator_keep_crate")
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "designator_kept.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn designator_is_kept_on_the_variant_struct() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let yaml = "category: MedicalEvent\\nname: x\\ndiagnosis: flu\\n";\n'
+            '    let v: EventOrSubtype = serde_yml::from_str(yaml).expect("decode");\n'
+            "    match &v {\n"
+            "        EventOrSubtype::MedicalEvent(inner) => {\n"
+            "            assert_eq!(\n"
+            "                inner.category.as_deref(),\n"
+            '                Some("MedicalEvent"),\n'
+            '                "designator was consumed as the enum tag instead of reaching the struct"\n'
+            "            );\n"
+            '            assert_eq!(inner.diagnosis.as_deref(), Some("flu"));\n'
+            "        }\n"
+            '        _ => panic!("expected MedicalEvent variant"),\n'
+            "    }\n"
+            '    let out = serde_yml::to_string(&v).expect("encode");\n'
+            "    assert_eq!(\n"
+            '        out.matches("category:").count(),\n'
+            "        1,\n"
+            '        "designator emitted twice (enum tag + struct field): {out}"\n'
+            "    );\n"
+            '    assert!(out.contains("category: MedicalEvent"), "{out}");\n'
+            "}\n"
+            "\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn variant_struct_serializes_designator_standalone() {\n"
+            f"    use {crate_ident}::MedicalEvent;\n"
+            "    let m = MedicalEvent {\n"
+            '        category: Some("MedicalEvent".to_string()),\n'
+            "        name: None,\n"
+            '        diagnosis: Some("flu".to_string()),\n'
+            "    };\n"
+            '    let out = serde_yml::to_string(&m).expect("encode struct");\n'
+            '    assert!(out.contains("category: MedicalEvent"), "{out}");\n'
+            "}\n"
+            "\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn unknown_and_missing_designator_are_rejected() {\n"
+            f"    use {crate_ident}::EventOrSubtype;\n"
+            '    let unknown = "category: NoSuchEvent\\nname: x\\n";\n'
+            "    assert!(serde_yml::from_str::<EventOrSubtype>(unknown).is_err());\n"
+            '    let missing = "name: x\\n";\n'
+            "    assert!(serde_yml::from_str::<EventOrSubtype>(missing).is_err());\n"
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "designator_kept"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    # These tests only run under --with-rustgen, which implies a Rust toolchain, so
+    # a non-zero exit is a real regression rather than a missing cargo.
+    if result.returncode != 0:
+        pytest.fail(
+            f"cargo test failed for the type-designator crate.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
 
 
 def test_rustgen_type_designator_tagged_roundtrip(temp_dir):
