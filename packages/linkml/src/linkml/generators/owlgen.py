@@ -32,6 +32,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     ClassRule,
     Definition,
+    Element,
     EnumDefinition,
     EnumDefinitionName,
     PermissibleValue,
@@ -358,9 +359,9 @@ class OwlSchemaGenerator(Generator):
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
         return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
 
-    def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
+    def add_metadata(self, e: Element | PermissibleValue, uri: URIRef) -> None:
         """
-        Add annotation properties.
+        Add annotation properties and explicit metaclass membership.
 
         Set the profile attribute to the appropriate OWL profile.
         Human-readable string literals are language-tagged when
@@ -375,6 +376,8 @@ class OwlSchemaGenerator(Generator):
         this_sv = self.schemaview
         sn_mappings = msv.slot_name_mappings()
         lang = self._resolve_language(e)
+
+        self._add_instantiates(e, uri)
 
         # iterate through all the assigned metamodel slots
         for metaslot_name, metaslot_value in vars(e).items():
@@ -1083,10 +1086,42 @@ class OwlSchemaGenerator(Generator):
         for mixin in slot.mixins:
             self.graph.add((slot_uri, RDFS.subPropertyOf, self._prop_uri(mixin)))
 
+    def _add_instantiates(self, element: Element | PermissibleValue, uri: URIRef) -> None:
+        """Type the emitted schema resource itself, without typing its data instances.
+
+        ``instantiates`` declares metaclass membership in LinkML. In OWL's RDF
+        mapping, class assertions are ``rdf:type`` triples; a resource also used
+        as an OWL class or property is interpreted separately as an individual.
+        A resource in the OWL 2 reserved vocabulary (Structural Specification
+        section 2.4, Table 2), such as a type emitted as ``xsd:integer``, cannot
+        be an individual, so its membership is not asserted.  A value that is
+        neither a CURIE nor an IRI, such as a bare element name, would become a
+        relative IRI and is skipped.  Both cases are logged as warnings.  The
+        instantiated class is declared, as OWL 2 DL requires for every class a
+        class assertion uses (Structural Specification §5.8.1), unless it is in
+        the reserved vocabulary.
+        """
+        reserved = tuple(str(ns) for ns in (RDF, RDFS, XSD, OWL))
+        if element.instantiates and str(uri).startswith(reserved):
+            logger.warning(f"Instantiates on {uri}, which is OWL 2 reserved vocabulary, is ignored")
+            return
+        for instantiated in element.instantiates:
+            expanded = self.schemaview.expand_curie(instantiated)
+            if ":" not in expanded:
+                logger.warning(
+                    f"Instantiates {instantiated!r} on {uri}, which is neither a CURIE nor an IRI, is ignored"
+                )
+                continue
+            self.graph.add((uri, RDF.type, URIRef(expanded)))
+            if not expanded.startswith(reserved):
+                self.graph.add((URIRef(expanded), RDF.type, OWL.Class))
+
     def add_type(self, typ: TypeDefinition) -> None:
         type_uri = self._type_uri(typ.name)
         if typ.from_schema == "https://w3id.org/linkml/types":
             return
+
+        self._add_instantiates(typ, type_uri)
 
         if self.metaclasses:
             self.graph.add(
@@ -1199,6 +1234,8 @@ class OwlSchemaGenerator(Generator):
                 pv_node = Literal(pv.text)
                 if pv.meaning:
                     logger.warning(f"Meaning on literal {pv.text} in {e.name} is ignored")
+                if pv.instantiates:
+                    logger.warning(f"Instantiates on literal {pv.text} in {e.name} is ignored")
             else:
                 pv_node = self._permissible_value_uri(pv, enum_uri, e)
             pv_uris.append(pv_node)
