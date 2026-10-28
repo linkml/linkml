@@ -11,7 +11,7 @@ from typing import Any
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from rdflib import RDF, SKOS, XSD, Namespace
+from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecated_fields
@@ -50,6 +50,7 @@ class ContextGenerator(Generator):
     emit_prefixes: set[str] = field(default_factory=lambda: set())
     default_ns: str = None
     context_body: dict = field(default_factory=lambda: dict())
+    _context_slot_names: dict[str, tuple[str, bool]] = field(default_factory=dict, init=False, repr=False)
     slot_class_maps: dict = field(default_factory=lambda: dict())
     metadata: bool = False
     model: bool | None = True
@@ -244,16 +245,6 @@ class ContextGenerator(Generator):
 
         return str(as_json(context)) + "\n"
 
-    def _curie(self, element: ClassDefinition | SlotDefinition) -> str:
-        if self.schemaview is None:
-            source = self.schema.source_file or self.schema
-            if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
-                source = str(Path(self.base_dir) / source)
-            sv = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
-        else:
-            sv = self.schemaview
-        return sv.get_curie(element)
-
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.exclude_imports and cls.name not in self._local_classes:
             return False
@@ -428,31 +419,32 @@ class ContextGenerator(Generator):
                     else:
                         slot_def["@container"] = "@set"
 
-                # Check if this slot's URI is rdf:type. If so, map to the JSON-LD @type
-                # keyword instead of the normal predicate. This applies to any slot with
-                # slot_uri=rdf:type, regardless of range or other properties. The mapping
-                # preserves RDF round-trip semantics: in RDF, the dumper uses slot_uri
-                # as the predicate; JSON-LD @type keyword expands to rdf:type.
-                if self._slot_uri_is_rdf_type(slot):
+                if self.is_rdf_type_slot(slot):
+                    # RDF type is a JSON-LD keyword, not an ordinary predicate
+                    # mapping. Keep modeled container policy but discard range
+                    # coercions, which do not determine @type keyword semantics.
                     container = slot_def.get("@container")
                     slot_def = {"@id": "@type"}
-                    # Preserve the normal multivalued-container policy for the @type alias.
                     if container:
                         slot_def["@container"] = container
                 else:
                     self._build_element_id(slot_def, slot.slot_uri)
                     self.add_mappings(slot)
-
         if slot_def:
-            if slot.identifier or self._slot_uri_is_rdf_type(slot):
-                # Slots that map to JSON-LD keywords (@id or @type) use the slot name
-                # as the context key (not CURIE), even when --use-curies is enabled.
-                # This preserves the semantic meaning of the keyword mapping.
-                key = underscore(aliased_slot_name)
-            elif self.use_curies:
-                key = self._curie(slot)
-            else:
-                key = underscore(aliased_slot_name)
+            # Identifier slots keep their @id key precedence. RDF type is the
+            # one non-identifier predicate whose serialized term remains the
+            # aliased instance key even when CURIE output is requested.
+            alias_key = underscore(aliased_slot_name)
+            key = self.serialized_slot_name(
+                slot,
+                use_curies=self.use_curies,
+                alias_name=alias_key,
+            )
+            is_rdf_type = not slot.identifier and self.is_rdf_type_slot(slot)
+            previous_slot = self._context_slot_names.get(key)
+            if previous_slot is not None and previous_slot[0] != slot.name and (is_rdf_type or previous_slot[1]):
+                raise ValueError(f"Serialized context key collision for slot {slot.name!r}: {key!r}")
+            self._context_slot_names[key] = (slot.name, is_rdf_type)
             self.context_body[key] = slot_def
 
             # collect @embed only for object-valued slots (range is a class)
@@ -479,22 +471,6 @@ class ContextGenerator(Generator):
             return range_type.uri
         return None
 
-    def _slot_uri_is_rdf_type(self, slot: SlotDefinition) -> bool:
-        """Check if a slot's slot_uri resolves to rdf:type.
-
-        In RDF semantics (rdflib_dumper), ANY slot whose slot_uri is rdf:type
-        will emit rdf:type triples, regardless of other properties like designates_type.
-        In JSON-LD, we should map such slots to the @type keyword to preserve
-        round-trip semantics.
-
-        :param slot: SlotDefinition to check
-        :return: True if slot_uri resolves to rdf:type, False otherwise
-        """
-        if not slot.slot_uri:
-            return False
-        slot_uri = self.namespaces.uri_for(slot.slot_uri)
-        return slot_uri == RDF.type
-
     def _build_scoped_context(self, cls: ClassDefinition) -> dict:
         """Build a scoped JSON-LD context for class-level slot range overrides.
 
@@ -508,6 +484,10 @@ class ContextGenerator(Generator):
         def _add_if_type_differs(slot_name: str, override_range: str) -> None:
             """Add a scoped entry if the override's @type differs from the global slot's @type."""
             global_slot = self.schema.slots[slot_name]
+            if self.is_rdf_type_slot(global_slot):
+                # The @type keyword always denotes an IRI; a slot range override
+                # must not turn it into a typed literal.
+                return
             global_type = self._resolve_slot_type(global_slot.range) if global_slot.range else None
             override_type = self._resolve_slot_type(override_range)
             if override_type == global_type:
@@ -516,10 +496,13 @@ class ContextGenerator(Generator):
             self._build_element_id(entry, global_slot.slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
-            if self.use_curies and not global_slot.identifier:
-                scoped[self._curie(global_slot)] = entry
-            else:
-                scoped[underscore(slot_name)] = entry
+            alias_key = underscore(self.aliased_slot_name(global_slot))
+            key = self.serialized_slot_name(
+                global_slot,
+                use_curies=self.use_curies,
+                alias_name=alias_key,
+            )
+            scoped[key] = entry
 
         # Check attributes that shadow global slots
         for attr_name, attr in cls.attributes.items():

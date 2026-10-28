@@ -450,7 +450,13 @@ class GolangGenerator(OOCodeGenerator):
         """
         slot_alias = slot.alias if slot.alias else slot.name
         go_name = camelcase(slot_alias)
-        json_name = underscore(slot_alias)
+        alias_name = underscore(slot_alias)
+        json_name = self.serialized_slot_name(
+            slot,
+            use_curies=False,
+            alias_name=alias_name,
+            identifier_name=alias_name,
+        )
 
         go_type = self.generate_go_type(slot, cls)
 
