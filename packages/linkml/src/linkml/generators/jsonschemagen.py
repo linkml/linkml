@@ -2,6 +2,8 @@ import ast
 import json
 import logging
 import os
+import re
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, cast
@@ -65,6 +67,76 @@ json_schema_types: dict[str, tuple[str, str | None]] = {
 _base_implied_patterns: dict[str, str] = {
     "ncname": r"^[a-zA-Z_][\w.-]*$",
 }
+
+# The JSON Schema dialects the generator can declare in ``$schema``, keyed by the
+# value of the ``draft`` option. The generator emits only keywords that mean the
+# same in every dialect listed here, so the choice changes ``$schema`` alone.
+JSON_SCHEMA_DRAFTS: dict[str, str] = {
+    "2019-09": "https://json-schema.org/draft/2019-09/schema",
+    "2020-12": "https://json-schema.org/draft/2020-12/schema",
+}
+
+# The naming styles for ``$defs`` keys, the values of the ``def_name_style`` option.
+DEF_NAME_STYLES: tuple[str, ...] = ("CamelCase", "camelCase", "snake_case", "kebab-case", "preserve")
+
+# This pattern splits a name into words at spaces, underscores and hyphens. It also
+# splits where a capital follows a lower-case letter or a digit, and where a word
+# follows an acronym, as in HTTPServer.
+_word_boundary = re.compile(r"[\s_-]+|(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+
+
+def style_def_name(name: str, style: str) -> str:
+    """Return *name* in *style*, one of the :data:`DEF_NAME_STYLES`.
+
+    ``CamelCase`` applies the generator's long-standing ``camelcase`` unchanged, so
+    hyphens stay in place. The other styles split the name into words first.
+
+    Examples:
+        >>> style_def_name("control detail", "CamelCase")
+        'ControlDetail'
+        >>> style_def_name("ControlDetail", "camelCase")
+        'controlDetail'
+        >>> style_def_name("HTTP server", "camelCase")
+        'httpServer'
+        >>> style_def_name("ControlDetail", "snake_case")
+        'control_detail'
+        >>> style_def_name("HTTPServer2Config", "kebab-case")
+        'http-server2-config'
+        >>> style_def_name("node_interface", "kebab-case")
+        'node-interface'
+        >>> style_def_name("node_interface", "preserve")
+        'node_interface'
+    """
+    if style == "preserve":
+        return name
+    if style == "CamelCase":
+        return camelcase(name)
+    words = [word for word in _word_boundary.split(name.strip()) if word]
+    if not words:
+        return name
+    if style == "camelCase":
+        return "".join([words[0].lower()] + [word.capitalize() for word in words[1:]])
+    if style == "snake_case":
+        return "_".join(word.lower() for word in words)
+    if style == "kebab-case":
+        return "-".join(word.lower() for word in words)
+    raise ValueError(f"Unknown definition name style {style!r}; expected one of {list(DEF_NAME_STYLES)}")
+
+
+def _option_error(draft: str, def_name_style: str | None) -> str | None:
+    """Return the message for an unknown ``draft`` or ``def_name_style``, or ``None`` when both are known.
+
+    Examples:
+        >>> _option_error("2020-12", "kebab-case") is None
+        True
+        >>> _option_error("draft-07", None)
+        "Unknown JSON Schema draft 'draft-07'; expected one of ['2019-09', '2020-12']"
+    """
+    if draft not in JSON_SCHEMA_DRAFTS:
+        return f"Unknown JSON Schema draft {draft!r}; expected one of {list(JSON_SCHEMA_DRAFTS)}"
+    if def_name_style is not None and def_name_style not in DEF_NAME_STYLES:
+        return f"Unknown definition name style {def_name_style!r}; expected one of {list(DEF_NAME_STYLES)}"
+    return None
 
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
@@ -219,17 +291,40 @@ class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
     PRESERVE_NAMES: bool = False
     USE_CURIES: bool = False
+    DEF_NAME_STYLE: str = "CamelCase"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
+        # The name each $defs key was made from, so that add_def can catch two names that give one key.
+        self._def_names = {}
+
+    @classmethod
+    def def_key(cls, name: str, keep: bool = False) -> str:
+        """Return the ``$defs`` key for an element named *name*.
+
+        Every definition and every ``$ref`` to it takes its key from this method, so the
+        two always agree. With *keep*, a name the caller has already settled, such as a
+        CURIE, is returned as it is.
+        """
+        return name if keep else style_def_name(name, cls.DEF_NAME_STYLE)
 
     def add_def(self, name: str, subschema: "JsonSchema", is_curie: bool = False, preserve_name: bool = False) -> None:
-        canonical_name = name if self.PRESERVE_NAMES or preserve_name or is_curie else camelcase(name)
+        canonical_name = self.def_key(name, keep=preserve_name or is_curie)
+        defined_name = self._def_names.setdefault(canonical_name, name)
+        if defined_name != name:
+            raise ValueError(
+                f"{defined_name!r} and {name!r} would share the $defs key {canonical_name!r}; "
+                "rename one of them or choose another def_name_style"
+            )
 
         if "$defs" not in self:
             self["$defs"] = {}
 
+        # A definition without a title takes its key as the title, so def_name_style styles
+        # titles too: under kebab-case the title of ControlDetail is control-detail. The rule
+        # is older than def_name_style. Titling definitions by element name instead would
+        # change the titles of documents generated today.
         if "title" not in subschema:
             subschema["title"] = canonical_name
 
@@ -248,7 +343,7 @@ class JsonSchema(dict):
             names = [names]
 
         for name in names:
-            canonical_name = name if self.PRESERVE_NAMES or self.USE_CURIES else camelcase(name)
+            canonical_name = self.def_key(name, keep=self.USE_CURIES)
 
             if "$defs" not in self or canonical_name not in self["$defs"]:
                 self._lax_forward_refs[canonical_name] = identifier_name
@@ -320,7 +415,7 @@ class JsonSchema(dict):
     @classmethod
     def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
-            def_name = class_name if cls.PRESERVE_NAMES or cls.USE_CURIES else camelcase(class_name)
+            def_name = cls.def_key(class_name, keep=cls.USE_CURIES)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
@@ -477,9 +572,30 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     remain consistent with the JSON-LD ``@id`` alias.
     """
 
+    def_name_style: str | None = None
+    """The naming style of ``$defs`` keys and of the ``$ref`` targets that point at them,
+    one of :data:`DEF_NAME_STYLES`.
+
+    When it is unset, definitions follow ``preserve_names``: they keep their names as
+    written when ``preserve_names`` is set, and take CamelCase otherwise. Under
+    ``use_curies``, class definitions are keyed by CURIE whatever the style. The style
+    does not change property names.
+    """
+
+    draft: str = "2019-09"
+    """The JSON Schema dialect the document declares in ``$schema``, one of the keys of
+    :data:`JSON_SCHEMA_DRAFTS`.
+
+    Only ``$schema`` changes. Validators that select their class from ``$schema``,
+    such as ``linkml-validate``, then check instances with the matching dialect.
+    """
+
     def __post_init__(self):
         if self.materialize_patterns is not None:
             deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
+        if message := _option_error(self.draft, self.def_name_style):
+            raise ValueError(message)
 
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -487,15 +603,29 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         super().__post_init__()
 
-        # Set the class variable for JsonSchema to use
-        JsonSchema.PRESERVE_NAMES = self.preserve_names
-        # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
-        # pre-converted to CURIEs, so they must not be camelcased again.
-        JsonSchema.USE_CURIES = self.use_curies
+        self._apply_naming()
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
                 logger.warning(f"No class in schema named {self.top_class}")
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Check ``draft`` and ``def_name_style``, so gen-project refuses an unknown value before generating."""
+        if message := _option_error(args.get("draft", cls.draft), args.get("def_name_style")):
+            raise click.UsageError(message)
+
+    def _apply_naming(self) -> None:
+        """Set this generator's naming options on :class:`JsonSchema`, which reads them as class variables.
+
+        :meth:`generate` calls this method again, so a generator constructed in between,
+        with other options, cannot change the names that this generator writes.
+        """
+        JsonSchema.PRESERVE_NAMES = self.preserve_names
+        # Under --use-curies, class $defs are keyed by CURIE and $ref targets are
+        # converted to CURIEs beforehand, so they must not be styled again.
+        JsonSchema.USE_CURIES = self.use_curies
+        JsonSchema.DEF_NAME_STYLE = self.def_name_style or ("preserve" if self.preserve_names else "CamelCase")
 
     def _names_match(self, a: str, b: str) -> bool:
         """Compare class names the way ``--top-class`` has always been matched.
@@ -543,7 +673,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         self.top_level_schema = JsonSchema(
             {
-                "$schema": "https://json-schema.org/draft/2019-09/schema",
+                "$schema": JSON_SCHEMA_DRAFTS[self.draft],
                 "$id": self.schema.id,
                 "metamodel_version": self.schema.metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
@@ -789,7 +919,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             base = schema_type.base.lower() if schema_type.base else ""
             (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
-            reference = slot.range
+            # Under --use-curies, ref_for keeps names as given, because class references are
+            # passed to it as CURIEs. Enums are keyed by their styled name, so this branch
+            # passes ref_for that key.
+            reference = JsonSchema.def_key(slot.range) if self.use_curies else slot.range
         elif slot.range in self.schemaview.all_classes().keys():
             if slot_is_inlined:
                 descendants = [
@@ -1098,6 +1231,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return result.schema_
 
     def generate(self) -> JsonSchema:
+        self._apply_naming()
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
 
@@ -1347,6 +1481,20 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     show_default=True,
     help="If set (default), optional slots also accept an explicit JSON null. "
     "Use --no-include-null to forbid explicit null on optional slots.",
+)
+@click.option(
+    "--def-name-style",
+    type=click.Choice(DEF_NAME_STYLES),
+    default=None,
+    help="Naming style of $defs keys and the $ref targets that point at them. "
+    "When unset, definitions follow --preserve-names.",
+)
+@click.option(
+    "--draft",
+    type=click.Choice(list(JSON_SCHEMA_DRAFTS)),
+    default="2019-09",
+    show_default=True,
+    help="JSON Schema dialect the document declares in $schema.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

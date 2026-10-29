@@ -131,6 +131,31 @@ def test_generate_rejects_bad_config_before_generating_anything(kitchen_sink_pat
     assert not out_dir.exists()
 
 
+@pytest.mark.parametrize(
+    ("arguments", "message"),
+    [
+        pytest.param({"draft": "draft-07"}, "jsonschema: Unknown JSON Schema draft 'draft-07'", id="draft"),
+        pytest.param(
+            {"def_name_style": "Title Case"}, "jsonschema: Unknown definition name style 'Title Case'", id="style"
+        ),
+    ],
+)
+def test_generate_rejects_bad_json_schema_options_before_generating_anything(
+    kitchen_sink_path, tmp_path, arguments, message
+):
+    """An unknown ``draft`` or ``def_name_style`` stops gen-project before any generator writes output."""
+    out_dir = tmp_path / "out"
+    config = ProjectConfiguration()
+    config.directory = out_dir
+    config.includes = ["graphql", "jsonschema"]  # graphql iterates first in GEN_MAP
+    config.generator_args["jsonschema"] = arguments
+
+    with pytest.raises(click.UsageError, match=re.escape(message)):
+        ProjectGenerator().generate(kitchen_sink_path, config)
+
+    assert not out_dir.exists()
+
+
 def test_generate_does_not_mistake_a_schema_error_for_a_bad_config_value(tmp_path):
     """A ValueError raised while actually constructing a generator (e.g. an unloadable
     schema) is a genuine failure, not a `generator_args` problem, and must propagate with
