@@ -20,8 +20,9 @@ impl From<{{ t }}>   for {{ enum_name }} { fn from(x: {{ t }})   -> Self { Self:
 {% endfor %}
 
 #[cfg(feature = "pyo3")]
-impl<'py> FromPyObject<'py> for {{ enum_name }} {
-    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for {{ enum_name }} {
+    type Error = PyErr;
+    fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
 {% for t in struct_names %}
         if let Ok(val) = ob.extract::<{{ t }}>() {
             return Ok({{ enum_name }}::{{ t }}(val));
@@ -61,8 +62,9 @@ impl<'py> IntoPyObject<'py> for Box<{{ enum_name }}>
 }
 
 #[cfg(feature = "pyo3")]
-impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
-    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for Box<{{ enum_name }}> {
+    type Error = PyErr;
+    fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
         if let Ok(val) = ob.extract::<{{ enum_name }}>() {
             return Ok(Box::new(val));
         }
