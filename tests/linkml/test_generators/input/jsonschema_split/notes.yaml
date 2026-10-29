@@ -1,0 +1,13 @@
+id: https://example.org/spec/notes
+name: notes
+title: Notes
+prefixes:
+  linkml: https://w3id.org/linkml/
+  spec: https://example.org/spec/
+imports:
+  - linkml:types
+default_prefix: spec
+types:
+  note_text:
+    typeof: string
+    pattern: "^\\S"
