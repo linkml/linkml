@@ -13,8 +13,10 @@ from linkml_runtime.utils.inference_utils import (
 from linkml_runtime.utils.schemaview import SchemaView
 from tests.linkml_runtime.test_utils import INPUT_DIR
 from tests.linkml_runtime.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
+from tests.linkml_runtime.test_utils.model.slot_names_example import Span, Sum, Window
 
 SCHEMA = os.path.join(INPUT_DIR, "inference-example.yaml")
+SLOT_NAMES_SCHEMA = os.path.join(INPUT_DIR, "slot-names-example.yaml")
 
 AGE_IN_YEARS = 12
 FIRST, LAST = "x", "y"
@@ -158,3 +160,29 @@ def test_nesting():
     infer_all_slot_values(r, schemaview=sv)
     assert '"b, a" IS SIBLING_OF "d, c"' == r.description
     assert '"a b" IS SIBLING_OF "c d"' == r.description2
+
+
+def test_infer_keyword_named_slots():
+    """Inference reads and writes keyword-named slots by slot name, and leaves slots without rules alone."""
+    sv = SchemaView(SLOT_NAMES_SCHEMA)
+    window = Window(from_="a", to="b")
+    infer_all_slot_values(window, schemaview=sv)
+    assert (window.from_, window.to) == ("a", "b")
+
+    span = Span(from_="a", to="b")
+    infer_all_slot_values(span, schemaview=sv)
+    assert span.as_ == "a-b"
+
+    total = Sum(in_=1, out=2)
+    infer_all_slot_values(total, schemaview=sv, config=Config(use_expressions=True))
+    assert total.total == 3
+
+
+def test_infer_keyword_named_slot_policies():
+    """infer_slot_value compares with and overwrites the escaped field behind a keyword-named slot."""
+    sv = SchemaView(SLOT_NAMES_SCHEMA)
+    with pytest.raises(ValueError, match="Inconsistent value x != a-b for as"):
+        infer_slot_value(Span(from_="a", to="b", as_="x"), "as", sv)
+    span = Span(from_="a", to="b", as_="x")
+    infer_slot_value(span, "as", sv, policy=Policy.OVERRIDE)
+    assert span.as_ == "a-b"

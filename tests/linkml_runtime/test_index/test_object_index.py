@@ -8,6 +8,8 @@ from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.inference_utils import Config, infer_slot_value
 from linkml_runtime.utils.schemaview import SchemaView
 from tests.linkml_runtime.test_index import INPUT_DIR
+from tests.linkml_runtime.test_utils import INPUT_DIR as UTILS_INPUT_DIR
+from tests.linkml_runtime.test_utils.model import slot_names_example as names_dm
 
 SCHEMA = os.path.join(INPUT_DIR, "container_test.yaml")
 DATA = os.path.join(INPUT_DIR, "object-indexer-data.yaml")
@@ -122,3 +124,20 @@ def test_object_index(schema_view, container, object_index):
     config = Config(use_expressions=True)
     infer_slot_value(person, "description", schemaview=schema_view, class_name="Person", config=config)
     assert person.description == "name: fred bloggs address: 1 oak street"
+
+
+def test_object_index_slot_names():
+    """Keys, proxies and expressions work for a keyword-named identifier and one with a space in its name."""
+    schema_view = SchemaView(os.path.join(UTILS_INPUT_DIR, "slot-names-example.yaml"))
+    container = names_dm.Container(
+        terms=[names_dm.Term(**{"in": "ex:t1", "from": "a"})],
+        named=names_dm.Named(term_id="ex:n1", start_date="2026"),
+    )
+    oix = ObjectIndex(container, schemaview=schema_view)
+    proxy = oix.bless(container)
+
+    assert proxy.terms[0].from_ == "a"
+    assert proxy.named.start_date == "2026"
+    assert oix.eval_expr("{in}", container.terms[0]) == "ex:t1"
+    assert oix.eval_expr("{from}", container.terms[0]) == "a"
+    assert oix.eval_expr("{term_id}", container.named) == "ex:n1"

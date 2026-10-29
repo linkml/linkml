@@ -15,8 +15,9 @@ from collections.abc import Iterator, Mapping
 from typing import Any
 
 from linkml_runtime.utils import eval_utils
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import YAMLRoot
+from linkml_runtime.utils.yamlutils import YAMLRoot, field_name_for, slot_name_for
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +135,8 @@ class ObjectIndex:
         cls = self._class_map[cls_name]
         id_slot = self._schemaview.get_identifier_slot(cls.name)
         if id_slot:
-            id_val = getattr(obj, id_slot.name)
+            # The field is the underscored slot name (term id -> term_id), escaped if a keyword (in -> in_)
+            id_val = getattr(obj, field_name_for(obj, underscore(id_slot.alias or id_slot.name)))
             return cls.name, id_val
         else:
             return cls.name, str(obj)
@@ -181,7 +183,8 @@ class ObjectIndex:
         if obj is None:
             obj = self._root_object
         ctxt_obj = self.bless(obj)
-        ctxt_dict = {k: getattr(ctxt_obj, k) for k in ctxt_obj._attributes()}
+        # Keyed by slot name, so an expression can say {from} for the field from_
+        ctxt_dict = {slot_name_for(ctxt_obj, k): getattr(ctxt_obj, k) for k in ctxt_obj._attributes()}
         return eval_utils.eval_expr(expr, **{**ctxt_dict, **kwargs})
 
 
@@ -211,7 +214,7 @@ class ProxyObject:
             return [v for k, v in self._parents if k == p]
         obj = self._shadowed
         cls = self._db._class_map[type(obj).__name__]
-        slot = self._db._schemaview.induced_slot(p, cls.name)
+        slot = self._db._schemaview.induced_slot(slot_name_for(obj, p), cls.name)
         v = getattr(obj, p)
         return self._map(v, slot.range)
 

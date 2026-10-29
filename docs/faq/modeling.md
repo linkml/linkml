@@ -483,17 +483,21 @@ classes:
         title: my slot
 ```
 
-Note that one current limitation of the LinkML generator framework is
-that it does not protect you from using keywords that are reserved in
-certain formalisms.
+Note that not every generator protects you from names that are reserved
+in its target language.
 
-For example, if you define a slot `in`, then this conflicts with the
-Python keyword, and the generated python code will raise errors. For now the recommendation is to avoid these as they arise.
+The Python, Pydantic, SQLAlchemy and Pandera generators do. A slot named
+after a Python keyword, such as `in` or `from`, gets a trailing underscore
+in the generated code, so `from` becomes the attribute `from_`. Data still
+uses the slot name: the Python class maps between the two names when it
+loads and dumps data, the Pydantic field keeps the slot name as its alias,
+and the column keeps it as its name. A class cannot have both such a slot
+and a slot named like its attribute, such as `from` and `from_`, and the
+generator reports an error for it. The pages for these generators show the
+generated code.
 
-In future, the LinkML framework will
-
- * warn if a reserved term is used
- * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
+Other generators may not handle reserved names yet, so avoid them when you
+use those generators.
 
 ## When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?
 
