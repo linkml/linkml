@@ -47,6 +47,19 @@ declarations and
 Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.
 
+JSON-LD version
+^^^^^^^^^^^^^^^
+
+A generated context that uses a JSON-LD 1.1 construct starts with
+``"@version": 1.1``. The generator emits three: scoped contexts for enum slots
+and for class-level range overrides, and ``@prefix`` (see below). A JSON-LD 1.0
+processor would silently ignore them; the number ``1.1`` makes it stop instead
+(`JSON-LD 1.1 §1.7 <https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords>`__),
+and selects JSON-LD 1.1 processing in processors that support both. A context
+without such a construct, for example one generated with ``--no-model`` or for a
+schema without enums and overrides, has no version line and stays loadable by a
+JSON-LD 1.0 processor.
+
 CURIE usage
 ^^^^^^^^^^^
 
