@@ -150,7 +150,9 @@ class RelationalModelTransformer:
     join_table_separator: str = "_"
     foreign_key_policy: ForeignKeyPolicy = field(default_factory=lambda: ForeignKeyPolicy.INJECT_FK_FOR_NESTED)
 
-    def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> TransformationResult:
+    def transform(
+        self, tgt_schema_name: str | None = None, top_class: ClassDefinitionName = None
+    ) -> TransformationResult:
         """
         Transforms the source schema into a relational schema
 

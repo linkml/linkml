@@ -241,7 +241,7 @@ class ERDiagramGenerator(Generator):
         self,
         class_names: list[str | ClassDefinitionName],
         follow_references=False,
-        max_hops: int = None,
+        max_hops: int | None = None,
         include_upstream: bool = False,
     ) -> MERMAID_SERIALIZATION:
         """

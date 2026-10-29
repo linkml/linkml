@@ -485,7 +485,7 @@ def cli(
     yamlfile: str,
     relmodel_output: str,
     sqla_file: str | None = None,
-    python_import: str = None,
+    python_import: str | None = None,
     dialect: str | None = None,
     use_foreign_keys: bool = True,
     **args,

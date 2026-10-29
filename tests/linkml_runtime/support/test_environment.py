@@ -198,8 +198,8 @@ class TestEnvironment:
         filename: Union[str, list[str]],
         generator: Callable[[Optional[str]], Optional[str]],
         value_is_returned: bool = False,
-        filtr: Callable[[str], str] = None,
-        comparator: Callable[[str, str], str] = None,
+        filtr: Callable[[str], str] | None = None,
+        comparator: Callable[[str, str], str] | None = None,
         use_testing_root: bool = False,
     ) -> str:
         """
@@ -244,7 +244,7 @@ class TestEnvironment:
         expected_file_path: str,
         actual_text: str,
         filtr: Callable[[str], str] = lambda s: s,
-        comparator: Callable[[str, str], str] = None,
+        comparator: Callable[[str, str], str] | None = None,
     ) -> bool:
         """Compare actual_text to the contents of the expected file.  Log a message if there is a mismatch and
         overwrite the expected file if we're not in the fail on error mode
