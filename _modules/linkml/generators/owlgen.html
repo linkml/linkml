@@ -428,8 +428,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_xsd_anyuri_range</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSD_ANYURI_AS_IRI_OPTION</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.language_tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageTagResolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
@@ -453,6 +452,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.introspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">package_schemaview</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">type_term</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -637,23 +637,9 @@
 
         <span class="k">return</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
 
-    <span class="n">xsd_anyuri_as_iri</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Treat ``range: uri`` / ``range: uriorcurie`` slots as ``owl:ObjectProperty``</span>
-<span class="sd">    instead of ``owl:DatatypeProperty`` with ``rdfs:range xsd:anyURI``.</span>
-
-<span class="sd">    This aligns the OWL output with the SHACL generator (which emits</span>
-<span class="sd">    ``sh:nodeKind sh:IRI``) and the JSON-LD context generator (which emits</span>
-<span class="sd">    ``@type: @id`` when its own ``--xsd-anyuri-as-iri`` flag is set).</span>
-
-<span class="sd">    Without this flag, ``range: uri`` produces a semantic inconsistency:</span>
-<span class="sd">    OWL says the value is a literal (``DatatypeProperty``), while SHACL and</span>
-<span class="sd">    JSON-LD say it is an IRI node.  Enabling the flag makes all three</span>
-<span class="sd">    generators consistent.</span>
-
-<span class="sd">    When enabled, URI-range slots:</span>
-<span class="sd">    - become ``owl:ObjectProperty`` (not ``owl:DatatypeProperty``)</span>
-<span class="sd">    - have no ``rdfs:range`` restriction (any IRI is valid)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xsd_anyuri_as_iri</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deprecated and without effect: slots whose values are IRIs or blank nodes</span>
+<span class="sd">    (:func:`~linkml_runtime.utils.rdf_terms.type_term`) are always object properties.&quot;&quot;&quot;</span>
 
     <span class="n">default_language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Default BCP 47 language tag for human-readable string literals.</span>
@@ -679,6 +665,8 @@
         <span class="c1"># once here; per-element tags are validated lazily, with at most one</span>
         <span class="c1"># warning per distinct malformed tag.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span> <span class="o">=</span> <span class="n">LanguageTagResolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_language</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">XSD_ANYURI_AS_IRI_OPTION</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="s2">&quot;Definition | PermissibleValue | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -1215,7 +1203,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine the OWL types of a named slot or slot expression</span>
 
-<span class="sd">        The OWL type is either OWL.Thing or RDFS.Datatype</span>
+<span class="sd">        The OWL type is either OWL.Thing or RDFS.Datatype. A type range gives OWL.Thing</span>
+<span class="sd">        when its values are IRIs or blank nodes (:meth:`_type_values_are_nodes`).</span>
 
 <span class="sd">        :param slot:</span>
 <span class="sd">        :param owning_class:</span>
@@ -1232,7 +1221,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">range_class</span> <span class="ow">and</span> <span class="n">range_class</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s2">&quot;linkml:Any&quot;</span><span class="p">):</span>
                     <span class="n">node_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
-                <span class="n">node_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">Datatype</span><span class="p">)</span>
+                <span class="n">node_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_values_are_nodes</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="k">else</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">Datatype</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;any_of&quot;</span><span class="p">,</span> <span class="s2">&quot;all_of&quot;</span><span class="p">,</span> <span class="s2">&quot;exactly_one_of&quot;</span><span class="p">,</span> <span class="s2">&quot;none_of&quot;</span><span class="p">]:</span>
             <span class="n">subslots</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">subslots</span><span class="p">:</span>
@@ -1319,7 +1308,7 @@
         <span class="n">this_owl_types</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">OWL_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">slot_range</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="ow">and</span> <span class="n">is_xsd_anyuri_range</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_values_are_nodes</span><span class="p">(</span><span class="n">slot_range</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">slot_is_literal_map</span><span class="p">[</span><span class="n">main_slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
                     <span class="n">this_owl_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1960,12 +1949,14 @@
             <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">Datatype</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">node</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_range_is_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_objects</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="ow">and</span> <span class="n">is_xsd_anyuri_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_type_values_are_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether values of the type *type_name* are IRIs or blank nodes rather than literals.</span>
+
+<span class="sd">        This follows :func:`~linkml_runtime.utils.rdf_terms.type_term`. With</span>
+<span class="sd">        :attr:`type_objects`, every typed value is an individual of the type&#39;s class</span>
+<span class="sd">        instead, so no type is treated differently.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_objects</span> <span class="ow">and</span> <span class="n">type_term</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">type_name</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_range_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
@@ -2113,7 +2104,7 @@
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">OWL</span><span class="o">.</span><span class="n">ObjectProperty</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="ow">and</span> <span class="n">is_xsd_anyuri_range</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_values_are_nodes</span><span class="p">(</span><span class="n">slot_range</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">OWL</span><span class="o">.</span><span class="n">ObjectProperty</span>
             <span class="k">return</span> <span class="n">OWL</span><span class="o">.</span><span class="n">DatatypeProperty</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2242,14 +2233,9 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-        <span class="s2">&quot;Treat range: uri / range: uriorcurie slots as owl:ObjectProperty (IRI node) &quot;</span>
-        <span class="s2">&quot;instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). &quot;</span>
-        <span class="s2">&quot;Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and &quot;</span>
-        <span class="s2">&quot;the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id).&quot;</span>
-    <span class="p">),</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Deprecated and without effect: slots whose values are IRIs, such as uri and uriorcurie, are always &quot;</span>
+    <span class="s2">&quot;object properties.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--default-language&quot;</span><span class="p">,</span>

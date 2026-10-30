@@ -445,7 +445,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.cli.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span> <span class="n">log_level_option</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.mergeutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">alias_root</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.schemaloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.schemaloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNKNOWN_NAMESPACE</span><span class="p">,</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.typereferences</span><span class="w"> </span><span class="kn">import</span> <span class="n">References</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -456,6 +456,7 @@
     <span class="n">ElementName</span><span class="p">,</span>
     <span class="n">EnumDefinition</span><span class="p">,</span>
     <span class="n">EnumDefinitionName</span><span class="p">,</span>
+    <span class="n">Prefix</span><span class="p">,</span>
     <span class="n">PrefixPrefixPrefix</span><span class="p">,</span>
     <span class="n">SchemaDefinition</span><span class="p">,</span>
     <span class="n">SlotDefinition</span><span class="p">,</span>
@@ -586,6 +587,8 @@
 <span class="sd">    it is preserved here so external callers/subclasses relying on it are not</span>
 <span class="sd">    silently broken by the switch to a property-backed field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_loaded_schemaview</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">SchemaView</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SchemaView built by :meth:`type_schemaview` for a SchemaLoader-based generator.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -624,6 +627,28 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save passed namespace registry in the private backing store of the</span>
 <span class="sd">        :attr:`namespaces` property.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Generator.type_schemaview">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator.type_schemaview">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">type_schemaview</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaView</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a SchemaView of the schema for questions about its types, on either generator path.</span>
+
+<span class="sd">        SchemaLoader-based generators have no :attr:`schemaview`. Their loaded schema</span>
+<span class="sd">        already has its imports resolved, so the view is built once from a copy of it</span>
+<span class="sd">        with the loaded prefixes, without reopening source files. Placeholder namespaces</span>
+<span class="sd">        that SchemaLoader gives undeclared prefixes are left out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_schemaview</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">imports</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">UNKNOWN_NAMESPACE</span><span class="p">):</span>
+                    <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">Prefix</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_schemaview</span></div>
+
 
     <span class="n">namespaces</span><span class="p">:</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">namespaces</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor kwarg backing the ``namespaces`` property (see above).</span>
@@ -1503,7 +1528,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ncname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized prefix: </span><span class="si">{</span><span class="n">ncname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">ncname</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://example.org/UNKNOWN/</span><span class="si">{</span><span class="n">ncname</span><span class="si">}</span><span class="s2">/&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">ncname</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">UNKNOWN_NAMESPACE</span><span class="si">}{</span><span class="n">ncname</span><span class="si">}</span><span class="s2">/&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ncname</span><span class="p">)</span></div>
 
 

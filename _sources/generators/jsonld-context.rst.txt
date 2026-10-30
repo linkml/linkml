@@ -47,6 +47,12 @@ declarations and
 Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.
 
+Values of ``uri``, ``uriorcurie``, the types derived from them, and the node
+types ``objectidentifier`` and ``nodeidentifier`` are coerced to ``@id``; a type
+derived from ``string`` with ``uri: xsd:anyURI`` keeps URI references as
+``xsd:anyURI`` literals (see
+:ref:`links-and-uri-references`).
+
 CURIE usage
 ^^^^^^^^^^^
 

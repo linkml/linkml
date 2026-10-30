@@ -599,6 +599,78 @@ details of how to use this in code.</p>
 create a class with <code class="docutils literal notranslate"><span class="pre">class_uri</span></code> set to the URI or CURIE and use that class
 as the range.</p>
 </section>
+<section id="links-and-uri-references">
+<span id="id1"></span><h2>Links and URI references<a class="headerlink" href="#links-and-uri-references" title="Link to this heading">¶</a></h2>
+<p>A value of a URI-like type is either a link, which becomes an RDF IRI, or a URI
+reference held as text, which becomes an <code class="docutils literal notranslate"><span class="pre">xsd:anyURI</span></code> literal. The type decides,
+in the same way for every generator and for the RDF dumper and loader:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>RDF term</p></th>
+<th class="head"><p>Use for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uri</span></code>, <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code> and types derived from them</p></td>
+<td><p>IRI (CURIEs are expanded)</p></td>
+<td><p>links to resources</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objectidentifier</span></code></p></td>
+<td><p>IRI</p></td>
+<td><p>references to objects</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nodeidentifier</span></code>, or a type with <code class="docutils literal notranslate"><span class="pre">uri:</span> <span class="pre">rdfs:Resource</span></code></p></td>
+<td><p>IRI or blank node (<code class="docutils literal notranslate"><span class="pre">_:b1</span></code>)</p></td>
+<td><p>references to nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p>a type derived from <code class="docutils literal notranslate"><span class="pre">string</span></code> with <code class="docutils literal notranslate"><span class="pre">uri:</span> <span class="pre">xsd:anyURI</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xsd:anyURI</span></code> literal, as written</p></td>
+<td><p>URI references held as data, such as relative file paths</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">curie</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xsd:string</span></code> literal, not expanded</p></td>
+<td><p>compact identifiers held as text</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">FilePath</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:anyURI</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A file location, which may be relative.</span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">homepage</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uri</span>
+<span class="w">  </span><span class="nt">file_path</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FilePath</span>
+</pre></div>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">homepage:</span> <span class="pre">https://alice.example.org/</span></code> and <code class="docutils literal notranslate"><span class="pre">file_path:</span> <span class="pre">./docs/cv.pdf</span></code> the RDF is</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nn">ex</span><span class="p">:</span><span class="nt">alice</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">homepage</span> <span class="nv">&lt;https://alice.example.org/&gt;</span> <span class="p">;</span>
+    <span class="nn">ex</span><span class="p">:</span><span class="nt">file_path</span> <span class="s">&quot;./docs/cv.pdf&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">anyURI</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>gen-jsonld-context coerces <code class="docutils literal notranslate"><span class="pre">homepage</span></code> to <code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> and <code class="docutils literal notranslate"><span class="pre">file_path</span></code> to <code class="docutils literal notranslate"><span class="pre">xsd:anyURI</span></code>,
+gen-shacl requires <code class="docutils literal notranslate"><span class="pre">sh:nodeKind</span> <span class="pre">sh:IRI</span></code> for one and <code class="docutils literal notranslate"><span class="pre">sh:datatype</span> <span class="pre">xsd:anyURI</span></code> for
+the other, and gen-owl makes <code class="docutils literal notranslate"><span class="pre">homepage</span></code> an object property and <code class="docutils literal notranslate"><span class="pre">file_path</span></code> a data
+property.</p>
+<p>An RDF IRI must be absolute (<a class="reference external" href="https://www.w3.org/TR/rdf11-concepts/#section-IRIs">RDF 1.1 Concepts §3.2</a>),
+so the RDF dumper rejects a relative value of a link type, such as <code class="docutils literal notranslate"><span class="pre">./home.html</span></code> in
+<code class="docutils literal notranslate"><span class="pre">homepage</span></code>, and JSON Schema validation rejects it for <code class="docutils literal notranslate"><span class="pre">uri</span></code> and the types derived
+from it (<code class="docutils literal notranslate"><span class="pre">format:</span> <span class="pre">uri</span></code>). Through a JSON-LD context, <code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> values are resolved
+against the base IRI of the document. Give values that may be relative a text type
+such as <code class="docutils literal notranslate"><span class="pre">FilePath</span></code>.</p>
+<p>The RDF loader reads an IRI back as a complete URI for <code class="docutils literal notranslate"><span class="pre">uri</span></code> and the types derived
+from it, and as a CURIE, where the schema declares the prefix, for <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code>,
+<code class="docutils literal notranslate"><span class="pre">objectidentifier</span></code> and <code class="docutils literal notranslate"><span class="pre">nodeidentifier</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--xsd-anyuri-as-iri</span></code> option of gen-owl and gen-jsonld-context is deprecated
+and has no effect: links are IRIs without it. A schema that relied on the earlier
+default, where <code class="docutils literal notranslate"><span class="pre">uri</span></code> values were <code class="docutils literal notranslate"><span class="pre">xsd:anyURI</span></code> literals in the JSON-LD context and
+in OWL, keeps that output by giving those slots a text type such as <code class="docutils literal notranslate"><span class="pre">FilePath</span></code>.</p>
+</section>
 </section>
 
         </article>
@@ -666,6 +738,7 @@ as the range.</p>
 <li><a class="reference internal" href="#defining-slots">Defining slots</a></li>
 <li><a class="reference internal" href="#equals-expression">equals_expression</a></li>
 <li><a class="reference internal" href="#uri-or-curie-as-a-range">URI or CURIE as a range</a></li>
+<li><a class="reference internal" href="#links-and-uri-references">Links and URI references</a></li>
 </ul>
 </li>
 </ul>

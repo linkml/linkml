@@ -746,6 +746,21 @@
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Use `package` (`--package` on the command line) instead.&quot;</span><span class="p">,</span>
         <span class="n">issue</span><span class="o">=</span><span class="mi">3780</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xsd-anyuri-as-iri-option&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.13.0&quot;</span><span class="p">),</span>
+        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.14.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The `xsd_anyuri_as_iri` option (`--xsd-anyuri-as-iri` on the command line) of gen-owl and &quot;</span>
+            <span class="s2">&quot;gen-jsonld-context has no effect: values of `uri`, `uriorcurie` and the types derived from &quot;</span>
+            <span class="s2">&quot;them are IRIs in every generator.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Remove the option. To keep a URI reference as text (an xsd:anyURI literal), use a type &quot;</span>
+            <span class="s2">&quot;derived from `string` with `uri: xsd:anyURI`.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">2495</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
@@ -784,6 +799,7 @@
 
 <span class="n">METADATA_FLAG</span> <span class="o">=</span> <span class="s2">&quot;metadata-flag&quot;</span>
 <span class="n">MATERIALIZE_PATTERNS_GENERATOR_OPTION</span> <span class="o">=</span> <span class="s2">&quot;materialize-patterns-generator-option&quot;</span>
+<span class="n">XSD_ANYURI_AS_IRI_OPTION</span> <span class="o">=</span> <span class="s2">&quot;xsd-anyuri-as-iri-option&quot;</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
 

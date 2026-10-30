@@ -533,6 +533,19 @@
 <p>The <cite>package_name</cite> parameter (<cite>–package-name</cite> on the command line) of GolangGenerator has been renamed <cite>package</cite> (<cite>–package</cite>), for consistency with other package-scoped generators (e.g. JavaGenerator’s <cite>package</cite>).</p>
 <p><strong>Recommendation:</strong> Use <cite>package</cite> (<cite>–package</cite> on the command line) instead.</p>
 </section>
+<section id="xsd-anyuri-as-iri-option">
+<h2>xsd-anyuri-as-iri-option<a class="headerlink" href="#xsd-anyuri-as-iri-option" title="Link to this heading">¶</a></h2>
+<div class="warning admonition">
+<p class="admonition-title">Deprecated</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.13.0.</span></p>
+</div>
+<p><em>Removed in 1.14.0</em></p>
+<p>See also: <a class="reference external" href="https://github.com/linkml/linkml/issues/2495">#2495</a></p>
+</div>
+<p>The <cite>xsd_anyuri_as_iri</cite> option (<cite>–xsd-anyuri-as-iri</cite> on the command line) of gen-owl and gen-jsonld-context has no effect: values of <cite>uri</cite>, <cite>uriorcurie</cite> and the types derived from them are IRIs in every generator.</p>
+<p><strong>Recommendation:</strong> Remove the option. To keep a URI reference as text (an xsd:anyURI literal), use a type derived from <cite>string</cite> with <cite>uri: xsd:anyURI</cite>.</p>
+</section>
 </section>
 
         </article>
@@ -600,6 +613,7 @@
 <li><a class="reference internal" href="#lint-validate-only-flag">lint-validate-only-flag</a></li>
 <li><a class="reference internal" href="#materialize-patterns-generator-option">materialize-patterns-generator-option</a></li>
 <li><a class="reference internal" href="#golanggen-package-name-option">golanggen-package-name-option</a></li>
+<li><a class="reference internal" href="#xsd-anyuri-as-iri-option">xsd-anyuri-as-iri-option</a></li>
 </ul>
 </li>
 </ul>

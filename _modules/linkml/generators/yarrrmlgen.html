@@ -419,6 +419,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">TermKind</span><span class="p">,</span> <span class="n">type_term</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FlowList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
@@ -757,10 +758,14 @@
 
             <span class="c1"># Scalar values and datatype mapping</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="k">else</span> <span class="kc">None</span>
-
-            <span class="k">if</span> <span class="n">t</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">type_term</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span><span class="p">:</span>
+                    <span class="c1"># YARRRML term types are iri, blank and literal; a kind that admits IRIs maps to iri.</span>
+                    <span class="n">term_type</span> <span class="o">=</span> <span class="s2">&quot;blank&quot;</span> <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">TermKind</span><span class="o">.</span><span class="n">BLANK_NODE</span> <span class="k">else</span> <span class="s2">&quot;iri&quot;</span>
+                    <span class="n">po</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;$(</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">term_type</span><span class="p">}})</span>
+                    <span class="k">continue</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_type</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">uri</span>
 
             <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
                 <span class="n">po</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;$(</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">datatype</span><span class="p">)}})</span>

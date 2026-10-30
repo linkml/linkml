@@ -423,18 +423,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">SKOS</span><span class="p">,</span> <span class="n">XSD</span><span class="p">,</span> <span class="n">Namespace</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated_fields</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSD_ANYURI_AS_IRI_OPTION</span><span class="p">,</span> <span class="n">deprecated_fields</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SHEX</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">type_term</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
-
-<span class="n">URI_RANGES</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHEX</span><span class="o">.</span><span class="n">nonliteral</span><span class="p">,</span> <span class="n">SHEX</span><span class="o">.</span><span class="n">bnode</span><span class="p">,</span> <span class="n">SHEX</span><span class="o">.</span><span class="n">iri</span><span class="p">)</span>
-
-<span class="c1"># Extended URI_RANGES that also treats xsd:anyURI as an IRI reference (@id)</span>
-<span class="c1"># rather than a typed literal. Opt-in via --xsd-anyuri-as-iri flag.</span>
-<span class="n">URI_RANGES_WITH_XSD</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">URI_RANGES</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">)</span>
 
 <span class="n">ENUM_CONTEXT</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;skos:notation&quot;</span><span class="p">,</span>
@@ -492,12 +486,9 @@
 <span class="sd">    context keys. Identifier slots retain their slot-name key and map to ``@id``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">xsd_anyuri_as_iri</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.</span>
-
-<span class="sd">    This aligns the JSON-LD context with the SHACL generator, which emits</span>
-<span class="sd">    ``sh:nodeKind sh:IRI`` for the same types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xsd_anyuri_as_iri</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deprecated and without effect: values of ``uri``, ``uriorcurie`` and the types</span>
+<span class="sd">    derived from them are always coerced to ``@id``.&quot;&quot;&quot;</span>
 
     <span class="c1"># Framing (opt-in via CLI flag)</span>
     <span class="n">emit_frame</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -506,6 +497,8 @@
     <span class="n">frame_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">XSD_ANYURI_AS_IRI_OPTION</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Schema text must be supplied to context generator.  Preparsed schema will not work&quot;</span><span class="p">)</span>
@@ -710,19 +703,9 @@
 <span class="sd">        and &quot;could not resolve safely because the branches disagree&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coercions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">uri_ranges</span> <span class="o">=</span> <span class="n">URI_RANGES_WITH_XSD</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="k">else</span> <span class="n">URI_RANGES</span>
         <span class="k">for</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">range_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-                <span class="k">continue</span>
-
-            <span class="n">range_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">range_name</span><span class="p">]</span>
-            <span class="n">range_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">range_uri</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
-                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">range_uri</span> <span class="ow">in</span> <span class="n">uri_ranges</span><span class="p">:</span>
-                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_coercion</span><span class="p">(</span><span class="n">range_name</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">coercions</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
@@ -824,14 +807,9 @@
                         <span class="n">skos</span> <span class="o">=</span> <span class="s2">&quot;skos&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">skos</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">range_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span>
-                    <span class="n">uri_ranges</span> <span class="o">=</span> <span class="n">URI_RANGES_WITH_XSD</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsd_anyuri_as_iri</span> <span class="k">else</span> <span class="n">URI_RANGES</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
-                        <span class="k">pass</span>
-                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span> <span class="ow">in</span> <span class="n">uri_ranges</span><span class="p">:</span>
-                        <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_type</span><span class="o">.</span><span class="n">uri</span>
+                    <span class="n">coercion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_coercion</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">coercion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coercion</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_multivalue_containers</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
@@ -868,14 +846,24 @@
         <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-            <span class="n">range_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">range_name</span><span class="p">]</span>
-            <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">uri</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">URI_RANGES</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;@id&quot;</span>
-            <span class="k">return</span> <span class="n">range_type</span><span class="o">.</span><span class="n">uri</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_coercion</span><span class="p">(</span><span class="n">range_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_type_coercion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the JSON-LD ``@type`` coercion of values of the type *type_name*.</span>
+
+<span class="sd">        Values of node types (:func:`~linkml_runtime.utils.rdf_terms.type_term`) are</span>
+<span class="sd">        coerced to ``@id``, which also turns ``_:`` labels into blank nodes. Literals</span>
+<span class="sd">        are coerced to their datatype as the schema writes it; plain strings need no</span>
+<span class="sd">        coercion, so the result is ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_schemaview</span><span class="p">()</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="n">type_term</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">type_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;@id&quot;</span>
+        <span class="k">if</span> <span class="n">term</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">term</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">view</span><span class="o">.</span><span class="n">induced_type</span><span class="p">(</span><span class="n">type_name</span><span class="p">)</span><span class="o">.</span><span class="n">uri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_scoped_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a scoped JSON-LD context for class-level slot range overrides.</span>
@@ -1020,9 +1008,8 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Map xsd:anyURI-typed ranges (uri, uriorcurie) to @type: @id instead of @type: xsd:anyURI.&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Deprecated and without effect: values of uri, uriorcurie and the types derived from them are always IRIs.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--use-curies/--not-use-curies&quot;</span><span class="p">,</span>

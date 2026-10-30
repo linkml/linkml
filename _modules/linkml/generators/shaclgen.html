@@ -412,6 +412,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
@@ -420,7 +421,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span><span class="p">,</span> <span class="n">is_uri_range</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_data_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclDataType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
@@ -428,6 +429,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PresenceEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">TermKind</span><span class="p">,</span> <span class="n">type_term</span><span class="p">,</span> <span class="n">value_term</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedNode</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -851,6 +853,9 @@
 
                 <span class="n">default_value</span> <span class="o">=</span> <span class="n">ifabsent_processor</span><span class="o">.</span><span class="n">process_slot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">default_value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span> <span class="ow">and</span> <span class="n">type_term</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span><span class="p">:</span>
+                        <span class="c1"># The default is a value of the slot, so it has the slot&#39;s term kind.</span>
+                        <span class="n">default_value</span> <span class="o">=</span> <span class="n">value_term</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">default_value</span><span class="p">))</span>
                     <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">defaultValue</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_rules</span><span class="p">:</span>
@@ -1133,40 +1138,23 @@
         <span class="p">)</span>
         <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span>
 
-    <span class="c1"># Type URIs denoting non-literal (IRI or blank-node) values.</span>
-    <span class="c1"># SHACL §4.8.1 &lt;https://www.w3.org/TR/shacl/#NodeKindConstraintComponent&gt;</span>
-    <span class="c1"># defines sh:IRI, sh:BlankNode, and sh:BlankNodeOrIRI as valid node kinds.</span>
-    <span class="c1"># These URIs map to sh:IRI or sh:BlankNodeOrIRI constraints (never sh:Literal).</span>
-    <span class="n">_NON_LITERAL_TYPE_URIS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">,</span>  <span class="c1"># uri, uriorcurie → sh:IRI</span>
-            <span class="s2">&quot;http://www.w3.org/ns/shex#nonLiteral&quot;</span><span class="p">,</span>  <span class="c1"># nodeidentifier → sh:BlankNodeOrIRI</span>
-            <span class="s2">&quot;http://www.w3.org/ns/shex#iri&quot;</span><span class="p">,</span>  <span class="c1"># future-proofing → sh:IRI</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
-    <span class="c1"># IRI-only subset: uri/uriorcurie must be strict IRI references (sh:IRI),</span>
-    <span class="c1"># while nodeidentifier (shex:nonLiteral) allows blank nodes too (sh:BlankNodeOrIRI).</span>
-    <span class="c1"># See RDF 1.1 §3.2–3.3 &lt;https://www.w3.org/TR/rdf11-concepts/#section-IRIs&gt;.</span>
-    <span class="n">_IRI_ONLY_TYPE_URIS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
+    <span class="c1"># SHACL §4.1.3 node kinds for the node term kinds of LinkML types.</span>
+    <span class="n">_SH_NODE_KINDS</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">TermKind</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">TermKind</span><span class="o">.</span><span class="n">IRI</span><span class="p">:</span> <span class="n">SH</span><span class="o">.</span><span class="n">IRI</span><span class="p">,</span>
+        <span class="n">TermKind</span><span class="o">.</span><span class="n">BLANK_NODE</span><span class="p">:</span> <span class="n">SH</span><span class="o">.</span><span class="n">BlankNode</span><span class="p">,</span>
+        <span class="n">TermKind</span><span class="o">.</span><span class="n">BLANK_NODE_OR_IRI</span><span class="p">:</span> <span class="n">SH</span><span class="o">.</span><span class="n">BlankNodeOrIRI</span><span class="p">,</span>
+    <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="c1"># Types can inherit URI and pattern constraints.</span>
         <span class="n">rt</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_type</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="n">type_uri</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">uri</span>
-        <span class="n">expanded</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_uri</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">type_uri</span> <span class="ow">and</span> <span class="p">(</span><span class="n">type_uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NON_LITERAL_TYPE_URIS</span> <span class="ow">or</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NON_LITERAL_TYPE_URIS</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">type_uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IRI_ONLY_TYPE_URIS</span><span class="p">:</span>
-                <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">nodeKind</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">IRI</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">nodeKind</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">BlankNodeOrIRI</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">type_uri</span><span class="p">:</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="n">type_term</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">uri</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">term</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">nodeKind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SH_NODE_KINDS</span><span class="p">[</span><span class="n">term</span><span class="o">.</span><span class="n">kind</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">term</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">nodeKind</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">Literal</span><span class="p">)</span>
-            <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">term</span><span class="o">.</span><span class="n">datatype</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
                 <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_annotations</span><span class="p">:</span>
@@ -1204,17 +1192,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all valid values from slot hierarchy for subproperty_of constraint.</span>
 
-<span class="sd">        Values are formatted according to range type:</span>
-<span class="sd">        - uri/uriorcurie: Returns URIRef objects with full URIs</span>
-<span class="sd">        - string: Returns Literal objects with slot names</span>
+<span class="sd">        Values take the term kind of the slot&#39;s range type:</span>
+<span class="sd">        - IRI types (uri, uriorcurie): URIRef objects with full URIs</span>
+<span class="sd">        - literal types (string, curie): Literal objects with slot names or CURIEs</span>
 
 <span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
 <span class="sd">        :return: List of URIRef or Literal objects for sh:in constraint</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
 
-        <span class="c1"># SHACL uses full URIs for URI-like ranges</span>
-        <span class="n">use_uris</span> <span class="o">=</span> <span class="n">is_uri_range</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="c1"># sh:in matches terms exactly (SHACL §4.8.3), so the values take the slot&#39;s term kind.</span>
+        <span class="n">use_uris</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span> <span class="ow">and</span> <span class="n">type_term</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span>
 
         <span class="c1"># Get string values from shared utility</span>
         <span class="c1"># For URI ranges, get full URIs; for string ranges, get formatted names</span>
