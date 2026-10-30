@@ -547,7 +547,7 @@ class OwlSchemaGenerator(Generator):
             return Literal(value, lang=language)
         if not type_term(msv, range_name).kind.is_node:
             return value_term(msv, range_name, value)
-        link = self.schemaview.expand_curie(str(value))
+        link = self.schemaview.expand_curie(str(value), fallback=msv)
         if link_iri(msv, link) is None and not link.startswith("_:"):
             logger.warning(f"{origin}: {value!r} is neither an IRI nor a CURIE; written as a literal")
             return Literal(str(value))
