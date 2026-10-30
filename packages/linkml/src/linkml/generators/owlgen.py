@@ -518,7 +518,9 @@ class OwlSchemaGenerator(Generator):
         if cls.class_uri:
             # If a class_ur is assigned, and it is different from model class_uri, then
             # Add an assertion that links the two
-            mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
+            field = "class_uri" if self.use_native_uris else "default_prefix"
+            with self._uri_error_context(f"class {cls.name!r}", field):
+                mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
             if cls_uri != mapped_uri:
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
@@ -1626,7 +1628,9 @@ class OwlSchemaGenerator(Generator):
 
     def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)
-        return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
+        field = "default_prefix" if self.use_native_uris else "class_uri"
+        with self._uri_error_context(f"class {cn!r}", field):
+            return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
 
     def _enum_uri(self, en: str | EnumDefinitionName) -> URIRef:
         sv = self.schemaview
@@ -1688,7 +1692,9 @@ class OwlSchemaGenerator(Generator):
         if pv.meaning:
             sv = self.schemaview
             assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
-            return URIRef(sv.expand_curie(pv.meaning))
+            enum_name = enum_def.name if enum_def is not None else enum_uri
+            with self._uri_error_context(f"permissible value {pv.text!r} in enum {enum_name!r}", "meaning"):
+                return URIRef(sv.expand_curie(pv.meaning))
         else:
             from urllib.parse import quote
 
