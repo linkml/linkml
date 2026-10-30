@@ -515,6 +515,9 @@ class OwlSchemaGenerator(Generator):
             else:
                 try:
                     k_uri = this_sv.expand_curie(k)
+                    # Annotation tags must expand, not merely pass URI syntax validation.
+                    if k_uri == k:
+                        k_uri = None
                 except ValueError:
                     k_uri = None
             if k_uri:
