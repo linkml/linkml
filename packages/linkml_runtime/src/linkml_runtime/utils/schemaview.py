@@ -44,7 +44,7 @@ from linkml_runtime.utils.context_utils import map_import, parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.pattern import PatternResolver
-from linkml_runtime.utils.uri_validator import validate_curie, validate_uri
+from linkml_runtime.utils.uri_validator import validate_curie, validate_uri, validate_uri_reference
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -1546,50 +1546,47 @@ class SchemaView:
         return self.compress_uri(uri)
 
     def expand_curie(self, uri: str) -> str:
-        """Expand a CURIE to a full URI using the schema's registered prefixes.
-
-        This is the strict inverse of :meth:`compress_uri`.
+        """Expand a registered CURIE or return a syntactically valid absolute URI.
 
         Resolution order:
 
-        1. If *uri* is already a valid full URI (contains ``"://"``), return it
-           unchanged — no expansion needed.
-        2. If *uri* looks like a CURIE (contains ``":"`` with exactly one colon and a
-           registered prefix), return the concatenated full URI.
-        3. If *uri* looks like a CURIE but the prefix is not in the schema's registered
-           namespaces, try each ``default_curi_maps`` entry of every schema in the
-           schema_map (i.e. the schema itself and all its imports) to find the prefix.
-        4. If the prefix is still not found, raise :exc:`ValueError`.
-        5. If *uri* contains no ``":"`` at all (bare name), raise :exc:`ValueError`.
+        1. Split *uri* at the first colon and resolve the prefix through the schema's
+           registered namespaces.
+        2. If the prefix is not registered, try each ``default_curi_maps`` entry of
+           every schema in the schema_map (the schema itself and its imports).
+        3. If the prefix is still unresolved but *uri* is a syntactically valid
+           absolute URI according to RFC 3986, return it unchanged. An authority
+           component is not required, and schemes need not be registered.
+        4. Otherwise, raise :exc:`ValueError`.
+
+        URI schemes and CURIE prefixes overlap syntactically. Registered prefixes
+        take precedence; otherwise, a value such as ``UNREG:C`` is accepted as an
+        absolute URI rather than rejected as an unknown CURIE prefix.
 
         :param uri: A CURIE or full URI string.
         :return: A full URI string.
-        :raises ValueError: When *uri* is a CURIE whose prefix cannot be resolved via
-            the schema's registered namespaces or any explicitly declared
-            ``default_curi_maps``, or when it is neither a CURIE nor a full URI.
+        :raises ValueError: When *uri* cannot be expanded through a registered
+            prefix or an explicitly declared ``default_curi_maps`` entry and is
+            not a syntactically valid absolute URI.
         """
-        if "://" in uri:
+        pfx, separator, local_id = uri.partition(":")
+        if separator:
+            ns = self.namespaces()
+            if pfx in ns:
+                return ns[pfx] + local_id
+            # Try context maps declared in any schema in this view's
+            # schema_map, including imports whose maps are not in namespaces().
+            for s in self.schema_map.values():
+                for cmap in s.default_curi_maps:
+                    tmp_ns = Namespaces()
+                    tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                    if pfx in tmp_ns:
+                        return tmp_ns[pfx] + local_id
+        if validate_uri(uri):
             return uri
-        if ":" in uri:
-            parts = uri.split(":")
-            if len(parts) == 2:
-                pfx, local_id = parts
-                ns = self.namespaces()
-                if pfx in ns:
-                    return ns[pfx] + local_id
-                # Fallback: try resolving via default_curi_maps declared in any
-                # schema in the schema_map. This handles cases where a sub-schema
-                # (e.g. units.yaml) uses a CURIE whose prefix is defined by a
-                # context map (e.g. semweb_context) that is declared in the
-                # sub-schema itself or one of its siblings/parents.
-                for s in self.schema_map.values():
-                    for cmap in s.default_curi_maps:
-                        tmp_ns = Namespaces()
-                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
-                        if pfx in tmp_ns:
-                            return tmp_ns[pfx] + local_id
-                raise ValueError(f"'{uri}' cannot be expanded: prefix '{pfx}' is not registered in the schema")
-        raise ValueError(f"'{uri}' is neither a CURIE nor a full URI")
+        if validate_uri_reference(uri):
+            raise ValueError(f"'{uri}' is a relative reference, not a valid absolute URI")
+        raise ValueError(f"'{uri}' is neither a resolvable CURIE nor a valid absolute URI")
 
     def compress_uri(self, uri: str) -> str:
         """Compress a URI or CURIE to a CURIE string using the schema's registered prefixes.
