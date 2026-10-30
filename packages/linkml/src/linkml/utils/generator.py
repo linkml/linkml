@@ -36,7 +36,7 @@ from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
 from linkml.utils.mergeutils import alias_root
-from linkml.utils.schemaloader import SchemaLoader
+from linkml.utils.schemaloader import UNKNOWN_NAMESPACE, SchemaLoader
 from linkml.utils.typereferences import References
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -47,6 +47,7 @@ from linkml_runtime.linkml_model.meta import (
     ElementName,
     EnumDefinition,
     EnumDefinitionName,
+    Prefix,
     PrefixPrefixPrefix,
     SchemaDefinition,
     SlotDefinition,
@@ -175,6 +176,8 @@ class Generator(metaclass=abc.ABCMeta):
     it is preserved here so external callers/subclasses relying on it are not
     silently broken by the switch to a property-backed field.
     """
+    _loaded_schemaview: ClassVar[SchemaView | None] = None
+    """SchemaView built by :meth:`type_schemaview` for a SchemaLoader-based generator."""
 
     @property
     def namespaces(self) -> Namespaces | None:
@@ -213,6 +216,25 @@ class Generator(metaclass=abc.ABCMeta):
         """Save passed namespace registry in the private backing store of the
         :attr:`namespaces` property."""
         self._namespaces = value
+
+    def type_schemaview(self) -> SchemaView:
+        """Return a SchemaView of the schema for questions about its types, on either generator path.
+
+        SchemaLoader-based generators have no :attr:`schemaview`. Their loaded schema
+        already has its imports resolved, so the view is built once from a copy of it
+        with the loaded prefixes, without reopening source files. Placeholder namespaces
+        that SchemaLoader gives undeclared prefixes are left out.
+        """
+        if self.schemaview is not None:
+            return self.schemaview
+        if self._loaded_schemaview is None:
+            schema = deepcopy(self.schema)
+            schema.imports = []
+            for prefix, namespace in self.namespaces.items():
+                if not prefix.startswith("@") and not str(namespace).startswith(UNKNOWN_NAMESPACE):
+                    schema.prefixes[prefix] = Prefix(prefix, str(namespace))
+            self._loaded_schemaview = SchemaView(schema)
+        return self._loaded_schemaview
 
     namespaces: Namespaces | None = namespaces
     """Constructor kwarg backing the ``namespaces`` property (see above).
@@ -985,7 +1007,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         if ncname not in self.namespaces:
             self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
+            self.namespaces[ncname] = f"{UNKNOWN_NAMESPACE}{ncname}/"
         self.emit_prefixes.add(ncname)
 
     def get_metamodel_slot_name(self, slot_name: str) -> str:
