@@ -388,18 +388,15 @@ class OwlSchemaGenerator(Generator):
                         obj = URIRef(v)
                     elif metaslot_range == "uriorcurie":
                         try:
-                            obj = URIRef(this_sv.expand_curie(v))
+                            obj = URIRef(this_sv.expand_curie(v, fallback=msv))
                         except ValueError:
-                            try:
-                                obj = URIRef(msv.expand_curie(v))
-                            except ValueError:
-                                logger.warning(
-                                    "uriorcurie metaslot value %r cannot be expanded to a URI "
-                                    "(neither prefix is registered in the metamodel or schema); "
-                                    "emitting as a relative IRI reference",
-                                    v,
-                                )
-                                obj = URIRef(v)
+                            logger.warning(
+                                "uriorcurie metaslot value %r cannot be expanded to a URI "
+                                "(neither a resolvable CURIE nor a valid absolute URI); "
+                                "emitting as a relative IRI reference",
+                                v,
+                            )
+                            obj = URIRef(v)
                     elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
                         obj = Literal(v, lang=lang)
                     else:

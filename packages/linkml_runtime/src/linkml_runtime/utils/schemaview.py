@@ -1545,7 +1545,7 @@ class SchemaView:
         uri = self.get_uri(e, imports=imports)
         return self.compress_uri(uri)
 
-    def expand_curie(self, uri: str) -> str:
+    def expand_curie(self, uri: str, *, fallback: SchemaView | None = None) -> str:
         """Expand a registered CURIE or return a syntactically valid absolute URI.
 
         Resolution order:
@@ -1554,16 +1554,20 @@ class SchemaView:
            registered namespaces.
         2. If the prefix is not registered, try each ``default_curi_maps`` entry of
            every schema in the schema_map (the schema itself and its imports).
-        3. If the prefix is still unresolved but *uri* is a syntactically valid
+        3. If a *fallback* SchemaView is provided, try its namespaces and
+           ``default_curi_maps`` using the same rules.
+        4. If the prefix is still unresolved but *uri* is a syntactically valid
            absolute URI according to RFC 3986, return it unchanged. An authority
            component is not required, and schemes need not be registered.
-        4. Otherwise, raise :exc:`ValueError`.
+        5. Otherwise, raise :exc:`ValueError`.
 
         URI schemes and CURIE prefixes overlap syntactically. Registered prefixes
         take precedence; otherwise, a value such as ``UNREG:C`` is accepted as an
         absolute URI rather than rejected as an unknown CURIE prefix.
 
         :param uri: A CURIE or full URI string.
+        :param fallback: Additional prefix-resolution context to try before URI
+            passthrough. This SchemaView's prefixes take precedence over the fallback.
         :return: A full URI string.
         :raises ValueError: When *uri* cannot be expanded through a registered
             prefix or an explicitly declared ``default_curi_maps`` entry and is
@@ -1571,17 +1575,19 @@ class SchemaView:
         """
         pfx, separator, local_id = uri.partition(":")
         if separator:
-            ns = self.namespaces()
-            if pfx in ns:
-                return ns[pfx] + local_id
-            # Try context maps declared in any schema in this view's
-            # schema_map, including imports whose maps are not in namespaces().
-            for s in self.schema_map.values():
-                for cmap in s.default_curi_maps:
-                    tmp_ns = Namespaces()
-                    tmp_ns.add_prefixmap(cmap, include_defaults=False)
-                    if pfx in tmp_ns:
-                        return tmp_ns[pfx] + local_id
+            views = (self,) if fallback is None else (self, fallback)
+            for view in views:
+                ns = view.namespaces()
+                if pfx in ns:
+                    return ns[pfx] + local_id
+                # Try context maps declared in any schema in this view's
+                # schema_map, including imports whose maps are not in namespaces().
+                for s in view.schema_map.values():
+                    for cmap in s.default_curi_maps:
+                        tmp_ns = Namespaces()
+                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                        if pfx in tmp_ns:
+                            return tmp_ns[pfx] + local_id
         if validate_uri(uri):
             return uri
         if validate_uri_reference(uri):

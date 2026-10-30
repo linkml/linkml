@@ -1934,6 +1934,27 @@ def test_expand_curie_imported_default_curi_maps(
     assert view.expand_curie(uri) == expected
 
 
+@pytest.mark.parametrize(
+    ("uri", "expected"),
+    [
+        ("ex:resource", "https://example.org/resource"),
+        ("fallback:resource", "https://example.org/fallback/resource"),
+        ("custom:resource", "custom:resource"),
+    ],
+)
+def test_expand_curie_fallback(sv_empty: SchemaView, uri: str, expected: str) -> None:
+    """Resolve primary then fallback namespaces before accepting URI syntax."""
+    sv_empty.schema.prefixes["ex"] = Prefix(prefix_prefix="ex", prefix_reference="https://example.org/")
+    fallback = SchemaView(
+        SchemaDefinition(
+            id="https://example.org/fallback",
+            name="fallback",
+            prefixes={"ex": "https://example.org/other/", "fallback": "https://example.org/fallback/"},
+        )
+    )
+    assert sv_empty.expand_curie(uri, fallback=fallback) == expected
+
+
 def test_uris_without_default_prefix() -> None:
     """Test if uri is correct if no default_prefix is defined for the schema.
 
