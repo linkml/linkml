@@ -3,6 +3,7 @@ import os
 import string
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import ClassVar
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -11,7 +12,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
-from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
@@ -19,6 +20,7 @@ from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import TermKind, type_term, value_term
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
@@ -437,6 +439,9 @@ class ShaclGenerator(Generator):
 
                 default_value = ifabsent_processor.process_slot(s, c)
                 if default_value:
+                    if s.range in sv.all_types() and type_term(sv, s.range).kind.is_node:
+                        # The default is a value of the slot, so it has the slot's term kind.
+                        default_value = value_term(sv, s.range, str(default_value))
                     prop_pv(SH.defaultValue, default_value)
 
             if self.emit_rules:
@@ -719,40 +724,23 @@ class ShaclGenerator(Generator):
         )
         func(SH["in"], pv_node)
 
-    # Type URIs denoting non-literal (IRI or blank-node) values.
-    # SHACL §4.8.1 <https://www.w3.org/TR/shacl/#NodeKindConstraintComponent>
-    # defines sh:IRI, sh:BlankNode, and sh:BlankNodeOrIRI as valid node kinds.
-    # These URIs map to sh:IRI or sh:BlankNodeOrIRI constraints (never sh:Literal).
-    _NON_LITERAL_TYPE_URIS = frozenset(
-        {
-            "xsd:anyURI",  # uri, uriorcurie → sh:IRI
-            "http://www.w3.org/ns/shex#nonLiteral",  # nodeidentifier → sh:BlankNodeOrIRI
-            "http://www.w3.org/ns/shex#iri",  # future-proofing → sh:IRI
-        }
-    )
-    # IRI-only subset: uri/uriorcurie must be strict IRI references (sh:IRI),
-    # while nodeidentifier (shex:nonLiteral) allows blank nodes too (sh:BlankNodeOrIRI).
-    # See RDF 1.1 §3.2–3.3 <https://www.w3.org/TR/rdf11-concepts/#section-IRIs>.
-    _IRI_ONLY_TYPE_URIS = frozenset(
-        {
-            "xsd:anyURI",
-        }
-    )
+    # SHACL §4.1.3 node kinds for the node term kinds of LinkML types.
+    _SH_NODE_KINDS: ClassVar[dict[TermKind, URIRef]] = {
+        TermKind.IRI: SH.IRI,
+        TermKind.BLANK_NODE: SH.BlankNode,
+        TermKind.BLANK_NODE_OR_IRI: SH.BlankNodeOrIRI,
+    }
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
         # Types can inherit URI and pattern constraints.
         rt = sv.induced_type(r)
-        type_uri = rt.uri
-        expanded = sv.get_uri(rt, expand=True) if type_uri else None
-        if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
-            if type_uri in self._IRI_ONLY_TYPE_URIS:
-                func(SH.nodeKind, SH.IRI)
-            else:
-                func(SH.nodeKind, SH.BlankNodeOrIRI)
-        elif type_uri:
+        term = type_term(sv, r) if rt.uri else None
+        if term is not None and term.kind.is_node:
+            func(SH.nodeKind, self._SH_NODE_KINDS[term.kind])
+        elif term is not None:
             func(SH.nodeKind, SH.Literal)
-            func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
+            func(SH.datatype, URIRef(term.datatype))
             if rt.pattern:
                 func(SH.pattern, Literal(rt.pattern))
             if rt.annotations and self.include_annotations:
@@ -790,17 +778,17 @@ class ShaclGenerator(Generator):
         """
         Get all valid values from slot hierarchy for subproperty_of constraint.
 
-        Values are formatted according to range type:
-        - uri/uriorcurie: Returns URIRef objects with full URIs
-        - string: Returns Literal objects with slot names
+        Values take the term kind of the slot's range type:
+        - IRI types (uri, uriorcurie): URIRef objects with full URIs
+        - literal types (string, curie): Literal objects with slot names or CURIEs
 
         :param slot: SlotDefinition with subproperty_of set
         :return: List of URIRef or Literal objects for sh:in constraint
         """
         sv = self.schemaview
 
-        # SHACL uses full URIs for URI-like ranges
-        use_uris = is_uri_range(sv, slot.range)
+        # sh:in matches terms exactly (SHACL §4.8.3), so the values take the slot's term kind.
+        use_uris = slot.range in sv.all_types() and type_term(sv, slot.range).kind.is_node
 
         # Get string values from shared utility
         # For URI ranges, get full URIs; for string ranges, get formatted names

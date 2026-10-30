@@ -3,7 +3,7 @@
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
       "tag": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "linkml:tag"
       },
       "value": {
