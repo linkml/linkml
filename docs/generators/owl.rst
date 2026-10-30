@@ -311,6 +311,28 @@ Other examples
   translation of Biolink schema to OWL
 
 
+Deterministic output
+^^^^^^^^^^^^^^^^^^^^
+
+``gen-owl`` canonicalizes the graph with `RDFC-1.0 <https://www.w3.org/TR/rdf-canon/>`_
+before serializing it. For standard RDF, repeated runs over the same schema
+therefore produce byte-identical Turtle, and checked-in artifacts do not change
+between runs.
+
+RDFC-1.0 numbers blank nodes in canonical order (``_:c14n0``, ``_:c14n1``, ...),
+so adding a statement can renumber unrelated blank nodes. ``--diff-stable``
+derives labels from blank-node neighbourhoods instead, which reduces this churn
+but does not guarantee minimal diffs; see :ref:`rdf-in-version-control`, which
+also names the optional dependency it needs. The option is also available on
+``gen-rdf``, ``gen-shacl`` and ``gen-shex --format rdf``.
+
+Graphs that are not standard RDF, with a relative IRI or a literal as a
+predicate, cannot be canonicalized under RDFC-1.0; ``gen-shacl
+--include-annotations`` writes such a predicate for an annotation whose tag is
+not a CURIE. They are serialized by rdflib instead, with an
+``RDFCanonicalizationWarning``, and ``--diff-stable`` has no effect on them.
+
+
 Docs
 ----
 
