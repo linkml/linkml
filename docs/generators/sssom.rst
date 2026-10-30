@@ -16,6 +16,8 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
+``--normalize-prefixes`` is described under :ref:`prefix-normalization`.
+
 .. click:: linkml.generators.sssomgen:cli
     :prog: gen-sssom
     :nested: full

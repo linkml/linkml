@@ -60,6 +60,8 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
+``--normalize-prefixes`` is described under :ref:`prefix-normalization`.
+
 .. currentmodule:: linkml.generators.sparqlgen
 
 .. click:: linkml.generators.sparqlgen:cli

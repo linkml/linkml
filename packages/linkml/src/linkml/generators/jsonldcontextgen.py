@@ -14,6 +14,13 @@ from jsonasobj2 import JsonObj, as_json
 from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
+from linkml.generators.common.prefixes import (
+    added_preferred_prefixes,
+    normalize_prefixes_option,
+    preferred_prefixes,
+    standardize_prefix,
+    standardize_values,
+)
 from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
@@ -58,6 +65,9 @@ class ContextGenerator(Generator):
     prefixes: bool | None = True
     flatprefixes: bool | None = False
     fix_multivalue_containers: bool | None = False
+    normalize_prefixes: bool = False
+    """Also define the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce``, and write compact IRIs with them."""
     exclude_imports: bool = False
     """If True, elements from imported schemas won't be included in the generated context"""
     exclude_external_imports: bool = False
@@ -191,9 +201,19 @@ class ContextGenerator(Generator):
                 self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
                 self.context_body["@base"] = base
+        preferred = None
+        if self.normalize_prefixes and prefixes:
+            preferred = added_preferred_prefixes(
+                preferred_prefixes(self.prefix_schemaview()),
+                {prefix: str(self.namespaces[prefix]) for prefix in self.emit_prefixes},
+                terms=self.context_body.keys() | self.slot_class_maps.keys(),
+            )
         if prefixes:
-            for prefix in sorted(self.emit_prefixes):
-                url = str(self.namespaces[prefix])
+            urls = {prefix: str(self.namespaces[prefix]) for prefix in self.emit_prefixes}
+            if preferred is not None:
+                urls |= {record.prefix: record.uri_prefix for record in preferred.records}
+            for prefix in sorted(urls):
+                url = urls[prefix]
                 # Derived from line # ~5223 in pyld/lib/jsonld.py
                 if bool(re.match(r".*[:/\?#\[\]@]$", url)) or flatprefixes:
                     context_content[prefix] = url
@@ -207,6 +227,8 @@ class ContextGenerator(Generator):
                 context_content[k] = v
             for k, v in self.slot_class_maps.items():
                 context_content[k] = v
+        if preferred is not None:
+            context_content = standardize_values(json.loads(as_json(context_content)), preferred)
         context["@context"] = context_content
         if output and not self.embed_context_in_frame:
             with open(output, "w", encoding="UTF-8") as outf:
@@ -234,6 +256,8 @@ class ContextGenerator(Generator):
             if root_name:
                 root_cls = self.schema.classes[root_name]
                 frame["@type"] = root_cls.class_uri or root_cls.name
+                if preferred is not None:
+                    frame["@type"] = standardize_prefix(frame["@type"], preferred)
 
             for prop, rule in self.frame_body.items():
                 frame[prop] = rule
@@ -616,6 +640,7 @@ class ContextGenerator(Generator):
     help="Use class_uri/slot_uri CURIEs as class and non-identifier slot context keys; identifier slots retain their "
     + "slot-name key and map to @id.",
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
     """Generate jsonld @context definition from LinkML model"""

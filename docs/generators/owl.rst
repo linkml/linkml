@@ -67,6 +67,13 @@ Mapping
 
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
+Prefix normalization
+^^^^^^^^^^^^^^^^^^^^
+
+``--normalize-prefixes`` writes the conventional names of well-known namespaces, the same in
+every generator; see :ref:`prefix-normalization`.
+
+
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
