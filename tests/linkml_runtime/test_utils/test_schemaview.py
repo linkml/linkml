@@ -24,6 +24,7 @@ from linkml_runtime.linkml_model import (
     SubsetDefinition,
     TypeDefinition,
 )
+from linkml_runtime.linkml_model.meta import AnonymousSlotExpression
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schema_builder import SchemaBuilder
@@ -2360,6 +2361,16 @@ def test_range_function_non_slot_input(
     """
     with pytest.raises(ValueError, match=f"A SlotDefinition must be provided to generate the {err_desc}."):
         getattr(schema_view_core, range_function)(slot_argument)
+
+
+def test_slot_range_as_union_anonymous_slot_expression(schema_view_core: SchemaView) -> None:
+    """An anonymous slot expression gives its ranges like a slot does."""
+    expression = AnonymousSlotExpression(
+        range="string",
+        exactly_one_of=[AnonymousSlotExpression(range="integer")],
+        any_of=[AnonymousSlotExpression(range="string"), AnonymousSlotExpression(range="boolean")],
+    )
+    assert schema_view_core.slot_range_as_union(expression) == ["string", "integer", "boolean"]
 
 
 """End of range-related tests. Phew!"""

@@ -60,6 +60,41 @@ classes:
         multivalued: true
         maximum_cardinality: 5
 
+  ExtraNotAllowedExpression:
+    is_a: Base
+    description: "allowed: false forbids extra fields, and the range_expression is ignored"
+    extra_slots:
+      allowed: false
+      range_expression:
+        range: string
+
+  ExtraAllowedExpression:
+    is_a: Base
+    description: "allowed: true allows any extra fields, whatever the range_expression says"
+    extra_slots:
+      allowed: true
+      range_expression:
+        range: integer
+
+  ExtraSlotsEmpty:
+    is_a: Base
+    description: "An extra_slots with neither allowed nor range_expression forbids extra fields"
+    extra_slots: {}
+
+  ExtraAllowedChild:
+    is_a: ExtraAllowed
+    description: "Has no extra_slots of its own, so it follows the generator default"
+
+  ExtraStringChild:
+    is_a: ExtraString
+    description: "Has no extra_slots of its own, so it follows the generator default"
+
+  ExtraStringAllowedChild:
+    is_a: ExtraString
+    description: "Allows any extra fields, although its parent only takes strings"
+    extra_slots:
+      allowed: true
+
   AnyClass:
     class_uri: linkml:Any
     description: "The Any type implicitly allows any extra slots"

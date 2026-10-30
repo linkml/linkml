@@ -322,6 +322,14 @@ DEPRECATIONS = (
         recommendation="Use `package` (`--package` on the command line) instead.",
         issue=3780,
     ),
+    Deprecation(
+        name="pydanticgen-extra-fields",
+        deprecated_in=SemVer.from_str("1.11.1"),
+        removed_in=SemVer.from_str("1.13.0"),
+        message="Globally overriding `extra` on generated classes with `extra_fields` is deprecated.",
+        recommendation="Set `extra_slots` on individual classes within the schema",
+        issue=3630,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
