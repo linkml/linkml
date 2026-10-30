@@ -12,35 +12,35 @@
       "skos": "http://www.w3.org/2004/02/skos/core#",
       "@vocab": "https://w3id.org/linkml/",
       "broad_mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:broadMatch"
       },
       "close_mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:closeMatch"
       },
       "deprecated_element_has_exact_replacement": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "deprecated_element_has_exact_replacement"
       },
       "deprecated_element_has_possible_replacement": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "deprecated_element_has_possible_replacement"
       },
       "exact_mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:exactMatch"
       },
       "mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:mappingRelation"
       },
       "narrow_mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:narrowMatch"
       },
       "related_mappings": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "skos:relatedMatch"
       },
       "@base": "https://w3id.org/linkml/"

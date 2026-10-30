@@ -211,3 +211,59 @@ details of how to use this in code.
 In some cases, you may want to use a URI or CURIE as a range. To do this,
 create a class with `class_uri` set to the URI or CURIE and use that class
 as the range.
+
+(links-and-uri-references)=
+## Links and URI references
+
+A value of a URI-like type is either a link, which becomes an RDF IRI, or a URI
+reference held as text, which becomes an `xsd:anyURI` literal. The type decides,
+in the same way for every generator and for the RDF dumper and loader:
+
+| Type | RDF term | Use for |
+|---|---|---|
+| `uri`, `uriorcurie` and types derived from them | IRI (CURIEs are expanded) | links to resources |
+| `objectidentifier` | IRI | references to objects |
+| `nodeidentifier`, or a type with `uri: rdfs:Resource` | IRI or blank node (`_:b1`) | references to nodes |
+| a type derived from `string` with `uri: xsd:anyURI` | `xsd:anyURI` literal, as written | URI references held as data, such as relative file paths |
+| `curie` | `xsd:string` literal, not expanded | compact identifiers held as text |
+
+```yaml
+types:
+  FilePath:
+    typeof: string
+    uri: xsd:anyURI
+    description: A file location, which may be relative.
+slots:
+  homepage:
+    range: uri
+  file_path:
+    range: FilePath
+```
+
+For `homepage: https://alice.example.org/` and `file_path: ./docs/cv.pdf` the RDF is
+
+```turtle
+ex:alice ex:homepage <https://alice.example.org/> ;
+    ex:file_path "./docs/cv.pdf"^^xsd:anyURI .
+```
+
+gen-jsonld-context coerces `homepage` to `@id` and `file_path` to `xsd:anyURI`,
+gen-shacl requires `sh:nodeKind sh:IRI` for one and `sh:datatype xsd:anyURI` for
+the other, and gen-owl makes `homepage` an object property and `file_path` a data
+property.
+
+An RDF IRI must be absolute ([RDF 1.1 Concepts §3.2](https://www.w3.org/TR/rdf11-concepts/#section-IRIs)),
+so the RDF dumper rejects a relative value of a link type, such as `./home.html` in
+`homepage`, and JSON Schema validation rejects it for `uri` and the types derived
+from it (`format: uri`). Through a JSON-LD context, `@id` values are resolved
+against the base IRI of the document. Give values that may be relative a text type
+such as `FilePath`.
+
+The RDF loader reads an IRI back as a complete URI for `uri` and the types derived
+from it, and as a CURIE, where the schema declares the prefix, for `uriorcurie`,
+`objectidentifier` and `nodeidentifier`.
+
+The `--xsd-anyuri-as-iri` option of gen-owl and gen-jsonld-context is deprecated
+and has no effect: links are IRIs without it. A schema that relied on the earlier
+default, where `uri` values were `xsd:anyURI` literals in the JSON-LD context and
+in OWL, keeps that output by giving those slots a text type such as `FilePath`.

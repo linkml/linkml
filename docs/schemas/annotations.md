@@ -130,6 +130,38 @@ first-class slots, and instantiates value was a mixin.
 However, this is not yet supported in the current LinkML validator, so using `instantiates` indicates your
 intent, but does not yet enforce validation.
 
+(annotations-in-rdf)=
+## Annotation values in RDF
+
+The declared range also decides how gen-owl and gen-shacl (with `--include-annotations`) write an
+annotation value, by the rule that applies to slot values (see {ref}`links-and-uri-references`): a
+`nodeidentifier` or `uri` value becomes an IRI, or a blank node for a `_:` label; a `string` value stays
+text and carries the language of `--default-language`; a `curie` value stays a string; and the value of
+an enum-ranged slot is written as the permissible value's text.
+
+```yaml
+classes:
+  Reviewable:
+    class_uri: mymetamodel:Reviewable
+    attributes:
+      review:
+        range: string
+      reviewer:
+        range: nodeidentifier
+  Person:
+    instantiates:
+      - mymetamodel:Reviewable
+    annotations:
+      review: A very useful class that is well defined
+      reviewer: orcid:0000-0002-1825-0097
+```
+
+gen-owl then writes `mymetamodel:review "A very useful class that is well defined"` and
+`mymetamodel:reviewer <https://orcid.org/0000-0002-1825-0097>` on the class. A value that cannot be a
+term of the declared kind, such as a relative reference for a `uri` slot, is an error. Without a
+declaration the generators keep their earlier behaviour: gen-owl writes every annotation value as a
+string, and gen-shacl writes a value containing a colon as an IRI.
+
 ## Other uses of instantiates
 
 The `instantiates` slot can also be used constrain rather than extend.

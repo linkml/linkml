@@ -26,3 +26,5 @@ ex:C a owl:Class,
 <http://example.org> a owl:Ontology ;
     rdfs:label "example.org" .
 
+skos:inScheme a owl:AnnotationProperty .
+
