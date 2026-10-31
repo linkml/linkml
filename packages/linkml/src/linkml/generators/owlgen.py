@@ -3,7 +3,7 @@
 import logging
 import os
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
@@ -91,6 +91,50 @@ class OWLProfile(Enum):
     @staticmethod
     def list() -> list[str]:
         return list(map(lambda c: c.value, OWLProfile))
+
+
+def _metadata_profile_values(value: Any) -> list[Any]:
+    """Return *value*, one metadata profile or a list of them, as a list.
+
+    A ``config.yaml`` gives a profile by its name, a string, which the
+    ``gen-owl`` command converts before it builds the generator, but
+    ``gen-project`` does not (linkml#1453).
+
+    >>> _metadata_profile_values("rdfs")
+    ['rdfs']
+    >>> _metadata_profile_values(None)
+    []
+    """
+    if value is None:
+        return []
+    if isinstance(value, str | MetadataProfile):
+        return [value]
+    return list(value)
+
+
+def _unknown_metadata_profile(values: list[Any]) -> str | None:
+    """Return a message naming the first of *values* that names no metadata profile, or None.
+
+    >>> _unknown_metadata_profile(["rdfs", MetadataProfile.ols]) is None
+    True
+    >>> _unknown_metadata_profile(["rdf"])
+    "'rdf' is not a metadata profile; choose one of linkml, rdfs, ols"
+    """
+    for value in values:
+        if not isinstance(value, MetadataProfile) and str(value) not in MetadataProfile.list():
+            return f"{value!r} is not a metadata profile; choose one of {', '.join(MetadataProfile.list())}"
+    return None
+
+
+def _as_metadata_profile(value: Any) -> MetadataProfile:
+    """Return *value*, a profile or its name, as a :class:`MetadataProfile`.
+
+    >>> _as_metadata_profile("rdfs")
+    <MetadataProfile.rdfs: 'rdfs'>
+    >>> _as_metadata_profile(MetadataProfile.ols)
+    <MetadataProfile.ols: 'ols'>
+    """
+    return value if isinstance(value, MetadataProfile) else MetadataProfile(str(value))
 
 
 @dataclass
@@ -256,7 +300,28 @@ class OwlSchemaGenerator(Generator):
         self._language_resolver = LanguageTagResolver(self.default_language)
         if self.xsd_anyuri_as_iri is not None:
             deprecation_warning(XSD_ANYURI_AS_IRI_OPTION, stack_level=4)
+        profile = _metadata_profile_values(self.metadata_profile)
+        profiles = _metadata_profile_values(self.metadata_profiles)
+        message = _unknown_metadata_profile(profile + profiles)
+        if message:
+            raise ValueError(message)
+        self.metadata_profile = _as_metadata_profile(profile[0]) if profile else None
+        self.metadata_profiles = [_as_metadata_profile(p) for p in profiles]
         super().__post_init__()
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Reject a ``metadata_profile`` or ``metadata_profiles`` value that names no profile.
+
+        :param args: The merged ``generator_args`` for the OWL generator.
+        :raises click.UsageError: if a value names no metadata profile.
+        """
+        message = _unknown_metadata_profile(
+            _metadata_profile_values(args.get("metadata_profile"))
+            + _metadata_profile_values(args.get("metadata_profiles"))
+        )
+        if message:
+            raise click.UsageError(message)
 
     def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
         """Return the BCP 47 language tag for *element*, or ``None``.
