@@ -50,36 +50,31 @@ def test_projectgen_java_package_from_config(kitchen_sink_path, tmp_path):
         assert "package com.example.generated;" in f.read_text(encoding="UTF-8")
 
 
-def test_projectgen_owl_metadata_profile_from_config(kitchen_sink_path, tmp_path):
-    """owl GEN_MAP wiring: a metadata profile named in config.yaml reaches the OWL file (linkml#1453)."""
+def _run_owl_with_config(kitchen_sink_path, tmp_path, owl_args: str):
+    """Run gen-project for owl alone, with *owl_args* as the config file's owl section."""
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
-        f"directory: {tmp_path / 'out'}\ngenerator_args:\n  owl:\n    metadata_profile: rdfs\n",
-        encoding="UTF-8",
+        f"directory: {tmp_path / 'out'}\ngenerator_args:\n  owl:\n    {owl_args}\n", encoding="UTF-8"
     )
-    result = CliRunner().invoke(
-        projectgen_cli, ["--config-file", str(config_path), "-I", "owl", str(kitchen_sink_path)]
-    )
+    return CliRunner().invoke(projectgen_cli, ["--config-file", str(config_path), "-I", "owl", str(kitchen_sink_path)])
+
+
+def test_projectgen_owl_metadata_profile_from_config(kitchen_sink_path, tmp_path):
+    """A metadata profile named in the config file reaches the OWL file (linkml#1453)."""
+    result = _run_owl_with_config(kitchen_sink_path, tmp_path, "metadata_profile: rdfs")
     assert result.exit_code == 0, result.output
     owl = (tmp_path / "out" / "owl" / "kitchen_sink.owl.ttl").read_text(encoding="UTF-8")
     assert 'rdfs:comment "A person, living or dead"' in owl
 
 
-def test_cli_unknown_owl_metadata_profile_is_a_usage_error(kitchen_sink_path, tmp_path):
-    """gen-project rejects a metadata profile name that names no profile before it generates anything."""
-    out_dir = tmp_path / "out"
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(
-        f"directory: {out_dir}\ngenerator_args:\n  owl:\n    metadata_profile: rdf\n",
-        encoding="UTF-8",
-    )
-    result = CliRunner().invoke(
-        projectgen_cli, ["--config-file", str(config_path), "-I", "owl", str(kitchen_sink_path)]
-    )
+@pytest.mark.parametrize("owl_args", ["metadata_profile: rdf", "metadata_profiles: [rdfs, rdf]"])
+def test_cli_unknown_owl_metadata_profile_is_a_usage_error(kitchen_sink_path, tmp_path, owl_args):
+    """gen-project rejects an unknown profile name before it generates anything."""
+    result = _run_owl_with_config(kitchen_sink_path, tmp_path, owl_args)
     assert result.exit_code != 0
     assert not isinstance(result.exception, ValueError)
     assert "'rdf' is not a metadata profile" in result.output
-    assert not out_dir.exists()
+    assert not (tmp_path / "out").exists()
 
 
 def test_directory_arg_scoped_per_generator_not_globally_stripped(kitchen_sink_path, tmp_path, monkeypatch):

@@ -160,7 +160,7 @@ def test_rdfs_profile(kitchen_sink_path):
     ],
 )
 def test_rdfs_profile_by_name(kitchen_sink_path, profile_args):
-    """A profile given by its name, as a config.yaml gives it, is honoured (linkml#1453)."""
+    """A profile named by a string, as a config file gives it, takes effect (linkml#1453)."""
     gen = OwlSchemaGenerator(
         kitchen_sink_path, mergeimports=False, metaclasses=False, type_objects=False, **profile_args
     )
@@ -171,10 +171,17 @@ def test_rdfs_profile_by_name(kitchen_sink_path, profile_args):
     assert list(g.objects(KS.Person, SKOS.definition)) == []
 
 
-@pytest.mark.parametrize("profile_args", [{"metadata_profile": "rdf"}, {"metadata_profiles": ["rdfs", "rdf"]}])
-def test_unknown_profile_name_is_rejected(kitchen_sink_path, profile_args):
-    """A name that is no metadata profile fails at construction, rather than leaving every profile off."""
-    with pytest.raises(ValueError, match="'rdf' is not a metadata profile"):
+@pytest.mark.parametrize(
+    "profile_args,message",
+    [
+        pytest.param({"metadata_profile": "rdf"}, "'rdf' is not a metadata profile", id="unknown-name"),
+        pytest.param({"metadata_profiles": ["rdfs", "rdf"]}, "'rdf' is not a metadata profile", id="unknown-in-list"),
+        pytest.param({"metadata_profile": ["rdfs", "ols"]}, "takes one profile", id="list-for-one"),
+    ],
+)
+def test_bad_profile_setting_is_rejected(kitchen_sink_path, profile_args, message):
+    """A bad profile setting fails at construction instead of leaving every profile off."""
+    with pytest.raises(ValueError, match=message):
         OwlSchemaGenerator(kitchen_sink_path, **profile_args)
 
 
