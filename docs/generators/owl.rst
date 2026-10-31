@@ -70,6 +70,26 @@ Mapping
 
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
+Metadata Profiles
+^^^^^^^^^^^^^^^^^
+
+A metadata profile chooses how an element's metadata is written. The default, ``linkml``,
+uses the LinkML metamodel's slot URIs, so a description becomes ``skos:definition``. ``rdfs``
+writes a description as ``rdfs:comment``. ``ols`` also marks each root class as an entry point
+for the Ontology Lookup Service, with ``IAO:0000700``.
+
+Choose one with ``--metadata-profile``, or in the ``owl`` section of a ``gen-project`` config
+file:
+
+.. code-block:: yaml
+
+    generator_args:
+      owl:
+        metadata_profiles: [rdfs]
+
+``metadata_profile`` takes a single profile and is deprecated in favour of
+``metadata_profiles``. A name that is not a profile is reported as an error.
+
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
