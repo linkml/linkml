@@ -9,6 +9,7 @@ from typing import Any
 import click
 from sqlalchemy import Column, ForeignKey, Index, MetaData, Numeric, Table, UniqueConstraint, create_mock_engine
 from sqlalchemy.dialects.oracle import VARCHAR2
+from sqlalchemy.schema import CreateIndex
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
@@ -178,10 +179,25 @@ class SQLTableGenerator(Generator):
         :rtype: str
         """
         ddl_str = ""
+        # SQLAlchemy keeps a table's indexes in a set, so create_all emits them in
+        # an order that changes from run to run. Hold each run of CREATE INDEX
+        # statements and write it sorted by index name.
+        pending_indexes = []
+
+        def flush_indexes():
+            nonlocal ddl_str
+            for _, stmt in sorted(pending_indexes, key=lambda item: item[0]):
+                ddl_str += stmt
+            pending_indexes.clear()
 
         def dump(sql, *multiparams, **params):
             nonlocal ddl_str
-            ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
+            stmt = f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
+            if isinstance(sql, CreateIndex):
+                pending_indexes.append((str(sql.element.name), stmt))
+                return
+            flush_indexes()
+            ddl_str += stmt
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
@@ -315,6 +331,7 @@ class SQLTableGenerator(Generator):
                                 cols.append(annotation_ind)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
+        flush_indexes()
         ddl_str = strip_dangling_whitespace(ddl_str)
         if ddl_str[-1:] != "\n":
             ddl_str += "\n"
