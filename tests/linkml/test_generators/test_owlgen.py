@@ -151,6 +151,40 @@ def test_rdfs_profile(kitchen_sink_path):
     assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
 
 
+@pytest.mark.parametrize(
+    "profile_args",
+    [
+        pytest.param({"metadata_profile": "rdfs"}, id="metadata_profile-name"),
+        pytest.param({"metadata_profiles": ["rdfs"]}, id="metadata_profiles-names"),
+        pytest.param({"metadata_profiles": "rdfs"}, id="metadata_profiles-one-name"),
+    ],
+)
+def test_rdfs_profile_by_name(kitchen_sink_path, profile_args):
+    """A profile named by a string, as a config file gives it, takes effect (linkml#1453)."""
+    gen = OwlSchemaGenerator(
+        kitchen_sink_path, mergeimports=False, metaclasses=False, type_objects=False, **profile_args
+    )
+    assert gen.has_profile(MetadataProfile.rdfs)
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
+    assert list(g.objects(KS.Person, SKOS.definition)) == []
+
+
+@pytest.mark.parametrize(
+    "profile_args,message",
+    [
+        pytest.param({"metadata_profile": "rdf"}, "'rdf' is not a metadata profile", id="unknown-name"),
+        pytest.param({"metadata_profiles": ["rdfs", "rdf"]}, "'rdf' is not a metadata profile", id="unknown-in-list"),
+        pytest.param({"metadata_profile": ["rdfs", "ols"]}, "takes one profile", id="list-for-one"),
+    ],
+)
+def test_bad_profile_setting_is_rejected(kitchen_sink_path, profile_args, message):
+    """A bad profile setting fails at construction instead of leaving every profile off."""
+    with pytest.raises(ValueError, match=message):
+        OwlSchemaGenerator(kitchen_sink_path, **profile_args)
+
+
 def test_rule_none_of_ignores_empty_slot_expression() -> None:
     """Issue 3358: empty ``none_of`` operands in rules must not crash OWL generation."""
 

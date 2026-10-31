@@ -3,7 +3,7 @@
 import logging
 import os
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
@@ -91,6 +91,42 @@ class OWLProfile(Enum):
     @staticmethod
     def list() -> list[str]:
         return list(map(lambda c: c.value, OWLProfile))
+
+
+def _metadata_profile_values(value: Any) -> list[Any]:
+    """Return *value*, one metadata profile or a list of them, as a list.
+
+    >>> _metadata_profile_values("rdfs")
+    ['rdfs']
+    >>> _metadata_profile_values(None)
+    []
+    """
+    if value is None:
+        return []
+    if isinstance(value, str | MetadataProfile):
+        return [value]
+    return list(value)
+
+
+def _metadata_profile_error(profile: Any, profiles: Any) -> str | None:
+    """Return why *profile* or *profiles* is not a valid setting, or None if both are.
+
+    A config file names a profile by a string, which the generator converts (linkml#1453).
+
+    >>> _metadata_profile_error("rdfs", [MetadataProfile.ols]) is None
+    True
+    >>> _metadata_profile_error(None, ["rdf"])
+    "'rdf' is not a metadata profile; choose one of linkml, rdfs, ols"
+    >>> _metadata_profile_error(["rdfs", "ols"], None)
+    'metadata_profile takes one profile; give several as metadata_profiles'
+    """
+    if profile is not None and not isinstance(profile, str | MetadataProfile):
+        return "metadata_profile takes one profile; give several as metadata_profiles"
+    names = MetadataProfile.list()
+    for value in _metadata_profile_values(profile) + _metadata_profile_values(profiles):
+        if not isinstance(value, MetadataProfile) and value not in names:
+            return f"{value!r} is not a metadata profile; choose one of {', '.join(names)}"
+    return None
 
 
 @dataclass
@@ -256,7 +292,23 @@ class OwlSchemaGenerator(Generator):
         self._language_resolver = LanguageTagResolver(self.default_language)
         if self.xsd_anyuri_as_iri is not None:
             deprecation_warning(XSD_ANYURI_AS_IRI_OPTION, stack_level=4)
+        message = _metadata_profile_error(self.metadata_profile, self.metadata_profiles)
+        if message:
+            raise ValueError(message)
+        if self.metadata_profile is not None:
+            self.metadata_profile = MetadataProfile(self.metadata_profile)
+        self.metadata_profiles = [MetadataProfile(p) for p in _metadata_profile_values(self.metadata_profiles)]
         super().__post_init__()
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Reject a ``metadata_profile`` or ``metadata_profiles`` value that names no profile.
+
+        :raises click.UsageError: if a value is not a valid setting.
+        """
+        message = _metadata_profile_error(args.get("metadata_profile"), args.get("metadata_profiles"))
+        if message:
+            raise click.UsageError(message)
 
     def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
         """Return the BCP 47 language tag for *element*, or ``None``.
