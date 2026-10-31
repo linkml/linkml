@@ -213,15 +213,17 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
 
 
-def test_index_order_is_sorted():
+# The sort uses the index name before quoting, so each dialect's quote marks must not change the order.
+@pytest.mark.parametrize("dialect", ["sqlite", "postgresql", "mysql"])
+def test_index_order_is_sorted(dialect: str):
     """A table's CREATE INDEX statements come out sorted by index name, not in set order."""
     b = SchemaBuilder()
     slot_names = [f"slot_{i:02d}" for i in range(12)]
     # Reverse name order, so that output in insertion order would fail too.
     index_value = {f"index_{name}": [name] for name in reversed(slot_names)}
     b.add_class("Indexed", slots=slot_names, annotations={"index": Annotation(tag="index", value=index_value)})
-    ddl = SQLTableGenerator(b.schema).generate_ddl()
-    index_names = re.findall(r'^CREATE INDEX "?([^"\s]+)"? ON ', ddl, flags=re.MULTILINE)
+    ddl = SQLTableGenerator(b.schema, dialect=dialect).generate_ddl()
+    index_names = re.findall(r'^CREATE INDEX ["`]?([^"`\s]+)["`]? ON ', ddl, flags=re.MULTILINE)
     assert set(index_value) <= set(index_names)
     assert index_names == sorted(index_names)
 
