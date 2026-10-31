@@ -173,6 +173,8 @@ class SQLTableGenerator(Generator):
         """
         Generate a DDL using the schema in self.schema.
 
+        Each table's CREATE INDEX statements follow it, sorted by index name.
+
         :param naming_policy: naming policy for columns, defaults to None
         :type naming_policy: SqlNamingPolicy, optional
         :return: the DDL as a string
@@ -180,13 +182,12 @@ class SQLTableGenerator(Generator):
         """
         ddl_str = ""
         # SQLAlchemy keeps a table's indexes in a set, so create_all emits them in
-        # an order that changes from run to run. Hold each run of CREATE INDEX
-        # statements and write it sorted by index name.
-        pending_indexes = []
+        # no fixed order. Hold them back and write them sorted by name.
+        pending_indexes: list[tuple[str, str]] = []
 
-        def flush_indexes():
+        def flush_indexes() -> None:
             nonlocal ddl_str
-            for _, stmt in sorted(pending_indexes, key=lambda item: item[0]):
+            for _, stmt in sorted(pending_indexes):
                 ddl_str += stmt
             pending_indexes.clear()
 

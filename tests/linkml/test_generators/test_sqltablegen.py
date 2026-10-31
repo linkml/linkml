@@ -214,14 +214,10 @@ def test_index_sqlddl():
 
 
 def test_index_order_is_sorted():
-    """A table's CREATE INDEX statements come out sorted by index name.
-
-    SQLAlchemy holds a table's indexes in a set, so without sorting their order
-    follows object identity and changes from run to run.
-    """
+    """A table's CREATE INDEX statements come out sorted by index name, not in set order."""
     b = SchemaBuilder()
     slot_names = [f"slot_{i:02d}" for i in range(12)]
-    # Insert the indexes in reverse name order so that insertion order is not sorted order.
+    # Reverse name order, so that output in insertion order would fail too.
     index_value = {f"index_{name}": [name] for name in reversed(slot_names)}
     b.add_class("Indexed", slots=slot_names, annotations={"index": Annotation(tag="index", value=index_value)})
     ddl = SQLTableGenerator(b.schema).generate_ddl()
