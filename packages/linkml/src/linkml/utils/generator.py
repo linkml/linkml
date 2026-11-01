@@ -21,7 +21,8 @@ import os
 import re
 import sys
 import warnings
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
+from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -396,6 +397,15 @@ class Generator(metaclass=abc.ABCMeta):
             interpolation.
         :raises click.UsageError: if a value is invalid.
         """
+
+    @staticmethod
+    @contextmanager
+    def _uri_error_context(element: str, field: str) -> Iterator[None]:
+        """Add schema-element and field context without suppressing URI errors."""
+        try:
+            yield
+        except ValueError as exc:
+            raise ValueError(f"Cannot resolve {field} for {element}: {exc}") from exc
 
     def serialize(self, **kwargs) -> str | None:
         """
