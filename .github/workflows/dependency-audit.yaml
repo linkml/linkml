@@ -38,13 +38,13 @@ jobs:
 
       # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         id: setup-python
         with:
           python-version: 3.13
