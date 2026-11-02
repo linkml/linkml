@@ -201,10 +201,17 @@ class OpenApiGenerator(Generator):
                                 result |= self._schema_refs(content_spec.get("schema"))
         return result
 
+    @staticmethod
+    def _plain_number(value: object) -> int | float | str:
+        """Return a loaded metamodel number as a built-in type, since YAML cannot dump the runtime's subclasses."""
+        if isinstance(value, int | float):
+            return float(value) if isinstance(value, float) else int(value)
+        return str(value)
+
     def _generate_type_schema(self, type_name: str) -> dict:
         """Build an OpenAPI-compatible JSON Schema for a LinkML TypeDefinition."""
-        type_def = self.schemaview.get_type(type_name)
-        typ, fmt = json_schema_types.get(type_def.base.lower(), ("string", None))
+        type_def = self.schemaview.induced_type(type_name)
+        typ, fmt = json_schema_types.get((type_def.base or "").lower(), ("string", None))
         schema: dict = {}
         if typ:
             schema["type"] = str(typ)
@@ -213,13 +220,13 @@ class OpenApiGenerator(Generator):
         if type_def.pattern:
             schema["pattern"] = str(type_def.pattern)
         if type_def.minimum_value is not None:
-            schema["minimum"] = str(type_def.minimum_value)
+            schema["minimum"] = self._plain_number(type_def.minimum_value)
         if type_def.maximum_value is not None:
-            schema["maximum"] = str(type_def.maximum_value)
+            schema["maximum"] = self._plain_number(type_def.maximum_value)
         if type_def.equals_string is not None:
             schema["const"] = str(type_def.equals_string)
         if type_def.equals_number is not None:
-            schema["const"] = str(type_def.equals_number)
+            schema["const"] = self._plain_number(type_def.equals_number)
         if type_def.description:
             schema["description"] = str(type_def.description)
         return schema

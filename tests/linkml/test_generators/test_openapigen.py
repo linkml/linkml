@@ -1087,6 +1087,57 @@ def test_openapi_type_constraints(input_path, tmp_path, oas_version):
         assert "#/$defs/" not in str(schema)
 
 
+def induced_type_schema(tmp_path: Path, types_body: str, oas_version: str = DEFAULT_OAS_VERSION) -> dict:
+    """Generate a spec exposing the type ``Declared``, given the ``types`` section, and return its component schema."""
+    schema = linkml_schema(
+        "induced_types",
+        f"""
+    types:
+{types_body}
+    classes:
+      Foo:
+        attributes:
+          value:
+            range: Declared
+    """,
+    )
+    template = single_endpoint_template(
+        "Induced type test",
+        "/api/declared",
+        "DeclaredRef",
+        schema_id="https://w3id.org/linkml/tests/induced_types",
+        source="Declared",
+        oas_version=oas_version,
+    )
+    spec = yaml.safe_load(OpenApiGenerator(schema).serialize(write_template(tmp_path, template)))
+    return spec["components"]["schemas"]["DeclaredRef"]
+
+
+def test_type_schema_takes_base_from_parent_type(tmp_path, oas_version):
+    """Test that a type with no ``base`` of its own maps through the base it inherits."""
+    declared = induced_type_schema(tmp_path, "      Declared:\n        typeof: integer", oas_version)
+    assert declared == {"type": "integer"}
+
+
+def test_type_schema_inherits_constraints(tmp_path, oas_version):
+    """Test that a type schema carries its parent's constraints, with the numeric ones as numbers."""
+    types_body = """\
+      Parent:
+        typeof: integer
+        minimum_value: 1
+        maximum_value: 9
+      Declared:
+        typeof: Parent"""
+    declared = induced_type_schema(tmp_path, types_body, oas_version)
+    assert declared == {"type": "integer", "minimum": 1, "maximum": 9}
+
+
+def test_type_schema_without_any_base_defaults_to_string(tmp_path):
+    """Test that a type with no ``base`` anywhere in its chain is a string rather than an error."""
+    declared = induced_type_schema(tmp_path, "      Declared:\n        uri: xsd:token")
+    assert declared == {"type": "string"}
+
+
 def test_renaming(tmp_path, kitchen_sink_path, oas_version):
     """Test that resource names differing from LinkML class names are renamed throughout the spec."""
     head_path = write_template(tmp_path, template_renaming(oas_version=oas_version))
