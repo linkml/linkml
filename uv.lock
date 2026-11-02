@@ -2565,7 +2565,7 @@ dev = [
     { name = "numpydantic", specifier = ">=1.10.0" },
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "pandas" },
-    { name = "pandera", specifier = ">=0.34.1" },
+    { name = "pandera", specifier = ">=0.35.0" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
     { name = "pyshacl", specifier = ">=0.40.1" },
     { name = "pytest", specifier = ">=7.4.0" },
@@ -2596,7 +2596,7 @@ docs = [
 lint = [{ name = "black", specifier = ">=26.10.0" }]
 pandera = [
     { name = "pandas" },
-    { name = "pandera", specifier = ">=0.34.1" },
+    { name = "pandera", specifier = ">=0.35.0" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
 ]
 shacl = [{ name = "pyshacl", specifier = ">=0.40.1" }]
@@ -3572,7 +3572,7 @@ wheels = [
 
 [[package]]
 name = "pandera"
-version = "0.34.1"
+version = "0.35.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
@@ -3581,9 +3581,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspect" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/56/6c86add6272b295ea77f629757c6d79a12ec30ac51e01a0428d6ff11224c/pandera-0.34.1.tar.gz", hash = "sha256:8907a976403757c5e05a73022d4c447c74844d01c6053667b9a2ca63f26c2fa6", size = 1066371, upload-time = "2026-10-06T15:16:29.118Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/44/a996e575da4f1adec5a4ff16eb43d69d0125901315ca9ac9613ac3b61009/pandera-0.35.0.tar.gz", hash = "sha256:d2d11bbf9b4dd19c227caf31ac57ac28a679bbe18577f9496dcf809143232389", size = 1132618, upload-time = "2026-10-25T02:33:03.012Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/e2/f86fdba3312c977beb39e7c3b29d1cdb43c508ed8278ff40aa329aa10611/pandera-0.34.1-py3-none-any.whl", hash = "sha256:fbcbd0aafeb8d69d7db0ab7990e89cbea31c2c5b8a5e9bde8b3a33f8678975a4", size = 535038, upload-time = "2026-10-06T15:16:27.372Z" },
+    { url = "https://files.pythonhosted.org/packages/29/17/239d1e64d290c26f126582445649bc7c925a7a80f2472b8bd04d6ec22f8d/pandera-0.35.0-py3-none-any.whl", hash = "sha256:ce5cab5e882480d07575361899a4140585b80c489410cf97b7ef6e8aa90de3b6", size = 557083, upload-time = "2026-10-25T02:33:01.376Z" },
 ]
 
 [[package]]
