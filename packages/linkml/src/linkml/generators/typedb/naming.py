@@ -248,6 +248,95 @@ def check_class_name_collisions(sv: SchemaView) -> None:
         )
 
 
+def check_slot_name_collisions(sv: SchemaView, slot_ranges: dict[str, str | None]) -> None:
+    """Raise if two distinct LinkML slot names map to the same TypeDB label of one kind.
+
+    Same failure as :func:`check_class_name_collisions`, one level down: ``has name`` and
+    ``has_name`` both become ``has_name``. Where the two land on different kinds the
+    suffixing in :func:`build_name_maps` separates them, so only a collision within one
+    kind is an error. Left unchecked the second slot's value type is silently dropped.
+
+    :param slot_ranges: slot name -> range, from :func:`slot_ranges`
+    :raises ValueError: if any kind's TypeDB label is claimed by more than one slot
+    """
+    all_class_names = set(sv.all_classes().keys())
+    by_label: dict[tuple[str, str], set[str]] = {}
+
+    def record(slot_name: str, slot_range: str | None) -> None:
+        kind = "relation" if slot_range in all_class_names else "attribute"
+        by_label.setdefault((kind, typedb_name(slot_name)), set()).add(slot_name)
+
+    for slot_name, slot_range in slot_ranges.items():
+        record(slot_name, slot_range)
+    # Inline ``attributes:`` are not in ``all_slots()``, so walk the classes too.
+    for class_name in sv.all_classes():
+        for slot in sv.class_induced_slots(class_name):
+            record(slot.name, slot.range)
+
+    clashes = {key: names for key, names in by_label.items() if len(names) > 1}
+    if clashes:
+        detail = "; ".join(f"{kind} {label!r} <- {sorted(names)}" for (kind, label), names in sorted(clashes.items()))
+        raise ValueError(
+            f"Cannot generate TypeQL: distinct LinkML slots map to the same TypeDB label ({detail}). "
+            "TypeDB labels must be unique; rename the conflicting slots in the source schema."
+        )
+
+
+def reserved_labels(sv: SchemaView, attr_names: dict[str, str], rel_names: dict[str, str]) -> set[str]:
+    """Return every TypeDB label already claimed by an entity, attribute or relation.
+
+    Generated names that are not derived from a LinkML name, such as the sub-relations
+    emitted for range narrowing, are checked against this so they cannot collide with a
+    label the schema already uses.
+    """
+    return {typedb_name(cn) for cn in sv.all_classes()} | set(attr_names.values()) | set(rel_names.values())
+
+
+def uniquify_label(candidate: str, taken: set[str], suffix: str) -> str:
+    """Return ``candidate``, or the first free ``candidate + suffix[n]`` if it is taken."""
+    if candidate not in taken:
+        return candidate
+    attempt = candidate + suffix
+    counter = 2
+    while attempt in taken:
+        attempt = f"{candidate}{suffix}{counter}"
+        counter += 1
+    return attempt
+
+
+def find_label_case_collisions(
+    sv: SchemaView,
+    attr_names: dict[str, str],
+    rel_names: dict[str, str],
+) -> dict[str, list[str]]:
+    """Group emitted TypeDB labels that differ only by case.
+
+    TypeDB labels are case-sensitive, so ``Pathway`` the entity and ``pathway`` the
+    relation coexist legally. They are also near-indistinguishable to a reader, and
+    LinkML itself treats sharing a name between a class and a slot as bad practice.
+    Exact clashes are already resolved by :func:`build_name_maps`, so what is left to
+    report is the case-only kind.
+
+    :param attr_names: slot name -> attribute label (from :func:`build_name_maps`)
+    :param rel_names: slot name -> relation label (from :func:`build_name_maps`)
+    :return: lowercased label -> sorted ``"<kind> <label>"`` descriptions, only for
+        labels claimed by more than one kind
+    """
+    by_lower: dict[str, set[str]] = {}
+    for class_name in sv.all_classes():
+        label = typedb_name(class_name)
+        by_lower.setdefault(label.lower(), set()).add(f"entity {label}")
+    for label in attr_names.values():
+        by_lower.setdefault(label.lower(), set()).add(f"attribute {label}")
+    for label in rel_names.values():
+        by_lower.setdefault(label.lower(), set()).add(f"relation {label}")
+    return {
+        lowered: sorted(kinds)
+        for lowered, kinds in sorted(by_lower.items())
+        if len({k.split(" ", 1)[1] for k in kinds}) > 1
+    }
+
+
 def slot_ranges(sv: SchemaView) -> dict[str, str | None]:
     """Return each slot's range, inherited through slot ``is_a`` when not set on the slot."""
     return {name: sv.induced_slot(name).range for name in sv.all_slots()}
@@ -353,6 +442,13 @@ def is_relationship_class(sv: SchemaView, class_name: str) -> bool:
     The nearest class in the ``is_a`` chain that sets ``represents_relationship``
     (true or false) decides. If none does, fall back to ``SchemaView.is_relationship()``,
     which detects RDF statement reification (``rdf:Statement`` / ``owl:Axiom``).
+
+    The fallback additionally requires at least one class-ranged slot. A reified
+    statement whose subject, predicate and object are all CURIE-valued has no roles to
+    relate, and TypeDB rejects a non-abstract relation type that relates nothing
+    (``[SVL41]``); as an entity it loads. An explicit ``represents_relationship: true``
+    is honoured either way, since overriding a stated intent is worse than failing at
+    load time.
     """
     current = class_name
     while current:
@@ -362,7 +458,15 @@ def is_relationship_class(sv: SchemaView, class_name: str) -> bool:
         if class_def.represents_relationship is not None:
             return bool(class_def.represents_relationship)
         current = class_def.is_a
-    return sv.is_relationship(class_name)
+    if not sv.is_relationship(class_name):
+        return False
+    return has_class_ranged_slot(sv, class_name)
+
+
+def has_class_ranged_slot(sv: SchemaView, class_name: str) -> bool:
+    """Return True if any of ``class_name``'s induced slots has a class as its range."""
+    all_class_names = sv.all_classes()
+    return any(slot.range in all_class_names for slot in sv.class_induced_slots(class_name))
 
 
 @dataclass
@@ -474,6 +578,7 @@ def build_class_range_narrowings(
     relationship_classes: set[str],
     rel_names: dict[str, str],
     role_names: dict[str, tuple[str, str]],
+    taken: set[str] | None = None,
 ) -> list[ClassRangeNarrowing]:
     """Find class-ranged slots that an ordinary (non-relationship) subclass narrows.
 
@@ -485,10 +590,15 @@ def build_class_range_narrowings(
     :param relationship_classes: class names emitted as ``relation`` (skipped)
     :param rel_names: slot name → safe TypeDB base relation name
     :param role_names: slot name → (owning_role_name, played_role_name)
+    :param taken: labels already claimed elsewhere in the schema (see
+        :func:`reserved_labels`). A sub-relation name that would collide is suffixed
+        instead; without this, an unrelated slot named like the generated sub-relation
+        would be merged into it by TypeDB and silently become its subtype.
     :return: one ``ClassRangeNarrowing`` per class that introduces a real narrowing
     """
     all_class_names = set(sv.all_classes().keys())
     result: list[ClassRangeNarrowing] = []
+    claimed = set(taken) if taken else set()
 
     for slot_name in sv.all_slots():
         base_range = sv.induced_slot(slot_name).range
@@ -514,7 +624,8 @@ def build_class_range_narrowings(
             if induced.range == parent_range:
                 continue
 
-            sub_relation = f"{base_relation}_{typedb_name(class_name)}"
+            sub_relation = uniquify_label(f"{base_relation}_{typedb_name(class_name)}", claimed, "_rel")
+            claimed.add(sub_relation)
             narrowed_played_role = f"{typedb_name(induced.range)}_{base_played_role}"
             result.append(
                 ClassRangeNarrowing(

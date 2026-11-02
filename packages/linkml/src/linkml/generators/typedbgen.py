@@ -42,7 +42,11 @@ from linkml.generators.typedb.naming import (
     build_relationship_role_info,
     build_role_names,
     check_class_name_collisions,
+    check_slot_name_collisions,
+    find_label_case_collisions,
+    has_class_ranged_slot,
     is_relationship_class,
+    reserved_labels,
     resolve_typedb_value_type,
     slot_ranges,
     typedb_name,
@@ -243,15 +247,34 @@ class TypeDBGenerator(Generator):
         """
         sv = self.schemaview
         check_class_name_collisions(sv)
+        all_slot_ranges = slot_ranges(sv)
+        check_slot_name_collisions(sv, all_slot_ranges)
         # Pre-compute safe names; resolves collisions across entity/attribute/relation labels.
-        attr_names, rel_names = build_name_maps(sv, slot_ranges(sv))
+        attr_names, rel_names = build_name_maps(sv, all_slot_ranges)
+        for lowered, kinds in find_label_case_collisions(sv, attr_names, rel_names).items():
+            logger.warning(
+                "Labels differing only by case: %s. TypeDB keeps them distinct, but they are "
+                "hard to tell apart; consider renaming in the source schema.",
+                " / ".join(kinds),
+            )
         role_names = build_role_names(sv, rel_names)
         relationship_classes = {cn for cn in sv.all_classes() if is_relationship_class(sv, cn)}
+        for class_name in sorted(relationship_classes):
+            if sv.get_class(class_name).abstract or has_class_ranged_slot(sv, class_name):
+                continue
+            logger.warning(
+                "Class %r is declared represents_relationship: true but has no class-ranged slot, "
+                "so it becomes a relation type that relates no roles. TypeDB rejects that [SVL41]; "
+                "give it a slot ranged on a class, mark it abstract, or drop represents_relationship.",
+                class_name,
+            )
         relationship_role_info = build_relationship_role_info(sv, relationship_classes)
         slot_relations = self._build_slot_relations(sv, relationship_classes, rel_names, role_names)
         for slot_name, sr in slot_relations.items():
             role_names[slot_name] = (sr.owning_role, sr.played_role)
-        class_range_narrowings = build_class_range_narrowings(sv, relationship_classes, rel_names, role_names)
+        class_range_narrowings = build_class_range_narrowings(
+            sv, relationship_classes, rel_names, role_names, reserved_labels(sv, attr_names, rel_names)
+        )
         lines: list[str] = []
 
         # Header comment
@@ -932,6 +955,7 @@ class TypeDBGenerator(Generator):
             # No `sub` when is_a points at a mixin, or a relation's parent is not a relation.
             is_a_is_mixin = bool(is_a_parent and is_a_parent.mixin)
             is_a_not_relationship = bool(class_def.is_a) and class_def.is_a not in relationship_classes
+            is_a_is_relationship = bool(class_def.is_a) and class_def.is_a in relationship_classes
 
             if is_rel_class:
                 # Emit as TypeDB relation type, not entity
@@ -988,28 +1012,40 @@ class TypeDBGenerator(Generator):
                 if is_abstract:
                     label += " @abstract"
                 parts.append(label)
-                if class_def.is_a and not is_a_is_mixin:
+                # An entity cannot subtype a class emitted as a relation ([DEX29]), the
+                # mirror of the relation branch's is_a_not_relationship guard.
+                has_entity_supertype = bool(class_def.is_a) and not is_a_is_mixin and not is_a_is_relationship
+                if has_entity_supertype:
                     parts[0] += f", sub {typedb_name(class_def.is_a)}"
 
                 self._widen_owns = self._widened_owns_for_class(sv, class_name)
 
                 # Slots that appear on ANY non-mixin ancestor are already inherited
-                # in TypeDB — redeclaring them causes [SVL42].
-                for induced in direct_slots_cache[class_name]:
+                # in TypeDB — redeclaring them causes [SVL42]. Without a supertype
+                # nothing is inherited, so the ancestors' slots are declared here.
+                scalar_slots = (
+                    direct_slots_cache[class_name] if not is_a_is_relationship else sv.class_induced_slots(class_name)
+                )
+                for induced in scalar_slots:
                     value_type = resolve_typedb_value_type(sv, induced.range)
                     if value_type is None:
                         continue  # object range → relation
                     slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
                     parts.append(self._build_owns_stmt(slot_tname, induced))
-                for induced in domain_owned[class_name]:
-                    slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
-                    parts.append(self._build_owns_stmt(slot_tname, induced))
+                domain_sources = [class_name]
+                if is_a_is_relationship:
+                    domain_sources += [a for a in sv.class_ancestors(class_name)[1:] if not sv.get_class(a).mixin]
+                for source in domain_sources:
+                    for induced in domain_owned.get(source, []):
+                        slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
+                        parts.append(self._build_owns_stmt(slot_tname, induced))
 
                 # An inherited slot the class narrows via slot_usage is redeclared with
                 # just the tightened constraints, which TypeDB accepts as a narrowing.
-                for induced in self._narrowed_inherited_slots(sv, class_name):
-                    slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
-                    parts.append(self._build_owns_narrowing_stmt(slot_tname, induced))
+                if not is_a_is_relationship:
+                    for induced in self._narrowed_inherited_slots(sv, class_name):
+                        slot_tname = attr_names.get(induced.name, typedb_name(induced.name))
+                        parts.append(self._build_owns_narrowing_stmt(slot_tname, induced))
 
                 for plays_stmt in dict.fromkeys(plays_map.get(class_name, [])):
                     parts.append(plays_stmt)

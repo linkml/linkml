@@ -71,10 +71,16 @@ def temp_db(typedb_driver):
     typedb_driver.databases.get(db_name).delete()
 
 
+# Schemas that must survive a round trip through a real server. Generation alone does
+# not catch kind mismatches or relations that relate nothing; only a load does.
+LOADABLE_SCHEMAS = ["organization.yaml", "kitchen_sink.yaml", "typedb_mappings.yaml"]
+
+
 @pytest.mark.integration
-def test_schema_loads_without_errors(typedb_driver, temp_db):
+@pytest.mark.parametrize("schema_name", LOADABLE_SCHEMAS)
+def test_schema_loads_without_errors(typedb_driver, temp_db, schema_name):
     """Generated TypeQL schema is accepted by TypeDB without errors."""
-    schema = TypeDBGenerator(_INPUT_DIR / "organization.yaml").serialize()
+    schema = TypeDBGenerator(_INPUT_DIR / schema_name).serialize()
 
     with typedb_driver.transaction(temp_db, TransactionType.SCHEMA) as tx:
         tx.query(schema).resolve()

@@ -1503,6 +1503,9 @@ classes:
     assert "relation InheritsEdge" in output
     assert "entity OverridesEdge" in output
     assert "relation OverridesEdge" not in output
+    # TypeDB rejects an entity subtyping a relation ([DEX29]), so the cross-kind
+    # `sub` is dropped rather than emitted.
+    assert "entity OverridesEdge, sub" not in output
 
 
 def test_subclass_narrows_role_via_slot_usage(tmp_path):
@@ -2331,3 +2334,284 @@ slots:
     )
     assert "owns name," in output or "owns name;" in output
     assert "owns name @card" not in output
+
+
+def test_warns_on_labels_differing_only_by_case(caplog):
+    """A class and a class-ranged slot sharing a name bar case should be reported.
+
+    TypeDB keeps the two labels distinct, so generation still succeeds; the point is
+    that a reader cannot tell them apart.
+    """
+    schema = """
+id: https://example.org/casepun
+name: casepun
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Author:
+    attributes:
+      id:
+        identifier: true
+  Book:
+    attributes:
+      id:
+        identifier: true
+      author:
+        range: Author
+"""
+    with caplog.at_level(logging.WARNING):
+        tql = TypeDBGenerator(schema).serialize()
+    assert "entity Author" in tql.replace("\n", " ") or "entity Author" in tql
+    messages = [r.getMessage() for r in caplog.records]
+    assert any("differing only by case" in m and "Author" in m and "author" in m for m in messages), messages
+
+
+def test_no_case_warning_when_names_are_distinct(caplog):
+    """Relationally named slots, as Biolink uses, should produce no warning."""
+    schema = """
+id: https://example.org/nopun
+name: nopun
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Author:
+    attributes:
+      id:
+        identifier: true
+  Book:
+    attributes:
+      id:
+        identifier: true
+      written_by:
+        range: Author
+"""
+    with caplog.at_level(logging.WARNING):
+        TypeDBGenerator(schema).serialize()
+    messages = [r.getMessage() for r in caplog.records]
+    assert not any("differing only by case" in m for m in messages), messages
+
+
+def test_reified_statement_with_only_scalar_slots_is_an_entity():
+    """A class mapped to rdf:Statement whose slots are all CURIE-valued stays an entity.
+
+    As a relation it would relate no roles, which TypeDB rejects for a non-abstract
+    relation type ([SVL41]).
+    """
+    schema = """
+id: https://example.org/stmt
+name: stmt
+prefixes:
+  linkml: https://w3id.org/linkml/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Edge:
+    class_uri: rdf:Statement
+    attributes:
+      subject:
+        range: uriorcurie
+      predicate:
+        range: uriorcurie
+      object:
+        range: uriorcurie
+"""
+    output = TypeDBGenerator(schema).serialize()
+    assert "entity Edge" in output
+    assert "relation Edge" not in output
+
+
+def test_reified_statement_with_a_class_ranged_slot_is_still_a_relation():
+    """The gate only suppresses the fallback where there is no role to relate."""
+    schema = """
+id: https://example.org/stmt2
+name: stmt2
+prefixes:
+  linkml: https://w3id.org/linkml/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Gene:
+    attributes:
+      id:
+        identifier: true
+  Edge:
+    class_uri: rdf:Statement
+    attributes:
+      subject:
+        range: Gene
+      predicate:
+        range: uriorcurie
+"""
+    output = TypeDBGenerator(schema).serialize()
+    assert "relation Edge" in output
+    assert "relates subject" in output
+
+
+def test_explicit_relationship_without_roles_warns(caplog):
+    """An explicit represents_relationship: true is honoured, with a warning.
+
+    Overriding a stated intent is worse than failing at load, so the generator reports
+    the [SVL41] it is about to cause rather than silently emitting an entity.
+    """
+    schema = """
+id: https://example.org/noroles
+name: noroles
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Edge:
+    represents_relationship: true
+    attributes:
+      label:
+        range: string
+"""
+    with caplog.at_level(logging.WARNING):
+        output = TypeDBGenerator(schema).serialize()
+    assert "relation Edge" in output
+    assert any("no class-ranged slot" in r.getMessage() for r in caplog.records), caplog.records
+
+
+def test_entity_under_relationship_parent_declares_inherited_slots():
+    """Dropping the cross-kind `sub` must not lose the parent's scalar slots."""
+    schema = """
+id: https://example.org/crosskind
+name: crosskind
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Thing:
+    attributes:
+      id:
+        identifier: true
+  Edge:
+    represents_relationship: true
+    attributes:
+      subject:
+        range: Thing
+      confidence:
+        range: float
+  OverridesEdge:
+    is_a: Edge
+    represents_relationship: false
+"""
+    output = TypeDBGenerator(schema).serialize()
+    lines = output.splitlines()
+    start = next(i for i, line in enumerate(lines) if "entity OverridesEdge" in line)
+    end = next(i for i in range(start, len(lines)) if lines[i].rstrip().endswith(";"))
+    entity_block = "\n".join(lines[start : end + 1])
+    assert "sub" not in entity_block, entity_block
+    assert "owns confidence" in entity_block, entity_block
+
+
+def test_slots_differing_only_by_whitespace_raise():
+    """Same hard error classes already get, one level down.
+
+    Without it the second slot's value type is silently dropped: `has name` (string) and
+    `has_name` (integer) both become `attribute has_name, value string`.
+    """
+    schema = """
+id: https://example.org/slotclash
+name: slotclash
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Rec:
+    slots:
+      - has name
+      - has_name
+slots:
+  has name:
+    range: string
+  has_name:
+    range: integer
+"""
+    with pytest.raises(ValueError, match="distinct LinkML slots map to the same TypeDB label"):
+        TypeDBGenerator(schema).serialize()
+
+
+def test_slots_colliding_across_kinds_are_still_allowed():
+    """A scalar and a class-ranged slot are separated by the `_rel` suffix, not an error."""
+    schema = """
+id: https://example.org/slotkinds
+name: slotkinds
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+  Rec:
+    slots:
+      - has name
+      - has_name
+slots:
+  has name:
+    range: string
+  has_name:
+    range: Person
+"""
+    output = TypeDBGenerator(schema).serialize()
+    assert "attribute has_name, value string;" in output
+    assert "relation has_name_rel" in output
+
+
+def test_narrowing_sub_relation_name_avoids_existing_label():
+    """A generated sub-relation name must not collide with a label the schema already uses.
+
+    `knows` narrowed on `Student` yields `knows_Student`, which is also an unrelated
+    slot here. TypeDB would merge the two blocks and make the unrelated relation a
+    subtype of `knows`.
+    """
+    schema = """
+id: https://example.org/subrel
+name: subrel
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+    slots:
+      - knows
+      - knows_Student
+  Student:
+    is_a: Person
+    slot_usage:
+      knows:
+        range: Student
+slots:
+  knows:
+    range: Person
+  knows_Student:
+    range: Person
+"""
+    output = TypeDBGenerator(schema).serialize()
+    assert output.count("relation knows_Student,") == 1
+    assert "relation knows_Student_rel sub knows," in output
