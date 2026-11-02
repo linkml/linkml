@@ -33,6 +33,9 @@ Mapping
 * Each LinkML slot maps to an OWL property
 
     - if the range of the slot is class, then an ObjectProperty is used
+    - an ObjectProperty is also used when the range is a type whose values are IRIs or blank
+      nodes: ``uri``, ``uriorcurie`` and the types derived from them, ``objectidentifier`` and
+      ``nodeidentifier`` (see :ref:`links-and-uri-references`)
     - otherwise DataProperty is used
     - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used;
       instead of having ranges of type be mapped to literals, these map to class-shadows of

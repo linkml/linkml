@@ -36634,7 +36634,7 @@
         "@id": "affects_response_to"
       },
       "affiliation": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "affiliation"
       },
       "agent_type": {
@@ -36778,7 +36778,7 @@
         "@id": "catalyzes"
       },
       "category": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "category"
       },
       "causal_mechanism_qualifier": {
@@ -37732,7 +37732,7 @@
         "@id": "mentions"
       },
       "mesh_terms": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "mesh_terms"
       },
       "missing_from": {
@@ -37836,7 +37836,7 @@
         "@id": "object_part_qualifier"
       },
       "object_specialization_qualifier": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "object_specialization_qualifier"
       },
       "occurs_in": {
@@ -37863,7 +37863,7 @@
         "@id": "original_object"
       },
       "original_predicate": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "original_predicate"
       },
       "original_subject": {
@@ -37988,7 +37988,7 @@
         "@id": "publications"
       },
       "published_in": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "published_in"
       },
       "publisher": {
@@ -38077,7 +38077,7 @@
         "@id": "resistance_associated_with"
       },
       "resource_id": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "resource_id"
       },
       "resource_role": {
@@ -38255,7 +38255,7 @@
         "@id": "subject_part_qualifier"
       },
       "subject_specialization_qualifier": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "subject_specialization_qualifier"
       },
       "summary": {
@@ -38282,7 +38282,7 @@
         "@id": "supporting_document_year"
       },
       "supporting_documents": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "supporting_documents"
       },
       "supporting_study_cohort": {
@@ -38298,11 +38298,11 @@
         "@id": "supporting_study_metadata"
       },
       "supporting_study_method_description": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "supporting_study_method_description"
       },
       "supporting_study_method_type": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "supporting_study_method_type"
       },
       "supporting_study_size": {
@@ -38407,7 +38407,7 @@
         "@id": "update_date"
       },
       "upstream_resource_ids": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "upstream_resource_ids"
       },
       "url": {
@@ -38432,7 +38432,7 @@
         "@id": "xenologous_to"
       },
       "xref": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "xref"
       },
       "AccessibleDnaRegion": {
