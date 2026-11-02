@@ -196,7 +196,7 @@
         "@id": "hasNcName"
       },
       "hasURI": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "hasURI"
       },
       "id": "@id",
