@@ -1275,3 +1275,108 @@ def test_kitchen_sink_proto_compiles_with_protoc(tmp_path):
     )
     assert completed.returncode == 0, completed.stderr
     assert desc_path.exists() and desc_path.stat().st_size > 0
+
+
+# ---------------------------------------------------------------------------
+# --no-mergeimports
+# ---------------------------------------------------------------------------
+
+
+def _write_import_chain(directory):
+    """Write main.yaml, which imports base.yaml, which imports sub/deep.yaml."""
+    header = "prefixes: {linkml: https://w3id.org/linkml/, ex: https://example.org/}\ndefault_prefix: ex\n"
+    (directory / "sub").mkdir()
+    (directory / "sub" / "deep.yaml").write_text(
+        "id: https://example.org/deep\nname: deep\n" + header + "imports: [linkml:types]\n"
+        "classes:\n  Deep:\n    attributes:\n      depth: {range: integer}\n"
+    )
+    (directory / "base.yaml").write_text(
+        "id: https://example.org/base\nname: Base_Module\n" + header + "imports: [linkml:types, sub/deep]\n"
+        "enums:\n  Colour:\n    permissible_values: {RED: {}}\n"
+        "classes:\n  Thing:\n    attributes:\n"
+        "      id: {identifier: true, range: string}\n"
+        "      deep: {range: Deep, inlined: true}\n"
+    )
+    (directory / "main.yaml").write_text(
+        "id: https://example.org/main\nname: main\n" + header + "imports: [linkml:types, base]\n"
+        "enums:\n  Size:\n    permissible_values: {BIG: {}}\n"
+        "classes:\n  Sub:\n    is_a: Thing\n    attributes:\n"
+        "      colour: {range: Colour}\n"
+        "      size: {range: Size}\n"
+        "      ref: {range: Thing}\n"
+        "      nested: {range: Thing, inlined: true}\n"
+    )
+
+
+def test_no_mergeimports_writes_only_the_schema_given(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml"), mergeimports=False).serialize()
+    assert "message Sub {" in proto
+    assert "enum Size {" in proto
+    assert "message Thing {" not in proto
+    assert "message Deep {" not in proto
+    assert "enum Colour {" not in proto
+
+
+def test_no_mergeimports_imports_what_fields_name(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml"), mergeimports=False).serialize()
+    # The file and package come from the schema's name, not the import's path.
+    # Sub inherits its field of type Deep, so it needs deep.proto, which main never imports.
+    assert re.findall(r'^import "(.+)";$', proto, re.M) == ["Base_Module.proto", "deep.proto"]
+    assert ".base_module.Colour colour" in proto
+    assert ".base_module.Thing nested" in proto
+    assert ".deep.Deep deep" in proto
+    assert "Size size" in proto
+    # A reference travels as the identifier scalar.
+    assert re.search(r"// reference to Thing\n\s+string ref", proto)
+
+
+def test_mergeimports_default_writes_one_file(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml")).serialize()
+    assert "import " not in proto
+    assert "message Deep {" in proto
+    assert "enum Colour {" in proto
+    assert "Colour colour" in proto
+    assert ".base_module" not in proto
+
+
+def test_no_mergeimports_in_memory_schema_uses_the_import_name():
+    base = {"id": "https://example.org/base", "name": "base", "classes": {"Thing": {"tree_root": True}}}
+    schema = {
+        "id": "https://example.org/main",
+        "name": "main",
+        "prefixes": {"ex": "https://example.org/"},
+        "default_prefix": "ex",
+        "default_range": "string",
+        "imports": ["base"],
+        "classes": {"Sub": {"attributes": {"thing": {"range": "Thing", "inlined": True}}}},
+    }
+    proto = ProtoGenerator(yaml.safe_dump(schema), mergeimports=False, importmap={"base": base}).serialize()
+    assert 'import "base.proto";' in proto
+    assert ".base.Thing thing" in proto
+
+
+def test_no_mergeimports_output_compiles_with_protoc(tmp_path):
+    pytest.importorskip("grpc_tools")
+    _write_import_chain(tmp_path)
+    protos = tmp_path / "protos"
+    protos.mkdir()
+    files = {"main.yaml": "main.proto", "base.yaml": "Base_Module.proto", "sub/deep.yaml": "deep.proto"}
+    for source, target in files.items():
+        (protos / target).write_text(ProtoGenerator(str(tmp_path / source), mergeimports=False).serialize())
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "grpc_tools.protoc",
+            f"--proto_path={protos}",
+            f"--python_out={tmp_path}",
+            *files.values(),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=protos,
+    )
+    assert result.returncode == 0, result.stderr

@@ -8,6 +8,7 @@ from linkml._version import __version__
 from linkml.utils.generator import Generator, apply_config_defaults, read_generator_config, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 # ---------------------------------------------------------------------------
 # LinkML built-in type -> proto3 scalar
@@ -133,6 +134,9 @@ class ProtoGenerator(Generator):
     # Per-class field statements keyed by field number. visit_class_slot fills
     # it and end_class writes it out in field-number order.
     _fields: dict[int, str] = field(default_factory=dict, init=False, repr=False)
+    # Schema id -> schema name for every imported schema, filled on first use
+    # when imports are not merged.
+    _schema_names: dict[str, str] | None = field(default=None, init=False, repr=False)
 
     # ------------------------------------------------------------------ header
 
@@ -181,10 +185,74 @@ class ProtoGenerator(Generator):
         # 'package' is optional in proto3 - only emit when non-bare (valued).
         if pkg:
             items.append(f"package {pkg};")
+        items.extend(f'import "{path}";' for path in self._proto_imports())
         items.append(f"// metamodel_version: {self.schema.metamodel_version}")
         if self.schema.version:
             items.append(f"// version: {self.schema.version}")
         return "\n".join(items) + "\n"
+
+    # ---------------------------------------------------------------- imports
+
+    def _is_imported(self, element: ClassDefinition | EnumDefinition) -> bool:
+        """Return whether *element* belongs in another schema's file.
+
+        Only ``--no-mergeimports`` separates the schemas; by default every
+        element is written to the one file.
+        """
+        return not self.mergeimports and bool(element.imported_from)
+
+    def _source_schema_name(self, element: ClassDefinition | EnumDefinition) -> str:
+        """Return the ``name`` of the imported schema that defines *element*.
+
+        The loader records only the schema's id and the import as written, while
+        the imported file takes its package from the schema's name, so the names
+        are read from the import closure. A schema given in memory has no
+        location to read imports from; there, the last segment of the import
+        stands in for the name.
+        """
+        if self._schema_names is None:
+            self._schema_names = {}
+            if self.schema_location:
+                view = SchemaView(self.schema_location, importmap=self.importmap, base_dir=self.base_dir)
+                view.imports_closure()
+                self._schema_names = {schema.id: schema.name for schema in view.schema_map.values()}
+        fallback = re.split(r"[/:]", str(element.imported_from))[-1]
+        return self._schema_names.get(element.from_schema, fallback)
+
+    def _proto_imports(self) -> list[str]:
+        """Return the sorted ``.proto`` files that this schema's own messages refer to.
+
+        Each message carries its inherited slots, so a file can need a schema it
+        does not import directly. proto3 imports are not transitive, which means
+        the file must name that schema itself. A reference by identifier travels
+        as a scalar and needs no import.
+        """
+        if self.mergeimports:
+            return []
+        names: set[str] = set()
+        for cls in self.schema.classes.values():
+            if self._is_imported(cls):
+                continue
+            for slot in self.all_slots(cls):
+                _, referenced = self._proto_range_for_slot(slot)
+                target = self.schema.classes.get(slot.range) or self.schema.enums.get(slot.range)
+                if referenced is None and target is not None and self._is_imported(target):
+                    names.add(self._source_schema_name(target))
+        return [f"{name}.proto" for name in sorted(names)]
+
+    def _proto_type_reference(self, element: ClassDefinition | EnumDefinition) -> str:
+        """Return the name a field uses for the message or enum *element*.
+
+        A type in another package is written in full with a leading dot, which
+        protoc resolves from the root, whatever the current package is called.
+        """
+        name = camelcase(element.name)
+        if not self._is_imported(element):
+            return name
+        package = self._sanitise_proto_package(self._source_schema_name(element))
+        if not package or package == self._proto_package():
+            return name
+        return f".{package}.{name}"
 
     # ------------------------------------------------ range / type resolution
 
@@ -205,8 +273,9 @@ class ProtoGenerator(Generator):
             return _PROTO_DEFAULT_SCALAR
         if slot_range in self.schema.types:
             return self._proto_scalar_for_type(slot_range)
-        if slot_range in self.schema.classes or slot_range in self.schema.enums:
-            return camelcase(slot_range)
+        target = self.schema.classes.get(slot_range) or self.schema.enums.get(slot_range)
+        if target is not None:
+            return self._proto_type_reference(target)
         return _PROTO_DEFAULT_SCALAR
 
     def _identifier_slot_for(self, cls_name: str) -> SlotDefinition | None:
@@ -353,6 +422,10 @@ class ProtoGenerator(Generator):
         # The trade-off is that LinkML's mixin/abstract semantics are not
         # carried over to proto3, but the resulting file is always compilable and every
         # range reference resolves to a declared message.
+        #
+        # Under --no-mergeimports, an imported class is declared in its own schema's file.
+        if self._is_imported(cls):
+            return None
 
         # Pre-compute proto field numbers for every slot in this class.
         #
@@ -451,10 +524,11 @@ class ProtoGenerator(Generator):
 
         Enums are emitted after the messages. Order is purely cosmetic.
         """
-        if not self.schema.enums:
+        enum_names = [name for name in sorted(self.schema.enums) if not self._is_imported(self.schema.enums[name])]
+        if not enum_names:
             return None
         blocks: list[str] = []
-        for ename in sorted(self.schema.enums):
+        for ename in enum_names:
             enum: EnumDefinition = self.schema.enums[ename]
             proto_name = camelcase(ename)
             value_prefix = _to_upper_snake(ename)

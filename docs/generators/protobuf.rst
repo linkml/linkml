@@ -133,6 +133,25 @@ inlined. ``Person`` lists ``aliases``, which it inherits from the mixin:
 
 .. _protobuf-configuration-file:
 
+Schemas that import other schemas
+---------------------------------
+
+By default, ``gen-proto`` merges every imported schema into one file. With
+``--no-mergeimports``, it writes only the messages and enums of the schema it
+is given, and refers to the others through ``import`` statements. Run it once
+per schema, and name each file after the schema's ``name``, in one directory:
+
+.. code:: bash
+
+   gen-proto --no-mergeimports base.yaml > protos/base.proto
+   gen-proto --no-mergeimports main.yaml > protos/main.proto
+   protoc --proto_path=protos --python_out=out protos/base.proto protos/main.proto
+
+A schema is imported only when a field names one of its messages or enums, and
+the field gives that type's full name, such as ``.base.Thing``. Types from
+``linkml:types`` become scalars and need no file. A message still lists the slots
+it inherits, because proto3 has no inheritance.
+
 Configuration File
 ------------------
 
