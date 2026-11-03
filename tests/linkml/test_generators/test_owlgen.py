@@ -1266,3 +1266,38 @@ def test_cli_ontology_uri_suffix(kitchen_sink_path, args: list[str], expected_su
     g = Graph()
     g.parse(data=result.output, format="turtle")
     assert _ontology_iris(g) == {URIRef(f"https://w3id.org/linkml/tests/kitchen_sink{expected_suffix}")}
+
+
+def test_bare_reference_values_resolve_in_the_default_namespace(caplog) -> None:
+    """A bare ``uriorcurie`` value becomes an IRI in the schema's default namespace, not a relative IRI.
+
+    rdflib serializes ``see_also: README`` as ``<README>``, which is not valid
+    OWL without a base, and which makes ``canonicalize_rdf_graph`` take its
+    non-standard RDF fallback. gen-owl places the value in the default
+    namespace, like an annotation tag without a colon, and names the slot in a
+    warning.
+    """
+    import warnings
+
+    from linkml_runtime.utils.rdf_canonicalize import RDFCanonicalizationWarning
+
+    sb = SchemaBuilder()
+    sb.add_class("Thing")
+    sb.add_defaults()
+    thing = sb.schema.classes["Thing"]
+    thing.see_also = ["README", "https://example.org/docs/thing"]
+    thing.exact_mappings = ["schema:Thing", "legacy:Thing"]
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"), warnings.catch_warnings():
+        warnings.simplefilter("error", RDFCanonicalizationWarning)
+        owl = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False).serialize()
+
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    assert set(g.objects(EX.Thing, RDFS.seeAlso)) == {EX.README, URIRef("https://example.org/docs/thing")}
+    # A CURIE with an undeclared prefix has a scheme as far as RDF is concerned, so it passes through as is.
+    assert set(g.objects(EX.Thing, SKOS.exactMatch)) == {URIRef("http://schema.org/Thing"), URIRef("legacy:Thing")}
+    assert [r.getMessage() for r in caplog.records] == [
+        f"see_also value 'README' is neither a URI nor a CURIE; emitting it as <{EX.README}> "
+        "in the schema's default namespace"
+    ]
