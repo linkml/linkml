@@ -1138,6 +1138,33 @@ def test_type_schema_without_any_base_defaults_to_string(tmp_path):
     assert declared == {"type": "string"}
 
 
+def test_type_schema_carries_format_of_base(tmp_path, oas_version):
+    """Test a type whose base maps to JSON Schema format with that format."""
+    declared = induced_type_schema(tmp_path, "      Declared:\n        typeof: date", oas_version)
+    assert declared == {"type": "string", "format": "date"}
+
+
+def test_type_schema_non_numeric_bound_fails_spec_validation(tmp_path):
+    """Test a bound which is not a number dumps as string, which spec validation then rejects."""
+    types_body = """\
+      Declared:
+        typeof: date
+        minimum_value: '2020-01-01'"""
+    with pytest.raises(OpenAPIValidationError, match="2020-01-01"):
+        induced_type_schema(tmp_path, types_body)
+
+
+def test_type_schema_equals_number_is_a_numeric_const(tmp_path, oas_version):
+    """Test ``equals_number`` reaches schema as a number and not as its string form."""
+    types_body = """\
+      Declared:
+        typeof: integer
+        equals_number: 7"""
+    declared = induced_type_schema(tmp_path, types_body, oas_version)
+    assert declared["type"] == "integer"
+    assert_fixed_value(declared, 7, oas_version)
+
+
 def test_renaming(tmp_path, kitchen_sink_path, oas_version):
     """Test that resource names differing from LinkML class names are renamed throughout the spec."""
     head_path = write_template(tmp_path, template_renaming(oas_version=oas_version))

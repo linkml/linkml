@@ -213,6 +213,7 @@ class OpenApiGenerator(Generator):
         type_def = self.schemaview.induced_type(type_name)
         typ, fmt = json_schema_types.get((type_def.base or "").lower(), ("string", None))
         schema: dict = {}
+        # typ is never empty: every json_schema_types entry names type; fallback "string"
         if typ:
             schema["type"] = str(typ)
         if fmt:
