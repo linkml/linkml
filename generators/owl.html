@@ -534,9 +534,34 @@ string.</p>
 </pre></div>
 </div>
 <p>The ontology header then carries <code class="docutils literal notranslate"><span class="pre">dcterms:creator</span> <span class="pre">&lt;https://orcid.org/0000-0002-1825-0097&gt;</span></code>
-and <code class="docutils literal notranslate"><span class="pre">dcterms:rights</span> <span class="pre">&quot;Copyright</span> <span class="pre">2026</span> <span class="pre">The</span> <span class="pre">Example</span> <span class="pre">Team&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">implements:</span> <span class="pre">[owl:AnnotationProperty]</span></code>
-declares the two predicates as annotation properties; the restrictions that the metaclass’s
-own slots produce are a matter of the property role, not of the value.</p>
+and <code class="docutils literal notranslate"><span class="pre">dcterms:rights</span> <span class="pre">&quot;Copyright</span> <span class="pre">2026</span> <span class="pre">The</span> <span class="pre">Example</span> <span class="pre">Team&quot;</span></code>, and the two predicates are
+declared as annotation properties (see below).</p>
+</section>
+<section id="annotation-properties">
+<h3>Annotation properties<a class="headerlink" href="#annotation-properties" title="Link to this heading">¶</a></h3>
+<p>A slot that <code class="docutils literal notranslate"><span class="pre">implements</span></code> <code class="docutils literal notranslate"><span class="pre">owl:AnnotationProperty</span></code> is an annotation property
+(<a class="reference external" href="https://www.w3.org/TR/owl2-syntax/#Annotation_Properties">OWL 2 §5.5</a>), and so is
+a slot whose property IRI is one of the nine built-in annotation properties, such as a
+slot with <code class="docutils literal notranslate"><span class="pre">slot_uri:</span> <span class="pre">rdfs:label</span></code> emitted with <code class="docutils literal notranslate"><span class="pre">--no-use-native-uris</span></code>. An annotation
+property has no logical meaning (<a class="reference external" href="https://www.w3.org/TR/owl2-syntax/#Annotations">§10.1</a>),
+so the generator emits no class restriction for it: a class that uses the slot gets no
+<code class="docutils literal notranslate"><span class="pre">owl:allValuesFrom</span></code> or cardinality axiom on it. Its domain, a datatype or class range
+and its super-properties are emitted as the annotation axioms of
+<a class="reference external" href="https://www.w3.org/TR/owl2-syntax/#Annotation_Axioms">§10.2</a>; a range that is a node
+type such as <code class="docutils literal notranslate"><span class="pre">nodeidentifier</span></code> gives no range axiom. Built-in annotation properties are
+not declared, as OWL 2 reserves them.</p>
+<p>An IRI is an annotation, an object or a data property, not two of these
+(<a class="reference external" href="https://www.w3.org/TR/owl2-syntax/#Typing_Constraints_of_OWL_2_DL">§5.8.1</a>), so a slot
+that implements two roles is an error, as is a logical use of an annotation property: an
+inverse or a property characteristic, a unique key, a type designator, or a condition in
+a rule or class expression. A super-property (<code class="docutils literal notranslate"><span class="pre">is_a</span></code> or a mixin) must have the same
+role as its sub-property, since a sub-property axiom relates two annotation properties
+or two logical properties. Every other predicate the generator writes outside the
+reserved vocabulary, such as <code class="docutils literal notranslate"><span class="pre">skos:definition</span></code> and <code class="docutils literal notranslate"><span class="pre">skos:inScheme</span></code> for element
+metadata, is declared as an annotation property, as OWL 2 DL requires a declaration
+for each property (§5.8.1). Slots without the role keep their object or data property
+projection, also when a metaclass declares them; LinkML then puns the annotated element
+as an individual, as it does for all metadata.</p>
 </section>
 <section id="enums-and-permissiblevalues">
 <h3>Enums and PermissibleValues<a class="headerlink" href="#enums-and-permissiblevalues" title="Link to this heading">¶</a></h3>
@@ -1165,6 +1190,7 @@ whereas LinkML is closed-world</p>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#mapping">Mapping</a></li>
 <li><a class="reference internal" href="#annotation-values">Annotation values</a></li>
+<li><a class="reference internal" href="#annotation-properties">Annotation properties</a></li>
 <li><a class="reference internal" href="#enums-and-permissiblevalues">Enums and PermissibleValues</a><ul>
 <li><a class="reference internal" href="#cli-options-for-controlling-enum-pv-generation">CLI Options for Controlling Enum/PV Generation</a></li>
 <li><a class="reference internal" href="#schema-annotations-for-fine-grained-control">Schema Annotations for Fine-Grained Control</a></li>
