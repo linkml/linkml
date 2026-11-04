@@ -8,12 +8,16 @@ literals; ``curie`` stays an ``xsd:string`` literal.
 """
 
 import json
+import warnings
 
+import pyoxigraph
 import pytest
 import yaml
+from click.testing import CliRunner
 from pyshacl import validate
 from rdflib import OWL, RDF, SH, XSD, BNode, Graph, Literal, URIRef
 
+from linkml.converter.cli import cli as convert_cli
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -26,6 +30,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.rdf_canonicalize import RDFCanonicalizationWarning
 from linkml_runtime.utils.rdf_terms import value_term
 
 EX = "https://example.org/terms/"
@@ -356,6 +361,168 @@ def test_validator_refuses_a_final_newline_in_a_uri():
     value = "https://alice.example.org/\n"
     results = linkml_validate({"id": "ex:doc", "homepage": value}, SCHEMA, "Document").results
     assert [result.message for result in results] == [f"{value!r} is not a 'uri' in /homepage"]
+
+
+ROUTES = """
+id: https://example.org/routes
+name: routes
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/routes/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+types:
+  Anon:
+    typeof: string
+    uri: shex:bnode
+classes:
+  Citation:
+    attributes:
+      id:
+        identifier: true
+  Encoded:
+    attributes:
+      id:
+        identifier: true
+        annotations:
+          percent_encoded: true
+  Paper:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      author:
+        range: Anon
+      homepage:
+        range: uri
+      mirrors:
+        range: uri
+        multivalued: true
+      ordered_mirrors:
+        range: uri
+        multivalued: true
+        list_elements_ordered: true
+      cites:
+        range: Citation
+      all_cites:
+        range: Citation
+        multivalued: true
+      created:
+        range: datetime
+      opens:
+        range: time
+"""
+
+# rdflib writes this label as it finds it, so it would close the statement and start another.
+INJECTING_LABEL = '_:x .\n<https://victim.example/a> <https://evil.example/p> "o" .\n_:y <https://evil.example/q> _:z'
+
+
+@pytest.fixture(scope="module")
+def pydantic_routes():
+    return compile_python(PydanticGenerator(ROUTES).serialize())
+
+
+@pytest.fixture(scope="module")
+def dataclass_routes():
+    return compile_python(PythonGenerator(ROUTES).serialize())
+
+
+@pytest.mark.parametrize(
+    "slot,value",
+    [
+        ("mirrors", ["https://example.org/a", "https://example.org/x\n"]),
+        ("ordered_mirrors", ["https://example.org/x\ny"]),
+    ],
+)
+def test_dumper_checks_every_value_of_a_multivalued_slot(pydantic_routes, slot, value):
+    """An ordered slot takes its own route to an ``rdf:List``, and the check covers that route too."""
+    paper = pydantic_routes.Paper(id="ex:p", **{slot: value})
+    with pytest.raises(ValueError, match="cannot hold"):
+        rdflib_dumper.as_rdf_graph(paper, schemaview=SchemaView(ROUTES))
+
+
+@pytest.mark.parametrize("slot,value", [("cites", "ex:a\nb"), ("all_cites", ["ex:a\nb"])])
+def test_dumper_checks_a_reference_to_another_class(dataclass_routes, slot, value):
+    """A reference to a class with an identifier becomes an IRI by the identifier's route."""
+    paper = dataclass_routes.Paper(id="ex:p", **{slot: value})
+    with pytest.raises(ValueError, match="^Identifier 'ex:a.nb' holds"):
+        rdflib_dumper.as_rdf_graph(paper, schemaview=SchemaView(ROUTES))
+
+
+def test_dumper_percent_encodes_a_percent_encoded_identifier(pydantic_routes):
+    """A line break in such an identifier is data to encode, so the dumper does not refuse it."""
+    graph = rdflib_dumper.as_rdf_graph(pydantic_routes.Encoded(id="a b\nc"), schemaview=SchemaView(ROUTES))
+    assert set(graph.subjects()) == {URIRef("a%20b%0Ac")}
+
+
+@pytest.mark.parametrize(
+    "slot,value",
+    [
+        ("homepage", "https://example.org/é"),
+        ("author", "_:a·b"),
+        ("author", "_:é"),
+        ("author", "_:a.b-c_1"),
+    ],
+)
+def test_dumper_writes_what_it_admits(pydantic_routes, slot, value):
+    """pyoxigraph serializes the graph and is strict, so a value it refused would raise the warning here."""
+    paper = pydantic_routes.Paper(id="ex:p", **{slot: value})
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RDFCanonicalizationWarning)
+        turtle = rdflib_dumper.dumps(paper, schemaview=SchemaView(ROUTES))
+    assert len(Graph().parse(data=turtle, format="turtle")) == 2
+    assert len(list(pyoxigraph.parse(turtle.encode(), format=pyoxigraph.RdfFormat.TURTLE))) == 2
+
+
+def test_dumper_writes_an_iri_only_rfc_3987_refuses(pydantic_routes):
+    """Turtle's IRIREF admits ``[`` outside a host, so the dumper still writes it, through rdflib, with a warning."""
+    paper = pydantic_routes.Paper(id="ex:p", homepage="https://example.org/a[1]")
+    with pytest.warns(RDFCanonicalizationWarning):
+        turtle = rdflib_dumper.dumps(paper, schemaview=SchemaView(ROUTES))
+    assert (None, None, URIRef("https://example.org/a[1]")) in Graph().parse(data=turtle, format="turtle")
+
+
+def test_dump_leaves_an_existing_file_when_the_dumper_refuses(pydantic_routes, tmp_path):
+    """The dumper refuses before anything is written, so the earlier output survives."""
+    output = tmp_path / "out.ttl"
+    output.write_text("earlier output")
+    paper = pydantic_routes.Paper(id="ex:p", author=INJECTING_LABEL)
+    with pytest.raises(ValueError, match="invalid blank node label"):
+        rdflib_dumper.dump(paper, to_file=str(output), schemaview=SchemaView(ROUTES))
+    assert output.read_text() == "earlier output"
+
+
+def test_linkml_convert_refuses_the_injecting_label(tmp_path):
+    """The value passes validation, since its type derives from string, and stops at the dumper."""
+    schema, data, output = (tmp_path / name for name in ("schema.yaml", "data.yaml", "out.ttl"))
+    schema.write_text(ROUTES)
+    data.write_text(yaml.safe_dump({"id": "ex:p", "author": INJECTING_LABEL}))
+    output.write_text("earlier output")
+    args = ["-s", str(schema), "-C", "Paper", "-t", "ttl", "-o", str(output), str(data)]
+    result = CliRunner().invoke(convert_cli, args)
+    assert isinstance(result.exception, ValueError)
+    assert "invalid blank node label" in str(result.exception)
+    assert output.read_text() == "earlier output"
+
+
+@pytest.mark.parametrize(
+    "slot,value,format_name,location",
+    [
+        ("homepage", "https://example.org/x\n", "uri", "/homepage"),
+        ("mirrors", ["https://example.org/x\n"], "uri", "/mirrors/0"),
+        ("created", "2020-01-01T00:00:00Z\n", "date-time", "/created"),
+        ("opens", "00:00:00Z\n", "time", "/opens"),
+    ],
+)
+def test_validator_refuses_a_final_newline_in_each_format(slot, value, format_name, location):
+    """Each of these formats has its own library check, and each of those ends in ``$``."""
+    results = linkml_validate({"id": "ex:p", slot: value}, ROUTES, "Paper").results
+    bad = value[0] if isinstance(value, list) else value
+    assert [result.message for result in results] == [f"{bad!r} is not a {format_name!r} in {location}"]
+    good = [item.rstrip() for item in value] if isinstance(value, list) else value.rstrip()
+    assert not linkml_validate({"id": "ex:p", slot: good}, ROUTES, "Paper").results
 
 
 def test_blank_node_values_through_the_context(shapes):

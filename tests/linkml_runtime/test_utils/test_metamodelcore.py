@@ -6,10 +6,12 @@ from jsonasobj2 import as_json
 from rdflib import RDF, XSD, Graph, Literal, Namespace
 
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 from linkml_runtime.utils.metamodelcore import (
     URI,
     Bool,
     Curie,
+    Identifier,
     NCName,
     NodeIdentifier,
     URIorCURIE,
@@ -19,6 +21,13 @@ from linkml_runtime.utils.metamodelcore import (
 )
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import lax, strict
+from linkml_runtime.utils.uri_validator import (
+    abs_uri_validator,
+    curie_validator,
+    safe_curie_validator,
+    uri_relative_ref_validator,
+    uri_validator,
+)
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_rdf
 
 
@@ -102,12 +111,51 @@ def test_curie():
         (URIorCURIE, "https://example.org/x"),
         (URIorCURIE, "ex:a"),
         (Curie, "ex:a"),
+        (Identifier, "https://example.org/x"),
+        (Identifier, "ex:a"),
+        (NCName, "a"),
+        (XSDDate, "2020-01-01"),
+        (XSDDateTime, "2020-01-01T00:00:00"),
+        (XSDTime, "00:00:00"),
     ],
 )
 def test_a_final_newline_is_refused(datatype, value):
     """A value is valid without a final newline and invalid with one."""
     assert datatype.is_valid(value)
     assert not datatype.is_valid(value + "\n")
+
+
+@pytest.mark.parametrize(
+    ("validator", "value"),
+    [
+        (uri_validator, "https://example.org/x"),
+        (uri_relative_ref_validator, "../a/b"),
+        (abs_uri_validator, "https://example.org/x"),
+        (curie_validator, "ex:a"),
+        (safe_curie_validator, "[ex:a]"),
+    ],
+)
+def test_each_uri_pattern_ends_at_the_end_of_the_string(validator, value):
+    """In a pattern compiled with ``re.VERBOSE``, a stray comment could also swallow its end anchor."""
+    assert validator.match(value)
+    for suffix in ("\n", "\r\n", "\nmore"):
+        assert not validator.match(value + suffix)
+
+
+@pytest.mark.parametrize(
+    "build",
+    [
+        lambda link: SchemaDefinition(id=link, name="s"),
+        lambda link: ClassDefinition(name="C", see_also=[link]),
+    ],
+    ids=["schema id", "see_also"],
+)
+def test_a_schema_with_a_final_newline_in_a_link_does_not_load(build):
+    """A YAML block scalar such as ``id: |`` ends in a newline, and no URI holds one."""
+    link = "https://example.org/x"
+    assert build(link)
+    with pytest.raises(ValueError, match="not a valid"):
+        build(link + "\n")
 
 
 def test_uri():

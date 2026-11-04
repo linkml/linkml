@@ -43,6 +43,8 @@ class RDFLibDumper(Dumper):
         :param schemaview:
         :param prefix_map:
         :return:
+        :raises ValueError: if an IRI or identifier holds a character that an IRI cannot, or a blank
+            node label is outside the Turtle grammar
         """
         g = Graph()
         schemaview.imports_closure()  # ensure all imported sub-schemas are in schema_map before namespaces() caches
@@ -208,10 +210,13 @@ class RDFLibDumper(Dumper):
         :param fmt:
         :param prefix_map:
         :return: serialization of rdflib Graph containing element
+        :raises ValueError: if an IRI or identifier holds a character that an IRI cannot, or a blank
+            node label is outside the Turtle grammar
         """
         return canonicalize_rdf_graph(self.as_rdf_graph(element, schemaview, prefix_map=prefix_map), output_format=fmt)
 
     def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:
+        """Return the IRI of an identifier. Percent-encoding leaves no character that needs a check."""
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
