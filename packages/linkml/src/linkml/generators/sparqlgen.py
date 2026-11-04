@@ -152,6 +152,14 @@ class SparqlGenerator(Generator):
 
     def __post_init__(self):
         super().__post_init__()
+        # No copy of the view is needed here. #3778 added one because materialize_schema rewrote the
+        # schema, which corrupted the input of any generator run afterwards (#3770). Adding
+        # --no-mergeimports then showed that the rewrite itself gave wrong queries: moving attributes
+        # into the root schema changed the prefix of inherited ones, and attributes sharing a name
+        # overwrote each other. So the rewrite was removed, and query_prefixes and slot_uri read the
+        # same facts from the view, which leaves a copy nothing to protect. The one write left is
+        # domain_of, which SchemaView.induced_slot fills in for any reader of a view, including the
+        # other SchemaView generators.
         self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
