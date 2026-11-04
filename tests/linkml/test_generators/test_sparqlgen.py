@@ -7,6 +7,7 @@ from rdflib.plugins.sparql import prepareQuery
 
 from linkml.generators.sparqlgen import SparqlGenerator, cli
 from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
 
 
 def test_sparqlgen(kitchen_sink_path):
@@ -19,29 +20,36 @@ def test_sparqlgen(kitchen_sink_path):
 
 def test_sparqlgen_does_not_mutate_input_schemaview(kitchen_sink_path):
     """
-    Materialization must not mutate a caller-supplied schema.
+    The generator must leave a caller-supplied schema as it found it.
 
     Regression for #3770: sparqlgen moved ``attributes`` into ``slots`` on the shared schema. A later
-    generator that reused the same SchemaView, for example under gen-project, then found the attributes
-    missing.
+    generator that reused the same schema object then found the attributes missing. The generator now reads
+    the caller's schema with no copy in between, so this compares all of it.
+
+    Two fields are filled in first, because this generator is not what writes them. Reading a view sets
+    ``domain_of``, and the base generator sets ``metamodel_version``.
     """
     sv = SchemaView(kitchen_sink_path)
-    before = {cn: len(c.attributes) for cn, c in sv.all_classes().items()}
+    for class_name in sv.all_classes():
+        sv.class_induced_slots(class_name)
+    sv.schema.metamodel_version = "0.0.0"
+    before = yaml_dumper.dumps(sv.schema)
 
-    SparqlGenerator(sv.schema).serialize()
+    gen = SparqlGenerator(sv.schema)
+    gen.serialize()
 
-    after = {cn: len(c.attributes) for cn, c in sv.all_classes().items()}
-    assert before == after
-    assert any(count > 0 for count in before.values()), "fixture must have attributes to be meaningful"
+    assert gen.schema is sv.schema, "the generator must read the caller's schema for this test to be meaningful"
+    assert any(c.attributes for c in sv.all_classes().values()), "fixture must have attributes to be meaningful"
+    assert yaml_dumper.dumps(sv.schema) == before
 
 
 def test_sparqlgen_path_and_object_inputs_match(kitchen_sink_path):
     """
     Path and pre-parsed-object inputs must produce identical output.
 
-    Regression for #3770: the base ``__post_init__`` rebuilt the SchemaView after materialization,
-    so path inputs silently dropped the prefixes materialization adds, yielding SPARQL that
-    referenced undeclared prefixes.
+    Regression for #3770: the base ``__post_init__`` rebuilt the SchemaView after ``materialize_schema``
+    ran, so path inputs silently dropped the prefixes it had added, yielding SPARQL that referenced
+    undeclared prefixes.
     """
     from_path = SparqlGenerator(kitchen_sink_path).serialize()
     from_object = SparqlGenerator(SchemaView(kitchen_sink_path).schema).serialize()
