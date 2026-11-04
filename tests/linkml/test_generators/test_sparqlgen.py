@@ -282,6 +282,67 @@ def test_sparqlgen_attributes_with_the_same_name_stay_separate(tmp_path, mergeim
     assert "CHECK_required_Child_name" in queries
 
 
+@pytest.mark.parametrize("mergeimports", [True, False])
+def test_sparqlgen_slot_uri_follows_the_order_of_induced_slot(tmp_path, mergeimports):
+    """
+    A slot's URI comes from the definition that ``SchemaView.induced_slot`` would choose.
+
+    A ``slot_uri`` set by a ``slot_usage`` comes first. An attribute of the class comes before the same attribute on
+    an ancestor, and an attribute comes before a schema-level slot with the same name.
+    """
+    base = dedent(
+        """\
+        id: https://example.org/base
+        name: base
+        prefixes:
+          linkml: https://w3id.org/linkml/
+          b: https://example.org/b/
+        default_prefix: b
+        default_range: string
+        imports:
+          - linkml:types
+        classes:
+          Parent:
+            attributes:
+              redeclared: {}
+              renamed: {}
+        slots:
+          shadowed: {}
+        """
+    )
+    main_schema = dedent(
+        """\
+        id: https://example.org/main
+        name: main
+        prefixes:
+          linkml: https://w3id.org/linkml/
+          m: https://example.org/m/
+        default_prefix: m
+        default_range: string
+        imports:
+          - linkml:types
+          - ./base
+        classes:
+          Child:
+            is_a: Parent
+            slot_usage:
+              renamed:
+                slot_uri: m:new_name
+            attributes:
+              redeclared: {}
+              shadowed: {}
+        """
+    )
+    main, _ = _write_schemas(tmp_path, base=base, main=main_schema)
+
+    permitted = SparqlGenerator(str(main), mergeimports=mergeimports).queries["CHECK_permitted_Child"]
+
+    for uri in ("m:new_name", "m:redeclared", "m:shadowed"):
+        assert f"{uri}," in permitted
+    for uri in ("b:renamed", "b:redeclared", "b:shadowed"):
+        assert uri not in permitted
+
+
 def test_sparqlgen_imported_class_gets_the_same_queries_from_either_schema(tmp_path):
     """The queries for a class are the same from a merged run and from a run over its own schema."""
     main, base = _write_schemas(tmp_path)
