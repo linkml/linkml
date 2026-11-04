@@ -428,6 +428,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.annotations</span><span class="w"> </span><span class="kn">import</span> <span class="n">declared_annotation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSD_ANYURI_AS_IRI_OPTION</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.language_tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageTagResolver</span>
@@ -452,7 +453,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.introspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">package_schemaview</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">type_term</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">link_iri</span><span class="p">,</span> <span class="n">type_term</span><span class="p">,</span> <span class="n">value_term</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -797,14 +798,7 @@
                 <span class="n">metaslot_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">metaslot_value</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metaslot_value</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="n">msv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">metaslot_range</span> <span class="o">==</span> <span class="s2">&quot;uri&quot;</span><span class="p">:</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="o">==</span> <span class="s2">&quot;uriorcurie&quot;</span><span class="p">:</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">this_sv</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-                    <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LANGUAGE_TAGGABLE_RANGES</span> <span class="ow">and</span> <span class="n">lang</span><span class="p">:</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_term</span><span class="p">(</span><span class="n">metaslot_range</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">metaslot_name</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="n">msv</span><span class="o">.</span><span class="n">all_subsets</span><span class="p">():</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># TODO</span>
                 <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="n">msv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
@@ -829,6 +823,10 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="k">continue</span>
+            <span class="n">declared</span> <span class="o">=</span> <span class="n">declared_annotation</span><span class="p">(</span><span class="n">this_sv</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">declared</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">declared</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">declared</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">continue</span>
             <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
                 <span class="n">default_prefix</span> <span class="o">=</span> <span class="n">this_sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
                 <span class="k">if</span> <span class="n">default_prefix</span> <span class="ow">in</span> <span class="n">this_sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
@@ -845,6 +843,32 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">k_uri</span><span class="p">),</span> <span class="n">obj</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_metaslot_term</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">range_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span> <span class="o">|</span> <span class="n">BNode</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the RDF term of a native metadata value according to the metamodel slot&#39;s range.</span>
+
+<span class="sd">        The term kind follows :func:`~linkml_runtime.utils.rdf_terms.value_term`, so</span>
+<span class="sd">        ``see_also`` and ``source`` values are IRIs and ``license`` values are</span>
+<span class="sd">        strings. A link&#39;s CURIE is expanded with the schema&#39;s prefixes, then with the</span>
+<span class="sd">        metamodel&#39;s. Human-readable text carries the resolved language. A link value</span>
+<span class="sd">        that is neither an IRI nor a CURIE, such as a bare element name in</span>
+<span class="sd">        ``see_also``, cannot be resolved; it is written as a plain literal, with a</span>
+<span class="sd">        warning, since a relative IRI would make the whole graph non-standard RDF</span>
+<span class="sd">        and OWL 2 admits a literal as an annotation value (Structural Specification</span>
+<span class="sd">        §10.1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_schemaview</span>
+        <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LANGUAGE_TAGGABLE_RANGES</span> <span class="ow">and</span> <span class="n">language</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">language</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">type_term</span><span class="p">(</span><span class="n">msv</span><span class="p">,</span> <span class="n">range_name</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">is_node</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value_term</span><span class="p">(</span><span class="n">msv</span><span class="p">,</span> <span class="n">range_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">link_iri</span><span class="p">(</span><span class="n">msv</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">link</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2"> is neither an IRI nor a CURIE; written as a literal&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value_term</span><span class="p">(</span><span class="n">msv</span><span class="p">,</span> <span class="n">range_name</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

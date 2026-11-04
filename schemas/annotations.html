@@ -525,6 +525,35 @@ first-class slots, and instantiates value was a mixin.</p>
 <p>However, this is not yet supported in the current LinkML validator, so using <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> indicates your
 intent, but does not yet enforce validation.</p>
 </section>
+<section id="annotation-values-in-rdf">
+<span id="annotations-in-rdf"></span><h2>Annotation values in RDF<a class="headerlink" href="#annotation-values-in-rdf" title="Link to this heading">¶</a></h2>
+<p>The declared range also decides how gen-owl and gen-shacl (with <code class="docutils literal notranslate"><span class="pre">--include-annotations</span></code>) write an
+annotation value, by the rule that applies to slot values (see <a class="reference internal" href="advanced.html#links-and-uri-references"><span class="std std-ref">Links and URI references</span></a>): a
+<code class="docutils literal notranslate"><span class="pre">nodeidentifier</span></code> or <code class="docutils literal notranslate"><span class="pre">uri</span></code> value becomes an IRI, or a blank node for a <code class="docutils literal notranslate"><span class="pre">_:</span></code> label; a <code class="docutils literal notranslate"><span class="pre">string</span></code> value stays
+text and carries the language of <code class="docutils literal notranslate"><span class="pre">--default-language</span></code>; a <code class="docutils literal notranslate"><span class="pre">curie</span></code> value stays a string; and the value of
+an enum-ranged slot is written as the permissible value’s text.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Reviewable</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">      </span><span class="nt">reviewer</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nodeidentifier</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
+<span class="w">      </span><span class="nt">reviewer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">orcid:0000-0002-1825-0097</span>
+</pre></div>
+</div>
+<p>gen-owl then writes <code class="docutils literal notranslate"><span class="pre">mymetamodel:review</span> <span class="pre">&quot;A</span> <span class="pre">very</span> <span class="pre">useful</span> <span class="pre">class</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">well</span> <span class="pre">defined&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mymetamodel:reviewer</span> <span class="pre">&lt;https://orcid.org/0000-0002-1825-0097&gt;</span></code> on the class. A value that cannot be a
+term of the declared kind, such as a relative reference for a <code class="docutils literal notranslate"><span class="pre">uri</span></code> slot, is an error. Without a
+declaration the generators keep their earlier behaviour: gen-owl writes every annotation value as a
+string, and gen-shacl writes a value containing a colon as an IRI.</p>
+</section>
 <section id="other-uses-of-instantiates">
 <h2>Other uses of instantiates<a class="headerlink" href="#other-uses-of-instantiates" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> slot can also be used constrain rather than extend.</p>
@@ -613,6 +642,7 @@ intent, but does not yet enforce validation.</p>
 <li><a class="reference internal" href="#adding-your-own-annotations">Adding your own annotations</a></li>
 <li><a class="reference internal" href="#annotation-validation">Annotation validation</a></li>
 <li><a class="reference internal" href="#validation-of-annotations">Validation of annotations</a></li>
+<li><a class="reference internal" href="#annotation-values-in-rdf">Annotation values in RDF</a></li>
 <li><a class="reference internal" href="#other-uses-of-instantiates">Other uses of instantiates</a></li>
 </ul>
 </li>
