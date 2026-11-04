@@ -1,7 +1,6 @@
 import logging
 import os
 from collections import defaultdict
-from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,14 +9,14 @@ from jinja2 import Template
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import Prefix
+from linkml_runtime.linkml_model.meta import Prefix, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
 template = """
-{% for pfxn, pfx in schema.prefixes.items() -%}
+{% for pfxn, pfx in prefixes.items() -%}
 PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
 {% endfor %}
 
@@ -33,8 +32,8 @@ SELECT ?g ?s ?p WHERE {
   ?s rdf:type {{ schema_view.get_uri(cn) }} ;
      ?p ?o .
   FILTER ( ?p NOT IN (
-   {% for sn in schema_view.class_slots(cn) -%}
-   {{ schema_view.get_uri(schema_view.get_slot(sn, attributes=True)) }},
+   {% for slot in schema_view.class_induced_slots(cn) -%}
+   {{ slot_uri(schema_view, cn, slot) }},
    {% endfor -%}
    rdf:type ))
  }
@@ -53,10 +52,10 @@ SELECT
   ?predicate WHERE {
  GRAPH ?graph {
   ?subject rdf:type {{ schema_view.get_uri(cn) }} .
-  FILTER NOT EXISTS { ?subject  {{ schema_view.get_uri(slot) }} ?o  }
+  FILTER NOT EXISTS { ?subject  {{ slot_uri(schema_view, cn, slot) }} ?o  }
  }
  VALUES ?check { linkml:required }
- VALUES ?predicate { {{schema_view.get_uri(slot)}} }
+ VALUES ?predicate { {{ slot_uri(schema_view, cn, slot) }} }
  {{ extra }}
 }  {{ limit }}
 {% endif %}
@@ -83,7 +82,7 @@ WHERE {
   }
  }
  VALUES ?check { linkml:range }
- VALUES ?predicate { {{ schema_view.get_uri(slot) }}  }
+ VALUES ?predicate { {{ slot_uri(schema_view, cn, slot) }}  }
  {{ extra }}
 }  {{ limit }}
 {% endif %}
@@ -102,26 +101,36 @@ x = """
 """
 
 
-def materialize_schema(schemaview: SchemaView):
-    schema = schemaview.schema
-    if "rdf" not in schema.prefixes:
-        schema.prefixes["rdf"] = Prefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-    for scn in schemaview.imports_closure():
-        for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
-            if pfxn not in schema:
-                schema.prefixes[pfxn] = pfx
-    for cn, c in schemaview.all_classes().items():
-        for a in list(c.attributes.values()):
-            schema.slots[a.name] = a
-            c.slots.append(a.name)
-            del c.attributes[a.name]
-    schemaview.set_modified()
-    for cn, c in schemaview.all_classes().items():
-        for s in schemaview.class_induced_slots(cn):
-            if s.name not in c.slots:
-                c.slots.append(s.name)
-            c.slot_usage[s.name] = s
-            s.slot_uri = schemaview.get_uri(s)
+def query_prefixes(schemaview: SchemaView) -> dict[str, Prefix]:
+    """Return the prefixes that the queries declare.
+
+    A query can name a class or slot from any imported schema, even when no query is written for
+    that class, so the prefixes of every imported schema are included. When two schemas declare the
+    same prefix, the schema given to the generator comes first, and then the order of the imports.
+    """
+    prefixes = dict(schemaview.schema.prefixes)
+    prefixes.setdefault("rdf", Prefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"))
+    for schema in schemaview.all_schema():
+        for name, prefix in schema.prefixes.items():
+            prefixes.setdefault(name, prefix)
+    return prefixes
+
+
+def slot_uri(schemaview: SchemaView, class_name: str, slot: SlotDefinition) -> str:
+    """Return the URI of an induced slot of a class.
+
+    A slot with no declared URI takes the default prefix of the schema that defines it. An induced
+    slot cannot name that schema, because a ``slot_usage`` in another schema replaces its
+    ``from_schema``, so this function finds the definition again. An attribute of the class or of an
+    ancestor comes before a schema-level slot of the same name, as in ``SchemaView.induced_slot``.
+    """
+    if slot.slot_uri:
+        return slot.slot_uri
+    for ancestor in schemaview.class_ancestors(class_name):
+        attributes = schemaview.get_class(ancestor).attributes
+        if slot.name in attributes:
+            return schemaview.get_uri(attributes[slot.name])
+    return schemaview.get_uri(schemaview.get_slot(slot.name, attributes=False))
 
 
 @dataclass
@@ -143,13 +152,6 @@ class SparqlGenerator(Generator):
 
     def __post_init__(self):
         super().__post_init__()
-        # Work on a copy, because materialization rewrites the schema: it moves attributes into slots
-        # and adds prefixes. Mutating the shared SchemaView corrupts the input for any generator that
-        # runs after this one under gen-project (#3770). Copying the whole view keeps what it needs to
-        # resolve imports.
-        self.schemaview = deepcopy(self.schemaview)
-        materialize_schema(self.schemaview)
-        self.schema = self.schemaview.schema
         self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
@@ -164,7 +166,8 @@ class SparqlGenerator(Generator):
             limit = ""
         sparql = template_obj.render(
             schema_view=self.schemaview,
-            schema=self.schema,
+            prefixes=query_prefixes(self.schemaview),
+            slot_uri=slot_uri,
             limit=limit,
             extra=extra,
             imports=bool(self.mergeimports),
