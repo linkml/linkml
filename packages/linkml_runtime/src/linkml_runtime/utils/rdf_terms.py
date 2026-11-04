@@ -101,6 +101,15 @@ VOCABULARY_PREFIXES: dict[str, str] = {"xsd": str(XSD), "shex": str(SHEX), "rdfs
 # RFC 3986 §3.1: an absolute URI starts with a scheme followed by ":".
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 
+# An IRI cannot hold these. The IRIREF production of Turtle 1.1 excludes the control characters up to
+# the space and < > " { } | \ ^ `. RFC 3987 also excludes the other control characters (its ucschar
+# starts at U+00A0) and the bidirectional formatting characters (section 4.1).
+_NOT_IN_IRI = re.compile(r'[\x00-\x20\x7f-\x9f<>"{}|\\^`\u200e\u200f\u202a-\u202e]')
+
+# A blank node label after its "_:": the BLANK_NODE_LABEL production of Turtle 1.1, near enough. rdflib
+# writes a label as it finds it, so anything wider could add triples to the output.
+_BLANK_NODE_LABEL = re.compile(r"\w(?:[\w.-]*[\w-])?")
+
 
 @dataclass(frozen=True)
 class TypeTerm:
@@ -196,7 +205,8 @@ def value_term(sv: SchemaView, type_name: str, value: Any) -> Node:
     ``xsd:string`` values become plain literals, which RDF 1.1 gives that datatype.
 
     :raises ValueError: if a value of an IRI type is a relative reference, which
-        cannot be an RDF IRI (RDF 1.1 Concepts §3.2)
+        cannot be an RDF IRI (RDF 1.1 Concepts §3.2), or holds a character that an
+        IRI cannot, such as a line break, or if a blank node label is invalid
     """
     term = type_term(sv, type_name)
     if not term.kind.is_node:
@@ -205,6 +215,8 @@ def value_term(sv: SchemaView, type_name: str, value: Any) -> Node:
         return Literal(value, datatype=URIRef(term.datatype))
     text = str(value)
     if text.startswith("_:") and term.kind in (TermKind.BLANK_NODE, TermKind.BLANK_NODE_OR_IRI):
+        if not _BLANK_NODE_LABEL.fullmatch(text[2:]):
+            raise ValueError(f"Value {text!r} of type {type_name!r} has an invalid blank node label.")
         return BNode(text[2:])
     if term.kind is TermKind.BLANK_NODE:
         raise ValueError(f"Value {text!r} of type {type_name!r} must be a blank node label such as '_:b1'")
@@ -217,4 +229,14 @@ def value_term(sv: SchemaView, type_name: str, value: Any) -> Node:
             "IRIs, which must be absolute. Use a type derived from string with uri: xsd:anyURI to keep "
             "URI references as text."
         )
+    return checked_iri(iri, f"Value {text!r} of type {type_name!r}")
+
+
+def checked_iri(iri: str, subject: str) -> URIRef:
+    """Return *iri* as a ``URIRef``.
+
+    :raises ValueError: if *iri* holds a character that an IRI cannot, naming *subject* in the message
+    """
+    if _NOT_IN_IRI.search(iri):
+        raise ValueError(f"{subject} holds a character that an RDF IRI cannot hold.")
     return URIRef(iri)

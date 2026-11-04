@@ -1,4 +1,7 @@
-from linkml.utils.helpers import is_simple_dict
+import jsonschema
+import pytest
+
+from linkml.utils.helpers import format_checker_for, is_simple_dict
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
@@ -56,3 +59,14 @@ def test_is_simple_dict():
     assert is_simple_dict(sv, simple_dict_slot)
     assert not is_simple_dict(sv, no_simple_dict_slot_1)
     assert not is_simple_dict(sv, no_simple_dict_slot_2)
+
+
+@pytest.mark.parametrize(
+    ("format_name", "value"),
+    [("uri", "https://example.org/x"), ("date-time", "2020-01-01T00:00:00Z"), ("time", "00:00:00Z")],
+)
+def test_format_checker_refuses_a_final_newline(format_name, value):
+    """A value conforms to its format without a final newline and does not with one."""
+    checker = format_checker_for(jsonschema.Draft201909Validator)
+    assert checker.conforms(value, format_name)
+    assert not checker.conforms(value + "\n", format_name)

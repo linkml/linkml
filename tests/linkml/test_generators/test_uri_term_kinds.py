@@ -16,14 +16,17 @@ from rdflib import OWL, RDF, SH, XSD, BNode, Graph, Literal, URIRef
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.yarrrmlgen import YarrrmlGenerator
+from linkml.validator import validate as linkml_validate
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.rdf_terms import value_term
 
 EX = "https://example.org/terms/"
 
@@ -281,6 +284,78 @@ def test_dumper_rejects_relative_links(module, slot):
     """A relative reference is not an RDF IRI (RDF 1.1 Concepts §3.2); text needs a string-derived type."""
     with pytest.raises(ValueError, match="relative reference"):
         _dumped(module, {**DATA, slot: "../img/cover.png"})
+
+
+@pytest.mark.parametrize("type_name", ["uri", "uriorcurie", "objectidentifier", "nodeidentifier", "ImageLink"])
+@pytest.mark.parametrize(
+    "value",
+    [
+        "https://example.org/x\n",
+        "https://example.org/x\ny",
+        "https://example.org/a b",
+        "https://example.org/<x>",
+        "https://example.org/\x85",
+        "https://example.org/\u202e",
+    ],
+)
+def test_iri_types_refuse_what_an_iri_cannot_hold(type_name, value):
+    """Turtle 1.1 excludes line breaks, spaces and angle brackets from an IRI, and RFC 3987 the rest."""
+    with pytest.raises(ValueError, match="cannot hold"):
+        value_term(SchemaView(SCHEMA), type_name, value)
+
+
+def test_iri_types_admit_a_non_ascii_iri():
+    """An RDF IRI may hold a non-ASCII character, although the ``uri`` type's validation rejects one."""
+    iri = "https://example.org/é"
+    assert value_term(SchemaView(SCHEMA), "uri", iri) == URIRef(iri)
+
+
+def test_dumper_refuses_a_line_break_from_a_pydantic_model():
+    """A Pydantic model holds a link as a plain string, so the dumper checks it."""
+    document = compile_python(PydanticGenerator(SCHEMA).serialize()).Document(
+        id="ex:doc", homepage="https://example.org/x\ny"
+    )
+    with pytest.raises(ValueError, match="cannot hold"):
+        rdflib_dumper.dumps(document, schemaview=SchemaView(SCHEMA))
+
+
+@pytest.mark.parametrize("type_name", ["nodeidentifier", "ResourceRef", "BlankOnly"])
+@pytest.mark.parametrize("label", ["n1", "a.b", "a-b", "é"])
+def test_blank_node_types_admit_a_valid_label(type_name, label):
+    """A label holds word characters, with dots and hyphens inside it."""
+    assert value_term(SchemaView(SCHEMA), type_name, f"_:{label}") == BNode(label)
+
+
+@pytest.mark.parametrize("type_name", ["nodeidentifier", "ResourceRef", "BlankOnly"])
+@pytest.mark.parametrize("label", ["", "a b", "a\n", "a.", ".a", "-a", "a;b"])
+def test_blank_node_types_refuse_an_invalid_label(type_name, label):
+    """A label outside the Turtle grammar is refused."""
+    with pytest.raises(ValueError, match="invalid blank node label"):
+        value_term(SchemaView(SCHEMA), type_name, f"_:{label}")
+
+
+def test_dumper_refuses_a_blank_node_label_that_would_add_triples():
+    """rdflib writes a label as it finds it, so this one would add a triple about another subject."""
+    label = '_:x .\n<https://victim.example/a> <https://evil.example/p> "o" .\n_:y <https://evil.example/q> _:z'
+    document = compile_python(PydanticGenerator(SCHEMA).serialize()).Document(id="ex:doc", any_node=label)
+    with pytest.raises(ValueError, match="invalid blank node label"):
+        rdflib_dumper.dumps(document, schemaview=SchemaView(SCHEMA))
+
+
+@pytest.mark.parametrize("generator", [PydanticGenerator, PythonGenerator])
+@pytest.mark.parametrize("identifier", ["https://example.org/x\n", "https://example.org/x\ny"])
+def test_dumper_refuses_a_line_break_in_an_identifier(generator, identifier):
+    """A class's identifier takes its own route to an IRI, and the dumper checks that route too."""
+    document = compile_python(generator(SCHEMA).serialize()).Document(id=identifier)
+    with pytest.raises(ValueError, match="cannot hold"):
+        rdflib_dumper.dumps(document, schemaview=SchemaView(SCHEMA))
+
+
+def test_validator_refuses_a_final_newline_in_a_uri():
+    """The checks behind ``format: uri`` end in ``$``, which also matches before a final newline."""
+    value = "https://alice.example.org/\n"
+    results = linkml_validate({"id": "ex:doc", "homepage": value}, SCHEMA, "Document").results
+    assert [result.message for result in results] == [f"{value!r} is not a 'uri' in /homepage"]
 
 
 def test_blank_node_values_through_the_context(shapes):

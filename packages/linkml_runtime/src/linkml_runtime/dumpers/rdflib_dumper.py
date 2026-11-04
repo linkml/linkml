@@ -12,7 +12,7 @@ from rdflib.term import BNode, Literal, Node
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-from linkml_runtime.utils.rdf_terms import value_term
+from linkml_runtime.utils.rdf_terms import checked_iri, value_term
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -215,4 +215,4 @@ class RDFLibDumper(Dumper):
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
-            return schemaview.namespaces().uri_for(element_id)
+            return checked_iri(schemaview.namespaces().uri_for(element_id), f"Identifier {str(element_id)!r}")

@@ -94,6 +94,22 @@ def test_curie():
     assert nsm._default["bear"] == Curie(":bear").as_uri(nsm)
 
 
+@pytest.mark.parametrize(
+    ("datatype", "value"),
+    [
+        (URI, "https://example.org/x"),
+        (URI, "../a/b"),
+        (URIorCURIE, "https://example.org/x"),
+        (URIorCURIE, "ex:a"),
+        (Curie, "ex:a"),
+    ],
+)
+def test_a_final_newline_is_refused(datatype, value):
+    """A value is valid without a final newline and invalid with one."""
+    assert datatype.is_valid(value)
+    assert not datatype.is_valid(value + "\n")
+
+
 def test_uri():
     """Test the URI data type"""
     str1 = "https://google.com/test#file?abc=1&def=4"
