@@ -71,9 +71,17 @@ def test_mixin(tmp_outputs):
     assert diff == ""
 
 
+@pytest.fixture
+def restore_csv_field_size_limit():
+    """Restore the process-wide CSV field size limit after the test changes it."""
+    original = csv.field_size_limit()
+    yield
+    csv.field_size_limit(original)
+
+
 @pytest.mark.parametrize("diff", [1, -1])
 @pytest.mark.parametrize("size", [20, 200000])
-def test_csv_limit(tmp_outputs, diff, size):
+def test_csv_limit(tmp_outputs, restore_csv_field_size_limit, diff, size):
     """
     Tests https://github.com/linkml/linkml/issues/815
     """
