@@ -144,7 +144,7 @@ docs = [
   "sphinx-click",
   "sphinx-rtd-theme",
   "myst-parser",
-  "matplotlib >= 3.7",
+  "matplotlib >= 3.7; python_version >= '3.11'",
   "sphinx-jinja >= 2.0.2",
   "sphinxcontrib-programoutput>=0.20",
   "sphinx-design>=0.6.1",
