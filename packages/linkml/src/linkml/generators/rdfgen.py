@@ -40,10 +40,11 @@ def _strip_relative_context_refs(jsonld_str: str) -> str:
     against ``@base`` — typically an ``https://`` schema URI — producing
     HTTP 404s because no such context file is published.
 
-    ``gen-rdf`` always merges imports into the working schema before
-    serialization, so the prefix bindings and class definitions those
-    per-module refs would otherwise contribute are already inlined. Filtering
-    the unresolvable refs is safe and converts the failure into a no-op.
+    The inline ``@context`` already carries the prefix bindings those
+    per-module refs would otherwise contribute, and the imported definitions
+    are merged into the schema body (unless ``--no-mergeimports`` leaves them
+    out). Filtering the unresolvable refs is safe and converts the failure
+    into a no-op.
 
     Absolute URIs (``http``/``https``/``file``) and inline ``@context``
     dicts (including the ``@base`` directive emitted by ``JSONLDGenerator``)
@@ -98,6 +99,7 @@ class RDFGenerator(Generator):
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
+            mergeimports=self.mergeimports,
             metadata=self.emit_metadata,
             include_generation_date=self.include_generation_date,
             importmap=self.importmap,
