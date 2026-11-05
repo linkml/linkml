@@ -402,10 +402,9 @@ def test_mixin_class_emitted_so_references_resolve(tmp_path):
 def test_abstract_class_emitted_so_references_resolve(tmp_path):
     """Defect #9: abstract classes must also be emitted (proto3 has no abstract).
 
-    The reference itself is resolved per W2 (non-inlined class range with an
-    identifier becomes the identifier scalar, not the class name), so we check
-    only that ``message NamedThing {}`` is declared. The W2 behaviour is
-    asserted in its own test below.
+    A reference to a class with an identifier becomes the identifier scalar,
+    not the class name, so this checks only that ``message NamedThing {}`` is
+    declared. The reference tests below cover the field type.
     """
     yaml_text = _schema(
         name="abs_schema",
@@ -639,20 +638,20 @@ def test_slot_without_description_emits_no_comment(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# W2 — inlined vs reference
-# Non-inlined class refs must resolve to the identifier scalar of the range,
-# not the class name. Inlined refs keep the class name (nested message).
+# Inlined versus reference
+# A reference to a class resolves to the identifier scalar of the range, not
+# the class name. An inlined slot keeps the class name, a nested message.
 # ---------------------------------------------------------------------------
 
 
-def test_w2_non_inlined_class_ref_uses_identifier_scalar(tmp_path):
-    """Slot with class range + no ``inlined`` -> identifier scalar (string).
+def test_reference_non_inlined_class_ref_uses_identifier_scalar(tmp_path):
+    """A slot with a class range and no ``inlined`` takes the identifier scalar.
 
-    A non-inlined reference carries only the identifier on the wire, so the
-    proto field type must match the range class's identifier type.
+    A reference carries only the identifier on the wire, so the field type
+    matches the identifier type of the range class.
     """
     yaml_text = _schema(
-        name="w2_ref_schema",
+        name="ref_ref_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -673,10 +672,10 @@ def test_w2_non_inlined_class_ref_uses_identifier_scalar(tmp_path):
     assert "Person person =" not in out
 
 
-def test_w2_inlined_true_keeps_class_reference(tmp_path):
-    """``inlined: true`` -> the field carries the nested message, not a ref."""
+def test_reference_inlined_true_keeps_class_reference(tmp_path):
+    """With ``inlined: true`` the field carries the nested message."""
     yaml_text = _schema(
-        name="w2_inlined_schema",
+        name="ref_inlined_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -698,10 +697,10 @@ def test_w2_inlined_true_keeps_class_reference(tmp_path):
     assert "// reference to" not in out
 
 
-def test_w2_inlined_as_list_keeps_class_reference(tmp_path):
-    """``inlined_as_list: true`` also keeps the class name (with ``repeated``)."""
+def test_reference_inlined_as_list_keeps_class_reference(tmp_path):
+    """``inlined_as_list: true`` also keeps the class name, as a ``repeated`` field."""
     yaml_text = _schema(
-        name="w2_inlined_list_schema",
+        name="ref_inlined_list_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -722,14 +721,14 @@ def test_w2_inlined_as_list_keeps_class_reference(tmp_path):
     assert "repeated Person people =" in out
 
 
-def test_w2_range_without_identifier_forces_inline(tmp_path):
-    """A class with no identifier cannot be referenced -> forced inline.
+def test_reference_range_without_identifier_forces_inline(tmp_path):
+    """A class with no identifier cannot be referenced, so the slot is inlined.
 
-    The proto field keeps the class name even without explicit ``inlined: true``
-    because no identifier exists to dereference against.
+    The field keeps the class name without an explicit ``inlined: true``,
+    because no identifier could stand in for the object.
     """
     yaml_text = _schema(
-        name="w2_no_id_schema",
+        name="ref_no_id_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -748,10 +747,10 @@ def test_w2_range_without_identifier_forces_inline(tmp_path):
     assert "Address address =" in out
 
 
-def test_w2_identifier_scalar_matches_range_identifier_type(tmp_path):
-    """When the identifier is e.g. ``integer``, the proto ref is ``int32``."""
+def test_reference_identifier_scalar_matches_range_identifier_type(tmp_path):
+    """An ``integer`` identifier makes the reference field an ``int32``."""
     yaml_text = _schema(
-        name="w2_int_id_schema",
+        name="ref_int_id_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -771,14 +770,14 @@ def test_w2_identifier_scalar_matches_range_identifier_type(tmp_path):
     assert "int32 person =" in out
 
 
-def test_w2_identifier_inherited_from_parent(tmp_path):
-    """A non-inlined ref to a subclass uses the *parent's* identifier slot.
+def test_reference_identifier_inherited_from_parent(tmp_path):
+    """A reference to a subclass uses the identifier slot of its parent.
 
     The SchemaLoader rolls the inherited identifier into the subclass's own
     slot list, which is where ``_identifier_slot_for`` looks.
     """
     yaml_text = _schema(
-        name="w2_inherited_id_schema",
+        name="ref_inherited_id_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -800,18 +799,18 @@ def test_w2_identifier_inherited_from_parent(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# W6 — identifier slot pinned to field number 1
+# The identifier slot takes field number 1
 # ---------------------------------------------------------------------------
 
 
-def test_w6_identifier_slot_pinned_to_field_1(tmp_path):
-    """When no slot has an explicit ``rank``, the identifier slot becomes field 1.
+def test_identifier_identifier_slot_pinned_to_field_1(tmp_path):
+    """When no slot has a ``rank``, the identifier slot becomes field 1.
 
-    Even when the identifier is declared *after* other slots in the source,
-    proto3 convention (and phenopackets/FHIR-on-proto practice) puts it first.
+    It leads the message even when the source declares it after other slots,
+    as phenopackets and FHIR proto files have it.
     """
     yaml_text = _schema(
-        name="w6_id_first_schema",
+        name="id_id_first_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -836,15 +835,14 @@ def test_w6_identifier_slot_pinned_to_field_1(tmp_path):
     assert out.index("string id = 1;") < out.index("string name = 2;") < out.index("int32 age = 3;")
 
 
-def test_w6_identifier_emits_comment(tmp_path):
+def test_identifier_identifier_emits_comment(tmp_path):
     """A ``// identifier`` comment is emitted above the identifier field.
 
-    The LinkML schema-loader treats identifier slots as implicitly required,
-    so the field also carries a ``// required`` comment (W8) - both should be
-    present, in that order.
+    The SchemaLoader treats an identifier slot as required, so the field also
+    carries a ``// required`` comment, after the identifier one.
     """
     yaml_text = _schema(
-        name="w6_id_comment_schema",
+        name="id_id_comment_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -860,11 +858,10 @@ def test_w6_identifier_emits_comment(tmp_path):
     assert "  // identifier\n  // required\n  string id = 1;" in out
 
 
-def test_w6_explicit_rank_takes_precedence_over_identifier_pin(tmp_path):
-    """When *any* slot has an explicit ``rank``, identifier auto-pinning is
-    suppressed - explicit author choice wins."""
+def test_identifier_explicit_rank_takes_precedence_over_identifier_pin(tmp_path):
+    """When any slot has a ``rank``, the identifier is not pinned: the author's numbering wins."""
     yaml_text = _schema(
-        name="w6_rank_wins_schema",
+        name="id_rank_wins_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -884,10 +881,10 @@ def test_w6_explicit_rank_takes_precedence_over_identifier_pin(tmp_path):
     assert "string id = 2;" in out
 
 
-def test_w6_no_identifier_no_pin(tmp_path):
-    """A class without an identifier uses pure source-order auto-assignment."""
+def test_identifier_no_identifier_no_pin(tmp_path):
+    """A class without an identifier is numbered in source order."""
     yaml_text = _schema(
-        name="w6_no_id_schema",
+        name="id_no_id_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -906,14 +903,14 @@ def test_w6_no_identifier_no_pin(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# W8 — `// required` comment for required slots
+# A required slot carries a `// required` comment
 # ---------------------------------------------------------------------------
 
 
-def test_w8_required_slot_gets_required_comment(tmp_path):
-    """``slot.required: true`` -> ``// required`` line above the field."""
+def test_required_required_slot_gets_required_comment(tmp_path):
+    """A required slot gets a ``// required`` line above its field."""
     yaml_text = _schema(
-        name="w8_required_schema",
+        name="req_required_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -929,10 +926,10 @@ def test_w8_required_slot_gets_required_comment(tmp_path):
     assert "  // required\n  string name =" in out
 
 
-def test_w8_unrequired_slot_emits_no_required_comment(tmp_path):
-    """A non-required slot must NOT carry a stray ``// required`` comment."""
+def test_required_unrequired_slot_emits_no_required_comment(tmp_path):
+    """A slot that is not required carries no ``// required`` comment."""
     yaml_text = _schema(
-        name="w8_unrequired_schema",
+        name="req_unrequired_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -947,14 +944,14 @@ def test_w8_unrequired_slot_emits_no_required_comment(tmp_path):
     assert "// required" not in out
 
 
-def test_w2_key_only_range_stays_nested(tmp_path):
+def test_reference_key_only_range_stays_nested(tmp_path):
     """A class with only a ``key`` cannot be referenced, so the field keeps the message type.
 
     ``SchemaView.is_inlined`` treats a key the same way: a key identifies an
     object within its container only, not across the data set.
     """
     yaml_text = _schema(
-        name="w2_key_only_schema",
+        name="ref_key_only_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -976,10 +973,10 @@ def test_w2_key_only_range_stays_nested(tmp_path):
     assert "// reference to" not in out
 
 
-def test_w2_reference_comment_names_target_class(tmp_path):
+def test_reference_reference_comment_names_target_class(tmp_path):
     """A reference field says which class its identifier scalar points at."""
     yaml_text = _schema(
-        name="w2_ref_comment_schema",
+        name="ref_ref_comment_schema",
         body=textwrap.dedent(
             """
             classes:
@@ -1167,6 +1164,9 @@ def _write_importing_schema(tmp_path):
                 attributes:
                   label:
                     range: string
+                  people:
+                    range: Person
+                    multivalued: true
             """
         ).strip(),
     ).replace("  - linkml:types", "  - linkml:types\n  - people")
@@ -1342,6 +1342,17 @@ def test_mergeimports_default_writes_one_file(tmp_path):
     assert ".base_module" not in proto
 
 
+def test_no_mergeimports_with_an_import_map_file(tmp_path):
+    """The schema names come from the import closure that the import map resolves."""
+    schema_path = _write_importing_schema(tmp_path)
+    importmap = _write_importmap(tmp_path / "importmap.json", tmp_path / "lib" / "people")
+    result = CliRunner().invoke(cli, ["--no-mergeimports", "--importmap", importmap, str(schema_path)])
+    assert result.exit_code == 0, result.output
+    assert 'import "people.proto";' in result.output
+    assert "repeated .people.Person people = 2;" in result.output
+    assert "message Person {" not in result.output
+
+
 def test_no_mergeimports_in_memory_schema_uses_the_import_name():
     base = {"id": "https://example.org/base", "name": "base", "classes": {"Thing": {"tree_root": True}}}
     schema = {
@@ -1359,7 +1370,6 @@ def test_no_mergeimports_in_memory_schema_uses_the_import_name():
 
 
 def test_no_mergeimports_output_compiles_with_protoc(tmp_path):
-    pytest.importorskip("grpc_tools")
     _write_import_chain(tmp_path)
     protos = tmp_path / "protos"
     protos.mkdir()
