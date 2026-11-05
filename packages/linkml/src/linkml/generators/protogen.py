@@ -120,7 +120,7 @@ class ProtoGenerator(Generator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.2.0"
+    generatorversion = "0.3.0"
     valid_formats = ["proto"]
     visit_all_class_slots = True
     uses_schemaloader = True
@@ -204,11 +204,10 @@ class ProtoGenerator(Generator):
     def _source_schema_name(self, element: ClassDefinition | EnumDefinition) -> str:
         """Return the ``name`` of the imported schema that defines *element*.
 
-        The loader records only the schema's id and the import as written, while
-        the imported file takes its package from the schema's name, so the names
-        are read from the import closure. A schema given in memory has no
-        location to read imports from; there, the last segment of the import
-        stands in for the name.
+        The loader keeps a schema's id and the import as written, not its name,
+        and the imported file takes its package from the name. The names are
+        read once from the import closure. A schema given in memory has no
+        location to read from; there, the last segment of the import stands in.
         """
         if self._schema_names is None:
             self._schema_names = {}
@@ -222,10 +221,9 @@ class ProtoGenerator(Generator):
     def _proto_imports(self) -> list[str]:
         """Return the sorted ``.proto`` files that this schema's own messages refer to.
 
-        Each message carries its inherited slots, so a file can need a schema it
-        does not import directly. proto3 imports are not transitive, which means
-        the file must name that schema itself. A reference by identifier travels
-        as a scalar and needs no import.
+        A message carries its inherited slots, so a file can need a schema it
+        does not import directly, and proto3 imports are not transitive. A
+        reference by identifier travels as a scalar and needs no import.
         """
         if self.mergeimports:
             return []
@@ -243,8 +241,8 @@ class ProtoGenerator(Generator):
     def _proto_type_reference(self, element: ClassDefinition | EnumDefinition) -> str:
         """Return the name a field uses for the message or enum *element*.
 
-        A type in another package is written in full with a leading dot, which
-        protoc resolves from the root, whatever the current package is called.
+        A type in another package is written in full with a leading dot, so
+        that protoc resolves it from the root whatever the current package is.
         """
         name = camelcase(element.name)
         if not self._is_imported(element):
@@ -281,10 +279,9 @@ class ProtoGenerator(Generator):
     def _identifier_slot_for(self, cls_name: str) -> SlotDefinition | None:
         """Return the identifier slot of the class *cls_name*, or None.
 
-        The SchemaLoader has already rolled inherited and mixin slots into
-        ``cls.slots``, so no ``is_a`` walk is needed. Only ``identifier``
-        counts: a ``key`` identifies an object within its container only, so a
-        key-only class is still inlined, as ``SchemaView.is_inlined`` has it.
+        The SchemaLoader has rolled inherited and mixin slots into ``cls.slots``.
+        A ``key`` does not count: it identifies an object within its container
+        only, so a key-only class stays inlined, as ``SchemaView.is_inlined`` has it.
         """
         for sname in self.schema.classes[cls_name].slots:
             slot = self.schema.slots[sname]
@@ -295,17 +292,16 @@ class ProtoGenerator(Generator):
     def _proto_range_for_slot(self, slot: SlotDefinition) -> tuple[str, str | None]:
         """Resolve *slot* to a proto3 type, honouring inlined versus reference.
 
-        A slot whose range is a class carries either the whole nested object
-        (inlined) or only its identifier (a reference). A reference maps to the
-        identifier slot's scalar, typically ``string``, because that is what
-        travels on the wire; an inlined object keeps the message reference. A
-        slot is inlined when ``inlined`` or ``inlined_as_list`` is set, or when
-        the range class has no identifier slot that could stand in for it. The
-        SchemaLoader sets ``inlined`` in that second case itself, except for a
-        class that has only a ``key``.
+        An inlined slot carries the whole nested object and keeps the message
+        type. Any other slot whose range is a class carries a reference, the
+        identifier of the object, and takes the identifier slot's scalar,
+        usually ``string``. A slot is inlined when ``inlined`` or
+        ``inlined_as_list`` is set, or when the range class has no identifier.
+        The SchemaLoader sets ``inlined`` in that last case itself, except for
+        a class that has only a ``key``.
 
         Returns the proto type and, for a reference, the name of the class
-        referred to, so that the caller can say so in a comment.
+        referred to, for the caller's comment.
         """
         if slot.range in self.schema.classes and not (slot.inlined or slot.inlined_as_list):
             id_slot = self._identifier_slot_for(slot.range)
@@ -363,9 +359,10 @@ class ProtoGenerator(Generator):
         """Return the field numbers that ``rank`` pins for *slots*, keyed by slot name.
 
         A rank that proto3 cannot use as a field number is dropped with a
-        warning, and the slot is numbered automatically instead: a rank outside
-        1 to 536870911, one inside the reserved range 19000 to 19999, or one
-        that another slot of the same class already claims.
+        warning, and the slot is numbered automatically: a rank above 536870911
+        or below 0, one inside the reserved range 19000 to 19999, or one that
+        another slot of the same class already claims. A rank of 0 counts as no
+        rank, without a warning, because LinkML schemas order elements from 0.
         """
         numbers: dict[str, int] = {}
         taken: dict[int, str] = {}
@@ -388,13 +385,13 @@ class ProtoGenerator(Generator):
     def _slots_to_emit(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Return the slots of *cls* to write out, one per proto field name.
 
-        Two LinkML slot names can sanitise to one field name, for example when
-        a ``slot_usage`` spells an inherited slot ``related to`` instead of
-        ``related_to`` and the SchemaLoader induces a second slot from it. A
-        message cannot declare a field twice, so the later slot replaces the
-        earlier one, with a warning; in the loader's order that is the more
-        specific slot, because a class's own and ``slot_usage`` slots follow
-        the ones it inherits. The field keeps the earlier slot's position.
+        Two slot names can sanitise to one field name: a ``slot_usage`` that
+        spells an inherited slot ``related to`` instead of ``related_to`` makes
+        the SchemaLoader induce a second slot. A message cannot declare a field
+        twice, so the later slot replaces the earlier one, with a warning. In
+        the loader's order the later slot is the more specific one, because a
+        class's own and ``slot_usage`` slots follow the inherited ones. The
+        field keeps the earlier slot's position.
         """
         by_field: dict[str, SlotDefinition] = {}
         for slot in self.all_slots(cls):
@@ -427,17 +424,11 @@ class ProtoGenerator(Generator):
         if self._is_imported(cls):
             return None
 
-        # Pre-compute proto field numbers for every slot in this class.
-        #
-        # proto3 forbids field number 0, requires uniqueness within a message,
-        # caps numbers at 2**29 - 1 and reserves 19000-19999. LinkML's `rank`
-        # pins a number, which lets authors keep wire compatibility; every
-        # other slot is numbered automatically from 1 in source order, skipping
-        # pinned and reserved numbers. When no slot has a rank, the identifier
-        # slot, if any, takes field 1: the convention phenopackets and other
-        # wire-shaped schemas follow.
-        #
-        # Doing this once up front keeps visit_class_slot a simple lookup.
+        # Number every slot of this class once, so that visit_class_slot only
+        # looks its number up. A `rank` pins a number, which keeps the wire
+        # format stable; the other slots are numbered from 1 in source order,
+        # skipping pinned and reserved numbers. When no slot has a rank, the
+        # identifier slot, if any, takes field 1, as phenopackets does.
         slots = self._slots_to_emit(cls)
         self._field_numbers = self._ranked_field_numbers(cls, slots)
         if not self._field_numbers:
@@ -475,9 +466,8 @@ class ProtoGenerator(Generator):
         qual = "repeated " if slot.multivalued else ""
         slotname = _proto_field_name(aliased_slot_name)
 
-        # A non-inlined class range resolves to the identifier scalar of the
-        # range class (typically `string`) rather than the class name: a
-        # reference travels as the identifier, not as a nested message.
+        # A reference to a class travels as its identifier, so the field takes
+        # the identifier's scalar.
         slot_range, referenced = self._proto_range_for_slot(slot)
         lines: list[str] = []
         # Slot description -> `//` comments, mirroring the class-level loop in
@@ -488,11 +478,10 @@ class ProtoGenerator(Generator):
         # Mark the identifier slot, as phenopackets and FHIR proto files do.
         if slot.identifier:
             lines.append("  // identifier")
-        # proto3 has no `required` keyword (proto2 dropped it), but the comment
-        # still tells downstream consumers and a LinkML round-trip what holds.
+        # proto3 has no required keyword, so a comment records the constraint.
         if slot.required:
             lines.append("  // required")
-        # Name the class a reference points at; the scalar type alone no longer says.
+        # Name the class a reference points at, since the scalar type cannot.
         if referenced is not None:
             lines.append(f"  // reference to {camelcase(referenced)}")
         # Every proto3 field statement must end with `;` - without it `protoc`
