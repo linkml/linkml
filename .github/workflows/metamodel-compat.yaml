@@ -196,13 +196,12 @@ jobs:
         if: always()
         run: |
           uv run pytest tests/ -m upstream --with-upstream \
+            --ignore=tests/linkml/test_notebooks \
             -k "not test_vendored_files_match_upstream_main" -v
 
-      # Notebook tests are excluded: their `!uv pip install` cells mutate the
-      # venv off the lock (#3581), which is why per-PR CI gives them a dedicated
-      # runner. Their stub-mode run in per-PR CI is the coverage that matters.
-      # (Cost: URLs only notebooks fetch -- the biocontext monarch context --
-      # are not live-checked anywhere; their stubs could drift silently.)
+      # Notebook tests are excluded from this step and the one above and run
+      # last, below: their as-shipped variant installs from PyPI and would
+      # mutate the venv under them.
       # --with-slow/--with-biolink: several network-marked tests (the metamodel
       # RDF ones especially -- the original flake source) are also marked slow,
       # and would otherwise be collected but skipped, silently exempting their
@@ -212,3 +211,12 @@ jobs:
         run: |
           uv run pytest tests/ --ignore=tests/linkml/test_notebooks \
             -m "network and not kroki" --with-network --with-slow --with-biolink -v
+
+      # Notebooks as a user runs them: install cells and all, live network.
+      # Per-PR CI runs them offline with the install lines removed, so this is
+      # the only check that the install cells work and that the released linkml
+      # still runs the notebooks. Last step, because the installs mutate the venv.
+      - name: Run notebooks as shipped
+        if: always()
+        run: |
+          uv run pytest tests/linkml/test_notebooks/ -m upstream --with-upstream -v
