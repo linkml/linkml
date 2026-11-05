@@ -141,6 +141,7 @@ select = [
   "F",  # Pyflakes
   "I",  # isort
   "UP", # pyupgrade
+  "RUF013", # implicit Optional (PEP 484)
 ]
 
 [tool.ruff.format]

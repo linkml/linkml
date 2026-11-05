@@ -111,7 +111,7 @@ class SchemaFixer:
         container_name: ClassDefinitionName,
         inlined_as_list=False,
         must_have_identifier=False,
-        slot_name_func: Callable = None,
+        slot_name_func: Callable | None = None,
         convert_camel_case=False,
     ) -> list[SlotDefinition]:
         """
@@ -319,8 +319,8 @@ class SchemaFixer:
     @staticmethod
     def fix_element_names(
         schema: SchemaDefinition,
-        schema_dict: dict[str, Any] = None,
-        rules: dict[str, Callable] = None,
+        schema_dict: dict[str, Any] | None = None,
+        rules: dict[str, Callable] | None = None,
         imports=False,
         preserve_original_using: str | None = None,
     ) -> YAMLRoot | dict:

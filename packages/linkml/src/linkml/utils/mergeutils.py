@@ -186,7 +186,7 @@ def merge_dicts(
 def merge_slots(
     target: SlotDefinition | TypeDefinition,
     source: SlotDefinition | TypeDefinition,
-    skip: list[SlotDefinitionName | TypeDefinitionName] = None,
+    skip: list[SlotDefinitionName | TypeDefinitionName] | None = None,
     inheriting: bool = True,
 ) -> None:
     """

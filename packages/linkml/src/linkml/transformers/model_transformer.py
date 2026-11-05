@@ -22,5 +22,5 @@ class ModelTransformer:
         return self.schemaview.schema
 
     @abstractmethod
-    def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> Any:
+    def transform(self, tgt_schema_name: str | None = None, top_class: ClassDefinitionName = None) -> Any:
         raise NotImplementedError
