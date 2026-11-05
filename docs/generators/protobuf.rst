@@ -27,10 +27,10 @@ that every type a field names is declared. proto3 has no inheritance, so each
 message lists the slots it inherits as well as its own. The ``package`` name
 comes from the schema ``name``.
 
-Field names are ``snake_case``. A slot with a ``rank`` keeps it as its field
-number. The other slots are numbered from 1 in schema order, skipping the
-numbers taken by ranks and the reserved range 19000 to 19999. When no slot of
-a class has a rank, the identifier slot takes field number 1. A rank that
+Field names are ``snake_case``. A slot with a ``rank`` above 0 keeps it as its
+field number. The other slots are numbered from 1 in schema order, skipping
+the numbers taken by ranks and the reserved range 19000 to 19999. When no slot
+of a class has a rank, the identifier slot takes field number 1. A rank that
 proto3 cannot use as a field number, or that another slot of the same class
 already uses, is dropped with a warning, and the slot is numbered
 automatically. Fields are written in field-number order.
@@ -91,8 +91,8 @@ and ``depicted_by`` from ``NamedThing``, and ``aliases`` from a mixin:
 The example leaves some slots out for brevity.
 
 ``gen-proto`` writes the following messages. The identifier leads each one.
-The reference to ``Address`` stays a nested message because the slot is
-inlined. ``Person`` lists ``aliases``, which it inherits from the mixin:
+``Address`` stays a nested message because the slot is inlined. ``Person``
+lists ``aliases``, which it inherits from the mixin:
 
 .. code-block:: proto
 
@@ -131,8 +131,6 @@ inlined. ``Person`` lists ``aliases``, which it inherits from the mixin:
     repeated NewsEvent has_news_events = 16;
   }
 
-.. _protobuf-configuration-file:
-
 Schemas that import other schemas
 ---------------------------------
 
@@ -147,21 +145,20 @@ per schema, and name each file after the schema's ``name``, in one directory:
    gen-proto --no-mergeimports main.yaml > protos/main.proto
    protoc --proto_path=protos --python_out=out protos/base.proto protos/main.proto
 
-A schema is imported only when a field names one of its messages or enums, and
-the field gives that type's full name, such as ``.base.Thing``. Types from
-``linkml:types`` become scalars and need no file. A message still lists the slots
-it inherits, because proto3 has no inheritance.
+A file imports a schema when one of its fields, inherited fields included,
+names a message or enum of that schema. The field gives the type's full name,
+such as ``.base.Thing``. Types from ``linkml:types`` become scalars and need no
+file.
 
 Configuration File
 ------------------
 
-``gen-proto`` accepts a ``--config-file``/``-C`` YAML file. The file has the
-format that ``gen-project`` reads with its own ``--config-file`` (see
-:doc:`project-generator`), and ``gen-java`` (see :doc:`java`) and
-``gen-golang`` (see :doc:`golang`) read the same format. One project-wide
-``config.yaml`` can therefore serve ``gen-project`` and a standalone
-``gen-proto`` run. The settings for ``gen-proto`` live under
-``generator_args.proto``:
+``gen-proto`` accepts a ``--config-file``/``-C`` YAML file in the format that
+``gen-project`` reads with its own ``--config-file`` (see
+:doc:`project-generator`). ``gen-java`` (see :doc:`java`) and ``gen-golang``
+(see :doc:`golang`) read the same format, so one project ``config.yaml`` can
+serve them all. The settings for ``gen-proto`` live under
+``generator_args.proto``, and the other sections are ignored:
 
 .. code-block:: yaml
 
@@ -177,25 +174,15 @@ format that ``gen-project`` reads with its own ``--config-file`` (see
 
    gen-proto -C config.yaml personinfo.yaml > personinfo.proto
 
-``gen-proto`` reads only ``generator_args.proto``. It ignores the sections of
-other generators, so a full project ``config.yaml`` can be passed unchanged. A
-file without a ``proto`` section changes nothing.
-
-Any option of the command can be set in the section. Each key is the option's
-name with underscores in place of dashes, such as ``importmap`` for
-``--importmap``. A key that is
+Any option of the command can be set there, keyed by its name with underscores
+in place of dashes, such as ``importmap`` for ``--importmap``. A key that is
 not an option of ``gen-proto`` is reported as a warning and ignored.
 ``--log_level``, ``--verbose`` and ``--stacktrace`` act as soon as the command
 line is read, so they are taken from the command line only.
 
-Each option takes its value in this order of precedence:
-
-1. The option given on the command line.
-2. The value under ``generator_args.proto`` in the file given with ``--config-file``.
-3. The option's default.
-
-``gen-proto`` never reads a ``config.yaml`` on its own. The file is used only
-when it is named with ``--config-file``.
+An option given on the command line wins over the file, and the file wins over
+the option's default. ``gen-proto`` reads the file only when it is named with
+``--config-file``.
 
 Docs
 ----
