@@ -2,8 +2,7 @@
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum {{ name }} {
 {% for item in items %}
-    {% if serde %}#[cfg_attr(feature = "serde", serde(rename = "{{ item.text_literal }}"))]
-    {% endif %}
+#[cfg_attr(feature = "serde", serde(rename = "{{ item.text_literal }}"))]
     {{ item.variant }},
 {% endfor %}
 }
