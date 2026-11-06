@@ -1,0 +1,38 @@
+id: https://example.org/spec/control
+name: control
+title: Control
+prefixes:
+  linkml: https://w3id.org/linkml/
+  spec: https://example.org/spec/
+imports:
+  - linkml:types
+  - units
+default_prefix: spec
+default_range: string
+classes:
+  ControlRequirement:
+    tree_root: true
+    attributes:
+      name:
+        required: true
+      details:
+        range: ControlDetail
+        multivalued: true
+        inlined_as_list: true
+  ControlDetail:
+    attributes:
+      control_id:
+        identifier: true
+      review_every:
+        range: TimeUnit
+        required: true
+      evidence:
+        range: Evidence
+        multivalued: true
+        inlined: true
+  Evidence:
+    attributes:
+      evidence_id:
+        identifier: true
+      summary:
+        required: true

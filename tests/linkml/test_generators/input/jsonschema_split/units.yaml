@@ -1,0 +1,15 @@
+id: https://example.org/spec/units
+name: units
+title: Units
+prefixes:
+  linkml: https://w3id.org/linkml/
+  spec: https://example.org/spec/
+imports:
+  - linkml:types
+default_prefix: spec
+enums:
+  TimeUnit:
+    permissible_values:
+      day:
+      week:
+      month:
