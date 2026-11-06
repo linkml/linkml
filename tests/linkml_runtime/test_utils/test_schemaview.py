@@ -3103,6 +3103,104 @@ def test_get_classes_by_slot(schema_view_with_imports: SchemaView) -> None:
 
 
 @pytest.mark.parametrize(
+    ("subset", "expected"),
+    [
+        ("subset A", [PERSON, EMPLOYED_AT, AGE_IN_YEARS]),
+        (
+            "subset B",
+            [
+                "has employment history",
+                "has marriage history",
+                "has medical history",
+                "has familial relationships",
+                AGE_IN_YEARS,
+            ],
+        ),
+        ("no such subset", []),
+    ],
+)
+def test_get_elements_by_subset(schema_view_with_imports: SchemaView, subset: str, expected: list[str]) -> None:
+    """Test getting the elements that declare membership of a subset, classes before slots."""
+    members = schema_view_with_imports.get_elements_by_subset(subset)
+    assert [e.name for e in members] == expected
+
+
+@pytest.fixture(scope="module")
+def sv_subset_members() -> SchemaView:
+    """Schema whose subset members span every element kind, one of them imported."""
+    imported = {
+        "id": "https://example.org/imported",
+        "name": "imported",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "subsets": {"core": {}},
+        "classes": {"ImportedClass": {"in_subset": ["core"]}},
+    }
+    root = {
+        "id": "https://example.org/root",
+        "name": "root",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types", "https://example.org/imported"],
+        "subsets": {"summary": {"in_subset": ["core"]}},
+        "types": {"Code": {"typeof": "string", "in_subset": ["core"]}},
+        "enums": {
+            "Colour": {"in_subset": ["core"]},
+            "Shape": {"permissible_values": {"ROUND": {"in_subset": ["core"]}}},
+        },
+        "slots": {"name": {"in_subset": ["core"]}, "size": {}},
+        "classes": {
+            "Thing": {
+                "in_subset": ["core"],
+                "slots": ["name", "size"],
+                "slot_usage": {"size": {"in_subset": ["core"]}},
+                "attributes": {"colour": {"range": "Colour", "in_subset": ["core", "summary"]}},
+            },
+            "Other": {"slots": ["name"]},
+        },
+    }
+    return SchemaView(SchemaDefinition(**root), importmap={"https://example.org/imported": imported})
+
+
+def test_get_elements_by_subset_every_element_kind(sv_subset_members: SchemaView) -> None:
+    """Test that classes, slots, attributes, enums, types and subsets are all members.
+
+    Order is classes, slots (attributes included), enums, types, subsets, each in the order
+    the ``all_*`` methods give, which puts the imported class before the local one.
+    """
+    members = sv_subset_members.get_elements_by_subset("core")
+    assert [(type(e).__name__, e.name) for e in members] == [
+        ("ClassDefinition", "ImportedClass"),
+        ("ClassDefinition", "Thing"),
+        ("SlotDefinition", "name"),
+        ("SlotDefinition", "colour"),
+        ("EnumDefinition", "Colour"),
+        ("TypeDefinition", "Code"),
+        ("SubsetDefinition", "summary"),
+    ]
+
+
+def test_get_elements_by_subset_ignores_slot_usage_and_permissible_values(sv_subset_members: SchemaView) -> None:
+    """Test that membership asserted in ``slot_usage`` or on a permissible value is not returned.
+
+    ``size`` joins ``core`` only in ``Thing``'s ``slot_usage``, and ``ROUND`` is a permissible
+    value of ``Shape``; neither is a schema element in the subset.
+    """
+    names = {e.name for e in sv_subset_members.get_elements_by_subset("core")}
+    assert "size" not in names
+    assert "Shape" not in names
+    assert "ROUND" not in names
+    # the class-specific membership is still visible on the induced slot
+    assert "core" in sv_subset_members.induced_slot("size", "Thing").in_subset
+
+
+def test_get_elements_by_subset_without_imports(sv_subset_members: SchemaView) -> None:
+    """Test that ``imports=False`` leaves out members declared in an imported schema."""
+    names = [e.name for e in sv_subset_members.get_elements_by_subset("core", imports=False)]
+    assert "ImportedClass" not in names
+    assert names[0] == "Thing"
+
+
+@pytest.mark.parametrize(
     ("interpolated", "partial_match", "expected_pattern"),
     [
         (True, True, r"[a-z]+"),
