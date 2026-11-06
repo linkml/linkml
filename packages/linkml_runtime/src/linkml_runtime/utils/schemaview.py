@@ -12,8 +12,9 @@ from collections import defaultdict, deque
 from collections.abc import Iterable
 from copy import copy, deepcopy
 from dataclasses import dataclass
+from dataclasses import field as dataclass_field
 from enum import Enum
-from functools import lru_cache
+from functools import lru_cache, wraps
 from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -249,7 +250,12 @@ class SchemaUsage:
 
 @dataclass
 class SchemaView:
-    """A SchemaView provides a virtual schema layered on top of a schema plus its import closure.
+    """A SchemaView is a live, read-only view over a schema and its import closure.
+
+    The supplied schema remains the backing object, so external changes are visible to the view.
+    SchemaView methods do not modify it. Explicit view mutations are kept in a local overlay.
+    Call :meth:`set_modified` after editing an existing element in place so cached queries are
+    refreshed.
 
     Most operations are parameterized by `imports`. If this is set to True (default), then the full
     import closure is considered when answering
@@ -276,6 +282,12 @@ class SchemaView:
     ## private vars --------
     # cached hash
     _hash: int | None = None
+    _overlay: dict[str, dict[Any, Any]] | None = dataclass_field(default=None, repr=False)
+    _overlay_origins: dict[str, dict[Any, Any]] | None = dataclass_field(default=None, repr=False)
+    _deleted: dict[str, set[Any]] | None = dataclass_field(default=None, repr=False)
+    _merged_imports: bool = dataclass_field(default=False, repr=False)
+    _schema_state: tuple[Any, ...] | None = dataclass_field(default=None, repr=False)
+    _schema_check_depth: int = dataclass_field(default=0, repr=False)
 
     def __init__(
         self,
@@ -286,11 +298,14 @@ class SchemaView:
     ) -> None:
         """Initialize a SchemaView instance.
 
-        :param schema: schema or path to schema to be viewed
+        :param schema: schema or path to schema to be viewed. A supplied
+            :class:`SchemaDefinition` remains the live backing schema and is not
+            modified by this view.
         :type schema: str | Path | SchemaDefinition
         :param importmap: import mapping. Values may be file-path/URL strings or
             in-memory schema dicts (loaded directly, without filesystem or network
-            access). Defaults to None.
+            access). Defaults to None. The supplied mapping is copied and will not
+            be mutated by this view.
         :type importmap: dict[str, str | dict[str, Any]] | None, optional
         :param merge_imports: whether or not to merge imports, defaults to False
         :type merge_imports: bool, optional
@@ -303,10 +318,65 @@ class SchemaView:
             schema = load_schema_wrap(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
-        self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else {}
+        self.importmap = parse_import_map(deepcopy(importmap), base_dir) if importmap is not None else {}
+        self._overlay = {key: {} for key in [PREFIXES, *SCHEMA_ELEMENTS]}
+        self._overlay_origins = {key: {} for key in [PREFIXES, *SCHEMA_ELEMENTS]}
+        self._deleted = {key: set() for key in [PREFIXES, *SCHEMA_ELEMENTS]}
+        self._merged_imports = False
+        self._schema_state = self._backing_schema_state()
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
+
+    def __getattribute__(self, name: str) -> Any:
+        """Notice external backing-schema edits before serving cached query results."""
+        value = object.__getattribute__(self, name)
+        if not name.startswith("_") and callable(value) and hasattr(value, "cache_clear"):
+
+            @wraps(value)
+            def checked_cached_call(*args: Any, **kwargs: Any) -> Any:
+                depth = object.__getattribute__(self, "_schema_check_depth")
+                if depth == 0:
+                    object.__getattribute__(self, "_refresh_backing_schema_state")()
+                object.__setattr__(self, "_schema_check_depth", depth + 1)
+                try:
+                    return value(*args, **kwargs)
+                finally:
+                    object.__setattr__(self, "_schema_check_depth", depth)
+
+            checked_cached_call.cache_clear = value.cache_clear
+            checked_cached_call.cache_info = value.cache_info
+            return checked_cached_call
+        return value
+
+    def _refresh_backing_schema_state(self) -> None:
+        """Invalidate method caches when backing-schema elements are replaced or added."""
+        schema_state = self._backing_schema_state()
+        if schema_state != object.__getattribute__(self, "_schema_state"):
+            object.__setattr__(self, "_schema_state", schema_state)
+            object.__setattr__(self, "_hash", None)
+            object.__setattr__(self, "modifications", object.__getattribute__(self, "modifications") + 1)
+
+    def _backing_schema_state(self) -> tuple[Any, ...]:
+        """Return a token for backing-schema collection edits and element replacement."""
+        schema = object.__getattribute__(self, "schema")
+        collections = [PREFIXES, *SCHEMA_ELEMENTS]
+
+        def collection_state(collection: Any) -> tuple[tuple[Any, int], ...]:
+            items = getattr(collection, "items", None)
+            if callable(items):
+                return tuple((name, id(element)) for name, element in items())
+            if isinstance(collection, dict):
+                return tuple((name, id(element)) for name, element in collection.items())
+            return tuple((name, id(element)) for name, element in vars(collection).items() if not name.startswith("_"))
+
+        return (
+            schema.id,
+            schema.name,
+            schema.default_range,
+            tuple(schema.imports),
+            tuple((collection, collection_state(getattr(schema, collection))) for collection in collections),
+        )
 
     def __key(self) -> tuple[str | URI, str, int]:
         return self.schema.id, self.uuid, self.modifications
@@ -329,9 +399,10 @@ class SchemaView:
         return self._hash
 
     def set_modified(self) -> None:
-        """Increase the number of schema modifications by 1."""
+        """Invalidate caches after a view-overlay or in-place backing-schema edit."""
         self._hash = None
         self.modifications += 1
+        self._schema_state = self._backing_schema_state()
 
     def _resolved_importmap(self) -> dict[str, Any]:
         """User-supplied importmap merged over the built-in ``linkml:`` metamodel mapping.
@@ -389,31 +460,34 @@ class SchemaView:
         return load_schema_wrap(sname + ".yaml", base_dir=base_dir)
 
     def merge_imports(self) -> None:
-        """Merge the full imports closure."""
-        schema = self.schema
-        to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 != schema]
+        """Merge the full imports closure into this view's local overlay."""
+        to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 is not self.schema]
         for s2 in to_merge:
             self.merge_schema(s2)
-        schema.imports = []
+        self._merged_imports = True
         self.set_modified()
 
     def merge_schema(self, schema: SchemaDefinition, clobber: bool = False) -> None:
-        """Merge another schema into this one.
+        """Merge snapshots of another schema's elements into this view.
 
         If the other schema has an element with the same name as an element in this schema,
         then this element is NOT copied.
 
-        :param schema: schema to be merged
+        :param schema: schema to be merged; it is not modified
         :param clobber: if True, then overwrite existing elements
         """
-        dest = self.schema
         for el in [PREFIXES, *SCHEMA_ELEMENTS]:
+            existing = set(getattr(self.schema, el)) - self._deleted[el]
+            existing.update(self._overlay[el])
             # for each key/value pair of the element type
             for k, v in getattr(schema, el).items():
-                # if clobber is True or the key does not exist in the destination schema
-                if clobber or k not in getattr(dest, el):
-                    # copy the element value to the destination schema indexed under k
-                    getattr(dest, el)[k] = copy(v)
+                # Preserve the view's current precedence without modifying either schema.
+                if clobber or k not in existing:
+                    detached = deepcopy(v)
+                    self._overlay[el][k] = detached
+                    self._overlay_origins[el][k] = getattr(detached, "from_schema", None) or schema.id
+                    self._deleted[el].discard(k)
+                    existing.add(k)
         self.set_modified()
 
     def _get_dict(self, element_name: str, imports: bool = True) -> dict:
@@ -422,7 +496,16 @@ class SchemaView:
         # iterate through all schemas and merge the list together
         for s in schemas:
             # get the value of element name from the schema; if empty, return empty dictionary.
-            d1 = getattr(s, element_name, {})
+            source_elements = getattr(s, element_name, {})
+            if s is self.schema and self._deleted[element_name]:
+                source_elements = {k: v for k, v in source_elements.items() if k not in self._deleted[element_name]}
+            d1 = {}
+            for k, value in source_elements.items():
+                detached = value
+                if hasattr(value, "from_schema") and value.from_schema is None:
+                    detached = copy(value)
+                    detached.from_schema = s.id
+                d1[k] = detached
             if element_name == CLASSES:
                 # For classes that appear in multiple schemas, additively merge
                 # rules and classification_rules so that imported rules are not
@@ -441,6 +524,13 @@ class SchemaView:
                         d1[k] = merged_v
             # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
             d = {**d, **d1}
+
+        for k, value in self._overlay[element_name].items():
+            detached = value
+            if hasattr(value, "from_schema") and value.from_schema is None:
+                detached = copy(value)
+                detached.from_schema = self._overlay_origins[element_name].get(k, self.schema.id)
+            d[k] = detached
 
         return d
 
@@ -525,6 +615,9 @@ class SchemaView:
         if not imports or (not traverse and traverse is not None):
             return [self.schema.name]
 
+        if self._merged_imports:
+            return [self.schema.name]
+
         while len(todo) > 0:
             # visit item
             sn, raw_imp, importer_sn = todo.pop()
@@ -581,22 +674,8 @@ class SchemaView:
         # filter duplicates, keeping first entry
         closure = list(dict.fromkeys(closure).keys())
 
-        if inject_metadata:
-            for s in self.schema_map.values():
-                # It is important to merge element definitions as a list as multiple elements of different kinds can
-                # have the same name which means they have the same dict key.
-                elements: list = []
-                elements.extend(s.classes.values())
-                elements.extend(s.enums.values())
-                elements.extend(s.slots.values())
-                elements.extend(s.subsets.values())
-                elements.extend(s.types.values())
-
-                for x in elements:
-                    x.from_schema = s.id
-                for c in s.classes.values():
-                    for a in c.attributes.values():
-                        a.from_schema = s.id
+        # Metadata is resolved by SchemaView when returning elements. Never inject it
+        # into schema_map here: the root schema may be caller-owned and live.
         return closure
 
     @lru_cache(None)
@@ -623,6 +702,8 @@ class SchemaView:
         for s in self.schema_map.values():
             for prefix in s.prefixes.values():
                 namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+        for prefix in self._overlay[PREFIXES].values():
+            namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         return namespaces
 
     @deprecated("Use `all_classes` instead")
@@ -726,6 +807,9 @@ class SchemaView:
             for c in self.all_classes().values():
                 for aname, a in c.attributes.items():
                     if aname not in slots:
+                        if a.from_schema is None:
+                            a = copy(a)
+                            a.from_schema = c.from_schema or self.schema.id
                         slots[aname] = a
 
         return self.ordered(slots, ordered_by=ordered_by)
@@ -890,7 +974,7 @@ class SchemaView:
                     if slot is not None:
                         # slot name is ambiguous: return a stub slot
                         return SlotDefinition(slot_name)
-                    slot = copy(c.attributes[slot_name])
+                    slot = deepcopy(c.attributes[slot_name])
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
         if strict and slot is None:
@@ -1485,9 +1569,10 @@ class SchemaView:
             if e.from_schema is not None:
                 schema = next((sc for sc in self.schema_map.values() if sc.id == e.from_schema), None)
                 if schema is None:
-                    msg = f"Cannot find {e.from_schema} in schema_map"
-                    raise ValueError(msg)
+                    schema = self.schema
             else:
+                schema = None
+            if schema is None:
                 # Two classes reusing an attribute name give a bare placeholder slot with no
                 # from_schema, so the schema has to be looked up by name instead.
                 schema_name = self.in_schema(e.name)  # the schema's own name, e.g. 'core'
@@ -1877,7 +1962,7 @@ class SchemaView:
             raise ValueError(msg)
 
         # copy the slot, as it will be modified
-        induced_slot = copy(slot)
+        induced_slot = deepcopy(slot)
 
         # Resolve patterns on each copied definition *before* inheritance. `pattern`
         # and `structured_pattern` are inherited as separate metaslots, so resolving
@@ -1892,11 +1977,11 @@ class SchemaView:
                 anc_slot = self.get_slot(anc_sn, attributes=False)
                 if anc_slot is None:
                     continue
-                anc_slot = copy(anc_slot)
+                anc_slot = deepcopy(anc_slot)
                 anc_slot.pattern = self.resolve_pattern(anc_slot)
                 for metaslot_name in SlotDefinition._inherited_slots:  # noqa: SLF001
                     if getattr(anc_slot, metaslot_name, None):
-                        setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
+                        setattr(induced_slot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
         mix_max_value_dict = {
             "maximum_value": lambda x, y: min(x, y),
             "minimum_value": lambda x, y: max(x, y),
@@ -1916,7 +2001,7 @@ class SchemaView:
             if asserted_slot_usage is None:
                 resolved_slot_usages.append((class_ancestor, None))
                 continue
-            slot_usage = copy(asserted_slot_usage)
+            slot_usage = deepcopy(asserted_slot_usage)
             # A slot_usage is defined as part of its owning class, so interpolate its
             # structured pattern using that class's schema rather than the base slot's.
             slot_usage.from_schema = owning_class.from_schema
@@ -2407,49 +2492,60 @@ class SchemaView:
 
     # MUTATION OPERATIONS
 
-    def add_class(self, cls: ClassDefinition) -> None:
-        """Add a class to the schema.
+    def _store_in_overlay(self, collection: str, name: Any, element: Any) -> None:
+        """Store a detached value in the view-local overlay."""
+        detached = deepcopy(element)
+        self._overlay[collection][name] = detached
+        self._overlay_origins[collection][name] = getattr(detached, "from_schema", None) or self.schema.id
+        self._deleted[collection].discard(name)
+
+    def add_class(self, cls: ClassDefinition, *, invalidate_cache: bool = True) -> None:
+        """Add a snapshot of a class to this view without changing its backing schema.
 
         :param cls: class to be added
+        :param invalidate_cache: whether to invalidate cached queries immediately;
+            callers batching edits may set this to False and call set_modified() once
+            after the batch
         :return:
         """
-        self.schema.classes[cls.name] = cls
-        self.set_modified()
+        self._store_in_overlay(CLASSES, cls.name, cls)
+        if invalidate_cache:
+            self.set_modified()
 
     def add_slot(self, slot: SlotDefinition) -> None:
-        """Add a slot to the schema.
+        """Add a snapshot of a slot to this view without changing its backing schema.
 
         :param slot: slot to be added
         :return:
         """
-        self.schema.slots[slot.name] = slot
+        self._store_in_overlay(SLOTS, slot.name, slot)
         self.set_modified()
 
     def add_enum(self, enum: EnumDefinition) -> None:
-        """Add an enum to the schema.
+        """Add a snapshot of an enum to this view without changing its backing schema.
 
         :param enum: enum to be added
         :return:
         """
-        self.schema.enums[enum.name] = enum
+        self._store_in_overlay(ENUMS, enum.name, enum)
         self.set_modified()
 
     def add_type(self, type_def: TypeDefinition) -> None:
-        """Add a type to the schema.
+        """Add a snapshot of a type to this view without changing its backing schema.
 
         :param type: type to be added
         :return:
         """
-        self.schema.types[type_def.name] = type_def
+        self._store_in_overlay(TYPES, type_def.name, type_def)
         self.set_modified()
 
     def add_subset(self, subset: SubsetDefinition) -> None:
-        """Add a subset to the schema.
+        """Add a snapshot of a subset to this view without changing its backing schema.
 
         :param subset: subset to be added
         :return:
         """
-        self.schema.subsets[subset.name] = subset
+        self._store_in_overlay(SUBSETS, subset.name, subset)
         self.set_modified()
 
     def delete_class(self, class_name: ClassDefinitionName, delete_references: bool = True) -> None:
@@ -2459,14 +2555,21 @@ class SchemaView:
         :return:
         """
         children = self.class_children(class_name)
-        del self.schema.classes[class_name]
+        if class_name not in self.schema.classes and class_name not in self._overlay[CLASSES]:
+            raise KeyError(class_name)
+        self._overlay[CLASSES].pop(class_name, None)
+        self._overlay_origins[CLASSES].pop(class_name, None)
+        self._deleted[CLASSES].add(class_name)
         if delete_references:
             for chn in children:
                 ch = self.get_class(chn)
                 if ch.is_a is not None and ch.is_a == class_name:
+                    ch = deepcopy(ch)
                     del ch.is_a
                 if class_name in ch.mixins:
+                    ch = deepcopy(ch)
                     ch.mixins.remove(class_name)
+                self._store_in_overlay(CLASSES, chn, ch)
             # TODO: remove other references, including range
         self.set_modified()
 
@@ -2476,7 +2579,11 @@ class SchemaView:
         :param slot_name: slot to be deleted
         :return:
         """
-        del self.schema.slots[slot_name]
+        if slot_name not in self.schema.slots and slot_name not in self._overlay[SLOTS]:
+            raise KeyError(slot_name)
+        self._overlay[SLOTS].pop(slot_name, None)
+        self._overlay_origins[SLOTS].pop(slot_name, None)
+        self._deleted[SLOTS].add(slot_name)
         self.set_modified()
 
     def delete_enum(self, enum_name: EnumDefinitionName) -> None:
@@ -2485,7 +2592,11 @@ class SchemaView:
         :param enum_name: enum to be deleted
         :return:
         """
-        del self.schema.enums[enum_name]
+        if enum_name not in self.schema.enums and enum_name not in self._overlay[ENUMS]:
+            raise KeyError(enum_name)
+        self._overlay[ENUMS].pop(enum_name, None)
+        self._overlay_origins[ENUMS].pop(enum_name, None)
+        self._deleted[ENUMS].add(enum_name)
         self.set_modified()
 
     def delete_type(self, type_name: TypeDefinitionName) -> None:
@@ -2494,7 +2605,11 @@ class SchemaView:
         :param type_name: type to be deleted
         :return:
         """
-        del self.schema.types[type_name]
+        if type_name not in self.schema.types and type_name not in self._overlay[TYPES]:
+            raise KeyError(type_name)
+        self._overlay[TYPES].pop(type_name, None)
+        self._overlay_origins[TYPES].pop(type_name, None)
+        self._deleted[TYPES].add(type_name)
         self.set_modified()
 
     def delete_subset(self, subset_name: SubsetDefinitionName) -> None:
@@ -2503,40 +2618,53 @@ class SchemaView:
         :param subset_name: subset to be deleted
         :return:
         """
-        del self.schema.subsets[subset_name]
+        if subset_name not in self.schema.subsets and subset_name not in self._overlay[SUBSETS]:
+            raise KeyError(subset_name)
+        self._overlay[SUBSETS].pop(subset_name, None)
+        self._overlay_origins[SUBSETS].pop(subset_name, None)
+        self._deleted[SUBSETS].add(subset_name)
         self.set_modified()
 
     # def rename(self, old_name: str, new_name: str):
     #   TODO: add to runtime
 
     def copy_schema(self, new_name: str | None = None) -> SchemaDefinition:
-        """Generate a copy of the schema.
+        """Materialize this view's effective schema as a detached definition.
 
         :param new_name: name for the new schema, defaults to None
         :type new_name: str | None, optional
-        :return: copied SchemaDefinition, optionally with new name
+        :return: detached SchemaDefinition including view-local additions and deletions
         :rtype: SchemaDefinition
         """
-        s2 = copy(self.schema)
+        s2 = deepcopy(self.schema)
+        for collection in [PREFIXES, *SCHEMA_ELEMENTS]:
+            target = getattr(s2, collection)
+            for name in self._deleted[collection]:
+                if name in target:
+                    del target[name]
+            for name, element in self._overlay[collection].items():
+                target[name] = deepcopy(element)
+        if self._merged_imports:
+            s2.imports = []
         if new_name is not None:
             s2.name = new_name
         return s2
 
     @deprecated(
         reason=(
-            "This method mutates asserted schema definitions. Use resolve_pattern() for a single definition, "
+            "This method is deprecated. Use resolve_pattern() for a single definition, "
             "or induced_slot() and induced_type() for induced definitions."
         )
     )
     def materialize_patterns(self, imports: bool = True) -> None:
-        """Materialize structured patterns into regular expressions in place.
+        """Materialize structured patterns into regular expressions in this view's overlay.
 
         :param imports: include definitions from imported schemas, defaults to True
         """
         self._materialize_patterns(imports)
 
     def _materialize_patterns(self, imports: bool = True) -> None:
-        """Implement in-place pattern materialization for compatibility callers."""
+        """Materialize patterns in the view-local overlay, never in backing schemas."""
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
         resolvers: dict[str, PatternResolver] = {}
         modified = False
@@ -2555,10 +2683,9 @@ class SchemaView:
         def materialize_pattern_into_definition(
             element_def: SlotDefinition | TypeDefinition,
             owning_class: ClassDefinition | None = None,
-        ) -> None:
-            nonlocal modified
+        ) -> bool:
             if not element_def.structured_pattern:
-                return
+                return False
             structured_pattern = element_def.structured_pattern
             pattern = structured_pattern.syntax
             resolver = resolver_for_definition(element_def, owning_class)
@@ -2570,31 +2697,48 @@ class SchemaView:
                 pattern = f"^(?:{pattern})$"
             if element_def.pattern != pattern:
                 element_def.pattern = pattern
+                return True
+            return False
+
+        for source_slot in self.all_slots(imports=imports, attributes=False).values():
+            slot_definition = deepcopy(source_slot)
+            if materialize_pattern_into_definition(slot_definition):
+                self._store_in_overlay(SLOTS, slot_definition.name, slot_definition)
                 modified = True
 
-        for slot_definition in self.all_slots(imports=imports, attributes=False).values():
-            materialize_pattern_into_definition(slot_definition)
+        for source_type in self.all_types(imports=imports).values():
+            type_definition = deepcopy(source_type)
+            if materialize_pattern_into_definition(type_definition):
+                self._store_in_overlay(TYPES, type_definition.name, type_definition)
+                modified = True
 
-        for type_definition in self.all_types(imports=imports).values():
-            materialize_pattern_into_definition(type_definition)
-
-        for class_definition in self.all_classes(imports=imports).values():
+        for source_class in self.all_classes(imports=imports).values():
+            class_definition = deepcopy(source_class)
+            class_modified = False
             if class_definition.slot_usage:
                 for slot_definition in class_definition.slot_usage.values():
-                    materialize_pattern_into_definition(slot_definition, class_definition)
+                    class_modified = (
+                        materialize_pattern_into_definition(slot_definition, class_definition) or class_modified
+                    )
 
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
-                    materialize_pattern_into_definition(slot_definition, class_definition)
+                    class_modified = (
+                        materialize_pattern_into_definition(slot_definition, class_definition) or class_modified
+                    )
+            if class_modified:
+                self._store_in_overlay(CLASSES, class_definition.name, class_definition)
+                modified = True
 
         if modified:
             self.set_modified()
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """Materialize a schema view into a schema definition."""
-        derived_schema = deepcopy(self.schema)
+        derived_schema = self.copy_schema()
         derived_schemaview = SchemaView(derived_schema)
         derived_schemaview.merge_imports()
+        derived_schema = derived_schemaview.copy_schema()
         for typ in [deepcopy(t) for t in self.all_types().values()]:
             for typ_anc_name in self.type_ancestors(typ.name, reflexive=False):
                 a = derived_schema.types[typ_anc_name]

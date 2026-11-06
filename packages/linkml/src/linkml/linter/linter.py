@@ -195,4 +195,4 @@ class Linter:
                 yield problem
 
         if fix and schema_view.schema.source_file:
-            yaml_dumper.dump(schema_view.schema, schema_view.schema.source_file)
+            yaml_dumper.dump(schema_view.copy_schema(), schema_view.schema.source_file)

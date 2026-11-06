@@ -1,5 +1,6 @@
 import logging
 import os
+from copy import deepcopy
 from dataclasses import dataclass
 
 import click
@@ -9,7 +10,6 @@ from linkml.utils.deprecation import MATERIALIZE_PATTERNS_GENERATOR_OPTION, depr
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
@@ -39,26 +39,23 @@ class LinkmlGenerator(Generator):
         if self.materialize_patterns is not None:
             deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
         super().__post_init__()
-        # Forward importmap/base_dir; the call to ``super().__post_init__``
-        # above built a ``self.schemaview`` with these honoured, and this
-        # overwrite must not drop them or URI-style imports resolved via
-        # ``--importmap`` will fall through to HTTP when ``mergeimports``
-        # triggers ``imports_closure()``.
-        self.schemaview = SchemaView(
-            self.schema,
-            merge_imports=self.mergeimports,
-            base_dir=self.base_dir,
-            importmap=self.importmap,
-        )
+        # Keep the SchemaView created by the base generator so it retains its live
+        # backing schema, import map, and any included definitions.
+        if self.mergeimports:
+            self.schemaview.merge_imports()
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attributes, in place"""
-        all_classes = self.schemaview.all_classes()
+        # This generator serializes the root schema unless mergeimports is enabled;
+        # don't promote imported classes into its local materialization overlay.
+        all_classes = self.schemaview.all_classes(imports=self.mergeimports)
 
         for c_name, c_def in all_classes.items():
+            c_def = deepcopy(c_def)
             attrs = self.schemaview.class_induced_slots(c_name)
             for attr in attrs:
                 c_def.attributes[attr.name] = attr
+            self.schemaview.add_class(c_def)
 
     def serialize(self, output: str = None, **kwargs) -> str:
         if self.materialize_attributes:
@@ -68,8 +65,9 @@ class LinkmlGenerator(Generator):
             # producing a second warning from SchemaView's public wrapper.
             self.schemaview._materialize_patterns()
 
+        schema = self.schemaview.copy_schema()
         if self.format == "json":
-            json_str = json_dumper.dumps(self.schemaview.schema)
+            json_str = json_dumper.dumps(schema)
 
             if output:
                 write_to_file(output, json_str)
@@ -78,7 +76,7 @@ class LinkmlGenerator(Generator):
 
             return json_str
         elif self.format == "yaml":
-            yaml_str = yaml_dumper.dumps(self.schemaview.schema)
+            yaml_str = yaml_dumper.dumps(schema)
 
             if output:
                 write_to_file(output, yaml_str)

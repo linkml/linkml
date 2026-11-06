@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
+from copy import deepcopy
 from functools import cache
 from itertools import chain
 
@@ -28,6 +29,7 @@ from linkml_runtime.linkml_model import (
     EnumDefinitionName,
     SlotDefinition,
     SlotDefinitionName,
+    SubsetDefinition,
     TypeDefinition,
     TypeDefinitionName,
 )
@@ -79,9 +81,20 @@ class NoEmptyTitleRule(LinterRule):
             if element_type_name in excluded_types:
                 continue
             if fix and e.title is None:
+                e = deepcopy(e)
                 title = e.name.replace("_", " ")
                 title = self.uncamel(title).lower()
                 e.title = title
+                if isinstance(e, ClassDefinition):
+                    schema_view.add_class(e)
+                elif isinstance(e, SlotDefinition):
+                    schema_view.add_slot(e)
+                elif isinstance(e, EnumDefinition):
+                    schema_view.add_enum(e)
+                elif isinstance(e, TypeDefinition):
+                    schema_view.add_type(e)
+                elif isinstance(e, SubsetDefinition):
+                    schema_view.add_subset(e)
             if e.title is None:
                 problem = LinterProblem(message=f"{self.format_element(e)} has no title")
                 yield problem
@@ -94,7 +107,9 @@ class NoXsdIntTypeRule(LinterRule):
         for type_definition in schema_view.all_types(imports=False).values():
             if type_definition.uri == "xsd:int":
                 if fix:
+                    type_definition = deepcopy(type_definition)
                     type_definition.uri = "xsd:integer"
+                    schema_view.add_type(type_definition)
                 else:
                     yield LinterProblem(f"{self.format_element(type_definition)} has uri xsd:int")
 
@@ -214,6 +229,7 @@ class TreeRootClassRule(LinterRule):
             index_slots.append(index_slot)
             schema_view.add_slot(index_slot)
             container.slots.append(index_slot.name)
+        schema_view.add_class(container)
         return index_slots
 
 
