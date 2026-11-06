@@ -9,6 +9,7 @@ from typing import Any
 import click
 from sqlalchemy import Column, ForeignKey, Index, MetaData, Numeric, Table, UniqueConstraint, create_mock_engine
 from sqlalchemy.dialects.oracle import VARCHAR2
+from sqlalchemy.schema import CreateIndex
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
@@ -172,16 +173,30 @@ class SQLTableGenerator(Generator):
         """
         Generate a DDL using the schema in self.schema.
 
+        Each table's CREATE INDEX statements follow it, sorted by index name.
+
         :param naming_policy: naming policy for columns, defaults to None
         :type naming_policy: SqlNamingPolicy, optional
         :return: the DDL as a string
         :rtype: str
         """
-        ddl_str = ""
+        # Collect statements and comments here and join them once at the end.
+        ddl_parts: list[str] = []
+        # SQLAlchemy keeps a table's indexes in a set, so create_all emits them in
+        # no fixed order. Hold them back and write them sorted by name.
+        pending_indexes: list[tuple[str, str]] = []
+
+        def flush_indexes() -> None:
+            ddl_parts.extend(stmt for _, stmt in sorted(pending_indexes))
+            pending_indexes.clear()
 
         def dump(sql, *multiparams, **params):
-            nonlocal ddl_str
-            ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
+            stmt = f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
+            if isinstance(sql, CreateIndex):
+                pending_indexes.append((str(sql.element.name), stmt))
+                return
+            flush_indexes()
+            ddl_parts.append(stmt)
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
@@ -235,14 +250,14 @@ class SQLTableGenerator(Generator):
             if include_comments:
                 if c.abstract:
                     if desc:
-                        ddl_str += f"-- # Abstract Class: {cn} Description: {desc}\n"
+                        ddl_parts.append(f"-- # Abstract Class: {cn} Description: {desc}\n")
                     else:
-                        ddl_str += f"-- # Abstract Class: {cn}\n"
+                        ddl_parts.append(f"-- # Abstract Class: {cn}\n")
                 else:
                     if desc:
-                        ddl_str += f"-- # Class: {cn} Description: {desc}\n"
+                        ddl_parts.append(f"-- # Class: {cn} Description: {desc}\n")
                     else:
-                        ddl_str += f"-- # Class: {cn}\n"
+                        ddl_parts.append(f"-- # Class: {cn}\n")
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:
                 cols = []
@@ -276,7 +291,7 @@ class SQLTableGenerator(Generator):
                         comment_str = f"--     * Slot: {sn}"
                         if desc:
                             comment_str += f" Description: {desc}"
-                        ddl_str += comment_str + "\n"
+                        ddl_parts.append(comment_str + "\n")
                     if s.description:
                         col.comment = s.description
                     cols.append(col)
@@ -315,7 +330,8 @@ class SQLTableGenerator(Generator):
                                 cols.append(annotation_ind)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
-        ddl_str = strip_dangling_whitespace(ddl_str)
+        flush_indexes()
+        ddl_str = strip_dangling_whitespace("".join(ddl_parts))
         if ddl_str[-1:] != "\n":
             ddl_str += "\n"
         return ddl_str
