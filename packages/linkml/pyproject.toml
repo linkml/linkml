@@ -115,7 +115,7 @@ pandera = [
   "pandas"
 ]
 tests-rustgen = [
-  "maturin>=1.15.0"
+  "maturin>=1.16.0"
 ]
 typedb = [
   "typedb-driver>=3.14.0,<4.0",
