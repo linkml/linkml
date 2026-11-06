@@ -5,6 +5,7 @@
       "linkml": "https://w3id.org/linkml/",
       "personinfo": "https://w3id.org/linkml/examples/personinfo/",
       "schema": "http://schema.org/",
+      "shex": "http://www.w3.org/ns/shex#",
       "@vocab": "https://w3id.org/linkml/examples/personinfo/",
       "persons": {
          "@type": "@id",

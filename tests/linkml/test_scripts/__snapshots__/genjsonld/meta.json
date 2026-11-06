@@ -75,6 +75,22 @@
     {
       "prefix_prefix": "qudt",
       "prefix_reference": "http://qudt.org/vocab/quantitykind/"
+    },
+    {
+      "prefix_prefix": "xsd",
+      "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix_prefix": "shex",
+      "prefix_reference": "http://www.w3.org/ns/shex#"
+    },
+    {
+      "prefix_prefix": "core",
+      "prefix_reference": "https://w3id.org/linkml/tests/core/"
+    },
+    {
+      "prefix_prefix": "prov",
+      "prefix_reference": "http://www.w3.org/ns/prov#"
     }
   ],
   "default_curi_maps": [
