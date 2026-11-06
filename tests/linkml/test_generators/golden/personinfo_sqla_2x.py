@@ -238,7 +238,7 @@ class PersonHasNewsEvent(Base):
     __tablename__ = "Person_has_news_event"
 
     Person_id: Mapped[str] = mapped_column(Text(), ForeignKey("Person.id"), primary_key=True)
-    has_news_event_id: Mapped[int] = mapped_column(Integer(), ForeignKey("NewsEvent.id"), primary_key=True)
+    has_news_event_id: Mapped[str] = mapped_column(Text(), ForeignKey("NewsEvent.id"), primary_key=True)
 
     def __repr__(self):
         return f"Person_has_news_event(Person_id={self.Person_id},has_news_event_id={self.has_news_event_id},)"
@@ -266,7 +266,7 @@ class HasNewsEventsHasNewsEvent(Base):
     __tablename__ = "HasNewsEvents_has_news_event"
 
     HasNewsEvents_id: Mapped[int] = mapped_column(Integer(), ForeignKey("HasNewsEvents.id"), primary_key=True)
-    has_news_event_id: Mapped[int] = mapped_column(Integer(), ForeignKey("NewsEvent.id"), primary_key=True)
+    has_news_event_id: Mapped[str] = mapped_column(Text(), ForeignKey("NewsEvent.id"), primary_key=True)
 
     def __repr__(self):
         return f"HasNewsEvents_has_news_event(HasNewsEvents_id={self.HasNewsEvents_id},has_news_event_id={self.has_news_event_id},)"
@@ -308,7 +308,7 @@ class OrganizationHasNewsEvent(Base):
     __tablename__ = "Organization_has_news_event"
 
     Organization_id: Mapped[str] = mapped_column(Text(), ForeignKey("Organization.id"), primary_key=True)
-    has_news_event_id: Mapped[int] = mapped_column(Integer(), ForeignKey("NewsEvent.id"), primary_key=True)
+    has_news_event_id: Mapped[str] = mapped_column(Text(), ForeignKey("NewsEvent.id"), primary_key=True)
 
     def __repr__(self):
         return f"Organization_has_news_event(Organization_id={self.Organization_id},has_news_event_id={self.has_news_event_id},)"
@@ -453,7 +453,7 @@ class NewsEvent(Event):
 
     __tablename__ = "NewsEvent"
 
-    id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(Text(), primary_key=True)
     headline: Mapped[str | None] = mapped_column(Text())
     started_at_time: Mapped[date | None] = mapped_column(Date())
     ended_at_time: Mapped[date | None] = mapped_column(Date())

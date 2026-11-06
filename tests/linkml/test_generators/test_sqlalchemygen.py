@@ -321,7 +321,7 @@ def test_sqla_declarative_exec(schema):
     # p1.aliases_rel = [mod.Person_alias(alias='zzz')]
     p1.aliases.append("Fred")
     p1.has_familial_relationships.append(mod.FamilialRelationship(related_to="P2", type="SIBLING_OF"))
-    news_event = mod.NewsEvent(headline="foo")
+    news_event = mod.NewsEvent(id="N1", headline="foo")
     p1.has_news_events.append(news_event)
     p1.current_address = address
     session.add(p1)
