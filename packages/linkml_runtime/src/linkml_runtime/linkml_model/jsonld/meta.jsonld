@@ -1642,6 +1642,33 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "is_open",
+      "definition_uri": "https://w3id.org/linkml/is_open",
+      "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+      "comments": [
+        "An open enumeration is analogous to the `allow-other=\"yes\"` construct in the OSCAL Metamodel.",
+        "When an enum is open, the permissible value set is not exhaustive - they document the advised, recommended, or expected values but allow values outside the permissible set."
+      ],
+      "in_subset": [
+        "SpecificationSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://pages.nist.gov/metaschema/specification/syntax/constraints/#allow-other",
+        "https://github.com/linkml/linkml/issues/127",
+        "https://github.com/linkml/linkml/pull/3712"
+      ],
+      "status": "testing",
+      "domain": "EnumExpression",
+      "slot_uri": "https://w3id.org/linkml/is_open",
+      "owner": "EnumExpression",
+      "domain_of": [
+        "EnumExpression"
+      ],
+      "range": "boolean",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "enum_uri",
       "definition_uri": "https://w3id.org/linkml/enum_uri",
       "description": "URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas",
@@ -7304,6 +7331,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -7329,6 +7357,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -7434,6 +7463,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -8903,8 +8933,8 @@
   ],
   "metamodel_version": "1.12.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2026-10-02T14:33:00",
-  "source_file_size": 102070,
+  "source_file_date": "2026-10-21T16:04:40",
+  "source_file_size": 103176,
   "@type": "SchemaDefinition",
   "@context": [
     "staging/jsonld/meta.context.jsonld",

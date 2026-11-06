@@ -2972,3 +2972,41 @@ def test_any_of_with_pattern_pyshacl_end_to_end(input_path):
     for value in ('"x1"', '"za"'):
         ok, _ = conforms(f"{prefixes}\nex:t2 a ex:SlotPatternWithAnyOf ; ex:tag {value} .")
         assert not ok, f"tag {value} violates the slot pattern or matches no branch and must be rejected"
+
+
+@pytest.mark.parametrize(
+    ("is_open", "expect_sh_in"),
+    [
+        (False, True),
+        (None, True),
+        (True, False),
+    ],
+)
+def test_open_enum_omits_sh_in_constraint(is_open, expect_sh_in):
+    """An open enum must not emit sh:in membership constraints in SHACL output."""
+    from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("id", identifier=True))
+    sb.add_slot(SlotDefinition("status", range="StatusEnum"))
+    enum_def = EnumDefinition(
+        name="StatusEnum",
+        is_open=is_open,
+        permissible_values={
+            "active": PermissibleValue(text="active"),
+            "inactive": PermissibleValue(text="inactive"),
+        },
+    )
+    sb.schema.enums["StatusEnum"] = enum_def
+    sb.add_class("Record", slots=["id", "status"])
+    sb.add_defaults()
+
+    g = _parse_shacl(sb.schema)
+
+    # sh:in triples appear anywhere in the graph when an enum membership constraint is emitted
+    sh_in_triples = list(g.subject_objects(SH["in"]))
+
+    if expect_sh_in:
+        assert sh_in_triples, "Expected sh:in constraint for closed enum but none found"
+    else:
+        assert not sh_in_triples, f"Expected no sh:in constraint for open enum but found: {sh_in_triples}"
