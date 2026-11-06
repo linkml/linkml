@@ -259,6 +259,25 @@ from it (`format: uri`). Through a JSON-LD context, `@id` values are resolved
 against the base IRI of the document. Give values that may be relative a text type
 such as `FilePath`.
 
+The generated Python classes do not enforce this rule. A dataclass accepts a relative
+`uri` value, because `linkml_runtime.utils.metamodelcore.URI` also types metamodel
+slots such as a schema's `id`, where code passes a bare name that `linkml-lint` rejects.
+A Pydantic model holds the value as a plain string.
+
+Run `linkml-validate` to check that a `uri` value is a URI. Its default JSON Schema
+plugin makes this check, and its Pydantic plugin does not. The check does not say that
+a value is safe to open: `javascript:alert(1)` and `file:///etc/passwd` both pass. It
+follows RFC 3986, so it refuses `https://example.org/é`, as a dataclass does, while a
+Pydantic model and the RDF dumper accept that IRI.
+
+`linkml-validate` leaves `uriorcurie`, `objectidentifier` and `nodeidentifier`
+unchecked, so only the RDF dumper rejects a relative value of those types. It also
+leaves `curie` unchecked, and the RDF dumper writes a `curie` value as a string. A text
+type such as `FilePath` has no syntax check, so `../../etc/passwd` and `two words` pass.
+
+Add a `pattern` to narrow a type's values: for example, `pattern: "^https?://"` on a
+type derived from `uri`. Only JSON Schema validation enforces a pattern on a type.
+
 The RDF loader reads an IRI back as a complete URI for `uri` and the types derived
 from it, and as a CURIE, where the schema declares the prefix, for `uriorcurie`,
 `objectidentifier` and `nodeidentifier`.
