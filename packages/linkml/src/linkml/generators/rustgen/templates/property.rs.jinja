@@ -22,6 +22,9 @@
 {% if hasdefault %}
 #[cfg_attr(feature = "serde", serde(default))]
 {% endif %}
+{% if serde_rename %}
+#[cfg_attr(feature = "serde", serde(rename = "{{ serde_rename }}"))]
+{% endif %}
 {% if alias %}
 #[cfg_attr(feature = "serde", serde(alias = "{{ alias }}"))]
 {% endif %}
