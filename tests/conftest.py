@@ -20,6 +20,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
 from tests.offline_network import install as install_offline_network
+from tests.upstream_failures import OutcomeRecorder, quarantine
 
 KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
@@ -264,6 +265,17 @@ def pytest_addoption(parser):
     parser.addoption(
         "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
     )
+    parser.addoption(
+        "--upstream-outcomes",
+        type=Path,
+        help="write per-test outcomes as JSON to this path (weekly workflow; see tests/upstream_failures.py)",
+    )
+
+
+def pytest_configure(config):
+    outcomes_path = config.getoption("--upstream-outcomes")
+    if outcomes_path:
+        config.pluginmanager.register(OutcomeRecorder(outcomes_path), "upstream-outcomes")
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -296,6 +308,10 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         for item in items:
             if item.get_closest_marker("upstream"):
                 item.add_marker(skip_upstream)
+
+    # Accepted live failures recorded by the weekly workflow become strict xfails
+    # when they run live. Loading the file here also validates it on every run.
+    quarantine(items)
 
     # Group compliance tests on a single xdist worker - they share
     # mutable module-level caches in helper.py that are not safe to split.

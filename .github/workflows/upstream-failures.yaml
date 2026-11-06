@@ -1,0 +1,54 @@
+# Re-runs, live, the tests listed in tests/upstream_failures.yaml whenever a PR
+# changes that file -- normally the weekly metamodel-compat workflow's quarantine
+# PR. Per-PR CI is otherwise fully offline, so this is what makes that PR arrive
+# red: it reproduces the real upstream failure. It goes green once each entry is
+# fixed (entry deleted, test passes live) or accepted (strict xfail still fails).
+#
+# Entries deleted by the PR are included too, so "fixed" is verified, not assumed.
+
+name: Upstream failures
+env:
+  UV_VERSION: "0.11.21"
+on:
+  pull_request:
+    paths:
+      - tests/upstream_failures.yaml
+
+jobs:
+  live-recheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          # Needs the base branch to see entries this PR deletes.
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2.0.2
+
+      - name: Re-run listed tests against the live network
+        run: |
+          mapfile -t TESTS < <(uv run python -m tests.upstream_failures listed --base "origin/${{ github.base_ref }}")
+          if [ "${#TESTS[@]}" -eq 0 ]; then
+            echo "No upstream failures listed."
+            exit 0
+          fi
+          uv run pytest "${TESTS[@]}" --with-network --with-upstream --with-slow --with-biolink -v
