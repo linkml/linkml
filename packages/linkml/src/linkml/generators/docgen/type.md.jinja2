@@ -3,7 +3,7 @@ search:
   boost: {% if element.deprecated %}0.5{% else %}1.0{% endif %}
 ---
 
-{%- if element.title and element.title != element.name %}
+{% if element.title and element.title != element.name %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
     {%- set title = gen.name(element) -%}
@@ -42,9 +42,9 @@ URI: {{ gen.uri_link(element) }}
 | Union Of | {{ gen.links(element.union_of) | join(', ') }} |
 {%- endif %}
 
-{%- set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+{% set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
 
-{%- if has_basic_constraints %}
+{% if has_basic_constraints %}
 ## Value Constraints
 
 | Property | Value |
@@ -57,14 +57,14 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 
 {% endif %}
-{%- set has_advanced_constraints = element.structured_pattern or element.equals_string
+{% set has_advanced_constraints = element.structured_pattern or element.equals_string
     or element.equals_string_in or element.equals_number or element.unit or element.implicit_prefix %}
 
-{%- if has_advanced_constraints %}
+{% if has_advanced_constraints %}
 <details>
 <summary>Additional Constraints</summary>
 
-{%- if element.structured_pattern %}
+{% if element.structured_pattern %}
 **Structured Pattern:**
 
 - **Syntax:** `{{ element.structured_pattern.syntax }}`
@@ -74,19 +74,19 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 {%- endif %}
 
-{%- if element.equals_string %}
+{% if element.equals_string %}
 **Must Equal:** `{{ element.equals_string }}`
 {%- endif %}
 
-{%- if element.equals_string_in %}
+{% if element.equals_string_in %}
 **Must Be One Of:** {{ element.equals_string_in | join(', ') }}
 {%- endif %}
 
-{%- if element.equals_number %}
+{% if element.equals_number %}
 **Must Equal:** {{ element.equals_number }}
 {%- endif %}
 
-{%- if element.unit %}
+{% if element.unit %}
 **Unit:**
 
 | Property | Value |
@@ -117,47 +117,47 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 {%- endif %}
 
-{%- if element.implicit_prefix %}
+{% if element.implicit_prefix %}
 **Implicit Prefix:** {{ element.implicit_prefix }}
 {%- endif %}
 
 </details>
 {% endif %}
 
-{%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of or element.none_of %}
+{% set has_expressions = element.any_of or element.all_of or element.exactly_one_of or element.none_of %}
 
-{%- if has_expressions %}
+{% if has_expressions %}
 <details>
 <summary>Type Expressions</summary>
 
-{%- if element.any_of %}
+{% if element.any_of %}
 **Any Of:** Value must satisfy at least one of these expressions
 
-{%- for expr in element.any_of %}
+{% for expr in element.any_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.all_of %}
+{% if element.all_of %}
 **All Of:** Value must satisfy all of these expressions
 
-{%- for expr in element.all_of %}
+{% for expr in element.all_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.exactly_one_of %}
+{% if element.exactly_one_of %}
 **Exactly One Of:** Value must satisfy exactly one of these expressions
 
-{%- for expr in element.exactly_one_of %}
+{% for expr in element.exactly_one_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.none_of %}
+{% if element.none_of %}
 **None Of:** Value must not satisfy any of these expressions
 
-{%- for expr in element.none_of %}
+{% for expr in element.none_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
