@@ -1,7 +1,7 @@
 """Tests for ``gen-proto`` / ``ProtoGenerator``.
 
-Covers the helpers in isolation plus end-to-end assertions for the eleven
-defects fixed in the proto generator overhaul (see ``ISSUE.md``):
+Covers the helpers in isolation plus end-to-end assertions for eleven
+defects fixed in the proto generator overhaul:
 
   1.  Bare ``package`` line
   2.  Field number 0 / schema mutation via ``slot.rank = 0``
@@ -15,15 +15,22 @@ defects fixed in the proto generator overhaul (see ``ISSUE.md``):
   10. Enum without ``_UNSPECIFIED = 0`` first value
   11. No protoc-compile coverage at all
 
+The wire-format additions have their own sections below: a class reference
+carries the identifier scalar, the identifier takes field 1, ``// required``
+and ``// reference to`` comments, field-number order, and ``rank`` checks.
+
 The snapshot test continues to act as the aggregate regression baseline.
 """
 
+import json
+import logging
 import re
 import subprocess
 import sys
 import textwrap
 
 import pytest
+import yaml
 from click.testing import CliRunner
 
 from linkml.generators.protogen import (
@@ -393,7 +400,12 @@ def test_mixin_class_emitted_so_references_resolve(tmp_path):
 
 
 def test_abstract_class_emitted_so_references_resolve(tmp_path):
-    """Defect #9: abstract classes must also be emitted (proto3 has no abstract)."""
+    """Defect #9: abstract classes must also be emitted (proto3 has no abstract).
+
+    A reference to a class with an identifier becomes the identifier scalar,
+    not the class name, so this checks only that ``message NamedThing {}`` is
+    declared. The reference tests below cover the field type.
+    """
     yaml_text = _schema(
         name="abs_schema",
         body=textwrap.dedent(
@@ -408,11 +420,13 @@ def test_abstract_class_emitted_so_references_resolve(tmp_path):
                 attributes:
                   item:
                     range: NamedThing
+                    inlined: true
             """
         ).strip(),
     )
     out = _gen(yaml_text, tmp_path)
     assert "message NamedThing {" in out
+    # `inlined: true` -> reference is the nested message
     assert "NamedThing item =" in out
 
 
@@ -537,9 +551,9 @@ def test_slot_names_emitted_as_snake_case(slot_name, expected_field, tmp_path):
 
 def test_slot_with_digit_segment_sanitised(tmp_path):
     """A slot name like ``slot with space 1`` produces ``slot_with_space_N1`` —
-    ``_to_proto_ident`` inserts an ``N`` after an underscore-before-digit (the
-    proto3 style guide discourages ``_<digit>``) rather than dropping it, which
-    keeps ``foo_2bar`` distinct from ``foo2bar``."""
+    ``_to_proto_ident`` inserts an ``N`` after any underscore that precedes a
+    digit (proto3 disallows ``_<digit>``), keeping the underscore rather than
+    dropping it so distinct source names stay distinct."""
     yaml_text = _schema(
         name="digit_schema",
         body=textwrap.dedent(
@@ -624,6 +638,612 @@ def test_slot_without_description_emits_no_comment(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# Inlined versus reference
+# A reference to a class resolves to the identifier scalar of the range, not
+# the class name. An inlined slot keeps the class name, a nested message.
+# ---------------------------------------------------------------------------
+
+
+def test_reference_non_inlined_class_ref_uses_identifier_scalar(tmp_path):
+    """A slot with a class range and no ``inlined`` takes the identifier scalar.
+
+    A reference carries only the identifier on the wire, so the field type
+    matches the identifier type of the range class.
+    """
+    yaml_text = _schema(
+        name="ref_ref_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # Reference resolves to `string` (Person.id is string), not `Person`
+    assert "string person =" in out
+    assert "Person person =" not in out
+
+
+def test_reference_inlined_true_keeps_class_reference(tmp_path):
+    """With ``inlined: true`` the field carries the nested message."""
+    yaml_text = _schema(
+        name="ref_inlined_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  person:
+                    range: Person
+                    inlined: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "Person person =" in out
+    # a nested message is not a reference, so it carries no reference comment
+    assert "// reference to" not in out
+
+
+def test_reference_inlined_as_list_keeps_class_reference(tmp_path):
+    """``inlined_as_list: true`` also keeps the class name, as a ``repeated`` field."""
+    yaml_text = _schema(
+        name="ref_inlined_list_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  people:
+                    range: Person
+                    multivalued: true
+                    inlined_as_list: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "repeated Person people =" in out
+
+
+def test_reference_range_without_identifier_forces_inline(tmp_path):
+    """A class with no identifier cannot be referenced, so the slot is inlined.
+
+    The field keeps the class name without an explicit ``inlined: true``,
+    because no identifier could stand in for the object.
+    """
+    yaml_text = _schema(
+        name="ref_no_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Address:
+                attributes:
+                  street:
+                    range: string
+              Container:
+                attributes:
+                  address:
+                    range: Address
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "Address address =" in out
+
+
+def test_reference_identifier_scalar_matches_range_identifier_type(tmp_path):
+    """An ``integer`` identifier makes the reference field an ``int32``."""
+    yaml_text = _schema(
+        name="ref_int_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+                    range: integer
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "int32 person =" in out
+
+
+def test_reference_identifier_inherited_from_parent(tmp_path):
+    """A reference to a subclass uses the identifier slot of its parent.
+
+    The SchemaLoader rolls the inherited identifier into the subclass's own
+    slot list, which is where ``_identifier_slot_for`` looks.
+    """
+    yaml_text = _schema(
+        name="ref_inherited_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              NamedThing:
+                attributes:
+                  id:
+                    identifier: true
+              Person:
+                is_a: NamedThing
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "string person =" in out
+
+
+# ---------------------------------------------------------------------------
+# The identifier slot takes field number 1
+# ---------------------------------------------------------------------------
+
+
+def test_identifier_identifier_slot_pinned_to_field_1(tmp_path):
+    """When no slot has a ``rank``, the identifier slot becomes field 1.
+
+    It leads the message even when the source declares it after other slots,
+    as phenopackets and FHIR proto files have it.
+    """
+    yaml_text = _schema(
+        name="id_id_first_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                  id:
+                    identifier: true
+                  age:
+                    range: integer
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # id is the identifier -> field 1 regardless of source order
+    assert "string id = 1;" in out
+    # Other slots get 2 and 3 in source order, skipping the pinned 1
+    assert "string name = 2;" in out
+    assert "int32 age = 3;" in out
+    # Fields are written in field-number order, so the identifier leads
+    assert out.index("string id = 1;") < out.index("string name = 2;") < out.index("int32 age = 3;")
+
+
+def test_identifier_identifier_emits_comment(tmp_path):
+    """A ``// identifier`` comment is emitted above the identifier field.
+
+    The SchemaLoader treats an identifier slot as required, so the field also
+    carries a ``// required`` comment, after the identifier one.
+    """
+    yaml_text = _schema(
+        name="id_id_comment_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # identifier, then required, then the field itself
+    assert "  // identifier\n  // required\n  string id = 1;" in out
+
+
+def test_identifier_explicit_rank_takes_precedence_over_identifier_pin(tmp_path):
+    """When any slot has a ``rank``, the identifier is not pinned: the author's numbering wins."""
+    yaml_text = _schema(
+        name="id_rank_wins_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                    rank: 1
+                  id:
+                    identifier: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # rank=1 honoured for `name`, identifier `id` gets the next auto slot
+    assert "string name = 1;" in out
+    assert "string id = 2;" in out
+
+
+def test_identifier_no_identifier_no_pin(tmp_path):
+    """A class without an identifier is numbered in source order."""
+    yaml_text = _schema(
+        name="id_no_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Holder:
+                attributes:
+                  a:
+                    range: string
+                  b:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "string a = 1;" in out
+    assert "string b = 2;" in out
+
+
+# ---------------------------------------------------------------------------
+# A required slot carries a `// required` comment
+# ---------------------------------------------------------------------------
+
+
+def test_required_required_slot_gets_required_comment(tmp_path):
+    """A required slot gets a ``// required`` line above its field."""
+    yaml_text = _schema(
+        name="req_required_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                    required: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // required\n  string name =" in out
+
+
+def test_required_unrequired_slot_emits_no_required_comment(tmp_path):
+    """A slot that is not required carries no ``// required`` comment."""
+    yaml_text = _schema(
+        name="req_unrequired_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "// required" not in out
+
+
+def test_reference_key_only_range_stays_nested(tmp_path):
+    """A class with only a ``key`` cannot be referenced, so the field keeps the message type.
+
+    ``SchemaView.is_inlined`` treats a key the same way: a key identifies an
+    object within its container only, not across the data set.
+    """
+    yaml_text = _schema(
+        name="ref_key_only_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Item:
+                attributes:
+                  code:
+                    key: true
+                  label:
+                    range: string
+              Container:
+                attributes:
+                  item:
+                    range: Item
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "Item item =" in out
+    assert "// reference to" not in out
+
+
+def test_reference_reference_comment_names_target_class(tmp_path):
+    """A reference field says which class its identifier scalar points at."""
+    yaml_text = _schema(
+        name="ref_ref_comment_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  person:
+                    range: Person
+                  people:
+                    range: Person
+                    multivalued: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // reference to Person\n  string person =" in out
+    assert "  // reference to Person\n  repeated string people =" in out
+
+
+# ---------------------------------------------------------------------------
+# Field numbers: order of emission and `rank` checks
+# ---------------------------------------------------------------------------
+
+
+def test_fields_emitted_in_field_number_order(tmp_path):
+    """Fields are written in field-number order, not source order."""
+    yaml_text = _schema(
+        name="field_order_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Holder:
+                attributes:
+                  a:
+                    range: string
+                    rank: 3
+                  b:
+                    range: string
+                    rank: 1
+                  c:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert out.index("string b = 1;") < out.index("string c = 2;") < out.index("string a = 3;")
+
+
+def test_duplicate_rank_warns_and_renumbers(tmp_path, caplog):
+    """Two slots with the same ``rank`` would share a field number, which protoc rejects.
+
+    The first keeps its rank; the second is numbered automatically, with a warning.
+    """
+    yaml_text = _schema(
+        name="dup_rank_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                    rank: 3
+                  age:
+                    range: integer
+                    rank: 3
+                  note:
+                    range: string
+            """
+        ).strip(),
+    )
+    with caplog.at_level(logging.WARNING):
+        out = _gen(yaml_text, tmp_path)
+    assert "string name = 3;" in out
+    assert "int32 age = 1;" in out
+    assert "string note = 2;" in out
+    assert "Person.age: rank 3 is already used by name" in caplog.text
+
+
+@pytest.mark.parametrize("rank", [-1, 19000, 19999, 536870912])
+def test_unusable_rank_warns_and_renumbers(rank, tmp_path, caplog):
+    """A ``rank`` outside 1..536870911 or inside the reserved range is not a field number.
+
+    The slot is numbered automatically instead, with a warning.
+    """
+    yaml_text = _schema(
+        name="bad_rank_schema",
+        body=textwrap.dedent(
+            f"""
+            classes:
+              Holder:
+                attributes:
+                  a:
+                    range: string
+                    rank: {rank}
+                  b:
+                    range: string
+            """
+        ).strip(),
+    )
+    with caplog.at_level(logging.WARNING):
+        out = _gen(yaml_text, tmp_path)
+    assert "string a = 1;" in out
+    assert "string b = 2;" in out
+    assert f"Holder.a: rank {rank} is not a usable proto3 field number" in caplog.text
+
+
+def test_slots_sharing_a_field_name_collapse_to_one_field(tmp_path, caplog):
+    """Two slots that sanitise to the same field name yield one field, with a warning.
+
+    The personinfo example spells an inherited ``related_to`` slot ``related
+    to`` in a ``slot_usage``; the SchemaLoader induces a second slot from it.
+    protoc rejects a message that declares a field twice, so the later, more
+    specific slot wins and keeps the earlier slot's field number.
+    """
+    yaml_text = _schema(
+        name="field_clash_schema",
+        body=textwrap.dedent(
+            """
+            slots:
+              started_at:
+              related_to:
+                range: Person
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Relationship:
+                slots:
+                  - started_at
+                  - related_to
+              FamilialRelationship:
+                is_a: Relationship
+                slot_usage:
+                  related to:
+                    range: Person
+                    required: true
+            """
+        ).strip(),
+    )
+    with caplog.at_level(logging.WARNING):
+        out = _gen(yaml_text, tmp_path)
+    body = out[out.index("message FamilialRelationship {") :]
+    body = body[: body.index("}")]
+    assert body.count(" related_to = ") == 1
+    assert "  // required\n  // reference to Person\n  string related_to = 2;" in body
+    assert "FamilialRelationship: slots related_to and related to both map to proto field related_to" in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# --config-file / -C
+# ---------------------------------------------------------------------------
+
+
+def _write_importing_schema(tmp_path):
+    """Write a schema that imports ``people`` from a ``lib`` directory, and return its path.
+
+    The import resolves only through an import map, so the run succeeds only when one is read.
+    """
+    (tmp_path / "lib").mkdir()
+    (tmp_path / "lib" / "people.yaml").write_text(
+        _schema(
+            name="people",
+            body=textwrap.dedent(
+                """
+                classes:
+                  Person:
+                    attributes:
+                      name:
+                        range: string
+                """
+            ).strip(),
+        )
+    )
+    main = _schema(
+        name="main_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Container:
+                attributes:
+                  label:
+                    range: string
+                  people:
+                    range: Person
+                    multivalued: true
+            """
+        ).strip(),
+    ).replace("  - linkml:types", "  - linkml:types\n  - people")
+    schema_path = tmp_path / "main_schema.yaml"
+    schema_path.write_text(main)
+    return schema_path
+
+
+def _write_importmap(path, target) -> str:
+    """Write an import map that sends ``people`` to *target*, and return its path."""
+    path.write_text(json.dumps({"people": str(target)}))
+    return str(path)
+
+
+def _proto_config_yaml(**settings) -> str:
+    """Return a config file in gen-project's format that holds ``settings`` under ``generator_args.proto``."""
+    return yaml.safe_dump({"generator_args": {"proto": settings}}, sort_keys=False)
+
+
+def test_cli_config_file_sets_option(tmp_path):
+    """``importmap`` in the config file resolves the import, as ``--importmap`` does."""
+    schema_path = _write_importing_schema(tmp_path)
+    importmap = _write_importmap(tmp_path / "importmap.json", tmp_path / "lib" / "people")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(importmap=importmap))
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Container {" in result.output
+    assert "message Person {" in result.output
+
+
+def test_cli_option_overrides_config_file(tmp_path):
+    """An explicit ``--importmap`` takes precedence over the one in the config file."""
+    schema_path = _write_importing_schema(tmp_path)
+    good = _write_importmap(tmp_path / "good.json", tmp_path / "lib" / "people")
+    bad = _write_importmap(tmp_path / "bad.json", tmp_path / "missing" / "people")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(importmap=bad))
+
+    result = CliRunner().invoke(cli, ["-C", str(config_path), "--importmap", good, str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Person {" in result.output
+
+
+def test_cli_config_file_without_proto_section_changes_nothing(tmp_path):
+    """A config file without a ``proto`` section gives the same output as no config file."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(MIN_SCHEMA)
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text("generator_args:\n  java:\n    package: org.example\n")
+
+    with_config = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+    without_config = CliRunner().invoke(cli, [str(schema_path)])
+
+    assert with_config.exit_code == 0, with_config.output
+    assert with_config.output == without_config.output
+
+
+def test_cli_config_file_unknown_key_is_ignored_with_warning(tmp_path, caplog):
+    """A key that is not an option of ``gen-proto`` is reported and ignored."""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(_proto_config_yaml(no_such_option=True))
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(MIN_SCHEMA)
+
+    with caplog.at_level(logging.WARNING):
+        result = CliRunner().invoke(cli, ["-C", str(config_path), str(schema_path)])
+
+    assert result.exit_code == 0, result.output
+    assert "message Person {" in result.output
+    assert "ignoring unknown key 'no_such_option'" in caplog.text
+
+
+# ---------------------------------------------------------------------------
 # Defect #11: protoc compilation
 # ---------------------------------------------------------------------------
 
@@ -631,12 +1251,9 @@ def test_slot_without_description_emits_no_comment(tmp_path):
 def test_kitchen_sink_proto_compiles_with_protoc(tmp_path):
     """The generated kitchen_sink proto must compile cleanly with ``protoc``.
 
-    Uses ``grpc_tools.protoc`` (the same Python wrapper as ``uvx --from
-    grpcio-tools``) so no system ``protoc`` binary is required. Skipped if
-    ``grpc_tools`` isn't installed in the test environment.
+    Uses ``grpc_tools.protoc`` from ``grpcio-tools``, a member of the ``tests``
+    dependency group, so no system ``protoc`` binary is required.
     """
-    pytest.importorskip("grpc_tools")
-
     result = CliRunner().invoke(cli, [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
 
@@ -658,3 +1275,118 @@ def test_kitchen_sink_proto_compiles_with_protoc(tmp_path):
     )
     assert completed.returncode == 0, completed.stderr
     assert desc_path.exists() and desc_path.stat().st_size > 0
+
+
+# ---------------------------------------------------------------------------
+# --no-mergeimports
+# ---------------------------------------------------------------------------
+
+
+def _write_import_chain(directory):
+    """Write main.yaml, which imports base.yaml, which imports sub/deep.yaml."""
+    header = "prefixes: {linkml: https://w3id.org/linkml/, ex: https://example.org/}\ndefault_prefix: ex\n"
+    (directory / "sub").mkdir()
+    (directory / "sub" / "deep.yaml").write_text(
+        "id: https://example.org/deep\nname: deep\n" + header + "imports: [linkml:types]\n"
+        "classes:\n  Deep:\n    attributes:\n      depth: {range: integer}\n"
+    )
+    (directory / "base.yaml").write_text(
+        "id: https://example.org/base\nname: Base_Module\n" + header + "imports: [linkml:types, sub/deep]\n"
+        "enums:\n  Colour:\n    permissible_values: {RED: {}}\n"
+        "classes:\n  Thing:\n    attributes:\n"
+        "      id: {identifier: true, range: string}\n"
+        "      deep: {range: Deep, inlined: true}\n"
+    )
+    (directory / "main.yaml").write_text(
+        "id: https://example.org/main\nname: main\n" + header + "imports: [linkml:types, base]\n"
+        "enums:\n  Size:\n    permissible_values: {BIG: {}}\n"
+        "classes:\n  Sub:\n    is_a: Thing\n    attributes:\n"
+        "      colour: {range: Colour}\n"
+        "      size: {range: Size}\n"
+        "      ref: {range: Thing}\n"
+        "      nested: {range: Thing, inlined: true}\n"
+    )
+
+
+def test_no_mergeimports_writes_only_the_schema_given(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml"), mergeimports=False).serialize()
+    assert "message Sub {" in proto
+    assert "enum Size {" in proto
+    assert "message Thing {" not in proto
+    assert "message Deep {" not in proto
+    assert "enum Colour {" not in proto
+
+
+def test_no_mergeimports_imports_what_fields_name(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml"), mergeimports=False).serialize()
+    # The file and package come from the schema's name, not the import's path.
+    # Sub inherits its field of type Deep, so it needs deep.proto, which main never imports.
+    assert re.findall(r'^import "(.+)";$', proto, re.M) == ["Base_Module.proto", "deep.proto"]
+    assert ".base_module.Colour colour" in proto
+    assert ".base_module.Thing nested" in proto
+    assert ".deep.Deep deep" in proto
+    assert "Size size" in proto
+    # A reference travels as the identifier scalar.
+    assert re.search(r"// reference to Thing\n\s+string ref", proto)
+
+
+def test_mergeimports_default_writes_one_file(tmp_path):
+    _write_import_chain(tmp_path)
+    proto = ProtoGenerator(str(tmp_path / "main.yaml")).serialize()
+    assert "import " not in proto
+    assert "message Deep {" in proto
+    assert "enum Colour {" in proto
+    assert "Colour colour" in proto
+    assert ".base_module" not in proto
+
+
+def test_no_mergeimports_with_an_import_map_file(tmp_path):
+    """The schema names come from the import closure that the import map resolves."""
+    schema_path = _write_importing_schema(tmp_path)
+    importmap = _write_importmap(tmp_path / "importmap.json", tmp_path / "lib" / "people")
+    result = CliRunner().invoke(cli, ["--no-mergeimports", "--importmap", importmap, str(schema_path)])
+    assert result.exit_code == 0, result.output
+    assert 'import "people.proto";' in result.output
+    assert "repeated .people.Person people = 2;" in result.output
+    assert "message Person {" not in result.output
+
+
+def test_no_mergeimports_in_memory_schema_uses_the_import_name():
+    base = {"id": "https://example.org/base", "name": "base", "classes": {"Thing": {"tree_root": True}}}
+    schema = {
+        "id": "https://example.org/main",
+        "name": "main",
+        "prefixes": {"ex": "https://example.org/"},
+        "default_prefix": "ex",
+        "default_range": "string",
+        "imports": ["base"],
+        "classes": {"Sub": {"attributes": {"thing": {"range": "Thing", "inlined": True}}}},
+    }
+    proto = ProtoGenerator(yaml.safe_dump(schema), mergeimports=False, importmap={"base": base}).serialize()
+    assert 'import "base.proto";' in proto
+    assert ".base.Thing thing" in proto
+
+
+def test_no_mergeimports_output_compiles_with_protoc(tmp_path):
+    _write_import_chain(tmp_path)
+    protos = tmp_path / "protos"
+    protos.mkdir()
+    files = {"main.yaml": "main.proto", "base.yaml": "Base_Module.proto", "sub/deep.yaml": "deep.proto"}
+    for source, target in files.items():
+        (protos / target).write_text(ProtoGenerator(str(tmp_path / source), mergeimports=False).serialize())
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "grpc_tools.protoc",
+            f"--proto_path={protos}",
+            f"--python_out={tmp_path}",
+            *files.values(),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=protos,
+    )
+    assert result.returncode == 0, result.stderr
