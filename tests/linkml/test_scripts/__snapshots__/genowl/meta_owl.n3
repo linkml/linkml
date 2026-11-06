@@ -11,9 +11,17 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix schema1: <http://schema.org/> .
+dcterms:title a owl:AnnotationProperty .
 xsd:integer a rdfs:Datatype .
 xsd:string a rdfs:Datatype ;
 	owl:equivalentClass _:c14n173 .
+skos:altLabel a owl:AnnotationProperty .
+skos:closeMatch a owl:AnnotationProperty .
+skos:definition a owl:AnnotationProperty .
+skos:exactMatch a owl:AnnotationProperty .
+skos:inScheme a owl:AnnotationProperty .
+skos:mappingRelation a owl:AnnotationProperty .
+sh:order a owl:AnnotationProperty .
 bizcodes:001 a owl:Class ;
 	rdfs:label "HIRE" ;
 	rdfs:subClassOf ks:EmploymentEventType ;
@@ -30,6 +38,8 @@ bizcodes:004 a owl:Class ;
 	rdfs:label "TRANSFER" ;
 	rdfs:subClassOf ks:EmploymentEventType ;
 	skos:definition "transfer internally" .
+biolink:opposite a owl:AnnotationProperty .
+linkml:permissible_values a owl:AnnotationProperty .
 linkml:tests\/core\/Activity a owl:Class ;
 	rdfs:label "activity" ;
 	rdfs:subClassOf _:c14n103 , _:c14n119 , _:c14n132 , _:c14n146 , _:c14n152 , _:c14n155 , _:c14n162 , _:c14n171 , _:c14n191 , _:c14n200 , _:c14n204 , _:c14n210 , _:c14n223 , _:c14n243 , _:c14n246 , _:c14n253 , _:c14n258 , _:c14n59 , _:c14n6 , _:c14n63 , _:c14n68 ;
@@ -432,6 +442,7 @@ ks:employed_at a owl:ObjectProperty ;
 	rdfs:label "employed at" ;
 	rdfs:range ks:Company ;
 	skos:inScheme linkml:tests\/kitchen_sink .
+ks:fallible a owl:AnnotationProperty .
 ks:has_birth_event a owl:ObjectProperty ;
 	rdfs:label "has birth event" ;
 	rdfs:range ks:BirthEvent ;
@@ -490,6 +501,7 @@ ks:metadata a owl:ObjectProperty ;
 ks:mixin_slot_I a owl:DatatypeProperty ;
 	rdfs:label "mixin_slot_I" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
+ks:opinions a owl:AnnotationProperty .
 ks:persons a owl:ObjectProperty ;
 	rdfs:label "persons" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
@@ -500,6 +512,7 @@ ks:procedure a owl:ObjectProperty ;
 ks:related_to a owl:DatatypeProperty ;
 	rdfs:label "related to" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
+ks:resting a owl:AnnotationProperty .
 ks:slot_with_space_1 a owl:DatatypeProperty ;
 	rdfs:label "slot with space 1" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
@@ -534,6 +547,7 @@ ks:tree_slot_C a owl:DatatypeProperty ;
 ks:type a owl:DatatypeProperty ;
 	rdfs:label "type" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
+ks:viewer a owl:AnnotationProperty .
 _:c14n0 rdf:first bizcodes:002 ;
 	rdf:rest _:c14n43 .
 _:c14n1 a owl:Restriction ;

@@ -4,13 +4,15 @@ from typing import Any
 
 from curies import Converter
 from pydantic import BaseModel
-from rdflib import XSD, Graph, URIRef
+from rdflib import Graph, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import value_term
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -101,20 +103,10 @@ class RDFLibDumper(Dumper):
             else:
                 return Literal(element.text)
         if target_type in schemaview.all_types():
-            t = schemaview.get_type(target_type)
-            dt_uri = t.uri
-            if dt_uri:
-                if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
-                    return URIRef(schemaview.expand_curie(element))
-                elif dt_uri == "xsd:string":
-                    return Literal(element)
-                else:
-                    if "xsd" not in namespaces:
-                        namespaces["xsd"] = XSD
-                    return Literal(element, datatype=namespaces.uri_for(dt_uri))
-            else:
-                logger.warning(f"No datatype specified for : {t.name}, using plain Literal")
+            if schemaview.induced_type(target_type).uri is None:
+                logger.warning(f"No datatype specified for : {target_type}, using plain Literal")
                 return Literal(element)
+            return value_term(schemaview, target_type, element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith("_")}
         if len(element_vars) == 0:
             id_slot = schemaview.get_identifier_slot(target_type)
@@ -140,23 +132,42 @@ class RDFLibDumper(Dumper):
             if isinstance(v_or_list, list):
                 vs = v_or_list
             elif isinstance(v_or_list, dict):
-                vs = v_or_list.values()
+                vs = list(v_or_list.values())
             else:
                 vs = [v_or_list]
+            vs = [v for v in vs if v is not None]
+            # Skip slots with no values before resolving the slot: an element may carry
+            # python attributes (e.g. defaults) that are not schema slots, and resolving
+            # those would raise. This mirrors the original per-value loop, which only
+            # touched the schema once it had a value to emit.
+            if not vs:
+                continue
+            if k in slot_name_map:
+                slot_name = slot_name_map[k].name
+            else:
+                logger.error(f"Slot {k} not in name map")
+                slot_name = k
+            slot = schemaview.induced_slot(slot_name, cn)
+            if slot.identifier:
+                continue
+            slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
+            if slot.multivalued and slot.list_elements_ordered:
+                # emit an ordered rdf:List (rdf:first/rdf:rest) so element order is part
+                # of the RDF semantics and survives canonicalization. This applies to
+                # both list- and dict-backed collections: ``vs`` is already in the
+                # correct (insertion) order for either form. See issue #3531.
+                nodes = [self.inject_triples(v, schemaview, graph, slot.range) for v in vs]
+                list_head = BNode()
+                Collection(graph, list_head, nodes)
+                graph.add((element_uri, slot_uri, list_head))
+                if slot.designates_type:
+                    type_added = True
+                continue
             for v in vs:
-                if v is None:
-                    continue
-                if k in slot_name_map:
-                    k = slot_name_map[k].name
-                else:
-                    logger.error(f"Slot {k} not in name map")
-                slot = schemaview.induced_slot(k, cn)
-                if not slot.identifier:
-                    slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
-                    v_node = self.inject_triples(v, schemaview, graph, slot.range)
-                    graph.add((element_uri, slot_uri, v_node))
-                    if slot.designates_type:
-                        type_added = True
+                v_node = self.inject_triples(v, schemaview, graph, slot.range)
+                graph.add((element_uri, slot_uri, v_node))
+                if slot.designates_type:
+                    type_added = True
         if not type_added:
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
