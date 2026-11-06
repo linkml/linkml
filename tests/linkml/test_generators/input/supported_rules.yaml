@@ -1,0 +1,49 @@
+id: https://example.org/supported-rules
+name: supported_rules
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/supported-rules/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  WeatherWind:
+    range: boolean
+    slot_uri: ex:WeatherWind
+  weatherWindValue:
+    range: decimal
+    slot_uri: ex:weatherWindValue
+  Status:
+    range: string
+    slot_uri: ex:Status
+classes:
+  Environment:
+    class_uri: ex:Environment
+    slots:
+      - WeatherWind
+      - weatherWindValue
+    rules:
+      - description: If weatherWindValue is provided, WeatherWind must be true.
+        preconditions:
+          slot_conditions:
+            weatherWindValue:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            WeatherWind:
+              equals_string: "true"
+  Container:
+    class_uri: ex:Container
+    slots:
+      - Status
+    rules:
+      - description: If status is archived, at most one value.
+        preconditions:
+          slot_conditions:
+            Status:
+              equals_string: "archived"
+        postconditions:
+          slot_conditions:
+            Status:
+              maximum_cardinality: 1
