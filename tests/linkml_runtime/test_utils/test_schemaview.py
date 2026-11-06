@@ -4013,3 +4013,42 @@ def test_relative_import_in_url_imported_schema(tmp_path: Path) -> None:
     slots = SchemaView(str(root)).all_slots(imports=True)
     assert "middle_slot" in slots
     assert "leaf_slot" in slots
+
+
+def test_namespaces_not_cached_while_imports_load(tmp_path: Path) -> None:
+    """Import resolution does not cache namespaces() before every import has loaded.
+
+    Repro from #3933: this import order maps the CURIE import ``childns:child`` before
+    ``linkml:types`` has loaded, so a namespaces() result cached at that point lacks
+    ``xsd``, which only ``linkml:types`` declares.
+    """
+    child_dir = tmp_path / "child"
+    child_dir.mkdir()
+    (child_dir / "child.yaml").write_text(
+        "id: https://example.org/child\nname: child\n"
+        "prefixes:\n  linkml: https://w3id.org/linkml/\n  child: https://example.org/child/\n"
+        "default_range: string\ndefault_prefix: child\nimports: [linkml:types]\n"
+        "classes:\n  Thing:\n    class_uri: child:Thing\n    attributes:\n      label:\n        range: string\n"
+    )
+    # as_uri() for the same reason as in test_relative_import_in_url_imported_schema
+    child_ns = child_dir.as_uri() + "/"
+    (tmp_path / "local_helper.yaml").write_text(
+        "id: https://example.org/local-helper\nname: local-helper\n"
+        "prefixes:\n  linkml: https://w3id.org/linkml/\n  helper: https://example.org/helper/\n"
+        f"  childns: {child_ns}\n"
+        "default_range: string\ndefault_prefix: helper\nimports: [linkml:types, childns:child]\n"
+        "classes:\n  HelperThing:\n    class_uri: helper:HelperThing\n"
+    )
+    root = tmp_path / "root.yaml"
+    root.write_text(
+        "id: https://example.org/root\nname: root\n"
+        "prefixes:\n  linkml: https://w3id.org/linkml/\n  root: https://example.org/root/\n"
+        f"  childns: {child_ns}\n"
+        "default_range: string\ndefault_prefix: root\nimports: [linkml:types, childns:child, ./local_helper]\n"
+        "classes:\n  RootThing:\n    is_a: Thing\n"
+    )
+
+    sv = SchemaView(str(root))
+    sv.imports_closure()
+    assert "xsd" in sv.namespaces()
+    assert sv.get_uri(sv.get_type("string"), expand=True) == "http://www.w3.org/2001/XMLSchema#string"

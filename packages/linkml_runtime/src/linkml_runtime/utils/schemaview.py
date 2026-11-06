@@ -379,7 +379,7 @@ class SchemaView:
             from linkml_runtime.loaders.yaml_loader import YAMLLoader
 
             return YAMLLoader().load(mapped, target_class=SchemaDefinition)
-        sname = map_import(importmap, self.namespaces, imp)
+        sname = map_import(importmap, self._loaded_namespaces, imp)
         if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
         else:
@@ -466,7 +466,7 @@ class SchemaView:
         importmap = self._resolved_importmap()
         # an in-memory schema dict has no location of its own, and a mapping hit on sn means an
         # importmap/CURIE entry governs this key; both resolve against the origin schema
-        if isinstance(importmap.get(str(sn)), dict) or map_import(importmap, self.namespaces, sn) != sn:
+        if isinstance(importmap.get(str(sn)), dict) or map_import(importmap, self._loaded_namespaces, sn) != sn:
             return self.load_import(sn)
         importer = self.schema_map.get(importer_sn)
         # without a source_file there is no directory to resolve the import against
@@ -613,6 +613,17 @@ class SchemaView:
         """Return the namespaces present in a schema.
 
         Note: the output of this function will differ, depending on whether any functions that process imports have been run.
+
+        :return: namespaces
+        :rtype: Namespaces
+        """
+        return self._loaded_namespaces()
+
+    def _loaded_namespaces(self) -> Namespaces:
+        """Return the namespaces of the schemas loaded so far, without caching.
+
+        Import resolution calls this rather than :meth:`namespaces`: a cached result taken
+        while imports are still loading would lack the prefixes of the schemas loaded after it.
 
         :return: namespaces
         :rtype: Namespaces
