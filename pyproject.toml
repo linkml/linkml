@@ -1,7 +1,7 @@
 [tool.uv]
 required-version = ">=0.9.17"
 exclude-newer = "7 days"
-constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
+constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=13.0.0,<13.1"]
 
 [tool.uv.workspace]
 members = [
@@ -115,6 +115,7 @@ markers = [
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator",
   "arrays: Array specifications!",
+  "diffable_rdf: tests that exercise the diffable-rdf integration (--diff-stable); run as a canary against linkml in diffable-rdf's own CI",
 ]
 
 # https://docs.astral.sh/ruff/settings/

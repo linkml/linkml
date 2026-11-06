@@ -62,17 +62,18 @@ URI: {{ gen.uri_link(element) }}
 {% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
 
 ## Inheritance
+
 {{ gen.inheritance_tree(element, mixins=True) }}
 {% else %}
 <!-- no inheritance hierarchy -->
 {% endif %}
 
-{%- set has_class_props = element.class_uri or element.tree_root or element.mixin
+{% set has_class_props = element.class_uri or element.tree_root or element.mixin
     or element.subclass_of or element.union_of or element.disjoint_with
     or element.slot_names_unique or element.represents_relationship
     or element.children_are_mutually_disjoint %}
 
-{%- if has_class_props %}
+{% if has_class_props %}
 ## Class Properties
 
 | Property | Value |
@@ -121,7 +122,7 @@ URI: {{ gen.uri_link(element) }}
 {% endfor -%}
 {% endif %}
 
-{%- if element.unique_keys %}
+{% if element.unique_keys %}
 ## Unique Keys
 
 {% for uk in element.unique_keys.values() %}
@@ -135,7 +136,7 @@ Considers null values as inequal
 {% endfor %}
 {% endif %}
 
-{%- if element.defining_slots %}
+{% if element.defining_slots %}
 ## Defining Slots
 
 This class is defined by the following slots:
@@ -145,57 +146,57 @@ This class is defined by the following slots:
 {%- endfor %}
 {% endif %}
 
-{%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of
+{% set has_expressions = element.any_of or element.all_of or element.exactly_one_of
     or element.none_of or element.slot_conditions %}
 
-{%- if has_expressions %}
+{% if has_expressions %}
 <details>
 <summary>Expressions & Logic</summary>
 
-{%- if element.any_of %}
+{% if element.any_of %}
 #### Any Of
 
 The class must satisfy at least one of:
 
-{%- for expr in element.any_of %}
+{% for expr in element.any_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.all_of %}
+{% if element.all_of %}
 #### All Of
 
 The class must satisfy all of:
 
-{%- for expr in element.all_of %}
+{% for expr in element.all_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.exactly_one_of %}
+{% if element.exactly_one_of %}
 #### Exactly One Of
 
 The class must satisfy exactly one of:
 
-{%- for expr in element.exactly_one_of %}
+{% for expr in element.exactly_one_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.none_of %}
+{% if element.none_of %}
 #### None Of
 
 The class must not satisfy any of:
 
-{%- for expr in element.none_of %}
+{% for expr in element.none_of %}
 - {{ expr }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.slot_conditions %}
+{% if element.slot_conditions %}
 #### Slot Conditions
 
-{%- for slot_name, conditions in element.slot_conditions.items() %}
+{% for slot_name, conditions in element.slot_conditions.items() %}
 - **{{ gen.link(slot_name) }}**: {{ conditions }}
 {%- endfor %}
 {%- endif %}

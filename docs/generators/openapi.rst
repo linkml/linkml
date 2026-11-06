@@ -23,6 +23,9 @@ The generator works in two stages:
 2. The generator fills the ``components/schemas`` section with JSON Schema
    definitions generated from the LinkML schema, keeping only those classes
    that are transitively reachable from the endpoints.
+   A reference counts wherever it sits in an endpoint's schema object, so a
+   list endpoint (``type: array`` with the ``$ref`` under ``items``) and a
+   polymorphic one (``oneOf``, ``anyOf``, ``allOf``) seed generation too.
 
 Both the input template and the final output are automatically validated
 against the corresponding OpenAPI specification version using

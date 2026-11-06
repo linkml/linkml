@@ -472,7 +472,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     """
 
     use_curies: bool = False
-    """If true, use class_uri/slot_uri CURIEs instead of calculated URIs."""
+    """If true, use class_uri/slot_uri CURIEs for class definitions and non-identifier
+    slot properties. Identifier properties retain their slot-name aliases so they
+    remain consistent with the JSON-LD ``@id`` alias.
+    """
 
     def __post_init__(self):
         if self.materialize_patterns is not None:
@@ -682,6 +685,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             # Anonymous slot expressions don't carry the underlying slot's `identifier` or
             # `multivalued` flags, so look them up on the schema's slot definition.
             base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            # Identifier slots retain their slot-name alias, matching the direct
+            # class-slot path and the JSON-LD @id context entry.
             if self.use_curies and not (base_slot is not None and base_slot.identifier):
                 prop_name = self._curie(slot)
             else:
@@ -779,8 +784,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            if schema_type.base:
-                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            # Types without an explicit base have no more specific JSON Schema
+            # representation available, so treat them like other unknown bases.
+            base = schema_type.base.lower() if schema_type.base else ""
+            (typ, fmt) = json_schema_types.get(base, ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
@@ -851,6 +858,26 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 constraints.add_keyword("enum", subproperty_values)
 
         return constraints
+
+    def _subschema_for_boolean_member(
+        self, parent_slot: SlotDefinition | AnonymousSlotExpression, member: AnonymousSlotExpression
+    ) -> JsonSchema:
+        # Boolean-combinator members (any_of, all_of, exactly_one_of, none_of) are
+        # anonymous slot expressions that do not carry the parent slot's inlining.
+        # Without it, a member whose range is an identifier-bearing class is reduced
+        # to that identifier's (string) type instead of a $ref to the class. Inherit
+        # the parent's inlining so class-ranged union members are referenced. See #3684.
+        if (
+            member.range is not None
+            and member.range in self.schemaview.all_classes()
+            and member.inlined is None
+            and parent_slot.inlined is not None
+        ):
+            member = deepcopy(member)
+            member.inlined = parent_slot.inlined
+            if member.inlined_as_list is None and parent_slot.inlined_as_list is not None:
+                member.inlined_as_list = parent_slot.inlined_as_list
+        return self.get_subschema_for_slot(member, include_null=False)
 
     def get_subschema_for_slot(
         self,
@@ -967,26 +994,24 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
             bool_subschema["anyOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.any_of]
             )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
             bool_subschema["allOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.all_of]
             )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
             bool_subschema["oneOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.exactly_one_of]
             )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": _deduplicate_subschemas(
-                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
-                )
+                "anyOf": _deduplicate_subschemas([self._subschema_for_boolean_member(slot, s) for s in slot.none_of])
             }
 
         if bool_subschema:
@@ -1024,6 +1049,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         )
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
+        # Identifier properties are the JSON-LD @id alias; never CURIE-key them.
         if self.use_curies and not slot.identifier:
             prop_name = self._curie(slot)
         else:
@@ -1261,7 +1287,8 @@ wins. The top level takes its value from the document's root class.
     default=False,
     show_default=True,
     help="""
-Instead of using the element names, use the corresponding CURIEs, based on the corresponding class_uri/slot_uri
+Use CURIEs based on class_uri/slot_uri for class definitions and non-identifier slot properties.
+Identifier properties retain their slot-name aliases to match the JSON-LD @id alias.
 """,
 )
 @click.option(

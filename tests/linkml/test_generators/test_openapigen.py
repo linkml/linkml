@@ -772,6 +772,76 @@ def template_head(oas_version: str = DEFAULT_OAS_VERSION) -> str:
     )
 
 
+# Each nested-reference shape gets its own single-endpoint template, so no shape can
+# pass because another endpoint already referenced its resources.
+NESTED_REF_SHAPES = {
+    # A list endpoint: the resource sits under ``items`` of an array response.
+    "items": (
+        """\
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+""",
+        ["Person"],
+    ),
+    # A polymorphic response: the resources are members of ``oneOf``.
+    "oneOf": (
+        """\
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/MarriageEvent'
+                  - $ref: '#/components/schemas/MedicalEvent'
+""",
+        ["MarriageEvent", "MedicalEvent"],
+    ),
+    # A request body that wraps its resource in ``allOf``.
+    "allOf": (
+        """\
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Company'
+      responses:
+        '201':
+          description: Created
+""",
+        ["Company"],
+    ),
+}
+
+
+def template_nested_ref(shape: str, oas_version: str = DEFAULT_OAS_VERSION) -> str:
+    """Compose a one-endpoint template that references its resources only under ``shape``.
+
+    :param shape: a key of ``NESTED_REF_SHAPES``
+    :param oas_version: the OpenAPI version the template advertises
+    """
+    operation, classes = NESTED_REF_SHAPES[shape]
+    return openapi_template(
+        "LinkML tests",
+        endpoints="  /api/things:\n" + operation,
+        schemas=schema_stubs([(name, KITCHEN_SINK_ID, name) for name in classes]),
+        oas_version=oas_version,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Helpers to feed LinkML schemas / OpenAPI templates to the generator
 # ---------------------------------------------------------------------------
@@ -1350,6 +1420,25 @@ def test_dangling_reference_reports_all(tmp_path, kitchen_sink_path, oas_version
     message = str(exc_info.value)
     assert "#/components/schemas/Foo" in message
     assert "#/components/schemas/Bar" in message
+
+
+@pytest.mark.parametrize("shape", list(NESTED_REF_SHAPES))
+def test_nested_references_seed_generation(tmp_path, kitchen_sink_path, oas_version, shape):
+    """Test that a ``$ref`` below the top level of an endpoint schema seeds generation.
+
+    The template's only endpoint refers to its resources under ``items``, ``oneOf``
+    or ``allOf``, never with a top-level ``$ref``. Each resource must be generated
+    from the LinkML class rather than pruned as unreferenced, which would leave a
+    dangling ``$ref``, and the endpoint schema must be kept as written.
+    """
+    template = template_nested_ref(shape, oas_version=oas_version)
+    head_path = write_template(tmp_path, template)
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    for name in NESTED_REF_SHAPES[shape][1]:
+        assert "properties" in schemas[name], f"{name} was not generated"
+    expected_paths = yaml.safe_load(template)["paths"]
+    assert spec["paths"]["/api/things"] == expected_paths["/api/things"]
 
 
 def test_refs_to_non_schema_components_allowed(tmp_path, kitchen_sink_path, oas_version):
