@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 import yaml
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.jsonschemagen import JsonSchema, JsonSchemaGenerator, style_def_name
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
@@ -25,6 +25,7 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders import yaml_loader
 from tests.linkml.test_generators.test_pythongen import make_python
+from tests.linkml.utils.jsonschema_refs import all_refs
 
 logger = logging.getLogger(__name__)
 
@@ -2079,3 +2080,251 @@ classes:
     generated = json.loads(JsonSchemaGenerator(str(schema_file)).serialize())
 
     assert generated["$defs"]["MyClass"]["properties"]["value"]["type"] == ["string", "null"]
+
+
+DRAFT_SCHEMA = """
+id: https://example.org/draft-test
+name: draft-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      items:
+        range: Item
+        multivalued: true
+        inlined_as_list: true
+  Item:
+    attributes:
+      id:
+        identifier: true
+      kind:
+        range: ItemKind
+enums:
+  ItemKind:
+    permissible_values:
+      small:
+      large:
+"""
+
+
+@pytest.mark.parametrize(
+    "draft,validator_class",
+    [
+        (None, jsonschema.Draft201909Validator),
+        ("2019-09", jsonschema.Draft201909Validator),
+        ("2020-12", jsonschema.Draft202012Validator),
+    ],
+)
+def test_draft_sets_schema_dialect(tmp_path, draft, validator_class):
+    """``draft`` changes ``$schema``, and the declared dialect validates the same instances."""
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    kwargs = {} if draft is None else {"draft": draft}
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), **kwargs).serialize())
+
+    assert jsonschema.validators.validator_for(generated) is validator_class
+    validator_class.check_schema(generated)
+    validator = validator_class(generated)
+    assert validator.is_valid({"items": [{"id": "i1", "kind": "small"}]})
+    assert not validator.is_valid({"items": [{"id": "i1", "kind": "medium"}]})
+    assert not validator.is_valid({"items": [{"kind": "small"}]})
+
+
+def test_draft_output_differs_only_in_schema_keyword(tmp_path):
+    """The two dialects produce the same document apart from ``$schema``."""
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    by_draft = {
+        draft: json.loads(JsonSchemaGenerator(str(schema_file), draft=draft).serialize())
+        for draft in ("2019-09", "2020-12")
+    }
+
+    assert by_draft["2020-12"].pop("$schema") == "https://json-schema.org/draft/2020-12/schema"
+    assert by_draft["2019-09"].pop("$schema") == "https://json-schema.org/draft/2019-09/schema"
+    assert by_draft["2019-09"] == by_draft["2020-12"]
+
+
+def test_draft_unknown_value_raises(tmp_path):
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    with pytest.raises(ValueError, match="Unknown JSON Schema draft"):
+        JsonSchemaGenerator(str(schema_file), draft="draft-07")
+
+
+DEF_NAME_STYLE_SCHEMA = """
+id: https://example.org/def-name-style
+name: def-name-style
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/def-name-style/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+classes:
+  ControlRequirement:
+    tree_root: true
+    attributes:
+      details:
+        range: ControlDetail
+        multivalued: true
+        inlined: true
+      interface:
+        range: node_interface
+        inlined: true
+  ControlDetail:
+    attributes:
+      id:
+        identifier: true
+      unit:
+        range: RateUnit
+  node_interface:
+    attributes:
+      host:
+enums:
+  RateUnit:
+    permissible_values:
+      second:
+      minute:
+"""
+
+
+@pytest.mark.parametrize(
+    "style,expected",
+    [
+        ("CamelCase", ["ControlDetail", "ControlRequirement", "NodeInterface", "RateUnit"]),
+        ("camelCase", ["controlDetail", "controlRequirement", "nodeInterface", "rateUnit"]),
+        ("snake_case", ["control_detail", "control_requirement", "node_interface", "rate_unit"]),
+        ("kebab-case", ["control-detail", "control-requirement", "node-interface", "rate-unit"]),
+        ("preserve", ["ControlDetail", "ControlRequirement", "RateUnit", "node_interface"]),
+    ],
+)
+def test_def_name_style_keys_and_refs_agree(tmp_path, style, expected):
+    """``def_name_style`` names every definition, and every ``$ref`` points at one of them."""
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), def_name_style=style).serialize())
+
+    lax_key = expected[0] + JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX
+    assert sorted(generated["$defs"]) == sorted(expected + [lax_key])
+    refs = all_refs(generated)
+    assert f"#/$defs/{lax_key}" in refs
+    for ref in refs:
+        assert ref.removeprefix("#/$defs/") in generated["$defs"]
+    # Property names keep their own rules.
+    assert set(generated["$defs"][expected[0]]["properties"]) == {"id", "unit"}
+
+    validator = jsonschema.Draft201909Validator(generated)
+    assert validator.is_valid({"details": {"c1": {"unit": "second"}}, "interface": {"host": "h"}})
+    assert not validator.is_valid({"details": {"c1": {"unit": "hour"}}})
+
+
+@pytest.mark.parametrize(
+    "preserve_names,explicit_style",
+    [(False, "CamelCase"), (True, "preserve")],
+)
+def test_def_name_style_unset_follows_preserve_names(tmp_path, preserve_names, explicit_style):
+    """With ``def_name_style`` unset, default output is unchanged: CamelCase, or preserve under ``preserve_names``."""
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
+    unset = JsonSchemaGenerator(str(schema_file), preserve_names=preserve_names).serialize()
+    explicit = JsonSchemaGenerator(
+        str(schema_file), preserve_names=preserve_names, def_name_style=explicit_style
+    ).serialize()
+
+    assert unset == explicit
+
+
+@pytest.mark.parametrize(
+    "style,enum_keys",
+    [(None, {"RateUnit", "IntervalKind"}), ("kebab-case", {"rate-unit", "interval-kind"})],
+)
+def test_def_name_style_with_use_curies(tmp_path, style, enum_keys):
+    """Class definitions stay keyed by CURIE under ``use_curies``. Enums take the style, and so do refs to them."""
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(
+        DEF_NAME_STYLE_SCHEMA.replace(
+            "        range: RateUnit\n", "        range: RateUnit\n      kind:\n        range: interval_kind\n"
+        )
+        + "  interval_kind:\n    permissible_values:\n      fixed:\n"
+    )
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), use_curies=True, def_name_style=style).serialize())
+
+    assert {"ex:ControlDetail", "ex:ControlRequirement", "ex:NodeInterface"} | enum_keys <= set(generated["$defs"])
+    for ref in all_refs(generated):
+        assert ref.removeprefix("#/$defs/") in generated["$defs"]
+
+
+def test_def_name_style_unknown_value_raises(tmp_path):
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
+    with pytest.raises(ValueError, match="Unknown definition name style"):
+        JsonSchemaGenerator(str(schema_file), def_name_style="Title Case")
+
+
+@pytest.mark.parametrize(
+    "name,style,expected",
+    [
+        ("control detail", "CamelCase", "ControlDetail"),
+        ("ControlDetail", "camelCase", "controlDetail"),
+        ("HTTP server", "camelCase", "httpServer"),
+        ("ControlID", "snake_case", "control_id"),
+        ("control detail", "snake_case", "control_detail"),
+        ("HTTPServer2Config", "kebab-case", "http-server2-config"),
+        ("node_interface", "kebab-case", "node-interface"),
+        ("node_interface", "preserve", "node_interface"),
+    ],
+)
+def test_style_def_name(name, style, expected):
+    """The styles split names into words at case changes, spaces, underscores and hyphens."""
+    assert style_def_name(name, style) == expected
+
+
+def test_style_def_name_unknown_style_raises():
+    with pytest.raises(ValueError, match="Unknown definition name style"):
+        style_def_name("ControlDetail", "Title Case")
+
+
+DEF_NAME_COLLISION_SCHEMA = """
+id: https://example.org/def-name-collision
+name: def-name-collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  HttpServer:
+    attributes:
+      port:
+        range: integer
+  HTTPServer:
+    attributes:
+      host:
+"""
+
+
+@pytest.mark.parametrize("style", ["snake_case", "kebab-case"])
+def test_def_name_style_collision_raises(tmp_path, style):
+    """The generator raises when two names give one key, rather than let one definition silently replace the other."""
+    schema_file = tmp_path / "def_name_collision.yaml"
+    schema_file.write_text(DEF_NAME_COLLISION_SCHEMA)
+
+    assert {"HttpServer", "HTTPServer"} <= set(json.loads(JsonSchemaGenerator(str(schema_file)).serialize())["$defs"])
+    with pytest.raises(ValueError, match=r"'HttpServer' and 'HTTPServer' would share the \$defs key"):
+        JsonSchemaGenerator(str(schema_file), def_name_style=style).serialize()
+
+
+def test_def_name_style_survives_another_generator(tmp_path):
+    """Naming options apply when generating, so a generator constructed in between cannot change them."""
+    schema_file = tmp_path / "def_name_style.yaml"
+    schema_file.write_text(DEF_NAME_STYLE_SCHEMA)
+    kebab = JsonSchemaGenerator(str(schema_file), def_name_style="kebab-case")
+    JsonSchemaGenerator(str(schema_file), preserve_names=True)
+
+    assert "control-detail" in json.loads(kebab.serialize())["$defs"]
