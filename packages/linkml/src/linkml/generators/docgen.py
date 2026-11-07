@@ -303,7 +303,7 @@ class DocGenerator(Generator):
         self.logger.debug("Processing Subsets...")
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
-            if self._is_external(c):
+            if self._is_external(s):
                 continue
             n = self.name(s)
             self.logger.debug(f"  Generating doc for {n}")

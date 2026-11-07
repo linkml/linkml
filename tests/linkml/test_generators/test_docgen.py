@@ -1733,6 +1733,27 @@ classes:
     assert_mdfile_does_not_contain(subset_file, "# Class:")
 
 
+def test_subset_page_in_schema_without_classes(tmp_path):
+    """A schema with a subset and no classes gets a subset page, not ``UnboundLocalError``."""
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+subsets:
+  basic:
+    description: A subset in a schema with no classes.
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    assert_mdfile_contains(tmp_path / "basic.md", "# Subset: basic")
+
+
 TABLE_SEPARATOR = re.compile(r"^\|(\s*:?-{3,}:?\s*\|)+\s*$")
 LIST_ITEM = re.compile(r"^\s*([-*]|\d+\.) ")
 
