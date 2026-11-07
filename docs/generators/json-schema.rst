@@ -387,6 +387,21 @@ With ``--no-include-null`` the optional string slot above is emitted as
 validation. The default (``--include-null``) preserves the previous behaviour.
 
 
+Dialect
+^^^^^^^
+
+The generated document declares JSON Schema draft 2019-09 in ``$schema`` by
+default. Use ``--draft 2020-12`` to declare draft 2020-12 instead:
+
+.. code:: bash
+
+   gen-json-schema --draft 2020-12 personinfo.yaml
+
+Only ``$schema`` changes, because the generator uses only keywords that mean
+the same in both drafts. ``linkml-validate`` reads ``$schema`` and validates
+with the matching dialect.
+
+
 Patterns
 ^^^^^^^^
 

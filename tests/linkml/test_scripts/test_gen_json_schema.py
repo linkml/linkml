@@ -117,3 +117,25 @@ def test_include_null_cli_option(flag, expected_opt, expected_opt_multi, tmp_pat
     assert props["opt_multi"]["type"] == expected_opt_multi
     # required scalar slot is unaffected by the flag
     assert props["req"]["type"] == "string"
+
+
+@pytest.mark.parametrize(
+    "arguments,expected",
+    [
+        ([], "https://json-schema.org/draft/2019-09/schema"),
+        (["--draft", "2019-09"], "https://json-schema.org/draft/2019-09/schema"),
+        (["--draft", "2020-12"], "https://json-schema.org/draft/2020-12/schema"),
+    ],
+)
+def test_draft_option(arguments, expected, input_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, arguments + [str(input_path("roottest.yaml"))])
+    assert result.exit_code == 0
+    assert json.loads(result.output)["$schema"] == expected
+
+
+def test_draft_option_rejects_unknown(input_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--draft", "draft-07", str(input_path("roottest.yaml"))])
+    assert result.exit_code != 0
+    assert "Invalid value for '--draft'" in result.output
