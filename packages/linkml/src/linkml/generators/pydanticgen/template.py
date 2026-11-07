@@ -198,7 +198,21 @@ class PydanticAttribute(PydanticTemplateModel):
     predefined: str | None = None
     """Fixed string to use in body of field"""
     range: str | None = None
-    """Type annotation used for model field"""
+    """
+    Type annotation used for model field.
+
+    The template wraps it in the collection (see :attr:`.collection`) and in ``Optional`` unless the
+    slot is required, so for a multivalued slot this is the annotation of a single value.
+    """
+    collection: Literal["list", "dict"] | None = None
+    """How the values of a multivalued slot are collected, when the template renders it"""
+    collection_key: str | None = None
+    """Type of the keys when :attr:`.collection` is ``"dict"``"""
+    simple_dict_value: str | None = None
+    """
+    When the values of a ``dict`` collection are inlined as a simple dict, the annotation of the simple value.
+    The collection then accepts that value or the object form given in :attr:`.range`.
+    """
     title: str | None = None
     description: str | None = None
     equals_number: int | float | None = None
@@ -223,9 +237,24 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
-            if self.empty_list_for_multivalued_slots and self.range and self.range.startswith("Optional[list"):
+            if self.empty_list_for_multivalued_slots and self.collection == "list" and not self.required:
                 return "[]"
             return "None"
+
+    @computed_field
+    def annotated_field(self) -> bool:
+        """
+        Whether the value constraints go in an ``Annotated`` marker on the values instead of in the ``Field``.
+
+        On the ``Field`` of a collection they would apply to the collection itself, which pydantic rejects.
+        """
+        has_constraints = any(
+            value is not None for value in (self.equals_number, self.minimum_value, self.maximum_value)
+        )
+        has_simple_values = self.collection == "list" or (
+            self.collection == "dict" and self.simple_dict_value is not None
+        )
+        return has_constraints and has_simple_values
 
     @model_validator(mode="after")
     def alias_python_keywords(self) -> Self:

@@ -637,21 +637,24 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             else:
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
-                result.attribute.range = f"list[{result.attribute.range}]"
+                result.attribute.collection = "list"
             else:
+                result.attribute.collection = "dict"
+                result.attribute.collection_key = collection_key
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
-                    # so we specify either that identifier or the range itself
-                    if simple_dict_value != result.attribute.range:
-                        simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
-                    result.attribute.range = f"dict[str, {simple_dict_value}]"
-                else:
-                    result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
-        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
-            result.attribute.range = f"Optional[{result.attribute.range}]"
+                    # so the template accepts either that identifier or the range itself
+                    result.attribute.simple_dict_value = simple_dict_value
+                    result.attribute.collection_key = "str"
+            if result.attribute.annotated_field:
+                annotated = Import(module="typing", objects=[ObjectImport(name="Annotated")])
+                result.imports = (result.imports if result.imports is not None else Imports()) + annotated
+        if slot.designates_type:
+            # a type designator always holds its predefined value, so it is never rendered as Optional
+            result.attribute.required = True
         return result
 
     @property
