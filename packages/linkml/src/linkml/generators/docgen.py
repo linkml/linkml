@@ -176,6 +176,9 @@ class DocGenerator(Generator):
     preserve_names: bool = False
     """If true, preserve LinkML element names in docs instead of camelcase/underscore."""
 
+    _page_names: dict[tuple[str, str], str] | None = field(default=None, init=False, repr=False)
+    """Page file names, keyed by element kind and name; see ``_assign_page_names``."""
+
     def __post_init__(self):
         dialect = self.dialect
         if dialect is not None:
@@ -244,6 +247,7 @@ class DocGenerator(Generator):
             "diagram_type": self.diagram_type.value if self.diagram_type else None,
             "include_top_level_diagram": self.include_top_level_diagram,
         }
+        self._page_names = None
         self.logger.debug("Processing Index")
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
@@ -251,64 +255,101 @@ class DocGenerator(Generator):
         if self._is_single_file_format(self.format):
             self.logger.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
-        self.logger.debug("Processing Schemas...")
-        template = self._get_template("schema")
-        for schema_name in sv.imports_closure():
-            self.logger.debug(f"  Generating doc for {schema_name}")
-            imported_schema = sv.schema_map.get(schema_name)
-            out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
-            self._write(
-                out_str,
-                f"{directory}/{SCHEMA_SUBFOLDER}" if self.subfolder_type_separation else directory,
-                imported_schema.name,
-            )
-        self.logger.debug("Processing Classes...")
-        template = self._get_template("class")
-        for cn, c in sv.all_classes().items():
-            if self._is_external(c):
-                continue
-            n = self.name(c)
-            self.logger.debug(f"  Generating doc for {n}")
-            out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
-            self._write(out_str, f"{directory}/{CLASS_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
-        self.logger.debug("Processing Slots...")
-        template = self._get_template("slot")
-        for sn, s in sv.all_slots().items():
-            if self._is_external(s):
-                continue
-            n = self.name(s)
-            self.logger.debug(f"  Generating doc for {n}")
-            s = sv.induced_slot(sn)
-            out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, f"{directory}/{SLOT_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
-        self.logger.debug("Processing Enums...")
-        template = self._get_template("enum")
-        for en, e in sv.all_enums().items():
-            if self._is_external(e):
-                continue
-            n = self.name(e)
-            self.logger.debug(f"  Generating doc for {n}")
-            out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
-            self._write(out_str, f"{directory}/{ENUM_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
-        self.logger.debug("Processing Types...")
-        template = self._get_template("type")
-        for tn, t in sv.all_types().items():
-            if self._exclude_type(t):
-                continue
-            n = self.name(t)
-            self.logger.debug(f"  Generating doc for {n}")
-            t = sv.induced_type(tn)
-            out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
-            self._write(out_str, f"{directory}/{TYPE_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
-        self.logger.debug("Processing Subsets...")
-        template = self._get_template("subset")
-        for _, s in sv.all_subsets().items():
-            if self._is_external(s):
-                continue
-            n = self.name(s)
-            self.logger.debug(f"  Generating doc for {n}")
-            out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
-            self._write(out_str, f"{directory}/{SUBSET_SUBFOLDER}" if self.subfolder_type_separation else directory, n)
+        for kind, elements in self._documented_elements():
+            self.logger.debug(f"Processing {kind} pages...")
+            template = self._get_template(kind)
+            subfolder = self._page_subfolder(kind)
+            for e in elements:
+                n = self.page_name(e)
+                self.logger.debug(f"  Generating doc for {n}")
+                if kind == "slot":
+                    e = sv.induced_slot(e.name)
+                elif kind == "type":
+                    e = sv.induced_type(e.name)
+                if kind == "schema":
+                    out_str = template.render(gen=self, schema=e, schemaview=sv, **template_vars)
+                else:
+                    out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
+                self._write(out_str, f"{directory}/{subfolder}" if subfolder else directory, n)
+
+    def _documented_elements(self) -> Iterator[tuple[str, list[Element]]]:
+        """Yield each kind of page with its elements; modules come last, as no page links to them.
+
+        :return: pairs of template kind (``schema``, ``class``, ...) and element list
+        """
+        sv = self.schemaview
+        yield "class", [c for c in sv.all_classes().values() if not self._is_external(c)]
+        yield "slot", [s for s in sv.all_slots().values() if not self._is_external(s)]
+        yield "enum", [e for e in sv.all_enums().values() if not self._is_external(e)]
+        yield "type", [t for t in sv.all_types().values() if not self._exclude_type(t)]
+        yield "subset", [s for s in sv.all_subsets().values() if not self._is_external(s)]
+        yield "schema", [sv.schema_map.get(schema_name) for schema_name in sv.imports_closure()]
+
+    def _page_subfolder(self, kind: str) -> str:
+        """Return the subfolder that holds pages of one kind, or ``""`` in the flat layout.
+
+        :param kind: template kind, such as ``class`` or ``slot``
+        :return: subfolder name
+        """
+        if not self.subfolder_type_separation:
+            return ""
+        return {
+            "schema": SCHEMA_SUBFOLDER,
+            "class": CLASS_SUBFOLDER,
+            "slot": SLOT_SUBFOLDER,
+            "enum": ENUM_SUBFOLDER,
+            "type": TYPE_SUBFOLDER,
+            "subset": SUBSET_SUBFOLDER,
+        }[kind]
+
+    @staticmethod
+    def _page_kind(element: Element) -> str:
+        """Return the template kind of an element, such as ``class`` for a class definition.
+
+        >>> DocGenerator._page_kind(SlotDefinition("index"))
+        'slot'
+
+        :param element: schema element or schema
+        :return: template kind
+        """
+        return type(element).class_name.removesuffix("_definition")
+
+    def _assign_page_names(self) -> dict[tuple[str, str], str]:
+        """Give each page a file name no earlier page in its folder has taken, ignoring case.
+
+        A later page gets its kind as a suffix, such as ``Asset-slot``, and a warning.
+
+        :return: page file name, without suffix, keyed by element kind and element name
+        """
+        taken = {("", self.index_name.casefold()): "the index"}
+        names = {}
+        for kind, elements in self._documented_elements():
+            folder = self._page_subfolder(kind)
+            for e in elements:
+                wanted = self.name(e) if kind != "schema" else e.name
+                n = wanted
+                suffix = 1
+                while (folder, n.casefold()) in taken:
+                    n = f"{wanted}-{kind}" if suffix == 1 else f"{wanted}-{kind}-{suffix}"
+                    suffix += 1
+                if n != wanted:
+                    self.logger.warning(
+                        f"{kind} {e.name} would share the page {wanted} with "
+                        f"{taken[(folder, wanted.casefold())]}; writing it to {n} instead"
+                    )
+                taken[(folder, n.casefold())] = f"{kind} {e.name}"
+                names[(kind, e.name)] = n
+        return names
+
+    def page_name(self, element: Element) -> str:
+        """Return the file name, without suffix, of the page that documents an element.
+
+        :param element: schema element or schema
+        :return: page file name
+        """
+        if self._page_names is None:
+            self._page_names = self._assign_page_names()
+        return self._page_names.get((self._page_kind(element), element.name), self.name(element))
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -496,17 +537,19 @@ class DocGenerator(Generator):
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
                     return self._markdown_link(
-                        n=curie.split(":")[1],
+                        n=self.page_name(e),
                         name=e.name,
                         subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                self.name(e),
+                self.page_name(e),
+                name=self.name(e),
                 subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(
-                self.name(e),
+                self.page_name(e),
+                name=self.name(e),
                 subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SlotDefinition):
@@ -514,22 +557,25 @@ class DocGenerator(Generator):
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
                     return self._markdown_link(
-                        n=curie.split(":")[1],
+                        n=self.page_name(e),
                         name=e.name,
                         subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                self.name(e),
+                self.page_name(e),
+                name=self.name(e),
                 subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(
-                self.name(e),
+                self.page_name(e),
+                name=self.name(e),
                 subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SubsetDefinition):
             return self._markdown_link(
-                self.name(e),
+                self.page_name(e),
+                name=self.name(e),
                 subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
             )
         else:
