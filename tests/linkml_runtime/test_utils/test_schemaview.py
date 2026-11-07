@@ -3228,6 +3228,65 @@ classes:
     assert view.modifications == 0
 
 
+@pytest.mark.parametrize("slot_name", ["name", "inherited"])
+def test_induced_slot_keeps_its_schema_when_slot_usage_is_in_another(tmp_path: Path, slot_name: str) -> None:
+    """A slot_usage in another schema refines an induced slot, which still belongs to the schema that defines it.
+
+    The slot keeps that schema's URI. A structured pattern in the slot_usage still resolves with the settings of the
+    schema that holds the slot_usage.
+    """
+    (tmp_path / "base.yaml").write_text(
+        """
+id: https://example.org/base
+name: base
+prefixes:
+  b: https://example.org/b/
+default_prefix: b
+settings:
+  word: "[a-z]+"
+slots:
+  name: {}
+classes:
+  Parent:
+    attributes:
+      inherited: {}
+"""
+    )
+    root_schema = tmp_path / "main.yaml"
+    root_schema.write_text(
+        f"""
+id: https://example.org/main
+name: main
+prefixes:
+  m: https://example.org/m/
+default_prefix: m
+imports:
+  - base
+settings:
+  word: "[0-9]+"
+classes:
+  Person:
+    is_a: Parent
+    slots:
+      - name
+    slot_usage:
+      {slot_name}:
+        required: true
+        structured_pattern:
+          syntax: "{{word}}"
+          interpolated: true
+"""
+    )
+    view = SchemaView(root_schema)
+
+    induced = view.induced_slot(slot_name, "Person")
+
+    assert view.get_uri(induced) == f"b:{slot_name}"
+    assert induced.from_schema == "https://example.org/base"
+    assert induced.required is True
+    assert induced.pattern == "^(?:[0-9]+)$"
+
+
 def test_induced_attribute_resolves_pattern_without_schema_slot() -> None:
     """Verify that pattern resolution works on an attribute when no schema-level slot
     definition exists."""
