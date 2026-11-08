@@ -1,4 +1,5 @@
 import abc
+import json
 import re
 from abc import ABC
 from typing import Any, TypeAlias
@@ -68,7 +69,7 @@ class IfAbsentProcessor(ABC):
     See `<https://w3id.org/linkml/ifabsent>`_.
     """
 
-    ifabsent_regex = re.compile(r"""(?:(?P<type>\w+)\()?[\"\']?(?P<default_value>[^\(\)\"\')]*)[\"\']?\)?""")
+    ifabsent_regex = re.compile(r"(?P<type>\w+)\((?P<default_value>.*)\)", re.DOTALL)
 
     URI_SPECIAL_CASES = ("class_uri", "slot_uri")
     CURIE_SPECIAL_CASES = ("class_curie", "slot_curie")
@@ -80,8 +81,15 @@ class IfAbsentProcessor(ABC):
 
     def process_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> str | None:
         if slot.ifabsent:
-            ifabsent_match = self.ifabsent_regex.search(slot.ifabsent)
-            ifabsent_default_value = ifabsent_match.group("default_value")
+            ifabsent_default_value = slot.ifabsent
+            if ifabsent_match := self.ifabsent_regex.fullmatch(ifabsent_default_value):
+                ifabsent_default_value = ifabsent_match.group("default_value")
+            if (
+                len(ifabsent_default_value) >= 2
+                and ifabsent_default_value[0] == ifabsent_default_value[-1]
+                and ifabsent_default_value[0] in "\"'"
+            ):
+                ifabsent_default_value = ifabsent_default_value[1:-1]
             return self._map_to_default_value(slot, ifabsent_default_value, cls)
 
         return None
@@ -362,8 +370,7 @@ class IfAbsentProcessor(ABC):
         return self.schema_view.namespaces().curie_for(uri, True, True) or self._strval(uri)
 
     def _strval(self, txt: str) -> str:
-        txt = str(txt).replace('"', '\\"')
-        return f'"{txt}"'
+        return json.dumps(str(txt), ensure_ascii=False)
 
     def _map_uri_special_case(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> str:
         if default_value == "class_uri":
