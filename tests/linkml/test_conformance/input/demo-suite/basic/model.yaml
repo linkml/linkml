@@ -1,0 +1,21 @@
+id: https://neverblink.eu/linkml/tests/basic/
+name: basic
+
+imports:
+  - linkml:types
+
+classes:
+  SomeClass:
+    description: Some text that describes the class
+    tree_root: true
+    slots:
+      - some_slot
+      - some_other_slot
+slots:
+  some_slot:
+    rank: 1
+    range: string
+  some_other_slot:
+    rank: 2
+    range: integer
+    required: true

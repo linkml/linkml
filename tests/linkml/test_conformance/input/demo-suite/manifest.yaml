@@ -1,0 +1,73 @@
+name: demo_test_suite
+entries:
+# JSON Schema
+  reject_missing_instance:
+    description: The generated JSON Schema should reject an instance with missing values
+    schema: basic/model.yaml
+    action:
+      type: JsonSchemaGenerate
+    assertion:
+      type: JsonSchemaRejects
+      instance: basic/invalid/missing/data.json
+  accept_full_instance:
+    schema: basic/model.yaml
+    description: The generated JSON Schema should accept a valid instance with optional values filled
+    action:
+      type: JsonSchemaGenerate
+    assertion:
+      type: JsonSchemaAccepts
+      instance: basic/valid/full/data.json
+  include_description:
+    schema: basic/model.yaml
+    description: >-
+      The generated JSON Schema should contain the schema metadata description for the class in JSON Schema $defs.
+    action:
+      type: JsonSchemaGenerate
+    assertion:
+      type: JsonPointerAssertion
+      path: $defs/SomeClass/description
+      value: Some text that describes the class
+
+# Rank derivation
+
+# # Issue #3845
+#  zero_rank_preserved:
+#    schema: rank/zero_rank.yaml
+#    description: The derivation procedure should preserve a rank of 0
+#    action:
+#      type: DeriveAction
+#    assertion:
+#      type: JsonPointerAssertion
+#      path: classes/SomeClass/attributes/zero_rank_slot/rank
+#      value: 0
+
+  class_to_class_rank_inherited:
+    schema: rank/class2class.yaml
+    description: The derivation procedure should propagate rank to class children
+    action:
+      type: DeriveAction
+    assertion:
+      type: JsonPointerAssertion
+      path: classes/SomeClass/attributes/second_slot/rank
+      value: 2
+
+  slot_to_class_rank_set:
+    schema: rank/slot2class.yaml
+    description: The derivation procedure should use the provided slot_usage rank
+    action:
+      type: DeriveAction
+    assertion:
+      type: JsonPointerAssertion
+      path: classes/SomeClass/attributes/second_slot/rank
+      value: 2
+
+# # Issue #3808
+#  slot_to_slot_rank_inheritance:
+#    schema: rank/slot2slot.yaml
+#    description: The derivation procedure should propagate rank in slot to slot inheritance
+#    action:
+#      type: DeriveAction
+#    assertion:
+#      type: JsonPointerAssertion
+#      path: classes/SomeClass/attributes/second_slot/rank
+#      value: 2
