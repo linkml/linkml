@@ -44,6 +44,7 @@ OWL, or translated to shape languages such as ShEx and SHACL.
    jsonld-context
    jsonld
    rdf
+   rdfs
    sparql
    shex
    shacl

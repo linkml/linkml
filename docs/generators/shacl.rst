@@ -19,6 +19,9 @@ To run:
 
    gen-shacl personinfo.yaml > personinfo.shacl.ttl
 
+.. seealso:: :doc:`rdfs` pairs well with this generator, emitting ``rdfs:subClassOf``
+             relations that are
+             `used by SHACL validators <https://www.w3.org/TR/shacl/#terminology>`__.
 
 
 Docs
