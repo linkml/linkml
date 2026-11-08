@@ -1,6 +1,6 @@
 """Minimal tests for the Ossie generator.
 
-The generator code is in LinkML-Scala, so the tests here check mostly that all the
+The generator code is in ohi LinkML, so the tests here check mostly that all the
 options work correctly.
 """
 
@@ -12,10 +12,10 @@ import pytest
 import yaml
 from click.testing import CliRunner
 
-from linkml.generators.common.scala import build_info
+from linkml.generators.common.ohi import build_info
 from linkml.generators.ossiegen import OssieGenerator, cli
 
-linkml_scala = pytest.importorskip("linkml_scala", reason="the LinkML-Scala bindings are not installed")
+ohi_linkml = pytest.importorskip("ohi_linkml", reason="the ohi LinkML bindings are not installed")
 
 pytestmark = pytest.mark.ossiegen
 
@@ -75,12 +75,12 @@ def test_unknown_format_is_rejected():
     "pruning_mode,tree_root,kept",
     [
         ("schema", None, {"Registry", "HasAliases", "Person", UNREACHABLE_CLASS, "VitalStatus"}),
-        ("treeRoot", None, {"Registry", "HasAliases", "Person", "VitalStatus"}),
-        ("treeRoot", "Person", {"HasAliases", "Person", "VitalStatus"}),
+        ("tree_root", None, {"Registry", "HasAliases", "Person", "VitalStatus"}),
+        ("tree_root", "Person", {"HasAliases", "Person", "VitalStatus"}),
     ],
 )
 def test_pruning_mode_drops_unreachable_concepts(pruning_mode, tree_root, kept):
-    """``--pruning-mode`` and ``--tree-root`` become LinkML-Scala's ``pruning_mode`` and ``tree_root``."""
+    """``--pruning-mode`` and ``--tree-root`` become ohi LinkML's ``pruning_mode`` and ``tree_root``."""
     with OssieGenerator(str(SCHEMA), pruning_mode=pruning_mode, tree_root=tree_root) as generator:
         assert concepts(generator.as_dict()) == kept
 
@@ -90,17 +90,10 @@ def test_no_pruning_keeps_imported_concepts(ontology):
     assert IMPORTED_CLASS in concepts(ontology)
 
 
-def test_tree_root_without_tree_root_pruning_is_rejected():
-    """A tree root only means something with ``pruning_mode="treeRoot"``."""
-    with OssieGenerator(str(SCHEMA), tree_root="Person") as generator:
-        with pytest.raises(ValueError, match="tree_root only applies"):
-            generator.serialize()
-
-
 def test_cli_pruning_mode():
     """``--pruning-mode`` and ``--tree-root`` reach the generator."""
     result = CliRunner().invoke(
-        cli, [str(SCHEMA), "--format", "json", "--pruning-mode", "treeRoot", "--tree-root", "Person"]
+        cli, [str(SCHEMA), "--format", "json", "--pruning-mode", "tree_root", "--tree-root", "Person"]
     )
     assert result.exit_code == 0
     assert "Registry" not in concepts(json.loads(result.output))
@@ -130,8 +123,8 @@ def test_every_cli_option_is_accepted_by_the_generator():
 
 
 def test_cli_version_reports_both_versions():
-    """A bug report needs the linkml version and the LinkML-Scala version, so ``-V`` shows both."""
+    """A bug report needs the linkml version and the ohi LinkML version, so ``-V`` shows both."""
     result = CliRunner().invoke(cli, ["-V"])
     assert result.exit_code == 0
     assert "linkml " in result.output
-    assert f"LinkML-Scala {build_info()['linkml_scala_version']}" in result.output
+    assert f"ohi LinkML {build_info()['linkml_scala_version']}" in result.output

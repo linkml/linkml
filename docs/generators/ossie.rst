@@ -15,22 +15,22 @@ concepts and the relationships between them.
    gen-ossie personinfo.yaml
    linkml generate ossie --format json personinfo.yaml
 
-Maintained in LinkML-Scala
---------------------------
+Maintained in ohi LinkML
+------------------------
 
 .. important::
 
    The generator itself is **not implemented in this repository**. This is a wrapper
-   around the Ossie generator in `LinkML-Scala
-   <https://github.com/NeverBlink-OSS/linkml-scala>`_.
+   around the Ossie generator in `ohi LinkML
+   <https://linkml.ohi.dev/>`_.
 
    Please report any bug reports or feature requests at
-   https://github.com/NeverBlink-OSS/linkml-scala
+   https://github.com/NeverBlink-OSS/ohi/issues
 
    You can also try the generator without installing anything in the
-   `in-browser playground <https://linkml.neverblink.eu/playground/>`_.
+   `in-browser playground <https://linkml.ohi.dev/playground/>`_.
 
-When reporting bugs, please include the versions of both linkml and LinkML-Scala.
+When reporting bugs, please include the versions of both linkml and ohi LinkML.
 You can find them by running ``gen-ossie --version``.
 
 What gets generated
@@ -59,13 +59,13 @@ What gets generated
    * - ``description``
      - ``description``
 
-The full mapping is described in the `LinkML-Scala documentation
-<https://github.com/NeverBlink-OSS/linkml-scala/blob/main/docs/ossie_mapping.md>`_.
+The full mapping is described in the `ohi LinkML documentation
+<https://linkml.ohi.dev/docs/generators/ossie/>`_.
 
 Limitations
 -----------
 
-The schema has to be a path to a local file. LinkML-Scala reads it and resolves its imports
+The schema has to be a path to a local file. ohi LinkML reads it and resolves its imports
 from disk itself, so a URL or an already-parsed ``SchemaDefinition`` is refused.
 
 Docs
@@ -86,7 +86,7 @@ Code
 .. autoclass:: OssieGenerator
     :members: serialize, as_yaml, as_json, as_dict
 
-.. currentmodule:: linkml.generators.common.scala
+.. currentmodule:: linkml.generators.common.ohi
 
-.. autoclass:: ScalaBackedGenerator
-    :members: scala_schema, generatorversion, close
+.. autoclass:: OhiBackedGenerator
+    :members: ohi_schema, generatorversion, close

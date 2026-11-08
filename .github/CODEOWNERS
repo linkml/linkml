@@ -54,17 +54,17 @@
 #
 # EXPERIMENT: delegated self-contained area, see
 # docs/maintainers/codeowners.md#experiment-delegating-self-contained-areas
-# Wrapper around LinkML-Scala: https://github.com/NeverBlink-OSS/linkml-scala
+# Wrapper around ohi LinkML: https://github.com/NeverBlink-OSS/ohi
 
 /docs/generators/ossie.rst                                         @Ostrzyciel @niegrzybkowski
 /packages/linkml/src/linkml/generators/ossiegen.py                 @Ostrzyciel @niegrzybkowski
 /tests/linkml/test_generators/test_ossiegen.py                     @Ostrzyciel @niegrzybkowski
 /tests/linkml/test_generators/input/ossie_ontology.yaml            @Ostrzyciel @niegrzybkowski
 
-# Shared machinery for LinkML-Scala backed generators:
+# Shared machinery for ohi LinkML backed generators:
 
-/packages/linkml/src/linkml/generators/common/scala.py             @Ostrzyciel @niegrzybkowski
-/tests/linkml/test_generators/test_scala_backed.py                 @Ostrzyciel @niegrzybkowski
+/packages/linkml/src/linkml/generators/common/ohi.py               @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/test_ohi_backed.py                   @Ostrzyciel @niegrzybkowski
 
 # zodgen:
 /docs/generators/zod.rst                                          @linkml/core-team @noelmcloughlin

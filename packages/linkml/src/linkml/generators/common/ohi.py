@@ -1,9 +1,9 @@
-"""Shared utilities for generators implemented as wrappers around LinkML-Scala.
+"""Shared utilities for generators implemented as wrappers around ohi LinkML.
 
-`LinkML-Scala <https://github.com/NeverBlink-OSS/linkml-scala>`_ is an independent LinkML
+`ohi LinkML <https://linkml.ohi.dev/>`_ is an independent LinkML
 implementation with its own generators. It's packaged as a natively-compiled library with
 Python bindings (the ``neverblink-linkml`` package on PyPI). A generator built on this base
-is a wrapper: report bugs in the output to LinkML-Scala.
+is a wrapper: report bugs in the output to ohi LinkML.
 """
 
 import functools
@@ -25,37 +25,37 @@ logger = logging.getLogger(__name__)
 UNSUPPORTED_OPTIONS = ("importmap", "base_dir", "include")
 """Unsupported options that change how imports should be resolved.
 
-LinkML-Scala resolves imports itself, from disk, relative to the schema being read, and currently
+ohi LinkML resolves imports itself, from disk, relative to the schema being read, and currently
 does not support these options.
 
-Upstream issue: https://github.com/NeverBlink-OSS/linkml-scala/issues/210
+Upstream issue: https://github.com/NeverBlink-OSS/ohi/issues/210
 """
 
 
 def bindings():
-    """Import the LinkML-Scala Python bindings.
+    """Import the ohi LinkML Python bindings.
 
     Imported lazily so that ``linkml`` stays importable when the bindings are missing
     (e.g., when linkml was installed from conda-forge).
 
-    :return: the ``linkml_scala`` module.
+    :return: the ``ohi_linkml`` module.
     :raises ImportError: if the bindings are not installed.
     """
     try:
-        import linkml_scala
+        import ohi_linkml
     except ImportError as exc:  # pragma: no cover - depends on how linkml was installed
         raise ImportError(
-            "This generator is implemented by LinkML-Scala, whose Python bindings are not "
+            "This generator is implemented by ohi LinkML, whose Python bindings are not "
             "installed. This usually only happens if you did not install linkml from PyPI, "
             "but from a different source, such as conda-forge. "
             "Install the bindings with: pip install neverblink-linkml"
         ) from exc
-    return linkml_scala
+    return ohi_linkml
 
 
 @functools.cache
 def build_info() -> dict[str, Any]:
-    """Version and build metadata for the LinkML-Scala library the bindings loaded.
+    """Version and build metadata for the ohi LinkML library the bindings loaded.
 
     :return: the metadata, with keys including ``linkml_scala_version`` and
         ``metamodel_version``.
@@ -64,13 +64,13 @@ def build_info() -> dict[str, Any]:
 
 
 def print_versions(ctx: click.Context, param: click.Parameter, value: bool) -> None:
-    """Print the linkml and LinkML-Scala versions and exit, as an eager ``--version`` callback.
+    """Print the linkml and ohi LinkML versions and exit, as an eager ``--version`` callback.
 
     Wire it into a generator's CLI with::
 
         @click.option("-V", "--version", is_flag=True, is_eager=True, expose_value=False,
                       callback=print_versions,
-                      help="Show the linkml and LinkML-Scala versions and exit.")
+                      help="Show the linkml and ohi LinkML versions and exit.")
 
     :param ctx: the click context, exited once the versions are printed.
     :param param: the click parameter. Unused, but click passes it.
@@ -80,20 +80,20 @@ def print_versions(ctx: click.Context, param: click.Parameter, value: bool) -> N
         return
     info = build_info()
     click.echo(f"linkml {__version__}")
-    click.echo(f"LinkML-Scala {info['linkml_scala_version']} (metamodel {info['metamodel_version']})")
+    click.echo(f"ohi LinkML {info['linkml_scala_version']} (metamodel {info['metamodel_version']})")
     ctx.exit()
 
 
 @dataclass
-class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
-    """Base class for generators that use LinkML-Scala.
+class OhiBackedGenerator(GeneratorBase, metaclass=ABCMeta):
+    """Base class for generators that use ohi LinkML.
 
     Subclasses set :attr:`valid_formats` and implement
     :meth:`~linkml.utils.generator_base.GeneratorBase.serialize` by calling one method on
-    :attr:`scala_schema`.
+    :attr:`ohi_schema`.
 
     Loading a schema is the expensive part and every generator call on a loaded schema is cheap,
-    so :attr:`scala_schema` is built on first use and then reused. Release it with
+    so :attr:`ohi_schema` is built on first use and then reused. Release it with
     :meth:`close`, or use the generator as a context manager::
 
         with SomeGenerator("schema.yaml") as generator:
@@ -102,7 +102,7 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
     Dropping the last reference will release it too, but only when the garbage collector gets to it.
 
     Unlike :class:`~linkml.utils.generator.Generator` this takes a path and nothing else, and
-    nothing here parses the schema: LinkML-Scala reads it, resolves its imports, and is the only
+    nothing here parses the schema: ohi LinkML reads it, resolves its imports, and is the only
     thing that has an opinion about it. That is also why the options in
     :data:`UNSUPPORTED_OPTIONS` are refused rather than emulated.
     """
@@ -125,7 +125,7 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
     """Kept for parity with the shared CLI options. Currently not used."""
 
     include_generation_date: bool = False
-    """Kept for parity with the shared CLI options. LinkML-Scala output never carries a
+    """Kept for parity with the shared CLI options. ohi LinkML output never carries a
     timestamp, so it is reproducible either way."""
 
     log_level: int | None = DEFAULT_LOG_LEVEL_INT
@@ -164,7 +164,7 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
     include: str | Path | None = None
     """Refused. See :data:`UNSUPPORTED_OPTIONS`."""
 
-    _scala_schema: Any = field(default=None, init=False, repr=False)
+    _ohi_schema: Any = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if not self.logger:
@@ -173,18 +173,18 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
         if not isinstance(self.schema, str | Path):
             raise TypeError(
                 f"{type(self).__name__} needs a path to a schema file, or the schema as YAML "
-                f"text, not a {type(self.schema).__name__}. LinkML-Scala reads and resolves the "
+                f"text, not a {type(self.schema).__name__}. ohi LinkML reads and resolves the "
                 "schema itself, so can't work with a parsed Python object. "
-                "See https://github.com/NeverBlink-OSS/linkml-scala"
+                "See https://linkml.ohi.dev/docs/python-bindings/"
             )
         if not self.schema_is_yaml_text and not Path(self.schema).is_file():
             raise FileNotFoundError(f"no such schema file: {self.schema}")
         refused = [name for name in UNSUPPORTED_OPTIONS if getattr(self, name)]
         if refused:
             raise NotImplementedError(
-                f"{type(self).__name__} does not support {', '.join(refused)}. LinkML-Scala "
+                f"{type(self).__name__} does not support {', '.join(refused)}. ohi LinkML "
                 "resolves imports itself and has no equivalent option yet. "
-                "Upstream issue: https://github.com/NeverBlink-OSS/linkml-scala/issues/210"
+                "Upstream issue: https://github.com/NeverBlink-OSS/ohi/issues/210"
             )
 
     @property
@@ -194,42 +194,42 @@ class ScalaBackedGenerator(GeneratorBase, metaclass=ABCMeta):
 
     @property
     def generatorversion(self) -> str:
-        """The LinkML-Scala version doing the translation, read from the ABI."""
+        """The ohi LinkML version doing the translation, read from the ABI."""
         return build_info()["linkml_scala_version"]
 
     @property
-    def scala_schema(self):
-        """The schema as LinkML-Scala sees it, loaded on first use and then reused.
+    def ohi_schema(self):
+        """The schema as ohi LinkML sees it, loaded on first use and then reused.
 
-        :return: a ``linkml_scala.Schema``, owned by this generator. Do not close it; call
+        :return: a ``ohi_linkml.Schema``, owned by this generator. Do not close it; call
             :meth:`close` instead.
-        :raises ImportError: if the LinkML-Scala bindings are not installed.
-        :raises linkml_scala.SchemaLoadError: if LinkML-Scala cannot load the schema.
+        :raises ImportError: if the ohi LinkML bindings are not installed.
+        :raises ohi_linkml.SchemaLoadError: if ohi LinkML cannot load the schema.
         """
-        if self._scala_schema is None:
-            linkml_scala = bindings()
-            self._scala_schema = self._load(linkml_scala)
-            for issue in self._scala_schema.issues(linkml_scala.ERROR) + self._scala_schema.issues(linkml_scala.FATAL):
-                self.logger.warning(f"LinkML-Scala reported: {issue.get('message', issue)}")
-        return self._scala_schema
+        if self._ohi_schema is None:
+            ohi_linkml = bindings()
+            self._ohi_schema = self._load(ohi_linkml)
+            for issue in self._ohi_schema.issues(ohi_linkml.ERROR) + self._ohi_schema.issues(ohi_linkml.FATAL):
+                self.logger.warning(f"ohi LinkML reported: {issue.get('message', issue)}")
+        return self._ohi_schema
 
-    def _load(self, linkml_scala):
-        """Load the schema into LinkML-Scala.
+    def _load(self, ohi_linkml):
+        """Load the schema into ohi LinkML.
 
-        :param linkml_scala: the bindings module.
-        :return: a ``linkml_scala.Schema``.
+        :param ohi_linkml: the bindings module.
+        :return: a ``ohi_linkml.Schema``.
         """
         if self.schema_is_yaml_text:
-            return linkml_scala.load_string(self.schema)
-        return linkml_scala.load_file(self.schema)
+            return ohi_linkml.load_string(self.schema)
+        return ohi_linkml.load_file(self.schema)
 
     def close(self) -> None:
         """Release the loaded schema. Calling it more than once is fine."""
-        schema, self._scala_schema = self._scala_schema, None
+        schema, self._ohi_schema = self._ohi_schema, None
         if schema is not None:
             schema.close()
 
-    def __enter__(self) -> "ScalaBackedGenerator":
+    def __enter__(self) -> "OhiBackedGenerator":
         return self
 
     def __exit__(self, *exception: object) -> None:

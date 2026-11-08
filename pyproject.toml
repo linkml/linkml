@@ -1,6 +1,7 @@
 [tool.uv]
 required-version = ">=0.9.17"
 exclude-newer = "7 days"
+exclude-newer-package = { neverblink-linkml = false }
 constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=13.0.0,<13.1"]
 
 [tool.uv.workspace]

@@ -1,9 +1,9 @@
 """Generate an `Apache Ossie <https://github.com/apache/ossie>`_ ontology from a LinkML schema.
 
 The translation itself is not implemented here. This module is a thin wrapper around the Ossie
-generator in `LinkML-Scala <https://github.com/NeverBlink-OSS/linkml-scala>`_, using
-its Python bindings. See :mod:`linkml.generators.common.scala` for the shared machinery. Report
-bugs in the output in the LinkML-Scala repository.
+generator in `ohi LinkML <https://linkml.ohi.dev/>`_, using
+its Python bindings. See :mod:`linkml.generators.common.ohi` for the shared machinery. Report
+bugs in the output in the ohi LinkML repository.
 
 Classes become ``EntityType`` concepts, enums and types become ``ValueType`` concepts, slots
 become relationships, and ``is_a`` and ``mixins`` become ``extends``.
@@ -17,15 +17,15 @@ from typing import Any, ClassVar
 
 import click
 
-from linkml.generators.common.scala import ScalaBackedGenerator, print_versions
+from linkml.generators.common.ohi import OhiBackedGenerator, print_versions
 from linkml.utils.generator import shared_arguments
 
-PRUNING_MODES = ("skip", "schema", "treeRoot")
-"""Pruning modes LinkML-Scala accepts, spelled as in its own CLI."""
+PRUNING_MODES = ("skip", "schema", "tree_root")
+"""Pruning modes ohi LinkML accepts, spelled as in its own CLI."""
 
 
 @dataclass
-class OssieGenerator(ScalaBackedGenerator):
+class OssieGenerator(OhiBackedGenerator):
     """Generates an Ossie ontology describing the schema's classes, slots, enums and types.
 
     >>> from linkml.generators.ossiegen import OssieGenerator
@@ -49,12 +49,16 @@ class OssieGenerator(ScalaBackedGenerator):
     >>> print(OssieGenerator(schema).serialize())
     version: 0.2.0.dev0
     name: personinfo
+    prefixes:
+      personinfo: https://example.org/personinfo/
     ontology:
       - concept: Person
         type: EntityType
+        iri: personinfo:Person
         description: A human being
         relationships:
           - name: age
+            iri: personinfo:age
             roles:
               - concept: Integer
             multiplicity: ManyToOne
@@ -72,15 +76,15 @@ class OssieGenerator(ScalaBackedGenerator):
 
     tree_root: str | None = None
     """Class to prune from instead of the schema's own ``tree_root``. Only valid with
-    ``pruning_mode="treeRoot"``."""
+    ``pruning_mode="tree_root"``."""
 
     def _generate(self, fmt: str) -> str:
-        """Ask LinkML-Scala for the ontology in one of the supported serialization formats.
+        """Ask ohi LinkML for the ontology in one of the supported serialization formats.
 
         :param fmt: ``yaml`` or ``json``.
         :return: the serialized ontology.
         """
-        return self.scala_schema.ossie(pruning_mode=self.pruning_mode, tree_root=self.tree_root, output_format=fmt)
+        return self.ohi_schema.ossie(pruning_mode=self.pruning_mode, tree_root=self.tree_root, format=fmt)
 
     def as_yaml(self) -> str:
         """Generate the Ossie ontology as YAML.
@@ -121,7 +125,7 @@ class OssieGenerator(ScalaBackedGenerator):
     default="skip",
     show_default=True,
     help="Which unused elements (classes, types, enums) to remove. "
-    "treeRoot - remove all elements unreachable from the tree_root class. "
+    "tree_root - remove all elements unreachable from the tree_root class. "
     "schema - remove all elements unreachable from any of the classes defined in the root schema. "
     "skip - do not remove unused elements.",
 )
@@ -134,7 +138,7 @@ class OssieGenerator(ScalaBackedGenerator):
     is_eager=True,
     expose_value=False,
     callback=print_versions,
-    help="Show the linkml and LinkML-Scala versions and exit.",
+    help="Show the linkml and ohi LinkML versions and exit.",
 )
 @click.command(name="ossie")
 def cli(yamlfile, **args):
@@ -144,8 +148,8 @@ def cli(yamlfile, **args):
     relationships, and is_a and mixins become extends. Use --pruning-mode to leave out elements
     that are not reachable from the root schema or from the tree root class.
 
-    The generator is implemented in LinkML-Scala, which is maintained separately. Please submit
-    bug reports and feature requests to https://github.com/NeverBlink-OSS/linkml-scala
+    The generator is implemented in ohi LinkML, which is maintained separately. Please submit
+    bug reports and feature requests to https://github.com/NeverBlink-OSS/ohi/issues
     """
     with OssieGenerator(yamlfile, **args) as generator:
         ontology = generator.serialize()

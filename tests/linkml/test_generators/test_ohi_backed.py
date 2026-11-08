@@ -1,4 +1,4 @@
-"""Tests for the shared utilities behind LinkML-Scala backed generators.
+"""Tests for the shared utilities behind ohi LinkML backed generators.
 
 These cover schema loading, reuse and release.
 """
@@ -10,16 +10,16 @@ from typing import ClassVar
 
 import pytest
 
-from linkml.generators.common.scala import (
+from linkml.generators.common.ohi import (
     UNSUPPORTED_OPTIONS,
-    ScalaBackedGenerator,
+    OhiBackedGenerator,
     bindings,
     build_info,
 )
 from linkml.utils.generator_base import GeneratorBase
 from linkml_runtime import SchemaView
 
-linkml_scala = pytest.importorskip("linkml_scala", reason="the LinkML-Scala bindings are not installed")
+ohi_linkml = pytest.importorskip("ohi_linkml", reason="the ohi LinkML bindings are not installed")
 
 pytestmark = pytest.mark.ossiegen
 
@@ -43,8 +43,8 @@ classes:
 
 
 @dataclass
-class _CountingGenerator(ScalaBackedGenerator):
-    """Counts how often the schema is handed to LinkML-Scala."""
+class _CountingGenerator(OhiBackedGenerator):
+    """Counts how often the schema is handed to ohi LinkML."""
 
     valid_formats: ClassVar[list[str]] = ["yaml"]
 
@@ -52,26 +52,26 @@ class _CountingGenerator(ScalaBackedGenerator):
         super().__post_init__()
         self.loads = 0
 
-    def _load(self, linkml_scala_module):
+    def _load(self, ohi_linkml_module):
         self.loads += 1
-        return super()._load(linkml_scala_module)
+        return super()._load(ohi_linkml_module)
 
     def serialize(self, **kwargs) -> str:
-        return self.scala_schema.ossie()
+        return self.ohi_schema.ossie()
 
 
 def test_it_implements_the_base_contract():
-    """The Scala base is a ``GeneratorBase`` but not a LinkML-Python ``Generator``."""
+    """The ohi LinkML base is a ``GeneratorBase`` but not a LinkML-Python ``Generator``."""
     from linkml.utils.generator import Generator
 
-    assert issubclass(ScalaBackedGenerator, GeneratorBase)
-    assert not issubclass(ScalaBackedGenerator, Generator)
+    assert issubclass(OhiBackedGenerator, GeneratorBase)
+    assert not issubclass(OhiBackedGenerator, Generator)
 
 
 def test_it_is_abstract():
     """``serialize`` is still owed by subclasses."""
     with pytest.raises(TypeError, match="abstract"):
-        ScalaBackedGenerator(str(SCHEMA))
+        OhiBackedGenerator(str(SCHEMA))
 
 
 def test_schema_is_loaded_once_and_reused():
@@ -80,17 +80,17 @@ def test_schema_is_loaded_once_and_reused():
     assert generator.loads == 0, "construction must not load the schema"
     generator.serialize()
     generator.serialize()
-    generator.scala_schema.ossie()
+    generator.ohi_schema.ossie()
     assert generator.loads == 1
 
 
 def test_schema_is_not_parsed_at_construction_time():
     """Nothing reads the schema until something asks for output."""
-    assert _CountingGenerator(str(SCHEMA))._scala_schema is None
+    assert _CountingGenerator(str(SCHEMA))._ohi_schema is None
 
 
 def test_nothing_here_parses_the_schema_with_linkml_python():
-    """LinkML-Scala is the only thing that reads the schema, so there is no SchemaView at all."""
+    """ohi LinkML is the only thing that reads the schema, so there is no SchemaView at all."""
     generator = _CountingGenerator(str(SCHEMA))
     generator.serialize()
     assert not hasattr(generator, "schemaview")
@@ -99,7 +99,7 @@ def test_nothing_here_parses_the_schema_with_linkml_python():
 
 @pytest.mark.parametrize("option", UNSUPPORTED_OPTIONS)
 def test_unsupported_options_are_refused(option, tmp_path):
-    """importmap, base_dir and include have no LinkML-Scala equivalent, so they are refused."""
+    """importmap, base_dir and include have no ohi LinkML equivalent, so they are refused."""
     value = str(tmp_path) if option == "base_dir" else str(SCHEMA)
     with pytest.raises(NotImplementedError, match=option):
         _CountingGenerator(str(SCHEMA), **{option: value})
@@ -145,7 +145,7 @@ def test_close_releases_the_schema_and_is_repeatable():
     generator = _CountingGenerator(str(SCHEMA))
     generator.serialize()
     generator.close()
-    assert generator._scala_schema is None
+    assert generator._ohi_schema is None
     generator.close()
 
 
@@ -161,12 +161,12 @@ def test_close_then_use_reloads():
 def test_context_manager_releases_the_schema():
     with _CountingGenerator(str(SCHEMA)) as generator:
         generator.serialize()
-        assert generator._scala_schema is not None
-    assert generator._scala_schema is None
+        assert generator._ohi_schema is not None
+    assert generator._ohi_schema is None
 
 
 def test_generatorversion_comes_from_the_bindings():
-    """The version on record is the LinkML-Scala version, not a constant in this repository."""
+    """The version on record is the ohi LinkML version, not a constant in this repository."""
     assert _CountingGenerator(str(SCHEMA)).generatorversion == build_info()["linkml_scala_version"]
 
 
@@ -177,19 +177,19 @@ def test_build_info_reports_the_library_it_loaded():
 
 
 def test_bindings_returns_the_module():
-    assert bindings() is linkml_scala
+    assert bindings() is ohi_linkml
 
 
 def test_absent_bindings_say_how_to_install_them(monkeypatch):
     """The bindings are a dependency, so a missing one is something the user can fix."""
     real_import = builtins.__import__
 
-    def without_linkml_scala(name, *args, **kwargs):
-        if name == "linkml_scala":
-            raise ImportError("No module named 'linkml_scala'")
+    def without_ohi_linkml(name, *args, **kwargs):
+        if name == "ohi_linkml":
+            raise ImportError("No module named 'ohi_linkml'")
         return real_import(name, *args, **kwargs)
 
-    monkeypatch.setattr(builtins, "__import__", without_linkml_scala)
+    monkeypatch.setattr(builtins, "__import__", without_ohi_linkml)
     with pytest.raises(ImportError) as raised:
         _CountingGenerator(str(SCHEMA)).serialize()
     message = str(raised.value)
