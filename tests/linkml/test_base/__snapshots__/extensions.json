@@ -442,7 +442,7 @@
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",
       "tag": {
-        "@type": "xsd:anyURI",
+        "@type": "@id",
         "@id": "tag"
       },
       "value": {
