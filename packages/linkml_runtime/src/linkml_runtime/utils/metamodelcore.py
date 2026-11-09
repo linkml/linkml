@@ -142,7 +142,16 @@ class URIorCURIE(Identifier):
 
 
 class URI(URIorCURIE):
-    """A relative absolute URI"""
+    """A URI or a relative reference, the two forms of a URI reference (RFC 3986 section 4.1).
+
+    This class is wider than the ``uri`` type, whose values must start with a scheme.
+    JSON Schema validation and the RDF dumper enforce that rule. This class stays wider
+    because metamodel slots such as a schema's ``id`` use it, and code passes a bare name
+    there that ``linkml-lint`` rejects.
+
+    The inherited ``is_absolute`` looks for an authority, not a scheme, so it is false
+    for ``urn:isbn:0451450523`` and true for ``//host/path``.
+    """
 
     def __init__(self, v: str) -> None:
         if is_strict() and not URI.is_valid(v):

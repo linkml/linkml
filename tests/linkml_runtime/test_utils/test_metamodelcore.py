@@ -103,11 +103,13 @@ def test_uri():
         URI(":")
     with pytest.raises(ValueError):
         URI(":123")
-    # imports range is uriorcurie, so we allow file paths
+    # this class also types the metamodel's id and from_schema, where code passes a bare name
     # URI("1")
     assert URI.is_valid("foo.bar")
     assert URI.is_valid("../a/b")
     assert URI.is_valid("abc:123")
+    # RFC 3986 allows no non-ASCII characters, so an IRI that holds one is not a URI
+    assert not URI.is_valid("https://example.org/é")
     # with pytest.raises(ValueError):
     #    URI("x1")
     # an empty URI is a valid same-document URI reference

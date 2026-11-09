@@ -20,6 +20,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.yarrrmlgen import YarrrmlGenerator
+from linkml.validator import validate as linkml_validate
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.loaders import rdflib_loader
@@ -276,11 +277,45 @@ def test_loader_keeps_blank_node_labels(module):
     assert container.documents[0].cross_ref == "_:n1"
 
 
-@pytest.mark.parametrize("slot", ["homepage", "image"])
+@pytest.mark.parametrize("slot", ["homepage", "image", "related", "node", "any_node"])
 def test_dumper_rejects_relative_links(module, slot):
     """A relative reference is not an RDF IRI (RDF 1.1 Concepts §3.2); text needs a string-derived type."""
     with pytest.raises(ValueError, match="relative reference"):
         _dumped(module, {**DATA, slot: "../img/cover.png"})
+
+
+@pytest.mark.parametrize(
+    ("slot", "value", "valid"),
+    [
+        ("homepage", "https://alice.example.org/", True),
+        ("homepage", "https://alice.example.org/#me", True),
+        ("homepage", "urn:isbn:0451450523", True),
+        ("homepage", "javascript:alert(1)", True),
+        ("homepage", "file:///etc/passwd", True),
+        ("homepage", "../img/cover.png", False),
+        ("homepage", "Original", False),
+        ("homepage", "two words", False),
+        ("homepage", "https://alice.example.org/é", False),
+        ("image", "https://example.org/terms/me.jpg", True),
+        ("image", "../img/cover.png", False),
+        ("related", "../img/cover.png", True),
+        ("node", "../img/cover.png", True),
+        ("any_node", "../img/cover.png", True),
+        ("code", "not a curie", True),
+        ("file_path", "../../etc/passwd", True),
+        ("file_path", "Original", True),
+        ("file_path", "two words", True),
+    ],
+)
+def test_validator_checks_uri_and_the_types_derived_from_it(slot, value, valid):
+    """linkml-validate applies ``format: uri`` to ``uri`` and the types derived from it, and to no other type."""
+    results = linkml_validate({"id": "ex:doc", slot: value}, SCHEMA, "Document").results
+    assert [result.message for result in results] == ([] if valid else [f"{value!r} is not a 'uri' in /{slot}"])
+
+
+def test_dataclass_admits_a_relative_link_the_dumper_rejects(module):
+    """The runtime's URI also types the metamodel's id, where code passes a bare name, so it stays wider."""
+    assert module.Document(id="ex:doc", homepage="../img/cover.png").homepage == "../img/cover.png"
 
 
 def test_blank_node_values_through_the_context(shapes):
