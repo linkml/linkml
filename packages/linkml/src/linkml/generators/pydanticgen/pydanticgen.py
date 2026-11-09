@@ -1239,7 +1239,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         Args:
             schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate
             output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to
-            split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`
+            split_pattern (str): Pattern to use to generate module names. Defaults to
+                :attr:`.PydanticGenerator.split_pattern`
             split_context (dict): Additional variables to pass into jinja context when generating module import names.
 
         Returns:
@@ -1255,9 +1256,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # Main schema
         # --------------------------------------------------
         gen_kwargs = kwargs
-        gen_kwargs.update(
-            {"split": True, "split_pattern": split_pattern, "split_context": split_context, "split_mode": split_mode}
-        )
+        gen_kwargs.update({"split": True, "split_context": split_context, "split_mode": split_mode})
+        # Without a split_pattern of its own, the generator keeps its default one.
+        if split_pattern is not None:
+            gen_kwargs["split_pattern"] = split_pattern
         generator = cls(schema, **gen_kwargs)
         # Generate the initial schema to figure out which of the imported schema actually need
         # to be generated
