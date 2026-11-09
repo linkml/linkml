@@ -1,0 +1,4 @@
+@field_validator('{{name}}', mode='before')
+    @classmethod
+    def coerce_keyed_{{name}}(cls, v):
+        return _coerce_keyed_collection(v, "{{keyed_dict_key}}"{% if keyed_dict_value %}, value_name="{{keyed_dict_value}}"{% endif %})
