@@ -431,8 +431,8 @@
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/Model",
       "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
       "exact_mappings": [
-        "foo:model",
-        "bar:whaoo"
+        "bar:whaoo",
+        "foo:model"
       ],
       "slots": [
         "state"

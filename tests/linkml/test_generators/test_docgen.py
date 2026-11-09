@@ -4,6 +4,7 @@ Tests generation of markdown and similar documents
 
 import logging
 import os
+import re
 from collections import Counter
 from collections.abc import Generator
 from copy import copy
@@ -1730,3 +1731,136 @@ classes:
     # Each file must describe only its own element type
     assert_mdfile_does_not_contain(class_file, "# Subset:")
     assert_mdfile_does_not_contain(subset_file, "# Class:")
+
+
+TABLE_SEPARATOR = re.compile(r"^\|(\s*:?-{3,}:?\s*\|)+\s*$")
+LIST_ITEM = re.compile(r"^\s*([-*]|\d+\.) ")
+
+
+def markdown_structure_problems(text: str) -> list[str]:
+    """Return the block-structure problems found in a generated Markdown page.
+
+    Markdown parsers only start a new heading, table, list or HTML block when it is separated
+    from the preceding block by a blank line, so a missing blank line silently merges a block
+    into its neighbor. The checks skip YAML front matter and fenced code blocks.
+
+    :param text: content of a generated Markdown page
+    :return: one ``"line N: problem"`` message per problem found
+    """
+    lines = text.splitlines()
+    problems = []
+    start = 0
+    if lines and lines[0] == "---":
+        if "---" in lines[1:]:
+            start = lines.index("---", 1) + 1
+        else:
+            problems.append("line 1: front matter is not terminated by a '---' line")
+    in_fence = False
+    content: list[tuple[int, str]] = []
+    for number, line in enumerate(lines[start:], start=start + 1):
+        if line.startswith("```"):
+            in_fence = not in_fence
+            content.append((number, "```"))
+        elif not in_fence:
+            content.append((number, line))
+
+    def blank(i: int) -> bool:
+        return i < 0 or i >= len(content) or content[i][1].strip() == ""
+
+    def is_row(i: int) -> bool:
+        return not blank(i) and content[i][1].startswith("|")
+
+    def is_list_item(i: int) -> bool:
+        return not blank(i) and LIST_ITEM.match(content[i][1]) is not None
+
+    def in_list(i: int) -> bool:
+        """Line ``i`` is a list item or a continuation line of one."""
+        while not blank(i):
+            if is_list_item(i):
+                return True
+            i -= 1
+        return False
+
+    for i, (number, line) in enumerate(content):
+        if line.startswith("#"):
+            if not blank(i - 1):
+                problems.append(f"line {number}: no blank line before heading {line!r}")
+            if not blank(i + 1):
+                problems.append(f"line {number}: no blank line after heading {line!r}")
+        elif is_row(i):
+            if not is_row(i - 1):
+                if not blank(i - 1):
+                    problems.append(f"line {number}: no blank line before table {line!r}")
+                if not (is_row(i + 1) and TABLE_SEPARATOR.match(content[i + 1][1])):
+                    problems.append(f"line {number}: table row without a header separator {line!r}")
+            if not is_row(i + 1) and not blank(i + 1):
+                problems.append(f"line {number}: no blank line after table {line!r}")
+        elif is_list_item(i):
+            if not in_list(i - 1) and not blank(i - 1):
+                problems.append(f"line {number}: no blank line before list {line!r}")
+        elif line == "<details>" and not blank(i - 1):
+            problems.append(f"line {number}: no blank line before <details>")
+        elif line.startswith("<summary>") and not blank(i + 1):
+            problems.append(f"line {number}: no blank line after {line!r}")
+        elif line == "</details>" and not blank(i + 1):
+            problems.append(f"line {number}: no blank line after </details>")
+    return problems
+
+
+@pytest.mark.parametrize(
+    "markdown,expected",
+    [
+        ("# Title\n\n| a |\n| --- |\n| 1 |\n\n## Next\n", []),
+        (
+            "| a |\n| --- |\n| 1 |\n### Next\n",
+            ["line 3: no blank line after table '| 1 |'", "line 4: no blank line before heading '### Next'"],
+        ),
+        ("text\n| a |\n| --- |\n", ["line 2: no blank line before table '| a |'"]),
+        ("| a |\n| --- |\n\n| 1 |\n", ["line 4: table row without a header separator '| 1 |'"]),
+        ("| a |\n| --- |\ntext\n", ["line 2: no blank line after table '| --- |'"]),
+        ("## Heading\ntext\n", ["line 1: no blank line after heading '## Heading'"]),
+        ("Intro:\n- item\n", ["line 2: no blank line before list '- item'"]),
+        ("- item\n    - nested\n- item\n", []),
+        ("- item that\ncontinues\n- item\n", []),
+        (
+            "| a |\n| --- |\n<details>\n",
+            ["line 2: no blank line after table '| --- |'", "line 3: no blank line before <details>"],
+        ),
+        ("text\n<details>\n", ["line 2: no blank line before <details>"]),
+        ("<summary>S</summary>\n**x**\n", ["line 1: no blank line after '<summary>S</summary>'"]),
+        ("</details>\ntext\n", ["line 1: no blank line after </details>"]),
+        ("---\nsearch: 1\n---\n\n# T\n", []),
+        ("---\nsearch: 1\n---# T\n", ["line 1: front matter is not terminated by a '---' line"]),
+        ("a\n\n\nb\n", []),
+        ("text\n```yaml\n- a\n# b\n```\n", []),
+    ],
+)
+def test_markdown_structure_problems(markdown: str, expected: list[str]) -> None:
+    """The Markdown structure checker reports exactly the expected problems."""
+    assert markdown_structure_problems(markdown) == expected
+
+
+@pytest.mark.parametrize(
+    "schema",
+    [
+        "kitchen_sink.yaml",
+        "core_element_properties_coverage.yaml",
+        "metadata_properties_coverage.yaml",
+        "linkml_issue_1731.yaml",
+        "linkml_issue_3242.yaml",
+        "docgen_markdown_structure.yaml",
+    ],
+)
+def test_docgen_markdown_structure(schema: str, input_path, tmp_path) -> None:
+    """Every generated page separates its headings, tables, lists and HTML blocks with blank lines.
+
+    Regression test for issue #4182, where a heading that directly followed a table was parsed as a table row.
+    """
+    gen = DocGenerator(str(input_path(schema)), mergeimports=True)
+    gen.serialize(directory=str(tmp_path))
+    problems = [
+        f"{md_file.relative_to(tmp_path)} {problem}"
+        for md_file in sorted(tmp_path.rglob("*.md"))
+        for problem in markdown_structure_problems(md_file.read_text())
+    ]
+    assert problems == []
