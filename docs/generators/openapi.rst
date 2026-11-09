@@ -181,6 +181,31 @@ that behavior so that enumerations are inlined, instead of being
 referenced, into the schemas that use them in the resulting OAD (OpenAPI
 Description) document.
 
+.. _openapi-configuration-file:
+
+Configuration File
+------------------
+
+``gen-openapi`` accepts a ``--config-file``/``-C`` YAML file in the format that
+``gen-project`` reads (see :doc:`project-generator`), and reads only its
+``generator_args.openapi`` section. Any option of the command can be set there,
+keyed by its name with dashes as underscores, such as ``template``,
+``keep_unreferenced`` and ``inline_enums``. Options given on the command line
+take precedence over the file, and a key that is not an option is reported as a
+warning and ignored.
+
+.. code-block:: yaml
+
+    # api.yaml
+    generator_args:
+      openapi:
+        template: api-template.yaml
+        inline_enums: true
+
+.. code:: bash
+
+   gen-openapi -C api.yaml personinfo.yaml > personinfo.openapi.yaml
+
 Docs
 ----
 
