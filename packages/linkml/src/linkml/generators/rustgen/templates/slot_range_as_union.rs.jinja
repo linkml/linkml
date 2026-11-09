@@ -8,8 +8,9 @@
     }
 
     #[cfg(feature = "pyo3")]
-    impl<'py> FromPyObject<'py> for {{ slot_name }}_range {
-        fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+    impl<'a, 'py> FromPyObject<'a, 'py> for {{ slot_name }}_range {
+        type Error = PyErr;
+        fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
     {% for t in ranges %}
             if let Ok(val) = ob.extract::<{{ t }}>() {
                 return Ok({{ slot_name }}_range::{{ t }}(val));
@@ -49,8 +50,9 @@
     }
 
     #[cfg(feature = "pyo3")]
-    impl<'py> FromPyObject<'py> for Box<{{ slot_name }}_range> {
-        fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+    impl<'a, 'py> FromPyObject<'a, 'py> for Box<{{ slot_name }}_range> {
+        type Error = PyErr;
+        fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
             if let Ok(val) = ob.extract::<{{ slot_name  }}_range>() {
                 return Ok(Box::new(val));
             }

@@ -262,7 +262,7 @@ fn py_any_to_value(bound: &Bound<'_, PyAny>) -> PyResult<Value> {
     }
 
     if let Ok(dict_obj) = bound.getattr("__dict__") {
-        if let Ok(dict) = dict_obj.downcast::<PyDict>() {
+        if let Ok(dict) = dict_obj.cast::<PyDict>() {
             let mut map: BTreeMap<Value, Value> = BTreeMap::new();
             for (k, v) in dict.iter() {
                 let key_str: String = k.extract()?;
@@ -273,7 +273,7 @@ fn py_any_to_value(bound: &Bound<'_, PyAny>) -> PyResult<Value> {
         }
     }
 
-    if let Ok(dict) = bound.downcast::<PyDict>() {
+    if let Ok(dict) = bound.cast::<PyDict>() {
         let mut map: BTreeMap<Value, Value> = BTreeMap::new();
         for (k, v) in dict.iter() {
             let key_str: String = k.extract()?;
@@ -283,7 +283,7 @@ fn py_any_to_value(bound: &Bound<'_, PyAny>) -> PyResult<Value> {
         return Ok(Value::Map(map));
     }
 
-    if let Ok(list) = bound.downcast::<PyList>() {
+    if let Ok(list) = bound.cast::<PyList>() {
         let mut items = Vec::with_capacity(list.len());
         for item in list.iter() {
             items.push(py_any_to_value(&item)?);
@@ -291,7 +291,7 @@ fn py_any_to_value(bound: &Bound<'_, PyAny>) -> PyResult<Value> {
         return Ok(Value::Seq(items));
     }
 
-    if let Ok(tuple) = bound.downcast::<PyTuple>() {
+    if let Ok(tuple) = bound.cast::<PyTuple>() {
         let mut items = Vec::with_capacity(tuple.len());
         for item in tuple.iter() {
             items.push(py_any_to_value(&item)?);
@@ -480,11 +480,13 @@ where
 }
 
 #[cfg(all(feature = "pyo3", feature = "serde"))]
-impl<'py, T> FromPyObject<'py> for PyValue<T>
+impl<'a, 'py, T> FromPyObject<'a, 'py> for PyValue<T>
 where
     T: DeserializeOwned,
 {
-    fn extract_bound(ob: &Bound<'py, PyAny>) -> PyResult<Self> {
-        deserialize_py_any(ob).map(PyValue)
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'a, 'py, PyAny>) -> PyResult<Self> {
+        deserialize_py_any(&ob).map(PyValue)
     }
 }
