@@ -4,7 +4,7 @@ from typing import Any
 
 from curies import Converter
 from pydantic import BaseModel
-from rdflib import XSD, Graph, URIRef
+from rdflib import Graph, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
@@ -12,6 +12,7 @@ from rdflib.term import BNode, Literal, Node
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import value_term
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -102,20 +103,10 @@ class RDFLibDumper(Dumper):
             else:
                 return Literal(element.text)
         if target_type in schemaview.all_types():
-            t = schemaview.get_type(target_type)
-            dt_uri = t.uri
-            if dt_uri:
-                if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
-                    return URIRef(schemaview.expand_curie(element))
-                elif dt_uri == "xsd:string":
-                    return Literal(element)
-                else:
-                    if "xsd" not in namespaces:
-                        namespaces["xsd"] = XSD
-                    return Literal(element, datatype=namespaces.uri_for(dt_uri))
-            else:
-                logger.warning(f"No datatype specified for : {t.name}, using plain Literal")
+            if schemaview.induced_type(target_type).uri is None:
+                logger.warning(f"No datatype specified for : {target_type}, using plain Literal")
                 return Literal(element)
+            return value_term(schemaview, target_type, element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith("_")}
         if len(element_vars) == 0:
             id_slot = schemaview.get_identifier_slot(target_type)
