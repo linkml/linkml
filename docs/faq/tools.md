@@ -69,6 +69,25 @@ There are a few strategies:
 
 You can use any of the generator tools distributed as part of linkml to check for errors in your schema.
 
+## Is there a master list of which generators or validators support which LinkML features?
+
+There is no separately curated, complete matrix of every generator and validator against every metamodel slot.
+
+The closest source of truth is the [Generator Feature Dashboard](../generators/dashboard). It is generated from the [compliance test suite](https://github.com/linkml/linkml/tree/main/tests/linkml/test_compliance) and shows which metamodel features each tested generator implements, partially implements, ignores, or has not yet been tested for.
+
+That dashboard is the outcome of [issue 2333](https://github.com/linkml/linkml/issues/2333) (Generator Support Matrix). It is not exhaustive:
+
+* Only generators that participate in the compliance suite appear as columns.
+* Cells can be unknown or partial; a result reflects the current tests, not a guarantee of every edge case.
+* There is no equivalent complete matrix for validators such as JSON Schema, Pydantic, SHACL, or ShEx. Those validators typically consume generated artifacts, so generator coverage on the dashboard is the relevant proxy.
+
+For more detail, see:
+
+* [Generators](../generators/index) and the individual generator pages (JSON Schema, Pydantic, SHACL, ShEx, and others)
+* [Validating data](../data/validating-data) for validation strategies and plugins
+
+If a feature you need is missing or marked unknown, please open an issue or add a compliance test rather than treating the dashboard as a finished catalog.
+
 ## Is there a linter for LinkML?
 
 Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter.html).

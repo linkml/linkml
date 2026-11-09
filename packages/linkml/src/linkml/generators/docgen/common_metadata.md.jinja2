@@ -82,9 +82,9 @@
 
 ## Identifier and Mapping Information
 
-{%- set has_admin_metadata = element.status or (element.rank is not none and element.rank != 1000) %}
+{% set has_admin_metadata = element.status or (element.rank is not none and element.rank != 1000) %}
 
-{%- if has_admin_metadata %}
+{% if has_admin_metadata %}
 ### Administrative Metadata
 
 {% if element.status -%}
