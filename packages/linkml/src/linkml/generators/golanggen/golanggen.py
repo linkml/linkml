@@ -738,7 +738,7 @@ _TEMPLATE_NAMES = [
 )
 @click.option(
     "--template-dir",
-    type=click.Path(),
+    type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="""
 Optional jinja2 template directory to use for Go code generation.
 
@@ -796,10 +796,6 @@ def cli(
     nullable_primitives = args.pop("nullable_primitives", nullable_primitives)
     named_slot_types = args.pop("named_slot_types", named_slot_types)
     template_dir = args.pop("template_dir", template_dir)
-
-    if template_dir is not None:
-        if not Path(template_dir).exists():
-            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
 
     # The package was already validated above; a ValueError raised while actually
     # constructing the generator here is therefore a genuine failure (e.g. an
