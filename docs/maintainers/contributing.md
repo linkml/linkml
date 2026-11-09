@@ -149,6 +149,9 @@ New tests in any directory should be written using pytest.
 
   Tests marked `network` run against local stubs by default (no network needed); pass
   `--with-network` only if you specifically want to exercise the live network instead.
+  The weekly `metamodel-compat` workflow runs them live; a failure that persists opens a
+  `dependencies`-labelled PR against `tests/upstream_failures.yaml` — see
+  `tests/upstream_failures.py` for how to resolve one.
 
   Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
   in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
