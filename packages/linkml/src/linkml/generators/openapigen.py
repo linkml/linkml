@@ -1,13 +1,16 @@
 """Generate OpenAPI YAML files."""
 
 import copy
+import difflib
 import json
+import logging
 import os
 import re
 import textwrap
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import cast
+from typing import Any, cast
 
 import click
 import yaml
@@ -20,9 +23,42 @@ from yaml import MappingNode, ScalarNode
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator, json_schema_types
 from linkml.generators.pydanticgen import PydanticGenerator
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import (
+    Generator,
+    apply_config_defaults,
+    config_mapping,
+    read_generator_config,
+    shared_arguments,
+)
+from linkml_runtime.linkml_model.meta import SlotDefinition
+
+logger = logging.getLogger(__name__)
 
 SUPPORTED_OPENAPI_VERSIONS = ["3.0.3", "3.1.0"]
+
+# The generator reads these settings of the ``generator_args.openapi`` section itself. They are
+# not options of the command, so :func:`cli` takes them out of the section before
+# :func:`apply_config_defaults` applies the rest to the options.
+EXPOSURE_CONFIG_KEYS = ("expose", "exclude")
+
+# The keys that ``expose`` may hold.
+EXPOSE_KEYS = frozenset({"subset", "classes"})
+
+# The keys of one ``expose.classes`` entry that the generator reads, with the type each must
+# have. The generator leaves any other key alone, because it belongs to another tool that reads
+# the same file, such as a server that keeps its routing settings beside the class it serves. A
+# key that looks like a misspelling of one of these, such as ``operationId``, is an error,
+# because ignoring it would change the API without a message.
+EXPOSE_CLASS_KEYS: dict[str, type] = {
+    "path": str,
+    "operation_id": str,
+    "summary": str,
+    "description": str,
+    "crud": bool,
+}
+
+# The source that an error message names when the exposure settings have the wrong shape.
+EXPOSURE_SOURCE = "generator_args.openapi"
 
 openapi_generic_template = """# TODO: remove this whole comment block after processing
 # This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.
@@ -92,6 +128,105 @@ OVERRIDABLE_SCHEMA_KEYS = frozenset({"description", "title", "example", "externa
 LINKML_BOOKKEEPING_PREFIX = "x-linkml-"
 
 
+def _misspelt_class_key(key: str) -> str | None:
+    """Return the ``expose.classes`` key that ``key`` looks like a misspelling of, or None.
+
+    The comparison first converts ``key`` to lower case with underscores, so that
+    ``operationId`` and ``operation-id`` both become ``operation_id``. It then accepts a close
+    misspelling.
+
+    >>> _misspelt_class_key("operationId")
+    'operation_id'
+    >>> _misspelt_class_key("summry")
+    'summary'
+    >>> _misspelt_class_key("descripton")  # codespell:ignore descripton
+    'description'
+    >>> _misspelt_class_key("related") is None
+    True
+    """
+    spelling = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", key).replace("-", "_").lower()
+    matches = difflib.get_close_matches(spelling, EXPOSE_CLASS_KEYS, n=1, cutoff=0.8)
+    return matches[0] if matches else None
+
+
+def exposure_settings(expose: Any, exclude: Any) -> tuple[dict[str, Any], list[str]]:
+    """Check the shape of the ``expose`` and ``exclude`` settings, and return them normalised.
+
+    This checks the shape only. It runs before any schema is loaded, so the names are checked
+    against the schema later, when the template is created. It raises ``ValueError`` rather
+    than a click error, so that a library caller gets the same checks, and
+    :meth:`OpenApiGenerator.validate_generator_args` turns the error into a usage error.
+
+    >>> exposure_settings({"classes": {"Risk": {"path": "/risks"}, "Hazard": None}}, "Entity")
+    ({'classes': {'Risk': {'path': '/risks'}, 'Hazard': {}}}, ['Entity'])
+    >>> exposure_settings({"subsets": "core"}, None)
+    Traceback (most recent call last):
+    ...
+    ValueError: expose: unknown key 'subsets'; the keys are classes, subset
+
+    :param expose: The ``expose`` mapping, or None when absent.
+    :param exclude: The ``exclude`` list. A bare class name counts as a list of one.
+    :return: ``expose`` with every class entry a mapping, and ``exclude`` as a list.
+    :raises ValueError: if either has the wrong shape.
+    """
+    expose = dict(config_mapping(expose, "'expose'", EXPOSURE_SOURCE))
+    for key in sorted(set(expose) - EXPOSE_KEYS):
+        raise ValueError(f"expose: unknown key {key!r}; the keys are {', '.join(sorted(EXPOSE_KEYS))}")
+    subset = expose.get("subset")
+    if subset is not None and not isinstance(subset, str):
+        raise ValueError(f"expose.subset: expected a subset name, found {type(subset).__name__}")
+    if "classes" in expose:
+        classes = {}
+        for name, entry in config_mapping(expose["classes"], "'expose.classes'", EXPOSURE_SOURCE).items():
+            entry = config_mapping(entry, f"'expose.classes.{name}'", EXPOSURE_SOURCE)
+            for key, expected in EXPOSE_CLASS_KEYS.items():
+                if key in entry and not isinstance(entry[key], expected):
+                    raise ValueError(
+                        f"expose.classes.{name}.{key}: expected {expected.__name__}, found {type(entry[key]).__name__}"
+                    )
+            if "path" in entry and not entry["path"].startswith("/"):
+                raise ValueError(f"expose.classes.{name}.path: a path starts with '/', found {entry['path']!r}")
+            for key in entry:
+                if key in EXPOSE_CLASS_KEYS:
+                    continue
+                if meant := _misspelt_class_key(str(key)):
+                    raise ValueError(
+                        f"expose.classes.{name}.{key}: did you mean {meant!r}? gen-openapi reads "
+                        f"{', '.join(EXPOSE_CLASS_KEYS)} in a class entry and leaves other keys alone"
+                    )
+                logger.debug(f"expose.classes.{name}.{key}: not read by gen-openapi, left for other tools")
+            classes[name] = entry
+        expose["classes"] = classes
+    if exclude is None:
+        exclude = []
+    elif isinstance(exclude, str):
+        # Read a YAML scalar as a list of one, as apply_config_defaults does for a repeatable option.
+        exclude = [exclude]
+    if not isinstance(exclude, list) or not all(isinstance(name, str) for name in exclude):
+        raise ValueError(f"exclude: expected a list of class names, found {type(exclude).__name__}")
+    return expose, exclude
+
+
+@dataclass
+class ExposedClass:
+    """One class that the exposure settings expose, resolved against the schema."""
+
+    name: str
+    """The LinkML class name, which ``x-linkml-source`` carries."""
+    openapi_name: str
+    """The key in ``components/schemas``: the class name, changed to match the OpenAPI name pattern."""
+    path: str
+    """The path of the list ``GET``."""
+    operation_id: str
+    summary: str
+    description: str | None
+    """The operation's ``description``, written only when the class entry sets one."""
+    crud: bool
+    """False puts the class in ``components/schemas`` without a path."""
+    slots: list[SlotDefinition]
+    """The induced slots that become query parameters, in rank order."""
+
+
 @dataclass
 class OpenApiGenerator(Generator):
     """
@@ -116,6 +251,9 @@ class OpenApiGenerator(Generator):
 
     The OpenAPI version to be generated is obtained from the template's top-level
     attribute `openapi`.
+
+    A person can write the template by hand, or :meth:`create_template` can create it from
+    the schema. It exposes the classes that the ``expose`` and ``exclude`` settings name.
     """
 
     generatorname = os.path.basename(__file__)
@@ -123,10 +261,15 @@ class OpenApiGenerator(Generator):
     valid_formats = ["openapi"]
     file_extension = "yaml"
     uses_schemaloader = False
+    config_section_name = "openapi"
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
     keep_unreferenced: bool = False
     inline_enums: bool = False
+    expose: dict[str, Any] = field(default_factory=dict)
+    """The classes that :meth:`create_template` exposes, as a ``subset`` and per-class ``classes`` entries."""
+    exclude: list[str] = field(default_factory=list)
+    """Classes :meth:`create_template` leaves out of the exposed set."""
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
     _openapi_versions: list[str] = field(
@@ -143,6 +286,18 @@ class OpenApiGenerator(Generator):
     )
 
     _openapi_version = ""  # OpenAPI version declared in the template
+
+    @classmethod
+    def validate_generator_args(cls, args: Mapping[str, Any]) -> None:
+        """Check the shape of ``expose`` and ``exclude`` before any generator is built from them.
+
+        :param args: The merged ``generator_args.openapi`` settings.
+        :raises click.UsageError: if a value has the wrong shape.
+        """
+        try:
+            exposure_settings(args.get("expose"), args.get("exclude"))
+        except ValueError as e:
+            raise click.UsageError(str(e)) from e
 
     def _validate_oad_template(self, oad_validator_class: type[OaSpecValidator], expected_version: str):
         """Validate the OpenAPI template"""
@@ -409,6 +564,17 @@ class OpenApiGenerator(Generator):
     # OpenAPI 3.1 schema-name pattern; keys under components/schemas must match it.
     _OPENAPI_31_NAME_RE = re.compile(r"^[a-zA-Z0-9._-]+$")
 
+    @classmethod
+    def _openapi_name(cls, name: str) -> str:
+        """Change a LinkML name to match the pattern of an OpenAPI ``components/schemas`` key.
+
+        Each run of characters outside the pattern becomes one underscore.
+
+        >>> OpenApiGenerator._openapi_name("Foo Bar")
+        'Foo_Bar'
+        """
+        return re.sub(r"[^a-zA-Z0-9._-]+", "_", name).strip("_") or "schema"
+
     def _sanitize_schema_names(self, openapi_schemas: dict, reserved: set[str]) -> dict[str, str]:
         """Return a map of schema names invalid under OpenAPI 3.1 to sanitized equivalents.
 
@@ -422,7 +588,7 @@ class OpenApiGenerator(Generator):
         for name in openapi_schemas:
             if self._OPENAPI_31_NAME_RE.match(name):
                 continue
-            base = re.sub(r"[^a-zA-Z0-9._-]+", "_", name).strip("_") or "schema"
+            base = self._openapi_name(name)
             candidate = base
             suffix = 1
             while candidate in existing or candidate in name_map.values():
@@ -710,6 +876,201 @@ class OpenApiGenerator(Generator):
             openapi_version_list=",".join(self._openapi_versions),
         )
 
+    def _subset_members(self, subset_name: str) -> tuple[set[str], set[str]]:
+        """Return the names of the classes and of the slots tagged ``in_subset`` with ``subset_name``.
+
+        This method reads ``in_subset`` on every class and slot. ``SchemaView.get_elements_by_subset``,
+        which #4103 proposes for #2432, does the same, and this method is the one place to call it
+        from once it is merged.
+
+        :raises ValueError: if the schema declares no subset of that name.
+        """
+        sv = self.schemaview
+        if subset_name not in sv.all_subsets():
+            declared = ", ".join(sorted(sv.all_subsets())) or "none"
+            raise ValueError(f"expose.subset: the schema declares no subset {subset_name!r}; it declares {declared}")
+        classes = {name for name, cls in sv.all_classes().items() if subset_name in cls.in_subset}
+        slots = {name for name, slot in sv.all_slots().items() if subset_name in slot.in_subset}
+        return classes, slots
+
+    def _exposed_classes(self) -> list[ExposedClass]:
+        """Resolve the exposed set from ``expose`` and ``exclude`` against the schema.
+
+        The set is the subset's classes, plus the classes named under ``expose.classes``, minus
+        ``exclude``, minus abstract and mixin classes. The abstract and mixin filter applies to
+        what the subset contributes. A class named under ``expose.classes`` is exposed even when
+        it is abstract or a mixin, because a person chose it by name: a listing of an abstract
+        class returns the records of its subclasses, and a schema may give a mixin records of its
+        own. With neither ``subset`` nor ``classes``, every class that is neither abstract nor a
+        mixin is exposed. The subset's members come first, in schema order, and then the classes
+        named under ``expose.classes``, in the order the settings give them. When the subset tags
+        slots, the parameters of the subset's classes narrow to those slots, and a class named
+        from outside the subset keeps all its slots.
+
+        :raises ValueError: if a name is not in the schema, a class is both exposed and excluded,
+            or two classes share a path.
+        """
+        expose, exclude = exposure_settings(self.expose, self.exclude)
+        all_classes = self.schemaview.all_classes()
+        explicit: dict[str, dict] = expose.get("classes", {})
+        for name in [*explicit, *exclude]:
+            if name not in all_classes:
+                raise ValueError(f"expose: the schema has no class {name!r}")
+        if contradictory := [name for name in explicit if name in exclude]:
+            raise ValueError(f"expose: {', '.join(contradictory)} named both in expose.classes and in exclude")
+        subset_name = expose.get("subset")
+        if subset_name is not None:
+            candidates, subset_slots = self._subset_members(subset_name)
+        else:
+            candidates, subset_slots = (set(all_classes) if not explicit else set()), set()
+        entries: dict[str, dict] = {}
+        for name, cls in all_classes.items():
+            if name in candidates and name not in exclude and not cls.abstract and not cls.mixin:
+                entries[name] = {}
+        for name, entry in explicit.items():
+            entries[name] = {**entries.get(name, {}), **entry}
+        # When the subset tags at least one slot, narrow the parameters of the subset's classes to
+        # those slots. A class named from outside the subset keeps all its slots, because the
+        # subset says nothing about them.
+        narrow_to = subset_name if subset_slots else None
+        exposed = [
+            self._exposed_class(name, entry, narrow_to if name in candidates else None)
+            for name, entry in entries.items()
+        ]
+        paths: dict[str, str] = {}
+        for cls in exposed:
+            if cls.crud and cls.path in paths:
+                raise ValueError(f"expose: {paths[cls.path]} and {cls.name} share the path {cls.path}")
+            paths[cls.path] = cls.name
+        return exposed
+
+    def _exposed_class(self, name: str, entry: Mapping[str, Any], narrow_to: str | None) -> ExposedClass:
+        """Resolve one exposed class, with each value from its entry, or else from the derived default.
+
+        The derived defaults are the path ``/<lowercase class>``, the operation id
+        ``list_<lowercase class>`` and the summary ``Get <Class>``. The description has no
+        default, because the class's description in the schema would drift once copied into a
+        template. The slots are the class's induced slots. When ``narrow_to`` is given, only the
+        slots it tags through ``in_subset`` are kept. They come in ``rank`` order, and slots
+        without a rank follow in schema order.
+        """
+        # Convert the name to a plain str, because yaml.dump writes the metamodel's name classes
+        # as Python tags.
+        name = str(name)
+        openapi_name = self._openapi_name(name)
+        slots = self.schemaview.class_induced_slots(name)
+        if narrow_to is not None:
+            slots = [slot for slot in slots if narrow_to in slot.in_subset]
+        slots.sort(key=lambda slot: (slot.rank is None, slot.rank or 0))
+        return ExposedClass(
+            name=name,
+            openapi_name=openapi_name,
+            path=entry.get("path", f"/{openapi_name.lower()}"),
+            operation_id=entry.get("operation_id", f"list_{openapi_name.lower()}"),
+            summary=entry.get("summary", f"Get {name}"),
+            description=entry.get("description"),
+            crud=entry.get("crud", True),
+            slots=slots,
+        )
+
+    def _parameter_type(self, slot: SlotDefinition) -> str:
+        """Return the ``schema.type`` of the query parameter for ``slot``.
+
+        A reference to a class is passed as the identifier, and an enum as the text of a
+        permissible value, so both are strings. A type maps through its base type, as the JSON
+        Schema generator maps it. A multivalued slot takes one value per request.
+        """
+        if slot.range in self.schemaview.all_types():
+            base = self.schemaview.induced_type(slot.range).base or ""
+            return json_schema_types.get(base.lower(), ("string", None))[0]
+        return "string"
+
+    def _class_parameters(self, exposed: ExposedClass) -> list[dict]:
+        """Return the query parameters of the class's list ``GET``, one per slot.
+
+        A parameter holds structure only: ``in``, ``name``, ``required``, ``schema.type`` and
+        ``x-linkml-source: <Class>.<slot>``. The ``name`` is the slot's ``alias`` when it has
+        one, and the slot name otherwise, because the generated schema names the property the
+        same way. The template copies no description, enum value or default from the schema,
+        because a copy would drift from it. ``x-linkml-source`` says where a later pass at
+        instantiation can find them.
+        """
+        return [
+            {
+                "in": "query",
+                "name": str(slot.alias or slot.name),
+                "required": False,
+                "schema": {"type": self._parameter_type(slot)},
+                "x-linkml-source": f"{exposed.name}.{slot.name}",
+            }
+            for slot in exposed.slots
+        ]
+
+    def _template_info(self) -> dict[str, str]:
+        """Return the ``info`` object from the schema's metadata."""
+        schema = self.schemaview.schema
+        info = {"title": str(schema.title or schema.name), "version": str(schema.version or "0.1.0")}
+        if schema.description:
+            info["description"] = str(schema.description)
+        return info
+
+    def create_template(self, openapi_version: str = SUPPORTED_OPENAPI_VERSIONS[0]) -> str:
+        """Return an OpenAPI template that exposes the classes ``expose`` and ``exclude`` resolve to.
+
+        The template holds structure only:
+
+        * ``info``, from the schema's metadata;
+        * one list ``GET`` for each exposed class with ``crud`` on, with a query parameter for
+          each of the class's slots, typed from the slot's range;
+        * one placeholder in ``components/schemas`` for each exposed class.
+
+        :meth:`serialize` generates the component schemas, with their descriptions, enum values
+        and defaults, from the schema when the template is instantiated, so the template cannot
+        drift from the schema. The template is validated before it is returned, so it
+        instantiates without further editing.
+
+        :param openapi_version: The OpenAPI version the template declares.
+        """
+        if openapi_version not in SUPPORTED_OPENAPI_VERSIONS:
+            raise ValueError(
+                f"Unsupported OpenAPI version {openapi_version}. "
+                + f"Only supported versions are {','.join(self._openapi_versions)}"
+            )
+        schema_id = str(self.schemaview.schema.id)
+        paths: dict[str, dict] = {}
+        schemas: dict[str, dict] = {}
+        for cls in self._exposed_classes():
+            schemas[cls.openapi_name] = {"type": "object", "x-linkml-schema": schema_id, "x-linkml-source": cls.name}
+            if not cls.crud:
+                continue
+            operation: dict[str, Any] = {"summary": cls.summary}
+            if cls.description is not None:
+                operation["description"] = cls.description
+            operation["operationId"] = cls.operation_id
+            if parameters := self._class_parameters(cls):
+                operation["parameters"] = parameters
+            operation["responses"] = {
+                "200": {
+                    "description": f"A list of {cls.name}",
+                    "content": {
+                        "application/json": {
+                            "schema": {"type": "array", "items": {"$ref": f"#/components/schemas/{cls.openapi_name}"}}
+                        }
+                    },
+                }
+            }
+            paths[cls.path] = {"get": operation}
+        document = {
+            "openapi": openapi_version,
+            "info": self._template_info(),
+            "paths": paths,
+            "components": {"schemas": schemas},
+        }
+        self._template = document
+        self._validate_oad_template(self._openapi_validators[openapi_version], openapi_version)
+        header = f"# OpenAPI template created by gen-openapi --create-template from {schema_id}\n"
+        return header + yaml.dump(document, sort_keys=False)
+
 
 @shared_arguments(OpenApiGenerator)
 @click.command(name="openapi")
@@ -732,11 +1093,74 @@ class OpenApiGenerator(Generator):
     default=False,
     help="Inline enum subschemas into their parent schemas instead of generating separate schema entries",
 )
+@click.option(
+    "--create-template",
+    is_flag=True,
+    default=False,
+    help="Print an OpenAPI template that exposes the classes named under "
+    "'generator_args: {openapi: {expose: ..., exclude: ...}}' in the config file, instead of "
+    "instantiating a template. Without a config file, every class that is neither abstract nor "
+    "a mixin is exposed. It cannot be given with --template.",
+)
+@click.option(
+    "--openapi-version",
+    type=click.Choice(SUPPORTED_OPENAPI_VERSIONS),
+    default=SUPPORTED_OPENAPI_VERSIONS[0],
+    show_default=True,
+    help="The OpenAPI version that a created template declares",
+)
+@click.option(
+    "--config-file",
+    "-C",
+    type=click.File("rb"),
+    help="Path to a YAML config file supplying defaults under "
+    "'generator_args: {openapi: {template: ...}}'. Keys are this command's own option "
+    "names with dashes as underscores; explicit command-line options always take "
+    "precedence over the config file. The same section carries the nested 'expose' and "
+    "'exclude' settings that --create-template reads.",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, template, keep_unreferenced, inline_enums, **args):
+@click.pass_context
+def cli(
+    ctx,
+    yamlfile,
+    template,
+    keep_unreferenced,
+    inline_enums,
+    create_template=False,
+    openapi_version=SUPPORTED_OPENAPI_VERSIONS[0],
+    config_file=None,
+    **args,
+):
     """Generate an OpenAPI YAML with resources modelled with LinkML.
     If no OpenAPI template is provided,
-    a generic one with one exemplary class/type schema is printed out."""
+    a generic one with one exemplary class/type schema is printed out.
+    With --create-template, it prints a template for the classes that the config file exposes."""
+    config = read_generator_config(config_file, OpenApiGenerator.config_section_name)
+    # The generator reads the settings in EXPOSURE_CONFIG_KEYS itself. They are not options of
+    # this command, so apply_config_defaults would warn that each is an unknown key. Take them
+    # out of the config before it is applied, and add them to args after.
+    exposure = {key: value for key, value in config.items() if key in EXPOSURE_CONFIG_KEYS}
+    config = {key: value for key, value in config.items() if key not in EXPOSURE_CONFIG_KEYS}
+    apply_config_defaults(ctx, config, args)
+    args.update(exposure)
+    OpenApiGenerator.validate_generator_args(args)
+    # apply_config_defaults writes each option the config file sets into args, even an option
+    # that this function names as a parameter. Move those values to the parameters, so that the
+    # code below reads them there and passes no option to the generator twice.
+    template = args.pop("template", template)
+    keep_unreferenced = args.pop("keep_unreferenced", keep_unreferenced)
+    inline_enums = args.pop("inline_enums", inline_enums)
+    create_template = args.pop("create_template", create_template)
+    openapi_version = args.pop("openapi_version", openapi_version)
+    # Refuse a --template given on the command line, which asks this run to instantiate it. A
+    # template named in the config file is allowed, because it names the template that a later
+    # run instantiates, which is often the file this run creates.
+    if create_template and ctx.get_parameter_source("template") is click.ParameterSource.COMMANDLINE:
+        raise click.UsageError("--template and --create-template cannot be given together")
+    if create_template:
+        print(OpenApiGenerator(yamlfile, **args).create_template(openapi_version), end="")
+        return
     # if no template provided, print out a generic one
     if not template:
         print(OpenApiGenerator(yamlfile, **args).printout_template())
