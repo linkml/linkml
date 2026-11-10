@@ -1788,17 +1788,33 @@ class SchemaView:
         return {k: v.value for k, v in e.annotations.items()}
 
     @lru_cache(None)
-    def _pattern_resolver(self, schema_id: str) -> PatternResolver:
+    def _pattern_resolver(self, schema_id: str, with_root_settings: bool = True) -> PatternResolver:
         """Return a pattern resolver configured with one schema's settings."""
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema()}
-        schema = schemas_by_id.get(schema_id, self.schema)
-        return PatternResolver(SchemaView(schema))
+        return self._schema_pattern_resolver(schemas_by_id.get(schema_id, self.schema), with_root_settings)
+
+    def _schema_pattern_resolver(self, schema: SchemaDefinition, with_root_settings: bool) -> PatternResolver:
+        """Return a resolver for a schema's settings, optionally falling back to the root schema's settings.
+
+        A setting declared in the defining schema wins. With ``with_root_settings``, a setting it does
+        not declare is taken from the schema this view was loaded from, so a module that relies on its
+        importing schema's settings, as linkml-runtime 1.11 allowed, still resolves. The fallback is
+        only for interpolation: escaping a non-interpolated pattern uses the defining schema's own
+        settings, so root settings never change a pattern that does not ask for them.
+        See https://github.com/linkml/linkml/issues/4135.
+        """
+        resolver = PatternResolver(SchemaView(schema))
+        if with_root_settings and schema is not self.schema and self.schema.settings:
+            for key, setting in self.schema.settings.items():
+                resolver.format_spec.setdefault(key, setting.setting_value)
+        return resolver
 
     def resolve_pattern(self, definition: SlotDefinition | TypeDefinition) -> str | None:
         """Return the effective regular-expression pattern for a slot or type definition.
 
         Structured patterns are resolved using settings from the schema that defined the
-        supplied definition. The definition and underlying schemas are not modified.
+        supplied definition. A setting that schema does not declare is taken from the root
+        schema of this view. The definition and underlying schemas are not modified.
 
         :param definition: slot or type definition whose pattern should be resolved
         :return: asserted or materialized regular-expression pattern, if present
@@ -1807,12 +1823,14 @@ class SchemaView:
         if structured_pattern is None:
             return definition.pattern
 
-        resolver = self._pattern_resolver(str(definition.from_schema or self.schema.id))
+        schema_id = str(definition.from_schema or self.schema.id)
         pattern = structured_pattern.syntax
         if structured_pattern.interpolated:
-            pattern = resolver.resolve(pattern)
+            pattern = self._pattern_resolver(schema_id, with_root_settings=True).resolve(pattern)
         else:
-            pattern = resolver.escape_uninterpolated(pattern)
+            # Escaping uses only the defining schema's settings. A root key escaped here would
+            # break the pattern: ``\N{SPACE}`` would become ``\N\{SPACE\}``.
+            pattern = self._pattern_resolver(schema_id, with_root_settings=False).escape_uninterpolated(pattern)
         if not structured_pattern.partial_match:
             pattern = f"^(?:{pattern})$"
         return pattern
@@ -2538,7 +2556,7 @@ class SchemaView:
     def _materialize_patterns(self, imports: bool = True) -> None:
         """Implement in-place pattern materialization for compatibility callers."""
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema(imports=imports)}
-        resolvers: dict[str, PatternResolver] = {}
+        resolvers: dict[tuple[str, bool], PatternResolver] = {}
         modified = False
 
         def resolver_for_definition(
@@ -2547,10 +2565,12 @@ class SchemaView:
         ) -> PatternResolver:
             source = owning_class if owning_class is not None else element_def
             schema_id = str(source.from_schema) if source.from_schema is not None else str(self.schema.id)
-            if schema_id not in resolvers:
+            # Root settings are added only for interpolation, as in resolve_pattern.
+            key = (schema_id, bool(element_def.structured_pattern.interpolated))
+            if key not in resolvers:
                 schema = schemas_by_id.get(schema_id, self.schema)
-                resolvers[schema_id] = PatternResolver(SchemaView(schema))
-            return resolvers[schema_id]
+                resolvers[key] = self._schema_pattern_resolver(schema, key[1])
+            return resolvers[key]
 
         def materialize_pattern_into_definition(
             element_def: SlotDefinition | TypeDefinition,
