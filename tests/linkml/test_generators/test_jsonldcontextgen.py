@@ -1,6 +1,7 @@
 import json
 import re
 import textwrap
+from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
@@ -11,6 +12,8 @@ from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextG
 from linkml.generators.jsonldcontextgen import cli as jsonld_context_cli
 from linkml.generators.owlgen import cli as owl_cli
 from linkml.utils.deprecation import EMITTED, XSD_ANYURI_AS_IRI_OPTION
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.utils.schemaview import SchemaView
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
@@ -1694,6 +1697,75 @@ def test_any_slot_with_rdf_type_uri_aliases_type(tmp_path, use_curies, fix_multi
 
     # Verify no CURIE alias is used for these slots (use slot name instead)
     assert "rdf:type" not in ctx, "Should not emit rdf:type as a context key"
+
+
+@pytest.mark.parametrize("use_curies", [True, False])
+@pytest.mark.parametrize("fix_multivalue_containers", [True, False])
+@pytest.mark.parametrize("multivalued", [True, False])
+def test_imported_rdf_type_slot_preserves_rdf_triples(
+    tmp_path: Path, use_curies: bool, fix_multivalue_containers: bool, multivalued: bool
+) -> None:
+    """An inherited slot and its RDF prefix from an imported schema retain @type semantics."""
+    imported_schema = Path(__file__).parents[1] / "test_prefixes" / "input" / "prefixtest.yaml"
+    # Vary cardinality in a test-local copy without redefining the imported RDF mapping.
+    imported_view = SchemaView(str(imported_schema))
+    imported_slot = imported_view.get_slot("type")
+    imported_slot.multivalued = multivalued
+    yaml_dumper.dump(imported_view.schema, to_file=str(tmp_path / "base.yaml"))
+    schema_file = tmp_path / "derived.yaml"
+    schema_file.write_text(
+        textwrap.dedent(
+            """\
+            id: https://example.org/derived
+            name: derived
+            prefixes:
+              ex: https://example.org/derived/
+            imports:
+              - base
+            default_prefix: ex
+            classes:
+              Base:
+                slots:
+                  - type
+              Derived:
+                is_a: Base
+            """
+        ),
+        encoding="utf-8",
+    )
+    # The predicate and RDF prefix come only from the imported fixture's type slot.
+    view = SchemaView(str(schema_file))
+    assert "type" not in view.all_slots(imports=False)
+    assert "rdf" not in view.schema.prefixes
+    slot = view.induced_slot("type", "Derived")
+    assert slot.slot_uri == "rdf:type"
+    assert bool(slot.multivalued) == multivalued
+
+    context = json.loads(
+        ContextGenerator(
+            str(schema_file),
+            mergeimports=True,
+            use_curies=use_curies,
+            fix_multivalue_containers=fix_multivalue_containers,
+        ).serialize()
+    )["@context"]
+    expected_entry = {"@id": "@type"}
+    if multivalued and fix_multivalue_containers:
+        expected_entry["@container"] = "@set"
+    assert context["type"] == expected_entry
+    assert "rdf:type" not in context
+
+    subject = URIRef("https://example.org/instance")
+    types = ["ex:Person", "ex:Agent"] if multivalued else ["ex:Person"]
+    document = {
+        "@context": context,
+        "@id": str(subject),
+        "type": types if multivalued else types[0],
+    }
+    graph = Graph().parse(data=json.dumps(document), format="json-ld")
+    assert set(graph) == {
+        (subject, RDF.type, URIRef(f"https://example.org/derived/{type_name.split(':')[1]}")) for type_name in types
+    }
 
 
 @pytest.mark.parametrize("use_curies", [True, False])
