@@ -16,6 +16,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.naming import check_keyword_collisions, escape_python_keyword
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
@@ -167,8 +168,7 @@ def make_valid_python_identifier(name: str) -> str:
         identifier = f"field_{identifier}"
 
     # Ensure it's not a keyword
-    if keyword.iskeyword(identifier):
-        identifier = f"{identifier}_"
+    identifier = escape_python_keyword(identifier)
 
     # Ensure it's not empty
     if not identifier:
@@ -504,6 +504,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             result = result.merge(slot)
 
         slot_results = self.after_generate_slots(slot_results, self.schemaview)
+        # A field whose name was changed, such as from_ for the slot from, keeps the slot name as its alias
+        check_keyword_collisions(cls.name, [slot.attribute.alias or slot.attribute.name for slot in slot_results])
         attributes = {slot.attribute.name: slot.attribute for slot in slot_results}
 
         result.cls.attributes = attributes
