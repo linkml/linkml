@@ -51,9 +51,9 @@ jobs:
         # Test on Windows with only the oldest and newest Python versions
         exclude:
           - os: windows-latest
-            python-version: "3.11"
-          - os: windows-latest
             python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.13"
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
       run:
