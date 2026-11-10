@@ -1728,18 +1728,20 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">keyed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">identifier</span><span class="p">:</span>
+                <span class="c1"># underscored name, as in data and dataclass field (``term id`` -&gt; ``term_id``)</span>
+                <span class="n">key_name</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
                     <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;self._normalize_inlined_as_dict(slot_name=&quot;</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
                         <span class="sa">f</span><span class="s2">&quot;slot_type=</span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">, &quot;</span>
-                        <span class="sa">f</span><span class="s1">&#39;key_name=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;key_name=&quot;</span><span class="si">{</span><span class="n">key_name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
                         <span class="sa">f</span><span class="s2">&quot;keyed=</span><span class="si">{</span><span class="n">keyed</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;self._normalize_inlined_as_list(slot_name=&quot;</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
                         <span class="sa">f</span><span class="s2">&quot;slot_type=</span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">, &quot;</span>
-                        <span class="sa">f</span><span class="s1">&#39;key_name=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;key_name=&quot;</span><span class="si">{</span><span class="n">key_name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
                         <span class="sa">f</span><span class="s2">&quot;keyed=</span><span class="si">{</span><span class="n">keyed</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
