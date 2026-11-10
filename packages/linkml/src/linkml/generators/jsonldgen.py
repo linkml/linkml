@@ -437,12 +437,9 @@ class JSONLDGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         cls.definition_uri = self.schemaview.get_uri(cls.name, native=True, expand=True)
-        # SchemaLoader synthesises class_uri when missing (schemaloader.py:291-302) then
-        # inserts it into exact_mappings (schemaloader.py:289-290 and 302).
-        # get_uri(native=False) already implements this: it returns the declared class_uri
-        # when set, otherwise constructs {default_prefix}:{camelcase(name)} — exactly
-        # what SchemaLoader's uri_or_curie_for does.
-        cls.exact_mappings.insert(0, cls.class_uri or self.schemaview.get_uri(cls.name, native=False))
+        # Materialize the class URI before adding mappings, as SchemaLoader does.
+        # The shared helper adds a mapping only when it differs from definition_uri.
+        cls.class_uri = cls.class_uri or self.schemaview.get_uri(cls.name, native=False)
         self._visit(cls)
         self._add_class_uri_exact_mapping(cls)
         class_uri = cls.class_uri
