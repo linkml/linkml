@@ -262,16 +262,17 @@ def test_native_link_uses_the_schema_prefixes_without_a_types_import():
     }
 
 
-def test_native_link_that_is_not_a_link_is_kept_as_a_literal(caplog):
-    """A bare element name in ``see_also`` cannot be resolved; it is kept as text, so the output stays standard RDF."""
+@pytest.mark.parametrize("value", ["implements", "./data/f.csv", "../docs/reference", "/docs/reference"])
+def test_native_link_that_is_not_a_link_is_kept_as_a_literal(caplog: pytest.LogCaptureFixture, value: str) -> None:
+    """Unresolvable ``see_also`` values remain text, so the output stays standard RDF."""
     schema = yaml.safe_load(SCHEMA)
-    schema["classes"]["Thing"]["see_also"] = ["implements"]
+    schema["classes"]["Thing"]["see_also"] = [value]
     with warnings.catch_warnings():
         warnings.simplefilter("error", RDFCanonicalizationWarning)
         output = OwlSchemaGenerator(yaml.safe_dump(schema), type_objects=False, metaclasses=False).serialize()
     graph = Graph().parse(data=output, format="turtle")
-    assert set(graph.objects(URIRef(EX + "Thing"), RDFS.seeAlso)) == {Literal("implements")}
-    assert "see_also of https://example.org/Thing: 'implements' is neither an IRI nor a CURIE" in caplog.text
+    assert set(graph.objects(URIRef(EX + "Thing"), RDFS.seeAlso)) == {Literal(value)}
+    assert f"see_also of https://example.org/Thing: {value!r} is neither an IRI nor a CURIE" in caplog.text
 
 
 def test_documented_dcmi_example():

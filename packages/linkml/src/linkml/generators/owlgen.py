@@ -44,7 +44,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-from linkml_runtime.utils.rdf_terms import link_iri, type_term, value_term
+from linkml_runtime.utils.rdf_terms import type_term, value_term
 
 logger = logging.getLogger(__name__)
 
@@ -547,8 +547,10 @@ class OwlSchemaGenerator(Generator):
             return Literal(value, lang=language)
         if not type_term(msv, range_name).kind.is_node:
             return value_term(msv, range_name, value)
-        link = self.schemaview.expand_curie(str(value), fallback=msv)
-        if link_iri(msv, link) is None and not link.startswith("_:"):
+        try:
+            link = self.schemaview.expand_curie(str(value), fallback=msv)
+        except ValueError:
+            # Invalid native links are annotation text, not relative RDF IRIs.
             logger.warning(f"{origin}: {value!r} is neither an IRI nor a CURIE; written as a literal")
             return Literal(str(value))
         return value_term(msv, range_name, link)
