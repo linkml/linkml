@@ -411,7 +411,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.naming</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_keyword_collisions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">..dataframe_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..render_adapters.dataframe_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeClass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.slot_handler_pandera</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotHandlerPandera</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -468,6 +472,17 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">make_multivalued</span><span class="p">(</span><span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;List&quot;</span></div>
+
+
+<div class="viewcode-block" id="PanderaDataframeGenerator.append_slots">
+<a class="viewcode-back" href="../../../../../generators/pandera.html#linkml.generators.panderagen.PanderaDataframeGenerator.append_slots">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schemaview_class</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ooclass</span><span class="p">:</span> <span class="n">DataframeClass</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Append slots to the class. A class cannot have both a column named after a Python keyword, such as</span>
+<span class="sd">        ``from``, and a column ``from_``, because the class-based model gives both the attribute ``from_``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append_slots</span><span class="p">(</span><span class="n">schemaview_class</span><span class="p">,</span> <span class="n">ooclass</span><span class="p">)</span>
+        <span class="n">check_keyword_collisions</span><span class="p">(</span><span class="n">schemaview_class</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ooclass</span><span class="o">.</span><span class="n">all_fields</span><span class="p">])</span></div>
 </div>
 
 </pre></div>

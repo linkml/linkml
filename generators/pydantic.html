@@ -1916,6 +1916,17 @@ is_a relationship), is a valid value for the slot”.</p>
 <p>When disabled, the slot uses its normal <code class="docutils literal notranslate"><span class="pre">range</span></code> without the hierarchy constraint.</p>
 </section>
 </section>
+<section id="slots-named-after-python-keywords">
+<h2>Slots named after Python keywords<a class="headerlink" href="#slots-named-after-python-keywords" title="Link to this heading">¶</a></h2>
+<p>A slot named after a Python keyword, such as <code class="docutils literal notranslate"><span class="pre">from</span></code> or <code class="docutils literal notranslate"><span class="pre">class</span></code>, cannot be a Python field
+name, so its field gets a trailing underscore. The field keeps the slot name as its alias, so
+data still uses <code class="docutils literal notranslate"><span class="pre">from</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;from&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A class cannot have both a slot named after a keyword and a slot named like its field, such as
+<code class="docutils literal notranslate"><span class="pre">from</span></code> and <code class="docutils literal notranslate"><span class="pre">from_</span></code>. The generator reports an error for it.</p>
+</section>
 <section id="additional-notes">
 <h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Link to this heading">¶</a></h2>
 <p>LinkML contains two Python generators. The Pydantic dataclass generator is specifically
@@ -2036,6 +2047,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <li><a class="reference internal" href="#disabling-expansion">Disabling Expansion</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#slots-named-after-python-keywords">Slots named after Python keywords</a></li>
 <li><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
 <li><a class="reference internal" href="#biolink-example">Biolink Example</a></li>
 </ul>

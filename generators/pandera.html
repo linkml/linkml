@@ -594,6 +594,18 @@ the first priority is implementing models of literal and nested data types and c
 </pre></div>
 </div>
 </section>
+<section id="columns-named-after-python-keywords">
+<h3>Columns named after Python keywords<a class="headerlink" href="#columns-named-after-python-keywords" title="Link to this heading">¶</a></h3>
+<p>In the class-based model, a column named after a Python keyword, such as <code class="docutils literal notranslate"><span class="pre">from</span></code>, gets an
+attribute with a trailing underscore. The attribute keeps the column name as its alias, so
+dataframes still use the column <code class="docutils literal notranslate"><span class="pre">from</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Date</span><span class="p">]</span> <span class="o">=</span> <span class="n">pla</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A class cannot have both a column named after a keyword and a column named like its attribute,
+such as <code class="docutils literal notranslate"><span class="pre">from</span></code> and <code class="docutils literal notranslate"><span class="pre">from_</span></code>. The generator reports an error for it. The polars schema names
+its columns with strings, so it accepts both.</p>
+</section>
 </section>
 <section id="command-line">
 <h2>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h2>
@@ -708,6 +720,13 @@ No exceptions are raised because the data matches the model.</p>
 <li><p>class-based</p></li>
 <li><p>schema-based (not implemented)</p></li>
 </ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.panderagen.PanderaDataframeGenerator.append_slots">
+<span class="sig-name descname"><span class="pre">append_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schemaview_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ooclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataframeClass</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/panderagen/pandera/pandera_dataframe_generator.html#PanderaDataframeGenerator.append_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.panderagen.PanderaDataframeGenerator.append_slots" title="Link to this definition">¶</a></dt>
+<dd><p>Append slots to the class. A class cannot have both a column named after a Python keyword, such as
+<code class="docutils literal notranslate"><span class="pre">from</span></code>, and a column <code class="docutils literal notranslate"><span class="pre">from_</span></code>, because the class-based model gives both the attribute <code class="docutils literal notranslate"><span class="pre">from_</span></code>.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.panderagen.PanderaDataframeGenerator.make_multivalued">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_multivalued</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/panderagen/pandera/pandera_dataframe_generator.html#PanderaDataframeGenerator.make_multivalued"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.panderagen.PanderaDataframeGenerator.make_multivalued" title="Link to this definition">¶</a></dt>
@@ -892,6 +911,7 @@ are not installed.</p>
 <li><a class="reference internal" href="#">Pandera</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#columns-named-after-python-keywords">Columns named after Python keywords</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>

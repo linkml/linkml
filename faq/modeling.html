@@ -839,16 +839,19 @@ JSON-Schema, RDF, Python then those naming conventions are applied.</p>
 <span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my slot</span>
 </pre></div>
 </div>
-<p>Note that one current limitation of the LinkML generator framework is
-that it does not protect you from using keywords that are reserved in
-certain formalisms.</p>
-<p>For example, if you define a slot <code class="docutils literal notranslate"><span class="pre">in</span></code>, then this conflicts with the
-Python keyword, and the generated python code will raise errors. For now the recommendation is to avoid these as they arise.</p>
-<p>In future, the LinkML framework will</p>
-<ul class="simple">
-<li><p>warn if a reserved term is used</p></li>
-<li><p>provide a mechanism for transparent mapping between a schema element and a “safe” version of the element</p></li>
-</ul>
+<p>Note that not every generator protects you from names that are reserved
+in its target language.</p>
+<p>The Pydantic, SQLAlchemy and Pandera generators do. A slot named after a
+Python keyword, such as <code class="docutils literal notranslate"><span class="pre">in</span></code> or <code class="docutils literal notranslate"><span class="pre">from</span></code>, gets a trailing underscore in the
+generated code, so <code class="docutils literal notranslate"><span class="pre">from</span></code> becomes the attribute <code class="docutils literal notranslate"><span class="pre">from_</span></code>. Data still uses
+the slot name: the field keeps it as its alias, and the column keeps it as
+its name. A class cannot have both such a slot and a slot named like its
+attribute, such as <code class="docutils literal notranslate"><span class="pre">from</span></code> and <code class="docutils literal notranslate"><span class="pre">from_</span></code>, and the generator reports an error
+for it. The pages for these generators show the generated code.</p>
+<p>The Python generator also adds the trailing underscore, but its classes
+do not yet map between the two names when they load or dump data.</p>
+<p>Other generators may not handle reserved names yet, so avoid them when you
+use those generators.</p>
 </section>
 <section id="when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">
 <h2>When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?<a class="headerlink" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml" title="Link to this heading">¶</a></h2>

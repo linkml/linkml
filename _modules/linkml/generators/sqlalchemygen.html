@@ -413,13 +413,14 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">Template</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.naming</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_keyword_collisions</span><span class="p">,</span> <span class="n">escape_python_keyword</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pythongen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqlalchemy.sqlalchemy_declarative_2x_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqlalchemy_declarative_2x_template_str</span>
@@ -436,7 +437,16 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">TemplateEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">python_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the Python attribute name for a slot. Spaces become underscores, and a name that is a Python</span>
+<span class="sd">    keyword gets a trailing underscore, so the slot ``in`` has the attribute ``in_``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">escape_python_keyword</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TemplateEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The style of SQLAlchemy mapping to generate. A member equals its string value, so the template</span>
+<span class="sd">    ``&quot;declarative&quot;`` is the same as ``TemplateEnum.DECLARATIVE``.&quot;&quot;&quot;</span>
+
     <span class="n">DECLARATIVE</span> <span class="o">=</span> <span class="s2">&quot;declarative&quot;</span>
     <span class="n">IMPERATIVE</span> <span class="o">=</span> <span class="s2">&quot;imperative&quot;</span>
     <span class="n">DECLARATIVE_2X</span> <span class="o">=</span> <span class="s2">&quot;declarative_2x&quot;</span>
@@ -477,6 +487,8 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="ow">or</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span>
+        <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="n">check_keyword_collisions</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">)])</span>
         <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">foreign_key_policy</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">foreign_key_policy</span>
@@ -533,6 +545,7 @@
             <span class="n">is_join_table</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;linkml:derived_from&quot;</span><span class="p">),</span>
             <span class="n">classes</span><span class="o">=</span><span class="n">rel_schema_classes_ordered</span><span class="p">,</span>
             <span class="n">python_type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">sql_repr</span><span class="p">:</span> <span class="n">SQL_TYPE_TO_PYTHON_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sql_repr</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">),</span>
+            <span class="n">python_name</span><span class="o">=</span><span class="n">python_name</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Generated code:</span><span class="se">\n</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">code</span>
@@ -590,7 +603,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">add_safe_aliases</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">a</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">python_name</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">alias</span> <span class="o">!=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                    <span class="c1"># The attribute for a slot named after a Python keyword, such as from, is from_,</span>
+                    <span class="c1"># so the column needs its name set to keep the slot name</span>
+                    <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span><span class="s2">&quot;column_name&quot;</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                    <span class="n">a</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">skip</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
