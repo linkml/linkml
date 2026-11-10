@@ -38,6 +38,48 @@ validator (bundled with linkml):
    Note that any JSON that conforms to the derived JSON Schema can be
    converted to RDF using the derived JSON-LD context.
 
+
+CURIE usage
+^^^^^^^^^^^
+
+By default, JSON Schema property names use the generator's normal slot-name alias. With
+``--use-curies``, non-identifier slot properties use their CURIEs (for example,
+``demo_id`` with ``slot_uri: demo:id`` becomes ``demo:id``). Identifier slots marked
+``identifier: true`` are an exception: they retain their slot-name alias (``id`` in
+the example) so that the property name agrees with the JSON-LD ``@id`` alias. Class
+``$defs`` names are CURIE-keyed as well.
+
+The CURIE mode is opt-in. CURIEs are resolved with ``SchemaView.get_curie`` using the
+schema's prefixes and default prefix.
+
+Example (``ex`` is the schema's ``default_prefix``):
+
+.. code-block:: yaml
+
+    prefixes:
+      ex: https://example.org/
+      demo: https://example.org/demo/
+    default_prefix: ex
+
+    classes:
+      Entity:
+        slots:
+          - id
+          - demo_id
+
+    slots:
+      id:
+        range: string
+        required: true
+        identifier: true
+      demo_id:
+        range: string
+        slot_uri: demo:id
+
+With ``gen-json-schema --use-curies``, the identifier property remains ``id`` and
+``demo_id`` is keyed as ``demo:id``.
+
+
 Inheritance
 ^^^^^^^^^^^
 

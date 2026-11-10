@@ -2674,6 +2674,19 @@ def test_generate_split_directory(input_path, tmp_path):
     assert not (tmp_path / "__init__.py").exists()
 
 
+@pytest.mark.pydanticgen_split
+def test_generate_split_default_pattern(input_path, tmp_path, monkeypatch):
+    """Without a split_pattern, generate_split uses the generator's default one."""
+    schema = input_path("split/main.yaml")
+    output_file = tmp_path / "split_default_pattern" / "main.py"
+    results = PydanticGenerator.generate_split(schema, output_file)
+
+    assert {result.path.name for result in results} == {"main.py", "schema_1.py", "schema_2.py"}
+    monkeypatch.syspath_prepend(str(tmp_path))
+    main = importlib.import_module("split_default_pattern.main")
+    assert issubclass(main.S1Inheritance, BaseModel)
+
+
 @pytest.mark.parametrize(
     "test,expected", [("Schema 1", "schema_1"), ("SchemaOneTwo", "schema_one_two"), ("Schema! One", "schema__one")]
 )

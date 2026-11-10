@@ -1,7 +1,7 @@
 id: https://w3id.org/linkml/meta
 title: LinkML Schema Metamodel
 name: meta
-metamodel_version: 1.11.0
+metamodel_version: 1.12.0
 description: |-
   The metamodel for schemas defined using the Linked Data Modeling Language framework.
 
