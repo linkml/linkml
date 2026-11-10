@@ -324,6 +324,20 @@ To disable subproperty expansion, set ``expand_subproperty_of=False``:
 
 When disabled, the slot uses its normal ``range`` without the hierarchy constraint.
 
+Slots named after Python keywords
+---------------------------------
+
+A slot named after a Python keyword, such as ``from`` or ``class``, cannot be a Python field
+name, so its field gets a trailing underscore. The field keeps the slot name as its alias, so
+data still uses ``from``:
+
+.. code-block:: python
+
+    from_: Optional[date] = Field(default=None, alias="from")
+
+A class cannot have both a slot named after a keyword and a slot named like its field, such as
+``from`` and ``from_``. The generator reports an error for it.
+
 Additional Notes
 ----------------
 LinkML contains two Python generators. The Pydantic dataclass generator is specifically
