@@ -421,7 +421,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers.dumper_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dumper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">value_term</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_terms</span><span class="w"> </span><span class="kn">import</span> <span class="n">checked_iri</span><span class="p">,</span> <span class="n">value_term</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span>
 
@@ -454,6 +454,8 @@
 <span class="sd">        :param schemaview:</span>
 <span class="sd">        :param prefix_map:</span>
 <span class="sd">        :return:</span>
+<span class="sd">        :raises ValueError: if an IRI or identifier holds a character that an IRI cannot, or a blank</span>
+<span class="sd">            node label is outside the Turtle grammar</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
         <span class="n">schemaview</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">()</span>  <span class="c1"># ensure all imported sub-schemas are in schema_map before namespaces() caches</span>
@@ -624,15 +626,18 @@
 <span class="sd">        :param fmt:</span>
 <span class="sd">        :param prefix_map:</span>
 <span class="sd">        :return: serialization of rdflib Graph containing element</span>
+<span class="sd">        :raises ValueError: if an IRI or identifier holds a character that an IRI cannot, or a blank</span>
+<span class="sd">            node label is outside the Turtle grammar</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">canonicalize_rdf_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_rdf_graph</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">prefix_map</span><span class="o">=</span><span class="n">prefix_map</span><span class="p">),</span> <span class="n">output_format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_as_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the IRI of an identifier. Percent-encoding leaves no character that needs a check.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">and</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">is_slot_percent_encoded</span><span class="p">(</span><span class="n">id_slot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">element_id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">checked_iri</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">element_id</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Identifier </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

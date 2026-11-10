@@ -663,6 +663,8 @@ so the RDF dumper rejects a relative value of a link type, such as <code class="
 from it (<code class="docutils literal notranslate"><span class="pre">format:</span> <span class="pre">uri</span></code>). Through a JSON-LD context, <code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> values are resolved
 against the base IRI of the document. Give values that may be relative a text type
 such as <code class="docutils literal notranslate"><span class="pre">FilePath</span></code>.</p>
+<p>The RDF dumper also rejects an IRI or identifier that holds a character an IRI cannot,
+such as a line break, and a blank node label outside the Turtle grammar.</p>
 <p>The RDF loader reads an IRI back as a complete URI for <code class="docutils literal notranslate"><span class="pre">uri</span></code> and the types derived
 from it, and as a CURIE, where the schema declares the prefix, for <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code>,
 <code class="docutils literal notranslate"><span class="pre">objectidentifier</span></code> and <code class="docutils literal notranslate"><span class="pre">nodeidentifier</span></code>.</p>
