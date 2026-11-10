@@ -44,7 +44,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-from linkml_runtime.utils.rdf_terms import link_iri, type_term, value_term
+from linkml_runtime.utils.rdf_terms import type_term, value_term
 
 logger = logging.getLogger(__name__)
 
@@ -446,6 +446,7 @@ class OwlSchemaGenerator(Generator):
 
         msv = self.metamodel_schemaview
         this_sv = self.schemaview
+        assert this_sv is not None, "OwlSchemaGenerator requires a SchemaView"
         sn_mappings = msv.slot_name_mappings()
         lang = self._resolve_language(e)
 
@@ -507,10 +508,17 @@ class OwlSchemaGenerator(Generator):
                 if default_prefix in this_sv.schema.prefixes:
                     default_prefix = this_sv.schema.prefixes[default_prefix].prefix_reference
                 k = default_prefix + k
-                k_uri = this_sv.expand_curie(k)
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                except ValueError:
+                    k_uri = None
             else:
-                k_uri = this_sv.expand_curie(k)
-                if k_uri == k:
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                    # Annotation tags must expand, not merely pass URI syntax validation.
+                    if k_uri == k:
+                        k_uri = None
+                except ValueError:
                     k_uri = None
             if k_uri:
                 if isinstance(v.value, str):
@@ -539,8 +547,10 @@ class OwlSchemaGenerator(Generator):
             return Literal(value, lang=language)
         if not type_term(msv, range_name).kind.is_node:
             return value_term(msv, range_name, value)
-        link = self.schemaview.expand_curie(str(value))
-        if link_iri(msv, link) is None and not link.startswith("_:"):
+        try:
+            link = self.schemaview.expand_curie(str(value), fallback=msv)
+        except ValueError:
+            # Invalid native links are annotation text, not relative RDF IRIs.
             logger.warning(f"{origin}: {value!r} is neither an IRI nor a CURIE; written as a literal")
             return Literal(str(value))
         return value_term(msv, range_name, link)
@@ -614,7 +624,9 @@ class OwlSchemaGenerator(Generator):
         if cls.class_uri:
             # If a class_ur is assigned, and it is different from model class_uri, then
             # Add an assertion that links the two
-            mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
+            field = "class_uri" if self.use_native_uris else "default_prefix"
+            with self._uri_error_context(f"class {cls.name!r}", field):
+                mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
             if cls_uri != mapped_uri:
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
@@ -1052,6 +1064,8 @@ class OwlSchemaGenerator(Generator):
         element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
         is_literal: bool | None = None,
     ) -> tuple[list[OWL_EXPRESSION], set[OWL_TYPE]]:
+        sv = self.schemaview
+        assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
         owl_types: set[OWL_TYPE] = set()
         owl_exprs: list[OWL_EXPRESSION] = []
         graph = self.graph
@@ -1079,7 +1093,12 @@ class OwlSchemaGenerator(Generator):
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
-                eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
+                try:
+                    eq_uri = URIRef(sv.expand_curie(equals_string))
+                except ValueError:
+                    # equals_string is a bare name or uses an unregistered prefix;
+                    # treat it as a relative URI reference (rdflib resolves against the base)
+                    eq_uri = URIRef(equals_string)
                 owl_exprs.append(eq_uri)
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
@@ -1248,6 +1267,8 @@ class OwlSchemaGenerator(Generator):
         self._add_super_properties(slot, slot_uri)
 
     def add_type(self, typ: TypeDefinition) -> None:
+        sv = self.schemaview
+        assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
         type_uri = self._type_uri(typ.name)
         if typ.from_schema == "https://w3id.org/linkml/types":
             return
@@ -1283,8 +1304,8 @@ class OwlSchemaGenerator(Generator):
                 # self.graph.add((type_uri, OWL.equivalentClass, self._type_uri(typ.typeof)))
                 eq_conjunctions.append(self._type_uri(typ.typeof))
                 # self.graph.add((type_uri, RDFS.subClassOf, self._type_uri(typ.typeof)))
-            if typ.uri and type_uri != URIRef(self.schemaview.expand_curie(typ.uri)):
-                eq_conjunctions.append(URIRef(self.schemaview.expand_curie(typ.uri)))
+            if typ.uri and type_uri != URIRef(sv.expand_curie(typ.uri)):
+                eq_conjunctions.append(URIRef(sv.expand_curie(typ.uri)))
                 # self.graph.add(
                 #    (type_uri, OWL.equivalentClass, URIRef(self.schemaview.expand_curie(typ.uri)))
                 # )
@@ -1775,37 +1796,44 @@ class OwlSchemaGenerator(Generator):
 
     def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)
-        return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
+        field = "default_prefix" if self.use_native_uris else "class_uri"
+        with self._uri_error_context(f"class {cn!r}", field):
+            return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
 
     def _enum_uri(self, en: str | EnumDefinitionName) -> URIRef:
         sv = self.schemaview
+        assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
         e = sv.get_enum(en, strict=True)
         uri = e.enum_uri
         if not uri:
             uri = f"{sv.schema.default_prefix}:{camelcase(en)}"
         # TODO: allow control over URIs
-        return URIRef(self.schemaview.expand_curie(uri))
+        return URIRef(sv.expand_curie(uri))
 
     def _prop_uri(self, pn: SlotDefinition | SlotDefinitionName) -> URIRef:
+        sv = self.schemaview
+        assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
         if isinstance(pn, SlotDefinition):
             p = pn
         else:
-            p = self.schemaview.get_slot(pn, attributes=True)
+            p = sv.get_slot(pn, attributes=True)
         if not p:
             raise ValueError(f"No such slot or attribute: {pn}")
         try:
-            return URIRef(self.schemaview.get_uri(p, expand=True, native=self.use_native_uris))
+            return URIRef(sv.get_uri(p, expand=True, native=self.use_native_uris))
         except (KeyError, ValueError):
             # TODO: fix this upstream in schemaview
-            default_prefix = self.schemaview.schema.default_prefix or ""
-            return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
+            default_prefix = sv.schema.default_prefix or ""
+            return URIRef(sv.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
 
     def _schema_uri(self, scn: str | SchemaDefinitionName) -> URIRef:
+        sv = self.schemaview
+        assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
         if ":" in scn:
-            return URIRef(self.schemaview.expand_curie(scn))
+            return URIRef(sv.expand_curie(scn))
         else:
-            default_prefix = self.schemaview.schema.default_prefix or ""
-            return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{scn}"))
+            default_prefix = sv.schema.default_prefix or ""
+            return URIRef(sv.expand_curie(f"{default_prefix}:{scn}"))
 
     def _type_uri(self, tn: TypeDefinitionName, native: bool | None = None) -> URIRef:
         if native is None:
@@ -1830,7 +1858,11 @@ class OwlSchemaGenerator(Generator):
                 raise ValueError(f"Cannot find permissible value: {pv_name}, got: {pvs}")
             pv = pvs[0]
         if pv.meaning:
-            return URIRef(self.schemaview.expand_curie(pv.meaning))
+            sv = self.schemaview
+            assert sv is not None, "OwlSchemaGenerator requires a SchemaView"
+            enum_name = enum_def.name if enum_def is not None else enum_uri
+            with self._uri_error_context(f"permissible value {pv.text!r} in enum {enum_name!r}", "meaning"):
+                return URIRef(sv.expand_curie(pv.meaning))
         else:
             from urllib.parse import quote
 

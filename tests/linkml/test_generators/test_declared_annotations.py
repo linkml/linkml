@@ -14,9 +14,11 @@ import yaml
 from pyshacl import validate
 from rdflib import DCTERMS, RDF, RDFS, SH, XSD, BNode, Graph, Literal, URIRef
 
+from linkml.generators.common.annotations import declaring_slots
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml_runtime.utils.rdf_canonicalize import RDFCanonicalizationWarning
+from linkml_runtime.utils.schemaview import SchemaView
 
 EX = "https://example.org/"
 EXAMPLE = Path(__file__).resolve().parents[3] / "docs/examples/owl-dcmi-agent-annotations.yaml"
@@ -102,6 +104,38 @@ def test_tag_as_slot_name_curie_or_iri(generator, form):
     schema["classes"]["Thing"]["annotations"] = {prefix + "reviewer": "ex:alice"}
     graph = _graph(yaml.safe_dump(schema), generator)
     assert set(graph.objects(URIRef(EX + "Thing"), URIRef(EX + "reviewer"))) == {URIRef(EX + "alice")}
+
+
+@pytest.mark.parametrize("tag", ["reviewer", "ex:reviewer", EX + "reviewer", "reviewer name"])
+def test_declaring_slots_matches_names_and_uris(tag: str) -> None:
+    """Annotation slot names need not be absolute URIs, including names with spaces."""
+    source = SCHEMA.replace("reviewer: {range:", "reviewer name: {range:") if " " in tag else SCHEMA
+    sv = SchemaView(source)
+    slots = declaring_slots(sv, sv.get_class("Thing"), tag)
+    assert [slot.name for slot in slots] == ["reviewer name" if " " in tag else "reviewer"]
+
+
+@pytest.mark.parametrize("tag", ["undeclared", "undeclared name"])
+def test_declaring_slots_ignores_undeclared_names(tag: str) -> None:
+    """An undeclared bare tag leaves annotation handling to the generator."""
+    sv = SchemaView(SCHEMA)
+    assert declaring_slots(sv, sv.get_class("Thing"), tag) == []
+
+
+@pytest.mark.parametrize("tag", ["reviewer", "undeclared name", "not a URI:tag"])
+def test_declaring_slots_without_metaclasses(tag: str) -> None:
+    """Elements without metaclass declarations do not need annotation URI lookup."""
+    sv = SchemaView(SCHEMA)
+    assert declaring_slots(sv, sv.get_class("Metadata"), tag) == []
+
+
+@pytest.mark.parametrize("reference", ["Profile", "ex:Profile", EX + "Profile"])
+def test_declaring_slots_resolves_metaclass_names_and_uris(reference: str) -> None:
+    """Metaclass names are resolved as schema elements, not expanded as CURIEs."""
+    sv = SchemaView(SCHEMA)
+    element = sv.get_class("Thing")
+    element.instantiates = [reference]
+    assert [slot.name for slot in declaring_slots(sv, element, "reviewer")] == ["reviewer"]
 
 
 @pytest.mark.parametrize(
@@ -228,16 +262,17 @@ def test_native_link_uses_the_schema_prefixes_without_a_types_import():
     }
 
 
-def test_native_link_that_is_not_a_link_is_kept_as_a_literal(caplog):
-    """A bare element name in ``see_also`` cannot be resolved; it is kept as text, so the output stays standard RDF."""
+@pytest.mark.parametrize("value", ["implements", "./data/f.csv", "../docs/reference", "/docs/reference"])
+def test_native_link_that_is_not_a_link_is_kept_as_a_literal(caplog: pytest.LogCaptureFixture, value: str) -> None:
+    """Unresolvable ``see_also`` values remain text, so the output stays standard RDF."""
     schema = yaml.safe_load(SCHEMA)
-    schema["classes"]["Thing"]["see_also"] = ["implements"]
+    schema["classes"]["Thing"]["see_also"] = [value]
     with warnings.catch_warnings():
         warnings.simplefilter("error", RDFCanonicalizationWarning)
         output = OwlSchemaGenerator(yaml.safe_dump(schema), type_objects=False, metaclasses=False).serialize()
     graph = Graph().parse(data=output, format="turtle")
-    assert set(graph.objects(URIRef(EX + "Thing"), RDFS.seeAlso)) == {Literal("implements")}
-    assert "see_also of https://example.org/Thing: 'implements' is neither an IRI nor a CURIE" in caplog.text
+    assert set(graph.objects(URIRef(EX + "Thing"), RDFS.seeAlso)) == {Literal(value)}
+    assert f"see_also of https://example.org/Thing: {value!r} is neither an IRI nor a CURIE" in caplog.text
 
 
 def test_documented_dcmi_example():

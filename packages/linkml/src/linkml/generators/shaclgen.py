@@ -220,11 +220,13 @@ class ShaclGenerator(Generator):
                 if v is not None:
                     g.add((class_uri_with_suffix, p, v))
 
-            class_uri = URIRef(sv.get_uri(c, expand=True))
+            with self._uri_error_context(f"class {c.name!r}", "class_uri"):
+                class_uri = URIRef(sv.get_uri(c, expand=True))
             if self.use_class_uri_names:
                 class_uri_with_suffix = class_uri
             else:
-                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
+                with self._uri_error_context(f"class {c.name!r}", "default_prefix"):
+                    class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
             if self.suffix:
                 class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
@@ -661,7 +663,8 @@ class ShaclGenerator(Generator):
                 enum = sv.get_enum(range_name)
                 pv = enum.permissible_values.get(value_name)
                 if pv and pv.meaning:
-                    iri = sv.expand_curie(pv.meaning)
+                    with self._uri_error_context(f"permissible value {pv.text!r} in enum {enum.name!r}", "meaning"):
+                        iri = sv.expand_curie(pv.meaning)
                     return f"<{iri}>"
         return f'"{value_name}"'
 
@@ -701,7 +704,9 @@ class ShaclGenerator(Generator):
         cls = sv.get_class(r)
         if cls and getattr(cls, "class_uri", None) == "linkml:Any":
             return
-        range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
+        field = "class_uri" if self.use_class_uri_names else "default_prefix"
+        with self._uri_error_context(f"class {r!r}", field):
+            range_ref = sv.get_uri(r, expand=True, native=not self.use_class_uri_names)
         if range_ref == self.LINKML_ANY_URI:
             return
         if self.use_class_uri_names:
@@ -715,14 +720,14 @@ class ShaclGenerator(Generator):
         sv = self.schemaview
         enum = sv.get_enum(r)
         pv_node = BNode()
-        Collection(
-            g,
-            pv_node,
-            [
-                URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
-                for pv_name, pv in enum.permissible_values.items()
-            ],
-        )
+        values: list[URIRef | Literal] = []
+        for pv_name, pv in enum.permissible_values.items():
+            if pv.meaning:
+                with self._uri_error_context(f"permissible value {pv.text!r} in enum {enum.name!r}", "meaning"):
+                    values.append(URIRef(sv.expand_curie(pv.meaning)))
+            else:
+                values.append(Literal(pv_name))
+        Collection(g, pv_node, values)
         func(SH["in"], pv_node)
 
     # SHACL §4.1.3 node kinds for the node term kinds of LinkML types.
