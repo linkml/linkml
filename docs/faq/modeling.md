@@ -96,6 +96,33 @@ More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
+## Does LinkML support conditional required fields?
+
+Yes. Use class-level [rules](../schemas/advanced.md#rules) with preconditions and postconditions.
+
+To make a slot required only when another slot has a particular value, set `required: true` on that slot under `postconditions.slot_conditions` (you can add other constraints there as well):
+
+```yaml
+classes:
+  Person:
+    attributes:
+      is_pregnant:
+      due_date:
+    rules:
+      - preconditions:
+          slot_conditions:
+            is_pregnant:
+              equals_string: "yes"
+        postconditions:
+          slot_conditions:
+            due_date:
+              required: true
+```
+
+If instead one slot should constrain the *permissible values* of another, use `range`, `equals_string`, or `any_of` in the postcondition. See [How do I constrain the value of a slot based on an entry in a different slot?](#how-do-i-constrain-the-value-of-a-slot-based-on-an-entry-in-a-different-slot) below.
+
+Rules are part of LinkML's [advanced features](../schemas/advanced.md), which are experimental: behavior is not guaranteed to stay consistent. For more examples, see [rules-example.yaml](https://github.com/linkml/linkml-model/blob/main/examples/rules-example.yaml) in the [linkml-model examples](https://github.com/linkml/linkml-model/tree/main/examples).
+
 ## How do I constrain the value of a slot based on an entry in a different slot?
 
 You may want to make the entries in one slot contingent on a different slot. If, for example, you are developing a schema for a toy store that sells wooden horses and frogs. The horses are available in red and green, but the frogs are available in blue and pink.
