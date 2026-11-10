@@ -15,8 +15,10 @@ class Dumper(ABC):
         :param to_file: file to dump to
         :@param _: method specific arguments
         """
+        # Serialize first, so that a dumper's refusal leaves an existing file as it was.
+        output = self.dumps(element, **_)
         with open(to_file, "w", encoding="UTF-8") as output_file:
-            output_file.write(self.dumps(element, **_))
+            output_file.write(output)
 
     @abstractmethod
     def dumps(self, element: BaseModel | YAMLRoot, **_) -> str:
