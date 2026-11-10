@@ -1,5 +1,9 @@
 import re
+from collections.abc import Callable
 from functools import lru_cache
+
+import jsonschema
+from jsonschema.protocols import Validator
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -7,6 +11,27 @@ from linkml_runtime.linkml_model.meta import (
     ElementName,
     SlotDefinition,
 )
+
+
+def format_checker_for(validator_cls: type[Validator]) -> jsonschema.FormatChecker:
+    """Return the format checker of *validator_cls*, with three formats also rejecting a final newline.
+
+    No value of ``uri`` (RFC 3986 section 3), ``date-time`` or ``time`` (RFC 3339 section 5.6) holds a
+    newline, but the libraries that jsonschema uses for them end their regular expressions in ``$``,
+    which also matches before a final newline.
+    """
+    checker = jsonschema.FormatChecker(formats=())
+    checker.checkers = dict(validator_cls.FORMAT_CHECKER.checkers)
+    for name in ("uri", "date-time", "time"):
+        if name in checker.checkers:
+            check, raises = checker.checkers[name]
+            checker.checks(name, raises=raises)(_refusing_a_final_newline(check))
+    return checker
+
+
+def _refusing_a_final_newline(check: Callable[[object], object]) -> Callable[[object], object]:
+    """Return a format check that also rejects a string ending in a newline."""
+    return lambda value: not (isinstance(value, str) and value.endswith("\n")) and check(value)
 
 
 def remove_duplicates(lst):
