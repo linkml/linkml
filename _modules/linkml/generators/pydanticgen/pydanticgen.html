@@ -1679,7 +1679,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            schema (str, :class:`.Path` , :class:`.SchemaDefinition` ): Main schema to generate</span>
 <span class="sd">            output_path (str, :class:`.Path` ): Python ``.py`` module to generate main schema to</span>
-<span class="sd">            split_pattern (str): Pattern to use to generate module names, see :attr:`.PydanticGenerator.split_pattern`</span>
+<span class="sd">            split_pattern (str): Pattern to use to generate module names. Defaults to</span>
+<span class="sd">                :attr:`.PydanticGenerator.split_pattern`</span>
 <span class="sd">            split_context (dict): Additional variables to pass into jinja context when generating module import names.</span>
 
 <span class="sd">        Returns:</span>
@@ -1695,9 +1696,10 @@
         <span class="c1"># Main schema</span>
         <span class="c1"># --------------------------------------------------</span>
         <span class="n">gen_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="n">gen_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;split&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;split_pattern&quot;</span><span class="p">:</span> <span class="n">split_pattern</span><span class="p">,</span> <span class="s2">&quot;split_context&quot;</span><span class="p">:</span> <span class="n">split_context</span><span class="p">,</span> <span class="s2">&quot;split_mode&quot;</span><span class="p">:</span> <span class="n">split_mode</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="n">gen_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;split&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;split_context&quot;</span><span class="p">:</span> <span class="n">split_context</span><span class="p">,</span> <span class="s2">&quot;split_mode&quot;</span><span class="p">:</span> <span class="n">split_mode</span><span class="p">})</span>
+        <span class="c1"># Without a split_pattern of its own, the generator keeps its default one.</span>
+        <span class="k">if</span> <span class="n">split_pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gen_kwargs</span><span class="p">[</span><span class="s2">&quot;split_pattern&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_pattern</span>
         <span class="n">generator</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">gen_kwargs</span><span class="p">)</span>
         <span class="c1"># Generate the initial schema to figure out which of the imported schema actually need</span>
         <span class="c1"># to be generated</span>
