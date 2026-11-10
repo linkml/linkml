@@ -194,6 +194,21 @@ The generate python looks like this:
             "inlined_simple_dict_column": {'id': 'id', 'other': 'x'},
         }
 
+Columns named after Python keywords
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the class-based model, a column named after a Python keyword, such as ``from``, gets an
+attribute with a trailing underscore. The attribute keeps the column name as its alias, so
+dataframes still use the column ``from``:
+
+.. code-block:: python
+
+    from_: Optional[Date] = pla.Field(alias="from", nullable=True)
+
+A class cannot have both a column named after a keyword and a column named like its attribute,
+such as ``from`` and ``from_``. The generator reports an error for it. The polars schema names
+its columns with strings, so it accepts both.
+
 Command Line
 ------------
 
