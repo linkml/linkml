@@ -10,7 +10,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-11-03T21:40:35.48332Z"
+exclude-newer = "2026-11-03T22:03:30.387838862Z"
 exclude-newer-span = "P7D"
 
 [manifest]
@@ -2376,6 +2376,7 @@ dev = [
     { name = "tomli-w" },
     { name = "tox", marker = "python_full_version >= '3.11'" },
     { name = "tox-uv", marker = "python_full_version >= '3.11'" },
+    { name = "uv" },
 ]
 docs = [
     { name = "furo" },
@@ -2504,6 +2505,7 @@ dev = [
     { name = "tomli-w", specifier = ">=1.2.0" },
     { name = "tox", marker = "python_full_version >= '3.11'", specifier = ">=4.64.1" },
     { name = "tox-uv", marker = "python_full_version >= '3.11'" },
+    { name = "uv" },
 ]
 docs = [
     { name = "furo", specifier = ">=2025.12.19" },
