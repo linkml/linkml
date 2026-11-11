@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/openapi.html">OpenAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/ossie.html">Ossie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/rdf.html">RDF</a></li>
@@ -408,7 +409,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.utils.generator</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Base class for all generators</span>
+<span class="sd">Base class for all generators implemented in Python</span>
 
 <span class="sd">Developer Notes</span>
 <span class="sd">---------------</span>
@@ -444,6 +445,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.cli.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span> <span class="n">log_level_option</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">deprecation_warning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneratorBase</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.mergeutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">alias_root</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.schemaloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNKNOWN_NAMESPACE</span><span class="p">,</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.typereferences</span><span class="w"> </span><span class="kn">import</span> <span class="n">References</span>
@@ -493,9 +495,9 @@
 <div class="viewcode-block" id="Generator">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.Generator">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">(</span><span class="n">GeneratorBase</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class for generators</span>
+<span class="sd">    Base class for generators implemented in Python</span>
 
 <span class="sd">    For usage `Generator Docs &lt;https://linkml.io/linkml/generators/&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -505,11 +507,7 @@
 <span class="sd">        open file or a pre-parsed schema&quot;&quot;&quot;</span>
 
     <span class="c1"># ClassVars</span>
-    <span class="n">generatorname</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Name of the generator. Override with os.path.basename(__file__)&quot;&quot;&quot;</span>
-
-    <span class="n">generatorversion</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Generator version identifier</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Version of the generator. Consider deprecating and instead use overall linkml version&quot;&quot;&quot;</span>
+    <span class="c1"># generatorname, generatorversion, valid_formats and file_extension come from GeneratorBase.</span>
 
     <span class="n">config_section_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Section this generator reads from a ``--config-file`` (``generator_args.&lt;name&gt;``).&quot;&quot;&quot;</span>
@@ -522,9 +520,6 @@
 
     <span class="n">requires_metamodel</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator queries an instance of the metamodel&quot;&quot;&quot;</span>
-
-    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allowed formats - first format is default&quot;&quot;&quot;</span>
 
     <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Visitor ClassVar: False means only visit own slots, True means visit all slots&quot;&quot;&quot;</span>
@@ -541,8 +536,6 @@
 
     <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;expected output format&quot;&quot;&quot;</span>
-
-    <span class="n">file_extension</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means include date, generator, etc. information in source header if appropriate&quot;&quot;&quot;</span>
@@ -698,17 +691,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_namespaces</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized format: </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">; known=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_common</span><span class="p">()</span>
         <span class="c1"># legacy: all generators should use &quot;mergeimports&quot;</span>
         <span class="c1"># self.merge_imports = self.mergeimports</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_metamodel</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="n">_resolved_metamodel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
 
@@ -1584,7 +1569,7 @@
 
 <div class="viewcode-block" id="shared_arguments">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.generator.shared_arguments">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Generator</span><span class="p">],</span> <span class="n">accepts_directory_input</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">GeneratorBase</span><span class="p">],</span> <span class="n">accepts_directory_input</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get command-line arguments common to all generators.</span>
 
 <span class="sd">    Use this decorator on the Click entry point for a generator to automatically</span>

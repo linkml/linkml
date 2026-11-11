@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ossie.html">Ossie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
@@ -582,13 +583,13 @@ into attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.linkmlgen.LinkmlGenerator.generatorname">
 <span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linkmlgen.py'</span></em><a class="headerlink" href="#linkml.generators.linkmlgen.LinkmlGenerator.generatorname" title="Link to this definition">¶</a></dt>
-<dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
+<dd><p>Name of the generator. Override with <code class="docutils literal notranslate"><span class="pre">os.path.basename(__file__)</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.linkmlgen.LinkmlGenerator.generatorversion">
 <span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1.0.0'</span></em><a class="headerlink" href="#linkml.generators.linkmlgen.LinkmlGenerator.generatorversion" title="Link to this definition">¶</a></dt>
-<dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
+<dd><p>Version of the generator.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -638,7 +639,7 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.linkmlgen.LinkmlGenerator.valid_formats">
 <span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['json',</span> <span class="pre">'yaml']</span></em><a class="headerlink" href="#linkml.generators.linkmlgen.LinkmlGenerator.valid_formats" title="Link to this definition">¶</a></dt>
-<dd><p>Allowed formats - first format is default</p>
+<dd><p>Allowed formats. The first one is the default.</p>
 </dd></dl>
 
 </dd></dl>

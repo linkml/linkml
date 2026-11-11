@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/openapi.html">OpenAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/ossie.html">Ossie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
@@ -538,6 +539,12 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">openapi</span></span></dt>
 <dd><p>Generate an OpenAPI YAML with resources…</p>
+</dd></dl>
+
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">ossie</span></span></dt>
+<dd><p>Generate an Apache Ossie ontology from a…</p>
 </dd></dl>
 
 <dl class="object">
@@ -3272,6 +3279,148 @@ a generic one with one exemplary class/type schema is printed out.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-openapi-arg-YAMLFILE">
 <span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-openapi-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+<section id="linkml-generate-full-ossie">
+<h4>ossie<a class="headerlink" href="#linkml-generate-full-ossie" title="Link to this heading">¶</a></h4>
+<p>Generate an Apache Ossie ontology from a LinkML model.</p>
+<p>Classes become EntityType concepts, enums and types become ValueType concepts, slots become
+relationships, and is_a and mixins become extends. Use –pruning-mode to leave out elements
+that are not reachable from the root schema or from the tree root class.</p>
+<p>The generator is implemented in ohi LinkML, which is maintained separately. Please submit
+bug reports and feature requests to <a class="reference external" href="https://github.com/NeverBlink-OSS/ohi/issues">https://github.com/NeverBlink-OSS/ohi/issues</a></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>ossie<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-V">
+<span id="cmdoption-linkml-generate-full-ossie-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-V" title="Link to this definition">¶</a></dt>
+<dd><p>Show the linkml and ohi LinkML versions and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-o">
+<span id="cmdoption-linkml-generate-full-ossie-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-o" title="Link to this definition">¶</a></dt>
+<dd><p>Output file name. Writes to stdout if not given.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-tree-root">
+<span class="sig-name descname"><span class="pre">--tree-root</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;tree_root&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-tree-root" title="Link to this definition">¶</a></dt>
+<dd><p>Tree root class name to use instead of the schema-defined tree_root.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-pruning-mode">
+<span class="sig-name descname"><span class="pre">--pruning-mode</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;pruning_mode&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-pruning-mode" title="Link to this definition">¶</a></dt>
+<dd><p>Which unused elements (classes, types, enums) to remove. tree_root - remove all elements unreachable from the tree_root class. schema - remove all elements unreachable from any of the classes defined in the root schema. skip - do not remove unused elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'skip'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>skip | schema | tree_root</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-f">
+<span id="cmdoption-linkml-generate-full-ossie-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-f" title="Link to this definition">¶</a></dt>
+<dd><p>Output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'yaml'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>yaml | json</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-metadata">
+<span id="cmdoption-linkml-generate-full-ossie-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-generation-date">
+<span id="cmdoption-linkml-generate-full-ossie-no-generation-date"></span><span class="sig-name descname"><span class="pre">--generation-date</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-generation-date</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-generation-date" title="Link to this definition">¶</a></dt>
+<dd><p>Stamp output with the generation_date timestamp. Off by default so output is reproducible across runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-useuris">
+<span id="cmdoption-linkml-generate-full-ossie-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-useuris" title="Link to this definition">¶</a></dt>
+<dd><p>Use class and slot URIs over model uris</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-im">
+<span id="cmdoption-linkml-generate-full-ossie-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-im" title="Link to this definition">¶</a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-log_level" title="Link to this definition">¶</a></dt>
+<dd><p>Logging level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'WARNING'</span></code></p>
+</dd>
+<dt class="field-even">Options<span class="colon">:</span></dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-v">
+<span id="cmdoption-linkml-generate-full-ossie-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-v" title="Link to this definition">¶</a></dt>
+<dd><p>Verbosity. Takes precedence over –log_level.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-mergeimports">
+<span id="cmdoption-linkml-generate-full-ossie-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-mergeimports" title="Link to this definition">¶</a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-stacktrace">
+<span id="cmdoption-linkml-generate-full-ossie-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-stacktrace" title="Link to this definition">¶</a></dt>
+<dd><p>Print a stack trace when an error occurs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-ossie-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-ossie-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -6438,6 +6587,7 @@ is conformant to the same LinkML schema.</p>
 <li><a class="reference internal" href="#linkml-generate-full-linkml">linkml</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-namespaces">namespaces</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-openapi">openapi</a></li>
+<li><a class="reference internal" href="#linkml-generate-full-ossie">ossie</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-owl">owl</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-plantuml">plantuml</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-prefix-map">prefix-map</a></li>
