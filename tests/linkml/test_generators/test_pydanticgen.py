@@ -14,6 +14,7 @@ from typing import ClassVar, Literal, Optional, Union
 import numpy as np
 import pytest
 import yaml
+from click.testing import CliRunner
 from jinja2 import DictLoader, Environment, Template
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -29,6 +30,7 @@ from linkml.generators.pydanticgen import (
     template,
 )
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
+from linkml.generators.pydanticgen.pydanticgen import cli as pydanticgen_cli
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -40,6 +42,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
     PydanticValidator,
 )
+from linkml.utils import deprecation
 from linkml.utils.exceptions import SchemaValidationError as ArrayValidationError
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
@@ -3285,6 +3288,27 @@ def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allo
     else:
         with pytest.raises(ValidationError):
             cls(**data)
+
+
+@pytest.mark.parametrize(
+    "args,deprecated",
+    [
+        ([], False),
+        (["--extra-fields", "forbid"], True),
+        (["--extra-fields", "allow"], True),
+    ],
+)
+def test_extra_fields_cli_deprecation(args, deprecated, input_path, monkeypatch):
+    """
+    The command line reports the deprecated ``extra_fields`` only when ``--extra-fields`` is given,
+    and classes forbid extra fields without it.
+    """
+    monkeypatch.setattr(deprecation, "EMITTED", set())
+    result = CliRunner().invoke(pydanticgen_cli, [str(input_path("extra_slots.yaml")), *args])
+    assert result.exit_code == 0, result.output
+    assert ("pydanticgen-extra-fields" in deprecation.EMITTED) is deprecated
+    if not args:
+        assert 'extra = "forbid"' in result.output
 
 
 EXTRA_SLOTS_SPLIT_IMPORTED = """

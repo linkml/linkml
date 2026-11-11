@@ -1481,8 +1481,9 @@ Available templates to override:
 @click.option(
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
-    default="forbid",
-    help="How to handle extra fields in BaseModel (default for all classes; per-class overrides via extra_slots).",
+    default=None,
+    help="Deprecated. How to handle extra fields in BaseModel (default for all classes; "
+    "per-class overrides via extra_slots). Without it, classes forbid extra fields.",
 )
 @click.option(
     "--black",
@@ -1515,7 +1516,7 @@ def cli(
     classvars=True,
     slots=True,
     array_representations=list("list"),
-    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
+    extra_fields: Literal["allow", "forbid", "ignore"] | None = None,
     black: bool = False,
     meta: MetadataMode = "auto",
     emptylist_for_multivalued_slots: bool = False,
