@@ -3,7 +3,7 @@ import logging
 
 import pytest
 from click.testing import CliRunner
-from rdflib import Graph, term
+from rdflib import RDF, Graph, Namespace, term
 from yaml import safe_load
 
 from linkml.generators import JSONLDGenerator, RDFGenerator
@@ -222,3 +222,74 @@ def test_relative_schema_locations(tmp_path, monkeypatch, make_output):
 
     assert '"name": "Base"' in output
     assert output.rstrip() == expected.rstrip()
+
+
+LINKML = Namespace("https://w3id.org/linkml/")
+
+
+def _yaml_element_names(output: str) -> dict[str, set[str]]:
+    """Names of the classes, slots and types defined in ``gen-yaml`` output."""
+    schema = safe_load(output)
+    return {kind: set(schema.get(kind, {})) for kind in ("classes", "slots", "types")}
+
+
+def _jsonld_element_names(output: str) -> dict[str, set[str]]:
+    """Names of the classes, slots and types defined in ``gen-jsonld`` output."""
+    schema = json.loads(output)
+    return {kind: {element["name"] for element in schema.get(kind, [])} for kind in ("classes", "slots", "types")}
+
+
+def _rdf_element_names(output: str) -> dict[str, set[str]]:
+    """Local names of the classes, slots and types defined in ``gen-rdf`` output."""
+    graph = Graph()
+    graph.parse(data=output, format="turtle")
+    definitions = {"classes": LINKML.ClassDefinition, "slots": LINKML.SlotDefinition, "types": LINKML.TypeDefinition}
+    return {
+        kind: {str(subject).rsplit("/", 1)[-1] for subject in graph.subjects(RDF.type, definition)}
+        for kind, definition in definitions.items()
+    }
+
+
+@pytest.mark.parametrize("mergeimports", [True, False])
+@pytest.mark.parametrize(
+    "generator,element_names",
+    [
+        pytest.param(YAMLGenerator, _yaml_element_names, id="yaml"),
+        pytest.param(JSONLDGenerator, _jsonld_element_names, id="jsonld"),
+        # network: rdflib fetches the linkml:types @context URL in the generated JSON-LD
+        pytest.param(RDFGenerator, _rdf_element_names, id="rdf", marks=pytest.mark.network),
+    ],
+)
+def test_mergeimports_controls_imported_elements(tmp_path, generator, element_names, mergeimports):
+    """``--no-mergeimports`` leaves imported classes, slots and types out of the output.
+
+    Regression test for https://github.com/linkml/linkml/issues/4212: gen-yaml, gen-jsonld
+    and gen-rdf wrote every imported element (including all of ``linkml:types``) whatever
+    ``mergeimports`` was set to.
+    """
+    (tmp_path / "core.yaml").write_text(CORE_SCHEMA)
+    (tmp_path / "tiny.yaml").write_text(TINY_SCHEMA)
+
+    names = element_names(generator(str(tmp_path / "tiny.yaml"), mergeimports=mergeimports).serialize())
+
+    assert "Thing" in names["classes"]
+    assert "thing__name" in names["slots"]
+    # Imported: class Base and its attribute from ./core, type string from linkml:types.
+    assert ("Base" in names["classes"]) is mergeimports
+    assert ("base__label" in names["slots"]) is mergeimports
+    assert ("string" in names["types"]) is mergeimports
+
+
+def test_yaml_without_merged_imports_resolves_them_through_imports(tmp_path):
+    """``gen-yaml --no-mergeimports`` output keeps its ``imports``, so the left-out elements still resolve."""
+    (tmp_path / "core.yaml").write_text(CORE_SCHEMA)
+    (tmp_path / "tiny.yaml").write_text(TINY_SCHEMA)
+    unmerged = tmp_path / "tiny_unmerged.yaml"
+    unmerged.write_text(YAMLGenerator(str(tmp_path / "tiny.yaml"), mergeimports=False).serialize())
+
+    view = SchemaView(str(unmerged))
+
+    assert view.schema.imports == ["linkml:types", "./core"]
+    assert set(view.all_classes(imports=False)) == {"Thing"}
+    assert set(view.all_classes()) == {"Thing", "Base"}
+    assert view.get_type("string").from_schema == "https://w3id.org/linkml/types"

@@ -1,12 +1,14 @@
 """Validate linkml input and optionally emit completely resolved biolink yaml output"""
 
 import os
+from copy import deepcopy
 from dataclasses import dataclass
 
 import click
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.mergeutils import remove_imported_elements
 from linkml.utils.schemaloader import load_raw_schema
 from linkml_runtime.utils.yamlutils import as_yaml
 
@@ -32,7 +34,12 @@ class YAMLGenerator(Generator):
         else:
             for cls in self.schema.classes.values():
                 self._add_class_uri_exact_mapping(cls)
-            return as_yaml(self.schema)
+            if self.mergeimports:
+                return as_yaml(self.schema)
+            # Leave out what the schema imports; keep self.schema whole for the caller.
+            schema = deepcopy(self.schema)
+            remove_imported_elements(schema)
+            return as_yaml(schema)
 
 
 @shared_arguments(YAMLGenerator)
