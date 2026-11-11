@@ -29,13 +29,12 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "click >= 8.3.3",
@@ -96,10 +95,10 @@ dev = [
   "nbconvert",
   "nbformat",
   "coverage>=7.16.2",
-  "tox>=4.64.1; python_version >= '3.11'",
-  "tox-uv; python_version >= '3.11'",
+  "tox>=4.64.1",
+  "tox-uv",
   "uv",
-  "myst-nb>=1.4.0; python_version >= '3.10'",
+  "myst-nb>=1.4.0",
   "sphinx-design >= 0.5.0",
   "rich>=15.0.0",
   "gql>=4.4.0",
@@ -140,7 +139,7 @@ docs = [
   "sphinx-click",
   "sphinx-rtd-theme",
   "myst-parser",
-  "matplotlib>=3.11.2; python_version >= '3.11'",
+  "matplotlib>=3.11.2",
   "sphinx-jinja >= 2.0.2",
   "sphinxcontrib-programoutput>=0.20",
   "sphinx-design>=0.6.1",

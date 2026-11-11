@@ -40,6 +40,122 @@ jobs:
         with:
           extra_args: --all-files
 
+  test_slow:
+    name: Slow Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.13"]
+    needs:
+      - quality-checks
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Test linkml slow tests
+        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
+        shell: bash
+        run: |
+          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m "slow and not kroki" -n auto
+          uv run coverage xml -o coverage-linkml-slow.xml
+          uv run coverage report -m
+      - name: Upload linkml slow test coverage
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-linkml-slow.xml
+          flags: linkml
+          fail_ci_if_error: true
+
+  test_notebooks:
+    name: Notebook Tests
+    # Notebooks execute `!uv pip install ... --upgrade` cells that mutate the
+    # venv off the lock. Run them in a dedicated job with its own fresh runner
+    # so they cannot pollute the primary test environment (#3581, #3583).
+    # Linux only: notebook tests are skipped on Windows.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.13"]
+    needs:
+      - quality-checks
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Run notebook tests
+        # Run serially (no xdist): concurrent `!uv pip install` would race on the venv.
+        run: |
+          uv run pytest tests/linkml/test_notebooks/ -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
+      - name: Upload notebook coverage
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          name: codecov-notebooks-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-notebooks.xml
+          flags: linkml
+          fail_ci_if_error: true
+
+  test_build_package:
+    name: Test Build Package
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: 3.13
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Build source and wheel archives
+        run: uv build --all-packages
+
   test:
     needs:
       - quality-checks
@@ -47,15 +163,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         # Test on Windows with only the oldest and newest Python versions
         exclude:
           - os: windows-latest
-            python-version: "3.10"
-          - os: windows-latest
-            python-version: "3.11"
-          - os: windows-latest
             python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.13"
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
       run:
@@ -121,119 +235,3 @@ jobs:
           files: coverage-linkml_runtime.xml
           flags: runtime
           fail_ci_if_error: true
-
-  test_slow:
-    name: Slow Tests
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.13"]
-    needs:
-      - quality-checks
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.3.2
-        with:
-          version: ${{ env.UV_VERSION }}
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v7.1.0
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: uv sync --all-groups
-      - name: Test linkml slow tests
-        # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
-        shell: bash
-        run: |
-          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m "slow and not kroki" -n auto
-          uv run coverage xml -o coverage-linkml-slow.xml
-          uv run coverage report -m
-      - name: Upload linkml slow test coverage
-        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.1.1
-        with:
-          name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage-linkml-slow.xml
-          flags: linkml
-          fail_ci_if_error: true
-
-  test_notebooks:
-    name: Notebook Tests
-    # Notebooks execute `!uv pip install ... --upgrade` cells that mutate the
-    # venv off the lock. Run them in a dedicated job with its own fresh runner
-    # so they cannot pollute the primary test environment (#3581, #3583).
-    # Linux only: notebook tests are skipped on Windows.
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10", "3.13"]
-    needs:
-      - quality-checks
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.3.2
-        with:
-          version: ${{ env.UV_VERSION }}
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v7.1.0
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: uv sync --all-groups
-      - name: Run notebook tests
-        # Run serially (no xdist): concurrent `!uv pip install` would race on the venv.
-        run: |
-          uv run pytest tests/linkml/test_notebooks/ -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
-      - name: Upload notebook coverage
-        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.1.1
-        with:
-          name: codecov-notebooks-${{ matrix.os }}-${{ matrix.python-version }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage-notebooks.xml
-          flags: linkml
-          fail_ci_if_error: true
-
-  test_build_package:
-    name: Test Build Package
-    needs:
-      - test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v7.1.0
-        with:
-          python-version: 3.13
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.3.2
-        with:
-          version: ${{ env.UV_VERSION }}
-      - name: Build source and wheel archives
-        run: uv build --all-packages

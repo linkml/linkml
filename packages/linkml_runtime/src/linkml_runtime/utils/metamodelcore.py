@@ -1,7 +1,6 @@
 import builtins
 import datetime
 import re
-import sys
 from dataclasses import field
 from decimal import Decimal
 from typing import Union
@@ -14,9 +13,6 @@ from rdflib.term import Identifier as rdflib_Identifier
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import is_strict
 from linkml_runtime.utils.uri_validator import validate_curie, validate_uri, validate_uri_reference
-
-if sys.version_info < (3, 11):
-    import isodate
 
 # Reference Decimal to make sure it stays in the imports
 _z = Decimal(1)
@@ -265,10 +261,7 @@ class XSDDate(str, TypedNode):
             value = value.value
         try:
             if not isinstance(value, datetime.date):
-                if sys.version_info >= (3, 11):
-                    value = datetime.date.fromisoformat(str(value))
-                else:
-                    value = isodate.parse_date(value)
+                value = datetime.date.fromisoformat(str(value))
             return value.isoformat()
         except (TypeError, ValueError) as e:
             if is_strict():
@@ -284,10 +277,7 @@ class XSDDate(str, TypedNode):
         if not re.match(r"^\d{4}-\d{2}-\d{2}$", value):
             return False
         try:
-            if sys.version_info >= (3, 11):
-                datetime.date.fromisoformat(str(value))
-            else:
-                value = isodate.parse_date(value)
+            datetime.date.fromisoformat(str(value))
         except ValueError:
             return False
         return True
@@ -303,16 +293,7 @@ class XSDDateTime(str, TypedNode):
             value = value.value
         try:
             if not isinstance(value, datetime.datetime):
-                if sys.version_info >= (3, 11):
-                    value = datetime.datetime.fromisoformat(value)  # Note that this handles non 'T' format as well
-                else:
-                    if "T" in str(value):
-                        value = isodate.parse_datetime(value)
-                    elif " " in value.strip():
-                        value = isodate.parse_datetime("T".join(value.strip().split(" ", 1)))
-                    else:
-                        # As datetime.fromisoformat allows dates to be parsed as datetime we do the same.
-                        value = isodate.parse_datetime(f"{value.strip()}T00:00:00")
+                value = datetime.datetime.fromisoformat(value)  # Note that this handles non 'T' format as well
             return value.isoformat()
         except (TypeError, ValueError) as e:
             if is_strict():
@@ -326,15 +307,7 @@ class XSDDateTime(str, TypedNode):
         if isinstance(value, datetime.datetime):
             value = value.isoformat()
         try:
-            if sys.version_info >= (3, 11):
-                datetime.datetime.fromisoformat(value)
-            else:
-                if "T" in str(value):
-                    isodate.parse_datetime(value)
-                elif " " in value.strip():
-                    isodate.parse_datetime("T".join(value.strip().split(" ", 1)))
-                else:
-                    datetime.datetime.fromisoformat(value)
+            datetime.datetime.fromisoformat(value)
         except (ValueError, TypeError):
             return False
         return True

@@ -1,5 +1,4 @@
 import logging
-import sys
 from pathlib import Path
 
 import pytest
@@ -181,7 +180,6 @@ def polars_transform_module_code(synthetic_flat_dataframe_model):
         ),
     ],
 )
-@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_stub(compiled_model, class_name, data):
     schema_class = getattr(compiled_model, class_name)
     logger.info(
@@ -285,7 +283,6 @@ def test_dict_range(field_range, expected):
     assert PolarsSchemaDataframeGenerator.dict_range(field_range) == expected
 
 
-@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_parent_slot_range_child_no_cycle():
     """A parent class whose slot ranges over a child class must not raise a cyclic dependency error.
 
@@ -307,7 +304,6 @@ def test_parent_slot_range_child_no_cycle():
     assert "pl.List(pl.Struct(ChildDict))" in code
 
 
-@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_peer_cycle_three_mutually_recursive_classes():
     """Three peer classes that form a cycle (no parent/child hierarchy) must
     still be generated cleanly.
