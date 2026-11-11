@@ -4,7 +4,9 @@ class {{ name }}(BaseModel):
         validate_by_name = True,
         validate_assignment = True,
         validate_default = True,
+        {% if extra_fields %}
         extra = "{{ extra_fields }}",
+        {% endif %}
         arbitrary_types_allowed = True,
         use_enum_values = True,
         strict = {{ strict }},

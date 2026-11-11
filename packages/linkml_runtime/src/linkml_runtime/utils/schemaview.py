@@ -2228,16 +2228,17 @@ class SchemaView:
             raise ValueError(msg)
         return range_types
 
-    def slot_range_as_union(self, slot: SlotDefinition) -> list[ElementName]:
+    def slot_range_as_union(self, slot: SlotDefinition | AnonymousSlotExpression) -> list[ElementName]:
         """Retrieve all applicable ranges for a slot.
 
         Typically, any given slot has exactly one range, and one metamodel element type.
         LinkML 1.2 allows the use of range expressions, where ranges can be defined as unions.
+        An anonymous slot expression, such as the range_expression of extra_slots, is read the same way.
 
         :param slot:
         :return: list of ranges
         """
-        if not slot or not isinstance(slot, SlotDefinition):
+        if not slot or not isinstance(slot, SlotDefinition | AnonymousSlotExpression):
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 

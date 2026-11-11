@@ -14,6 +14,7 @@ from typing import ClassVar, Literal, Optional, Union
 import numpy as np
 import pytest
 import yaml
+from click.testing import CliRunner
 from jinja2 import DictLoader, Environment, Template
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -29,6 +30,7 @@ from linkml.generators.pydanticgen import (
     template,
 )
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
+from linkml.generators.pydanticgen.pydanticgen import cli as pydanticgen_cli
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -40,6 +42,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
     PydanticValidator,
 )
+from linkml.utils.deprecation import EMITTED
 from linkml.utils.exceptions import SchemaValidationError as ArrayValidationError
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
@@ -3189,3 +3192,225 @@ classes:
     # InteractionAssociation should have narrowed constraint
     # (interacts_with and its descendants only)
     assert 'Literal["interacts_with", "physically_interacts_with"]' in code
+
+
+# --------------------------------------------------
+# extra_slots
+# --------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def extra_slots(input_path) -> ModuleType:
+    schema = input_path("extra_slots.yaml")
+    generated = PydanticGenerator(schema).serialize()
+    mod = compile_python(generated)
+    return mod
+
+
+@pytest.mark.parametrize(
+    "clsname,valid,data",
+    [
+        ("Base", True, {"x": 1}),
+        ("Base", False, {"x": 1, "y": 2}),
+        ("ExtraNotAllowed", True, {"x": 1}),
+        ("ExtraNotAllowed", False, {"x": 1, "y": 2}),
+        ("ExtraAllowed", True, {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}}),
+        (
+            "ExtraString",
+            True,
+            {
+                "x": 1,
+                "y": "string",
+            },
+        ),
+        (
+            "ExtraString",
+            False,
+            {
+                "x": 1,
+                "y": 2,
+            },
+        ),
+        ("ExtraClass", True, {"x": 1, "another": {"y": "string"}, "third": {"y": "some string"}}),
+        (
+            "ExtraClass",
+            False,
+            {
+                "x": 1,
+                "another": {"y": 1},
+            },
+        ),
+        ("ExtraAnyOf", True, {"x": 1, "another": "hey", "third": 2}),
+        (
+            "ExtraAnyOf",
+            False,
+            {
+                "x": 1,
+                "another": 1.5,
+            },
+        ),
+        ("ExtraCardinality", True, {"x": 1, "another": [1, 2, 3, 4, 5]}),
+        ("ExtraCardinality", False, {"x": 1, "another": [1, 2, 3, 4, 5, 6]}),
+        ("ExtraNotAllowedExpression", False, {"x": 1, "y": "string"}),
+        ("ExtraAllowedExpression", True, {"x": 1, "y": "string"}),
+        ("ExtraAllowedChild", False, {"x": 1, "y": 2}),
+        ("ExtraStringChild", False, {"x": 1, "y": "string"}),
+        ("ExtraStringAllowedChild", True, {"x": 1, "y": 2}),
+        ("ExtraString", True, {"x": 1, "y": None}),
+    ],
+)
+def test_extra_slots(data, clsname, valid, extra_slots):
+    cls = getattr(extra_slots, clsname)
+    if valid:
+        # Pydantic's default extra="ignore" would also accept the data, so check the extras were kept.
+        # model_extra is None when the class does not allow extra data.
+        assert set(cls(**data).model_extra or {}) == set(data) - {"x"}
+    else:
+        with pytest.raises(ValidationError):
+            cls(**data)
+
+
+@pytest.mark.parametrize(
+    "data,valid",
+    [
+        ({"any_class": {"x": 1, "whatever": "else"}}, True),
+        ({"allowed": {"x": 1, "whatever": "else"}}, True),
+        ({"not_allowed": {"x": 1, "y": 2}}, False),
+        ({"extra_string": {"x": 1, "y": "string"}}, True),
+        ({"extra_string": {"x": 1, "y": 2}}, False),
+    ],
+)
+def test_extra_slots_nested(data, valid, extra_slots):
+    """
+    Extra data is checked on nested objects too, through the ``Container`` class
+    that the gen-json-schema tests use. ``AnyClass`` takes any value.
+    """
+    if valid:
+        extra_slots.Container(**data)
+    else:
+        with pytest.raises(ValidationError):
+            extra_slots.Container(**data)
+
+
+@pytest.fixture(scope="module")
+def extra_slots_allowed_by_default(input_path) -> ModuleType:
+    schema = input_path("extra_slots.yaml")
+    generated = PydanticGenerator(schema, extra_fields="allow").serialize()
+    return compile_python(generated)
+
+
+@pytest.mark.parametrize(
+    "clsname,valid",
+    [
+        ("Base", True),
+        ("ExtraNotAllowed", False),
+        ("ExtraString", False),
+        ("ExtraStringChild", True),
+        ("ExtraSlotsEmpty", False),
+    ],
+)
+def test_extra_slots_override_generator_default(clsname, valid, extra_slots_allowed_by_default):
+    """
+    An explicit ``extra_slots`` on a class wins over the generator-wide ``extra_fields``,
+    which only applies to classes without ``extra_slots``.
+    """
+    cls = getattr(extra_slots_allowed_by_default, clsname)
+    data = {"x": 1, "y": 2}
+    if valid:
+        cls(**data)
+    else:
+        with pytest.raises(ValidationError):
+            cls(**data)
+
+
+@pytest.mark.parametrize(
+    "args,deprecated",
+    [
+        ([], False),
+        (["--extra-fields", "forbid"], True),
+        (["--extra-fields", "allow"], True),
+    ],
+)
+def test_extra_fields_cli_deprecation(args, deprecated, input_path):
+    """
+    The command line reports the deprecated ``extra_fields`` only when ``--extra-fields`` is given,
+    and classes forbid extra fields without it.
+    """
+    result = CliRunner().invoke(pydanticgen_cli, [str(input_path("extra_slots.yaml")), *args])
+    assert result.exit_code == 0, result.output
+    assert ("pydanticgen-extra-fields" in EMITTED) is deprecated
+    if not args:
+        assert 'extra = "forbid"' in result.output
+
+
+@pytest.mark.parametrize(
+    "extra_slots,annotated",
+    [
+        (None, False),
+        ({"allowed": True}, False),
+        ({"range_expression": {"range": "integer"}}, True),
+    ],
+)
+def test_annotated_imported_only_for_typed_extra_slots(extra_slots, annotated):
+    """
+    The generated module imports ``Annotated`` only when a class types its extra data,
+    the one place the templates render it.
+    """
+    sb = SchemaBuilder("annotated_import")
+    sb.add_defaults()
+    sb.add_class("Thing", slots=["name"], extra_slots=extra_slots)
+    code = PydanticGenerator(sb.schema).serialize()
+    assert bool(re.search(r"^from typing import \([^)]*\bAnnotated\b", code, re.MULTILINE)) is annotated
+    assert ("Annotated[" in code) is annotated
+    compile_python(code)
+
+
+EXTRA_SLOTS_SPLIT_IMPORTED = """
+id: https://example.org/extra_slots_imported
+name: extra_slots_imported
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Remote:
+    attributes:
+      y:
+        range: string
+"""
+
+EXTRA_SLOTS_SPLIT_MAIN = """
+id: https://example.org/extra_slots_main
+name: extra_slots_main
+imports:
+  - linkml:types
+  - extra_slots_imported
+default_range: string
+classes:
+  Holder:
+    attributes:
+      x:
+        range: integer
+    extra_slots:
+      range_expression:
+        range: Remote
+"""
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_extra_slots(tmp_path, monkeypatch):
+    """
+    In split mode, a class that types the extra data of another class is imported
+    from the module of the schema that defines it.
+    """
+    (tmp_path / "extra_slots_imported.yaml").write_text(EXTRA_SLOTS_SPLIT_IMPORTED)
+    (tmp_path / "extra_slots_main.yaml").write_text(EXTRA_SLOTS_SPLIT_MAIN)
+    output_file = tmp_path / "split_extra_slots" / "extra_slots_main.py"
+    PydanticGenerator.generate_split(
+        str(tmp_path / "extra_slots_main.yaml"), output_file, split_pattern=".{{ schema.name }}"
+    )
+
+    monkeypatch.syspath_prepend(str(tmp_path))
+    module = importlib.import_module("split_extra_slots.extra_slots_main")
+    module.Holder(x=1, extra={"y": "string"})
+    with pytest.raises(ValidationError):
+        module.Holder(x=1, extra={"y": 1})
