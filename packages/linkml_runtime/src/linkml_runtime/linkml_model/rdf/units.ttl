@@ -461,7 +461,7 @@ linkml:units dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/
 	linkml:metamodel_version "1.12.0" ;
 	linkml:slots linkml:UnitOfMeasure_exact_mappings , linkml:abbreviation , linkml:annotations , linkml:broad_mappings , linkml:close_mappings , linkml:deprecated_element_has_exact_replacement , linkml:deprecated_element_has_possible_replacement , linkml:derivation , linkml:descriptive_name , linkml:exact_mappings , linkml:extension_tag , linkml:extension_value , linkml:extensions , linkml:has_quantity_kind , linkml:iec61360code , linkml:mappings , linkml:narrow_mappings , linkml:related_mappings , linkml:symbol , linkml:ucum_code , linkml:unit ;
 	linkml:source_file "units.yaml" ;
-	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-21T16:04:37"^^xsd:dateTime ;
 	linkml:source_file_size 2847 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:uri dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
