@@ -323,6 +323,21 @@ DEPRECATIONS = (
         issue=3780,
     ),
     Deprecation(
+        name="xsd-anyuri-as-iri-option",
+        deprecated_in=SemVer.from_str("1.13.0"),
+        removed_in=SemVer.from_str("1.14.0"),
+        message=(
+            "The `xsd_anyuri_as_iri` option (`--xsd-anyuri-as-iri` on the command line) of gen-owl and "
+            "gen-jsonld-context has no effect: values of `uri`, `uriorcurie` and the types derived from "
+            "them are IRIs in every generator."
+        ),
+        recommendation=(
+            "Remove the option. To keep a URI reference as text (an xsd:anyURI literal), use a type "
+            "derived from `string` with `uri: xsd:anyURI`."
+        ),
+        issue=2495,
+    ),
+    Deprecation(
         name="pydanticgen-extra-fields",
         deprecated_in=SemVer.from_str("1.13.0"),
         removed_in=SemVer.from_str("1.14.0"),
@@ -365,6 +380,7 @@ def deprecation_warning(name: str, stack_level: int = 3):
 
 METADATA_FLAG = "metadata-flag"
 MATERIALIZE_PATTERNS_GENERATOR_OPTION = "materialize-patterns-generator-option"
+XSD_ANYURI_AS_IRI_OPTION = "xsd-anyuri-as-iri-option"
 T = TypeVar("T")
 
 

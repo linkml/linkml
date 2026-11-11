@@ -1,7 +1,8 @@
 [tool.uv]
 required-version = ">=0.9.17"
 exclude-newer = "7 days"
-constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=12.3.0,<12.4"]
+exclude-newer-package = { neverblink-linkml = false }
+constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=13.0.0,<13.1"]
 
 [tool.uv.workspace]
 members = [
@@ -60,7 +61,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py310", "py311", "py312", "py313"]
+target-version = ["py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -111,10 +112,12 @@ markers = [
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "sqlddlbigquerygen: Tests for BigQuery DDL generator",
   "owlgen: Tests for OWL generator",
+  "ossiegen: Tests for the Ossie generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator",
   "arrays: Array specifications!",
+  "diffable_rdf: tests that exercise the diffable-rdf integration (--diff-stable); run as a canary against linkml in diffable-rdf's own CI",
 ]
 
 # https://docs.astral.sh/ruff/settings/
@@ -131,7 +134,7 @@ extend-exclude = [
 ]
 force-exclude = true
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 extend-ignore = ["E203"]

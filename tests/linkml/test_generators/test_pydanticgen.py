@@ -245,6 +245,26 @@ enums:
         )
 
 
+def test_pydantic_keyword_slot_collision():
+    """A class with slots ``from`` and ``from_`` fails to generate rather than silently keeping one field."""
+    schema = """id: https://example.org/keyword-collision
+name: keyword-collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+      from_:
+"""
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        PydanticGenerator(schema).serialize()
+
+
 def test_pydantic_unmasked_keywords(input_path):
     gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
     code = gen.serialize()
@@ -2675,6 +2695,19 @@ def test_generate_split_directory(input_path, tmp_path):
 
     # we didn't generate __init__.py files outside the topmost common directory
     assert not (tmp_path / "__init__.py").exists()
+
+
+@pytest.mark.pydanticgen_split
+def test_generate_split_default_pattern(input_path, tmp_path, monkeypatch):
+    """Without a split_pattern, generate_split uses the generator's default one."""
+    schema = input_path("split/main.yaml")
+    output_file = tmp_path / "split_default_pattern" / "main.py"
+    results = PydanticGenerator.generate_split(schema, output_file)
+
+    assert {result.path.name for result in results} == {"main.py", "schema_1.py", "schema_2.py"}
+    monkeypatch.syspath_prepend(str(tmp_path))
+    main = importlib.import_module("split_default_pattern.main")
+    assert issubclass(main.S1Inheritance, BaseModel)
 
 
 @pytest.mark.parametrize(

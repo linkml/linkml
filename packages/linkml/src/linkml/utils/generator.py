@@ -1,5 +1,5 @@
 """
-Base class for all generators
+Base class for all generators implemented in Python
 
 Developer Notes
 ---------------
@@ -35,8 +35,9 @@ from click import Argument, Command, Option, ParameterSource
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
+from linkml.utils.generator_base import GeneratorBase
 from linkml.utils.mergeutils import alias_root
-from linkml.utils.schemaloader import SchemaLoader
+from linkml.utils.schemaloader import UNKNOWN_NAMESPACE, SchemaLoader
 from linkml.utils.typereferences import References
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -47,6 +48,7 @@ from linkml_runtime.linkml_model.meta import (
     ElementName,
     EnumDefinition,
     EnumDefinitionName,
+    Prefix,
     PrefixPrefixPrefix,
     SchemaDefinition,
     SlotDefinition,
@@ -81,9 +83,9 @@ def _resolved_metamodel(mergeimports):
 
 
 @dataclass
-class Generator(metaclass=abc.ABCMeta):
+class Generator(GeneratorBase, metaclass=abc.ABCMeta):
     """
-    Base class for generators
+    Base class for generators implemented in Python
 
     For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
@@ -93,11 +95,7 @@ class Generator(metaclass=abc.ABCMeta):
         open file or a pre-parsed schema"""
 
     # ClassVars
-    generatorname: ClassVar[str] = None
-    """ Name of the generator. Override with os.path.basename(__file__)"""
-
-    generatorversion: ClassVar[str] = None  # Generator version identifier
-    """Version of the generator. Consider deprecating and instead use overall linkml version"""
+    # generatorname, generatorversion, valid_formats and file_extension come from GeneratorBase.
 
     config_section_name: ClassVar[str] = None
     """Section this generator reads from a ``--config-file`` (``generator_args.<name>``)."""
@@ -110,9 +108,6 @@ class Generator(metaclass=abc.ABCMeta):
 
     requires_metamodel: ClassVar[bool] = True
     """Generator queries an instance of the metamodel"""
-
-    valid_formats: ClassVar[list[str]] = []
-    """Allowed formats - first format is default"""
 
     visit_all_class_slots: ClassVar[bool] = False
     """Visitor ClassVar: False means only visit own slots, True means visit all slots"""
@@ -129,8 +124,6 @@ class Generator(metaclass=abc.ABCMeta):
 
     format: str | None = None
     """expected output format"""
-
-    file_extension: ClassVar[str] = None
 
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
@@ -175,6 +168,8 @@ class Generator(metaclass=abc.ABCMeta):
     it is preserved here so external callers/subclasses relying on it are not
     silently broken by the switch to a property-backed field.
     """
+    _loaded_schemaview: ClassVar[SchemaView | None] = None
+    """SchemaView built by :meth:`type_schemaview` for a SchemaLoader-based generator."""
 
     @property
     def namespaces(self) -> Namespaces | None:
@@ -213,6 +208,25 @@ class Generator(metaclass=abc.ABCMeta):
         """Save passed namespace registry in the private backing store of the
         :attr:`namespaces` property."""
         self._namespaces = value
+
+    def type_schemaview(self) -> SchemaView:
+        """Return a SchemaView of the schema for questions about its types, on either generator path.
+
+        SchemaLoader-based generators have no :attr:`schemaview`. Their loaded schema
+        already has its imports resolved, so the view is built once from a copy of it
+        with the loaded prefixes, without reopening source files. Placeholder namespaces
+        that SchemaLoader gives undeclared prefixes are left out.
+        """
+        if self.schemaview is not None:
+            return self.schemaview
+        if self._loaded_schemaview is None:
+            schema = deepcopy(self.schema)
+            schema.imports = []
+            for prefix, namespace in self.namespaces.items():
+                if not prefix.startswith("@") and not str(namespace).startswith(UNKNOWN_NAMESPACE):
+                    schema.prefixes[prefix] = Prefix(prefix, str(namespace))
+            self._loaded_schemaview = SchemaView(schema)
+        return self._loaded_schemaview
 
     namespaces: Namespaces | None = namespaces
     """Constructor kwarg backing the ``namespaces`` property (see above).
@@ -262,17 +276,9 @@ class Generator(metaclass=abc.ABCMeta):
             self._namespaces = None
         if not self.logger:
             self.logger = logger
-        if self.log_level is not None:
-            self.logger.setLevel(self.log_level)
-        if self.format is None:
-            self.format = self.valid_formats[0]
-        if self.format not in self.valid_formats:
-            raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
+        self._init_common()
         # legacy: all generators should use "mergeimports"
         # self.merge_imports = self.mergeimports
-        if not self.metadata:
-            self.source_file_date = None
-            self.source_file_size = None
         if self.requires_metamodel:
             self.metamodel = _resolved_metamodel(self.mergeimports)
 
@@ -476,6 +482,21 @@ class Generator(metaclass=abc.ABCMeta):
         @return: Visit slots and end class.  False means skip and go on
         """
         return True
+
+    def _add_class_uri_exact_mapping(self, cls: ClassDefinition) -> None:
+        """Add a class's URI as an exact mapping when it differs from its definition URI.
+
+        SchemaLoader deliberately leaves ``exact_mappings`` untouched. Generators
+        that serialize this relationship can opt in here without making loading
+        itself mutate the schema.
+        """
+        class_uri = cls.class_uri
+        expanded_class_uri = self.namespaces.uri_for(class_uri)
+        expanded_definition_uri = self.namespaces.uri_for(cls.definition_uri)
+        if expanded_class_uri != expanded_definition_uri and not any(
+            self.namespaces.uri_for(mapping) == expanded_class_uri for mapping in cls.exact_mappings
+        ):
+            cls.exact_mappings.append(class_uri)
 
     def end_class(self, cls: ClassDefinition) -> str | None:
         """Visited after visit_class_slots (if visit_class returned true)
@@ -970,7 +991,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         if ncname not in self.namespaces:
             self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
+            self.namespaces[ncname] = f"{UNKNOWN_NAMESPACE}{ncname}/"
         self.emit_prefixes.add(ncname)
 
     def get_metamodel_slot_name(self, slot_name: str) -> str:
@@ -1016,7 +1037,7 @@ class Generator(metaclass=abc.ABCMeta):
         return cls.class_uri == "linkml:Any"
 
 
-def shared_arguments(g: type[Generator], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
+def shared_arguments(g: type[GeneratorBase], accepts_directory_input: bool = False) -> Callable[[Command], Command]:
     """Get command-line arguments common to all generators.
 
     Use this decorator on the Click entry point for a generator to automatically
