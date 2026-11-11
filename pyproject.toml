@@ -1,6 +1,7 @@
 [tool.uv]
 required-version = ">=0.9.17"
 exclude-newer = "7 days"
+exclude-newer-package = { neverblink-linkml = false }
 constraint-dependencies = ["click>=8.3.3,<8.4", "pillow>=13.0.0,<13.1"]
 
 [tool.uv.workspace]
@@ -111,6 +112,7 @@ markers = [
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "sqlddlbigquerygen: Tests for BigQuery DDL generator",
   "owlgen: Tests for OWL generator",
+  "ossiegen: Tests for the Ossie generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator",
