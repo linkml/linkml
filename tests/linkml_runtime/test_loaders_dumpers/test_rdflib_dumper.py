@@ -144,6 +144,54 @@ def test_enums(prefix_map):
     assert sorted([org1type1, org1type2], key=str) == sorted(catsx, key=str)
 
 
+def test_dumper_keeps_the_uri_when_slot_usage_is_in_another_schema(tmp_path):
+    """The predicate for a slot is its own URI, even when a slot_usage in another schema refines the slot."""
+    (tmp_path / "base.yaml").write_text(
+        """
+id: https://example.org/base
+name: base
+prefixes:
+  linkml: https://w3id.org/linkml/
+  b: https://example.org/b/
+default_prefix: b
+default_range: string
+imports:
+  - linkml:types
+slots:
+  name: {}
+"""
+    )
+    main = tmp_path / "main.yaml"
+    main.write_text(
+        """
+id: https://example.org/main
+name: main
+prefixes:
+  linkml: https://w3id.org/linkml/
+  m: https://example.org/m/
+default_prefix: m
+default_range: string
+imports:
+  - linkml:types
+  - base
+classes:
+  Person:
+    slots:
+      - name
+    slot_usage:
+      name:
+        required: true
+"""
+    )
+
+    class Person(BaseModel):
+        name: str
+
+    graph = rdflib_dumper.as_rdf_graph(Person(name="Ann"), schemaview=SchemaView(main))
+
+    assert set(graph.predicates(None, Literal("Ann"))) == {URIRef("https://example.org/b/name")}
+
+
 def test_undeclared_prefix_raises_error():
     """Test that undeclared prefixes raise exceptions."""
     view = SchemaView(str(SCHEMA))
