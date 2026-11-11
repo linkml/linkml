@@ -1,3 +1,4 @@
+import logging
 import re
 import sqlite3
 
@@ -429,6 +430,7 @@ def test_cli_index(schema: str) -> None:
         ("date", Date),
         ("datetime", DateTime),
         ("uriorcurie", Text),
+        ("curie", Text),
         ("uri", Text),
         ("ncname", Text),
         ("objectidentifier", Text),
@@ -443,6 +445,25 @@ def test_get_sql_range(schema: str, slot_range: str, ddl_type: type) -> None:
     gen = SQLTableGenerator(schema)
     slot = SlotDefinition(name="range_test", range=slot_range)
     assert isinstance(gen.get_sql_range(slot), ddl_type)
+
+
+@pytest.mark.parametrize("slot_range", ["curie", "objectidentifier", "nodeidentifier"])
+def test_cli_identifier_ranges_log_no_errors(write_schema, caplog, slot_range: str) -> None:
+    """gen-sqltables maps curie, objectidentifier and nodeidentifier to TEXT without logging an error."""
+    b = SchemaBuilder()
+    b.add_slot("id", identifier=True, range="curie")
+    b.add_slot("ref", range=slot_range)
+    b.add_class("Thing", ["id", "ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    with caplog.at_level(logging.ERROR, logger="linkml.generators.sqltablegen"):
+        result = CliRunner().invoke(cli, [schema_path])
+
+    assert result.exit_code == 0, result.output
+    assert "id TEXT NOT NULL" in result.output
+    assert "ref TEXT" in result.output
+    assert [r.getMessage() for r in caplog.records if r.levelno >= logging.ERROR] == []
 
 
 def test_varchar_sql_range(capsys) -> None:
