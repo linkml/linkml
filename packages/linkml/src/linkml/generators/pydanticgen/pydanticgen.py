@@ -65,6 +65,9 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     return pyrange
 
 
+ANNOTATED_IMPORT = Import(module="typing", objects=[ObjectImport(name="Annotated")])
+"""Imported only by a module with a class whose ``extra_slots`` types the extra data."""
+
 DEFAULT_IMPORTS = (
     Imports()
     + Import(module="__future__", objects=[ObjectImport(name="annotations")])
@@ -78,7 +81,6 @@ DEFAULT_IMPORTS = (
     + Import(
         module="typing",
         objects=[
-            ObjectImport(name="Annotated"),
             ObjectImport(name="Any"),
             ObjectImport(name="ClassVar"),
             ObjectImport(name="Literal"),
@@ -579,8 +581,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         result = ClassResult(cls=pyclass, source=cls, imports=imports)
         if typed_extra:
-            # Brings in the imports for any class that types the extra data.
+            # Brings in the imports for any class that types the extra data,
+            # and Annotated, in which the template wraps that type.
             result = result.merge(extra)
+            result.imports = (result.imports or Imports()) + ANNOTATED_IMPORT
 
         # Gather slots
         slots = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]

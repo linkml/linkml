@@ -3311,6 +3311,28 @@ def test_extra_fields_cli_deprecation(args, deprecated, input_path, monkeypatch)
         assert 'extra = "forbid"' in result.output
 
 
+@pytest.mark.parametrize(
+    "extra_slots,annotated",
+    [
+        (None, False),
+        ({"allowed": True}, False),
+        ({"range_expression": {"range": "integer"}}, True),
+    ],
+)
+def test_annotated_imported_only_for_typed_extra_slots(extra_slots, annotated):
+    """
+    The generated module imports ``Annotated`` only when a class types its extra data,
+    the one place the templates render it.
+    """
+    sb = SchemaBuilder("annotated_import")
+    sb.add_defaults()
+    sb.add_class("Thing", slots=["name"], extra_slots=extra_slots)
+    code = PydanticGenerator(sb.schema).serialize()
+    assert bool(re.search(r"^from typing import \([^)]*\bAnnotated\b", code, re.MULTILINE)) is annotated
+    assert ("Annotated[" in code) is annotated
+    compile_python(code)
+
+
 EXTRA_SLOTS_SPLIT_IMPORTED = """
 id: https://example.org/extra_slots_imported
 name: extra_slots_imported
