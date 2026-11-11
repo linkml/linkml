@@ -155,26 +155,22 @@ New tests in any directory should be written using pytest.
 
 ## Code formatting and linting
 
-This repository is configured to use [Ruff](https://docs.astral.sh/ruff/) to ensure good formatting and code quality standards.
+This repository is configured to use [Ruff](https://docs.astral.sh/ruff/) to ensure good formatting and code quality standards, and [codespell](https://github.com/codespell-project/codespell) to catch common misspellings.
 
-Each of these tools can be run on-demand via `tox`. To check the code for issues run:
-
-```shell
-uv run tox -e lint
-```
-
-Any issues should be fixed before committing or pushing changes. This command is automatically run against pull requests and the testing workflow will fail if issues are found.
-
-Formatting and some code quality issues can be fixed automatically by running:
+These checks run through [pre-commit](https://pre-commit.com/), which pins the tool versions in `.pre-commit-config.yaml`. To check the whole repository, fixing formatting and some code quality issues automatically, run:
 
 ```shell
-uv run tox -e format
+uvx pre-commit run --all-files
 ```
 
-You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pipx.pypa.io/):
+(`make format` does the same.) Any remaining issues should be fixed before committing or pushing changes. The same checks run against pull requests, and the testing workflow will fail if issues are found.
+
+You can also run the checks automatically before each commit. To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pipx.pypa.io/) or uv:
 
 ```shell
 pipx install pre-commit
+# or
+uv tool install pre-commit
 ```
 
 Or one of their [other supported installation options](https://pre-commit.com/#installation).
