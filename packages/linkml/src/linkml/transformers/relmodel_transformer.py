@@ -1,5 +1,5 @@
 import logging
-from copy import copy
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 
 from sqlalchemy import Enum
@@ -162,7 +162,7 @@ class RelationalModelTransformer:
         source_sv = self.schemaview
         source_sv.merge_imports()  # do before get_reference_map, avoid busting lru_cache
         links = self.get_reference_map()
-        source = source_sv.schema
+        source = source_sv.copy_schema()
         src_schema_name = source.name
         mappings = []
         if tgt_schema_name is None:
@@ -237,7 +237,8 @@ class RelationalModelTransformer:
         # post-process target schema
         # for each class, for each slot with a range of object,
         # we have a reference to another class.
-        for class_index, (cn, c) in enumerate(all_target_classes.items(), start=1):
+        for class_index, cn in enumerate(list(target_sv.all_classes()), start=1):
+            c = deepcopy(target_sv.get_class(cn))
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
@@ -278,7 +279,7 @@ class RelationalModelTransformer:
                         # e.g. if Person->Address, and only Person has Address,
                         # we can make Address.Person_id
                         backref_slot.inverse = slot_name
-                        backref_class = target.classes[slot_range]
+                        backref_class = deepcopy(target_sv.get_class(slot_range))
                         add_attribute(backref_class.attributes, backref_slot)
                         # In SQLA, corresponds to source_class.source_slot = relationship(target_class)
                         mappings.append(
@@ -299,6 +300,7 @@ class RelationalModelTransformer:
                                 unique_key_name=unique_key_name,
                                 unique_key_slots=[backref_slot.name, backref_key_slot.name],
                             )
+                        target_sv.add_class(backref_class)
 
                     else:
                         # MANY-TO-MANY
@@ -320,7 +322,6 @@ class RelationalModelTransformer:
                         add_attribute(linker_class.attributes, backref_slot)
                         add_attribute(linker_class.attributes, slot)
                         slot.slot_uri = "rdf:object"
-                        target.classes[linker_class.name] = linker_class
                         if slot_range_is_class:
                             fwdann = Annotation("forwardref", "true")
                             slot.annotations[fwdann.tag] = fwdann
@@ -344,20 +345,21 @@ class RelationalModelTransformer:
                                     join_class=linker_class.name,
                                 )
                             )
+                        target_sv.add_class(linker_class)
                     # we delete the slot from the set of attributes for the class,
                     # but leave it present as a 'dangling' slot, where it can
                     # be referenced for mapping purposes
-                    target.slots[slot_name] = src_slot
                     src_slot.owner = None
+                    target_sv.add_slot(src_slot)
                     del c.attributes[slot_name]
                     target_sv.set_modified()
-            target.classes[c.name] = c
+            target_sv.add_class(c)
 
         # add PK and FK anns
         target_sv.set_modified()
         fk_policy = self.foreign_key_policy
         forward_map = {}
-        for class_index, c in enumerate(target.classes.values(), start=1):
+        for class_index, c in enumerate(target_sv.all_classes().values(), start=1):
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = target_sv.get_identifier_slot(c.name)
@@ -368,8 +370,8 @@ class RelationalModelTransformer:
                 if a.required:
                     ann = Annotation("required", "true")
                     a.annotations[ann.tag] = ann
-                if a.range in target.classes:
-                    tc = target.classes[a.range]
+                if a.range in target_sv.all_classes():
+                    tc = target_sv.get_class(a.range)
                     # tc_pk_slot = target_sv.get_identifier_slot(tc.name)
                     tc_pk_slot = self.get_direct_identifier_attribute(target_sv, tc.name)
                     if tc_pk_slot is None:
@@ -406,8 +408,9 @@ class RelationalModelTransformer:
                 uc.unique_key_slots = new_slot_names
             for uc_name in removed_ucs:
                 del c.unique_keys[uc_name]
+            target_sv.add_class(c)
 
-        result = TransformationResult(target, mappings=mappings)
+        result = TransformationResult(target_sv.copy_schema(), mappings=mappings)
         return result
 
     @staticmethod
@@ -470,7 +473,7 @@ class RelationalModelTransformer:
         :param sv:
         :return:
         """
-        c = sv.get_class(cn)
+        c = deepcopy(sv.get_class(cn))
         candidate_names = ["id", "uid", "identifier", "pk"]
         valid_candidate_names = [n for n in candidate_names if n not in c.attributes]
         if not valid_candidate_names:
@@ -487,4 +490,5 @@ class RelationalModelTransformer:
         c.attributes.clear()  # See https://github.com/linkml/linkml/issues/370
         add_attribute(c.attributes, pk)  # add to start
         c.attributes.update(atts)
+        sv.add_class(c, invalidate_cache=False)
         return pk
