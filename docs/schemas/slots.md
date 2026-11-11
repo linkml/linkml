@@ -272,6 +272,12 @@ slots:
     ifabsent: FamilialRelationshipType(PARENT_OF)
 ```
 
+For literal text containing parentheses, use the `string(...)` constructor. For example,
+`ifabsent: string("J/(kg K)")` preserves the complete unit `J/(kg K)`, and
+`ifabsent: string("hello(you)")` produces the literal default `hello(you)`.
+The matching quotes around the constructor's value are optional; parentheses inside
+the value do not need escaping.
+
 
 ## logical characteristics
 
