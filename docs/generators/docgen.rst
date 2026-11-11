@@ -34,6 +34,29 @@ in your schema, and you can modify whichever you need to based on your requireme
 
 *Figure.: schematic diagram explaining the working mechanism of the ``gen-doc`` module*
 
+Page names
+^^^^^^^^^^
+
+``gen-doc`` writes the index to ``index.md``. Use ``--index-name`` to give it another name, for
+example when your static site generator reads ``index.md`` as the folder's own page, or when
+your schema has a slot named ``index``:
+
+.. code-block:: bash
+
+    gen-doc --index-name overview -d docs/elements schema.yaml
+
+Each element gets a page named after it: a class in CamelCase (``Person.md``), a slot in
+snake_case (``home_address.md``), and each imported module under its schema name.
+
+By default all pages share one folder. When two would share a file name, compared without case
+because ``Person.md`` and ``person.md`` are one file on macOS and Windows, the later page gets its
+kind as a suffix (``Person-slot.md``) and ``gen-doc`` logs a warning naming both. The index keeps
+its name, then classes, slots, enums, types, subsets and modules in that order. Links always
+point to the page's final name.
+
+``--subfolder-type-separation`` puts each kind in its own folder (``classes/``, ``slots/``, ...),
+so a class and a slot can share a name without a suffix. It changes every page's address.
+
 Command Line
 ^^^^^^^^^^^^
 
