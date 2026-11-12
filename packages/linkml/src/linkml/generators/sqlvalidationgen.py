@@ -888,7 +888,7 @@ class SQLValidationGenerator(Generator):
     help="Include description of tests in generated query",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile: str, dialect: str = None, **args):
+def cli(yamlfile: str, dialect: str | None = None, **args):
     """Generate SQL validation queries from LinkML schema."""
     gen = SQLValidationGenerator(yamlfile, **args)
     if dialect:

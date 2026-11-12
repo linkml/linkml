@@ -395,7 +395,7 @@ def test_ifabsent(input_path):
     g = rdflib.Graph()
     g.parse(data=shacl)
 
-    def check_slot_default_value(slot: URIRef, default_value: Any, datatype: str = None) -> None:
+    def check_slot_default_value(slot: URIRef, default_value: Any, datatype: str | None = None) -> None:
         for subject, predicate, object in g.triples((None, SH.path, slot)):
             # pyoxigraph's RDFC-1.0 serialization drops explicit ^^xsd:string
             # per RDF 1.1 (plain literals and xsd:string are equivalent).

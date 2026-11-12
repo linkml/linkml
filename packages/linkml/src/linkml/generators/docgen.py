@@ -227,7 +227,7 @@ class DocGenerator(Generator):
 
             self.schemaview.get_mappings = get_mappings_with_preserved_uris
 
-    def serialize(self, directory: str = None) -> None:
+    def serialize(self, directory: str | None = None) -> None:
         """
         Serialize a schema as a collection of documents
 
@@ -755,7 +755,7 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
-    def mermaid_diagram(self, class_names: list[str | ClassDefinitionName] = None) -> str:
+    def mermaid_diagram(self, class_names: list[str | ClassDefinitionName] | None = None) -> str:
         """
         Render a mermaid diagram for a set of classes
 

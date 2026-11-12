@@ -153,7 +153,7 @@ class ExampleRunner:
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 
-    def example_source_inputs(self, class_name: str = None) -> list[str]:
+    def example_source_inputs(self, class_name: str | None = None) -> list[str]:
         """
         Get the list of example source inputs.
 

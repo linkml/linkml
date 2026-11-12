@@ -60,7 +60,7 @@ class LinkmlGenerator(Generator):
             for attr in attrs:
                 c_def.attributes[attr.name] = attr
 
-    def serialize(self, output: str = None, **kwargs) -> str:
+    def serialize(self, output: str | None = None, **kwargs) -> str:
         if self.materialize_attributes:
             self.materialize_classes()
         if self.materialize_patterns:

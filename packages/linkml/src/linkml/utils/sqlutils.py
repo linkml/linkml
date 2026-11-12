@@ -138,7 +138,7 @@ class SQLStore:
         self.native_module = gen.compile_module()
         return self.native_module
 
-    def load(self, target_class: str | type[YAMLRoot] = None) -> YAMLRoot:
+    def load(self, target_class: str | type[YAMLRoot] | None = None) -> YAMLRoot:
         """
         Loads a LinkML object from the wrapped SQLite database
 
@@ -147,7 +147,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(self, target_class: str | type[YAMLRoot] = None) -> list[YAMLRoot]:
+    def load_all(self, target_class: str | type[YAMLRoot] | None = None) -> list[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -341,8 +341,8 @@ def dump(
     input_format=None,
     schema=None,
     validate=None,
-    force: bool = None,
-    glob: bool = None,
+    force: bool | None = None,
+    glob: bool | None = None,
     index_slot=None,
 ) -> None:
     """
@@ -446,7 +446,7 @@ def load(
     input_format=None,
     schema=None,
     validate=None,
-    force: bool = None,
+    force: bool | None = None,
     index_slot=None,
 ) -> None:
     """

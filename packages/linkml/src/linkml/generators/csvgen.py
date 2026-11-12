@@ -58,7 +58,7 @@ class CsvGenerator(Generator):
             out = "\n".join([out, f"# version: {self.schema.version}"])
         return out
 
-    def visit_schema(self, classes: list[ClassDefinitionName] = None, **_) -> None:
+    def visit_schema(self, classes: list[ClassDefinitionName] | None = None, **_) -> None:
         # Note: classes comes from the "root" argument
         self.closure = set()
 
