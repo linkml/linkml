@@ -763,10 +763,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.title_from == "title" and enum.title:
             enum_schema["title"] = enum.title
 
-        # For an open enum, permissible values are advisory only, so we do not
-        # constrain the range to them: the schema stays a plain string.
-        if permissible_values_texts and not enum.is_open:
-            enum_schema["enum"] = permissible_values_texts
+        # An open enum admits any string. Its permissible values go under
+        # ``examples``, which lists them for a reader and never rejects a value.
+        if permissible_values_texts:
+            if enum.is_open:
+                enum_schema["examples"] = permissible_values_texts
+            else:
+                enum_schema["enum"] = permissible_values_texts
 
         enum_schema = self.after_generate_enum(
             EnumResult.model_construct(schema_=enum_schema, source=enum), self.schemaview

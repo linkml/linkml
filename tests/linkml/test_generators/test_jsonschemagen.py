@@ -2090,7 +2090,7 @@ classes:
     ],
 )
 def test_open_enum_omits_enum_keyword(is_open, expect_enum_keyword):
-    """An open enum maps to a plain string; a closed enum constrains to permissible values."""
+    """An open enum lists its values under examples; a closed enum constrains to them."""
     schema = SchemaDefinition(
         id="https://example.com/open_enum",
         name="open_enum_schema",
@@ -2116,8 +2116,10 @@ def test_open_enum_omits_enum_keyword(is_open, expect_enum_keyword):
     assert enum_def["type"] == "string"
     if expect_enum_keyword:
         assert enum_def["enum"] == ["male", "female"]
+        assert "examples" not in enum_def
     else:
         assert "enum" not in enum_def
+        assert enum_def["examples"] == ["male", "female"]
 
 
 def test_open_enum_validates_out_of_set_value():
