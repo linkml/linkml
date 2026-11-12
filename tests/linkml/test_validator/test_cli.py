@@ -530,3 +530,35 @@ def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_d
     assert result.exception is None
     assert "No issues found" in result.output
     assert result.exit_code == 0
+
+
+def test_open_enum_unlisted_value_warns(tmp_path, cli_runner, json_data_file):
+    """An unlisted value of an open enum is reported as a warning and does not fail validation."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text("""
+id: https://example.org/open_enum
+name: open_enum
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+enums:
+  Family:
+    is_open: true
+    permissible_values:
+      GATEWAY:
+      DAEMON:
+classes:
+  Component:
+    attributes:
+      family:
+        range: Family
+""")
+    data_path = json_data_file([{"family": "GATEWAY"}, {"family": "UNLISTED"}])
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "-C", "Component", data_path])
+
+    assert result.exception is None
+    assert result.output.splitlines() == [
+        f"[WARN] [{data_path}/1] 'UNLISTED' is not among the permissible values of open enum 'Family' in /family"
+    ]
+    assert result.exit_code == 0

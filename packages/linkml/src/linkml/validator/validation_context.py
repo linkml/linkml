@@ -1,9 +1,12 @@
 import json
 import os
 from collections import OrderedDict
+from collections.abc import Iterator
 from functools import lru_cache
+from typing import Any
 
 import jsonschema
+from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 
 from linkml.generators import JsonSchemaGenerator, PydanticGenerator
@@ -44,6 +47,17 @@ def _make_cache_key(
     include_range_class_descendants: bool,
 ) -> tuple:
     return (id(schema), include_range_class_descendants)
+
+
+# JSON Schema has no keyword that reports a value without rejecting it. The open-enum
+# validator adds this one to a copy of the JSON Schema, on each open enum's definition.
+OPEN_ENUM_KEYWORD = "linkmlOpenEnum"
+
+
+def _open_enum_keyword(validator: Validator, listed: dict, instance: Any, schema: dict) -> Iterator[ValidationError]:
+    """Yield an error for a string the open enum does not list (a ``jsonschema`` keyword function)."""
+    if validator.is_type(instance, "string") and instance not in listed["values"]:
+        yield ValidationError(f"{instance!r} is not among the permissible values of open enum {listed['enum']!r}")
 
 
 # Keys that JsonSchemaGenerator's start_schema sets on the root and that the
@@ -136,6 +150,41 @@ class ValidationContext:
 
         validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
         return validator_cls(json_schema, format_checker=format_checker_for(validator_cls))
+
+    @lru_cache
+    def open_enum_validator(
+        self,
+        *,
+        closed: bool,
+        include_range_class_descendants: bool,
+        path_override: os.PathLike | None = None,
+    ) -> Validator | None:
+        """Return a validator that finds values an open enum does not list.
+
+        It validates against the JSON Schema of :meth:`json_schema_validator`, with
+        ``OPEN_ENUM_KEYWORD`` added to the definition of each open enum, holding the
+        values the definition lists under ``examples``. An error from that keyword,
+        at any depth, marks an unlisted value; a caller ignores every other error.
+
+        :return: ``None`` when no open enum in the JSON Schema lists values
+        """
+        base = self.json_schema_validator(
+            closed=closed,
+            include_range_class_descendants=include_range_class_descendants,
+            path_override=path_override,
+        )
+        defs = base.schema.get("$defs", {})
+        open_defs = {}
+        for enum in self._schema_view.all_enums().values():
+            def_name = camelcase(enum.name)
+            enum_def = defs.get(def_name, {})
+            if enum.is_open and enum_def.get("examples"):
+                listed = {"enum": enum.name, "values": enum_def["examples"]}
+                open_defs[def_name] = {**enum_def, OPEN_ENUM_KEYWORD: listed}
+        if not open_defs:
+            return None
+        validator_cls = jsonschema.validators.extend(type(base), {OPEN_ENUM_KEYWORD: _open_enum_keyword})
+        return validator_cls({**base.schema, "$defs": {**defs, **open_defs}}, format_checker=base.format_checker)
 
     def pydantic_model(self, *, closed: bool):
         module = self._pydantic_module(closed=closed)

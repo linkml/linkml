@@ -85,7 +85,7 @@ With an open enum:
 
 - The permissible values are advisory - they document the recommended values (and are useful for autocomplete, dropdowns, and documentation), but data values that are not in the set are still valid.
 - In JSON Schema, an open enum maps to a `string` that lists the permissible values under `examples`, rather than a JSON Schema `enum` constraint.
-- When validating with the reference validator, an out-of-set value is reported at `INFO` severity rather than as an error.
+- `linkml-validate` reports an out-of-set value as a warning rather than an error. The reference validator reports it at `INFO` severity.
 
 This is analogous to (say) NIST Metaschema `allow-other="yes"` construct (used by OSCAL).
 
