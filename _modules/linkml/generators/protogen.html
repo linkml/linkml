@@ -415,9 +415,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">apply_config_defaults</span><span class="p">,</span> <span class="n">read_generator_config</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># LinkML built-in type -&gt; proto3 scalar</span>
@@ -466,6 +467,8 @@
 <span class="c1"># proto3 reserves field numbers 19000-19999 for internal use.</span>
 <span class="n">_RESERVED_FIELD_LO</span> <span class="o">=</span> <span class="mi">19000</span>
 <span class="n">_RESERVED_FIELD_HI</span> <span class="o">=</span> <span class="mi">19999</span>
+<span class="c1"># Field numbers run from 1 to 2**29 - 1.</span>
+<span class="n">_MAX_FIELD_NUMBER</span> <span class="o">=</span> <span class="mi">536_870_911</span>
 
 <span class="c1"># Fallback when we can&#39;t resolve a slot range (e.g. unknown reference).</span>
 <span class="c1"># &quot;string&quot; is safest choice - (see _PROTO_SCALAR_BY_LINKML_BASE)</span>
@@ -502,6 +505,14 @@
     <span class="k">return</span> <span class="n">cleaned</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_proto_field_name</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the proto3 field name for a slot: ``snake_case`` and a valid identifier.</span>
+
+<span class="sd">    See https://protobuf.dev/programming-guides/style/#message-and-field-names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_to_proto_ident</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">))</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_to_upper_snake</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert *value* to UPPER_SNAKE_CASE for use as a proto3 enum value name.&quot;&quot;&quot;</span>
     <span class="c1"># Break CamelCase into CAMEL_CASE before sanitising - this preserves word</span>
@@ -521,16 +532,23 @@
 
     <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.2.0&quot;</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.3.0&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;proto&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">config_section_name</span> <span class="o">=</span> <span class="s2">&quot;proto&quot;</span>
 
     <span class="c1"># ObjectVars</span>
     <span class="c1"># Per-class map of slot name -&gt; proto field number. Populated in visit_class</span>
     <span class="c1"># so visit_class_slot can look up the pre-computed number without having to</span>
     <span class="c1"># repeat the collision-avoidance logic for every slot.</span>
     <span class="n">_field_numbers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Per-class field statements keyed by field number. visit_class_slot fills</span>
+    <span class="c1"># it and end_class writes it out in field-number order.</span>
+    <span class="n">_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Schema id -&gt; schema name for every imported schema, filled on first use</span>
+    <span class="c1"># when imports are not merged.</span>
+    <span class="n">_schema_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------ header</span>
 
@@ -579,10 +597,72 @@
         <span class="c1"># &#39;package&#39; is optional in proto3 - only emit when non-bare (valued).</span>
         <span class="k">if</span> <span class="n">pkg</span><span class="p">:</span>
             <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;package </span><span class="si">{</span><span class="n">pkg</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;import &quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">&quot;;&#39;</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_imports</span><span class="p">())</span>
         <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// metamodel_version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
             <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># ---------------------------------------------------------------- imports</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_imported</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether *element* belongs in another schema&#39;s file.</span>
+
+<span class="sd">        Only ``--no-mergeimports`` separates the schemas; by default every</span>
+<span class="sd">        element is written to the one file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">imported_from</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``name`` of the imported schema that defines *element*.</span>
+
+<span class="sd">        The loader keeps a schema&#39;s id and the import as written, not its name,</span>
+<span class="sd">        and the imported file takes its package from the name. The names are</span>
+<span class="sd">        read once from the import closure. A schema given in memory has no</span>
+<span class="sd">        location to read from; there, the last segment of the import stands in.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_schema_names</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span><span class="p">:</span>
+                <span class="n">view</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
+                <span class="n">view</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_schema_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[/:]&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">imported_from</span><span class="p">))[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_imports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the sorted ``.proto`` files that this schema&#39;s own messages refer to.</span>
+
+<span class="sd">        A message carries its inherited slots, so a file can need a schema it</span>
+<span class="sd">        does not import directly, and proto3 imports are not transitive. A</span>
+<span class="sd">        reference by identifier travels as a scalar and needs no import.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_imported</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">referenced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">referenced</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_imported</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+                    <span class="n">names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_schema_name</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.proto&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_type_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name a field uses for the message or enum *element*.</span>
+
+<span class="sd">        A type in another package is written in full with a leading dot, so</span>
+<span class="sd">        that protoc resolves it from the root whatever the current package is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_imported</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="n">package</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitise_proto_package</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_schema_name</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">package</span> <span class="ow">or</span> <span class="n">package</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_package</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># ------------------------------------------------ range / type resolution</span>
 
@@ -603,9 +683,43 @@
             <span class="k">return</span> <span class="n">_PROTO_DEFAULT_SCALAR</span>
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_scalar_for_type</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_type_reference</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_PROTO_DEFAULT_SCALAR</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_identifier_slot_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the identifier slot of the class *cls_name*, or None.</span>
+
+<span class="sd">        The SchemaLoader has rolled inherited and mixin slots into ``cls.slots``.</span>
+<span class="sd">        A ``key`` does not count: it identifies an object within its container</span>
+<span class="sd">        only, so a key-only class stays inlined, as ``SchemaView.is_inlined`` has it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cls_name</span><span class="p">]</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sname</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">slot</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_range_for_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve *slot* to a proto3 type, honouring inlined versus reference.</span>
+
+<span class="sd">        An inlined slot carries the whole nested object and keeps the message</span>
+<span class="sd">        type. Any other slot whose range is a class carries a reference, the</span>
+<span class="sd">        identifier of the object, and takes the identifier slot&#39;s scalar,</span>
+<span class="sd">        usually ``string``. A slot is inlined when ``inlined`` or</span>
+<span class="sd">        ``inlined_as_list`` is set, or when the range class has no identifier.</span>
+<span class="sd">        The SchemaLoader sets ``inlined`` in that last case itself, except for</span>
+<span class="sd">        a class that has only a ``key``.</span>
+
+<span class="sd">        Returns the proto type and, for a reference, the name of the class</span>
+<span class="sd">        referred to, for the caller&#39;s comment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">):</span>
+            <span class="n">id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identifier_slot_for</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range</span><span class="p">(</span><span class="n">id_slot</span><span class="o">.</span><span class="n">range</span><span class="p">),</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">),</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_proto_scalar_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Map a LinkML type to a proto3 scalar by walking its ``typeof`` chain.</span>
@@ -653,6 +767,55 @@
             <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">n</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ranked_field_numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the field numbers that ``rank`` pins for *slots*, keyed by slot name.</span>
+
+<span class="sd">        A rank that proto3 cannot use as a field number is dropped with a</span>
+<span class="sd">        warning, and the slot is numbered automatically: a rank above 536870911</span>
+<span class="sd">        or below 0, one inside the reserved range 19000 to 19999, or one that</span>
+<span class="sd">        another slot of the same class already claims. A rank of 0 counts as no</span>
+<span class="sd">        rank, without a warning, because LinkML schemas order elements from 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numbers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">taken</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rank</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">taken</span><span class="p">:</span>
+                <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> is already used by </span><span class="si">{</span><span class="n">taken</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">rank</span> <span class="o">&lt;=</span> <span class="n">_MAX_FIELD_NUMBER</span> <span class="ow">or</span> <span class="n">_RESERVED_FIELD_LO</span> <span class="o">&lt;=</span> <span class="n">rank</span> <span class="o">&lt;=</span> <span class="n">_RESERVED_FIELD_HI</span><span class="p">:</span>
+                <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> is not a usable proto3 field number&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rank</span>
+                <span class="n">taken</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">; assigning its field number automatically&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numbers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_slots_to_emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the slots of *cls* to write out, one per proto field name.</span>
+
+<span class="sd">        Two slot names can sanitise to one field name: a ``slot_usage`` that</span>
+<span class="sd">        spells an inherited slot ``related to`` instead of ``related_to`` makes</span>
+<span class="sd">        the SchemaLoader induce a second slot. A message cannot declare a field</span>
+<span class="sd">        twice, so the later slot replaces the earlier one, with a warning. In</span>
+<span class="sd">        the loader&#39;s order the later slot is the more specific one, because a</span>
+<span class="sd">        class&#39;s own and ``slot_usage`` slots follow the inherited ones. The</span>
+<span class="sd">        field keeps the earlier slot&#39;s position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">by_field</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="n">field_name</span> <span class="o">=</span> <span class="n">_proto_field_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">by_field</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: slots </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">by_field</span><span class="p">[</span><span class="n">field_name</span><span class="p">])</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span><span class="si">}</span><span class="s2"> both map to proto field </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">; keeping the latter&quot;</span>
+                <span class="p">)</span>
+            <span class="n">by_field</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">by_field</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
     <span class="c1"># ---------------------------------------------- class &amp; slot emission</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -668,25 +831,32 @@
         <span class="c1"># The trade-off is that LinkML&#39;s mixin/abstract semantics are not</span>
         <span class="c1"># carried over to proto3, but the resulting file is always compilable and every</span>
         <span class="c1"># range reference resolves to a declared message.</span>
-
-        <span class="c1"># Pre-compute proto field numbers for every slot in this class.</span>
         <span class="c1">#</span>
-        <span class="c1"># Pre-pass: proto3 forbids field number 0, requires uniqueness within a</span>
-        <span class="c1"># message, and reserves 19000-19999. Honor LinkML&#39;s `rank` slot (allow</span>
-        <span class="c1"># pinning numbers for wire compatibility) and auto-assign the rest (starting</span>
-        <span class="c1"># at 1), skipping numbers already claimed by rank, and reserved range.</span>
+        <span class="c1"># Under --no-mergeimports, an imported class is declared in its own schema&#39;s file.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_imported</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="c1"># Doing this once up front keeps visit_class_slot a simple lookup.</span>
-        <span class="n">used_ranks</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">rank</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">rank</span><span class="p">}</span>
+        <span class="c1"># Number every slot of this class once, so that visit_class_slot only</span>
+        <span class="c1"># looks its number up. A `rank` pins a number, which keeps the wire</span>
+        <span class="c1"># format stable; the other slots are numbered from 1 in source order,</span>
+        <span class="c1"># skipping pinned and reserved numbers. When no slot has a rank, the</span>
+        <span class="c1"># identifier slot, if any, takes field 1, as phenopackets does.</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slots_to_emit</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ranked_field_numbers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slots</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">:</span>
+            <span class="n">id_slot</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">id_slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">next_auto</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">next_auto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_field_number</span><span class="p">(</span><span class="n">next_auto</span><span class="p">,</span> <span class="n">used_ranks</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_auto</span>
-                <span class="n">next_auto</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">next_auto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_field_number</span><span class="p">(</span><span class="n">next_auto</span><span class="p">,</span> <span class="n">used</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_auto</span>
+            <span class="n">used</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">next_auto</span><span class="p">)</span>
+            <span class="n">next_auto</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
@@ -696,27 +866,42 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="c1"># Fields are written in field-number order, so the identifier (field 1</span>
+        <span class="c1"># when no rank is set) leads the message whatever its source order.</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">body</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">:</span>
+            <span class="c1"># Another slot of this class claimed the same proto field name (see _slots_to_emit).</span>
+            <span class="k">return</span>
         <span class="n">qual</span> <span class="o">=</span> <span class="s2">&quot;repeated &quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="c1"># snake_case per https://protobuf.dev/programming-guides/style/#message-and-field-names</span>
-        <span class="c1"># `_to_proto_ident` enforces the proto3 identifier rules:</span>
-        <span class="c1"># (no leading or trailing `_`, no `__`, no `_&lt;digit&gt;`).</span>
-        <span class="n">slotname</span> <span class="o">=</span> <span class="n">_to_proto_ident</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">))</span>
+        <span class="n">slotname</span> <span class="o">=</span> <span class="n">_proto_field_name</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
 
-        <span class="n">slot_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="c1"># A reference to a class travels as its identifier, so the field takes</span>
+        <span class="c1"># the identifier&#39;s scalar.</span>
+        <span class="n">slot_range</span><span class="p">,</span> <span class="n">referenced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Slot description -&gt; `//` comments, mirroring the class-level loop in</span>
         <span class="c1"># visit_class. Useful for both meta and wire consumers.</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">dline</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  // </span><span class="si">{</span><span class="n">dline</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Mark the identifier slot, as phenopackets and FHIR proto files do.</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  // identifier&quot;</span><span class="p">)</span>
+        <span class="c1"># proto3 has no required keyword, so a comment records the constraint.</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  // required&quot;</span><span class="p">)</span>
+        <span class="c1"># Name the class a reference points at, since the scalar type cannot.</span>
+        <span class="k">if</span> <span class="n">referenced</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  // reference to </span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">referenced</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># Every proto3 field statement must end with `;` - without it `protoc`</span>
         <span class="c1"># rejects the file. The field number comes from the pre-computed map</span>
         <span class="c1"># built in visit_class so we never emit forbidden &quot;&quot;= 0&quot;.</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">qual</span><span class="si">}{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">slotname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">qual</span><span class="si">}{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">slotname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">[</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------- enum emission</span>
 
@@ -740,10 +925,11 @@
 
 <span class="sd">        Enums are emitted after the messages. Order is purely cosmetic.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+        <span class="n">enum_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_imported</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">name</span><span class="p">])]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enum_names</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ename</span> <span class="ow">in</span> <span class="n">enum_names</span><span class="p">:</span>
             <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">ename</span><span class="p">]</span>
             <span class="n">proto_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">ename</span><span class="p">)</span>
             <span class="n">value_prefix</span> <span class="o">=</span> <span class="n">_to_upper_snake</span><span class="p">(</span><span class="n">ename</span><span class="p">)</span>
@@ -783,10 +969,23 @@
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--config-file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to a YAML config file supplying defaults under &quot;</span>
+    <span class="s2">&quot;&#39;generator_args: {proto: {importmap: ...}}&#39;. Keys are this command&#39;s own option &quot;</span>
+    <span class="s2">&quot;names with dashes as underscores; explicit command-line options always take &quot;</span>
+    <span class="s2">&quot;precedence over the config file.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;proto&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">pass_context</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate proto representation of LinkML model&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">read_generator_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">ProtoGenerator</span><span class="o">.</span><span class="n">config_section_name</span><span class="p">)</span>
+    <span class="n">apply_config_defaults</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">ProtoGenerator</span><span class="o">.</span><span class="n">validate_generator_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 

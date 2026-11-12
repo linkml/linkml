@@ -418,27 +418,57 @@
 <h1>ProtoBuf<a class="headerlink" href="#protobuf" title="Link to this heading">¶</a></h1>
 <section id="example-output">
 <h2>Example Output<a class="headerlink" href="#example-output" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/protobuf/personinfo.proto">personinfo.schema.proto</a></p>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/protobuf/personinfo.proto">personinfo.proto</a></p>
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a>
-is a protocol for seriaizing data developed by Google.</p>
-<p>Protobuf can be generated from a LinkML schema.</p>
+<p><a class="reference external" href="https://protobuf.dev/">Protocol Buffers</a> is Google’s language-neutral
+format for serializing structured data. <code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> writes a <code class="docutils literal notranslate"><span class="pre">proto3</span></code>
+schema from a LinkML schema. The output compiles with <code class="docutils literal notranslate"><span class="pre">protoc</span></code>.</p>
 <p>To run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-proto<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.proto
 </pre></div>
 </div>
+</section>
+<section id="how-a-schema-maps-to-proto3">
+<h2>How a schema maps to proto3<a class="headerlink" href="#how-a-schema-maps-to-proto3" title="Link to this heading">¶</a></h2>
+<p>Every class becomes a <code class="docutils literal notranslate"><span class="pre">message</span></code>, including mixins and abstract classes, so
+that every type a field names is declared. proto3 has no inheritance, so each
+message lists the slots it inherits as well as its own. The <code class="docutils literal notranslate"><span class="pre">package</span></code> name
+comes from the schema <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<p>Field names are <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>. A slot with a <code class="docutils literal notranslate"><span class="pre">rank</span></code> above 0 keeps it as its
+field number. The other slots are numbered from 1 in schema order, skipping
+the numbers taken by ranks and the reserved range 19000 to 19999. When no slot
+of a class has a rank, the identifier slot takes field number 1. A rank that
+proto3 cannot use as a field number, or that another slot of the same class
+already uses, is dropped with a warning, and the slot is numbered
+automatically. Fields are written in field-number order.</p>
+<p>LinkML types map to proto3 scalars: <code class="docutils literal notranslate"><span class="pre">integer</span></code> to <code class="docutils literal notranslate"><span class="pre">int32</span></code>, <code class="docutils literal notranslate"><span class="pre">boolean</span></code> to
+<code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> to <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code> to <code class="docutils literal notranslate"><span class="pre">double</span></code>, and every other
+type, including dates, URIs and decimals, to <code class="docutils literal notranslate"><span class="pre">string</span></code>. A multivalued slot
+becomes a <code class="docutils literal notranslate"><span class="pre">repeated</span></code> field. A slot with no single range, such as one declared
+with <code class="docutils literal notranslate"><span class="pre">any_of</span></code>, becomes a <code class="docutils literal notranslate"><span class="pre">string</span></code> field.</p>
+<p>A slot whose range is a class carries the nested message when the slot is
+inlined. Otherwise it carries a reference: the identifier of the object. The
+field then has the identifier’s scalar type, usually <code class="docutils literal notranslate"><span class="pre">string</span></code>, and a
+<code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">reference</span> <span class="pre">to</span></code> comment names the class. A class without an identifier is
+always inlined.</p>
+<p>Each enum becomes an <code class="docutils literal notranslate"><span class="pre">enum</span></code> whose first value is <code class="docutils literal notranslate"><span class="pre">&lt;NAME&gt;_UNSPECIFIED</span> <span class="pre">=</span> <span class="pre">0</span></code>.
+The permissible values follow from 1, each prefixed with the enum name so that
+values of different enums never clash.</p>
+<p>Descriptions become <code class="docutils literal notranslate"><span class="pre">//</span></code> comments. An identifier slot carries
+<code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">identifier</span></code> and a required slot <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">required</span></code>, since proto3 has no
+<code class="docutils literal notranslate"><span class="pre">required</span></code> keyword.</p>
 <section id="inheritance">
 <h3>Inheritance<a class="headerlink" href="#inheritance" title="Link to this heading">¶</a></h3>
-<p>Because Protobuf does not support inheritance hierarchy, slots are
-“rolled down” from parent.</p>
-<p>For example, in the personinfo schema, slots such as <cite>id</cite> and <cite>name</cite>
-are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mixin:</p>
+<p>In the personinfo schema, <code class="docutils literal notranslate"><span class="pre">Person</span></code> inherits <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>
+and <code class="docutils literal notranslate"><span class="pre">depicted_by</span></code> from <code class="docutils literal notranslate"><span class="pre">NamedThing</span></code>, and <code class="docutils literal notranslate"><span class="pre">aliases</span></code> from a mixin:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">NamedThing</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">slots</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">depicted_by</span>
 
 <span class="nt">HasAliases</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">mixin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -451,42 +481,100 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 <span class="w">  </span><span class="nt">mixins</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
 <span class="w">  </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary_email</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">birth_date</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">current_address</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">telephone</span>
 </pre></div>
 </div>
-<p>(some parts truncated for brevity)</p>
-<p>This would generate the following Protobuf:</p>
+<p>The example leaves some slots out for brevity.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> writes the following messages. The identifier leads each one.
+<code class="docutils literal notranslate"><span class="pre">Address</span></code> stays a nested message because the slot is inlined. <code class="docutils literal notranslate"><span class="pre">Person</span></code>
+lists <code class="docutils literal notranslate"><span class="pre">aliases</span></code>, which it inherits from the mixin:</p>
 <div class="highlight-proto notranslate"><div class="highlight"><pre><span></span><span class="c1">// A generic grouping for any identifiable entity</span>
-<span class="kd">message</span><span class="w"> </span><span class="nc">NamedThing</span>
-<span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
-<span class="w"> </span><span class="p">}</span>
+<span class="kd">message</span><span class="w"> </span><span class="nc">NamedThing</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// identifier</span>
+<span class="w">  </span><span class="c1">// required</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// required</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">depicted_by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="p">}</span>
 
 <span class="c1">// A person (alive, dead, undead, or fictional).</span>
-<span class="kd">message</span><span class="w"> </span><span class="nc">Person</span>
-<span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">primaryEmail</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">birthDate</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">ageInYears</span><span class="w"> </span><span class="na">Integer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="na">GenderType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span>
-<span class="w">  </span><span class="k">optional</span><span class="w"> </span><span class="n">currentAddress</span><span class="w"> </span><span class="na">Address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span>
-<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">hasEmploymentHistory</span><span class="w"> </span><span class="na">EmploymentEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
-<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">hasFamilialRelationships</span><span class="w"> </span><span class="na">FamilialRelationship</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span>
-<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">hasMedicalHistory</span><span class="w"> </span><span class="na">MedicalEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span>
-<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">aliases</span><span class="w"> </span><span class="na">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span>
-<span class="w"> </span><span class="p">}</span>
+<span class="kd">message</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// identifier</span>
+<span class="w">  </span><span class="c1">// required</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// required</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">depicted_by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">primary_email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">birth_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int32</span><span class="w"> </span><span class="na">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span>
+<span class="w">  </span><span class="n">GenderType</span><span class="w"> </span><span class="na">gender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// The address at which a person currently lives</span>
+<span class="w">  </span><span class="n">Address</span><span class="w"> </span><span class="na">current_address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="na">telephone</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">EmploymentEvent</span><span class="w"> </span><span class="na">has_employment_history</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">FamilialRelationship</span><span class="w"> </span><span class="na">has_familial_relationships</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">InterPersonalRelationship</span><span class="w"> </span><span class="na">has_interpersonal_relationships</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">MedicalEvent</span><span class="w"> </span><span class="na">has_medical_history</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">14</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">aliases</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">NewsEvent</span><span class="w"> </span><span class="na">has_news_events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="schemas-that-import-other-schemas">
+<h2>Schemas that import other schemas<a class="headerlink" href="#schemas-that-import-other-schemas" title="Link to this heading">¶</a></h2>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> merges every imported schema into one file. With
+<code class="docutils literal notranslate"><span class="pre">--no-mergeimports</span></code>, it writes only the messages and enums of the schema it
+is given, and refers to the others through <code class="docutils literal notranslate"><span class="pre">import</span></code> statements. Run it once
+per schema, and name each file after the schema’s <code class="docutils literal notranslate"><span class="pre">name</span></code>, in one directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-proto<span class="w"> </span>--no-mergeimports<span class="w"> </span>base.yaml<span class="w"> </span>&gt;<span class="w"> </span>protos/base.proto
+gen-proto<span class="w"> </span>--no-mergeimports<span class="w"> </span>main.yaml<span class="w"> </span>&gt;<span class="w"> </span>protos/main.proto
+protoc<span class="w"> </span>--proto_path<span class="o">=</span>protos<span class="w"> </span>--python_out<span class="o">=</span>out<span class="w"> </span>protos/base.proto<span class="w"> </span>protos/main.proto
+</pre></div>
+</div>
+<p>A file imports a schema when one of its fields, inherited fields included,
+names a message or enum of that schema. The field gives the type’s full name,
+such as <code class="docutils literal notranslate"><span class="pre">.base.Thing</span></code>. Types from <code class="docutils literal notranslate"><span class="pre">linkml:types</span></code> become scalars and need no
+file.</p>
+</section>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">--config-file</span></code>/<code class="docutils literal notranslate"><span class="pre">-C</span></code> YAML file in the format that
+<code class="docutils literal notranslate"><span class="pre">gen-project</span></code> reads with its own <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> (see
+<a class="reference internal" href="project-generator.html"><span class="doc">Project Generator</span></a>). <code class="docutils literal notranslate"><span class="pre">gen-java</span></code> (see <a class="reference internal" href="java.html"><span class="doc">Java</span></a>) and <code class="docutils literal notranslate"><span class="pre">gen-golang</span></code>
+(see <a class="reference internal" href="golang.html"><span class="doc">Go</span></a>) read the same format, so one project <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> can
+serve them all. The settings for <code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> live under
+<code class="docutils literal notranslate"><span class="pre">generator_args.proto</span></code>, and the other sections are ignored:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config.yaml</span>
+<span class="nt">generator_args</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">proto</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">importmap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">importmap.json</span>
+<span class="w">    </span><span class="nt">mergeimports</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">java</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">package</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.example.model</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-proto<span class="w"> </span>-C<span class="w"> </span>config.yaml<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.proto
+</pre></div>
+</div>
+<p>Any option of the command can be set there, keyed by its name with underscores
+in place of dashes, such as <code class="docutils literal notranslate"><span class="pre">importmap</span></code> for <code class="docutils literal notranslate"><span class="pre">--importmap</span></code>. A key that is
+not an option of <code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> is reported as a warning and ignored.
+<code class="docutils literal notranslate"><span class="pre">--log_level</span></code>, <code class="docutils literal notranslate"><span class="pre">--verbose</span></code> and <code class="docutils literal notranslate"><span class="pre">--stacktrace</span></code> act as soon as the command
+line is read, so they are taken from the command line only.</p>
+<p>An option given on the command line wins over the file, and the file wins over
+the option’s default. <code class="docutils literal notranslate"><span class="pre">gen-proto</span></code> reads the file only when it is named with
+<code class="docutils literal notranslate"><span class="pre">--config-file</span></code>.</p>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
@@ -503,6 +591,12 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 <dt class="sig sig-object std" id="cmdoption-gen-proto-V">
 <span id="cmdoption-gen-proto-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-proto-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-proto-C">
+<span id="cmdoption-gen-proto-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-proto-C" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a YAML config file supplying defaults under ‘generator_args: {proto: {importmap: …}}’. Keys are this command’s own option names with dashes as underscores; explicit command-line options always take precedence over the config file.</p>
 </dd></dl>
 
 <dl class="std option">
@@ -688,10 +782,13 @@ directly to disk instead of returning it (e.g. ExcelGenerator, JavaGenerator)</p
             <ul>
 <li><a class="reference internal" href="#">ProtoBuf</a><ul>
 <li><a class="reference internal" href="#example-output">Example Output</a></li>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#how-a-schema-maps-to-proto3">How a schema maps to proto3</a><ul>
 <li><a class="reference internal" href="#inheritance">Inheritance</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#schemas-that-import-other-schemas">Schemas that import other schemas</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration File</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
 <li><a class="reference internal" href="#gen-proto">gen-proto</a></li>
