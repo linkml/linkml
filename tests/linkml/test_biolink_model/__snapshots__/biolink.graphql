@@ -256,7 +256,7 @@ enum StrandEnum
     __QUESTION_MARK__
   }
 
-type AccessibleDnaRegion implements GenomicEntity, ChemicalEntityOrGeneOrGeneProduct, PhysicalEssence, OntologyClass
+type AccessibleDnaRegion implements GenomicEntity & ChemicalEntityOrGeneOrGeneProduct & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -273,6 +273,7 @@ type AccessibleDnaRegion implements GenomicEntity, ChemicalEntityOrGeneOrGenePro
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
 type Activity implements ActivityAndBehavior
@@ -289,10 +290,12 @@ type Activity implements ActivityAndBehavior
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 interface ActivityAndBehavior
   {
+    _placeholder: Boolean
   }
 
 interface AdministrativeEntity
@@ -345,6 +348,7 @@ type AnatomicalEntity implements PhysicalEssence
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 interface AnatomicalEntityToAnatomicalEntityAssociation
@@ -478,6 +482,7 @@ type AnatomicalEntityToAnatomicalEntityPartOfAssociation
 
 interface Annotation
   {
+    _placeholder: Boolean
   }
 
 type Article
@@ -590,7 +595,7 @@ type Bacterium
     hasAttribute: [Attribute]
   }
 
-type Behavior implements OntologyClass, ActivityAndBehavior
+type Behavior implements OntologyClass & ActivityAndBehavior
   {
     id: String!
     iri: IriType
@@ -609,9 +614,10 @@ type Behavior implements OntologyClass, ActivityAndBehavior
     hasInput: [NamedThing]
     hasOutput: [NamedThing]
     enabledBy: [PhysicalEntity]
+    _placeholder: Boolean
   }
 
-type BehaviorToBehavioralFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin
+type BehaviorToBehavioralFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier
   {
     id: String!
     iri: IriType
@@ -709,9 +715,10 @@ type BehavioralFeature
 
 type BehavioralOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
-type BiologicalEntity implements ThingWithTaxon
+interface BiologicalEntity implements ThingWithTaxon
   {
     id: String!
     iri: IriType
@@ -729,28 +736,7 @@ type BiologicalEntity implements ThingWithTaxon
     inTaxonLabel: LabelType
   }
 
-type BiologicalProcess implements Occurrent, OntologyClass
-  {
-    id: String!
-    iri: IriType
-    type: [String]
-    name: LabelType
-    description: NarrativeText
-    hasAttribute: [Attribute]
-    deprecated: Boolean
-    providedBy: [String]
-    xref: [String]
-    fullName: LabelType
-    synonym: [LabelType]
-    category: [String]!
-    inTaxon: [OrganismTaxon]
-    inTaxonLabel: LabelType
-    hasInput: [NamedThing]
-    hasOutput: [NamedThing]
-    enabledBy: [PhysicalEntity]
-  }
-
-type BiologicalProcessOrActivity implements Occurrent, OntologyClass
+type BiologicalProcess implements Occurrent & OntologyClass
   {
     id: String!
     iri: IriType
@@ -769,6 +755,29 @@ type BiologicalProcessOrActivity implements Occurrent, OntologyClass
     hasInput: [NamedThing]
     hasOutput: [NamedThing]
     enabledBy: [PhysicalEntity]
+    _placeholder: Boolean
+  }
+
+type BiologicalProcessOrActivity implements Occurrent & OntologyClass
+  {
+    id: String!
+    iri: IriType
+    type: [String]
+    name: LabelType
+    description: NarrativeText
+    hasAttribute: [Attribute]
+    deprecated: Boolean
+    providedBy: [String]
+    xref: [String]
+    fullName: LabelType
+    synonym: [LabelType]
+    category: [String]!
+    inTaxon: [OrganismTaxon]
+    inTaxonLabel: LabelType
+    hasInput: [NamedThing]
+    hasOutput: [NamedThing]
+    enabledBy: [PhysicalEntity]
+    _placeholder: Boolean
   }
 
 type BiologicalSex
@@ -881,6 +890,7 @@ type Case implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 interface CaseToEntityAssociationMixin
@@ -890,7 +900,7 @@ interface CaseToEntityAssociationMixin
     object: NamedThing!
   }
 
-type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin, CaseToEntityAssociationMixin
+type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier & CaseToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -948,7 +958,7 @@ type CaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAsso
     hasPercentage: Float
   }
 
-type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneToEntityAssociationMixin
+type CausalGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -1040,9 +1050,10 @@ type CellLine implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
-type CellLineAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin, EntityToDiseaseAssociationMixin
+type CellLineAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -1092,7 +1103,7 @@ type CellLineAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     diseaseContextQualifier: Disease
   }
 
-type CellLineToDiseaseOrPhenotypicFeatureAssociation implements CellLineToEntityAssociationMixin, EntityToDiseaseOrPhenotypicFeatureAssociationMixin
+type CellLineToDiseaseOrPhenotypicFeatureAssociation implements CellLineToEntityAssociationMixin & EntityToDiseaseOrPhenotypicFeatureAssociationMixin
   {
     id: String!
     iri: IriType
@@ -1176,6 +1187,7 @@ type CellularOrganism implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 type ChemicalAffectsGeneAssociation
@@ -1236,7 +1248,7 @@ type ChemicalAffectsGeneAssociation
     object: GeneOrGeneProduct!
   }
 
-type ChemicalEntity implements PhysicalEssence, ChemicalOrDrugOrTreatment, ChemicalEntityOrGeneOrGeneProduct, ChemicalEntityOrProteinOrPolypeptide
+type ChemicalEntity implements PhysicalEssence & ChemicalOrDrugOrTreatment & ChemicalEntityOrGeneOrGeneProduct & ChemicalEntityOrProteinOrPolypeptide
   {
     id: String!
     iri: IriType
@@ -1255,6 +1267,7 @@ type ChemicalEntity implements PhysicalEssence, ChemicalOrDrugOrTreatment, Chemi
     maxToleratedDose: String
     isToxic: Boolean
     hasChemicalRole: [ChemicalRole]
+    _placeholder: Boolean
   }
 
 type ChemicalEntityAssessesNamedThingAssociation
@@ -1302,6 +1315,7 @@ type ChemicalEntityAssessesNamedThingAssociation
 
 interface ChemicalEntityOrGeneOrGeneProduct
   {
+    _placeholder: Boolean
   }
 
 type ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
@@ -1350,6 +1364,7 @@ type ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
 
 interface ChemicalEntityOrProteinOrPolypeptide
   {
+    _placeholder: Boolean
   }
 
 interface ChemicalEntityToEntityAssociationMixin
@@ -1457,9 +1472,10 @@ type ChemicalMixture
 
 interface ChemicalOrDrugOrTreatment
   {
+    _placeholder: Boolean
   }
 
-type ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin, EntityToDiseaseOrPhenotypicFeatureAssociationMixin
+type ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin & EntityToDiseaseOrPhenotypicFeatureAssociationMixin
   {
     id: String!
     iri: IriType
@@ -1510,7 +1526,7 @@ type ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation im
     predicate: PredicateType!
   }
 
-type ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin, EntityToDiseaseOrPhenotypicFeatureAssociationMixin, EntityToFeatureOrDiseaseQualifiersMixin
+type ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin & EntityToDiseaseOrPhenotypicFeatureAssociationMixin & EntityToFeatureOrDiseaseQualifiersMixin
   {
     id: String!
     iri: IriType
@@ -1667,7 +1683,7 @@ type ChemicalToChemicalDerivationAssociation
     predicate: PredicateType!
   }
 
-type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin, EntityToDiseaseOrPhenotypicFeatureAssociationMixin
+type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntityAssociationMixin & EntityToDiseaseOrPhenotypicFeatureAssociationMixin
   {
     id: String!
     iri: IriType
@@ -1957,6 +1973,7 @@ type Cohort implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 type CommonDataElement
@@ -2106,7 +2123,7 @@ type ContributorAssociation
     qualifiers: [OntologyClass]
   }
 
-type CorrelatedGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneToEntityAssociationMixin
+type CorrelatedGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -2318,7 +2335,7 @@ type DiseaseOrPhenotypicFeature
     inTaxonLabel: LabelType
   }
 
-type DiseaseOrPhenotypicFeatureExposure implements ExposureEvent, PathologicalEntityMixin
+type DiseaseOrPhenotypicFeatureExposure implements ExposureEvent & PathologicalEntityMixin
   {
     id: String!
     type: [String]
@@ -2336,10 +2353,12 @@ type DiseaseOrPhenotypicFeatureExposure implements ExposureEvent, PathologicalEn
     hasQualitativeValue: NamedThing
     iri: IriType
     timepoint: TimeType
+    _placeholder: Boolean
   }
 
 type DiseaseOrPhenotypicFeatureOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 interface DiseaseOrPhenotypicFeatureToEntityAssociationMixin
@@ -2442,7 +2461,7 @@ interface DiseaseToEntityAssociationMixin
     object: NamedThing!
   }
 
-type DiseaseToExposureEventAssociation implements DiseaseToEntityAssociationMixin, EntityToExposureEventAssociationMixin
+type DiseaseToExposureEventAssociation implements DiseaseToEntityAssociationMixin & EntityToExposureEventAssociationMixin
   {
     id: String!
     iri: IriType
@@ -2485,7 +2504,7 @@ type DiseaseToExposureEventAssociation implements DiseaseToEntityAssociationMixi
     category: [String]
   }
 
-type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, EntityToPhenotypicFeatureAssociationMixin, DiseaseToEntityAssociationMixin
+type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier & EntityToPhenotypicFeatureAssociationMixin & DiseaseToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -2544,7 +2563,7 @@ type DiseaseToPhenotypicFeatureAssociation implements FrequencyQuantifier, Entit
     anatomicalContextQualifier: String
   }
 
-type Drug implements ChemicalOrDrugOrTreatment, OntologyClass
+type Drug implements ChemicalOrDrugOrTreatment & OntologyClass
   {
     id: String!
     iri: IriType
@@ -2567,6 +2586,7 @@ type Drug implements ChemicalOrDrugOrTreatment, OntologyClass
     highestFDAApprovalStatus: ApprovalStatusEnum
     drugRegulatoryStatusWorldWide: ApprovalStatusEnum
     routesOfDelivery: [DrugDeliveryEnum]
+    _placeholder: Boolean
   }
 
 type DrugExposure implements ExposureEvent
@@ -2686,7 +2706,7 @@ type DrugToGeneInteractionExposure implements GeneGroupingMixin
     hasGeneOrGeneProduct: [Gene]
   }
 
-type DruggableGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneToEntityAssociationMixin
+type DruggableGeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -2895,7 +2915,7 @@ type EntityToPhenotypicFeatureAssociation
     maxResearchPhase: ResearchPhaseEnum
   }
 
-type EntityToPhenotypicFeatureAssociationMixin implements FrequencyQuantifier
+interface EntityToPhenotypicFeatureAssociationMixin implements FrequencyQuantifier
   {
     frequencyQualifier: FrequencyValue
     subjectAspectQualifier: String
@@ -2988,10 +3008,12 @@ type EnvironmentalProcess implements Occurrent
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 type EpidemiologicalOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 interface EpigenomicEntity
@@ -3147,7 +3169,7 @@ type ExposureEventToOutcomeAssociation implements EntityToOutcomeAssociationMixi
     temporalContextQualifier: TimeType
   }
 
-type ExposureEventToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin
+type ExposureEventToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier
   {
     id: String!
     iri: IriType
@@ -3341,7 +3363,7 @@ type Fungus
     hasAttribute: [Attribute]
   }
 
-type Gene implements GeneOrGeneProduct, GenomicEntity, ChemicalEntityOrGeneOrGeneProduct, PhysicalEssence, OntologyClass
+type Gene implements GeneOrGeneProduct & GenomicEntity & ChemicalEntityOrGeneOrGeneProduct & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -3359,6 +3381,7 @@ type Gene implements GeneOrGeneProduct, GenomicEntity, ChemicalEntityOrGeneOrGen
     symbol: String
     xref: [String]
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
 type GeneAffectsChemicalAssociation
@@ -3420,7 +3443,7 @@ type GeneAffectsChemicalAssociation
     object: ChemicalEntity!
   }
 
-type GeneAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin, EntityToDiseaseAssociationMixin
+type GeneAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -3486,7 +3509,7 @@ interface GeneExpressionMixin
     phenotypicState: DiseaseOrPhenotypicFeature
   }
 
-type GeneFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProduct
+type GeneFamily implements GeneGroupingMixin & ChemicalEntityOrGeneOrGeneProduct
   {
     id: String!
     iri: IriType
@@ -3503,6 +3526,7 @@ type GeneFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProduct
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
+    _placeholder: Boolean
   }
 
 interface GeneGroupingMixin
@@ -3635,7 +3659,7 @@ type GeneRegulatesGeneAssociation
     object: GeneOrGeneProduct!
   }
 
-type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneToEntityAssociationMixin
+type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -3693,7 +3717,7 @@ type GeneToDiseaseAssociation implements EntityToDiseaseAssociationMixin, GeneTo
     object: Disease!
   }
 
-type GeneToDiseaseOrPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin, GeneToEntityAssociationMixin
+type GeneToDiseaseOrPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -4108,7 +4132,7 @@ type GeneToPathwayAssociation implements GeneToEntityAssociationMixin
     object: Pathway!
   }
 
-type GeneToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin, GeneToEntityAssociationMixin
+type GeneToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier & GeneToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -4184,7 +4208,7 @@ type GeneticInheritance
     inTaxonLabel: LabelType
   }
 
-type Genome implements GenomicEntity, PhysicalEssence, OntologyClass
+type Genome implements GenomicEntity & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -4201,9 +4225,10 @@ type Genome implements GenomicEntity, PhysicalEssence, OntologyClass
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
-type GenomicBackgroundExposure implements ExposureEvent, GeneGroupingMixin, PhysicalEssence, GenomicEntity, ThingWithTaxon, OntologyClass
+type GenomicBackgroundExposure implements ExposureEvent & GeneGroupingMixin & PhysicalEssence & GenomicEntity & ThingWithTaxon & OntologyClass
   {
     id: String!
     type: [String]
@@ -4225,6 +4250,7 @@ type GenomicBackgroundExposure implements ExposureEvent, GeneGroupingMixin, Phys
     hasBiologicalSequence: BiologicalSequence
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
+    _placeholder: Boolean
   }
 
 interface GenomicEntity
@@ -4280,7 +4306,7 @@ type GenomicSequenceLocalization
     predicate: PredicateType!
   }
 
-type Genotype implements PhysicalEssence, GenomicEntity, OntologyClass
+type Genotype implements PhysicalEssence & GenomicEntity & OntologyClass
   {
     id: String!
     iri: IriType
@@ -4298,9 +4324,10 @@ type Genotype implements PhysicalEssence, GenomicEntity, OntologyClass
     inTaxonLabel: LabelType
     hasZygosity: Zygosity
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
-type GenotypeAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin, EntityToDiseaseAssociationMixin
+type GenotypeAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -4350,7 +4377,7 @@ type GenotypeAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMi
     subject: Genotype!
   }
 
-type GenotypeToDiseaseAssociation implements GenotypeToEntityAssociationMixin, EntityToDiseaseAssociationMixin
+type GenotypeToDiseaseAssociation implements GenotypeToEntityAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -4493,7 +4520,7 @@ type GenotypeToGenotypePartAssociation
     object: Genotype!
   }
 
-type GenotypeToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin, GenotypeToEntityAssociationMixin
+type GenotypeToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier & GenotypeToEntityAssociationMixin
   {
     id: String!
     iri: IriType
@@ -4688,7 +4715,7 @@ type GrossAnatomicalStructure
     hasAttribute: [Attribute]
   }
 
-type Haplotype implements GenomicEntity, PhysicalEssence, OntologyClass
+type Haplotype implements GenomicEntity & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -4705,6 +4732,7 @@ type Haplotype implements GenomicEntity, PhysicalEssence, OntologyClass
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
 type Hospitalization
@@ -4725,6 +4753,7 @@ type Hospitalization
 
 type HospitalizationOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 type Human implements SubjectOfInvestigation
@@ -4743,6 +4772,7 @@ type Human implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 type IndividualOrganism implements SubjectOfInvestigation
@@ -4761,6 +4791,7 @@ type IndividualOrganism implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 interface InformationContentEntity
@@ -5091,6 +5122,7 @@ type Mammal implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 interface MappingCollection
@@ -5112,6 +5144,7 @@ type MaterialSample implements SubjectOfInvestigation
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 type MaterialSampleDerivationAssociation
@@ -5157,7 +5190,7 @@ type MaterialSampleDerivationAssociation
     object: NamedThing!
   }
 
-type MaterialSampleToDiseaseOrPhenotypicFeatureAssociation implements MaterialSampleToEntityAssociationMixin, EntityToDiseaseOrPhenotypicFeatureAssociationMixin
+type MaterialSampleToDiseaseOrPhenotypicFeatureAssociation implements MaterialSampleToEntityAssociationMixin & EntityToDiseaseOrPhenotypicFeatureAssociationMixin
   {
     id: String!
     iri: IriType
@@ -5232,7 +5265,7 @@ interface ModelToDiseaseAssociationMixin
     object: NamedThing!
   }
 
-type MolecularActivity implements Occurrent, OntologyClass
+type MolecularActivity implements Occurrent & OntologyClass
   {
     id: String!
     iri: IriType
@@ -5251,6 +5284,7 @@ type MolecularActivity implements Occurrent, OntologyClass
     hasInput: [MolecularEntity]
     hasOutput: [MolecularEntity]
     enabledBy: [MacromolecularMachineMixin]
+    _placeholder: Boolean
   }
 
 type MolecularActivityToChemicalEntityAssociation
@@ -5431,6 +5465,7 @@ type MolecularMixture
 
 type MortalityOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 type NamedThing
@@ -5515,7 +5550,7 @@ type NoncodingRNAProduct
     inTaxonLabel: LabelType
   }
 
-type NucleicAcidEntity implements GenomicEntity, ThingWithTaxon, PhysicalEssence, OntologyClass
+type NucleicAcidEntity implements GenomicEntity & ThingWithTaxon & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -5538,6 +5573,7 @@ type NucleicAcidEntity implements GenomicEntity, ThingWithTaxon, PhysicalEssence
     hasBiologicalSequence: BiologicalSequence
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
+    _placeholder: Boolean
   }
 
 type NucleicAcidSequenceMotif
@@ -5558,7 +5594,7 @@ type NucleicAcidSequenceMotif
     inTaxonLabel: LabelType
   }
 
-type NucleosomeModification implements GeneProductIsoformMixin, GenomicEntity, EpigenomicEntity
+type NucleosomeModification implements GeneProductIsoformMixin & GenomicEntity & EpigenomicEntity
   {
     id: String!
     iri: IriType
@@ -5599,6 +5635,7 @@ type ObservedExpectedFrequencyAnalysisResult
 
 interface Occurrent
   {
+    _placeholder: Boolean
   }
 
 type Onset
@@ -5668,7 +5705,7 @@ interface OrganismTaxonToEntityAssociation
     object: NamedThing!
   }
 
-type OrganismTaxonToEnvironmentAssociation implements OrganismTaxonToEntityAssociation
+interface OrganismTaxonToEnvironmentAssociation implements OrganismTaxonToEntityAssociation
   {
     id: String!
     iri: IriType
@@ -5711,7 +5748,7 @@ type OrganismTaxonToEnvironmentAssociation implements OrganismTaxonToEntityAssoc
     predicate: PredicateType!
   }
 
-type OrganismTaxonToOrganismTaxonAssociation implements OrganismTaxonToEntityAssociation
+interface OrganismTaxonToOrganismTaxonAssociation implements OrganismTaxonToEntityAssociation
   {
     id: String!
     iri: IriType
@@ -5884,7 +5921,7 @@ type OrganismToOrganismAssociation
     object: IndividualOrganism!
   }
 
-type OrganismalEntity implements SubjectOfInvestigation
+interface OrganismalEntity implements SubjectOfInvestigation
   {
     id: String!
     iri: IriType
@@ -5900,9 +5937,10 @@ type OrganismalEntity implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
-type OrganismalEntityAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin, EntityToDiseaseAssociationMixin
+type OrganismalEntityAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -5954,6 +5992,7 @@ type OrganismalEntityAsAModelOfDiseaseAssociation implements ModelToDiseaseAssoc
 
 interface Outcome
   {
+    _placeholder: Boolean
   }
 
 type PairwiseGeneToGeneInteraction
@@ -6071,6 +6110,7 @@ type Patent
 
 interface PathognomonicityQuantifier
   {
+    _placeholder: Boolean
   }
 
 type PathologicalAnatomicalExposure implements ExposureEvent
@@ -6095,6 +6135,7 @@ type PathologicalAnatomicalExposure implements ExposureEvent
 
 type PathologicalAnatomicalOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 type PathologicalAnatomicalStructure implements PathologicalEntityMixin
@@ -6113,10 +6154,12 @@ type PathologicalAnatomicalStructure implements PathologicalEntityMixin
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 interface PathologicalEntityMixin
   {
+    _placeholder: Boolean
   }
 
 type PathologicalProcess implements PathologicalEntityMixin
@@ -6138,6 +6181,7 @@ type PathologicalProcess implements PathologicalEntityMixin
     hasInput: [NamedThing]
     hasOutput: [NamedThing]
     enabledBy: [PhysicalEntity]
+    _placeholder: Boolean
   }
 
 type PathologicalProcessExposure implements ExposureEvent
@@ -6162,6 +6206,7 @@ type PathologicalProcessExposure implements ExposureEvent
 
 type PathologicalProcessOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 type Pathway implements OntologyClass
@@ -6199,6 +6244,7 @@ type Phenomenon implements Occurrent
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 type PhenotypicFeature
@@ -6219,7 +6265,7 @@ type PhenotypicFeature
     inTaxonLabel: LabelType
   }
 
-type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociationMixin, PhenotypicFeatureToEntityAssociationMixin
+type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociationMixin & PhenotypicFeatureToEntityAssociationMixin & FrequencyQuantifier
   {
     id: String!
     iri: IriType
@@ -6274,7 +6320,7 @@ type PhenotypicFeatureToDiseaseAssociation implements EntityToDiseaseAssociation
     hasPercentage: Float
   }
 
-type PhenotypicFeatureToEntityAssociationMixin implements FrequencyQuantifier
+interface PhenotypicFeatureToEntityAssociationMixin implements FrequencyQuantifier
   {
     frequencyQualifier: FrequencyValue
     predicate: PredicateType!
@@ -6292,7 +6338,7 @@ type PhenotypicFeatureToEntityAssociationMixin implements FrequencyQuantifier
     hasPercentage: Float
   }
 
-type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatureToEntityAssociationMixin, EntityToPhenotypicFeatureAssociationMixin
+type PhenotypicFeatureToPhenotypicFeatureAssociation implements PhenotypicFeatureToEntityAssociationMixin & FrequencyQuantifier & EntityToPhenotypicFeatureAssociationMixin
   {
     id: String!
     iri: IriType
@@ -6402,14 +6448,17 @@ type PhysicalEntity implements PhysicalEssence
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 interface PhysicalEssence
   {
+    _placeholder: Boolean
   }
 
 interface PhysicalEssenceOrOccurrent
   {
+    _placeholder: Boolean
   }
 
 type PhysiologicalProcess implements OntologyClass
@@ -6467,7 +6516,7 @@ type Plant
     hasAttribute: [Attribute]
   }
 
-type Polypeptide implements ChemicalEntityOrGeneOrGeneProduct, ChemicalEntityOrProteinOrPolypeptide
+type Polypeptide implements ChemicalEntityOrGeneOrGeneProduct & ChemicalEntityOrProteinOrPolypeptide
   {
     id: String!
     iri: IriType
@@ -6483,6 +6532,7 @@ type Polypeptide implements ChemicalEntityOrGeneOrGeneProduct, ChemicalEntityOrP
     category: [String]!
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
+    _placeholder: Boolean
   }
 
 type PopulationOfIndividualOrganisms implements SubjectOfInvestigation
@@ -6501,6 +6551,7 @@ type PopulationOfIndividualOrganisms implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 type PopulationToPopulationAssociation
@@ -6629,6 +6680,7 @@ type Procedure implements ActivityAndBehavior
     fullName: LabelType
     synonym: [LabelType]
     category: [String]!
+    _placeholder: Boolean
   }
 
 type ProcessRegulatesProcessAssociation
@@ -6717,7 +6769,7 @@ type Protein implements GeneProductMixin
     inTaxonLabel: LabelType
   }
 
-type ProteinDomain implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProduct
+type ProteinDomain implements GeneGroupingMixin & ChemicalEntityOrGeneOrGeneProduct
   {
     id: String!
     iri: IriType
@@ -6734,9 +6786,10 @@ type ProteinDomain implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProdu
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
+    _placeholder: Boolean
   }
 
-type ProteinFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProduct
+type ProteinFamily implements GeneGroupingMixin & ChemicalEntityOrGeneOrGeneProduct
   {
     id: String!
     iri: IriType
@@ -6753,6 +6806,7 @@ type ProteinFamily implements GeneGroupingMixin, ChemicalEntityOrGeneOrGeneProdu
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasGeneOrGeneProduct: [Gene]
+    _placeholder: Boolean
   }
 
 type ProteinIsoform implements GeneProductIsoformMixin
@@ -6897,7 +6951,7 @@ type ReactionToParticipantAssociation
     subject: MolecularEntity!
   }
 
-type ReagentTargetedGene implements GenomicEntity, PhysicalEssence, OntologyClass
+type ReagentTargetedGene implements GenomicEntity & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -6914,9 +6968,10 @@ type ReagentTargetedGene implements GenomicEntity, PhysicalEssence, OntologyClas
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
-type RegulatoryRegion implements GenomicEntity, ChemicalEntityOrGeneOrGeneProduct, PhysicalEssence, OntologyClass
+type RegulatoryRegion implements GenomicEntity & ChemicalEntityOrGeneOrGeneProduct & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -6933,10 +6988,12 @@ type RegulatoryRegion implements GenomicEntity, ChemicalEntityOrGeneOrGeneProduc
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
 interface RelationshipQuantifier
   {
+    _placeholder: Boolean
   }
 
 type RelationshipType
@@ -7025,6 +7082,7 @@ type RNAProductIsoform implements GeneProductIsoformMixin
 
 interface SensitivityQuantifier
   {
+    _placeholder: Boolean
   }
 
 type SequenceAssociation
@@ -7113,7 +7171,7 @@ type SequenceFeatureRelationship
     object: NucleicAcidEntity!
   }
 
-type SequenceVariant implements GenomicEntity, PhysicalEssence, OntologyClass
+type SequenceVariant implements GenomicEntity & PhysicalEssence & OntologyClass
   {
     iri: IriType
     type: [String]
@@ -7131,6 +7189,7 @@ type SequenceVariant implements GenomicEntity, PhysicalEssence, OntologyClass
     hasGene: [Gene]
     hasBiologicalSequence: BiologicalSequence
     id: String!
+    _placeholder: Boolean
   }
 
 interface SequenceVariantModulatesTreatmentAssociation
@@ -7325,10 +7384,12 @@ type SocioeconomicExposure implements ExposureEvent
 
 type SocioeconomicOutcome implements Outcome
   {
+    _placeholder: Boolean
   }
 
 interface SpecificityQuantifier
   {
+    _placeholder: Boolean
   }
 
 type Study
@@ -7407,6 +7468,7 @@ type StudyVariable
 
 interface SubjectOfInvestigation
   {
+    _placeholder: Boolean
   }
 
 type TaxonToTaxonAssociation
@@ -7544,7 +7606,7 @@ type TranscriptToGeneRelationship
     object: Gene!
   }
 
-type TranscriptionFactorBindingSite implements GenomicEntity, ChemicalEntityOrGeneOrGeneProduct, PhysicalEssence, OntologyClass
+type TranscriptionFactorBindingSite implements GenomicEntity & ChemicalEntityOrGeneOrGeneProduct & PhysicalEssence & OntologyClass
   {
     id: String!
     iri: IriType
@@ -7561,9 +7623,10 @@ type TranscriptionFactorBindingSite implements GenomicEntity, ChemicalEntityOrGe
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasBiologicalSequence: BiologicalSequence
+    _placeholder: Boolean
   }
 
-type Treatment implements ExposureEvent, ChemicalOrDrugOrTreatment
+type Treatment implements ExposureEvent & ChemicalOrDrugOrTreatment
   {
     id: String!
     iri: IriType
@@ -7581,9 +7644,10 @@ type Treatment implements ExposureEvent, ChemicalOrDrugOrTreatment
     hasDevice: [Device]
     hasProcedure: [Procedure]
     timepoint: TimeType
+    _placeholder: Boolean
   }
 
-type VariantAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin, EntityToDiseaseAssociationMixin
+type VariantAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -7633,7 +7697,7 @@ type VariantAsAModelOfDiseaseAssociation implements ModelToDiseaseAssociationMix
     subject: SequenceVariant!
   }
 
-type VariantToDiseaseAssociation implements VariantToEntityAssociationMixin, EntityToDiseaseAssociationMixin
+type VariantToDiseaseAssociation implements VariantToEntityAssociationMixin & EntityToDiseaseAssociationMixin
   {
     id: String!
     iri: IriType
@@ -7780,7 +7844,7 @@ type VariantToGeneExpressionAssociation implements GeneExpressionMixin
     phenotypicState: DiseaseOrPhenotypicFeature
   }
 
-type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociationMixin, EntityToPhenotypicFeatureAssociationMixin
+type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociationMixin & EntityToPhenotypicFeatureAssociationMixin & FrequencyQuantifier
   {
     id: String!
     iri: IriType
@@ -7838,7 +7902,7 @@ type VariantToPhenotypicFeatureAssociation implements VariantToEntityAssociation
     hasPercentage: Float
   }
 
-type VariantToPopulationAssociation implements VariantToEntityAssociationMixin, FrequencyQuantifier, FrequencyQualifierMixin
+type VariantToPopulationAssociation implements VariantToEntityAssociationMixin & FrequencyQuantifier & FrequencyQualifierMixin
   {
     id: String!
     iri: IriType
@@ -7920,6 +7984,7 @@ type Virus implements SubjectOfInvestigation
     inTaxon: [OrganismTaxon]
     inTaxonLabel: LabelType
     hasAttribute: [Attribute]
+    _placeholder: Boolean
   }
 
 type WebPage
@@ -7966,3 +8031,21 @@ type Zygosity
     hasQualitativeValue: NamedThing
     iri: IriType
   }
+
+scalar BiologicalSequence
+
+scalar FrequencyValue
+
+scalar IriType
+
+scalar LabelType
+
+scalar NarrativeText
+
+scalar PredicateType
+
+scalar SymbolType
+
+scalar TimeType
+
+scalar Unit
