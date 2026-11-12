@@ -216,6 +216,38 @@ classes:
     assert "[ERROR]" not in result.output
 
 
+def test_fix_reports_warning(cli_runner, tmp_path):
+    """--fix reports a normalization warning on stderr and still writes the data."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/warn
+name: warn
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Person:
+    attributes:
+      name:
+        range: string
+      email:
+        range: string
+        recommended: true
+"""
+    )
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("name: Ada\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "-C", "Person", "--fix", str(data_path)])
+    assert result.exception is None
+    assert result.stdout == "name: Ada\n\n"
+    assert f"[WARN] [{data_path}] RecommendedConstraint: email" in result.stderr
+    assert result.exit_code == 0
+
+
 def test_fix_rejects_unsupported_extension(cli_runner, tmp_path):
     """--fix errors clearly on non-YAML/JSON files."""
 
