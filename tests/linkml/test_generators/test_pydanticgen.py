@@ -3189,3 +3189,61 @@ classes:
     # InteractionAssociation should have narrowed constraint
     # (interacts_with and its descendants only)
     assert 'Literal["interacts_with", "physically_interacts_with"]' in code
+
+
+OPEN_ENUM_SCHEMA = """
+id: https://example.org/open_enum
+name: open_enum
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+enums:
+  Family:
+    is_open: true
+    permissible_values:
+      GATEWAY:
+      DAEMON:
+  Status:
+    permissible_values:
+      ACTIVE:
+classes:
+  Component:
+    attributes:
+      family:
+        range: Family
+      families:
+        range: Family
+        multivalued: true
+      family_or_count:
+        any_of:
+          - range: Family
+          - range: integer
+      status:
+        range: Status
+"""
+
+
+@pytest.mark.parametrize(
+    ("slot", "annotation"),
+    [
+        ("family", "Optional[Union[Family, str]]"),
+        ("families", "Optional[list[Union[Family, str]]]"),
+        ("family_or_count", "Optional[Union[Family, int, str]]"),
+        ("status", "Optional[Status]"),
+    ],
+)
+def test_open_enum_range_adds_str(slot, annotation):
+    """A slot whose range is an open enum also takes str; a closed enum's range is unchanged."""
+    assert f"\n    {slot}: {annotation} = Field(" in PydanticGenerator(OPEN_ENUM_SCHEMA).serialize()
+
+
+def test_open_enum_accepts_unlisted_value():
+    """A model accepts a value an open enum does not list, and still rejects one a closed enum does not list."""
+    mod = PydanticGenerator(OPEN_ENUM_SCHEMA).compile_module()
+    component = mod.Component(family="UNLISTED", families=["GATEWAY", "OTHER"], family_or_count="OTHER")
+    assert component.family == "UNLISTED"
+    assert component.families == ["GATEWAY", "OTHER"]
+    assert component.family_or_count == "OTHER"
+    with pytest.raises(ValidationError, match="Input should be 'ACTIVE'"):
+        mod.Component(status="RETIRED")

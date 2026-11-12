@@ -608,6 +608,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         pyranges = [self.generate_python_range(slot_range, slot, cls) for slot_range in slot_ranges]
 
+        # An open enum also admits a value it does not list, so str joins its enum class
+        sv = self.schemaview
+        open_enums = [r for r in slot_ranges if r in sv.all_enums() and sv.get_enum(r).is_open]
+        if any(camelcase(r) in pyranges for r in open_enums):
+            pyranges.append("str")
+
         pyranges = list(set(pyranges))  # remove duplicates
         pyranges.sort()
 
