@@ -5,7 +5,8 @@ resolution-markers = [
     "python_full_version >= '3.14'",
     "python_full_version == '3.13.*'",
     "python_full_version == '3.12.*'",
-    "python_full_version < '3.12'",
+    "python_full_version >= '3.11.5' and python_full_version < '3.12'",
+    "python_full_version < '3.11.5'",
 ]
 
 [options]
@@ -247,8 +248,26 @@ wheels = [
 
 [[package]]
 name = "beautifulsoup4"
+version = "4.6.3"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.11.5'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/88/df/86bffad6309f74f3ff85ea69344a078fc30003270c8df6894fca7a3c72ff/beautifulsoup4-4.6.3.tar.gz", hash = "sha256:90f8e61121d6ae58362ce3bed8cd997efb00c914eae0ff3d363c32f9a9822d10", size = 167469, upload-time = "2018-08-12T16:39:49.655Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/21/0a/47fdf541c97fd9b6a610cb5fd518175308a7cc60569962e776ac52420387/beautifulsoup4-4.6.3-py3-none-any.whl", hash = "sha256:194ec62a25438adcb3fdb06378b26559eda1ea8a747367d34c33cef9c7f48d57", size = 90375, upload-time = "2018-08-12T16:39:48.02Z" },
+]
+
+[[package]]
+name = "beautifulsoup4"
 version = "4.14.2"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14'",
+    "python_full_version == '3.13.*'",
+    "python_full_version == '3.12.*'",
+    "python_full_version >= '3.11.5' and python_full_version < '3.12'",
+]
 dependencies = [
     { name = "soupsieve" },
     { name = "typing-extensions" },
@@ -1097,7 +1116,8 @@ version = "2025.12.19"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accessible-pygments" },
-    { name = "beautifulsoup4" },
+    { name = "beautifulsoup4", version = "4.6.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11.5'" },
+    { name = "beautifulsoup4", version = "4.14.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11.5'" },
     { name = "pygments" },
     { name = "sphinx" },
     { name = "sphinx-basic-ng" },
@@ -1382,16 +1402,6 @@ dependencies = [
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/94/c8/1223f29c84a143ae9a56c084fc96894de0ba84b6e8d60a26241abd81d278/grpcio_tools-1.80.0.tar.gz", hash = "sha256:26052b19c6ce0dcf52d1024496aea3e2bdfa864159f06dc7b97b22d041a94b26", size = 6133212, upload-time = "2026-03-30T08:52:39.077Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/54/1de67f5080da305a258758a8deb33f85666fa759f56785042a80b114a53f/grpcio_tools-1.80.0-cp310-cp310-linux_armv7l.whl", hash = "sha256:727477b9afa4b53f5ec70cafb41c3965d893835e0d4ea9b542fe3d0d005602bf", size = 2549601, upload-time = "2026-03-30T08:50:09.498Z" },
-    { url = "https://files.pythonhosted.org/packages/9a/b4/6d57ea199c5b880d182a2234aafa9a686f9c54c708ea7be75bd19d5aa825/grpcio_tools-1.80.0-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:85fe8d15f146c62cb76f38d963e256392d287442b9232717d30ae9e3bbda9bc3", size = 5712717, upload-time = "2026-03-30T08:50:15.028Z" },
-    { url = "https://files.pythonhosted.org/packages/6a/1a/5505ee2277d368b409c796c78f22ea34a2a517b7d16755247efd663dc7af/grpcio_tools-1.80.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:95f0fffb5ca00519f3b602f938169b4dfa04b165e03258323965a9dfe8cc4d80", size = 2595941, upload-time = "2026-03-30T08:50:17.299Z" },
-    { url = "https://files.pythonhosted.org/packages/4e/39/7fc1d16d8b767805079d76365d73e82c88dfaf179034473dbc9fbccedb77/grpcio_tools-1.80.0-cp310-cp310-manylinux2014_i686.manylinux_2_17_i686.whl", hash = "sha256:7a0106af212748823a6ebd8ffbd9043414216f47cae3835f3187de0a62c415d3", size = 2909304, upload-time = "2026-03-30T08:50:19.485Z" },
-    { url = "https://files.pythonhosted.org/packages/97/d8/276ee759755d8f34f2ca5e9d2debd1a59f29f66059fb790bc369f2236c26/grpcio_tools-1.80.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:31fd01a4038b5dfc4ec79504a17061344f670f851833411717fef66920f13cd7", size = 2660269, upload-time = "2026-03-30T08:50:21.266Z" },
-    { url = "https://files.pythonhosted.org/packages/51/04/a6bb47942ad52901d777a649324d3203cf19d487f1d446263637f7a5bf12/grpcio_tools-1.80.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:57da9e19607fac4a01c48ead333c0dd15d91ed38794dce1194eda308f73e2038", size = 3109798, upload-time = "2026-03-30T08:50:23.267Z" },
-    { url = "https://files.pythonhosted.org/packages/be/50/7ee69b2919916739787d725f205b878e8d1619dd30422b8278e324664669/grpcio_tools-1.80.0-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:90968f751851abb8b145593609800fa70c837e1c93ba0792c480b1c8d8bc29ef", size = 3658930, upload-time = "2026-03-30T08:50:25.458Z" },
-    { url = "https://files.pythonhosted.org/packages/92/61/6d50783092b0e8bbcb04152d5388bf50ecf3ea2f783d95288ff6c3bb00fa/grpcio_tools-1.80.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:b69dc5d6376ab43406304d1e2fc61ccf960b287d4325d77c3d45448c37a9d2da", size = 3326562, upload-time = "2026-03-30T08:50:27.809Z" },
-    { url = "https://files.pythonhosted.org/packages/ea/58/d272ba549f6b1f0d8504f5fc4cd0a296f2c495a64d6e987fe871c4151557/grpcio_tools-1.80.0-cp310-cp310-win32.whl", hash = "sha256:3e8dcfebe34cb54df095de3d5871a4562a85a29f26d0f8bb41ee2c3dcfb11c3c", size = 997620, upload-time = "2026-03-30T08:50:29.959Z" },
-    { url = "https://files.pythonhosted.org/packages/70/5f/9f45a9946a0298711c72ca48b2c1f46a7d0c207a44cd3e4bb59d04556ba3/grpcio_tools-1.80.0-cp310-cp310-win_amd64.whl", hash = "sha256:fc622ed4ca400695f41c9eae3266276c6ba007e4c28164ce53b44e7ccc5e492b", size = 1162466, upload-time = "2026-03-30T08:50:32.242Z" },
     { url = "https://files.pythonhosted.org/packages/8a/d7/225dc91e6cb4f8d4830f16a478a468e9c6f342dcdf8cacc3772cc1d1f607/grpcio_tools-1.80.0-cp311-cp311-linux_armv7l.whl", hash = "sha256:1c43e5c768578fe0c6de3dbfaabe64af642951e1aa05c487cacedda63fa6c6c4", size = 2549937, upload-time = "2026-03-30T08:50:34.651Z" },
     { url = "https://files.pythonhosted.org/packages/97/3d/a3684cb7677f3bea8db434eae02a9ce30135d7a268cd473b1bc8041c4722/grpcio_tools-1.80.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:a225348456575f3ac7851d8e23163195e76d2a905ee340cf73f33da62fba08aa", size = 5713099, upload-time = "2026-03-30T08:50:37.158Z" },
     { url = "https://files.pythonhosted.org/packages/b1/81/5665c697173ec346076358bfbfed0f7386825852494593ca14386478dfee/grpcio_tools-1.80.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:a9396f02820d3f51c368c2c9dee15c55c77636c91be48a4d5c702e98d6fe0fdc", size = 2595776, upload-time = "2026-03-30T08:50:39.087Z" },
@@ -2911,7 +2921,8 @@ name = "nbconvert"
 version = "7.17.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "beautifulsoup4" },
+    { name = "beautifulsoup4", version = "4.6.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11.5'" },
+    { name = "beautifulsoup4", version = "4.14.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11.5'" },
     { name = "bleach", extra = ["css"] },
     { name = "defusedxml" },
     { name = "jinja2" },
@@ -4599,11 +4610,11 @@ wheels = [
 
 [[package]]
 name = "soupsieve"
-version = "2.9"
+version = "4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/80/f1/93422647dd7e461f23d254e6b2bfa687a85b53aeb4903fcdbb74474d4584/soupsieve-2.9.tar.gz", hash = "sha256:acee8417325c5653e1377dc31eccad59eb82cbc65942afe6174c53b3aaad63fc", size = 122122, upload-time = "2026-07-19T01:35:18.425Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/5e/19b7c5d20bc2f226c44f33a9d9aab9740efed7555b96e656231fd564e514/soupsieve-4.0.tar.gz", hash = "sha256:ccd6470b256394ac44b08b86fd94b30a17d335a5335c8a3d15565f7b03d3c8cf", size = 151929, upload-time = "2026-11-03T14:28:55.388Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/d6/3185ab5ad1280319b31986898f3206dd7227cd75e293d4dba2a5e6bf27a0/soupsieve-2.9-py3-none-any.whl", hash = "sha256:a2b2c76d67df2382d245409fd71e321a571717e58463efa32ace87dcadac2c12", size = 37387, upload-time = "2026-07-19T01:35:17.106Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/18/d24df2f733ee0655c58717d51add4118a70e64692d0e47d403b9aac4cf98/soupsieve-4.0-py3-none-any.whl", hash = "sha256:5e7494bfce90e06676cfb4c5c2cf22243e98e5cf24646bb1ecdda46d318550a0", size = 50158, upload-time = "2026-11-03T14:28:53.988Z" },
 ]
 
 [[package]]
