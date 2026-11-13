@@ -1749,7 +1749,7 @@ class Entity(YAMLRoot):
 
 
             if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
+                target_cls = cls._class_for_uri(type_designator_value)
 
 
             if target_cls is None:
@@ -1828,7 +1828,7 @@ class NamedThing(Entity):
 
 
             if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
+                target_cls = cls._class_for_uri(type_designator_value)
 
 
             if target_cls is None:
@@ -7515,7 +7515,7 @@ class Association(Entity):
 
 
             if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
+                target_cls = cls._class_for_uri(type_designator_value)
 
 
             if target_cls is None:
