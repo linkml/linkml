@@ -143,7 +143,7 @@ linkml:extensions dcterms:license "https://creativecommons.org/publicdomain/zero
 	linkml:slot_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	linkml:slots linkml:extension_tag , linkml:extension_value , linkml:extensions ;
 	linkml:source_file "extensions.yaml" ;
-	linkml:source_file_date "2026-10-02T14:33:00"^^xsd:dateTime ;
+	linkml:source_file_date "2026-10-21T16:04:37"^^xsd:dateTime ;
 	linkml:source_file_size 1164 ;
 	linkml:types linkml:boolean , linkml:curie , linkml:date , linkml:date_or_datetime , linkml:datetime , linkml:decimal , linkml:double , linkml:float , linkml:integer , linkml:jsonpath , linkml:jsonpointer , linkml:ncname , linkml:nodeidentifier , linkml:objectidentifier , linkml:sparqlpath , linkml:string , linkml:time , linkml:uri , linkml:uriorcurie .
 linkml:float a linkml:TypeDefinition ;

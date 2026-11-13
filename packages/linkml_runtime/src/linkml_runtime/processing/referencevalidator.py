@@ -39,6 +39,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.processing.validation_datamodel import (
     ConstraintType,
+    SeverityType,
     ValidationConfiguration,
     ValidationResult,
 )
@@ -253,6 +254,8 @@ class Report:
         self.results.append(result)
 
     def _is_error(self, result: ValidationResult) -> bool:
+        if result.severity is not None and str(result.severity) in ("INFO", "WARNING"):
+            return False
         return result.type != ConstraintType(ConstraintType.RecommendedConstraint)
 
     def errors(self) -> list[ValidationResult]:
@@ -803,7 +806,19 @@ class ReferenceValidator:
 
     def normalize_enum(self, input_object: Any, target: EnumDefinition, report: Report) -> Any:
         if input_object not in target.permissible_values:
-            report.add_problem(ConstraintType.PermissibleValueConstraint, target.name, input_object)
+            if target.is_open:
+                # Open enums permit values outside of the permissible values; the
+                # permissible values are advisory, so this is reported at INFO severity
+                # rather than treated as an error.
+                report.add_problem(
+                    ConstraintType.PermissibleValueConstraint,
+                    target.name,
+                    input_object,
+                    severity=SeverityType.INFO,
+                    info=f"'{input_object}' is not among the permissible values of open enum '{target.name}'",
+                )
+            else:
+                report.add_problem(ConstraintType.PermissibleValueConstraint, target.name, input_object)
         return input_object
 
     def normalize_type(

@@ -353,6 +353,7 @@ class AnonymousEnumExpression(Base):
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
     pv_formula = Column(Enum('CODE', 'CURIE', 'URI', 'FHIR_CODING', 'LABEL', name='pv_formula_options'))
+    is_open = Column(Boolean())
     reachable_from_id = Column(Integer(), ForeignKey('reachability_query.id'))
     reachable_from = relationship("ReachabilityQuery", uselist=False, foreign_keys=[reachable_from_id])
     matches_id = Column(Integer(), ForeignKey('match_query.id'))
@@ -381,7 +382,7 @@ class AnonymousEnumExpression(Base):
     
 
     def __repr__(self):
-        return f"anonymous_enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
+        return f"anonymous_enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},is_open={self.is_open},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
 
 
 
@@ -11390,6 +11391,7 @@ class EnumExpression(Expression):
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
     pv_formula = Column(Enum('CODE', 'CURIE', 'URI', 'FHIR_CODING', 'LABEL', name='pv_formula_options'))
+    is_open = Column(Boolean())
     reachable_from_id = Column(Integer(), ForeignKey('reachability_query.id'))
     reachable_from = relationship("ReachabilityQuery", uselist=False, foreign_keys=[reachable_from_id])
     matches_id = Column(Integer(), ForeignKey('match_query.id'))
@@ -11418,7 +11420,7 @@ class EnumExpression(Expression):
     
 
     def __repr__(self):
-        return f"enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
+        return f"enum_expression(id={self.id},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},is_open={self.is_open},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
 
 
 
@@ -12060,6 +12062,7 @@ class EnumDefinition(Definition):
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
     pv_formula = Column(Enum('CODE', 'CURIE', 'URI', 'FHIR_CODING', 'LABEL', name='pv_formula_options'))
+    is_open = Column(Boolean())
     is_a = Column(Text(), ForeignKey('definition.name'))
     abstract = Column(Boolean())
     mixin = Column(Boolean())
@@ -12238,7 +12241,7 @@ class EnumDefinition(Definition):
     
 
     def __repr__(self):
-        return f"enum_definition(enum_uri={self.enum_uri},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
+        return f"enum_definition(enum_uri={self.enum_uri},code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},is_open={self.is_open},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},reachable_from_id={self.reachable_from_id},matches_id={self.matches_id},)"
 
 
 
