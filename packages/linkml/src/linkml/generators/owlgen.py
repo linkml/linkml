@@ -157,7 +157,9 @@ class OwlSchemaGenerator(Generator):
     allow a property to be both."""
 
     assert_equivalent_classes: bool = False
-    """If True, assert equivalence between definition_uris and class_uris"""
+    """If True, assert equivalence between definition_uris and class_uris.
+
+    Only applies when use_native_uris is True; otherwise no cross-reference is emitted."""
 
     use_native_uris: bool = True
     """If True, use the definition_uris, otherwise use class_uris."""
@@ -611,11 +613,17 @@ class OwlSchemaGenerator(Generator):
                             cls_uri,
                         )
                     )
-        if cls.class_uri:
-            # If a class_ur is assigned, and it is different from model class_uri, then
-            # Add an assertion that links the two
-            mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
-            if cls_uri != mapped_uri:
+        # Cross-reference the class_uri only when the element is minted at its
+        # name-based (native) URI: there the class_uri is a second, asserted identifier
+        # worth linking. When native URIs are disabled the element is already minted at
+        # its class_uri, so the name-based URI is synthetic and was never declared in
+        # the source; asserting a mapping to it would be a dangling reference.
+        if cls.class_uri and self.use_native_uris:
+            # In this branch use_native_uris is True, so cls_uri is the native URI and the
+            # mapped target is the explicit class_uri (native=False).
+            mapped_uri = sv.get_uri(cls, expand=True, native=False)
+            # cls_uri is a URIRef, and a URIRef never equals a str, so compare as URIRefs.
+            if cls_uri != URIRef(mapped_uri):
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
         subject_expr = URIRef(cls_uri)
@@ -1917,7 +1925,7 @@ class OwlSchemaGenerator(Generator):
     "--assert-equivalent-classes/--no-assert-equivalent-classes",
     default=False,
     show_default=True,
-    help="If true, add owl:equivalentClass between a class and a class_uri",
+    help="If true, add owl:equivalentClass between a class and a class_uri (only applies with --use-native-uris)",
 )
 @click.option(
     "--mixins-as-expressions/--no-mixins-as-expressions",
