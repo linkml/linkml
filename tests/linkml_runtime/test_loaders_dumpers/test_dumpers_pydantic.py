@@ -1,6 +1,9 @@
 import json
-from datetime import UTC, datetime
+from collections.abc import Callable
+from datetime import UTC, date, datetime
+from typing import Any
 
+import pytest
 import yaml
 from pydantic import BaseModel
 
@@ -94,14 +97,24 @@ class PydanticDumpersDateTestCase(LoaderDumperTestCase):
         self.dumps_test("kitchen_sink_person_01.json", lambda: json_dumper.dumps(self.person))
 
 
-class EventWithDatetime(BaseModel):
-    """Pydantic model with a datetime field; the generated test models have only date fields."""
+class Event(BaseModel):
+    """Pydantic model with date and datetime fields, the Python types of the LinkML date and datetime ranges."""
 
+    day: date
     at: datetime
 
 
-def test_json_dumper_writes_datetime_in_iso_8601() -> None:
-    """Datetimes are written with the ``T`` separator required by xsd:dateTime."""
-    event = EventWithDatetime(at=datetime(2024, 5, 15, 15, 51, 15, tzinfo=UTC))
-    data = json.loads(json_dumper.dumps(event, inject_type=False))
-    assert data == {"at": "2024-05-15T15:51:15+00:00"}
+@pytest.mark.parametrize(
+    "dumps,loads",
+    [
+        (lambda e: json_dumper.dumps(e, inject_type=False), json.loads),
+        (yaml_dumper.dumps, yaml.safe_load),
+    ],
+    ids=["json", "yaml"],
+)
+def test_dumper_writes_dates_as_iso_8601_strings(
+    dumps: Callable[[BaseModel], str], loads: Callable[[str], Any]
+) -> None:
+    """Dates and datetimes are written as xsd:date and xsd:dateTime strings, not as native YAML timestamps."""
+    event = Event(day=date(2021, 1, 1), at=datetime(2024, 5, 15, 15, 51, 15, tzinfo=UTC))
+    assert loads(dumps(event)) == {"day": "2021-01-01", "at": "2024-05-15T15:51:15+00:00"}
