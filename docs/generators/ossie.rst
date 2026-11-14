@@ -28,7 +28,7 @@ Maintained in ohi LinkML
    https://github.com/NeverBlink-OSS/ohi/issues
 
    You can also try the generator without installing anything in the
-   `in-browser playground <https://linkml.ohi.dev/playground/>`_.
+   `in-browser playground <https://linkml.ohi.dev/playground/?target=ossie>`_.
 
 When reporting bugs, please include the versions of both linkml and ohi LinkML.
 You can find them by running ``gen-ossie --version``.
