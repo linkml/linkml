@@ -1,6 +1,8 @@
 import json
+from datetime import UTC, datetime
 
 import yaml
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.utils.formatutils import remove_empty_items
@@ -90,3 +92,16 @@ class PydanticDumpersDateTestCase(LoaderDumperTestCase):
         """Test the json emitter"""
         self.dump_test("kitchen_sink_person_01.json", lambda out_fname: json_dumper.dump(self.person, out_fname))
         self.dumps_test("kitchen_sink_person_01.json", lambda: json_dumper.dumps(self.person))
+
+
+class EventWithDatetime(BaseModel):
+    """Pydantic model with a datetime field; the generated test models have only date fields."""
+
+    at: datetime
+
+
+def test_json_dumper_writes_datetime_in_iso_8601() -> None:
+    """Datetimes are written with the ``T`` separator required by xsd:dateTime."""
+    event = EventWithDatetime(at=datetime(2024, 5, 15, 15, 51, 15, tzinfo=UTC))
+    data = json.loads(json_dumper.dumps(event, inject_type=False))
+    assert data == {"at": "2024-05-15T15:51:15+00:00"}
