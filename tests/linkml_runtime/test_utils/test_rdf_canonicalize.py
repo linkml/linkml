@@ -6,12 +6,13 @@ import re
 import subprocess
 import sys
 import textwrap
+import warnings
 from pathlib import Path
 
 import pyoxigraph as ox
 import pytest
 import rdflib
-from rdflib import BNode, Graph, Literal, Namespace, URIRef
+from rdflib import BNode, Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, SH, XSD
 from rdflib.collection import Collection
 
@@ -536,7 +537,43 @@ def test_fallback_preserves_relative_iri():
     assert "<testing>" in result
 
 
-@pytest.mark.parametrize("output_format", ["turtle", "xml"])
+def _forcing_fallback(graph: Graph) -> Graph:
+    """Add a relative IRI, which pyoxigraph rejects, so ``graph`` takes the rdflib fallback."""
+    graph.add((URIRef("testing"), URIRef("http://example.com/p"), Literal("forces-fallback")))
+    return graph
+
+
+@pytest.mark.parametrize("output_format", ["turtle", "n3", "trig", "xml"])
+@pytest.mark.parametrize("force_fallback", [False, True], ids=["pyoxigraph", "fallback"])
+@pytest.mark.parametrize("base", ["http://ex.org/d#", "http://ex.org/"])
+def test_an_iri_written_against_a_base_reads_back_unchanged(base, force_fallback, output_format):
+    """Writing IRIs relative to a base must not change them.
+
+    rdflib relativizes by string prefix, so against ``http://ex.org/d#`` it
+    writes ``<a>``, which reads back as ``http://ex.org/a`` (RFC 3986
+    section 5.2.2). Both paths re-read their output and drop such a base.
+    """
+    triple = (URIRef("http://ex.org/d#a"), URIRef("http://example.com/p"), Literal("v"))
+    graph = Graph(base=base)
+    graph.add(triple)
+    if force_fallback:
+        _forcing_fallback(graph)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RDFCanonicalizationWarning)
+        serialized = canonicalize_rdf_graph(graph, output_format=output_format)
+    reread = Dataset().parse(data=serialized, format=output_format)
+    assert triple in {quad[:3] for quad in reread.quads()}
+
+
+def test_base_survives_the_fallback():
+    """A base that rdflib relativizes against correctly stays in fallback output."""
+    graph = _forcing_fallback(Graph(base="http://example.org/default/"))
+    with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
+        serialized = canonicalize_rdf_graph(graph)
+    assert "@base <http://example.org/default/> ." in serialized
+
+
+@pytest.mark.parametrize("output_format", ["turtle", "n3", "trig", "xml"])
 def test_fallback_is_deterministic_across_processes(output_format):
     """The rdflib fallback produces byte-identical output across processes.
 

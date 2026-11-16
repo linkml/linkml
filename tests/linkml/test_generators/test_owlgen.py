@@ -1232,3 +1232,37 @@ def test_complement_of_union_of_mixed_none_filters_silently():
     # Should succeed and return a BNode (the complement expression).
     assert result is not None
     assert isinstance(result, BNode)
+
+
+def _ontology_iris(g: Graph) -> set[URIRef]:
+    """Return the IRIs declared as owl:Ontology in the graph."""
+    return set(g.subjects(RDF.type, OWL.Ontology))
+
+
+@pytest.mark.parametrize("suffix", [None, "", ".owl", ".owl.ttl"])
+def test_ontology_uri_suffix_is_appended_to_ontology_iri(suffix: str | None) -> None:
+    """The ontology IRI is the schema id followed by ``ontology_uri_suffix`` (#569)."""
+    sb = _build_abstract_schema()
+    g = _owl_graph(sb, ontology_uri_suffix=suffix)
+    assert _ontology_iris(g) == {URIRef(f"{sb.schema.id}{suffix or ''}")}
+
+
+@pytest.mark.parametrize(
+    "args,expected_suffix",
+    [
+        ([], ".owl.ttl"),
+        (["--ontology-uri-suffix", ".owl"], ".owl"),
+        (["--ontology-uri-suffix", ""], ""),
+    ],
+)
+def test_cli_ontology_uri_suffix(kitchen_sink_path, args: list[str], expected_suffix: str) -> None:
+    """``gen-owl --ontology-uri-suffix`` changes the ontology IRI, and defaults to ``.owl.ttl`` (#569)."""
+    from click.testing import CliRunner
+
+    from linkml.generators.owlgen import cli
+
+    result = CliRunner().invoke(cli, [str(kitchen_sink_path), *args])
+    assert result.exit_code == 0, result.output
+    g = Graph()
+    g.parse(data=result.output, format="turtle")
+    assert _ontology_iris(g) == {URIRef(f"https://w3id.org/linkml/tests/kitchen_sink{expected_suffix}")}

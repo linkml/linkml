@@ -14,18 +14,12 @@ from jsonasobj2 import JsonObj, as_json
 from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
-from linkml.utils.deprecation import deprecated_fields
+from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecated_fields, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
-from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.rdf_terms import type_term
 from linkml_runtime.utils.schemaview import SchemaView
-
-URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
-
-# Extended URI_RANGES that also treats xsd:anyURI as an IRI reference (@id)
-# rather than a typed literal. Opt-in via --xsd-anyuri-as-iri flag.
-URI_RANGES_WITH_XSD = (*URI_RANGES, XSD.anyURI)
 
 ENUM_CONTEXT = {
     "text": "skos:notation",
@@ -81,12 +75,9 @@ class ContextGenerator(Generator):
     context keys. Identifier slots retain their slot-name key and map to ``@id``.
     """
 
-    xsd_anyuri_as_iri: bool = False
-    """Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.
-
-    This aligns the JSON-LD context with the SHACL generator, which emits
-    ``sh:nodeKind sh:IRI`` for the same types.
-    """
+    xsd_anyuri_as_iri: bool | None = None
+    """Deprecated and without effect: values of ``uri``, ``uriorcurie`` and the types
+    derived from them are always coerced to ``@id``."""
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
@@ -95,6 +86,8 @@ class ContextGenerator(Generator):
     frame_root: str | None = None
 
     def __post_init__(self) -> None:
+        if self.xsd_anyuri_as_iri is not None:
+            deprecation_warning(XSD_ANYURI_AS_IRI_OPTION, stack_level=4)
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
@@ -299,19 +292,9 @@ class ContextGenerator(Generator):
         and "could not resolve safely because the branches disagree".
         """
         coercions: set[str | None] = set()
-        uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
         for range_name in ranges:
-            if range_name not in self.schema.types:
-                continue
-
-            range_type = self.schema.types[range_name]
-            range_uri = self.namespaces.uri_for(range_type.uri)
-            if range_uri == XSD.string:
-                coercions.add(None)
-            elif range_uri in uri_ranges:
-                coercions.add("@id")
-            else:
-                coercions.add(range_type.uri)
+            if range_name in self.schema.types:
+                coercions.add(self._type_coercion(range_name))
 
         if not coercions:
             return False, None
@@ -413,14 +396,9 @@ class ContextGenerator(Generator):
                         skos = "skos"
                     self.emit_prefixes.add(skos)
                 else:
-                    range_type = self.schema.types[slot.range]
-                    uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
-                    if self.namespaces.uri_for(range_type.uri) == XSD.string:
-                        pass
-                    elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
-                        slot_def["@type"] = "@id"
-                    else:
-                        slot_def["@type"] = range_type.uri
+                    coercion = self._type_coercion(slot.range)
+                    if coercion is not None:
+                        slot_def["@type"] = coercion
 
                 if self.fix_multivalue_containers and slot.multivalued:
                     if slot.inlined and not slot.inlined_as_list:
@@ -457,14 +435,24 @@ class ContextGenerator(Generator):
         if range_name in self.schema.enums:
             return None
         if range_name in self.schema.types:
-            range_type = self.schema.types[range_name]
-            uri = self.namespaces.uri_for(range_type.uri)
-            if uri == XSD.string:
-                return None
-            if uri in URI_RANGES:
-                return "@id"
-            return range_type.uri
+            return self._type_coercion(range_name)
         return None
+
+    def _type_coercion(self, type_name: str) -> str | None:
+        """Return the JSON-LD ``@type`` coercion of values of the type *type_name*.
+
+        Values of node types (:func:`~linkml_runtime.utils.rdf_terms.type_term`) are
+        coerced to ``@id``, which also turns ``_:`` labels into blank nodes. Literals
+        are coerced to their datatype as the schema writes it; plain strings need no
+        coercion, so the result is ``None``.
+        """
+        view = self.type_schemaview()
+        term = type_term(view, type_name)
+        if term.kind.is_node:
+            return "@id"
+        if term.datatype is None or term.datatype == str(XSD.string):
+            return None
+        return view.induced_type(type_name).uri
 
     def _build_scoped_context(self, cls: ClassDefinition) -> dict:
         """Build a scoped JSON-LD context for class-level slot range overrides.
@@ -605,9 +593,8 @@ class ContextGenerator(Generator):
 )
 @click.option(
     "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
-    default=False,
-    show_default=True,
-    help="Map xsd:anyURI-typed ranges (uri, uriorcurie) to @type: @id instead of @type: xsd:anyURI.",
+    default=None,
+    help="Deprecated and without effect: values of uri, uriorcurie and the types derived from them are always IRIs.",
 )
 @click.option(
     "--use-curies/--not-use-curies",

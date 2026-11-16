@@ -2,7 +2,11 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 
+from linkml.generators.common.naming import check_keyword_collisions
+from linkml_runtime.linkml_model.meta import ClassDefinition
+
 from ..dataframe_generator import DataframeGenerator
+from ..render_adapters.dataframe_class import DataframeClass
 from .slot_handler_pandera import SlotHandlerPandera
 
 logger = logging.getLogger(__name__)
@@ -55,3 +59,11 @@ class PanderaDataframeGenerator(DataframeGenerator):
     @staticmethod
     def make_multivalued(range: str) -> str:
         return "List"
+
+    def append_slots(self, schemaview_class: ClassDefinition, ooclass: DataframeClass) -> None:
+        """
+        Append slots to the class. A class cannot have both a column named after a Python keyword, such as
+        ``from``, and a column ``from_``, because the class-based model gives both the attribute ``from_``.
+        """
+        super().append_slots(schemaview_class, ooclass)
+        check_keyword_collisions(schemaview_class.name, [field.name for field in ooclass.all_fields])

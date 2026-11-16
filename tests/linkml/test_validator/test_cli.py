@@ -10,6 +10,9 @@ from linkml.validator.cli import cli
 VALID_PERSON_1 = {"id": "id:1", "name": "John Doe", "age": 35}
 VALID_PERSON_2 = {"id": "id:2", "name": "Jane Smith", "age": 25, "telephone": "555-555-5550"}
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
+REMOTE_PERSONINFO_SCHEMA = (
+    "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/tests/linkml/test_validator/input/personinfo.yaml"
+)
 
 
 @pytest.fixture
@@ -71,6 +74,28 @@ def test_valid_json_file_list(cli_runner, json_data_file):
     assert result.exception is None
     assert "No issues found" in result.output
     assert result.exit_code == 0
+
+
+@pytest.mark.network
+def test_valid_json_file_remote_schema(cli_runner, json_data_file):
+    """Verify that -s/--schema accepts a URL"""
+
+    data_path = json_data_file(VALID_PERSON_1)
+
+    result = cli_runner.invoke(cli, ["-s", REMOTE_PERSONINFO_SCHEMA, "-C", "Person", data_path])
+    assert result.exception is None
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_missing_local_schema(cli_runner, json_data_file):
+    """Verify that a nonexistent local -s/--schema path is still rejected up front"""
+
+    data_path = json_data_file(VALID_PERSON_1)
+
+    result = cli_runner.invoke(cli, ["-s", "does-not-exist.yaml", data_path])
+    assert "does not exist" in result.output
+    assert result.exit_code == 2
 
 
 def test_no_files_provided(cli_runner):
