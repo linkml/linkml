@@ -347,3 +347,28 @@ def test_parent_slot_usage_relationships():
     # Person should inherit the slot_usage from BaseEntity and have a relationship to Organization
     assert "Person ||--" in diagram
     assert 'Organization : "related_org"' in diagram
+
+
+@pytest.mark.parametrize("preserve_names", [False, True])
+def test_quote_names_mermaid_cannot_parse(preserve_names):
+    """Entity names that are not plain identifiers, such as kebab-case ones, are quoted."""
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_kebab_case",
+        classes={
+            "character-class": ClassDefinition(name="character-class", slots=["name"]),
+            "class-reference": ClassDefinition(name="class-reference", slots=["target"]),
+        },
+        slots={
+            "name": SlotDefinition(name="name", range="string"),
+            "target": SlotDefinition(name="target", range="character-class"),
+        },
+    )
+
+    diagram = ERDiagramGenerator(schema=schema, preserve_names=preserve_names).serialize()
+
+    first, second = ("class-reference", "character-class") if preserve_names else ("Class-reference", "Character-class")
+    assert f'"{second}" {{' in diagram
+    assert f'"{first}" {{' in diagram
+    assert f'"{first}" ||--|o "{second}" : "target"' in diagram
+    assert f"\n{first} " not in diagram
