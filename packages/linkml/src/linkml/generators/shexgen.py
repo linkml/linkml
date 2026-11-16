@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 import click
 from jsonasobj import as_json as as_json_1
-from rdflib import OWL, RDF, XSD, Graph, Namespace
+from rdflib import OWL, RDF, Graph, Namespace, URIRef
 from ShExJSG import ShExC
 from ShExJSG.SchemaWithContext import Schema
 from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
@@ -23,10 +23,10 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinitionName,
     TypeDefinition,
 )
-from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import TermKind, type_term
 
 
 @dataclass
@@ -38,6 +38,8 @@ class ShExGenerator(Generator):
     file_extension = "shex.rdf"
     visit_all_class_slots = False
     uses_schemaloader = True
+    # ShEx 2.1 §5.4.2 node kinds for the node term kinds of LinkML types
+    _SHEX_NODE_KINDS = {TermKind.IRI: "iri", TermKind.BLANK_NODE: "bnode", TermKind.BLANK_NODE_OR_IRI: "nonliteral"}
 
     # ObjectVars
     diff_stable: bool = False
@@ -71,16 +73,15 @@ class ShExGenerator(Generator):
         context = self.shex["@context"]
         self.shex["@context"] = [context, {"@base": self.namespaces._base}]
         # Emit all of the type definitions
+        type_view = self.type_schemaview()
         for typ in self.schema.types.values():
             model_uri = self._class_or_type_uri(typ)
             if typ.uri:
-                typ_type_uri = self.namespaces.uri_for(typ.uri)
-                if typ_type_uri in (XSD.anyURI, SHEX.iri):
-                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind="iri"))
-                elif typ_type_uri == SHEX.nonLiteral:
-                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind="nonliteral"))
+                term = type_term(type_view, typ.name)
+                if term.kind.is_node:
+                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind=self._SHEX_NODE_KINDS[term.kind]))
                 else:
-                    self.shapes.append(NodeConstraint(id=model_uri, datatype=self.namespaces.uri_for(typ.uri)))
+                    self.shapes.append(NodeConstraint(id=model_uri, datatype=URIRef(term.datatype)))
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))

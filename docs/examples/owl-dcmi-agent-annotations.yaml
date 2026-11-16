@@ -1,0 +1,26 @@
+id: https://example.org/model
+name: model
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+  dcterms: http://purl.org/dc/terms/
+  orcid: https://orcid.org/
+  owl: http://www.w3.org/2002/07/owl#
+imports: [linkml:types]
+default_prefix: ex
+instantiates: [ex:AgentMetadata]
+annotations:
+  creator: orcid:0000-0002-1825-0097
+  rights: Copyright 2026 The Example Team
+classes:
+  AgentMetadata:
+    description: Declares the agent metadata that a schema may carry as annotations.
+    attributes:
+      creator:
+        slot_uri: dcterms:creator
+        range: nodeidentifier
+        implements: [owl:AnnotationProperty]
+      rights:
+        slot_uri: dcterms:rights
+        range: string
+        implements: [owl:AnnotationProperty]
