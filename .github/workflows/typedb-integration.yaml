@@ -10,7 +10,10 @@ on:
   pull_request:
     paths:
       - 'packages/linkml/src/linkml/generators/typedbgen.py'
+      - 'packages/linkml/src/linkml/generators/typedb/**'
       - 'tests/linkml/test_generators/test_typedbgen*.py'
+      - 'tests/linkml/test_generators/input/typedb_mappings.yaml'
+      - '.github/workflows/typedb-integration.yaml'
   workflow_dispatch:
 
 jobs:
