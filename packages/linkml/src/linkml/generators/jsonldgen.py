@@ -15,6 +15,7 @@ from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.mergeutils import remove_imported_elements
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -187,6 +188,9 @@ class JSONLDGenerator(Generator):
             self._add_type(self.schema)
         else:
             raise Exception(f"self.schema should be of type YAMLRoot, but it's of type {type(self.schema)}")
+        if not self.mergeimports:
+            # self.schema is replaced by original_schema below, so it can be pruned in place.
+            remove_imported_elements(self.schema)
         base_prefix = self.default_prefix()
 
         # `context` can be a `str`, a `list[str]` or a `tuple[str]`
