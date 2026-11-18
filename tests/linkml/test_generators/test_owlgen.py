@@ -9,7 +9,7 @@ from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
-from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
@@ -89,6 +89,29 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
     coll = Collection(g, enum_bnode)
     assert [BIZ["001"], BIZ["002"], BIZ["003"], BIZ["004"]] == list(coll)
     assert BIZ["001"] in owl_classes
+
+
+@pytest.mark.parametrize(
+    ("schema_ncit_prefix", "expected"),
+    [
+        (None, "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C2991"),
+        ("http://purl.obolibrary.org/obo/NCIT_", "http://purl.obolibrary.org/obo/NCIT_C2991"),
+    ],
+)
+def test_metadata_prefix_resolution(schema_ncit_prefix: str | None, expected: str) -> None:
+    """Metadata uses schema prefixes before metamodel prefixes or URI passthrough."""
+    prefixes = {"ex": "https://example.org/"}
+    if schema_ncit_prefix is not None:
+        prefixes["NCIT"] = schema_ncit_prefix
+    schema = SchemaDefinition(
+        id="https://example.org/metadata",
+        name="metadata",
+        prefixes=prefixes,
+        default_prefix="ex",
+        classes={"C": ClassDefinition(name="C", exact_mappings=["NCIT:C2991"])},
+    )
+    graph = OwlSchemaGenerator(schema).as_graph()
+    assert set(graph.objects(URIRef("https://example.org/C"), SKOS.exactMatch)) == {URIRef(expected)}
 
 
 @pytest.mark.parametrize(
