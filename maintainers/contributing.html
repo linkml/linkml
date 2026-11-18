@@ -573,18 +573,16 @@ in which case you may need to use <code class="docutils literal notranslate"><sp
 </section>
 <section id="code-formatting-and-linting">
 <h2>Code formatting and linting<a class="headerlink" href="#code-formatting-and-linting" title="Link to this heading">¶</a></h2>
-<p>This repository is configured to use <a class="reference external" href="https://docs.astral.sh/ruff/">Ruff</a> to ensure good formatting and code quality standards.</p>
-<p>Each of these tools can be run on-demand via <code class="docutils literal notranslate"><span class="pre">tox</span></code>. To check the code for issues run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>lint
+<p>This repository is configured to use <a class="reference external" href="https://docs.astral.sh/ruff/">Ruff</a> to ensure good formatting and code quality standards, and <a class="reference external" href="https://github.com/codespell-project/codespell">codespell</a> to catch common misspellings.</p>
+<p>These checks run through <a class="reference external" href="https://pre-commit.com/">pre-commit</a>, which pins the tool versions in <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>. To check the whole repository, fixing formatting and some code quality issues automatically, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uvx<span class="w"> </span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
 </pre></div>
 </div>
-<p>Any issues should be fixed before committing or pushing changes. This command is automatically run against pull requests and the testing workflow will fail if issues are found.</p>
-<p>Formatting and some code quality issues can be fixed automatically by running:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>format
-</pre></div>
-</div>
-<p>You can configure these tools to run automatically before each commit by using <a class="reference external" href="https://pre-commit.com/">pre-commit</a>. To set this up, first ensure that you have the pre-commit package installed globally. This can be done via <a class="reference external" href="https://pipx.pypa.io/">pipx</a>:</p>
+<p>(<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">format</span></code> does the same.) Any remaining issues should be fixed before committing or pushing changes. The same checks run against pull requests, and the testing workflow will fail if issues are found.</p>
+<p>You can also run the checks automatically before each commit. To set this up, first ensure that you have the pre-commit package installed globally. This can be done via <a class="reference external" href="https://pipx.pypa.io/">pipx</a> or uv:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
+<span class="c1"># or</span>
+uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>pre-commit
 </pre></div>
 </div>
 <p>Or one of their <a class="reference external" href="https://pre-commit.com/#installation">other supported installation options</a>.</p>
