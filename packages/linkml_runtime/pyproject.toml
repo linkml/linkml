@@ -200,53 +200,6 @@ ignore = [
 # Flag errors (`C901`) whenever the complexity level exceeds 15.
 max-complexity = 15
 
-[tool.tox]
-requires = ["tox>=4"]
-env_list = ["lint", "py{310,311,312,313,314}"]
-
-[tool.tox.env_run_base]
-allowlist_externals = ["uv"]
-deps = ["pytest"]
-commands = [
-  ["uv", "sync", "--all-extras", "--dev"],
-  ["uv", "run", "pytest", "{posargs}"],
-]
-
-[tool.tox.env.codespell]
-description = "Run spell checkers."
-skip_install = true
-deps = [
-  "codespell",
-  "tomli", # required for getting config from pyproject.toml
-]
-commands = [
-  ["codespell", "{posargs}"]
-]
-
-[tool.tox.env.format]
-description = "Run ruff code formatter."
-skip_install = true
-deps = ["ruff==0.11.13"]
-commands = [
-  ["ruff", "format", "{posargs:.}"],
-]
-
-[tool.tox.env.format_check]
-description = "Check that code is correctly formatted by ruff."
-skip_install = true
-deps = ["ruff==0.11.13"]
-commands = [
-  ["ruff", "format", "--check", "{posargs:.}"],
-]
-
-[tool.tox.env.lint]
-description = "Run code linter and formatter (no fixes)."
-skip_install = true
-deps = ["ruff==0.11.13"]
-commands = [
-  ["ruff", "check", "{posargs:.}"],
-]
-
 [tool.uv-dynamic-versioning]
 vcs = "git"
 style = "pep440"
