@@ -16,6 +16,7 @@ from jsonschema.exceptions import best_match
 from jsonschema.protocols import Validator
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.utils.helpers import format_checker_for
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -45,7 +46,7 @@ def get_metamodel_validator() -> Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
     meta_json_schema = meta_json_gen.generate()
     validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
-    return validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
+    return validator_cls(meta_json_schema, format_checker=format_checker_for(validator_cls))
 
 
 def merge_configs(original: dict, other: dict):

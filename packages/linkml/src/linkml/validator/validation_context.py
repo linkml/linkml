@@ -9,6 +9,7 @@ from jsonschema.protocols import Validator
 from linkml.generators import JsonSchemaGenerator, PydanticGenerator
 from linkml.generators.jsonschemagen import JsonSchema
 from linkml.utils.datautils import infer_root_class
+from linkml.utils.helpers import format_checker_for
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.formatutils import camelcase
@@ -134,7 +135,7 @@ class ValidationContext:
                 json_schema = JsonSchema(root)
 
         validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
-        return validator_cls(json_schema, format_checker=validator_cls.FORMAT_CHECKER)
+        return validator_cls(json_schema, format_checker=format_checker_for(validator_cls))
 
     def pydantic_model(self, *, closed: bool):
         module = self._pydantic_module(closed=closed)

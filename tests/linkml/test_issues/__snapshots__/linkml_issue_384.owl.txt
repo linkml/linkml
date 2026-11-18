@@ -1,4 +1,7 @@
 # --- linkml_issue_384-False-False.owl ---
+<http://purl.org/dc/terms/title> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
+<http://www.w3.org/2004/02/skos/core#exactMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
+<http://www.w3.org/2004/02/skos/core#inScheme> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2000/01/rdf-schema#label> "GeoAge" .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:c14n10 .
@@ -177,6 +180,9 @@ _:c14n9 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2
 _:c14n9 <http://www.w3.org/2002/07/owl#onProperty> <https://w3id.org/linkml/examples/personinfo/unit> .
 
 # --- linkml_issue_384-True-True.owl ---
+<http://purl.org/dc/terms/title> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
+<http://www.w3.org/2004/02/skos/core#exactMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
+<http://www.w3.org/2004/02/skos/core#inScheme> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2000/01/rdf-schema#label> "GeoAge" .
