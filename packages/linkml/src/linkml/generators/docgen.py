@@ -2,7 +2,7 @@ import importlib.util
 import logging
 import os
 from collections.abc import Iterable, Iterator
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -31,7 +31,6 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 
 class MarkdownDialect(Enum):
@@ -194,17 +193,9 @@ class DocGenerator(Generator):
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        # Forward importmap/base_dir; the call to ``super().__post_init__``
-        # above built a ``self.schemaview`` with these honoured, and this
-        # overwrite must not drop them or URI-style imports resolved via
-        # ``--importmap`` will fall through to HTTP when ``mergeimports``
-        # triggers ``imports_closure()``.
-        self.schemaview = SchemaView(
-            self.schema,
-            merge_imports=self.mergeimports,
-            base_dir=self.base_dir,
-            importmap=self.importmap,
-        )
+        # Keep the base generator's live view and its import resolution context.
+        if self.mergeimports:
+            self.schemaview.merge_imports()
 
         # Override schemaview's get_mappings to use preserved URIs when needed
         if self.preserve_names:
@@ -246,7 +237,7 @@ class DocGenerator(Generator):
         }
         self.logger.debug("Processing Index")
         template = self._get_template("index")
-        out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
+        out_str = template.render(gen=self, schema=sv.copy_schema(), schemaview=sv, **template_vars)
         self._write(out_str, directory, self.index_name)
         if self._is_single_file_format(self.format):
             self.logger.info(f"{self.format} is a single-page format, skipping non-index elements")
@@ -256,6 +247,8 @@ class DocGenerator(Generator):
         for schema_name in sv.imports_closure():
             self.logger.debug(f"  Generating doc for {schema_name}")
             imported_schema = sv.schema_map.get(schema_name)
+            if schema_name == sv.schema.name:
+                imported_schema = sv.copy_schema()
             out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
             self._write(
                 out_str,
@@ -436,6 +429,12 @@ class DocGenerator(Generator):
                 sep = "" if base.endswith(("/", "#", "_", ":")) else "/"
                 return f"{base}{sep}{self.name(element)}"
 
+        if self.mergeimports and element.from_schema and element.from_schema != self.schemaview.schema.id:
+            # In a merged document, imported definitions are rendered as part of
+            # the root schema and should use its native namespace for fallback URIs.
+            element = copy(element)
+            element.from_schema = self.schemaview.schema.id
+
         if self.subfolder_type_separation:
             return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
 
@@ -549,7 +548,7 @@ class DocGenerator(Generator):
     def _is_external(self, element: Element) -> bool:
         if element is None:
             return False
-        if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
+        if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta and not self.mergeimports:
             return True
         else:
             return False
@@ -763,7 +762,11 @@ class DocGenerator(Generator):
         :return:
         """
         if self.diagram_type.value == DiagramType.er_diagram.value:
-            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid", preserve_names=self.preserve_names)
+            erdgen = ERDiagramGenerator(
+                self.schemaview.copy_schema(),
+                format="mermaid",
+                preserve_names=self.preserve_names,
+            )
             if class_names:
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
@@ -771,7 +774,7 @@ class DocGenerator(Generator):
         elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
         elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
-            plantumlgen = PlantumlGenerator(self.schema, preserve_names=self.preserve_names)
+            plantumlgen = PlantumlGenerator(self.schemaview.copy_schema(), preserve_names=self.preserve_names)
             plantuml_diagram = plantumlgen.serialize(classes=class_names)
             self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
             return plantuml_diagram

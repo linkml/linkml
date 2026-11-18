@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from linkml_runtime.utils.schemaview import CLASS_NAME, SchemaView
 
 CLASS_NAME_OR_LIST = CLASS_NAME | list[CLASS_NAME]
@@ -19,18 +21,19 @@ def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_
         classes = [classes]
     dels = set()
     for cn in classes:
-        c = sv.get_class(cn)
+        c = deepcopy(sv.get_class(cn))
         for d in sv.class_descendants(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
                 if sn not in c.slots:
                     c.slots.append(sn)
                 # if slot was declared as an attribute it may not be in the set of slots
-                if sn not in sv.schema.slots:
+                if sv.get_slot(sn, imports=False) is None:
                     # TODO: determine behavior for merging
                     sv.add_slot(s)
             if delete:
                 dels.add(d)
+        sv.add_class(c)
     for d in dels:
         sv.delete_class(d)
     sv.set_modified()
@@ -50,18 +53,19 @@ def roll_down(sv: SchemaView, classes: list[CLASS_NAME] = None, mixins=True, is_
         classes = sv.class_leaves()
     dels = set()
     for cn in classes:
-        c = sv.get_class(cn)
+        c = deepcopy(sv.get_class(cn))
         for d in sv.class_ancestors(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
                 if sn not in c.slots:
                     c.slots.append(sn)
                 # if slot was declared as an attribute it may not be in the set of slots
-                if sn not in sv.schema.slots:
+                if sv.get_slot(sn, imports=False) is None:
                     # TODO: determine behavior for merging
                     sv.add_slot(s)
             if delete:
                 dels.add(d)
+        sv.add_class(c)
         # when we roll down with deletion, parent classes disappear,
         # cascading
         if delete and False:
