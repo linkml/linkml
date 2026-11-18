@@ -212,3 +212,112 @@ jobs:
         run: |
           uv run pytest tests/ --ignore=tests/linkml/test_notebooks \
             -m "network and not kroki" --with-network --with-slow --with-biolink -v
+
+  # Nothing moves UPSTREAM_SHA automatically, so a new linkml-model (pre)release
+  # can sit unadopted with every check still green. When one exists, re-vendor it
+  # and open a PR: merging that PR is the decision to adopt the release. Expect it
+  # to arrive red -- generated snapshots usually need regenerating alongside it.
+  #
+  # A separate job so the fixture changes made above can't leak into this PR.
+  vendored-model-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      # Resolution is delegated to `make print_latest_model_release`, the same
+      # target `make update_model` uses, so this check and the vendoring command
+      # cannot disagree about what "latest" means. If it fails, its own error
+      # message ends the step and nothing downstream fires.
+      - name: Check whether the vendored pin is behind the latest release
+        id: pin_check
+        run: |
+          PINNED=$(tr -d '[:space:]' < packages/linkml_runtime/src/linkml_runtime/linkml_model/UPSTREAM_SHA)
+          RELEASE=$(make -C packages/linkml_runtime -s print_latest_model_release)
+          read -r TAG LATEST <<< "${RELEASE}"
+          if [ -z "${PINNED}" ] || [ -z "${TAG}" ] || [ -z "${LATEST}" ]; then
+            echo "::error::Could not resolve the vendored pin or the latest release (pinned='${PINNED}' release='${RELEASE}')"
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+          # Compare by ancestry, not equality: a pin ahead of the latest release
+          # (re-vendored from main by hand) is not stale, and re-vendoring would
+          # downgrade it.
+          STATUS=$(gh api "repos/linkml/linkml-model/compare/${PINNED}...${LATEST}" --jq .status)
+          case "${STATUS}" in
+            identical)
+              echo "Vendored pin matches ${TAG}."
+              echo "stale=false" >> "$GITHUB_OUTPUT" ;;
+            ahead)
+              echo "Vendored pin ${PINNED} is behind ${TAG} (${LATEST})."
+              echo "stale=true" >> "$GITHUB_OUTPUT" ;;
+            behind|diverged)
+              echo "::warning::Vendored pin ${PINNED} is not behind ${TAG} (${STATUS}); not re-vendoring."
+              echo "stale=false" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "::error::Unexpected compare status '${STATUS}' for ${PINNED}...${LATEST}"
+              exit 1 ;;
+          esac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # create-pull-request rebuilds its branch from main on every run, which would
+      # discard snapshot fixes already pushed to an open re-vendor PR. Leave an open
+      # one alone; a newer release is picked up once it is merged or closed.
+      - name: Check for an open re-vendor PR
+        if: steps.pin_check.outputs.stale == 'true'
+        id: open_pr
+        run: |
+          OPEN=$(gh pr list --head update-vendored-linkml-model --state open --json number --jq '.[0].number // empty')
+          if [ -n "${OPEN}" ]; then
+            echo "Re-vendor PR #${OPEN} is already open; leaving it alone."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # `make update_model` finishes with a pre-commit run, which isn't in the uv groups.
+      - name: Install pre-commit
+        if: steps.open_pr.outputs.proceed == 'true'
+        run: uv tool install pre-commit
+
+      - name: Re-vendor the latest release
+        if: steps.open_pr.outputs.proceed == 'true'
+        run: make -C packages/linkml_runtime update_model
+
+      # Labelled `dependencies` so it lands in the same queue as Dependabot's PRs.
+      # PRs opened with GITHUB_TOKEN don't trigger CI, hence the note in the body.
+      - name: Create PR with the re-vendored model
+        if: steps.open_pr.outputs.proceed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: packages/linkml_runtime/src/linkml_runtime/linkml_model
+          commit-message: "Vendor linkml-model ${{ steps.pin_check.outputs.tag }}"
+          title: "Vendor linkml-model ${{ steps.pin_check.outputs.tag }}"
+          body: |
+            Re-vendors linkml-model [${{ steps.pin_check.outputs.tag }}](https://github.com/linkml/linkml-model/releases/tag/${{ steps.pin_check.outputs.tag }}) via `make update_model`. Merging this adopts the release.
+
+            Expect CI to fail until generated snapshots are regenerated against the new model; push those fixes to this branch.
+
+            CI does not start on its own for bot-opened PRs: close and reopen this PR to run it.
+
+            **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          branch: update-vendored-linkml-model
+          delete-branch: true
+          labels: dependencies
