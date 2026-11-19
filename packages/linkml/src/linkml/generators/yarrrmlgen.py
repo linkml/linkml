@@ -8,6 +8,14 @@ import click
 import yaml
 
 from linkml._version import __version__
+from linkml.generators.common.prefixes import (
+    curie_prefixes,
+    document_prefixes,
+    normalize_prefixes_option,
+    preferred_prefixes,
+    prefix_declarations,
+    standardize_values,
+)
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition
 from linkml_runtime.utils.rdf_terms import TermKind, type_term
@@ -46,6 +54,9 @@ class YarrrmlGenerator(Generator):
     """YARRRML source shorthand, e.g. data.json~jsonpath or data.csv~csv."""
     iterator_template: str | None = None
     """JSONPath iterator template; supports {Class}."""
+    normalize_prefixes: bool = False
+    """Write the conventional prefix names of :mod:`linkml.generators.common.prefixes`,
+    e.g. ``dc`` where the schema declares ``dce`` for ``http://purl.org/dc/elements/1.1/``."""
 
     def __post_init__(self):
         super().__post_init__()
@@ -181,6 +192,10 @@ class YarrrmlGenerator(Generator):
             mappings[str(cls.name)] = mapping_dict
 
         prefixes = self._prefixes_with_defaults()
+        if self.normalize_prefixes:
+            plan = document_prefixes(prefixes, preferred_prefixes(sv), curie_prefixes(mappings))
+            prefixes = prefix_declarations(plan, prefixes)
+            mappings = standardize_values(mappings, plan)
         return {"prefixes": prefixes, "mappings": mappings}
 
     def _is_json_source(self) -> bool:
@@ -371,6 +386,7 @@ class YarrrmlGenerator(Generator):
     "--iterator-template",
     help='JSONPath iterator template; supports {Class}, default: "$[*]"',
 )
+@normalize_prefixes_option
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, source, iterator_template, **args):
     """Generate YARRRML mappings from a LinkML schema."""
