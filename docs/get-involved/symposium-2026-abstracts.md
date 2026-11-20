@@ -203,7 +203,7 @@ Knowledge Trust Ladder keeps a repository's scattered knowledge as a collection:
 ### Fixing category errors in single cell annotation
 
 - **Presenter:** Sid Cox
-- **Affiliation:** Broad
+- **Affiliation:** Broad Institute
 - **Project:** [broadinstitute.github.io/warp/docs/Pipelines/scANVI_Pipeline/README](https://broadinstitute.github.io/warp/docs/Pipelines/scANVI_Pipeline/README)
 
 Modern single-cell reference atlases combine high-throughput transcriptomic measurements with multi-level biological taxonomies and curated ontologies. In the Allen Institute and BICAN Whole Mouse Brain consensus atlas (AIT33), 7.64 million cells across 372 donors are organised into five nested levels of detail: 9 neighbourhoods at the top, 43 classes, 414 subclasses, 1,386 supertypes, and 6,721 clusters at the leaf level, cross-referenced to the Cell Ontology (CL) and the Uberon anatomy ontology. In production pipelines such as Broad DSP's WARP scANVI workflow, semi-supervised deep generative models take raw transcript counts across 21,205 genes and assign cell-type labels at each level of this taxonomy.
