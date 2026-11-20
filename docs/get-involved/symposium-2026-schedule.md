@@ -1,6 +1,6 @@
 # Symposium 2026 Schedule
 
-All times are in UTC.
+**The schedule is currently under review and is subject to change.**
 
 ## Wednesday, December 2, 2026
 
