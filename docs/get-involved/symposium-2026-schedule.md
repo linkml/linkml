@@ -9,12 +9,12 @@ In Sessions 1 and 2, each presentation is 12 minutes, followed by 3 minutes for 
 ### Welcome & Keynote
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
-| 15:00–15:15 | Welcome & how this works: goals, code of conduct, etiquette, how Q&A and recording work | Nico Matentzoglu | Semanticly |
+| 15:00–15:15 | Welcome & how this works | Nico Matentzoglu | Semanticly |
 | 15:15–15:45 | Keynote: Title TBD | Chris Mungall | Lawrence Berkeley National Laboratory |
-
-**Break** (15:45–15:55)
+| 15:45-15:55 | Break (10 minutes) | | |
 
 ### Session 1: Schemas & domain modelling
+Total Session 1 time: 15:55 to 17:25 (90 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 15:55–16:10 | Running LinkML in Production at the Human Tumor Atlas Network | Aditi Gopalan | Sage Bionetworks |
@@ -23,10 +23,10 @@ In Sessions 1 and 2, each presentation is 12 minutes, followed by 3 minutes for 
 | 16:40–16:55 | DCAT-AP+ & ChemDCAT-AP: Building domain-specific subprofiles of DCAT-AP with LinkML | Philip Strömert | TIB & NFDI4Chem |
 | 16:55–17:10 | Common practices for interoperable LinkML schemas in the bioimaging community | Damien Goutte-Gattat | German BioImaging e.V. |
 | 17:10–17:25 | TBD (open slot) | | |
-
-**Break** (17:25–17:35)
+| 17:25–17:35 | Break (10 minutes) | | |
 
 ### Session 2: Public-sector, library, geo & cross-domain schemas
+Total Session 2 time: 17:35 to 18:50 (75 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 17:35–17:50 | Making the “Common” in CDEs More Common Using LinkML and Microschemas | Anne Thessen | University of North Carolina Chapel Hill |
@@ -50,6 +50,7 @@ In Sessions 3 to 5, each presentation is 10 minutes. Each session ends with a sh
 | 15:00–15:10 | Welcome + Day 1 highlights | Nico Matentzoglu | Semanticly |
 
 ### Session 3: Tools, generators & workflows I
+Total Session 3 time: 15:10 to 16:20 (70 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 15:10–15:20 | Term Harvester | Damion Dooley | Simon Fraser University |
@@ -59,23 +60,23 @@ In Sessions 3 to 5, each presentation is 10 minutes. Each session ends with a sh
 | 15:50–16:00 | Native semantic storage: TypeDB as a LinkML store | Alex Walker | TypeDB |
 | 16:00–16:10 | LinkML and Apache Ossie (incubating): two approaches to semantic modeling | Piotr Sowiński | NeverBlink |
 | 16:10–16:20 | Session Q&A | | |
-
-**Break** (16:20–16:30)
+| 16:20–16:30 | Break (10 minutes) | | |
 
 ### Session 4: LinkML × AI / agentic
+Total Session 4 time: 16:30 to 17:40 (70 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 16:30–16:40 | litschema: Turn a folder of PDFs into a dataset you can defend | Cory Levinson | UC Davis |
 | 16:40–16:50 | Machine-Actionable Datasheets for Datasets: Schema-Guided Agentic Extraction from Project Documentation | Marcin Joachimiak | Lawrence Berkeley National Laboratory |
 | 16:50–17:00 | Knowledge Trust Ladder | Noel McLoughlin | Open Engineering / TD Bank |
-| 17:00–17:10 | Fixing category errors in single cell annotation | Sid Cox | Broad |
+| 17:00–17:10 | Fixing category errors in single cell annotation | Sid Cox | Broad Institute |
 | 17:10–17:20 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
 | 17:20–17:30 | A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources | Diana McSpadden | Thomas Jefferson National Accelerator Facility |
 | 17:30–17:40 | Session Q&A | | |
-
-**Break** (17:40–17:50)
+| 17:40–17:50 | Break (10 minutes) | | |
 
 ### Session 5: Tools, generators & workflows II
+Total Session 5 time: 17:50 to 18:50 (60 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 17:50–18:00 | DataHarmonizer 2.0 | Damion Dooley | Simon Fraser University |
@@ -88,4 +89,4 @@ In Sessions 3 to 5, each presentation is 10 minutes. Each session ends with a sh
 ### Wrap Up
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
-| 18:50–19:00 | Wrap-up & next step: recordings, abstracts archive | Nico Matentzoglu | Semanticly |
+| 18:50–19:00 | Wrap-up & next steps | Nico Matentzoglu | Semanticly |
