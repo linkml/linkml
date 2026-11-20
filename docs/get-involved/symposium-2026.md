@@ -12,73 +12,15 @@ Zoom. The Zoom link for the Symposium will be shared after you register.
 ## Register for the Symposium
 **While participation is free, registration via [this form](https://forms.gle/V6CxJkqx3FdqPjqn8) is required to join.** <br> Once you submit the registration form, you will receive an .ics calendar link via email to block the time on your calendar.
 
-## Schedule
+## Schedule and Abstracts
+See the full program for both days and the abstract for each presentation.
 
-### Wednesday, December 2, 2026
+```{toctree}
+:maxdepth: 1
 
-#### Welcome & Keynote
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-| 15:00 |  | |
-
-#### Session 1: Schemas & domain modelling
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-|  |  | |
-
-#### Session 2: Public-sector, library, geo & cross-domain schemas
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-|  |  | |
-
-### Thursday, December 3, 2026
-
-#### Session 3: Tools, generators & workflows I
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-| 15:00 | Welcome | |
-
-#### Session 4: LinkML × AI / agentic
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-|  |  | |
-
-#### Session 5: Tools, generators & workflows II
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-|  |  | |
-
-#### Wrap Up
-| Time (UTC) | Presentation Title | Presenter | Affiliation |
-| -- | -- | -- | -- |
-|  |  | |
-
-## Abstracts
-
-### Session 1: Schemas & domain modelling
-| Presenter | Affiliation | Presentation Title | Abstract |
-| -- | -- | -- | -- |
-|  |  | |
-
-### Session 2: Public-sector, library, geo & cross-domain schemas
-| Presenter | Affiliation | Presentation Title | Abstract |
-| -- | -- | -- | -- |
-|  |  | |
-
-### Session 3: Tools, generators & workflows I
-| Presenter | Affiliation | Presentation Title | Abstract |
-| -- | -- | -- | -- |
-|  |  | |
-
-### Session 4: LinkML × AI / agentic
-| Presenter | Affiliation | Presentation Title | Abstract |
-| -- | -- | -- | -- |
-|  |  | |
-
-### Session 5: Tools, generators & workflows II
-| Presenter | Affiliation | Presentation Title | Abstract |
-| -- | -- | -- | -- |
-|  |  | |
+symposium-2026-schedule
+symposium-2026-abstracts
+```
 
 ## Questions and Support
 Reach out to Sarah Gehrke (sarah@tislab.org) or Nico Matentzoglu (nicolas.matentzoglu@gmail.com) via email or Slack.
