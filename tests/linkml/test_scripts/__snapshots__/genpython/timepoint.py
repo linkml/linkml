@@ -60,6 +60,8 @@ version = None
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = CurieNamespace('', 'http://example.org/tests/timepoint/')
 

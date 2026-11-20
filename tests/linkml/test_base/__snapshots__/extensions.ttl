@@ -10,21 +10,21 @@ linkml:AnyValue a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
-	linkml:slot_usage _:c14n0 .
+	linkml:slot_usage _:c14n1 .
 linkml:Extensible a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
 	linkml:description "mixin for classes that support extension" ;
 	linkml:mixin true ;
-	linkml:slot_usage _:c14n4 ;
+	linkml:slot_usage _:c14n6 ;
 	linkml:slots linkml:extensions .
 linkml:Extension a linkml:ClassDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
 	linkml:description "a tag/value pair used to add non-model information to an entry" ;
-	linkml:slot_usage _:c14n3 ;
+	linkml:slot_usage _:c14n4 ;
 	linkml:slots linkml:extension_tag , linkml:extension_value , linkml:extensions .
 linkml:boolean a linkml:TypeDefinition ;
 	skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
@@ -109,7 +109,7 @@ linkml:extension_tag a linkml:SlotDefinition ;
 linkml:extension_value a linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
 	skos:prefLabel "value" ;
-	linkml:annotations _:c14n1 ;
+	linkml:annotations _:c14n2 ;
 	linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
 	linkml:description "the actual annotation" ;
 	linkml:domain linkml:Extension ;
@@ -124,7 +124,7 @@ linkml:extensions dcterms:license "https://creativecommons.org/publicdomain/zero
 	pav:version "2.0.0" ;
 	a linkml:SchemaDefinition , linkml:SlotDefinition ;
 	skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-	sh:declare _:c14n2 ;
+	sh:declare _:c14n0 , _:c14n3 , _:c14n5 , _:c14n7 ;
 	linkml:classes linkml:AnyValue , linkml:Extensible , linkml:Extension ;
 	linkml:default_prefix "linkml" ;
 	linkml:default_range linkml:string ;
@@ -263,8 +263,14 @@ linkml:uriorcurie a linkml:TypeDefinition ;
 	linkml:imported_from "linkml:types" ;
 	linkml:repr "str" ;
 	linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
-_:c14n1 a linkml:Annotation ;
+_:c14n0 sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+	sh:prefix "xsd" .
+_:c14n2 a linkml:Annotation ;
 	skos:example true ;
 	linkml:tag "simple_dict_value"^^xsd:anyURI .
-_:c14n2 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+_:c14n3 sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
 	sh:prefix "linkml" .
+_:c14n5 sh:namespace "http://www.w3.org/ns/shex#"^^xsd:anyURI ;
+	sh:prefix "shex" .
+_:c14n7 sh:namespace "http://schema.org/"^^xsd:anyURI ;
+	sh:prefix "schema" .

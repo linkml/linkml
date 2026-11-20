@@ -95,6 +95,18 @@
     {
       "prefix_prefix": "rdf",
       "prefix_reference": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    },
+    {
+      "prefix_prefix": "xsd",
+      "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix_prefix": "shex",
+      "prefix_reference": "http://www.w3.org/ns/shex#"
+    },
+    {
+      "prefix_prefix": "IAO",
+      "prefix_reference": "http://purl.obolibrary.org/obo/IAO_"
     }
   ],
   "emit_prefixes": [
@@ -8935,6 +8947,7 @@
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "schema": "http://schema.org/",
       "sh": "http://www.w3.org/ns/shacl#",
+      "shex": "http://www.w3.org/ns/shex#",
       "skos": "http://www.w3.org/2004/02/skos/core#",
       "skosxl": "http://www.w3.org/2008/05/skos-xl#",
       "swrl": "http://www.w3.org/2003/11/swrl#",

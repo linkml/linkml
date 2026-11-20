@@ -23,6 +23,7 @@ from linkml.generators.common.annotations import declared_annotation
 from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
+from linkml.utils.schema_prefix_merge import materialize_prefixes
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -389,6 +390,10 @@ class OwlSchemaGenerator(Generator):
         self.graph = graph
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
+        # Merge prefixes contributed by imported sub-schemas onto the root schema
+        # so that imported prefix bindings (e.g., used in enum_uri / meaning slots)
+        # are emitted in the generated OWL.
+        materialize_prefixes(sv)
         for pfx in schema.prefixes.values():
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
         graph.add((base, RDF.type, OWL.Ontology))
