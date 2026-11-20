@@ -45,7 +45,7 @@ class YAMLGenerator(Generator):
 )
 @click.option(
     "--validateonly/--generate",
-    "-V/-g",
+    " / -g",
     default=False,
     show_default=True,
     help="Just validate / generate output (default: generate)",
