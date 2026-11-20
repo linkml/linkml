@@ -4,6 +4,8 @@ All times are in UTC.
 
 ## Wednesday, December 2, 2026
 
+In Sessions 1 and 2, each presentation is 12 minutes, followed by 3 minutes for questions (15 minutes in total).
+
 ### Welcome & Keynote
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
@@ -39,6 +41,8 @@ All times are in UTC.
 | 18:50–19:00 | Wrap-up day 1 & reminders about day 2 | Nico Matentzoglu | Semanticly |
 
 ## Thursday, December 3, 2026
+
+In Sessions 3 to 5, each presentation is 10 minutes. Each session ends with a shared Q&A (question and answer) for all of that session's presenters.
 
 ### Welcome
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
