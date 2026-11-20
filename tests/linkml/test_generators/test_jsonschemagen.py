@@ -2079,3 +2079,77 @@ classes:
     generated = json.loads(JsonSchemaGenerator(str(schema_file)).serialize())
 
     assert generated["$defs"]["MyClass"]["properties"]["value"]["type"] == ["string", "null"]
+
+
+DRAFT_SCHEMA = """
+id: https://example.org/draft-test
+name: draft-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      items:
+        range: Item
+        multivalued: true
+        inlined_as_list: true
+  Item:
+    attributes:
+      id:
+        identifier: true
+      kind:
+        range: ItemKind
+enums:
+  ItemKind:
+    permissible_values:
+      small:
+      large:
+"""
+
+
+@pytest.mark.parametrize(
+    "draft,validator_class",
+    [
+        (None, jsonschema.Draft201909Validator),
+        ("2019-09", jsonschema.Draft201909Validator),
+        ("2020-12", jsonschema.Draft202012Validator),
+    ],
+)
+def test_draft_sets_schema_dialect(tmp_path, draft, validator_class):
+    """``draft`` changes ``$schema``, and the declared dialect validates the same instances."""
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    kwargs = {} if draft is None else {"draft": draft}
+    generated = json.loads(JsonSchemaGenerator(str(schema_file), **kwargs).serialize())
+
+    assert jsonschema.validators.validator_for(generated) is validator_class
+    validator_class.check_schema(generated)
+    validator = validator_class(generated)
+    assert validator.is_valid({"items": [{"id": "i1", "kind": "small"}]})
+    assert not validator.is_valid({"items": [{"id": "i1", "kind": "medium"}]})
+    assert not validator.is_valid({"items": [{"kind": "small"}]})
+
+
+def test_draft_output_differs_only_in_schema_keyword(tmp_path):
+    """The two dialects produce the same document apart from ``$schema``."""
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    by_draft = {
+        draft: json.loads(JsonSchemaGenerator(str(schema_file), draft=draft).serialize())
+        for draft in ("2019-09", "2020-12")
+    }
+
+    assert by_draft["2020-12"].pop("$schema") == "https://json-schema.org/draft/2020-12/schema"
+    assert by_draft["2019-09"].pop("$schema") == "https://json-schema.org/draft/2019-09/schema"
+    assert by_draft["2019-09"] == by_draft["2020-12"]
+
+
+def test_draft_unknown_value_raises(tmp_path):
+    schema_file = tmp_path / "draft_test.yaml"
+    schema_file.write_text(DRAFT_SCHEMA)
+    with pytest.raises(ValueError, match="Unknown JSON Schema draft"):
+        JsonSchemaGenerator(str(schema_file), draft="draft-07")
