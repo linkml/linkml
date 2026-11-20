@@ -82,7 +82,7 @@ In Sessions 3 to 5, each presentation is 10 minutes. Each session ends with a sh
 | 18:00–18:10 | LinkML is Relatable | James Overton | Knocean Inc. |
 | 18:10–18:20 | ohi LinkML: a modern tool stack for LinkML | Piotr Sowiński | NeverBlink |
 | 18:20–18:30 | From Spec to Study: LinkML-Map in Production with dm-bip | Corey Cox | University of North Carolina Chapel Hill |
-| 18:30–18:40 | From Pydantic to LinkML without changing the schema: migrating the DANDI archive metadata models | Yaroslav Halchenko | [Center for Open Neuroscience](https://centerforopenneuroscience.org/) |
+| 18:30–18:40 | From Pydantic to LinkML without changing the schema: migrating the DANDI archive metadata models | Yaroslav Halchenko | Center for Open Neuroscience |
 | 18:40–18:50 | Session Q&A | | |
 
 ### Wrap Up
