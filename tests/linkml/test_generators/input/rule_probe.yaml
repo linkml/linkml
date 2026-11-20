@@ -1,0 +1,49 @@
+id: https://example.org/rule-probe
+name: rule_probe
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/rule-probe/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  Flag:
+    range: boolean
+    slot_uri: ex:Flag
+  flagValue:
+    range: decimal
+    slot_uri: ex:flagValue
+  slotA:
+    range: string
+    slot_uri: ex:slotA
+  slotB:
+    range: string
+    slot_uri: ex:slotB
+classes:
+  NumericRuleClass:
+    class_uri: ex:NumericRuleClass
+    slots:
+      - Flag
+      - flagValue
+    rules:
+      - description: Numeric range validation rule.
+        preconditions:
+          slot_conditions:
+            flagValue:
+              value_presence: PRESENT
+  DisjunctionRuleClass:
+    class_uri: ex:DisjunctionRuleClass
+    slots:
+      - slotA
+      - slotB
+    rules:
+      - description: Disjunction of conditions rule.
+        preconditions:
+          slot_conditions:
+            slotA:
+              equals_string: "foo"
+        postconditions:
+          slot_conditions:
+            slotB:
+              equals_string: "bar"
