@@ -1,0 +1,28 @@
+id: urn:rank/slot2slot
+name: slot2slot
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+slots:
+  first_slot:
+    range: string
+    required: true
+    rank: 1
+  second_base_slot:
+    rank: 2
+    abstract: true
+  second_slot:
+    is_a: second_base_slot
+    range: string
+    required: true
+
+classes:
+  SomeClass:
+    tree_root: true
+    slots:
+      - first_slot
+      - second_slot
