@@ -128,7 +128,7 @@ def _normalize_and_validate(
         click.echo(f"[FIXED] [{data_path}] {r.type}: {r.instantiates} ({r.info or ''})", err=True)
 
     for r in report.warnings():
-        severity_counter[Severity.WARNING] += 1
+        severity_counter[Severity.WARN] += 1
         click.echo(f"[WARN] [{data_path}] {r.type}: {r.instantiates}", err=True)
 
     for r in report.errors():
