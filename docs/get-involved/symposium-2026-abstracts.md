@@ -2,6 +2,13 @@
 
 Abstracts are listed in the same order as the [schedule](symposium-2026-schedule.md).
 
+```{contents} Jump to an Abstract
+:local:
+:depth: 2
+:backlinks: none
+:class: this-will-duplicate-information-and-it-is-still-useful-here
+```
+
 ## Session 1: Schemas & domain modelling
 
 ### Running LinkML in Production at the Human Tumor Atlas Network
