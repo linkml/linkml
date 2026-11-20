@@ -79,3 +79,30 @@ def test_preserve_names():
 
     # Test generate_class_diagrams method for coverage
     gen_preserve.generate_class_diagrams()
+
+
+def test_escape_names_mermaid_cannot_parse(tmp_path):
+    """Class names that are not plain identifiers, such as kebab-case ones, are backtick-escaped."""
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_kebab_case",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+        default_range="string",
+        classes={
+            "character-class": ClassDefinition(name="character-class", attributes={"name": {}}),
+            "class-reference": ClassDefinition(
+                name="class-reference", attributes={"target": {"range": "character-class"}}
+            ),
+        },
+    )
+
+    MermaidClassDiagramGenerator(schema=schema, directory=tmp_path).generate_class_diagrams()
+    diagram = (tmp_path / "class-reference.md").read_text()
+
+    assert "class `Class-reference`" in diagram
+    assert 'click `Class-reference` href "../Class-reference"' in diagram
+    assert "`Class-reference` : target" in diagram
+    assert '`Class-reference` --> "0..1" `Character-class` : target' in diagram
+    assert 'click `Character-class` href "../Character-class"' in diagram
+    assert "class Class-reference" not in diagram
