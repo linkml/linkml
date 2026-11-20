@@ -31,7 +31,7 @@ All times are in UTC.
 | 17:50–18:05 | LinkML Common Data Element Microschemas to Support Reuse of Myositis Clinical Research Data | Matthew Diller | National Library of Medicine |
 | 18:05–18:20 | Generating the Human Reference Atlas KG | Bruce W. Herr II | Indiana University |
 | 18:20–18:35 | Heritage/Data Custodian | Simon Kemper | National Archives of the Netherlands, TextPast |
-| 18:35–18:50 | SOMA: An Open Framework for Linking Outcomes, Measurements, Assays, and Evidence Across Biological Scales | Sierra Moxon on behalf of NIEHS Data Standards | LBNL |
+| 18:35–18:50 | SOMA: An Open Framework for Linking Outcomes, Measurements, Assays, and Evidence Across Biological Scales | Sierra Moxon | Lawrence Berkeley National Laboratory |
 
 ### Wrap Up
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
@@ -51,7 +51,7 @@ All times are in UTC.
 | 15:10–15:20 | Term Harvester | Damion Dooley | Simon Fraser University |
 | 15:20–15:30 | LinkML Explorer: A highly interactive visualization tool for understanding schemas | Sigfried Gold | |
 | 15:30–15:40 | Standardizing Prefixes, CURIEs, and URIs in LinkML Schemas with the Bioregistry/Semantic Farm | Charles Tapley Hoyt | RWTH Aachen University |
-| 15:40–15:50 | Tesserops: computable collaboration infrastructure | Julie McMurry | UNC |
+| 15:40–15:50 | Tesserops: computable collaboration infrastructure | Julie McMurry | University of North Carolina Chapel Hill |
 | 15:50–16:00 | Native semantic storage: TypeDB as a LinkML store | Alex Walker | TypeDB |
 | 16:00–16:10 | LinkML and Apache Ossie (incubating): two approaches to semantic modeling | Piotr Sowiński | NeverBlink |
 | 16:10–16:20 | Session Q&A | | |
@@ -62,8 +62,8 @@ All times are in UTC.
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |
 | 16:30–16:40 | litschema: Turn a folder of PDFs into a dataset you can defend | Cory Levinson | UC Davis |
-| 16:40–16:50 | Machine-Actionable Datasheets for Datasets: Schema-Guided Agentic Extraction from Project Documentation | Marcin Joachimiak | LBNL |
-| 16:50–17:00 | Knowledge Trust Ladder | Noel McLoughin | Open Engineering / TD Bank |
+| 16:40–16:50 | Machine-Actionable Datasheets for Datasets: Schema-Guided Agentic Extraction from Project Documentation | Marcin Joachimiak | Lawrence Berkeley National Laboratory |
+| 16:50–17:00 | Knowledge Trust Ladder | Noel McLoughlin | Open Engineering / TD Bank |
 | 17:00–17:10 | Fixing category errors in single cell annotation | Sid Cox | Broad |
 | 17:10–17:20 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
 | 17:20–17:30 | A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources | Diana McSpadden | Thomas Jefferson National Accelerator Facility |
@@ -78,7 +78,7 @@ All times are in UTC.
 | 18:00–18:10 | LinkML is Relatable | James Overton | Knocean Inc. |
 | 18:10–18:20 | ohi LinkML: a modern tool stack for LinkML | Piotr Sowiński | NeverBlink |
 | 18:20–18:30 | From Spec to Study: LinkML-Map in Production with dm-bip | Corey Cox | University of North Carolina Chapel Hill |
-| 18:30–18:40 | From Pydantic to LinkML without changing the schema: migrating the DANDI archive metadata models | Yaroslav Halchenko | centerforopenneuroscience.org @ PBS @ dartmouth.edu |
+| 18:30–18:40 | From Pydantic to LinkML without changing the schema: migrating the DANDI archive metadata models | Yaroslav Halchenko | [Center for Open Neuroscience](https://centerforopenneuroscience.org/) |
 | 18:40–18:50 | Session Q&A | | |
 
 ### Wrap Up
