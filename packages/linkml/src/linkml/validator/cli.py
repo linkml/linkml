@@ -22,7 +22,7 @@ from linkml_runtime.loaders import yaml_loader
 class Config(BaseModel):
     schema_path: str | Path | None = Field(alias="schema", default=None)
     target_class: str | None = None
-    data_sources: Iterable[str | dict[str, dict[str, str]]] = []
+    data_sources: list[str | dict[str, dict[str, str]]] = []
     plugins: dict[str, dict[str, Any] | None] | None = {"JsonschemaValidationPlugin": {"closed": True}}
 
 
