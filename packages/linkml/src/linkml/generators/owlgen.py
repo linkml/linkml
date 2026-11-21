@@ -331,6 +331,42 @@ class OwlSchemaGenerator(Generator):
             return sv.induced_slot(slot.name, cls.name)
         return sv.get_slot(slot.name, attributes=True) or slot
 
+    def _with_slot_uri(self, slot: SlotDefinition, owner: ClassDefinition | None) -> SlotDefinition:
+        """Return *slot* with the ``slot_uri`` of the slot it names in *owner*.
+
+        A ``slot_usage`` or ``slot_conditions`` entry names a slot and states only what it adds, so
+        it carries no ``slot_uri``. Only the ``slot_uri`` is taken from the slot it names: the IRI
+        derived from a slot's name depends on the schema that defines the slot, which the name
+        alone already resolves to. With native URIs a ``slot_uri`` is not used at all, so the
+        entry is returned as it is. A name may be written in its underscored form, as
+        ``SchemaView.induced_slot`` accepts it.
+        """
+        if slot.slot_uri or self.use_native_uris:
+            return slot
+        sv = self.schemaview
+        named_slot = slot
+        if slot.name not in sv.all_slots():
+            named_slot = sv.slot_name_mappings().get(slot.name, slot)
+        slot_uri = self._resolved_slot(named_slot, owner).slot_uri
+        if not slot_uri:
+            return slot
+        named = copy(slot)
+        named.slot_uri = slot_uri
+        return named
+
+    def _range_class(
+        self,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        main_slot: SlotDefinition,
+        owner: "ClassDefinition | AnonymousClassExpression | None",
+    ) -> ClassDefinition | None:
+        """Return the class that the slot expression *slot* of *main_slot* ranges over, if it is one.
+
+        The range is the expression's own, else that of *main_slot* in *owner*.
+        """
+        range_name = slot.range or main_slot.range or self._resolved_slot(main_slot, owner).range
+        return self.schemaview.get_class(range_name) if range_name else None
+
     def __post_init__(self) -> None:
         # Resolver must be assigned before ``super().__post_init__()`` so that
         # any hook the parent invokes during initialisation can safely call
@@ -646,7 +682,11 @@ class OwlSchemaGenerator(Generator):
 
         def condition_to_bnode(expr: AnonymousClassExpression) -> OWL_EXPRESSION | None:
             # inner function: translate a LinkML class expression to an OWL class expression.
-            ixn_listnode = self.transform_class_expression(expr, quantifier_predicate=OWL.someValuesFrom)
+            # The axiom of an expression with is_a is about the instances of that class.
+            named = sv.get_class(expr.is_a) if expr is not None and expr.is_a else None
+            ixn_listnode = self.transform_class_expression(
+                expr, quantifier_predicate=OWL.someValuesFrom, owner=named or cls
+            )
             if not ixn_listnode:
                 return None
             if expr.is_a:
@@ -757,6 +797,7 @@ class OwlSchemaGenerator(Generator):
         self,
         cls: ClassDefinition | AnonymousClassExpression | None,
         quantifier_predicate: URIRef = OWL.allValuesFrom,
+        owner: ClassDefinition | None = None,
     ) -> OWL_EXPRESSION | None:
         """
         Transform a LinkML class expression into an OWL expression.
@@ -767,21 +808,26 @@ class OwlSchemaGenerator(Generator):
 
         :param cls: LinkML class expression (anonymous if called recursively)
         :param quantifier_predicate:
+        :param owner: the class whose slots the conditions of an anonymous expression name: the class
+            that states the expression, the class a rule's expression names with ``is_a`` or, for a
+            range expression, the class the slot ranges over, if it is one. A class is its own owner.
         :return: blank node representing the OWL expression
         """
         if cls is None:
             cls = AnonymousClassExpression()
+        if isinstance(cls, ClassDefinition):
+            owner = cls
         graph = self.graph
         sv = self.schemaview
         own_slots = self.get_own_slots(cls)
         owl_exprs: list[OWL_EXPRESSION] = []
         if cls.any_of:
-            any_of_expr = self._union_of([self.transform_class_expression(x) for x in cls.any_of])
+            any_of_expr = self._union_of([self.transform_class_expression(x, owner=owner) for x in cls.any_of])
             if any_of_expr:
                 owl_exprs.append(any_of_expr)
         if cls.exactly_one_of:
             sub_exprs: list[OWL_EXPRESSION] = self._present(
-                self.transform_class_expression(x) for x in cls.exactly_one_of
+                self.transform_class_expression(x, owner=owner) for x in cls.exactly_one_of
             )
             if isinstance(cls, ClassDefinition):
                 cls_uri = self._class_uri(cls.name)
@@ -791,11 +837,13 @@ class OwlSchemaGenerator(Generator):
             else:
                 sub_sub_exprs: list[OWL_EXPRESSION] = []
                 for i, x in enumerate(cls.exactly_one_of):
-                    operand_expr = self.transform_class_expression(x)
+                    operand_expr = self.transform_class_expression(x, owner=owner)
                     if not operand_expr:
                         continue
                     rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
-                    neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
+                    neg_expr = self._complement_of_union_of(
+                        [self.transform_class_expression(nx, owner=owner) for nx in rest]
+                    )
                     pos_expr = self._intersection_of([operand_expr, neg_expr])
                     if pos_expr:
                         sub_sub_exprs.append(pos_expr)
@@ -804,15 +852,17 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(union_expr)
                 # owl_exprs.extend(sub_exprs)
         if cls.all_of:
-            all_of_expr = self._intersection_of([self.transform_class_expression(x) for x in cls.all_of])
+            all_of_expr = self._intersection_of([self.transform_class_expression(x, owner=owner) for x in cls.all_of])
             if all_of_expr:
                 owl_exprs.append(all_of_expr)
         if cls.none_of:
-            none_of_expr = self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of])
+            none_of_expr = self._complement_of_union_of(
+                [self.transform_class_expression(x, owner=owner) for x in cls.none_of]
+            )
             if none_of_expr:
                 owl_exprs.append(none_of_expr)
         for slot in own_slots:
-            if self.is_annotation_property(self._resolved_slot(slot, cls)):
+            if self.is_annotation_property(self._resolved_slot(slot, owner if owner is not None else cls)):
                 if isinstance(cls, AnonymousClassExpression):
                     raise ValueError(f"Annotation property {slot.name!r} cannot be a condition of a class expression")
                 # An annotation property has no logical meaning (OWL 2 §10.1), so no restriction.
@@ -821,7 +871,7 @@ class OwlSchemaGenerator(Generator):
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
             else:
                 owltypes = self.slot_node_owltypes(slot, owning_class=cls)
-            x = self.transform_class_slot_expression(cls, slot, slot, owltypes)
+            x = self.transform_class_slot_expression(cls, slot, slot, owltypes, owner=owner)
             if not x:
                 range = sv.schema.default_range
                 if range and OWL.Thing not in owltypes:
@@ -836,7 +886,7 @@ class OwlSchemaGenerator(Generator):
                         # x = self._class_uri(range)
                 else:
                     x = OWL.Thing
-            slot_uri = self._prop_uri(slot)
+            slot_uri = self._prop_uri(self._with_slot_uri(slot, owner))
             if slot.name in sv.all_slots():
                 top_slot = sv.get_slot(slot.name)
             else:
@@ -901,7 +951,7 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
 
             if slot.has_member:
-                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
+                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot, owner=owner)
                 if has_member_expr:
                     owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
@@ -947,6 +997,7 @@ class OwlSchemaGenerator(Generator):
         slot: SlotDefinition | AnonymousSlotExpression,
         main_slot: SlotDefinition | None = None,
         owl_types: set[OWL_TYPE] | None = None,
+        owner: ClassDefinition | None = None,
     ) -> OWL_EXPRESSION | None:
         """
         Take a ClassExpression and SlotExpression combination and transform to a node.
@@ -955,6 +1006,7 @@ class OwlSchemaGenerator(Generator):
         :param slot:
         :param main_slot:
         :param owl_types:
+        :param owner: the class whose slot *main_slot* is, see :meth:`transform_class_expression`
         :return:
         """
         sv = self.schemaview
@@ -967,12 +1019,16 @@ class OwlSchemaGenerator(Generator):
 
         if slot.range_expression:
             if isinstance(slot.range_expression, AnonymousClassExpression):
-                range_expr = self.transform_class_expression(slot.range_expression)
+                range_expr = self.transform_class_expression(
+                    slot.range_expression, owner=self._range_class(slot, main_slot, owner or cls)
+                )
                 if range_expr:
                     owl_exprs.append(range_expr)
 
         if slot.all_members:
-            all_members_expr = self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types)
+            all_members_expr = self.transform_class_slot_expression(
+                cls, slot.all_members, main_slot, owl_types, owner=owner
+            )
             if all_members_expr:
                 owl_exprs.append(all_members_expr)
 
@@ -982,7 +1038,7 @@ class OwlSchemaGenerator(Generator):
             if not slot_definitions:
                 return None
             rdflib_nodes: list[OWL_EXPRESSION] = self._present(
-                self.transform_class_slot_expression(cls, slot_expression, main_slot, owl_types)
+                self.transform_class_slot_expression(cls, slot_expression, main_slot, owl_types, owner=owner)
                 for slot_expression in slot_definitions
             )
             return rdflib_nodes or None
@@ -996,12 +1052,12 @@ class OwlSchemaGenerator(Generator):
         if slot.exactly_one_of:
             disj_exprs: list[OWL_EXPRESSION] = []
             for i, operand in enumerate(slot.exactly_one_of):
-                operand_expr = self.transform_class_slot_expression(cls, operand, main_slot, owl_types)
+                operand_expr = self.transform_class_slot_expression(cls, operand, main_slot, owl_types, owner=owner)
                 if not operand_expr:
                     continue
                 rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
                 neg_expr = self._complement_of_union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types, owner=owner) for x in rest],
                     owl_types=owl_types,
                 )
                 pos_expr = self._intersection_of(
