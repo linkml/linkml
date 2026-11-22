@@ -239,7 +239,7 @@ class JSONLDGenerator(Generator):
             if base_prefix:
                 self.schema["@context"].append({"@base": base_prefix})
         # json_obj["@id"] = self.schema.id
-        out = str(as_json(self.schema, indent="  ")) + "\n"
+        out = str(as_json(self.schema, indent="  ", ensure_ascii=False)) + "\n"
         self.schema = self.original_schema
         return out
 
