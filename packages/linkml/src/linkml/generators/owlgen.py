@@ -2,7 +2,7 @@
 
 import logging
 import os
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Iterable, Sequence
 from copy import copy
 from dataclasses import dataclass, field
@@ -172,6 +172,9 @@ class OwlSchemaGenerator(Generator):
 
     node_owltypes: defaultdict[OWL_EXPRESSION, set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
+
+    _attribute_iri_counts: Counter[URIRef] | None = field(default=None, init=False, repr=False, compare=False)
+    """Number of class attributes expanding to each IRI; built on first use by each ``as_graph`` run"""
 
     simplify: bool = True
     """Reduce complex expressions to simpler forms"""
@@ -387,6 +390,7 @@ class OwlSchemaGenerator(Generator):
         # initialize the rdflib Graph where all axiom triples will be added
         graph = Graph(identifier=base)
         self.graph = graph
+        self._attribute_iri_counts = None
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in schema.prefixes.values():
@@ -1161,13 +1165,13 @@ class OwlSchemaGenerator(Generator):
             )
 
         if attribute:
-            n = 0
-            for c in self.schemaview.all_classes().values():
-                for a in c.attributes.values():
-                    att_uri = self.schemaview.get_uri(a, native=False, expand=True)
-                    if slot_uri == URIRef(att_uri):
-                        n += 1
-            if n > 1:
+            if self._attribute_iri_counts is None:
+                self._attribute_iri_counts = Counter(
+                    URIRef(self.schemaview.get_uri(a, native=False, expand=True))
+                    for c in self.schemaview.all_classes().values()
+                    for a in c.attributes.values()
+                )
+            if self._attribute_iri_counts[slot_uri] > 1:
                 logger.warning(f"Ambiguous attribute: {slot.name} {slot_uri}")
                 return
 

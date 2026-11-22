@@ -289,6 +289,61 @@ def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_
     assert len(list(owl_graph.triples((this_a, None, None)))) == 1
 
 
+def _attribute_schema(n_classes: int, shared_attribute: str | None = None) -> SchemaBuilder:
+    """Return a schema of ``n_classes`` classes, each with a unique and, optionally, a shared attribute.
+
+    :param n_classes: number of classes to create
+    :param shared_attribute: name of an attribute added to every class, or ``None`` for none
+    """
+    sb = SchemaBuilder()
+    for i in range(n_classes):
+        attributes = [SlotDefinition(f"unique_{i}")]
+        if shared_attribute:
+            attributes.append(SlotDefinition(shared_attribute))
+        sb.add_class(f"C{i}", slots=attributes, use_attributes=True)
+    sb.add_defaults()
+    return sb
+
+
+def test_ambiguous_attribute_is_warned_about_and_left_undescribed(caplog: pytest.LogCaptureFixture) -> None:
+    """An attribute whose IRI is shared by several classes is warned about and gets no metadata; others do."""
+    sb = _attribute_schema(3, shared_attribute="shared")
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    ambiguous = [r.getMessage() for r in caplog.records if r.getMessage().startswith("Ambiguous attribute")]
+    assert ambiguous == [f"Ambiguous attribute: shared {EX.shared}"] * 3
+    assert (EX.shared, RDF.type, None) in g
+    assert (EX.shared, RDFS.label, None) not in g
+    for i in range(3):
+        assert (EX[f"unique_{i}"], RDFS.label, Literal(f"unique_{i}")) in g
+
+
+def test_attribute_ambiguity_check_scales_linearly(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deciding whether an attribute is ambiguous must not re-expand every attribute for each attribute (#4263).
+
+    The number of URI expansions is counted rather than timed, so the check is deterministic: doubling
+    the number of classes roughly doubles the count when linear, and roughly quadruples it when quadratic.
+    """
+    from linkml_runtime import SchemaView
+
+    calls = []
+    original = SchemaView.get_uri
+
+    def counting_get_uri(self, *args, **kwargs):
+        calls.append(1)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(SchemaView, "get_uri", counting_get_uri)
+
+    def expansions(n_classes: int) -> int:
+        calls.clear()
+        _owl_graph(_attribute_schema(n_classes, shared_attribute="shared"))
+        return len(calls)
+
+    small, large = expansions(40), expansions(80)
+    assert large < 3 * small, f"{small} URI expansions for 40 classes but {large} for 80: not linear"
+
+
 @pytest.mark.parametrize(
     "description,metadata_profiles,use_native_uris,metaclasses,assert_equivalent_classes,expected",
     [
