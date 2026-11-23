@@ -41,6 +41,10 @@ tbl_{{classname(c.name)}} = Table('{{c.name}}', metadata,
 
 {% for c in classes if not is_join_table(c) %}
 mapper_registry.map_imperatively({{classname(c.name)}}, tbl_{{classname(c.name)}}, properties = {
+  {#- The Python class has the attribute from_ for a column named after a Python keyword, such as from -#}
+  {%- for s in c.attributes.values() if s.alias != s.name %}
+  '{{ s.alias }}': tbl_{{classname(c.name)}}.c['{{ s.name }}'],
+  {%- endfor %}
   ## NOTE: mapping omitted for now, see https://stackoverflow.com/questions/11746922/sqlalchemy-object-has-no-attribute-sa-adapter
   {% for mapping in backrefs[c.name] %}
   {% if mapping.uses_join_table %}

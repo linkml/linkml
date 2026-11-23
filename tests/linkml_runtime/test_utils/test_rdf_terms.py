@@ -1,9 +1,12 @@
 """Tests for the RDF term kind of values of LinkML types (``linkml_runtime.utils.rdf_terms``)."""
 
+from collections.abc import Callable
+
+import pyoxigraph
 import pytest
 from rdflib import XSD, BNode, Literal, URIRef
 
-from linkml_runtime.utils.rdf_terms import TermKind, TypeTerm, link_root, type_term, value_term
+from linkml_runtime.utils.rdf_terms import TermKind, TypeTerm, checked_iri, link_root, type_term, value_term
 from linkml_runtime.utils.schemaview import SchemaView
 
 ANYURI = str(XSD.anyURI)
@@ -200,3 +203,119 @@ def test_value_term_rejects_values_of_the_wrong_kind(sv, type_name, value, messa
     """A relative reference cannot be an RDF IRI (RDF 1.1 Concepts §3.2), nor a blank node an IRI."""
     with pytest.raises(ValueError, match=message):
         value_term(sv, type_name, value)
+
+
+def _accepted(check: Callable[[str], object], value: str) -> bool:
+    """Whether *check* accepts *value*. Each check here refuses with a ``ValueError``."""
+    try:
+        check(value)
+    except ValueError:
+        return False
+    return True
+
+
+def test_checked_iri_agrees_with_rfc_3987_on_every_code_point():
+    """pyoxigraph's IRI parser follows RFC 3987, and the query is the part of an IRI that allows the most.
+
+    The check refuses only what no part allows, so it leaves ``%``, ``[`` and ``]``. It does
+    refuse the bidirectional formatting characters, which RFC 3987 excludes in its prose (section
+    4.1) and not in its grammar.
+    """
+    differences = {
+        code_point
+        for code_point in range(0x110000)
+        if _accepted(lambda iri: checked_iri(iri, "Value"), iri := f"https://example.org/?{chr(code_point)}")
+        != _accepted(pyoxigraph.NamedNode, iri)
+    }
+    assert differences == {ord("%"), ord("["), ord("]"), 0x200E, 0x200F, *range(0x202A, 0x202F)}
+
+
+def test_checked_iri_leaves_what_some_part_of_an_iri_allows():
+    """A private-use character is valid in a query only, and ``[`` in an IPv6 host only."""
+    for iri in (f"https://example.org/{chr(0xE000)}", "https://example.org/a[1]", "https://example.org/%zz"):
+        assert checked_iri(iri, "Value") == URIRef(iri)
+
+
+def test_checked_iri_names_its_subject():
+    with pytest.raises(ValueError, match="^Identifier 'x' holds a character"):
+        checked_iri("https://example.org/a b", "Identifier 'x'")
+
+
+# The ranges of the code points that the BLANK_NODE_LABEL production of Turtle 1.1 names
+_LABEL_RANGES = [
+    (0x30, 0x39),
+    (0x41, 0x5A),
+    (0x5F, 0x5F),
+    (0x61, 0x7A),
+    (0xB7, 0xB7),
+    (0xC0, 0xD6),
+    (0xD8, 0xF6),
+    (0xF8, 0x2FF),
+    (0x300, 0x36F),
+    (0x370, 0x37D),
+    (0x37F, 0x1FFF),
+    (0x200C, 0x200D),
+    (0x203F, 0x2040),
+    (0x2070, 0x218F),
+    (0x2C00, 0x2FEF),
+    (0x3001, 0xD7FF),
+    (0xF900, 0xFDCF),
+    (0xFDF0, 0xFFFD),
+    (0x10000, 0xEFFFF),
+]
+# Each edge of those ranges, the punctuation the production treats apart, and characters that the
+# regular expression class \\w holds but the production does not, such as a superscript digit.
+_LABEL_CODE_POINTS = sorted(
+    {code_point for low, high in _LABEL_RANGES for code_point in (low - 1, low, high, high + 1)}
+    | {ord("-"), ord("."), ord(":"), 0xAA, 0xB2, 0xB5, 0x2460}
+)
+
+
+def _turtle_reads_label(label: str) -> bool:
+    """Whether a Turtle parser reads *label* as the label of a blank node."""
+    try:
+        return (
+            len(list(pyoxigraph.parse(f"_:{label} <urn:p> <urn:o> .".encode(), format=pyoxigraph.RdfFormat.TURTLE)))
+            == 1
+        )
+    except (SyntaxError, UnicodeError):
+        return False
+
+
+@pytest.mark.parametrize(
+    "label_with",
+    [lambda c: f"{c}a", lambda c: f"a{c}b", lambda c: f"a{c}", lambda c: c],
+    ids=["first", "middle", "last", "alone"],
+)
+def test_blank_node_label_agrees_with_the_turtle_grammar(sv, label_with):
+    """A character's place in a label decides whether it may be there: a dot may not end one, and so on."""
+    disagreements = [
+        f"U+{code_point:04X}"
+        for code_point in _LABEL_CODE_POINTS
+        if _accepted(lambda value: value_term(sv, "BlankOnly", value), f"_:{label_with(chr(code_point))}")
+        != _turtle_reads_label(label_with(chr(code_point)))
+    ]
+    assert disagreements == []
+
+
+@pytest.mark.parametrize("value", ["a b", "line one\nline two", "ends in a newline\n", '<x> "y"'])
+def test_literals_keep_what_an_iri_cannot_hold(sv, value):
+    """Text is a literal, so rdflib escapes it and neither check applies."""
+    assert value_term(sv, "string", value) == Literal(value)
+    assert value_term(sv, "FilePath", value) == Literal(value, datatype=XSD.anyURI)
+
+
+@pytest.mark.parametrize("value", ["ex:a b", "ex:a\n", "ex:a\nb", "undeclared:a\n", "undeclared:a b"])
+@pytest.mark.parametrize("type_name", ["uri", "uriorcurie", "nodeidentifier", "ImageLink"])
+def test_value_term_checks_a_curie_after_expanding_it(sv, type_name, value):
+    """A CURIE with a declared prefix and a value of an undeclared scheme both end up as IRIs."""
+    with pytest.raises(ValueError, match="cannot hold"):
+        value_term(sv, type_name, value)
+
+
+def test_value_term_names_the_value_and_type(sv):
+    """The refusal says which value and which type, with the line break escaped."""
+    with pytest.raises(ValueError, match=r"^Value 'https://example.org/x\\n' of type 'uri' holds"):
+        value_term(sv, "uri", "https://example.org/x\n")
+    with pytest.raises(ValueError, match=r"^Value '_:a\\n' of type 'BlankOnly' has an invalid"):
+        value_term(sv, "BlankOnly", "_:a\n")

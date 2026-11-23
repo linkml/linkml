@@ -259,6 +259,9 @@ from it (`format: uri`). Through a JSON-LD context, `@id` values are resolved
 against the base IRI of the document. Give values that may be relative a text type
 such as `FilePath`.
 
+The RDF dumper also rejects an IRI or identifier that holds a character an IRI cannot,
+such as a line break, and a blank node label outside the Turtle grammar.
+
 The RDF loader reads an IRI back as a complete URI for `uri` and the types derived
 from it, and as a CURIE, where the schema declares the prefix, for `uriorcurie`,
 `objectidentifier` and `nodeidentifier`.

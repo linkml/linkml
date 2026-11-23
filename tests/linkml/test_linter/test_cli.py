@@ -373,6 +373,32 @@ classes:
         assert "Input Schema" in result.stdout
 
 
+def test_final_newline_in_id_caught(runner):
+    """A newline at the end of a schema id is caught by metamodel validation."""
+    with runner.isolated_filesystem():
+        with open(SCHEMA_FILE, "w") as f:
+            f.write(
+                """
+id: |
+  https://example.org/input_schema
+name: input_schema
+imports:
+  - linkml:types
+default_range: string
+classes:
+  InClass:
+    tree_root: true
+    attributes:
+      foo:
+        description: test
+"""
+            )
+
+        result = runner.invoke(main, [SCHEMA_FILE])
+        assert result.exit_code == 2
+        assert "is not a 'uri'" in result.stdout
+
+
 def test_relative_uri_for_id_caught(runner):
     """Relative URIs in schema id are caught by metamodel validation (#3261)."""
     with runner.isolated_filesystem():
