@@ -34,8 +34,9 @@ impl<'py> IntoPyObject<'py> for {{ name }} {
 }
 
 #[cfg(feature = "pyo3")]
-impl<'py> FromPyObject<'py> for {{ name }} {
-    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for {{ name }} {
+    type Error = PyErr;
+    fn extract(ob: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
         if let Ok(s) = ob.extract::<&str>() {
             match s {
             {% for item in items %}
@@ -66,5 +67,13 @@ impl ::pyo3_stub_gen::PyStubType for {{ name }} {
         {% else %}
         ::pyo3_stub_gen::TypeInfo::ident("typing.Any")
         {% endif %}
+    }
+}
+
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::runtime::PyRuntimeType for {{ name }} {
+    fn runtime_type_object(py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Bound<'_, pyo3::PyAny>> {
+        // Enums are exposed to Python as plain strings.
+        Ok(py.get_type::<pyo3::types::PyString>().into_any())
     }
 }

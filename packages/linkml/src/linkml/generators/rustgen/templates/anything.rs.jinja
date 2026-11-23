@@ -12,6 +12,14 @@ impl ::pyo3_stub_gen::PyStubType for Anything {
     }
 }
 
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::runtime::PyRuntimeType for Anything {
+    fn runtime_type_object(py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Bound<'_, pyo3::PyAny>> {
+        // Anything maps to `object` at runtime, like PyAny.
+        Ok(py.get_type::<pyo3::types::PyAny>().into_any())
+    }
+}
+
 
 #[cfg(feature = "serde")]
 impl Serialize for Anything {
@@ -30,8 +38,9 @@ impl<'de> Deserialize<'de> for Anything {
 }
 
 #[cfg(all(feature = "pyo3", feature = "serde"))]
-impl<'py> FromPyObject<'py> for Anything {
-    fn extract_bound(obj: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for Anything {
+    type Error = PyErr;
+    fn extract(obj: pyo3::Borrowed<'a, 'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
         use pyo3::types::{PyAny, PyDict, PyList, PyTuple};
         use serde_value::Value;
 
@@ -59,14 +68,14 @@ impl<'py> FromPyObject<'py> for Anything {
             }
 
             // Sequences (list/tuple)
-            if let Ok(list) = o.downcast::<PyList>() {
+            if let Ok(list) = o.cast::<PyList>() {
                 let mut out = Vec::with_capacity(list.len());
                 for item in list.iter() {
                     out.push(py_to_value(&item)?);
                 }
                 return Ok(Value::Seq(out));
             }
-            if let Ok(t) = o.downcast::<PyTuple>() {
+            if let Ok(t) = o.cast::<PyTuple>() {
                 let mut out = Vec::with_capacity(t.len());
                 for item in t.iter() {
                     out.push(py_to_value(&item)?);
@@ -75,7 +84,7 @@ impl<'py> FromPyObject<'py> for Anything {
             }
 
             // Mappings (dict with string-like keys)
-            if let Ok(d) = o.downcast::<PyDict>() {
+            if let Ok(d) = o.cast::<PyDict>() {
                 let mut map = std::collections::BTreeMap::<Value, Value>::new();
                 for (k, v) in d.iter() {
                     // Only accept string-like keys for deterministic ordering
@@ -95,7 +104,7 @@ impl<'py> FromPyObject<'py> for Anything {
             Ok(Value::String(s))
         }
 
-        Ok(Anything(py_to_value(obj)?))
+        Ok(Anything(py_to_value(&obj)?))
     }
 }
 
