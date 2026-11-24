@@ -278,15 +278,37 @@ class OwlSchemaGenerator(Generator):
         the reserved vocabulary (§2.4) is an annotation: the metadata of elements
         (``skos:definition``, ``skos:inScheme``, ``dcterms:title``, ...), the
         mappings, and annotations. A predicate that a restriction uses
-        (``owl:onProperty``) is a logical property and is left alone.
+        (``owl:onProperty``) is a logical property and is left alone. Without
+        merged imports, so is the IRI of an imported slot that is an object or
+        data property: the imported ontology declares it, and the import closure
+        must not declare an IRI as two kinds of property (§5.8.1).
         """
         graph = self.graph
         declared = {s for s, role in graph.subject_objects(RDF.type) if role in self._PROPERTY_DECLARATIONS}
         restricted = set(graph.objects(None, OWL.onProperty))
+        imported = set() if self.mergeimports else self._imported_logical_properties()
         for predicate in set(graph.predicates()):
-            if str(predicate).startswith(self._RESERVED_NAMESPACES) or predicate in declared | restricted:
+            if str(predicate).startswith(self._RESERVED_NAMESPACES) or predicate in declared | restricted | imported:
                 continue
             graph.add((predicate, RDF.type, OWL.AnnotationProperty))
+
+    def _imported_logical_properties(self) -> set[URIRef]:
+        """Return the IRIs of the imported slots that are object or data properties.
+
+        These are the slots and class attributes of the imported schemas, which
+        :meth:`as_graph` emits only with merged imports, under the IRI that
+        :meth:`add_slot` gives them. A slot that is not an annotation property is
+        an object or a data property (:meth:`slot_owl_type`), so the declarations
+        do not depend on whether imports are merged.
+        """
+        sv = self.schemaview
+        local_slots = sv.all_slots(imports=False, attributes=False)
+        local_classes = sv.all_classes(imports=False)
+        slots = [slot for name, slot in sv.all_slots(attributes=False).items() if name not in local_slots]
+        for name, cls in sv.all_classes().items():
+            if name not in local_classes:
+                slots.extend(cls.attributes.values())
+        return {self._prop_uri(slot) for slot in slots if not self.is_annotation_property(slot)}
 
     # The property roles a slot can declare with ``implements`` (OWL 2 §5.3 to §5.5).
     _PROPERTY_ROLES: ClassVar[frozenset[URIRef]] = frozenset(
