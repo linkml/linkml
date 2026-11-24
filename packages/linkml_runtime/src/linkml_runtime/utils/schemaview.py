@@ -2,18 +2,20 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
 import os
 import re
 import sys
 import uuid
 import warnings
+import weakref
 from collections import defaultdict, deque
 from collections.abc import Iterable
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from functools import lru_cache
+from functools import lru_cache, update_wrapper
 from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -57,6 +59,86 @@ logger = logging.getLogger(__name__)
 
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
+
+
+# --- Per-instance method caches ------------------------------------------------------
+#
+# SchemaView methods used to be decorated with ``functools.lru_cache``. That cache lives on
+# the *function*, shared by all instances, and ``self`` is part of every key, so each view a
+# cached method was ever called on stayed alive for the whole process (linkml/linkml#3735).
+#
+# ``_cached_per_view`` keeps lru_cache itself (same keys, same ``maxsize``, same speed) but
+# makes one cache per view: the first time ``view.induced_slot`` is looked up, it wraps the
+# bound method in a new ``lru_cache`` and stores that in the view's ``__dict__``. Later
+# lookups find it there directly. The cache refers back to its view (through the bound
+# method), a reference cycle that Python's garbage collector frees once nothing else uses
+# the view.
+
+# Views holding cached methods, by id(). Only used by the class-level
+# ``SchemaView.<method>.cache_clear()``; weak, so it keeps no view alive.
+_VIEWS_WITH_CACHES: weakref.WeakValueDictionary[int, SchemaView] = weakref.WeakValueDictionary()
+
+
+class _CachedMethod:
+    """Descriptor that gives each SchemaView its own ``lru_cache`` of a method; see ``_cached_per_view``."""
+
+    def __init__(self, function: Callable[..., Any], maxsize: int | None) -> None:
+        update_wrapper(self, function)  # keeps __name__, __doc__ and __wrapped__ for docs and inspect
+        self.maxsize = maxsize  # most results kept per view, None for no limit (as in lru_cache)
+
+    def __get__(self, view: SchemaView | None, owner: type | None = None) -> Callable[..., Any]:
+        """Return the cached method of ``view``, creating its cache on first use.
+
+        Accessed on the class itself (``SchemaView.induced_slot``), return the descriptor, so
+        that ``SchemaView.induced_slot.cache_clear()`` keeps working.
+        """
+        if view is None:
+            return self
+        caches = view.__dict__.setdefault("_method_caches", {})  # method name -> lru_cache
+        cached_method = caches.get(self.__name__)
+        if cached_method is None:
+            cached_method = lru_cache(self.maxsize)(self.__wrapped__.__get__(view))
+            update_wrapper(cached_method, self.__wrapped__)
+            caches[self.__name__] = cached_method
+            _VIEWS_WITH_CACHES[id(view)] = view
+            if inspect.getattr_static(type(view), self.__name__) is self:
+                # Shortcut: an instance attribute with the method's name is found before this
+                # descriptor, so later lookups skip __get__. Not done when something else
+                # answers to that name (@deprecated wrapping this method, or a subclass
+                # overriding it and calling super()), as the shortcut would bypass it.
+                view.__dict__[self.__name__] = cached_method
+        return cached_method
+
+    def __call__(self, view: SchemaView, *args: Any, **kwargs: Any) -> Any:
+        """Call through the class, as in ``SchemaView.all_classes(view)`` (also used by ``@deprecated``)."""
+        return self.__get__(view)(*args, **kwargs)
+
+    def cache_clear(self) -> None:
+        """Drop the cached results of this method on every live view.
+
+        This is what ``SchemaView.<method>.cache_clear()`` did with ``lru_cache``.
+        """
+        for view in list(_VIEWS_WITH_CACHES.values()):
+            cached_method = view.__dict__.get("_method_caches", {}).get(self.__name__)
+            if cached_method is not None:
+                cached_method.cache_clear()
+
+
+def _cached_per_view(maxsize: int | None = None) -> Callable[[Callable[..., Any]], _CachedMethod]:
+    """Cache a SchemaView method like ``functools.lru_cache(maxsize)``, but separately for each view.
+
+    A view no longer in use is then freed together with its caches, instead of being kept
+    alive by them (linkml/linkml#3735). ``SchemaView.set_modified()`` drops the caches.
+
+    :param maxsize: most results kept per view and method, None for no limit
+    :return: the decorator
+    """
+
+    def decorate(function: Callable[..., Any]) -> _CachedMethod:
+        return _CachedMethod(function, maxsize)
+
+    return decorate
+
 
 CLASSES = "classes"
 SLOTS = "slots"
@@ -329,9 +411,26 @@ class SchemaView:
         return self._hash
 
     def set_modified(self) -> None:
-        """Increase the number of schema modifications by 1."""
+        """Increase the number of schema modifications by 1 and drop the cached method results."""
         self._hash = None
         self.modifications += 1
+        self._drop_method_caches(self.__dict__)
+
+    @staticmethod
+    def _drop_method_caches(state: dict[str, Any]) -> None:
+        """Remove the per-view method caches (see ``_cached_per_view``) from an instance ``__dict__``."""
+        for method_name in state.pop("_method_caches", {}):
+            state.pop(method_name, None)
+
+    def __getstate__(self) -> dict[str, Any]:
+        """Return the state to copy or pickle, without the method caches.
+
+        Each cached method is bound to this view, so a copy that kept them would answer from
+        (and about) the original view.
+        """
+        state = self.__dict__.copy()
+        self._drop_method_caches(state)
+        return state
 
     def _resolved_importmap(self) -> dict[str, Any]:
         """User-supplied importmap merged over the built-in ``linkml:`` metamodel mapping.
@@ -476,7 +575,7 @@ class SchemaView:
         # would apply the relative prefix twice (subdir/types against <root>/subdir/)
         return self.load_import(raw_imp, from_schema=importer)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def imports_closure(
         self, imports: bool = True, traverse: bool | None = None, inject_metadata: bool = True
     ) -> list[SchemaDefinitionName]:
@@ -599,7 +698,7 @@ class SchemaView:
                         a.from_schema = s.id
         return closure
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_schema(self, imports: bool = True) -> list[SchemaDefinition]:
         """Return all schemas.
 
@@ -608,7 +707,7 @@ class SchemaView:
         """
         return [self.schema_map[sn] for sn in self.imports_closure(imports)]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def namespaces(self) -> Namespaces:
         """Return the namespaces present in a schema.
 
@@ -626,7 +725,7 @@ class SchemaView:
         return namespaces
 
     @deprecated("Use `all_classes` instead")
-    @lru_cache(None)
+    @_cached_per_view()
     def all_class(self, imports: bool = True) -> dict[ClassDefinitionName, ClassDefinition]:
         """Return all classes.
 
@@ -687,7 +786,7 @@ class SchemaView:
 
         return {s.name: s for s in slist}
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_classes(
         self, ordered_by: OrderedBy = OrderedBy.PRESERVE, imports: bool = True
     ) -> dict[ClassDefinitionName, ClassDefinition]:
@@ -701,7 +800,7 @@ class SchemaView:
         return self.ordered(classes, ordered_by=ordered_by)
 
     @deprecated("Use `all_slots` instead")
-    @lru_cache(None)
+    @_cached_per_view()
     def all_slot(self, **kwargs: dict[str, Any]) -> dict[SlotDefinitionName, SlotDefinition]:
         """Retrieve all slots from the schema.
 
@@ -710,7 +809,7 @@ class SchemaView:
         """
         return self.all_slots(**kwargs)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_slots(
         self, ordered_by: OrderedBy = OrderedBy.PRESERVE, imports: bool = True, attributes: bool = True
     ) -> dict[SlotDefinitionName, SlotDefinition]:
@@ -731,7 +830,7 @@ class SchemaView:
         return self.ordered(slots, ordered_by=ordered_by)
 
     @deprecated("Use `all_enums` instead")
-    @lru_cache(None)
+    @_cached_per_view()
     def all_enum(self, imports: bool = True) -> dict[EnumDefinitionName, EnumDefinition]:
         """Retrieve all enums from the schema.
 
@@ -740,7 +839,7 @@ class SchemaView:
         """
         return self.all_enums(imports)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_enums(self, imports: bool = True) -> dict[EnumDefinitionName, EnumDefinition]:
         """Retrieve all enums from the schema.
 
@@ -750,7 +849,7 @@ class SchemaView:
         return self._get_dict(ENUMS, imports)
 
     @deprecated("Use `all_types` instead")
-    @lru_cache(None)
+    @_cached_per_view()
     def all_type(self, imports: bool = True) -> dict[TypeDefinitionName, TypeDefinition]:
         """Retrieve all types from the schema.
 
@@ -759,7 +858,7 @@ class SchemaView:
         """
         return self.all_types(imports)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_types(self, imports: bool = True) -> dict[TypeDefinitionName, TypeDefinition]:
         """Retrieve all types from the schema.
 
@@ -777,7 +876,7 @@ class SchemaView:
         """
         return self.all_subsets(imports)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_subsets(self, imports: bool = True) -> dict[SubsetDefinitionName, SubsetDefinition]:
         """Retrieve all subsets from the schema.
 
@@ -787,7 +886,7 @@ class SchemaView:
         return self._get_dict(SUBSETS, imports)
 
     @deprecated("Use `all_elements` instead")
-    @lru_cache(None)
+    @_cached_per_view()
     def all_element(self, imports: bool = True) -> dict[ElementName, Element]:
         """Retrieve all elements from the schema.
 
@@ -796,7 +895,7 @@ class SchemaView:
         """
         return self.all_elements(imports)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_elements(self, imports: bool = True) -> dict[ElementName, Element]:
         """Retrieve all elements from the schema.
 
@@ -811,7 +910,7 @@ class SchemaView:
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_name_mappings(self) -> dict[str, SlotDefinition]:
         """Return a mapping between processed safe slot names (following naming conventions) and slots.
 
@@ -821,7 +920,7 @@ class SchemaView:
         """
         return {underscore(s.name): s for s in self.all_slots().values()}
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_name_mappings(self) -> dict[str, ClassDefinition]:
         """Return a mapping between processed safe class names (following naming conventions) and classes.
 
@@ -831,7 +930,7 @@ class SchemaView:
         """
         return {camelcase(s.name): s for s in self.all_classes().values()}
 
-    @lru_cache(None)
+    @_cached_per_view()
     def in_schema(self, element_name: ElementName) -> SchemaDefinitionName:
         """Retrieve the name of the schema in which an element is defined.
 
@@ -844,7 +943,7 @@ class SchemaView:
             raise ValueError(msg)
         return ix[element_name]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def element_by_schema_map(self) -> dict[ElementName, SchemaDefinitionName]:
         ix = {}
         schemas = self.all_schema(imports=True)
@@ -857,7 +956,7 @@ class SchemaView:
                     ix[aname] = schema.name
         return ix
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_class(self, class_name: CLASS_NAME, imports: bool = True, strict: bool = False) -> ClassDefinition | None:
         """Retrieve a class from the schema.
 
@@ -871,7 +970,7 @@ class SchemaView:
             raise ValueError(msg)
         return c
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_slot(
         self, slot_name: SLOT_NAME, imports: bool = True, attributes: bool = True, strict: bool = False
     ) -> SlotDefinition | None:
@@ -898,7 +997,7 @@ class SchemaView:
             raise ValueError(msg)
         return slot
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_subset(
         self, subset_name: SUBSET_NAME, imports: bool = True, strict: bool = False
     ) -> SubsetDefinition | None:
@@ -915,7 +1014,7 @@ class SchemaView:
             raise ValueError(msg)
         return s
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_enum(self, enum_name: ENUM_NAME, imports: bool = True, strict: bool = False) -> EnumDefinition | None:
         """Retrieve an enum from the schema.
 
@@ -929,7 +1028,7 @@ class SchemaView:
             raise ValueError(msg)
         return e
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_type(self, type_name: TYPE_NAME, imports: bool = True, strict: bool = False) -> TypeDefinition | None:
         """Retrieve a type from the schema.
 
@@ -943,7 +1042,7 @@ class SchemaView:
             raise ValueError(msg)
         return t
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_children(self, name: str, mixin: bool = True) -> list[str]:
         """Get the children of an element (any class, slot, enum, type).
 
@@ -966,7 +1065,7 @@ class SchemaView:
             parents.append(e.is_a)
         return parents
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_parents(
         self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
     ) -> list[ClassDefinitionName]:
@@ -980,7 +1079,7 @@ class SchemaView:
         cls = self.get_class(class_name, imports, strict=True)
         return self._parents(cls, imports, mixins, is_a)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_children(
         self, class_name: CLASS_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
     ) -> list[ClassDefinitionName]:
@@ -995,7 +1094,7 @@ class SchemaView:
         elts = [self.get_class(x) for x in self.all_classes(imports=imports)]
         return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_ancestors(
         self,
         class_name: CLASS_NAME,
@@ -1024,7 +1123,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_descendants(
         self,
         class_name: CLASS_NAME,
@@ -1050,7 +1149,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_roots(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
         """Return all classes that have no parents.
 
@@ -1065,7 +1164,7 @@ class SchemaView:
             if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_leaves(self, imports: bool = True, mixins: bool = True, is_a: bool = True) -> list[ClassDefinitionName]:
         """Return all classes that have no children.
 
@@ -1080,7 +1179,7 @@ class SchemaView:
             if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_parents(
         self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
     ) -> list[SlotDefinitionName]:
@@ -1096,7 +1195,7 @@ class SchemaView:
             return self._parents(s, imports, mixins, is_a)
         return []
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_children(
         self, slot_name: SLOT_NAME, imports: bool = True, mixins: bool = True, is_a: bool = True
     ) -> list[SlotDefinitionName]:
@@ -1111,7 +1210,7 @@ class SchemaView:
         elts = [self.get_slot(x) for x in self.all_slots(imports=imports)]
         return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_ancestors(
         self,
         slot_name: SLOT_NAME,
@@ -1137,7 +1236,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_descendants(
         self,
         slot_name: SLOT_NAME,
@@ -1163,7 +1262,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_roots(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
         """Return all slots that have no parents.
 
@@ -1175,7 +1274,7 @@ class SchemaView:
             c for c in self.all_slots(imports=imports) if self.slot_parents(c, mixins=mixins, imports=imports) == []
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_leaves(self, imports: bool = True, mixins: bool = True) -> list[SlotDefinitionName]:
         """Return all slots that have no children.
 
@@ -1187,7 +1286,7 @@ class SchemaView:
             c for c in self.all_slots(imports=imports) if self.slot_children(c, mixins=mixins, imports=imports) == []
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def type_parents(self, type_name: TYPE_NAME, imports: bool = True) -> list[TypeDefinitionName]:
         """Return the parent of a type, if it exists.
 
@@ -1200,7 +1299,7 @@ class SchemaView:
             return [typ.typeof]
         return []
 
-    @lru_cache(None)
+    @_cached_per_view()
     def type_ancestors(
         self,
         type_name: TYPE_NAME,
@@ -1225,7 +1324,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def type_roots(self, imports: bool = True) -> list[TypeDefinitionName]:
         """Return all types that have no parents.
 
@@ -1236,7 +1335,7 @@ class SchemaView:
         """
         return [t for t in self.all_types(imports=imports) if not self.type_parents(t, imports=imports)]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def enum_parents(
         self, enum_name: ENUM_NAME, imports: bool = False, mixins: bool = False, is_a: bool = True
     ) -> list[EnumDefinitionName]:
@@ -1250,7 +1349,7 @@ class SchemaView:
         e = self.get_enum(enum_name, strict=True)
         return self._parents(e, imports, mixins, is_a=is_a)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def enum_ancestors(
         self,
         enum_name: ENUM_NAME,
@@ -1285,7 +1384,7 @@ class SchemaView:
     ) -> list[str | PermissibleValueText]:
         return self.permissible_value_parents(permissible_value, enum_name)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def permissible_value_parents(
         self, permissible_value: str, enum_name: ENUM_NAME
     ) -> list[str | PermissibleValueText]:
@@ -1302,7 +1401,7 @@ class SchemaView:
             raise ValueError(err_msg)
         return [pv.is_a] if pv.is_a else []
 
-    @lru_cache(None)
+    @_cached_per_view()
     def permissible_value_children(
         self, permissible_value: str, enum_name: ENUM_NAME
     ) -> list[str | PermissibleValueText]:
@@ -1324,7 +1423,7 @@ class SchemaView:
             if isa_pv_entity.is_a and pv.text == isa_pv_entity.is_a
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def permissible_value_ancestors(
         self,
         permissible_value_text: str,
@@ -1354,7 +1453,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def permissible_value_descendants(
         self,
         permissible_value_text: str,
@@ -1375,7 +1474,7 @@ class SchemaView:
             **kwargs,
         )
 
-    @lru_cache(None)
+    @_cached_per_view()
     def is_multivalued(self, slot_name: SlotDefinition) -> bool:
         """Return True if slot is multivalued, else returns False.
 
@@ -1385,7 +1484,7 @@ class SchemaView:
         induced_slot = self.induced_slot(slot_name)
         return bool(induced_slot.multivalued)
 
-    @lru_cache(None)
+    @_cached_per_view()
     def slot_is_true_for_metadata_property(self, slot_name: SlotDefinition, metadata_property: str) -> bool:
         """Return true if the value of the provided "metadata_property" is True.
 
@@ -1595,7 +1694,7 @@ class SchemaView:
         else:
             raise ValueError(f"'{uri}' does not seem to be either a valid URI or a valid CURIE")
 
-    @lru_cache(CACHE_SIZE)
+    @_cached_per_view(CACHE_SIZE)
     def get_elements_applicable_by_identifier(self, identifier: str) -> list[str]:
         """Get a model element by identifier.
 
@@ -1614,7 +1713,7 @@ class SchemaView:
             )
         return elements
 
-    @lru_cache(CACHE_SIZE)
+    @_cached_per_view(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> list[str]:
         """Get a model element by prefix.
 
@@ -1632,7 +1731,7 @@ class SchemaView:
             if hasattr(element, "id_prefixes") and prefix in element.id_prefixes
         ]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def all_aliases(self) -> list[str]:
         """Get all aliases.
 
@@ -1655,7 +1754,7 @@ class SchemaView:
 
         return element_aliases
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_mappings(
         self, element_name: ElementName = None, imports: bool = True, expand: bool = False
     ) -> dict[MAPPING_TYPE, list[URIorCURIE]]:
@@ -1686,7 +1785,7 @@ class SchemaView:
 
         return m_dict
 
-    @lru_cache(None)
+    @_cached_per_view()
     def is_mixin(self, element_name: ElementName | Element) -> bool:
         """Determine whether the given name is the name of a mixin.
 
@@ -1698,7 +1797,7 @@ class SchemaView:
         element = self.get_element(element_name)
         return element.mixin if isinstance(element, Definition) else False
 
-    @lru_cache(None)
+    @_cached_per_view()
     def inverse(self, slot_name: SlotDefinition):
         """Determine whether the given name is a relationship, and return the inverse (if available).
 
@@ -1746,7 +1845,7 @@ class SchemaView:
                     ix[v].append((mapping_type, self.get_element(en, imports=imports)))
         return ix
 
-    @lru_cache(None)
+    @_cached_per_view()
     def is_relationship(self, class_name: CLASS_NAME | None = None, imports: bool = True) -> bool:
         """Test if a class represents a relationship or reified statement.
 
@@ -1764,7 +1863,7 @@ class SchemaView:
                     return True
         return False
 
-    @lru_cache(None)
+    @_cached_per_view()
     def annotation_dict(
         self, element_name: ElementName, imports: bool = True, class_name: ClassDefinitionName | None = None
     ) -> dict[URIorCURIE, Any]:
@@ -1787,7 +1886,7 @@ class SchemaView:
         e = self.get_element(element_name, imports=imports)
         return {k: v.value for k, v in e.annotations.items()}
 
-    @lru_cache(None)
+    @_cached_per_view()
     def _pattern_resolver(self, schema_id: str) -> PatternResolver:
         """Return a pattern resolver configured with one schema's settings."""
         schemas_by_id = {str(schema.id): schema for schema in self.all_schema()}
@@ -1817,7 +1916,7 @@ class SchemaView:
             pattern = f"^(?:{pattern})$"
         return pattern
 
-    @lru_cache(None)
+    @_cached_per_view()
     def induced_slot(
         self,
         slot_name: SLOT_NAME,
@@ -1970,17 +2069,16 @@ class SchemaView:
                 existing_domain_of.add(class_name_candidate)
         return induced_slot
 
-    @lru_cache(None)
+    @_cached_per_view()
     def _metaslots_for_slot(self):
         fake_slot = SlotDefinition("__FAKE")
         return vars(fake_slot).keys()
 
-    @lru_cache(None)
+    @_cached_per_view()
     def _slot_class_map(self) -> dict[str, list[str]]:
         """Build a reverse map: slot/attribute name → list of class names that declare it.
 
-        Computed once and cached; automatically invalidated when set_modified() is called
-        (because SchemaView's hash changes with each modification).
+        Computed once and cached; automatically invalidated when set_modified() is called.
         """
         result: dict[str, list[str]] = {}
         for c in self.all_classes().values():
@@ -1990,7 +2088,7 @@ class SchemaView:
                 result.setdefault(aname, []).append(c.name)
         return result
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_slots(
         self, class_name: CLASS_NAME, imports: bool = True, direct: bool = False, attributes: bool = True
     ) -> list[SlotDefinitionName]:
@@ -2015,7 +2113,7 @@ class SchemaView:
                 slots_nr.append(s)
         return slots_nr
 
-    @lru_cache(None)
+    @_cached_per_view()
     def class_induced_slots(self, class_name: CLASS_NAME | None = None, imports: bool = True) -> list[SlotDefinition]:
         """Retrieve all slots that are asserted or inferred for a class, with their inferred semantics.
 
@@ -2025,7 +2123,7 @@ class SchemaView:
         """
         return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
-    @lru_cache(None)
+    @_cached_per_view()
     def induced_class(self, class_name: CLASS_NAME | None = None) -> ClassDefinition:
         """Generate an induced class.
 
@@ -2044,7 +2142,7 @@ class SchemaView:
         c.slots = []
         return c
 
-    @lru_cache(None)
+    @_cached_per_view()
     def induced_type(self, type_name: TYPE_NAME | None = None) -> TypeDefinition:
         """Generate an induced type.
 
@@ -2064,7 +2162,7 @@ class SchemaView:
                     setattr(induced_type, metaslot_name, deepcopy(value))
         return induced_type
 
-    @lru_cache(None)
+    @_cached_per_view()
     def induced_enum(self, enum_name: ENUM_NAME | None = None) -> EnumDefinition:
         """Generate an induced enum.
 
@@ -2073,7 +2171,7 @@ class SchemaView:
         """
         return deepcopy(self.get_enum(enum_name))
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_identifier_slot(self, cn: CLASS_NAME, use_key: bool = False, imports: bool = True) -> SlotDefinition | None:
         """Retrieve the slot that is the identifier for the given class.
 
@@ -2089,7 +2187,7 @@ class SchemaView:
             return self.get_key_slot(cn, imports=imports)
         return None
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_key_slot(self, cn: CLASS_NAME, imports: bool = True) -> SlotDefinition | None:
         """Retrieve the slot that is the key for the given class.
 
@@ -2103,7 +2201,7 @@ class SchemaView:
                 return s
         return None
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_type_designator_slot(self, cn: CLASS_NAME, imports: bool = True) -> SlotDefinition | None:
         """Get the type designator slot for a class.
 
@@ -2117,7 +2215,7 @@ class SchemaView:
                 return s
         return None
 
-    @lru_cache(None)
+    @_cached_per_view()
     def _get_string_type(self) -> TypeDefinition:
         """Get the type used for representing strings.
 
@@ -2168,12 +2266,12 @@ class SchemaView:
                 # walk all ancestors (reflexive=False to skip the slot itself,
                 # already checked above).
                 try:
-                    # slot_ancestors() is @lru_cache and handles both is_a and mixins;
+                    # slot_ancestors() is cached and handles both is_a and mixins;
                     ancestors = self.slot_ancestors(slot_name, imports=imports, reflexive=False)
                 except ValueError:
                     ancestors = []
                 if ancestors:
-                    # all_slots() is @lru_cache
+                    # all_slots() is cached
                     all_slots = self.all_slots(imports=imports)
                     for anc_name in ancestors:
                         anc = all_slots.get(anc_name)
@@ -2325,7 +2423,7 @@ class SchemaView:
 
         return list(classes_ordered_set.keys())
 
-    @lru_cache(None)
+    @_cached_per_view()
     def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> list[SlotDefinition]:
         """Get all slots that use a given enum: schema defined, attribute, or slot_usage.
 
@@ -2376,7 +2474,7 @@ class SchemaView:
                 return "percent_encoded" in anns
         return None
 
-    @lru_cache(None)
+    @_cached_per_view()
     def usage_index(self) -> dict[ElementName, list[SchemaUsage]]:
         """Fetch an index that shows the ways in which each element is used.
 
