@@ -62,7 +62,7 @@ Total Session 3 time: 15:10 to 16:20 (70 min)
 | 16:10–16:20 | Session Q&A | | |
 | 16:20–16:30 | Break (10 minutes) | | |
 
-### Session 4: LinkML × AI / agentic
+### Session 4: LinkML × AI / agentic and curation workflows
 Total Session 4 time: 16:30 to 17:40 (70 min)
 | Time (UTC) | Presentation Title | Presenter | Affiliation |
 | -- | -- | -- | -- |

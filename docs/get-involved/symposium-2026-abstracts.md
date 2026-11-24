@@ -182,7 +182,7 @@ To put this into practice, we built converters in both directions, in ohi LinkML
 
 We will close with a discussion of where the two communities could align, including metamodel features, handling non-standard extensions, and common tooling.
 
-## Session 4: LinkML × AI / agentic
+## Session 4: LinkML × AI / agentic and curation workflows
 
 ### litschema: Turn a folder of PDFs into a dataset you can defend
 
