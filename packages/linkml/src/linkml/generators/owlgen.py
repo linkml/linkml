@@ -888,7 +888,13 @@ class OwlSchemaGenerator(Generator):
                 owltypes = self.slot_node_owltypes(slot, owning_class=cls)
             x = self.transform_class_slot_expression(cls, slot, slot, owltypes, owner=owner)
             if not x:
-                range = sv.schema.default_range
+                # An entry without a range of its own has the range of the slot it names. A type whose values are
+                # nodes has no datatype to restrict to (see slot_node_owltypes); for one the default_range applies.
+                named_slot = self._named_slot(slot, owner)
+                range = named_slot.range
+                if range in sv.all_types() and self._type_values_are_nodes(range):
+                    range = None
+                range = range or sv.schema.default_range
                 if range and OWL.Thing not in owltypes:
                     if range in sv.all_types():
                         x = self._type_uri(range)
@@ -899,6 +905,10 @@ class OwlSchemaGenerator(Generator):
                     else:
                         raise ValueError(f"Unknown range {range}")
                         # x = self._class_uri(range)
+                    if not sv.schema.default_range:
+                        # Without a default_range, the kinds of a slot's fillers decide whether a slot without a
+                        # range of its own is a data or an object property (slot_owl_type); this is the named range.
+                        self.slot_is_literal_map[named_slot.name].add(range in sv.all_types())
                 else:
                     x = OWL.Thing
             slot_uri = self._named_prop_uri(slot, named_slot)
