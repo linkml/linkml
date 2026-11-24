@@ -22,7 +22,7 @@ Total Session 1 time: 15:55 to 17:25 (90 min)
 | 16:25–16:40 | Aligning OKN Graphs with LinkML Representations | Mahir Morshed | Renaissance Computing Institute |
 | 16:40–16:55 | DCAT-AP+ & ChemDCAT-AP: Building domain-specific subprofiles of DCAT-AP with LinkML | Philip Strömert | TIB & NFDI4Chem |
 | 16:55–17:10 | Common practices for interoperable LinkML schemas in the bioimaging community | Damien Goutte-Gattat | German BioImaging e.V. |
-| 17:10–17:25 | TBD (open slot) | | |
+| 17:10–17:25 | A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources | Diana McSpadden | Thomas Jefferson National Accelerator Facility |
 | 17:25–17:35 | Break (10 minutes) | | |
 
 ### Session 2: Public-sector, library, geo & cross-domain schemas
@@ -69,9 +69,9 @@ Total Session 4 time: 16:30 to 17:40 (70 min)
 | 16:30–16:40 | litschema: Turn a folder of PDFs into a dataset you can defend | Cory Levinson | UC Davis |
 | 16:40–16:50 | Machine-Actionable Datasheets for Datasets: Schema-Guided Agentic Extraction from Project Documentation | Marcin Joachimiak | Lawrence Berkeley National Laboratory |
 | 16:50–17:00 | Knowledge Trust Ladder | Noel McLoughlin | Open Engineering / TD Bank |
-| 17:00–17:10 | Fixing category errors in single cell annotation | Sid Cox | Broad Institute |
-| 17:10–17:20 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
-| 17:20–17:30 | A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources | Diana McSpadden | Thomas Jefferson National Accelerator Facility |
+| 17:00–17:10 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
+| 17:10–17:20 | TBD (open slot) | | |
+| 17:20–17:30 | TBD (open slot) | | |
 | 17:30–17:40 | Session Q&A | | |
 | 17:40–17:50 | Break (10 minutes) | | |
 
