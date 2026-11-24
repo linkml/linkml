@@ -72,7 +72,7 @@ and resolves its imports itself.
 
 There are some differences:
 
-- ohi LinkML refuses to download imported schemas from URLs. The built-in ``linkml:`` schemas are 
+- ohi LinkML refuses to download imported schemas from URLs. The built-in ``linkml:`` schemas are
   bundled, so they always load.
 - Without ``base_dir``, a relative location in the import map is joined to the directory of the
   schema being generated, not to the directory of the schema that has the import. The two are the
