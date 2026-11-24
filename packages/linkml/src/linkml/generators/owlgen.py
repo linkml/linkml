@@ -420,16 +420,21 @@ class OwlSchemaGenerator(Generator):
         self._declare_annotation_properties()
         return graph
 
-    def serialize(self, **kwargs: Any) -> str:
+    def serialize(self, output: str | None = None, **kwargs: Any) -> str:
         """
         Serialize the OWL triple graph to a standard RDF serialization format.
 
+        :param output: if given, the serialization is also written to this file
         :param kwargs:
         :return:
         """
         self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
+        out = canonicalize_rdf_graph(self.graph, output_format=fmt, diff_stable=self.diff_stable)
+        if output:
+            with open(output, "w", encoding="UTF-8") as outf:
+                outf.write(out)
+        return out
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
@@ -2038,7 +2043,9 @@ def cli(yamlfile: str, metadata_profile: str, **kwargs: Any) -> None:
     else:
         metadata_profiles = [MetadataProfile.linkml]
     gen = OwlSchemaGenerator(yamlfile, metadata_profiles=metadata_profiles, **kwargs)
-    print(gen.serialize(**kwargs))
+    serialized = gen.serialize(**kwargs)
+    if not kwargs.get("output"):
+        print(serialized)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,17 @@ def test_help():
     assert "Generate an OWL representation of a LinkML model" in result.output
 
 
+def test_output_option_writes_file(tmp_path):
+    """--output writes the OWL to the file instead of stdout (#2752)."""
+    output = tmp_path / "out.owl.ttl"
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--output", str(output), KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+    assert result.output == ""
+    assert output.exists()
+    assert "owl:Ontology" in output.read_text(encoding="UTF-8")
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize(
     "arguments,snapshot_file,rdf_format",
