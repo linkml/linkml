@@ -1,14 +1,16 @@
 import logging
 import os
+import sys
 from enum import Enum
 
 import pytest
 from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
+from rdflib.compare import isomorphic
 from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
-from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
+from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator, _regex_as_xsd
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -94,8 +96,8 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
 @pytest.mark.parametrize(
     ("partial_match", "expected_pattern"),
     [
-        (False, r"[a-z]+"),
-        (True, r".*([a-z]+).*"),
+        (False, r"[a-z]+\n?"),
+        (True, r"(.|\n|\r)*[a-z]+(.|\n|\r)*"),
     ],
 )
 def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
@@ -130,6 +132,339 @@ classes:
     patterns = list(graph.objects(None, XSD.pattern))
     assert Literal(expected_pattern) in patterns, patterns
     assert value_slot.pattern is None
+
+
+SPACE = "\\s\\p{Z}\x85"  # Python's \s over the characters XML allows
+
+
+@pytest.mark.parametrize(
+    ("pattern", "expected"),
+    [
+        (r"^[a-z_]+$", r"[a-z_]+\n?"),
+        (r"[a-z]+", r"(.|\n|\r)*[a-z]+(.|\n|\r)*"),
+        (r"^https?:\/\/", r"https?://(.|\n|\r)*"),
+        (r"^(this)|(that)|(whatever)$", r"(this)(.|\n|\r)*|(.|\n|\r)*(that)(.|\n|\r)*|(.|\n|\r)*(whatever)\n?"),
+        (r"^(?:a|b)$", r"a\n?|b\n?"),
+        (r"(a|b)", r"(.|\n|\r)*(a|b)(.|\n|\r)*"),
+        (r".*(Z|[+-]\d{2}:\d{2})$", r"(.|\n|\r)*(Z|[+\-]\d{2}:\d{2})\n?"),
+        (r"^a.*", r"a(.|\n|\r)*"),
+        (r"^.*a", r"(.|\r)*a(.|\n|\r)*"),
+        (r"a.*$", r"(.|\n|\r)*a(.|\r)*\n?"),
+        (r"^a.b$", r"a(.|\r)b\n?"),
+        (r"^a\.b$", r"a\.b\n?"),
+        (r"^$", r"\n?"),
+        (r"^^a$$", r"a\n?"),
+        (r"", r"(.|\n|\r)*"),
+        (r".*$", r"(.|\n|\r)*"),
+        (r"a|", r"(.|\n|\r)*a(.|\n|\r)*|(.|\n|\r)*"),
+        (r"^\d{2,}?-\w+$", r"\d{2,}-[\p{L}\p{N}_]+\n?"),
+        (r"^[\w.-]+$", r"[\p{L}\p{N}_.\-]+\n?"),
+        (r"^\W+$", r"[^\p{L}\p{N}_]+\n?"),
+        (r"^[^\w]$", r"[^\p{L}\p{N}_]\n?"),
+        (r"^\S+ \S+$", rf"[^{SPACE}]+ [^{SPACE}]+\n?"),
+        (r"^[^\s]\s$", rf"[^{SPACE}][{SPACE}]\n?"),
+        # XML Schema cannot add a negated class to a class
+        (r"[\W]", r"(.|\n|\r)*[^\p{L}\p{N}_](.|\n|\r)*"),
+        (r"^[\S+.]+$", rf"([+.]|[^{SPACE}])+\n?"),
+        (r"^[\S\W]$", "([^" + SPACE + r"]|[^\p{L}\p{N}_])\n?"),
+        (r"^[]\S]$", rf"([\]]|[^{SPACE}])\n?"),
+        (r"^[\S]]$", rf"[^{SPACE}]\]\n?"),
+        (r"^[^\S]$", rf"[{SPACE}]\n?"),
+        (r"^[^\S\r\n]$", rf"[{SPACE}-[\r\n]]\n?"),
+        (r"^[^\W\d_]+$", r"[\p{L}\p{N}_-[\d_]]+\n?"),
+        (r"^[]a]$", r"[\]a]\n?"),
+        (r"^[^]a]$", r"[^\]a]\n?"),
+        (r"^[\^a]$", r"[\^a]\n?"),
+        (r"^[^|]+\|$", r"[^|]+\|\n?"),
+        (r"^[--/]$", r"[\-.-/]\n?"),
+        (r"^[!-\]]$", r"[!-,\-.-Z\[\\\]]\n?"),
+        (r"^[\^-z]$", r"[\^_-z]\n?"),
+        (r"^[\t-\r]$", r"[\t\n\r]\n?"),
+        (r"^a{,3}$", r"a{0,3}\n?"),
+        (r"^a{x}{}$", r"a\{x\}\{\}\n?"),
+        (r"^a{,٣}$", r"a\{,٣\}\n?"),
+        (r"^\$\d+$", r"$\d+\n?"),
+        ("^a\tb$", "a\tb\\n?"),
+        # a structured pattern without partial_match resolves to "^(?:syntax)$"
+        (r"^(?:^(https?://|(mailto|tel):)\w+$)$", r"(https?://|(mailto|tel):)[\p{L}\p{N}_]+\n?"),
+        (r"^(?:^a$|b)$", r"a\n?|b\n?"),
+        (r"^(?:a)|(b)$", r"(a)(.|\n|\r)*|(.|\n|\r)*(b)\n?"),
+        # constructs the translation leaves out
+        (r"^(?=a)a$", None),
+        (r"^(a)\1$", None),
+        (r"\bword\b", None),
+        (r"(?i)a", None),
+        (r"(^a)", None),
+        (r"(a$)", None),
+        (r"a^b", None),
+        (r"^a$b", None),
+        (r"[^\S\W]", None),
+        (r"a++", None),
+        (r"[!-\x7f]", None),
+        # characters XML excludes
+        ("^a\x01b$", None),
+        ("^[\x01-\x08]$", None),
+        # patterns Python cannot compile
+        (r"[", None),
+        (r"a{99999999999999999999}", None),
+        pytest.param("a{" + "9" * 4500 + "}", None, id="too-many-digits"),
+    ],
+)
+def test_regex_as_xsd(pattern: str, expected: str | None) -> None:
+    """Translate a pattern to a regular expression that matches the values in which Python's re.search finds it."""
+    assert _regex_as_xsd(pattern) == expected
+
+
+def test_regex_nested_too_deep_for_python_is_left_out() -> None:
+    """A pattern nested deeper than Python's recursion limit allows cannot be compiled, so it has no translation."""
+    # the limit is read at run time, as an imported module may have raised it
+    depth = sys.getrecursionlimit()
+    assert _regex_as_xsd("^" + "(" * depth + "a" + ")" * depth + "$") is None
+
+
+def test_patterns_become_xsd_facets(caplog) -> None:
+    """A pattern becomes an xsd:pattern facet, or none with a warning if XML Schema cannot express it."""
+    generator = OwlSchemaGenerator(
+        """
+id: https://example.org/pattern
+name: pattern
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+slots:
+  code:
+    pattern: "^[a-z_]+$"
+  label:
+    pattern: "^(?!-)[a-z-]+$"
+  name:
+    all_of:
+      - pattern: "^[a-z]+$"
+      - pattern: "^(?!x)"
+  owner:
+    range: C
+classes:
+  C:
+    slots:
+      - code
+      - label
+      - name
+      - owner
+    slot_usage:
+      owner:
+        pattern: "^(?=y)"
+""",
+        metaclasses=False,
+        type_objects=False,
+    )
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = generator.as_graph()
+
+    # a conjunction keeps the patterns it can express
+    assert set(graph.objects(None, XSD.pattern)) == {Literal(r"[a-z_]+\n?"), Literal(r"[a-z]+\n?")}
+    assert any("'^(?!-)[a-z-]+$' has no XML Schema equivalent" in msg for msg in caplog.messages)
+    # a class does not restrict an object-valued slot with a pattern (#1841), so it is not translated
+    assert not any("(?=y)" in msg for msg in caplog.messages)
+
+
+LOSSY_SCHEMA = """
+id: https://example.org/lossy
+name: lossy
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: Folded
+imports:
+  - linkml:types
+types:
+  Folded:
+    typeof: string
+    pattern: "PATTERN"
+slots:
+  code:
+    range: string
+  kind:
+    range: string
+classes:
+  C:
+    slots:
+      - code
+      - kind
+"""
+
+
+@pytest.mark.parametrize(
+    "construct",
+    [
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        any_of:
+          - pattern: "PATTERN"
+          - pattern: "^y$"
+""",
+            id="slot any_of",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        any_of:
+          - range: Folded
+          - pattern: "^y$"
+""",
+            id="slot any_of with a type",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        exactly_one_of:
+          - pattern: "PATTERN"
+          - pattern: "^y$"
+""",
+            id="slot exactly_one_of",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        none_of:
+          - pattern: "PATTERN"
+""",
+            id="slot none_of",
+        ),
+        pytest.param(
+            """
+    any_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+      - slot_conditions:
+          kind:
+            pattern: "^y$"
+""",
+            id="class any_of",
+        ),
+        pytest.param(
+            """
+    exactly_one_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+      - slot_conditions:
+          kind:
+            pattern: "^y$"
+""",
+            id="class exactly_one_of",
+        ),
+        pytest.param(
+            """
+    none_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+""",
+            id="class none_of",
+        ),
+        pytest.param(
+            """
+    none_of:
+      - slot_conditions:
+          code: {}
+""",
+            id="class none_of with the default range",
+        ),
+        pytest.param(
+            """
+    rules:
+      - preconditions:
+          slot_conditions:
+            code:
+              pattern: "PATTERN"
+        postconditions:
+          slot_conditions:
+            kind:
+              pattern: "^y$"
+""",
+            id="rule",
+        ),
+        pytest.param(
+            """
+    classification_rules:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+""",
+            id="classification rule",
+        ),
+    ],
+)
+def test_expressions_needing_an_inexpressible_pattern_are_left_out(construct: str, caplog) -> None:
+    """Leaving out a pattern admits more values, so a negation or union that needs one is left out as a whole."""
+
+    def as_graph(pattern: str, construct: str) -> Graph:
+        schema = (LOSSY_SCHEMA + construct).replace("PATTERN", pattern)
+        return OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = as_graph("(?i)^x$", construct)
+
+    assert isomorphic(graph, as_graph("(?i)^x$", ""))
+    assert any(
+        msg.endswith("is left out, as it needs a pattern that has no XML Schema equivalent") for msg in caplog.messages
+    )
+    # the expression is generated where XML Schema can express its pattern
+    assert not isomorphic(as_graph("^x$", construct), as_graph("^x$", ""))
+
+
+def test_equals_string_on_literals_becomes_one_of() -> None:
+    """equals_string compares the whole value, so it is a one-literal owl:oneOf and not an xsd:pattern."""
+    graph = OwlSchemaGenerator(
+        """
+id: https://example.org/equals
+name: equals
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+types:
+  JsonLd:
+    typeof: string
+    equals_string: application/ld+json
+slots:
+  media_type:
+    range: string
+  format:
+    range: JsonLd
+  document:
+    range: Document
+classes:
+  Document:
+    slots:
+      - media_type
+      - format
+  C:
+    slots:
+      - document
+    slot_usage:
+      document:
+        range_expression:
+          slot_conditions:
+            media_type:
+              equals_string: application/ld+json
+""",
+        metaclasses=False,
+        type_objects=False,
+    ).as_graph()
+
+    one_ofs = [list(Collection(graph, members)) for members in graph.objects(None, OWL.oneOf)]
+    assert one_ofs == [[Literal("application/ld+json")]] * 2
+    assert not list(graph.objects(None, XSD.pattern))
 
 
 def test_rdfs_profile(kitchen_sink_path):
