@@ -16,9 +16,9 @@ def test_template_dir(input_path):
     assert (
         """Sample
 attr: attr_1
-range: Optional[Union[int, str]]
+range: Union[int, str]
 attr: attr_2
-range: Optional[list[float]]"""
+range: float"""
         in result.stdout
     )
 
