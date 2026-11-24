@@ -61,6 +61,14 @@ Several projects in the bioimaging community have adopted or are on the verge of
 
 This broadening adoption creates a need to ensure that independently developed LinkML schemas are interoperable. To that effect, we are establishing a set of guidelines and recommendations for schema authors, that we propose as a complement to LinkML’s own documentation. The guidelines aim to promote schemas that are easily reusable, composable, and extensible while preserving backward, and ideally forward, compatibility.
 
+### A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources
+
+- **Presenter:** Diana McSpadden
+- **Affiliation:** Thomas Jefferson National Accelerator Facility
+- **Project:** [doi.org/10.18141/3376151](https://doi.org/10.18141/3376151)
+
+As AI, scientific machine learning, and agentic workflows become central to Department of Energy (DOE) science, machine-actionable metadata must cover not only datasets but also models, agents, software, and computing resources. This talk presents a shared LinkML-based framework and extensible “xCards” for describing these resources. Each card pairs validated structured data with human-readable context, enabling automated processing and understanding. FAIR-aligned features include discovery, access, interoperability, reuse, governance, and AI use. Controlled vocabularies, persistent identifiers, and typed relationships connect artifacts into a navigable scientific resource network. Relationships such as is derived from, is trained on, processes, and runs on support provenance, workflow composition, and grounded agent reasoning. Governance, sensitivity, licensing, and access details enable responsible reuse by humans and machines. The presentation covers the schema, standards alignment, validation tools, and integration with emerging xCard registries and discovery services.
+
 ## Session 2: Public-sector, library, geo & cross-domain schemas
 
 ### Making the “Common” in CDEs More Common Using LinkML and Microschemas
@@ -200,16 +208,6 @@ Scientific dataset documentation is scattered across publications, protocols, an
 
 Knowledge Trust Ladder keeps a repository's scattered knowledge as a collection: catalogued, authenticated and explained, with the trust in every claim left visible
 
-### Fixing category errors in single cell annotation
-
-- **Presenter:** Sid Cox
-- **Affiliation:** Broad Institute
-- **Project:** [broadinstitute.github.io/warp/docs/Pipelines/scANVI_Pipeline/README](https://broadinstitute.github.io/warp/docs/Pipelines/scANVI_Pipeline/README)
-
-Modern single-cell reference atlases combine high-throughput transcriptomic measurements with multi-level biological taxonomies and curated ontologies. In the Allen Institute and BICAN Whole Mouse Brain consensus atlas (AIT33), 7.64 million cells across 372 donors are organised into five nested levels of detail: 9 neighbourhoods at the top, 43 classes, 414 subclasses, 1,386 supertypes, and 6,721 clusters at the leaf level, cross-referenced to the Cell Ontology (CL) and the Uberon anatomy ontology. In production pipelines such as Broad DSP's WARP scANVI workflow, semi-supervised deep generative models take raw transcript counts across 21,205 genes and assign cell-type labels at each level of this taxonomy.
-
-When cell-type predictions are exported into downstream tables, knowledge graphs, or ontology files, data pipelines routinely commit a category error: they collapse three fundamentally different kinds of statement into a single representation.
-
 ### ohi.dev: An ontology and LinkML schema package manager, for humans and agents
 
 - **Presenter:** Alireza Furutanpey
@@ -221,14 +219,6 @@ Ontologies are meant to be reused, but in practice reuse is difficult. They are 
 ohi.dev addresses this by treating ontologies as versioned packages. It provides a searchable catalog of hundreds of ontologies, with explicit versions, recorded dependencies, and files in multiple formats, including LinkML. Users can search the catalog, inspect an ontology’s metadata, download a specific version in the format they need, and record their choices in a project file that keeps ontology files consistent and reproducible.
 
 In this talk we explain the problem ohi.dev solves and show the main ways to use it, from single searches on the command line to managing the ontologies of a whole project. We then demonstrate how AI agents can use ohi.dev as a tool, through sample workflows, and what are the benefits of this approach.
-
-### A Shared LinkML Metadata Schema for FAIR, Machine-Actionable Scientific Data, Models, Agents, and Resources
-
-- **Presenter:** Diana McSpadden
-- **Affiliation:** Thomas Jefferson National Accelerator Facility
-- **Project:** [doi.org/10.18141/3376151](https://doi.org/10.18141/3376151)
-
-As AI, scientific machine learning, and agentic workflows become central to Department of Energy (DOE) science, machine-actionable metadata must cover not only datasets but also models, agents, software, and computing resources. This talk presents a shared LinkML-based framework and extensible “xCards” for describing these resources. Each card pairs validated structured data with human-readable context, enabling automated processing and understanding. FAIR-aligned features include discovery, access, interoperability, reuse, governance, and AI use. Controlled vocabularies, persistent identifiers, and typed relationships connect artifacts into a navigable scientific resource network. Relationships such as is derived from, is trained on, processes, and runs on support provenance, workflow composition, and grounded agent reasoning. Governance, sensitivity, licensing, and access details enable responsible reuse by humans and machines. The presentation covers the schema, standards alignment, validation tools, and integration with emerging xCard registries and discovery services.
 
 ## Session 5: Tools, generators & workflows II
 
