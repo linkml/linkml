@@ -150,7 +150,8 @@ class OwlSchemaGenerator(Generator):
     """If metaclasses=True, then this property is used to connect object shadows to literals"""
 
     type_objects: bool = True
-    """if True, represents types as classes (and thus all slots are object properties);
+    """if True, represents types as classes (and thus all slots are object properties,
+    except those that range only over enums of literals);
     typed object classes effectively shadow the main xsd literal types.
     The purpose of this is to allow a uniform ObjectProperty representation for all slots,
     without having to commit to being either Data or Object property (OWL-DL does not
@@ -821,7 +822,7 @@ class OwlSchemaGenerator(Generator):
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
             else:
                 owltypes = self.slot_node_owltypes(slot, owning_class=cls)
-            x = self.transform_class_slot_expression(cls, slot, slot, owltypes)
+            x = self.transform_class_slot_expression(cls, slot, slot, owltypes) or self._literal_enum_range(slot, cls)
             if not x:
                 range = sv.schema.default_range
                 if range and OWL.Thing not in owltypes:
@@ -1028,7 +1029,10 @@ class OwlSchemaGenerator(Generator):
                     typ = sv.get_type(slot_range)
                     owl_exprs.append(self._type_uri(typ.name))
             elif slot_range in sv.all_enums(imports=True):
-                # TODO: enums fill this in
+                # TODO: record the kind of a class enum too
+                if self._enum_is_literal(sv.get_enum(slot_range)):
+                    self.slot_is_literal_map[main_slot.name].add(True)
+                    this_owl_types.add(RDFS.Literal)
                 owl_exprs.append(self._enum_uri(EnumDefinitionName(slot_range)))
             elif slot_range in sv.all_classes(imports=True):
                 this_owl_types.add(OWL.Thing)
@@ -1146,7 +1150,8 @@ class OwlSchemaGenerator(Generator):
         slot_uri = self._prop_uri(slot)
 
         # Slots may be modeled as Object or Datatype Properties
-        # if type_objects is True, then ALL slots are ObjectProperties
+        # if type_objects is True, then all slots but those ranging only
+        # over enums of literals are ObjectProperties
         role = self.slot_owl_type(slot)
         if slot_uri not in self._BUILTIN_ANNOTATION_PROPERTIES:
             self.graph.add((slot_uri, RDF.type, role))
@@ -1321,29 +1326,134 @@ class OwlSchemaGenerator(Generator):
             return URIRef(default_value)
         return default_value
 
+    def _enum_is_literal(self, e: EnumDefinition) -> bool:
+        """Whether *e* has permissible values and all of them are ``rdfs:Literal``.
+
+        Such an enum is a datatype in OWL. An enum without permissible values stays
+        a class, since OWL 2 DL needs a definition for every datatype that is not
+        built in (§5.2).
+        """
+        enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
+        pvs = e.permissible_values.values()
+        return bool(pvs) and all(self._get_metatype(pv, enum_owl_type) == RDFS.Literal for pv in pvs)
+
+    def _ranges_are_literals(self, slot: SlotDefinition) -> bool:
+        """Whether *slot* ranges over an enum of literals (:meth:`_enum_is_literal`), and each
+        of its ranges has literal values: it is such an enum or, without :attr:`type_objects`,
+        a type whose values are literals.
+
+        The ranges of *slot* are those given by its ``range``, ``range_expression``, boolean
+        expressions and ``all_members``, or the default range if these give none, and those
+        given by its ``has_member``. A ``range_expression`` gives a class expression if it has
+        slot conditions, also in its boolean expressions, and else nothing.
+        """
+        sv = self.schemaview
+
+        def gives_class_expression(expr: AnonymousClassExpression) -> bool:
+            return bool(expr.slot_conditions) or any(
+                gives_class_expression(x)
+                for k in ("any_of", "all_of", "exactly_one_of", "none_of")
+                for x in getattr(expr, k) or []
+            )
+
+        def expressions(
+            root: SlotDefinition | AnonymousSlotExpression,
+        ) -> list[SlotDefinition | AnonymousSlotExpression]:
+            found: list[SlotDefinition | AnonymousSlotExpression] = []
+            pending = [root]
+            while pending:
+                expr = pending.pop()
+                found.append(expr)
+                for k in ("any_of", "all_of", "exactly_one_of", "none_of"):
+                    pending.extend(getattr(expr, k, None) or [])
+                if expr.all_members:
+                    pending.append(expr.all_members)
+            return found
+
+        own = expressions(slot)
+        members = expressions(slot.has_member) if slot.has_member else []
+        if any(expr.range_expression and gives_class_expression(expr.range_expression) for expr in own + members):
+            return False
+        ranges = {expr.range for expr in own if expr.range}
+        if not ranges and sv.schema.default_range:
+            ranges.add(sv.schema.default_range)
+        ranges |= {expr.range for expr in members if expr.range}
+        literal_enums = {r for r in ranges if r in sv.all_enums() and self._enum_is_literal(sv.get_enum(r))}
+        literal_types: set[str] = set()
+        if not self.type_objects:
+            literal_types = {r for r in ranges if r in sv.all_types() and not self._type_values_are_nodes(r)}
+        return bool(literal_enums) and ranges <= literal_enums | literal_types
+
+    def _literal_enum_range(
+        self, slot: SlotDefinition, cls: ClassDefinition | AnonymousClassExpression
+    ) -> URIRef | None:
+        """The enum of literals that *slot* has as range in *cls*, if it has one.
+
+        A class can refine a slot without giving its range, as a ``slot_usage`` that only
+        sets ``required`` does. The slot of such an enum is a data property, so its
+        restriction needs the enum, not the default range or ``owl:Thing``, which are
+        classes with ``type_objects`` or without a default range.
+        """
+        sv = self.schemaview
+        if sv.get_slot(slot.name) is None:
+            # A class expression can have a condition on a slot that is not declared.
+            return None
+        if isinstance(cls, ClassDefinition):
+            slot_range = sv.induced_slot(slot.name, cls.name).range
+        else:
+            slot_range = sv.get_slot(slot.name).range
+        if slot_range in sv.all_enums() and self._enum_is_literal(sv.get_enum(slot_range)):
+            return self._enum_uri(EnumDefinitionName(slot_range))
+        return None
+
+    def _is_class_parent(self, e: EnumDefinition, parent_name: str) -> bool:
+        """Whether the parent enum *parent_name* of *e*, a class, is a class too.
+
+        An enum of literals is a datatype, and an IRI cannot be both a class and a
+        datatype (OWL 2 §5.8.1), so it is not emitted as a parent, with a warning.
+        """
+        parent = self.schemaview.get_enum(parent_name)
+        if parent is not None and self._enum_is_literal(parent):
+            logger.warning(
+                f"Enum {e.name!r} is a class in OWL and its parent {parent_name!r} is a datatype, "
+                "so that parent is not emitted"
+            )
+            return False
+        return True
+
     def add_enum(self, e: EnumDefinition) -> None:
         g = self.graph
         enum_uri = self._enum_uri(e.name)
-        g.add((enum_uri, RDF.type, OWL.Class))
+        # OWL 2 DL does not let an IRI be both a class and a datatype (§5.8.1).
+        is_datatype = self._enum_is_literal(e)
+        g.add((enum_uri, RDF.type, RDFS.Datatype if is_datatype else OWL.Class))
 
         self.add_metadata(e, enum_uri)
-        has_parent = False
-        if e.is_a:
-            self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(e.is_a)))
-            has_parent = True
-        for mixin in sorted(e.mixins):
-            parent = self._enum_uri(mixin)
-            if self.mixins_as_expressions:
-                parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
-            else:
+        if is_datatype:
+            # OWL 2 has no subtype axiom for datatypes, as SubClassOf is for classes.
+            if e.is_a or e.mixins or (self.enum_inherits_as_subclass_of and e.inherits):
+                logger.warning(f"Enum {e.name!r} is a datatype in OWL, so its parent enums are not emitted")
+        else:
+            has_parent = False
+            if e.is_a and self._is_class_parent(e, e.is_a):
+                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(e.is_a)))
                 has_parent = True
-            self.graph.add((enum_uri, RDFS.subClassOf, parent))
-        if self.enum_inherits_as_subclass_of:
-            for parent_name in e.inherits:
-                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
-        if not has_parent and self.add_root_classes:
-            self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
-            self._declare_grouping_class(URIRef(EnumDefinition.class_class_uri), EnumDefinition.class_name)
+            for mixin in sorted(e.mixins):
+                if not self._is_class_parent(e, mixin):
+                    continue
+                parent = self._enum_uri(mixin)
+                if self.mixins_as_expressions:
+                    parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
+                else:
+                    has_parent = True
+                self.graph.add((enum_uri, RDFS.subClassOf, parent))
+            if self.enum_inherits_as_subclass_of:
+                for parent_name in e.inherits:
+                    if self._is_class_parent(e, parent_name):
+                        self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
+            if not has_parent and self.add_root_classes:
+                self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
+                self._declare_grouping_class(URIRef(EnumDefinition.class_class_uri), EnumDefinition.class_name)
         if self.metaclasses:
             g.add(
                 (
@@ -1416,12 +1526,15 @@ class OwlSchemaGenerator(Generator):
                     # self._object_one_of(pv_uris, node=enum_uri)
                     sub_pred = RDF.type
                 if combo_pred:
-                    self._boolean_expression(
+                    expr = self._boolean_expression(
                         pv_uris,
                         combo_pred,
-                        enum_uri,
+                        None if is_datatype else enum_uri,
                         owl_types={owl_type for owl_type in owl_types if owl_type is not None},
                     )
+                    if is_datatype:
+                        # A datatype definition is an equivalence to a data range (OWL 2 §9.4).
+                        g.add((enum_uri, OWL.equivalentClass, expr))
             for pv_node in pv_uris:
                 # this would normally be entailed, but we assert here so it is visible
                 # without reasoning
@@ -1848,6 +1961,9 @@ class OwlSchemaGenerator(Generator):
             slot_range = self.schemaview.schema.default_range
         else:
             slot_range = slot.range
+        if self._ranges_are_literals(slot):
+            # Only a data property has literal values (OWL 2 §5.4).
+            return OWL.DatatypeProperty
         if self.type_objects:
             return OWL.ObjectProperty
         is_literal_vals = self.slot_is_literal_map[slot.name]

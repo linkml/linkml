@@ -36,8 +36,17 @@ Mapping
     - an ObjectProperty is also used when the range is a type whose values are IRIs or blank
       nodes: ``uri``, ``uriorcurie`` and the types derived from them, ``objectidentifier`` and
       ``nodeidentifier`` (see :ref:`links-and-uri-references`)
+    - if the range is an enum, an ObjectProperty is used, unless every permissible value of
+      the enum is a literal (``rdfs:Literal``): such an enum is a datatype, and a DataProperty
+      is used for a slot that ranges over such an enum if each of its ranges is such an enum
+      or, without ``type_objects``, a type whose values are literals. The ranges of a slot are
+      those given by its ``range``, ``range_expression``, which is a class expression if it
+      has slot conditions, ``any_of``, ``all_of``, ``exactly_one_of``, ``none_of`` and
+      ``all_members`` (or, if these give none, the default range) and by its ``has_member``
+      (see `OWL Output Patterns`_)
     - otherwise DataProperty is used
-    - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used;
+    - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used,
+      except for a slot that ranges only over enums of literals;
       instead of having ranges of type be mapped to literals, these map to class-shadows of
       literals, that have a data property ``value``.
       This can be useful in some scenarios - for example, if you want to use the same property and
@@ -129,7 +138,7 @@ CLI Options for Controlling Enum/PV Generation
 
   - ``owl:Class`` (default) - PVs become OWL classes, enum uses ``owl:unionOf``
   - ``owl:NamedIndividual`` - PVs become named individuals, enum uses ``owl:oneOf``
-  - ``rdfs:Literal`` - PVs become RDF literals, enum uses ``owl:oneOf``
+  - ``rdfs:Literal`` - PVs become RDF literals, the enum is a datatype that uses ``owl:oneOf``
 
 * ``--enum-iri-separator`` - Changes the separator character in enum IRIs (default: ``#``)
 
@@ -222,10 +231,23 @@ The choice of permissible value type affects the generated OWL structure:
 
 **rdfs:Literal:**
 
+An enum whose permissible values are all literals is a datatype, and a slot with this
+range is a data property:
+
 .. code-block:: turtle
 
-    :StatusEnum a owl:Class ;
-        owl:oneOf ( "active" "inactive" ) .
+    :StatusEnum a rdfs:Datatype ;
+        owl:equivalentClass [ a rdfs:Datatype ;
+            owl:oneOf ( "active" "inactive" ) ] .
+    :status a owl:DatatypeProperty ;
+        rdfs:range :StatusEnum .
+
+OWL 2 has no subtype axiom for datatypes, as ``rdfs:subClassOf`` is for classes, so the
+parent enums of such an enum (``is_a``, ``mixins``, and ``inherits`` with
+``--enum-inherits-as-subclass-of``) are not emitted, and an enum that stays a class does
+not get such an enum as a parent either; the generator warns when it drops a parent.
+An enum without permissible values, or with values that are not all literals, stays a
+class.
 
 Mixed Types in One Enum
 ~~~~~~~~~~~~~~~~~~~~~~~
