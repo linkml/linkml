@@ -69,9 +69,9 @@ Total Session 4 time: 16:30 to 17:40 (70 min)
 | 16:30–16:40 | litschema: Turn a folder of PDFs into a dataset you can defend | Cory Levinson | UC Davis |
 | 16:40–16:50 | Machine-Actionable Datasheets for Datasets: Schema-Guided Agentic Extraction from Project Documentation | Marcin Joachimiak | Lawrence Berkeley National Laboratory |
 | 16:50–17:00 | Knowledge Trust Ladder | Noel McLoughlin | Open Engineering / TD Bank |
-| 17:00–17:10 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
-| 17:10–17:20 | TBD (open slot) | | |
-| 17:20–17:30 | TBD (open slot) | | |
+| 17:00–17:10 | ORINOCO and ORINOCO-Lite: one LinkML-modelled knowledge base behind a research group’s website, slides, etc | Yaroslav Halchenko | Center for Open Neuroscience |
+| 17:10–17:20 | ohi.dev: An ontology and LinkML schema package manager, for humans and agents | Alireza Furutanpey | NeverBlink |
+| 17:20–17:30 | From the Lab to the Knowledge Graph: Building BICAN Metadata Models with LinkML | Dorota Jarecka | Massachusetts Institute of Technology |
 | 17:30–17:40 | Session Q&A | | |
 | 17:40–17:50 | Break (10 minutes) | | |
 
