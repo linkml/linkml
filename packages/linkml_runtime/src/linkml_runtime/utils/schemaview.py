@@ -1800,6 +1800,10 @@ class SchemaView:
         Structured patterns are resolved using settings from the schema that defined the
         supplied definition. The definition and underlying schemas are not modified.
 
+        An induced slot already holds its pattern, resolved layer by layer because a ``slot_usage``
+        can be in another schema. Read its ``pattern`` rather than passing it to this method, which
+        would use the settings of the schema that defines the slot.
+
         :param definition: slot or type definition whose pattern should be resolved
         :return: asserted or materialized regular-expression pattern, if present
         """
@@ -1925,6 +1929,11 @@ class SchemaView:
 
         # iterate through all metaslots, and potentially populate metaslot value for induced slot
         for metaslot_name in self._metaslots_for_slot():
+            # A slot_usage holds its owning class's from_schema only so that its pattern could resolve
+            # above. The induced slot still comes from the schema that defines the slot, and get_uri
+            # takes the slot's default prefix from that schema.
+            if metaslot_name == "from_schema":
+                continue
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(induced_slot, metaslot_name, None)

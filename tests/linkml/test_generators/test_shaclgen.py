@@ -2840,6 +2840,51 @@ def test_shacl_modular_schema_with_reused_attribute_name(tmp_path) -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_sh_path_keeps_the_uri_when_slot_usage_is_in_another_schema(tmp_path):
+    """The sh:path of a slot is its own URI, even when a slot_usage in another schema refines the slot."""
+    (tmp_path / "base.yaml").write_text(
+        """
+id: https://example.org/base
+name: base
+prefixes:
+  linkml: https://w3id.org/linkml/
+  b: https://example.org/b/
+default_prefix: b
+default_range: string
+imports:
+  - linkml:types
+slots:
+  name: {}
+"""
+    )
+    main = tmp_path / "main.yaml"
+    main.write_text(
+        """
+id: https://example.org/main
+name: main
+prefixes:
+  linkml: https://w3id.org/linkml/
+  m: https://example.org/m/
+default_prefix: m
+default_range: string
+imports:
+  - linkml:types
+  - base
+classes:
+  Person:
+    slots:
+      - name
+    slot_usage:
+      name:
+        required: true
+"""
+    )
+
+    graph = rdflib.Graph().parse(data=ShaclGenerator(str(main)).serialize(), format="turtle")
+
+    assert set(graph.objects(None, SH.path)) == {URIRef("https://example.org/b/name")}
+
+
 def test_any_of_with_pattern(input_path):
     """Test that pattern constraints combined with any_of emit sh:pattern.
 
