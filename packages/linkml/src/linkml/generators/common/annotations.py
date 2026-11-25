@@ -57,18 +57,21 @@ class DeclaredAnnotation:
 def declaring_slots(sv: SchemaView, element: Element | PermissibleValue, tag: str) -> list[SlotDefinition]:
     """Return the slots of the metaclasses that *element* instantiates which declare annotation *tag*.
 
-    A metaclass is referenced by its class URI. A tag matches a slot by name or,
+    A metaclass is referenced by its name or class URI. A tag matches a slot by name or,
     as a CURIE or IRI, by the slot's URI. Inherited and imported slots count.
     """
-    expanded_tag = sv.expand_curie(tag)
+    if not element.instantiates:
+        return []
+    expanded_tag = sv.expand_curie(tag) if ":" in tag else None
     slots: list[SlotDefinition] = []
     for reference in element.instantiates:
-        metaclass_uri = sv.expand_curie(reference)
+        metaclass = sv.get_class(reference)
+        metaclass_uri = sv.get_uri(metaclass, expand=True) if metaclass is not None else sv.expand_curie(reference)
         for cls in sv.all_classes().values():
             if sv.get_uri(cls, expand=True) != metaclass_uri:
                 continue
             for slot in sv.class_induced_slots(cls.name):
-                if slot.name == tag or sv.get_uri(slot, expand=True) == expanded_tag:
+                if slot.name == tag or (expanded_tag is not None and sv.get_uri(slot, expand=True) == expanded_tag):
                     slots.append(slot)
     return slots
 

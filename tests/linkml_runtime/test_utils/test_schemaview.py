@@ -1842,6 +1842,143 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     assert view.get_uri("relationship type") == "ks:RelationshipType"
 
 
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "https://example.org/resource",
+        "http://example.org:8080/resource",
+        "urn:isbn:0451450523",
+        "urn:uuid:123e4567-e89b-12d3-a456-426614174000",
+        "URN:isbn:0451450523",
+        "mailto:a@b.org",
+        "mailto:a@b.org?subject=Hello%20world",
+        "MAILTO:a@b.org",
+        "data:text/plain,Hello%20world",
+        "tel:+1-201-555-0123",
+        "file:/path/to/resource",
+        "https:resource",
+        "custom:resource",
+        "custom+v1.0:resource/path?query=value#fragment",
+        "UNREG:C",
+        "urnish:value",
+        "mailtoo:a@b.org",
+    ],
+)
+def test_expand_curie_absolute_uri(sv_empty: SchemaView, uri: str) -> None:
+    """Absolute URI syntax does not require an authority or a known scheme."""
+    assert sv_empty.expand_curie(uri) == uri
+
+
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "",
+        "bare_name",
+        "/relative/path",
+        "//example.org/resource",
+        "urn:isbn:invalid value",
+        "mailto:invalid value",
+        "https://example.org/invalid value",
+        "1bad:resource",
+        "bad_prefix:resource",
+        "custom:bad%escape",
+    ],
+)
+def test_expand_curie_invalid_input(sv_empty: SchemaView, uri: str) -> None:
+    """Unresolvable inputs must still be syntactically valid absolute URIs."""
+    with pytest.raises(ValueError):
+        sv_empty.expand_curie(uri)
+
+
+@pytest.mark.parametrize("local_id", ["resource", "resource:part", "resource/path#fragment"])
+def test_expand_curie_registered_prefix(sv_empty: SchemaView, local_id: str) -> None:
+    """Registered CURIE prefixes still expand to their declared URI bases."""
+    sv_empty.schema.prefixes["ex"] = Prefix(prefix_prefix="ex", prefix_reference="https://example.org/")
+    assert sv_empty.expand_curie(f"ex:{local_id}") == f"https://example.org/{local_id}"
+
+
+@pytest.mark.parametrize(
+    ("prefix", "local_id"),
+    [("mailto", "a@b.org"), ("urn", "isbn:0451450523"), ("custom", "resource")],
+)
+def test_expand_curie_registered_prefix_before_uri_scheme(sv_empty: SchemaView, prefix: str, local_id: str) -> None:
+    """An explicit namespace binding takes precedence over URI scheme syntax."""
+    sv_empty.schema.prefixes[prefix] = Prefix(prefix_prefix=prefix, prefix_reference="https://example.org/")
+    assert sv_empty.expand_curie(f"{prefix}:{local_id}") == f"https://example.org/{local_id}"
+
+
+@pytest.mark.parametrize(
+    "prefix_reference", [None, "https://example.org/custom/"], ids=["imported-map", "explicit-prefix"]
+)
+@pytest.mark.parametrize(
+    ("curi_maps", "uri", "expected"),
+    [
+        (["semweb_context"], "rdfs:label", "http://www.w3.org/2000/01/rdf-schema#label"),
+        (["semweb_context"], "rdf:type", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        (["semweb_context", "obo_context"], "GO:0008150", "http://purl.obolibrary.org/obo/GO_0008150"),
+        (["semweb_context"], "UNREG:C", "UNREG:C"),
+    ],
+)
+def test_expand_curie_imported_default_curi_maps(
+    curi_maps: list[str], uri: str, expected: str, prefix_reference: str | None
+) -> None:
+    """Use imported context maps only when no explicit namespace resolves the prefix."""
+    prefix, _, local_id = uri.partition(":")
+    prefixes = {"ex": "https://example.org/"}
+    if prefix_reference is not None:
+        prefixes[prefix] = prefix_reference
+    schema = SchemaDefinition(
+        id="https://example.org/root",
+        name="root",
+        prefixes=prefixes,
+        default_prefix="ex",
+        imports=["contexts"],
+    )
+    view = SchemaView(
+        schema,
+        importmap={
+            "contexts": {
+                "id": "https://example.org/contexts",
+                "name": "contexts",
+                "default_curi_maps": curi_maps,
+            }
+        },
+    )
+    view.imports_closure()
+
+    assert not view.schema.default_curi_maps
+    assert view.schema_map["contexts"].default_curi_maps == curi_maps
+    if prefix_reference is None:
+        # These bindings are deliberately absent from the regular namespaces;
+        # only the imported default_curi_maps lookup can expand the known CURIEs.
+        assert prefix not in view.namespaces()
+    else:
+        assert view.namespaces()[prefix] == prefix_reference
+        expected = prefix_reference + local_id
+    assert view.expand_curie(uri) == expected
+
+
+@pytest.mark.parametrize(
+    ("uri", "expected"),
+    [
+        ("ex:resource", "https://example.org/resource"),
+        ("fallback:resource", "https://example.org/fallback/resource"),
+        ("custom:resource", "custom:resource"),
+    ],
+)
+def test_expand_curie_fallback(sv_empty: SchemaView, uri: str, expected: str) -> None:
+    """Resolve primary then fallback namespaces before accepting URI syntax."""
+    sv_empty.schema.prefixes["ex"] = Prefix(prefix_prefix="ex", prefix_reference="https://example.org/")
+    fallback = SchemaView(
+        SchemaDefinition(
+            id="https://example.org/fallback",
+            name="fallback",
+            prefixes={"ex": "https://example.org/other/", "fallback": "https://example.org/fallback/"},
+        )
+    )
+    assert sv_empty.expand_curie(uri, fallback=fallback) == expected
+
+
 def test_uris_without_default_prefix() -> None:
     """Test if uri is correct if no default_prefix is defined for the schema.
 

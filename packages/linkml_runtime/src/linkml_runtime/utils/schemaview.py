@@ -44,7 +44,7 @@ from linkml_runtime.utils.context_utils import map_import, parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.pattern import PatternResolver
-from linkml_runtime.utils.uri_validator import validate_curie, validate_uri
+from linkml_runtime.utils.uri_validator import validate_curie, validate_uri, validate_uri_reference
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -1512,7 +1512,9 @@ class SchemaView:
             if pfx == sfx(str(schema.id)):
                 uri = f"{pfx}{e_type_path}{e_name}"
         if expand:
-            return self.expand_curie(uri)
+            if ":" in uri:
+                return self.expand_curie(uri)
+            return uri
         return uri
 
     def get_curie(
@@ -1543,20 +1545,54 @@ class SchemaView:
         uri = self.get_uri(e, imports=imports)
         return self.compress_uri(uri)
 
-    def expand_curie(self, uri: str) -> str:
-        """Expand a URI or CURIE to a full URI.
+    def expand_curie(self, uri: str, *, fallback: SchemaView | None = None) -> str:
+        """Expand a registered CURIE or return a syntactically valid absolute URI.
 
-        :param uri:
-        :return: URI as a string
+        Resolution order:
+
+        1. Split *uri* at the first colon and resolve the prefix through the schema's
+           registered namespaces.
+        2. If the prefix is not registered, try each ``default_curi_maps`` entry of
+           every schema in the schema_map (the schema itself and its imports).
+        3. If a *fallback* SchemaView is provided, try its namespaces and
+           ``default_curi_maps`` using the same rules.
+        4. If the prefix is still unresolved but *uri* is a syntactically valid
+           absolute URI according to RFC 3986, return it unchanged. An authority
+           component is not required, and schemes need not be registered.
+        5. Otherwise, raise :exc:`ValueError`.
+
+        URI schemes and CURIE prefixes overlap syntactically. Registered prefixes
+        take precedence; otherwise, a value such as ``UNREG:C`` is accepted as an
+        absolute URI rather than rejected as an unknown CURIE prefix.
+
+        :param uri: A CURIE or full URI string.
+        :param fallback: Additional prefix-resolution context to try before URI
+            passthrough. This SchemaView's prefixes take precedence over the fallback.
+        :return: A full URI string.
+        :raises ValueError: When *uri* cannot be expanded through a registered
+            prefix or an explicitly declared ``default_curi_maps`` entry and is
+            not a syntactically valid absolute URI.
         """
-        if ":" in uri:
-            parts = uri.split(":")
-            if len(parts) == 2:
-                [pfx, local_id] = parts
-                ns = self.namespaces()
+        pfx, separator, local_id = uri.partition(":")
+        if separator:
+            views = (self,) if fallback is None else (self, fallback)
+            for view in views:
+                ns = view.namespaces()
                 if pfx in ns:
                     return ns[pfx] + local_id
-        return uri
+                # Try context maps declared in any schema in this view's
+                # schema_map, including imports whose maps are not in namespaces().
+                for s in view.schema_map.values():
+                    for cmap in s.default_curi_maps:
+                        tmp_ns = Namespaces()
+                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                        if pfx in tmp_ns:
+                            return tmp_ns[pfx] + local_id
+        if validate_uri(uri):
+            return uri
+        if validate_uri_reference(uri):
+            raise ValueError(f"'{uri}' is a relative reference, not a valid absolute URI")
+        raise ValueError(f"'{uri}' is neither a resolvable CURIE nor a valid absolute URI")
 
     def compress_uri(self, uri: str) -> str:
         """Compress a URI or CURIE to a CURIE string using the schema's registered prefixes.
