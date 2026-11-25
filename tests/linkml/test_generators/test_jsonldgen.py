@@ -147,6 +147,36 @@ def test_class_uri_kept_alongside_exact_mapping(tmp_path):
     assert "exact_mappings" not in merged["classes"]["MappingSet"]
 
 
+NON_ASCII_SCHEMA = """
+id: https://example.org/cafe
+name: cafe
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/cafe/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+classes:
+  Mapping:
+    description: A “mapping record” – café
+"""
+
+
+def test_non_ascii_not_escaped(tmp_path):
+    """Non-ASCII characters are written as UTF-8, not as ``\\uXXXX`` escapes.
+
+    Regression test for https://github.com/linkml/linkml/issues/4266.
+    """
+    schema_path = tmp_path / "cafe.yaml"
+    schema_path.write_text(NON_ASCII_SCHEMA, encoding="utf-8")
+
+    output = JSONLDGenerator(str(schema_path)).serialize()
+
+    assert "A “mapping record” – café" in output
+    assert "\\u" not in output
+
+
 CORE_SCHEMA = """
 id: https://example.org/core
 name: core
