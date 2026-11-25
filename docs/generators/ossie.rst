@@ -62,11 +62,21 @@ What gets generated
 The full mapping is described in the `ohi LinkML documentation
 <https://linkml.ohi.dev/docs/generators/ossie/>`_.
 
-Limitations
------------
+Schemas and imports
+-------------------
 
-The schema has to be a path to a local file. ohi LinkML reads it and resolves its imports
-from disk itself, so a URL or an already-parsed ``SchemaDefinition`` is refused.
+The generator takes the same schemas as the other generators: a path, YAML text, an open file, a
+dict, a parsed ``SchemaDefinition`` or ``SchemaView``, or another generator. ``--importmap``,
+``base_dir`` and ``include`` work as in the other generators too. ohi LinkML then reads the schema
+and resolves its imports itself.
+
+There are some differences:
+
+- ohi LinkML refuses to download imported schemas from URLs. The built-in ``linkml:`` schemas are
+  bundled, so they always load.
+- Without ``base_dir``, a relative location in the import map is joined to the directory of the
+  schema being generated, not to the directory of the schema that has the import. The two are the
+  same unless an import map entry is used by a schema in another directory.
 
 Docs
 ----
@@ -89,4 +99,13 @@ Code
 .. currentmodule:: linkml.generators.common.ohi
 
 .. autoclass:: OhiBackedGenerator
-    :members: ohi_schema, generatorversion, close
+    :members: schema, ohi_schema, source, generatorversion, close
+
+.. autoclass:: SchemaSource
+    :members:
+
+.. autofunction:: schema_source
+
+.. autofunction:: ohi_import_options
+
+.. autofunction:: merge_include
