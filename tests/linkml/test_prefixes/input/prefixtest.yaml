@@ -54,6 +54,7 @@ slots:
 
   type:
     slot_uri: rdf:type
+    range: uriorcurie
 
   label:
     slot_uri: rdfs:label

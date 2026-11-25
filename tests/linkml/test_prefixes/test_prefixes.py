@@ -169,7 +169,7 @@ def test_jsonldcontext(schema, context_output):
         "id": "@id",
         "label": {"@id": "rdfs:label"},
         "part_of": {"@id": "BFO:0000050"},
-        "type": {"@id": "rdf:type"},
+        "type": {"@id": "@type"},
     }
     with open(context_output) as stream:
         obj = json.load(stream)["@context"]
