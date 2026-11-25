@@ -174,6 +174,9 @@ class OwlSchemaGenerator(Generator):
     node_owltypes: defaultdict[OWL_EXPRESSION, set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
 
+    _literal_enums: dict[str, bool] = field(default_factory=dict, init=False, repr=False)
+    """Whether each enum is a datatype (:meth:`_enum_is_literal`), by name"""
+
     simplify: bool = True
     """Reduce complex expressions to simpler forms"""
 
@@ -656,6 +659,10 @@ class OwlSchemaGenerator(Generator):
 
         # rules yield OWL GCI subClassOf axioms
         for rule in cls.rules:
+            pre_reason, post_reason = self._unstated(rule.preconditions), self._unstated(rule.postconditions)
+            if pre_reason or post_reason:
+                logger.warning(f"A rule of class {cls.name!r} is not emitted, since in it {pre_reason or post_reason}")
+                continue
             pre_node = condition_to_bnode(rule.preconditions)
             if not pre_node:
                 continue
@@ -666,6 +673,9 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((pre_node, RDFS.subClassOf, post_node))
         # classification rules yield OWL GCI subClassOf axioms
         for expr in cls.classification_rules:
+            if reason := self._unstated(expr):
+                logger.warning(f"A classification rule of class {cls.name!r} is not emitted, since in it {reason}")
+                continue
             ixn_listnode = condition_to_bnode(expr)
             if not ixn_listnode:
                 continue
@@ -754,6 +764,31 @@ class OwlSchemaGenerator(Generator):
         own_slots.sort(key=lambda x: x.name)
         return own_slots
 
+    def _stated_operands(
+        self, cls: ClassDefinition | AnonymousClassExpression, key: str
+    ) -> list[AnonymousClassExpression]:
+        """The operands of the boolean expression *key* of *cls* that OWL can state (:meth:`_unstated`).
+
+        An operand that OWL cannot state is not transformed: leaving out only what it cannot
+        state in it would make the axiom of a class stronger where the operand is negated, as
+        in ``none_of``, and leaving it out would where it is one of a union, as in ``any_of``.
+        So of a class, an ``any_of`` or ``exactly_one_of`` with such an operand is left out,
+        and of ``all_of`` and ``none_of`` only such an operand is, which makes the axiom
+        weaker, with a warning. An anonymous class expression is only transformed if OWL can
+        state it, and so can its operands.
+        """
+        operands = list(getattr(cls, key, None) or [])
+        if not isinstance(cls, ClassDefinition):
+            return operands
+        reasons = [self._unstated(operand) for operand in operands]
+        if key in ("any_of", "exactly_one_of") and any(reasons):
+            reason = next(r for r in reasons if r)
+            logger.warning(f"The {key} of class {cls.name!r} is not emitted, since in one of its operands {reason}")
+            return []
+        for reason in filter(None, reasons):
+            logger.warning(f"An operand of the {key} of class {cls.name!r} is not emitted, since in it {reason}")
+        return [operand for operand, reason in zip(operands, reasons, strict=True) if not reason]
+
     def transform_class_expression(
         self,
         cls: ClassDefinition | AnonymousClassExpression | None,
@@ -776,14 +811,15 @@ class OwlSchemaGenerator(Generator):
         sv = self.schemaview
         own_slots = self.get_own_slots(cls)
         owl_exprs: list[OWL_EXPRESSION] = []
-        if cls.any_of:
-            any_of_expr = self._union_of([self.transform_class_expression(x) for x in cls.any_of])
+        any_of, exactly_one_of, all_of, none_of = (
+            self._stated_operands(cls, k) for k in ("any_of", "exactly_one_of", "all_of", "none_of")
+        )
+        if any_of:
+            any_of_expr = self._union_of([self.transform_class_expression(x) for x in any_of])
             if any_of_expr:
                 owl_exprs.append(any_of_expr)
-        if cls.exactly_one_of:
-            sub_exprs: list[OWL_EXPRESSION] = self._present(
-                self.transform_class_expression(x) for x in cls.exactly_one_of
-            )
+        if exactly_one_of:
+            sub_exprs: list[OWL_EXPRESSION] = self._present(self.transform_class_expression(x) for x in exactly_one_of)
             if isinstance(cls, ClassDefinition):
                 cls_uri = self._class_uri(cls.name)
                 listnode = BNode()
@@ -791,11 +827,11 @@ class OwlSchemaGenerator(Generator):
                 graph.add((cls_uri, OWL.disjointUnionOf, listnode))
             else:
                 sub_sub_exprs: list[OWL_EXPRESSION] = []
-                for i, x in enumerate(cls.exactly_one_of):
+                for i, x in enumerate(exactly_one_of):
                     operand_expr = self.transform_class_expression(x)
                     if not operand_expr:
                         continue
-                    rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
+                    rest = exactly_one_of[0:i] + exactly_one_of[i + 1 :]
                     neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
                     pos_expr = self._intersection_of([operand_expr, neg_expr])
                     if pos_expr:
@@ -804,12 +840,12 @@ class OwlSchemaGenerator(Generator):
                 if union_expr:
                     owl_exprs.append(union_expr)
                 # owl_exprs.extend(sub_exprs)
-        if cls.all_of:
-            all_of_expr = self._intersection_of([self.transform_class_expression(x) for x in cls.all_of])
+        if all_of:
+            all_of_expr = self._intersection_of([self.transform_class_expression(x) for x in all_of])
             if all_of_expr:
                 owl_exprs.append(all_of_expr)
-        if cls.none_of:
-            none_of_expr = self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of])
+        if none_of:
+            none_of_expr = self._complement_of_union_of([self.transform_class_expression(x) for x in none_of])
             if none_of_expr:
                 owl_exprs.append(none_of_expr)
         for slot in own_slots:
@@ -818,14 +854,33 @@ class OwlSchemaGenerator(Generator):
                     raise ValueError(f"Annotation property {slot.name!r} cannot be a condition of a class expression")
                 # An annotation property has no logical meaning (OWL 2 §10.1), so no restriction.
                 continue
+            if slot.name in sv.all_slots():
+                top_slot = sv.get_slot(slot.name)
+            else:
+                top_slot = slot
+            # An entry without ranges of its own has those of the slot it names.
+            kinds = self._range_kinds(slot, default=False) or self._range_kinds(top_slot, default=False)
+            reason = self._misfit(slot)
+            restricted = reason is None
+            if (
+                reason
+                and isinstance(cls, ClassDefinition)
+                and (slot.name not in sv.all_slots(attributes=False) or reason != self._misfit(top_slot))
+            ):
+                # add_slot warns about a slot whose values are restricted nowhere.
+                logger.warning(f"In class {cls.name!r}, {reason}, so its values there are not restricted")
             if slot.name:
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
             else:
                 owltypes = self.slot_node_owltypes(slot, owning_class=cls)
-            x = self.transform_class_slot_expression(cls, slot, slot, owltypes) or self._literal_enum_range(slot, cls)
-            if not x:
+            x = None
+            if restricted:
+                x = self.transform_class_slot_expression(cls, slot, slot, owltypes)
+                x = x or self._literal_enum_range(slot, cls)
+            if restricted and not x:
                 range = sv.schema.default_range
-                if range and OWL.Thing not in owltypes:
+                # A slot that ranges over nodes is an object property, so a datatype is no filler for it.
+                if range and OWL.Thing not in owltypes and not (False in kinds and self._values_are_literals(range)):
                     if range in sv.all_types():
                         x = self._type_uri(range)
                     elif range in sv.all_enums():
@@ -838,11 +893,7 @@ class OwlSchemaGenerator(Generator):
                 else:
                     x = OWL.Thing
             slot_uri = self._prop_uri(slot)
-            if slot.name in sv.all_slots():
-                top_slot = sv.get_slot(slot.name)
-            else:
-                top_slot = slot
-            if not (
+            if restricted and not (
                 quantifier_predicate == OWL.allValuesFrom
                 and self.skip_vacuous_local_range_axioms
                 and self._is_vacuous_avf_filler(top_slot, x)
@@ -901,7 +952,7 @@ class OwlSchemaGenerator(Generator):
                 if max_card is not None:
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
 
-            if slot.has_member:
+            if slot.has_member and restricted:
                 has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
                 if has_member_expr:
                     owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
@@ -928,10 +979,8 @@ class OwlSchemaGenerator(Generator):
             slot_range = slot.range
             if isinstance(owning_class, ClassDefinition):
                 slot_range = sv.induced_slot(slot.name, owning_class.name).range
-            if slot_range in sv.all_classes():
-                range_class = sv.get_class(slot_range)
-                if not (range_class and range_class.class_uri == "linkml:Any"):
-                    node_types.add(OWL.Thing)
+            if slot_range in sv.all_classes() and not self._is_any(slot_range):
+                node_types.add(OWL.Thing)
             if slot.range in sv.all_types():
                 node_types.add(OWL.Thing if self._type_values_are_nodes(slot.range) else RDFS.Datatype)
         for k in ["any_of", "all_of", "exactly_one_of", "none_of"]:
@@ -1001,17 +1050,14 @@ class OwlSchemaGenerator(Generator):
                 if not operand_expr:
                     continue
                 rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
+                # As for any_of, all_of and none_of, the operands give the types of these expressions.
                 neg_expr = self._complement_of_union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
-                    owl_types=owl_types,
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest]
                 )
-                pos_expr = self._intersection_of(
-                    [operand_expr, neg_expr],
-                    owl_types=owl_types,
-                )
+                pos_expr = self._intersection_of([operand_expr, neg_expr])
                 if pos_expr:
                     disj_exprs.append(pos_expr)
-            exactly_one_expr = self._union_of(disj_exprs, owl_types=owl_types)
+            exactly_one_expr = self._union_of(disj_exprs)
             if exactly_one_expr:
                 owl_exprs.append(exactly_one_expr)
         slot_range = slot.range
@@ -1020,24 +1066,26 @@ class OwlSchemaGenerator(Generator):
         this_owl_types: set[OWL_TYPE] = set()
         if slot_range:
             if slot_range in sv.all_types(imports=True):
-                if self._type_values_are_nodes(slot_range):
-                    self.slot_is_literal_map[main_slot.name].add(False)
-                    this_owl_types.add(OWL.Thing)
-                else:
-                    self.slot_is_literal_map[main_slot.name].add(True)
-                    this_owl_types.add(RDFS.Literal)
-                    typ = sv.get_type(slot_range)
-                    owl_exprs.append(self._type_uri(typ.name))
+                # With type_objects, a type is a class (see add_type), whose values are nodes.
+                literal = self._values_are_literals(slot_range)
+                self.slot_is_literal_map[main_slot.name].add(literal)
+                this_owl_types.add(RDFS.Literal if literal else OWL.Thing)
+                if not self._type_values_are_nodes(slot_range):
+                    owl_exprs.append(self._type_uri(slot_range))
             elif slot_range in sv.all_enums(imports=True):
-                # TODO: record the kind of a class enum too
                 if self._enum_is_literal(sv.get_enum(slot_range)):
                     self.slot_is_literal_map[main_slot.name].add(True)
                     this_owl_types.add(RDFS.Literal)
+                else:
+                    self.slot_is_literal_map[main_slot.name].add(False)
+                    this_owl_types.add(OWL.Thing)
                 owl_exprs.append(self._enum_uri(EnumDefinitionName(slot_range)))
             elif slot_range in sv.all_classes(imports=True):
-                this_owl_types.add(OWL.Thing)
-                self.slot_is_literal_map[main_slot.name].add(False)
-                owl_exprs.append(self._class_uri(ClassDefinitionName(slot_range)))
+                # linkml:Any adds nothing to the other expressions of the slot (see _range_kinds).
+                if not (owl_exprs and self._is_any(slot_range)):
+                    this_owl_types.add(OWL.Thing)
+                    self.slot_is_literal_map[main_slot.name].add(False)
+                    owl_exprs.append(self._class_uri(ClassDefinitionName(slot_range)))
             else:
                 raise ValueError(f"Unknown range {slot_range}")
         is_literal = None
@@ -1185,9 +1233,13 @@ class OwlSchemaGenerator(Generator):
                 self._add_annotation_property_axioms(slot, slot_uri)
             return
 
-        range_expr = self.transform_class_slot_expression(None, slot)
-        if range_expr:
-            self.graph.add((slot_uri, RDFS.range, range_expr))
+        reason = self._misfit(slot)
+        if reason:
+            logger.warning(f"{reason[0].upper()}{reason[1:]}, so it has no range and its values are not restricted")
+        else:
+            range_expr = self.transform_class_slot_expression(None, slot)
+            if range_expr:
+                self.graph.add((slot_uri, RDFS.range, range_expr))
         if slot.domain:
             self.graph.add((slot_uri, RDFS.domain, self._class_uri(slot.domain)))
         if slot.inverse:
@@ -1331,21 +1383,50 @@ class OwlSchemaGenerator(Generator):
 
         Such an enum is a datatype in OWL. An enum without permissible values stays
         a class, since OWL 2 DL needs a definition for every datatype that is not
-        built in (§5.2).
+        built in (§5.2). The answer is cached, as the kind of every slot of the enum needs it.
         """
-        enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
-        pvs = e.permissible_values.values()
-        return bool(pvs) and all(self._get_metatype(pv, enum_owl_type) == RDFS.Literal for pv in pvs)
+        if e.name not in self._literal_enums:
+            enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
+            pvs = e.permissible_values.values()
+            self._literal_enums[e.name] = bool(pvs) and all(
+                self._get_metatype(pv, enum_owl_type) == RDFS.Literal for pv in pvs
+            )
+        return self._literal_enums[e.name]
 
-    def _ranges_are_literals(self, slot: SlotDefinition) -> bool:
-        """Whether *slot* ranges over an enum of literals (:meth:`_enum_is_literal`), and each
-        of its ranges has literal values: it is such an enum or, without :attr:`type_objects`,
-        a type whose values are literals.
+    def _values_are_literals(self, range_name: str) -> bool:
+        """Whether the values of the range *range_name* are literals, and not IRIs or blank nodes.
+
+        The values of an enum of literals (:meth:`_enum_is_literal`) are literals, as are those
+        of a type without :attr:`type_objects` unless they are nodes
+        (:meth:`_type_values_are_nodes`). The values of a class, including ``linkml:Any``, and
+        of another enum are nodes.
+        """
+        sv = self.schemaview
+        if range_name in sv.all_enums():
+            return self._enum_is_literal(sv.get_enum(range_name))
+        return range_name in sv.all_types() and not self.type_objects and not self._type_values_are_nodes(range_name)
+
+    def _is_any(self, range_name: str | None) -> bool:
+        """Whether *range_name* is the class of any value, the one with the URI ``linkml:Any``."""
+        range_class = self.schemaview.get_class(range_name) if range_name else None
+        return range_class is not None and range_class.class_uri == "linkml:Any"
+
+    def _range_kinds(self, slot: SlotDefinition | AnonymousSlotExpression, default: bool = True) -> set[bool]:
+        """The kinds of the values of the ranges of *slot*: ``True`` for literals and ``False``
+        for IRIs and blank nodes (:meth:`_values_are_literals`). The values of a class
+        expression are nodes.
 
         The ranges of *slot* are those given by its ``range``, ``range_expression``, boolean
-        expressions and ``all_members``, or the default range if these give none, and those
-        given by its ``has_member``. A ``range_expression`` gives a class expression if it has
-        slot conditions, also in its boolean expressions, and else nothing.
+        expressions and ``all_members``, or, with *default*, the default range if these give
+        none, and those given by its ``has_member``. A ``range_expression`` gives a class
+        expression if it has slot conditions, also in its boolean expressions, and else nothing.
+        A branch of ``any_of`` or ``exactly_one_of`` that gives none, such as one with only a
+        ``pattern``, has the range of the expression it is in, or else that of the slot, or else
+        the default range. The range ``linkml:Any`` (:meth:`_is_any`) gives nothing to an
+        expression whose other expressions give ranges, as with ``range: Any`` the ``any_of``
+        of a slot gives all its ranges (see the documentation on unions as ranges).
+
+        :raises ValueError: if a range is not a class, an enum or a type
         """
         sv = self.schemaview
 
@@ -1356,33 +1437,104 @@ class OwlSchemaGenerator(Generator):
                 for x in getattr(expr, k) or []
             )
 
-        def expressions(
-            root: SlotDefinition | AnonymousSlotExpression,
-        ) -> list[SlotDefinition | AnonymousSlotExpression]:
-            found: list[SlotDefinition | AnonymousSlotExpression] = []
-            pending = [root]
-            while pending:
-                expr = pending.pop()
-                found.append(expr)
-                for k in ("any_of", "all_of", "exactly_one_of", "none_of"):
-                    pending.extend(getattr(expr, k, None) or [])
-                if expr.all_members:
-                    pending.append(expr.all_members)
-            return found
+        def kinds_of(expr: SlotDefinition | AnonymousSlotExpression, outer: str | None) -> set[bool]:
+            # outer: the range of the expression that *expr* is in, or else that of the slot
+            outer = expr.range or outer
+            kinds: set[bool] = set()
+            for k in ("any_of", "exactly_one_of"):
+                for branch in getattr(expr, k, None) or []:
+                    kinds |= kinds_of(branch, outer) or ({self._values_are_literals(outer)} if outer else set())
+            for k in ("all_of", "none_of"):
+                for operand in getattr(expr, k, None) or []:
+                    kinds |= kinds_of(operand, outer)
+            if expr.all_members:
+                kinds |= kinds_of(expr.all_members, outer)
+            if expr.range_expression and gives_class_expression(expr.range_expression):
+                kinds.add(False)
+            if expr.range:
+                if not any(expr.range in elements for elements in (sv.all_classes(), sv.all_enums(), sv.all_types())):
+                    raise ValueError(f"Unknown range {expr.range}")
+                if not (kinds and self._is_any(expr.range)):
+                    kinds.add(self._values_are_literals(expr.range))
+            return kinds
 
-        own = expressions(slot)
-        members = expressions(slot.has_member) if slot.has_member else []
-        if any(expr.range_expression and gives_class_expression(expr.range_expression) for expr in own + members):
-            return False
-        ranges = {expr.range for expr in own if expr.range}
-        if not ranges and sv.schema.default_range:
-            ranges.add(sv.schema.default_range)
-        ranges |= {expr.range for expr in members if expr.range}
-        literal_enums = {r for r in ranges if r in sv.all_enums() and self._enum_is_literal(sv.get_enum(r))}
-        literal_types: set[str] = set()
-        if not self.type_objects:
-            literal_types = {r for r in ranges if r in sv.all_types() and not self._type_values_are_nodes(r)}
-        return bool(literal_enums) and ranges <= literal_enums | literal_types
+        # An entry of a class without a range has that of the slot it names.
+        name = getattr(slot, "name", None)
+        outer = (sv.get_slot(name).range if name in sv.all_slots() else None) or sv.schema.default_range
+        kinds = kinds_of(slot, outer)
+        if not kinds and default and sv.schema.default_range:
+            kinds = {self._values_are_literals(sv.schema.default_range)}
+        if slot.has_member:
+            kinds |= kinds_of(slot.has_member, slot.range or outer)
+        return kinds
+
+    def _misfit(self, slot: SlotDefinition) -> str | None:
+        """Why OWL cannot restrict the values of *slot*, a slot or an entry of a class or of a
+        class expression, if it cannot.
+
+        It cannot if they are both literals and nodes (:meth:`_range_kinds`), which neither an
+        object property, whose values are individuals (OWL 2 §5.3), nor a data property, whose
+        values are literals (§5.4), can have; if they are literals and the property is an object
+        property, or nodes and it is a data property (:meth:`slot_owl_type`); or if they range
+        over a class expression that OWL cannot state (:meth:`_unstated`). An entry without
+        ranges of its own has those of the slot it names.
+        """
+        sv = self.schemaview
+        top_slot = sv.get_slot(slot.name) if slot.name in sv.all_slots() else slot
+        kinds = self._range_kinds(slot, default=False) or self._range_kinds(top_slot, default=False)
+        if len(kinds) > 1:
+            return (
+                f"slot {slot.name!r} ranges over both literals and nodes, "
+                "which neither an object nor a data property can have"
+            )
+        # add_slot declares the property as the slot and each attribute of its name define it, and
+        # SchemaView gives a slot without a range for an attribute that more than one class has.
+        definitions = [c.attributes[slot.name] for c in sv.all_classes().values() if slot.name in c.attributes]
+        if slot.name in sv.all_slots(attributes=False) or not definitions:
+            definitions.append(top_slot)
+        roles = set()
+        for definition in definitions:
+            role = self._declared_property_role(definition)
+            if role is None and self._range_kinds(definition):
+                # Without a range, the role of a slot is only known once all classes are emitted.
+                role = self.slot_owl_type(definition)
+            roles.add(role)
+        # Definitions that disagree give the property more than one role, and so none.
+        role = roles.pop() if len(roles) == 1 else None
+        if role == OWL.ObjectProperty and kinds == {True}:
+            return f"slot {slot.name!r} ranges over literals, but it is an object property"
+        if role == OWL.DatatypeProperty and kinds == {False}:
+            return f"slot {slot.name!r} ranges over nodes, but it is a data property"
+        pending = [slot] + ([slot.has_member] if slot.has_member else [])
+        while pending:
+            expr = pending.pop()
+            for k in ("any_of", "all_of", "exactly_one_of", "none_of"):
+                pending.extend(getattr(expr, k, None) or [])
+            if expr.all_members:
+                pending.append(expr.all_members)
+            if isinstance(expr.range_expression, AnonymousClassExpression):
+                reason = self._unstated(expr.range_expression)
+                if reason:
+                    return f"slot {slot.name!r} ranges over a class expression in which {reason}"
+        return None
+
+    def _unstated(self, expr: AnonymousClassExpression | None) -> str | None:
+        """Why OWL cannot state the class expression *expr*, if it cannot: why it cannot restrict
+        the values of a condition of *expr*, or of an expression in it (:meth:`_misfit`).
+
+        :raises ValueError: if a condition is on an annotation property, which has no logical
+            meaning (OWL 2 §10.1)
+        """
+        if expr is None:
+            return None
+        reasons = []
+        for slot in self.get_own_slots(expr):
+            if self.is_annotation_property(self._resolved_slot(slot, expr)):
+                raise ValueError(f"Annotation property {slot.name!r} cannot be a condition of a class expression")
+            reasons.append(self._misfit(slot))
+        for k in ("any_of", "all_of", "exactly_one_of", "none_of"):
+            reasons.extend(self._unstated(x) for x in getattr(expr, k, None) or [])
+        return next((reason for reason in reasons if reason), None)
 
     def _literal_enum_range(
         self, slot: SlotDefinition, cls: ClassDefinition | AnonymousClassExpression
@@ -1752,6 +1904,7 @@ class OwlSchemaGenerator(Generator):
         if union_expr is None:
             return None
         self.graph.add((neg_expr, complement_predicate, union_expr), **kwargs)
+        self.node_owltypes[neg_expr].update(owl_types)
 
         return neg_expr
 
@@ -1821,6 +1974,9 @@ class OwlSchemaGenerator(Generator):
         owl_types = owl_types.union(self._get_owltypes(set(), expr_list))
         if len(owl_types) == 1 and RDFS.Literal in owl_types:
             graph.add((node, RDF.type, RDFS.Datatype))
+        if isinstance(node, BNode):
+            # An expression that has this one as an operand gets its types from it (_get_owltypes).
+            self.node_owltypes[node].update(owl_types)
         return node
 
     def _type_values_are_nodes(self, type_name: str) -> bool:
@@ -1951,42 +2107,27 @@ class OwlSchemaGenerator(Generator):
             return URIRef(enum_uri + self.enum_iri_separator + encoded_text)
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
-        sv = self.schemaview
         role = self._declared_property_role(slot)
         if role is not None:
             return role
         if self._prop_uri(slot) in self._BUILTIN_ANNOTATION_PROPERTIES:
             return OWL.AnnotationProperty
-        if slot.range is None:
-            slot_range = self.schemaview.schema.default_range
-        else:
-            slot_range = slot.range
-        if self._ranges_are_literals(slot):
-            # Only a data property has literal values (OWL 2 §5.4).
-            return OWL.DatatypeProperty
+        kinds = self._range_kinds(slot)
+        if kinds:
+            # Only a data property has literal values (OWL 2 §5.4). A slot that can have both
+            # literals and nodes can be neither an object nor a data property, and so is left an
+            # object property without a range (see add_slot).
+            return OWL.DatatypeProperty if kinds == {True} else OWL.ObjectProperty
         if self.type_objects:
             return OWL.ObjectProperty
+        # A slot without a range: what its class expressions record decides.
         is_literal_vals = self.slot_is_literal_map[slot.name]
         if len(is_literal_vals) > 1:
             logger.warning(f"Ambiguous type for: {slot.name}")
-        if slot_range is None:
-            if not is_literal_vals:
-                logger.warning(f"Guessing type for {slot.name}")
-                return OWL.ObjectProperty
-            if (list(is_literal_vals))[0]:
-                return OWL.DatatypeProperty
-            else:
-                return OWL.ObjectProperty
-        elif slot_range in sv.all_classes():
+        if not is_literal_vals:
+            logger.warning(f"Guessing type for {slot.name}")
             return OWL.ObjectProperty
-        elif slot_range in sv.all_enums():
-            return OWL.ObjectProperty
-        elif slot_range in sv.all_types():
-            if self._type_values_are_nodes(slot_range):
-                return OWL.ObjectProperty
-            return OWL.DatatypeProperty
-        else:
-            raise Exception(f"Unknown range: {slot.range}")
+        return OWL.DatatypeProperty if is_literal_vals == {True} else OWL.ObjectProperty
 
 
 @shared_arguments(OwlSchemaGenerator)

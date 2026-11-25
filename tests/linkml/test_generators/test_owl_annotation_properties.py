@@ -143,6 +143,20 @@ def test_contradictory_roles_fail():
             "condition of a class expression",
             id="rule",
         ),
+        pytest.param(
+            {
+                "classes": {
+                    "Thing": {
+                        "any_of": [
+                            {"slot_conditions": {"note": {"equals_string": "x"}}},
+                            {"slot_conditions": {"plain": {"range": "Thing"}}},
+                        ]
+                    }
+                }
+            },
+            "condition of a class expression",
+            id="left_out",
+        ),
     ],
 )
 def test_logical_use_of_annotation_property_fails(change, message):
