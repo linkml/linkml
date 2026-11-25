@@ -2,7 +2,7 @@
 # PERSONINFO
 
 
-**metamodel version:** 1.11.0
+**metamodel version:** 1.12.0
 
 **version:** None
 
@@ -605,6 +605,7 @@ NewsEvent:
   - ended_at_time
   - duration
   - is_current
+  - newsEvent__id
   - newsEvent__headline
 
 ```
@@ -616,6 +617,7 @@ NewsEvent:
 
 | Name | Cardinality: | Type | Description |
 | --- | --- | --- | --- |
+| **[id](#id)** | <sub>1..1</sub> | string |  |
 | **[duration](#duration)** | <sub>0..1</sub> | float |  |
 | **[ended_at_time](#ended_at_time)** | <sub>0..1</sub> | date |  |
 | **[is_current](#is_current)** | <sub>0..1</sub> | boolean |  |
@@ -1115,7 +1117,7 @@ WithLocation:
 
 | Name | Cardinality/Range | Used By |
 | --- | --- | --- |
-| <a id="id"></a>**id** | <sub>1..1</sub><br/>uriorcurie | [Concept](#concept), [DiagnosisConcept](#diagnosisconcept), [ImagingProcedureConcept](#imagingprocedureconcept), [NamedThing](#namedthing), [OperationProcedureConcept](#operationprocedureconcept), [Organization](#organization), [Person](#person), [Place](#place), [ProcedureConcept](#procedureconcept), [CodeSystem](#codesystem) |
+| <a id="id"></a>**id** | <sub>1..1</sub><br/>uriorcurie | [Concept](#concept), [DiagnosisConcept](#diagnosisconcept), [ImagingProcedureConcept](#imagingprocedureconcept), [NamedThing](#namedthing), [NewsEvent](#newsevent), [OperationProcedureConcept](#operationprocedureconcept), [Organization](#organization), [Person](#person), [Place](#place), [ProcedureConcept](#procedureconcept), [CodeSystem](#codesystem) |
 | <a id="name"></a>**name** | <sub>1..1</sub><br/>string | [Concept](#concept), [DiagnosisConcept](#diagnosisconcept), [ImagingProcedureConcept](#imagingprocedureconcept), [NamedThing](#namedthing), [OperationProcedureConcept](#operationprocedureconcept), [Organization](#organization), [Person](#person), [Place](#place), [ProcedureConcept](#procedureconcept), [CodeSystem](#codesystem) |
 | <a id="description"></a>**description** | <sub>0..1</sub><br/>string | [Concept](#concept), [DiagnosisConcept](#diagnosisconcept), [ImagingProcedureConcept](#imagingprocedureconcept), [NamedThing](#namedthing), [OperationProcedureConcept](#operationprocedureconcept), [Organization](#organization), [Person](#person), [ProcedureConcept](#procedureconcept) |
 | <a id="familialrelationship_related to"></a>**FamilialRelationship_related to** | <sub>1..1</sub><br/>[Person](#person) |  |
@@ -1154,6 +1156,7 @@ WithLocation:
 | <a id="min_salary"></a>**min_salary** | <sub>0..1</sub><br/>SalaryType | [Organization](#organization) |
 | <a id="mission_statement"></a>**mission_statement** | <sub>0..1</sub><br/>string | [Organization](#organization) |
 | <a id="newsevent__headline"></a>**newsEvent__headline** | <sub>0..1</sub><br/>string |  |
+| <a id="newsevent__id"></a>**newsEvent__id** | <sub>1..1</sub><br/>string |  |
 | <a id="organizations"></a>**organizations** | <sub>0..\*</sub><br/>[Organization](#organization) | [Container](#container) |
 | <a id="persons"></a>**persons** | <sub>0..\*</sub><br/>[Person](#person) | [Container](#container) |
 | <a id="places"></a>**places** | <sub>0..\*</sub><br/>[Place](#place) | [Container](#container) |

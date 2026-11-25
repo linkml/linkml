@@ -169,6 +169,29 @@ def test_inject_backref_foreign_key() -> None:
     assert get_foreign_key_map(d) == {"c_id": "c.id"}
 
 
+def test_distinct_inlined_collections_get_distinct_backref_foreign_keys() -> None:
+    """Separate collection slots must not overwrite one another's owner foreign key."""
+    builder = SchemaBuilder(name="distinct_inlined_collections")
+    builder.add_class("owner", ["positive", "negative"])
+    builder.add_class("expression", ["value"])
+    builder.set_slot("positive", range="expression", multivalued=True)
+    builder.set_slot("negative", range="expression", multivalued=True)
+
+    result = _translate(builder)
+    relationships = {
+        mapping.source_slot: mapping.target_slot
+        for mapping in result.mappings
+        if mapping.source_class == "owner" and mapping.target_class == "expression"
+    }
+    relational_view = SchemaView(result.schema)
+    expression = relational_view.get_class("expression")
+
+    assert set(relationships) == {"positive", "negative"}
+    assert len(set(relationships.values())) == 2
+    assert set(relationships.values()).issubset(expression.attributes)
+    assert {get_foreign_key_map(expression)[slot] for slot in relationships.values()} == {"owner.id"}
+
+
 @pytest.mark.parametrize("add_id_to_c", [True, False])
 @pytest.mark.parametrize("add_id_to_d", [True, False])
 def test_inject_many_to_many(add_id_to_c: bool, add_id_to_d: bool) -> None:  # noqa: FBT001
@@ -264,18 +287,19 @@ def test_aliases() -> None:
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
     d = rsv.get_class("d")
-    c_has_d = rsv.get_class("c_has_d")
+    # ``d`` has no identifier/key, so ``has_d`` is inlined (a composition): rather than a
+    # ``c_has_d`` linking table, the child ``d`` carries a ``c_id`` back-reference.
+    c_aliases = rsv.get_class("c_aliases")
     assert sorted(c.attributes.keys()) == ["description", "id", "name"]
-    assert sorted(d.attributes.keys()) == ["id", "name"]
-    assert sorted(c_has_d.attributes.keys()) == ["c_id", "has_d_id"]
+    assert sorted(d.attributes.keys()) == ["c_id", "id", "name"]
+    assert sorted(c_aliases.attributes.keys()) == ["aliases", "c_id"]
 
     assert sorted(get_primary_key_attributes(c)) == ["id"]
     assert sorted(get_primary_key_attributes(d)) == ["id"]
-    assert sorted(get_primary_key_attributes(c_has_d)) == ["c_id", "has_d_id"]
 
     assert get_foreign_key_map(c) == {}
-    assert get_foreign_key_map(d) == {}
-    assert get_foreign_key_map(c_has_d) == {"c_id": "c.id", "has_d_id": "d.id"}
+    assert get_foreign_key_map(d) == {"c_id": "c.id"}
+    assert get_foreign_key_map(c_aliases) == {"c_id": "c.id"}
 
 
 def test_sqlt_on_metamodel() -> None:
@@ -340,9 +364,10 @@ def test_sqlt_complete_example(input_path: Path) -> None:
     assert news_event_pk is not None
     assert news_event_pk.name == "id"
 
+    # ``NewsEvent`` has no identifier, so ``has_news_event`` is inlined (a composition):
+    # instead of ``{cn}_has_news_event`` linking tables, the child ``NewsEvent`` carries a
+    # back-reference foreign key to each owning class.
+    news_event = sv.get_class("NewsEvent")
     for cn in ["Person", "Organization"]:
-        c = sv.get_class(f"{cn}_has_news_event")
-        a1 = c.attributes["has_news_event_id"]
-        assert a1.range == "NewsEvent"
-        a2 = c.attributes[f"{cn}_id"]
-        assert a2.range == cn
+        back_ref = news_event.attributes[f"{cn}_id"]
+        assert back_ref.range == cn

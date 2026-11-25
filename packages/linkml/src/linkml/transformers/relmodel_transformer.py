@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass, field
 
@@ -14,6 +15,7 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
 )
 from linkml_runtime.linkml_model.meta import UniqueKey
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 
 logger = logging.getLogger(__name__)
@@ -234,6 +236,11 @@ class RelationalModelTransformer:
         # TODO: separate out the logic into separate testable methods
         target_sv.set_modified()
         multivalued_slots_original = []
+        multivalued_class_ranges: dict[tuple[str, str], int] = defaultdict(int)
+        for source_class_name, source_class in all_target_classes.items():
+            for source_slot in source_class.attributes.values():
+                if source_slot.multivalued and source_slot.range in all_target_classes:
+                    multivalued_class_ranges[(source_class_name, source_slot.range)] += 1
         # post-process target schema
         # for each class, for each slot with a range of object,
         # we have a reference to another class.
@@ -261,8 +268,22 @@ class RelationalModelTransformer:
                     sn_singular = slot.singular_name if slot.singular_name else slot.name
                     if pk_slot is None:
                         pk_slot = self.add_primary_key(c.name, target_sv)
+                    backref_slot_name = f"{cn}_{pk_slot.name}"
+                    if (
+                        is_shared
+                        and slot_range_is_class
+                        and (
+                            multivalued_class_ranges[(cn, slot_range)] > 1
+                            or backref_slot_name in target.classes[slot_range].attributes
+                        )
+                    ):
+                        backref_slot_name = f"{cn}_{underscore(slot_name)}_{pk_slot.name}"
+                        suffix = 2
+                        while backref_slot_name in target.classes[slot_range].attributes:
+                            backref_slot_name = f"{cn}_{underscore(slot_name)}_{pk_slot.name}_{suffix}"
+                            suffix += 1
                     backref_slot = SlotDefinition(
-                        name=f"{c.name}_{pk_slot.name}",
+                        name=backref_slot_name,
                         description="Autocreated FK slot",
                         range=c.name,
                         slot_uri="rdf:subject",
@@ -295,6 +316,14 @@ class RelationalModelTransformer:
                                 raise ValueError(f"Multiple keys for {c.name}: {backref_key_slots}")
                             backref_key_slot = backref_key_slots[0]
                             unique_key_name = f"{c.name}_{backref_key_slot.name}"
+                            if unique_key_name in backref_class.unique_keys:
+                                unique_key_name = f"{c.name}_{underscore(slot_name)}_{backref_key_slot.name}"
+                                suffix = 2
+                                while unique_key_name in backref_class.unique_keys:
+                                    unique_key_name = (
+                                        f"{c.name}_{underscore(slot_name)}_{backref_key_slot.name}_{suffix}"
+                                    )
+                                    suffix += 1
                             backref_class.unique_keys[unique_key_name] = UniqueKey(
                                 unique_key_name=unique_key_name,
                                 unique_key_slots=[backref_slot.name, backref_key_slot.name],

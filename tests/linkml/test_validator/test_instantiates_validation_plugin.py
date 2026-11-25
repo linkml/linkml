@@ -183,18 +183,23 @@ classes:
     annotations:
       must_be_inlined: true
 
-  NoIdClass:
+  # The instantiating class has an identifier so it *can* be referenced (not auto-inlined);
+  # the container then explicitly opts out of inlining, which violates must_be_inlined.
+  ReferenceableClass:
     instantiates:
       - InlineDef
     attributes:
+      id:
+        identifier: true
       value:
 
   Container:
     tree_root: true
     attributes:
       items:
-        range: NoIdClass
+        range: ReferenceableClass
         multivalued: true
+        inlined: false
 """
 
 SCHEMA_MULTIPLE_INSTANTIATES = """\
