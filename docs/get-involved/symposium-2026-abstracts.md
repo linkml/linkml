@@ -182,7 +182,7 @@ To put this into practice, we built converters in both directions, in ohi LinkML
 
 We will close with a discussion of where the two communities could align, including metamodel features, handling non-standard extensions, and common tooling.
 
-## Session 4: LinkML × AI / agentic
+## Session 4: LinkML × AI / agentic and curation workflows
 
 ### litschema: Turn a folder of PDFs into a dataset you can defend
 
@@ -208,6 +208,18 @@ Scientific dataset documentation is scattered across publications, protocols, an
 
 Knowledge Trust Ladder keeps a repository's scattered knowledge as a collection: catalogued, authenticated and explained, with the trust in every claim left visible
 
+### ORINOCO and ORINOCO-Lite: one LinkML-modelled knowledge base behind a research group’s website, slides, etc
+
+- **Presenter:** Yaroslav Halchenko
+- **Affiliation:** Center for Open Neuroscience
+- **Project:** [github.com/ORINOCO-Lite](https://github.com/ORINOCO-Lite)
+
+Research groups keep the same facts about people, projects, publications and funding in many places: the website, reports, CVs, slides. ORINOCO, developed by Michael Hanke’s Psychoinformatics group (Forschungszentrum Jülich), turns these facts into structured, linked records. They follow LinkML schemas from concepts.datalad.org, are edited through forms that the shacl-vue editor generates from the model, and are stored and served by dedicated services.
+
+ORINOCO-Lite, developed and used at the Center for Open Neuroscience, brings the same model and editor to GitHub, so a group need not deploy any services. Records live in a repository in YAML files, edits made with agentic AI (or via shacl-vue) as pull requests, and CI validates and builds the outputs. A template lets a new group start its own site.
+
+We will introduce the schemas, compare the two deployments, and show what one set of records yields: the group website at centerforopenneuroscience.org, a graph explorer, and materializations such as an acknowledgement slide.
+
 ### ohi.dev: An ontology and LinkML schema package manager, for humans and agents
 
 - **Presenter:** Alireza Furutanpey
@@ -219,6 +231,14 @@ Ontologies are meant to be reused, but in practice reuse is difficult. They are 
 ohi.dev addresses this by treating ontologies as versioned packages. It provides a searchable catalog of hundreds of ontologies, with explicit versions, recorded dependencies, and files in multiple formats, including LinkML. Users can search the catalog, inspect an ontology’s metadata, download a specific version in the format they need, and record their choices in a project file that keeps ontology files consistent and reproducible.
 
 In this talk we explain the problem ohi.dev solves and show the main ways to use it, from single searches on the command line to managing the ontologies of a whole project. We then demonstrate how AI agents can use ohi.dev as a tool, through sample workflows, and what are the benefits of this approach.
+
+### From the Lab to the Knowledge Graph: Building BICAN Metadata Models with LinkML
+
+- **Presenter:** Dorota Jarecka
+- **Affiliation:** Massachusetts Institute of Technology
+- **Project:** [brain-bican.github.io/models](https://brain-bican.github.io/models/)
+
+In BICAN, metadata models are built together with the scientists who produce the data. We start by collecting the fields a lab records, with their definitions, units and example values, in simple tables. These tables are submitted as pull requests to the BICAN Metadata and Ontology Working Group repository, where they are reviewed, aligned with existing fields and ontologies, and versioned. The same CSV tables are the source of the LinkML model: schemasheets turns them into a LinkML schema, and automated workflows generate the other formats (JSON Schema, Python classes, diagrams and documentation). Finally, bkbit, our Python toolkit, reads the data files, creates objects validated against the model, links them through provenance, and writes JSON-LD or Turtle that can be ingested  into the BICAN knowledge graph.
 
 ## Session 5: Tools, generators & workflows II
 
