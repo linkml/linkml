@@ -3,6 +3,7 @@ Generators translate between a SchemaDefinition and an alternative
 representation such as JsonSchema
 """
 
+from linkml.generators.frictionlessgen import FrictionlessGenerator
 from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
@@ -26,6 +27,7 @@ __all__ = [
     "csvgen",
     "dotgen",
     "docgen",
+    "frictionlessgen",
     "golrgen",
     "graphqlgen",
     "javagen",
@@ -47,6 +49,7 @@ __all__ = [
     "summarygen",
     "typedbgen",
     "yamlgen",
+    "FrictionlessGenerator",
     "OpenApiGenerator",
     "OssieGenerator",
     "OwlSchemaGenerator",

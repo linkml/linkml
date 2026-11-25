@@ -1,0 +1,82 @@
+id: https://example.org/tablemodel
+name: tablemodel
+description: Test schema for the Frictionless generator.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  tm: https://example.org/tablemodel/
+default_prefix: tm
+default_range: string
+imports:
+  - linkml:types
+  # Any schema with a class of its own will do.
+  # Used to test that imported classes get tables too.
+  - core
+
+classes:
+  Registry:
+    tree_root: true
+    attributes:
+      people:
+        range: Person
+        multivalued: true
+        inlined_as_list: true
+
+  NamedThing:
+    abstract: true
+    slots:
+      - uid
+      - full_name
+
+  Person:
+    is_a: NamedThing
+    description: A human being
+    slots:
+      - age
+      - vital_status
+      - employer
+      - manager
+      - friends
+      - home
+
+  Organization:
+    is_a: NamedThing
+
+  Address:
+    description: Has no identifier, so no other table can refer to it.
+    attributes:
+      street:
+
+  Pet:
+    description: Not reachable from the tree root.
+    is_a: NamedThing
+
+slots:
+  uid:
+    identifier: true
+  full_name:
+    required: true
+  age:
+    range: AgeInYears
+  vital_status:
+    range: VitalStatus
+  employer:
+    range: Organization
+  manager:
+    range: Person
+  friends:
+    range: Person
+    multivalued: true
+  home:
+    range: Address
+    inlined: true
+
+types:
+  AgeInYears:
+    typeof: integer
+    minimum_value: 0
+
+enums:
+  VitalStatus:
+    permissible_values:
+      ALIVE:
+      DEAD:

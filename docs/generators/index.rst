@@ -27,6 +27,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    graphql
    openapi
    ossie
+   frictionless
 
 
 Linked Data Standards
