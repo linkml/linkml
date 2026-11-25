@@ -7,11 +7,12 @@ logical meaning, §10.1). Its domain, range and super-properties are emitted as 
 annotation axioms of §10.2; logical uses are errors.
 """
 
+from collections import defaultdict
 from pathlib import Path
 
 import pytest
 import yaml
-from rdflib import DCTERMS, OWL, RDF, RDFS, XSD, Graph, URIRef
+from rdflib import DCTERMS, OWL, PROV, RDF, RDFS, SKOS, XSD, Graph, URIRef
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 
@@ -226,3 +227,112 @@ def test_every_predicate_without_a_role_is_an_annotation_property(native):
             assert not any((predicate, RDF.type, role) in graph for role in roles), predicate
         else:
             assert any((predicate, RDF.type, role) in graph for role in roles), predicate
+
+
+IMPORTED = """
+id: https://example.org/b
+name: b
+prefixes:
+  ex: https://example.org/m/
+  linkml: https://w3id.org/linkml/
+  dcterms: http://purl.org/dc/terms/
+  prov: http://www.w3.org/ns/prov#
+imports: [linkml:types]
+default_prefix: ex
+slots:
+  title:
+    slot_uri: dcterms:title
+    range: string
+classes:
+  Release:
+    slots: [title]
+    attributes:
+      derived_from:
+        slot_uri: prov:wasDerivedFrom
+        range: nodeidentifier
+      revision:
+        range: string
+"""
+
+IMPORTING = """
+id: https://example.org/a
+name: a
+title: A schema
+description: A schema that imports b.
+prefixes:
+  ex: https://example.org/m/
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+imports: [linkml:types, b]
+default_prefix: ex
+instantiates: [ex:Release]
+annotations:
+  prov:wasDerivedFrom: ex:release1
+  revision: "2"
+"""
+
+
+def _imports(directory: Path) -> Path:
+    """Write the imported and the importing schema into *directory* and return the importing one."""
+    (directory / "b.yaml").write_text(IMPORTED, encoding="utf-8")
+    (directory / "a.yaml").write_text(IMPORTING, encoding="utf-8")
+    return directory / "a.yaml"
+
+
+def _roles(*graphs: Graph) -> dict[URIRef, set[URIRef]]:
+    """The property roles that *graphs* together declare for each IRI."""
+    roles: dict[URIRef, set[URIRef]] = defaultdict(set)
+    for graph in graphs:
+        for prop, role in graph.subject_objects(RDF.type):
+            if role in (OWL.AnnotationProperty, OWL.ObjectProperty, OWL.DatatypeProperty):
+                roles[prop].add(role)
+    return dict(roles)
+
+
+def test_imported_object_or_data_property_is_not_declared_again(tmp_path):
+    """Without merged imports, a predicate that is the IRI of an imported object or data property
+    is not declared an annotation property; any other predicate still is."""
+    graph = _graph(_imports(tmp_path), use_native_uris=False, mergeimports=False)
+    for predicate in (DCTERMS.title, PROV.wasDerivedFrom, URIRef(EX + "revision")):
+        assert (None, predicate, None) in graph, predicate
+        assert set(graph.objects(predicate, RDF.type)) == set(), predicate
+    assert (SKOS.definition, RDF.type, OWL.AnnotationProperty) in graph
+
+
+@pytest.mark.parametrize("native", [True, False])
+def test_declarations_do_not_depend_on_merged_imports(tmp_path, native):
+    """The importing ontology without merged imports and the imported ontology together declare
+    each IRI with the one role the merged ontology gives it, as OWL 2 DL requires of the import
+    closure (§5.8.1)."""
+    source = _imports(tmp_path)
+    merged = _roles(_graph(source, use_native_uris=native))
+    imported = _graph(tmp_path / "b.yaml", use_native_uris=native)
+    assert _roles(_graph(source, use_native_uris=native, mergeimports=False), imported) == merged
+    assert all(len(roles) == 1 for roles in merged.values())
+
+
+METAMODEL_EXTENSION = """
+id: https://example.org/c
+name: c
+title: A metamodel extension
+description: A schema that imports the metamodel.
+prefixes:
+  ex: https://example.org/m/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:meta]
+default_prefix: ex
+classes:
+  Thing:
+    description: A thing.
+"""
+
+
+@pytest.mark.parametrize("native", [True, False])
+def test_metadata_predicates_stay_declared_with_linkml_imports(native):
+    """A ``linkml:`` import names an ontology the metamodel publishes, not one generated with these
+    options: its slots, mapped to ``dcterms:title`` or ``skos:definition``, do not keep the schema
+    from declaring its metadata predicates as annotation properties without merged imports."""
+    graph = _graph(METAMODEL_EXTENSION, use_native_uris=native, mergeimports=False)
+    for predicate in (DCTERMS.title, SKOS.definition, SKOS.inScheme):
+        assert (None, predicate, None) in graph, predicate
+        assert set(graph.objects(predicate, RDF.type)) == {OWL.AnnotationProperty}, predicate
