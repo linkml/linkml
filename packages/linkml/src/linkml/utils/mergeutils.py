@@ -183,6 +183,28 @@ def merge_dicts(
                 target[k].imported_from = imported_from
 
 
+def remove_imported_elements(schema: SchemaDefinition) -> None:
+    """Remove, in place, every element that :func:`merge_dicts` tagged with ``imported_from``.
+
+    ``SchemaLoader`` always loads the import closure into the schema it resolves,
+    because resolution needs the imported definitions. With ``mergeimports`` off,
+    it marks each imported element with ``imported_from`` instead of adopting it.
+    Generators that write the loaded schema out whole call this to leave those
+    elements out. The schema's ``imports`` still point to where they come from.
+
+    >>> from linkml_runtime.linkml_model.meta import TypeDefinition
+    >>> schema = SchemaDefinition(id="https://example.org/s", name="s")
+    >>> schema.types["local"] = TypeDefinition("local", typeof="string")
+    >>> schema.types["string"] = TypeDefinition("string", base="str", imported_from="linkml:types")
+    >>> remove_imported_elements(schema)
+    >>> list(schema.types)
+    ['local']
+    """
+    for elements in (schema.subsets, schema.types, schema.enums, schema.slots, schema.classes):
+        for name in [name for name, element in elements.items() if element.imported_from]:
+            del elements[name]
+
+
 def merge_slots(
     target: SlotDefinition | TypeDefinition,
     source: SlotDefinition | TypeDefinition,
