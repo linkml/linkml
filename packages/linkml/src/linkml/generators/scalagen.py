@@ -94,6 +94,9 @@ class ScalaGenerator(OhiBackedGenerator):
     def as_files(self) -> dict[str, str]:
         """Generate the Scala code, one file per class, enum and type.
 
+        Lines end with ``\\n`` on every platform. ohi LinkML's Windows builds currently end some
+        lines with ``\\r\\n``, so these are turned into ``\\n``.
+
         :return: the code of each file, by file name, sorted by file name.
         """
         files = self.ohi_schema.scala(
@@ -101,7 +104,7 @@ class ScalaGenerator(OhiBackedGenerator):
             package=self.package,
             skip_leaf_interfaces=self.skip_leaf_interfaces,
         )
-        return dict(sorted(files.items()))
+        return {name: code.replace("\r\n", "\n") for name, code in sorted(files.items())}
 
     def serialize(self, **kwargs) -> str:
         """Generate the Scala code as one text, each file after a ``// FILE`` comment.
@@ -136,7 +139,8 @@ class ScalaGenerator(OhiBackedGenerator):
         written = []
         for name, code in files.items():
             path = directory / name
-            path.write_text(code, encoding="utf-8")
+            # Written as is, so that lines end with \n on Windows too.
+            path.write_text(code, encoding="utf-8", newline="\n")
             written.append(path)
         return written
 

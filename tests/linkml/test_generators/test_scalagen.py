@@ -57,6 +57,11 @@ def test_every_file_is_in_the_package(files):
     assert all(f"\npackage {PACKAGE}\n" in code for code in files.values())
 
 
+def test_lines_end_with_newline_on_every_platform(files):
+    """ohi LinkML's Windows builds end some lines with ``\\r\\n``, so the output must not depend on that."""
+    assert not [name for name, code in files.items() if "\r" in code]
+
+
 def test_default_package_is_example():
     """Without ``--package``, the package is ``example``, as in ``gen-java``."""
     assert "\npackage example\n" in ScalaGenerator(str(SCHEMA)).as_files()["Person.scala"]
@@ -96,7 +101,8 @@ def test_cli_writes_the_files_to_the_output_directory(files, tmp_path):
     result = CliRunner().invoke(cli, [str(SCHEMA), "--package", PACKAGE, "-d", str(tmp_path / "out")])
     assert result.exit_code == 0
     assert result.output == ""
-    written = {path.name: path.read_text() for path in (tmp_path / "out").iterdir()}
+    # Read as bytes, so that line endings are compared as they are on disk.
+    written = {path.name: path.read_bytes().decode("utf-8") for path in (tmp_path / "out").iterdir()}
     assert written == files
 
 
