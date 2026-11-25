@@ -66,6 +66,14 @@ _base_implied_patterns: dict[str, str] = {
     "ncname": r"^[a-zA-Z_][\w.-]*$",
 }
 
+# The JSON Schema dialects the generator can declare in ``$schema``, keyed by the
+# value of the ``draft`` option. The generator emits only keywords that mean the
+# same in every dialect listed here, so the choice changes ``$schema`` alone.
+JSON_SCHEMA_DRAFTS: dict[str, str] = {
+    "2019-09": "https://json-schema.org/draft/2019-09/schema",
+    "2020-12": "https://json-schema.org/draft/2020-12/schema",
+}
+
 
 def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
     """Return *subschemas* with duplicate entries removed, preserving order.
@@ -477,9 +485,20 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     remain consistent with the JSON-LD ``@id`` alias.
     """
 
+    draft: str = "2019-09"
+    """The JSON Schema dialect the document declares in ``$schema``, one of the keys of
+    :data:`JSON_SCHEMA_DRAFTS`.
+
+    Only ``$schema`` changes. Validators that select their class from ``$schema``,
+    such as ``linkml-validate``, then check instances with the matching dialect.
+    """
+
     def __post_init__(self):
         if self.materialize_patterns is not None:
             deprecation_warning(MATERIALIZE_PATTERNS_GENERATOR_OPTION, stack_level=4)
+
+        if self.draft not in JSON_SCHEMA_DRAFTS:
+            raise ValueError(f"Unknown JSON Schema draft {self.draft!r}; expected one of {list(JSON_SCHEMA_DRAFTS)}")
 
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -543,7 +562,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         self.top_level_schema = JsonSchema(
             {
-                "$schema": "https://json-schema.org/draft/2019-09/schema",
+                "$schema": JSON_SCHEMA_DRAFTS[self.draft],
                 "$id": self.schema.id,
                 "metamodel_version": self.schema.metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
@@ -1347,6 +1366,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     show_default=True,
     help="If set (default), optional slots also accept an explicit JSON null. "
     "Use --no-include-null to forbid explicit null on optional slots.",
+)
+@click.option(
+    "--draft",
+    type=click.Choice(list(JSON_SCHEMA_DRAFTS)),
+    default="2019-09",
+    show_default=True,
+    help="JSON Schema dialect the document declares in $schema.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
