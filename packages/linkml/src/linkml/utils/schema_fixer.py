@@ -66,8 +66,14 @@ class SchemaFixer:
         :param schema: input schema, will be modified in place
         :return:
         """
-        sv = SchemaView(schema)
-        for e in sv.all_elements().values():
+        elements = [
+            *schema.classes.values(),
+            *schema.slots.values(),
+            *schema.enums.values(),
+            *schema.types.values(),
+            *schema.subsets.values(),
+        ]
+        for e in elements:
             if e.title is not None:
                 continue
             title = e.name.replace("_", " ")
@@ -100,7 +106,7 @@ class SchemaFixer:
             else:
                 raise ValueError(f"Schema already has containers: {tree_roots}")
         container = ClassDefinition(class_name, tree_root=True)
-        sv.add_class(container)
+        schema.classes[container.name] = container
         self._add_history(f"added container {container.name}")
         self.add_index_slots(schema, container.name, **kwargs)
         return container
@@ -125,7 +131,7 @@ class SchemaFixer:
         :return: new slots
         """
         sv = SchemaView(schema)
-        container = sv.get_class(container_name)
+        container = schema.classes[container_name]
         ranges = set()
         for cn in sv.all_classes():
             for s in sv.class_induced_slots(cn):
@@ -154,6 +160,7 @@ class SchemaFixer:
             schema.slots[index_slot.name] = index_slot
             container.slots.append(index_slot.name)
             self._add_history(f"Adding container slot: {index_slot.name}")
+        sv.set_modified()
         return index_slots
 
     def attributes_to_slots(self, schema: SchemaDefinition, remove_redundant_slot_usage=True) -> None:
@@ -166,16 +173,17 @@ class SchemaFixer:
         """
         sv = SchemaView(schema)
         new_slots = []
-        for c in sv.all_classes().values():
+        for c in schema.classes.values():
             for a in c.attributes:
                 new_slots.append(a)
                 self.merge_slot_usage(sv, c, a)
                 del c.attributes[a.name]
         for slot in new_slots:
-            if slot.name in sv.all_slots():
+            if slot.name in schema.slots:
                 raise ValueError(f"Duplicate slot {slot.name}")
-            sv.add_slot(slot)
+            schema.slots[slot.name] = slot
             self._add_history(f"Adding slot from attribute: {slot.name}")
+        sv.set_modified()
         if remove_redundant_slot_usage:
             self.remove_redundant_slot_usage(schema)
 
@@ -222,10 +230,10 @@ class SchemaFixer:
         """
         sv = SchemaView(schema)
         if class_name is None:
-            for class_name in sv.all_classes():
+            for class_name in schema.classes:
                 self.remove_redundant_slot_usage(schema, class_name)
         else:
-            cls = sv.get_class(class_name)
+            cls = schema.classes[class_name]
             # test every key-value pair in the slot usage to determine which
             # slots within that are redundant
             slot_usage_keys = list(cls.slot_usage.keys())
