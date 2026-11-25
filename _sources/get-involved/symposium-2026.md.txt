@@ -35,7 +35,7 @@ Here is a quick look at both days. All times are in UTC, and the schedule is cur
 - 15:00–15:10: [Welcome](symposium-2026-schedule.md#welcome)
 - 15:10–16:20: [Session 3: Tools, generators & workflows I](symposium-2026-schedule.md#session-3-tools-generators--workflows-i)
 - 16:20–16:30: Break
-- 16:30–17:40: [Session 4: LinkML × AI / agentic](symposium-2026-schedule.md#session-4-linkml--ai--agentic)
+- 16:30–17:40: [Session 4: LinkML × AI / agentic and curation workflows](symposium-2026-schedule.md#session-4-linkml--ai--agentic-and-curation-workflows)
 - 17:40–17:50: Break
 - 17:50–18:50: [Session 5: Tools, generators & workflows II](symposium-2026-schedule.md#session-5-tools-generators--workflows-ii)
 - 18:50–19:00: [Wrap Up](symposium-2026-schedule.md#wrap-up-1)
