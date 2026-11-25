@@ -316,6 +316,19 @@ data_sources:
     assert result.exit_code == 0
 
 
+def test_config_data_sources_are_validated(tmp_path, cli_runner, json_data_file):
+    """Data sources listed only in the config file must actually be validated (#4227)"""
+    invalid_person = {**VALID_PERSON_1, "age": "not-a-number"}
+    json_data_path = json_data_file({"persons": [invalid_person]})
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(f"schema: {PERSONINFO_SCHEMA}\ndata_sources:\n  - {json_data_path}\n")
+
+    result = cli_runner.invoke(cli, ["--config", str(config_path)])
+    assert "No issues found" not in result.output
+    assert "not-a-number" in result.output
+    assert result.exit_code == 1
+
+
 # --- tests for --allow-null-for-optional-enums  ---
 # Uses the existing personinfo.yaml schema which has:
 #   - gender slot: range=GenderType enum, required=false (optional) ← perfect for our test
