@@ -305,7 +305,7 @@ CREATE TABLE "HasNewsEvents_has_news_event" (
 	PRIMARY KEY ("HasNewsEvents_id", has_news_event_id),
 	FOREIGN KEY("HasNewsEvents_id") REFERENCES "HasNewsEvents" (id),
 	FOREIGN KEY(has_news_event_id) REFERENCES "NewsEvent" (id)
-);CREATE INDEX "ix_HasNewsEvents_has_news_event_HasNewsEvents_id" ON "HasNewsEvents_has_news_event" ("HasNewsEvents_id");CREATE INDEX "ix_HasNewsEvents_has_news_event_has_news_event_id" ON "HasNewsEvents_has_news_event" (has_news_event_id);
+);CREATE INDEX "ix_HasNewsEvents_has_news_event_has_news_event_id" ON "HasNewsEvents_has_news_event" (has_news_event_id);CREATE INDEX "ix_HasNewsEvents_has_news_event_HasNewsEvents_id" ON "HasNewsEvents_has_news_event" ("HasNewsEvents_id");
 CREATE TABLE "Organization" (
 	mission_statement TEXT,
 	founding_date TEXT,
@@ -410,7 +410,7 @@ CREATE TABLE "ProcedureConcept_mappings" (
 	mappings TEXT,
 	PRIMARY KEY ("ProcedureConcept_id", mappings),
 	FOREIGN KEY("ProcedureConcept_id") REFERENCES "ProcedureConcept" (id)
-);CREATE INDEX "ix_ProcedureConcept_mappings_mappings" ON "ProcedureConcept_mappings" (mappings);CREATE INDEX "ix_ProcedureConcept_mappings_ProcedureConcept_id" ON "ProcedureConcept_mappings" ("ProcedureConcept_id");
+);CREATE INDEX "ix_ProcedureConcept_mappings_ProcedureConcept_id" ON "ProcedureConcept_mappings" ("ProcedureConcept_id");CREATE INDEX "ix_ProcedureConcept_mappings_mappings" ON "ProcedureConcept_mappings" (mappings);
 CREATE TABLE "OperationProcedureConcept_mappings" (
 	"OperationProcedureConcept_id" TEXT,
 	mappings TEXT,
@@ -441,7 +441,7 @@ CREATE TABLE "Organization_categories" (
 	categories VARCHAR(18),
 	PRIMARY KEY ("Organization_id", categories),
 	FOREIGN KEY("Organization_id") REFERENCES "Organization" (id)
-);CREATE INDEX "ix_Organization_categories_categories" ON "Organization_categories" (categories);CREATE INDEX "ix_Organization_categories_Organization_id" ON "Organization_categories" ("Organization_id");
+);CREATE INDEX "ix_Organization_categories_Organization_id" ON "Organization_categories" ("Organization_id");CREATE INDEX "ix_Organization_categories_categories" ON "Organization_categories" (categories);
 CREATE TABLE "Organization_alias" (
 	"Organization_id" TEXT,
 	alias TEXT,
@@ -454,4 +454,4 @@ CREATE TABLE "Organization_has_news_event" (
 	PRIMARY KEY ("Organization_id", has_news_event_id),
 	FOREIGN KEY("Organization_id") REFERENCES "Organization" (id),
 	FOREIGN KEY(has_news_event_id) REFERENCES "NewsEvent" (id)
-);CREATE INDEX "ix_Organization_has_news_event_has_news_event_id" ON "Organization_has_news_event" (has_news_event_id);CREATE INDEX "ix_Organization_has_news_event_Organization_id" ON "Organization_has_news_event" ("Organization_id");
+);CREATE INDEX "ix_Organization_has_news_event_Organization_id" ON "Organization_has_news_event" ("Organization_id");CREATE INDEX "ix_Organization_has_news_event_has_news_event_id" ON "Organization_has_news_event" (has_news_event_id);
