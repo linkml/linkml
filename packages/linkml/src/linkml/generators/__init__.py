@@ -14,6 +14,7 @@ from linkml.generators.panderagen import PanderaDataframeGenerator, PolarsSchema
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
+from linkml.generators.rdfsgen import RdfsGenerator
 from linkml.generators.rustgen import RustGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
@@ -41,6 +42,7 @@ __all__ = [
     "pythongen",
     "pydanticgen",
     "rdfgen",
+    "rdfsgen",
     "shexgen",
     "shaclgen",
     "sssomgen",
@@ -65,6 +67,7 @@ __all__ = [
     "SQLTableGenerator",
     "SQLValidationGenerator",
     "RDFGenerator",
+    "RdfsGenerator",
     "TypeDBGenerator",
 ]
 

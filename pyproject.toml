@@ -113,6 +113,7 @@ markers = [
   "sqlddlbigquerygen: Tests for BigQuery DDL generator",
   "owlgen: Tests for OWL generator",
   "ossiegen: Tests for the Ossie generator",
+  "rdfsgen: Tests for the RDFS generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
   "typedbgen: Tests for the TypeDB generator",

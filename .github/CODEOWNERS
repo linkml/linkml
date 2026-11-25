@@ -61,6 +61,17 @@
 /tests/linkml/test_generators/test_ossiegen.py                     @Ostrzyciel @niegrzybkowski
 /tests/linkml/test_generators/input/ossie_ontology.yaml            @Ostrzyciel @niegrzybkowski
 
+# rdfsgen:
+#
+# EXPERIMENT: delegated self-contained area, see
+# docs/maintainers/codeowners.md#experiment-delegating-self-contained-areas
+# Wrapper around ohi LinkML: https://github.com/NeverBlink-OSS/ohi
+
+/docs/generators/rdfs.rst                                          @Ostrzyciel @niegrzybkowski
+/packages/linkml/src/linkml/generators/rdfsgen.py                  @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/test_rdfsgen.py                      @Ostrzyciel @niegrzybkowski
+/tests/linkml/test_generators/input/rdfs_vocabulary.yaml           @Ostrzyciel @niegrzybkowski
+
 # Shared machinery for ohi LinkML backed generators:
 
 /packages/linkml/src/linkml/generators/common/ohi.py               @Ostrzyciel @niegrzybkowski
