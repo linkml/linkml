@@ -80,3 +80,28 @@ def test_not_a_valid_schema():
         assert False, "Expected an exception due to invalid schema, but none was raised"
     except Exception:
         pass  # This is expected
+
+
+def test_importmap_forwarded_to_validator():
+    """The module-level ``validate`` forwards ``importmap`` so a schema with a
+    custom import URI resolves against an in-memory imported schema dict."""
+    base_schema = {
+        "id": "https://example.org/base_schema/0.1.0",
+        "name": "base_schema",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "classes": {"Record": {"tree_root": True, "attributes": {"code": {"equals_string": "OK"}}}},
+    }
+    user_schema = {
+        "id": "https://example.org/user_schema",
+        "name": "user_schema",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types", "https://example.org/base_schema/0.1.0"],
+    }
+    importmap = {"https://example.org/base_schema/0.1.0": base_schema}
+
+    bad = validate({"code": "nope"}, user_schema, "Record", importmap=importmap)
+    assert [r.message for r in bad.results] == ["'OK' was expected in /code"]
+
+    good = validate({"code": "OK"}, user_schema, "Record", importmap=importmap)
+    assert good.results == []
