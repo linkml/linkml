@@ -5931,7 +5931,7 @@ _:c14n10 a owl:Restriction ;
 	owl:onProperty biolink:category ;
 	owl:someValuesFrom biolink:WebPage .
 _:c14n100 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1000 a owl:Restriction ;
 	rdfs:subClassOf biolink:RNAProductIsoform ;
@@ -5967,10 +5967,10 @@ _:c14n101 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:object_context_qualifier .
 _:c14n1010 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:BiologicalSequence ;
 	owl:onProperty biolink:has_biological_sequence .
 _:c14n1011 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1012 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -6227,7 +6227,7 @@ _:c14n1088 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty biolink:negated .
 _:c14n1089 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n109 a owl:Restriction ;
 	owl:allValuesFrom biolink:OrganismTaxon ;
@@ -6293,7 +6293,7 @@ _:c14n1106 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty biolink:object .
 _:c14n1107 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1108 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -6526,7 +6526,7 @@ _:c14n1177 a owl:Restriction ;
 	owl:allValuesFrom biolink:ResourceRoleEnum ;
 	owl:onProperty biolink:resource_role .
 _:c14n1178 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1179 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -6859,7 +6859,7 @@ _:c14n1277 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:subject_direction_qualifier .
 _:c14n1278 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1279 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
@@ -6885,7 +6885,7 @@ _:c14n1285 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:subject .
 _:c14n1286 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1287 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -7055,7 +7055,7 @@ _:c14n1337 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:volume .
 _:c14n1338 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1339 a owl:Restriction ;
 	rdfs:subClassOf biolink:BehavioralFeature ;
@@ -7065,13 +7065,13 @@ _:c14n134 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:object_aspect_qualifier .
 _:c14n1340 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Double ;
 	owl:onProperty biolink:has_quotient .
 _:c14n1341 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:provided_by .
 _:c14n1342 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1343 a owl:Restriction ;
 	owl:minCardinality 1 ;
@@ -7109,7 +7109,7 @@ _:c14n1353 a owl:Restriction ;
 	owl:onProperty biolink:category ;
 	owl:someValuesFrom biolink:Pathway .
 _:c14n1354 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1355 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -7141,7 +7141,7 @@ _:c14n1363 a owl:Restriction ;
 	owl:onProperty biolink:category ;
 	owl:someValuesFrom biolink:ReagentTargetedGene .
 _:c14n1364 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:LabelType ;
 	owl:onProperty biolink:name .
 _:c14n1365 rdf:first biolink:DrugDeliveryEnum\#oral ;
 	rdf:rest _:c14n1747 .
@@ -7166,7 +7166,7 @@ _:c14n1371 a owl:Restriction ;
 	owl:allValuesFrom biolink:MolecularActivity ;
 	owl:onProperty biolink:subject .
 _:c14n1372 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:LabelType ;
 	owl:onProperty biolink:name .
 _:c14n1373 rdf:first biolink:ApprovalStatusEnum\#fda_clinical_research_phase_1 ;
 	rdf:rest _:c14n402 .
@@ -7190,7 +7190,7 @@ _:c14n1379 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:subject_derivative_qualifier .
 _:c14n138 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1380 a owl:Restriction ;
 	owl:allValuesFrom linkml:Integer ;
@@ -7424,7 +7424,7 @@ _:c14n1449 a owl:Restriction ;
 	owl:onProperty biolink:category ;
 	owl:someValuesFrom biolink:ClinicalMeasurement .
 _:c14n145 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1450 a owl:Restriction ;
 	owl:allValuesFrom biolink:NamedThing ;
@@ -7467,7 +7467,7 @@ _:c14n1461 a owl:Restriction ;
 	owl:allValuesFrom biolink:Disease ;
 	owl:onProperty biolink:object .
 _:c14n1462 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1463 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -7519,7 +7519,7 @@ _:c14n1477 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:object .
 _:c14n1478 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1479 a owl:Restriction ;
 	owl:allValuesFrom biolink:Gene ;
@@ -7623,7 +7623,7 @@ _:c14n1509 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:predicate .
 _:c14n151 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Integer ;
 	owl:onProperty biolink:start_interbase_coordinate .
 _:c14n1510 owl:unionOf _:c14n1514 .
 _:c14n1511 a owl:Restriction ;
@@ -7734,7 +7734,7 @@ _:c14n1544 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:upstream_resource_ids .
 _:c14n1545 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1546 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -7774,7 +7774,7 @@ _:c14n1555 a owl:Restriction ;
 _:c14n1556 rdf:first biolink:DrugAvailabilityEnum\#over_the_counter ;
 	rdf:rest _:c14n405 .
 _:c14n1557 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1558 a owl:Restriction ;
 	owl:minCardinality 1 ;
@@ -7963,7 +7963,7 @@ _:c14n1611 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:has_input .
 _:c14n1612 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1613 a owl:Restriction ;
 	owl:allValuesFrom biolink:AnatomicalEntity ;
@@ -7984,7 +7984,7 @@ _:c14n1618 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:enabled_by .
 _:c14n1619 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n162 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -8077,7 +8077,7 @@ _:c14n1647 a owl:Restriction ;
 	owl:allValuesFrom biolink:OrganismTaxon ;
 	owl:onProperty biolink:object .
 _:c14n1648 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Integer ;
 	owl:onProperty biolink:has_total .
 _:c14n1649 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -8196,7 +8196,7 @@ _:c14n1681 a owl:Restriction ;
 _:c14n1682 rdf:first biolink:Publication ;
 	rdf:rest _:c14n1100 .
 _:c14n1683 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1684 a owl:Restriction ;
 	owl:allValuesFrom biolink:BiologicalSex ;
@@ -8371,7 +8371,7 @@ _:c14n1733 a owl:Restriction ;
 	owl:allValuesFrom biolink:GeneOrGeneProduct ;
 	owl:onProperty biolink:subject .
 _:c14n1734 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Integer ;
 	owl:onProperty biolink:has_count .
 _:c14n1735 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -8549,7 +8549,7 @@ _:c14n179 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:FDA_adverse_event_level .
 _:c14n1790 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1791 a owl:Restriction ;
 	rdfs:subClassOf biolink:MolecularMixture ;
@@ -8647,7 +8647,7 @@ _:c14n1817 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty biolink:object_label_closure .
 _:c14n1818 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1819 rdf:first biolink:PosttranslationalModification ;
 	rdf:rest _:c14n28 .
@@ -8869,7 +8869,7 @@ _:c14n1882 a owl:Restriction ;
 	owl:onProperty biolink:category ;
 	owl:someValuesFrom biolink:SequenceAssociation .
 _:c14n1883 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1884 rdf:first biolink:DirectionQualifierEnum\#decreased ;
 	rdf:rest _:c14n110 .
@@ -8880,7 +8880,7 @@ _:c14n1886 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:has_distribution .
 _:c14n1887 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1888 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -8930,7 +8930,7 @@ _:c14n1901 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty biolink:predicate .
 _:c14n1902 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n1903 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
@@ -9046,7 +9046,7 @@ _:c14n208 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty biolink:subject .
 _:c14n209 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n21 a owl:Restriction ;
 	rdfs:subClassOf biolink:PhenotypicQuality ;
@@ -9069,7 +9069,7 @@ _:c14n214 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty biolink:object .
 _:c14n215 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n216 a owl:Restriction ;
 	owl:minCardinality 1 ;
@@ -9125,7 +9125,7 @@ _:c14n231 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:has_numeric_value .
 _:c14n232 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n233 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -9365,7 +9365,7 @@ _:c14n302 a owl:Restriction ;
 	owl:allValuesFrom biolink:DirectionQualifierEnum ;
 	owl:onProperty biolink:object_direction_qualifier .
 _:c14n303 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n304 a owl:Restriction ;
 	owl:allValuesFrom biolink:LabelType ;
@@ -9570,7 +9570,7 @@ _:c14n365 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty biolink:subject_aspect_qualifier .
 _:c14n366 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n367 rdf:first biolink:CausalMechanismQualifierEnum\#potentiation ;
 	rdf:rest _:c14n442 .
@@ -9643,7 +9643,7 @@ _:c14n389 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:subject .
 _:c14n39 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n390 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -9696,7 +9696,7 @@ _:c14n404 a owl:Restriction ;
 _:c14n405 rdf:first biolink:DrugAvailabilityEnum\#prescription ;
 	rdf:rest rdf:nil .
 _:c14n406 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n407 a owl:Restriction ;
 	owl:allValuesFrom linkml:Float ;
@@ -10251,7 +10251,7 @@ _:c14n569 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:quantifier_qualifier .
 _:c14n57 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n570 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -10575,7 +10575,7 @@ _:c14n667 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:species_context_qualifier .
 _:c14n668 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n669 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -10611,7 +10611,7 @@ _:c14n678 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty biolink:summary .
 _:c14n679 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n68 a owl:Restriction ;
 	owl:allValuesFrom biolink:SymbolType ;
@@ -10778,7 +10778,7 @@ _:c14n727 a owl:Restriction ;
 	owl:allValuesFrom biolink:PhenotypicFeature ;
 	owl:onProperty biolink:object .
 _:c14n728 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n729 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -10795,7 +10795,7 @@ _:c14n732 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:full_name .
 _:c14n733 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Integer ;
 	owl:onProperty biolink:end_interbase_coordinate .
 _:c14n734 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -10874,7 +10874,7 @@ _:c14n755 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:subject .
 _:c14n756 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n757 a owl:Restriction ;
 	owl:minCardinality 1 ;
@@ -11114,7 +11114,7 @@ _:c14n827 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:has_biological_sequence .
 _:c14n828 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n829 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -11161,7 +11161,7 @@ _:c14n841 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:has_input .
 _:c14n842 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n843 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -11172,7 +11172,7 @@ _:c14n844 a owl:Restriction ;
 _:c14n845 rdf:first biolink:ChemicalOrGeneOrGeneProductFormOrVariantEnum\#polymorphic_form ;
 	rdf:rest _:c14n1299 .
 _:c14n846 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n847 a owl:Restriction ;
 	owl:allValuesFrom biolink:GeneOrGeneProduct ;
@@ -11482,7 +11482,7 @@ _:c14n936 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty biolink:license .
 _:c14n937 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty biolink:category .
 _:c14n938 rdf:first biolink:FDAIDAAdverseEventEnum\#serious_adverse_event ;
 	rdf:rest _:c14n1632 .
@@ -11597,7 +11597,7 @@ _:c14n970 a owl:Restriction ;
 _:c14n971 rdf:first biolink:CausalMechanismQualifierEnum\#transcriptional_regulation ;
 	rdf:rest _:c14n1567 .
 _:c14n972 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom biolink:PredicateType ;
 	owl:onProperty biolink:predicate .
 _:c14n973 a owl:Restriction ;
 	owl:minCardinality 0 ;

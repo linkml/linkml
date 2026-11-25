@@ -2315,7 +2315,7 @@ _:c14n198 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:exact_number_dimensions .
 _:c14n199 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:symmetric .
 _:c14n2 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -2694,7 +2694,7 @@ _:c14n312 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:multivalued .
 _:c14n313 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:transitive .
 _:c14n314 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -2895,7 +2895,7 @@ _:c14n375 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:broad_mappings .
 _:c14n376 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:asymmetric .
 _:c14n377 rdf:first linkml:PresenceEnum\#UNCOMMITTED ;
 	rdf:rest _:c14n678 .
@@ -3025,7 +3025,7 @@ _:c14n414 a owl:Restriction ;
 	owl:allValuesFrom linkml:ExtraSlotsExpression ;
 	owl:onProperty linkml:extra_slots .
 _:c14n415 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:locally_reflexive .
 _:c14n416 rdf:first linkml:ObligationLevelEnum\#REQUIRED ;
 	rdf:rest _:c14n521 .
@@ -3288,7 +3288,7 @@ _:c14n496 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:singular_name .
 _:c14n497 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:irreflexive .
 _:c14n498 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -3508,7 +3508,7 @@ _:c14n563 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:literal_form .
 _:c14n564 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:reflexive .
 _:c14n565 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -3959,7 +3959,7 @@ _:c14n701 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:alias .
 _:c14n702 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:exact_mappings .
 _:c14n703 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -4354,7 +4354,7 @@ _:c14n824 rdf:first _:c14n826 ;
 _:c14n825 rdf:first linkml:SlotDefinition ;
 	rdf:rest rdf:nil .
 _:c14n826 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:is_grouping_slot .
 _:c14n827 rdf:first linkml:Boolean ;
 	rdf:rest rdf:nil .
@@ -4374,7 +4374,7 @@ _:c14n832 rdf:first _:c14n834 ;
 _:c14n833 rdf:first linkml:SlotDefinition ;
 	rdf:rest rdf:nil .
 _:c14n834 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:is_grouping_slot .
 _:c14n835 rdf:first linkml:SlotDefinition ;
 	rdf:rest rdf:nil .

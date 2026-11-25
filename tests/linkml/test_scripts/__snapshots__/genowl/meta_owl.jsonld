@@ -1171,14 +1171,14 @@
     "@type": [
       "http://www.w3.org/2002/07/owl#Restriction"
     ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "http://www.w3.org/2001/XMLSchema#string"
-      }
-    ],
     "http://www.w3.org/2002/07/owl#onProperty": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink/cordialness"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum"
       }
     ]
   },

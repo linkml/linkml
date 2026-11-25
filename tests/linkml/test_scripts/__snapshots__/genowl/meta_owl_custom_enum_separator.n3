@@ -1020,7 +1020,7 @@ _:c14n249 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:tests\/core\/name .
 _:c14n25 a owl:Restriction ;
-	owl:allValuesFrom xsd:string ;
+	owl:allValuesFrom ks:CordialnessEnum ;
 	owl:onProperty ks:cordialness .
 _:c14n250 a owl:Restriction ;
 	owl:minCardinality 0 ;
