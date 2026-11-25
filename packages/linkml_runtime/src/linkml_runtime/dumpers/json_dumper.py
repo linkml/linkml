@@ -55,7 +55,7 @@ class JSONDumper(Dumper):
                 # https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
                 return str(o)
             elif isinstance(o, datetime | date):
-                return str(o)
+                return o.isoformat()
             else:
                 return json.JSONDecoder().decode(o)
 

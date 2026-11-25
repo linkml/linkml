@@ -1,6 +1,11 @@
 import json
+from collections.abc import Callable
+from datetime import UTC, date, datetime
+from typing import Any
 
+import pytest
 import yaml
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.utils.formatutils import remove_empty_items
@@ -90,3 +95,26 @@ class PydanticDumpersDateTestCase(LoaderDumperTestCase):
         """Test the json emitter"""
         self.dump_test("kitchen_sink_person_01.json", lambda out_fname: json_dumper.dump(self.person, out_fname))
         self.dumps_test("kitchen_sink_person_01.json", lambda: json_dumper.dumps(self.person))
+
+
+class Event(BaseModel):
+    """Pydantic model with date and datetime fields, the Python types of the LinkML date and datetime ranges."""
+
+    day: date
+    at: datetime
+
+
+@pytest.mark.parametrize(
+    "dumps,loads",
+    [
+        (lambda e: json_dumper.dumps(e, inject_type=False), json.loads),
+        (yaml_dumper.dumps, yaml.safe_load),
+    ],
+    ids=["json", "yaml"],
+)
+def test_dumper_writes_dates_as_iso_8601_strings(
+    dumps: Callable[[BaseModel], str], loads: Callable[[str], Any]
+) -> None:
+    """Dates and datetimes are written as xsd:date and xsd:dateTime strings, not as native YAML timestamps."""
+    event = Event(day=date(2021, 1, 1), at=datetime(2024, 5, 15, 15, 51, 15, tzinfo=UTC))
+    assert loads(dumps(event)) == {"day": "2021-01-01", "at": "2024-05-15T15:51:15+00:00"}
