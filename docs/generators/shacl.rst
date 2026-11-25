@@ -68,7 +68,7 @@ Example Output:
                 shacl:path <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ],
             [ shacl:maxCount 1 ;
                 shacl:path <https://w3id.org/linkml/tests/core/name> ;
-                shacl:pattern "^\\S+ \\S+" ],
+                shacl:pattern "^[^\\s\u0085\u00A0\u1680\u2000-\u200A\u2028-\u2029\u202F\u205F\u3000]+ [^\\s\u0085\u00A0\u1680\u2000-\u200A\u2028-\u2029\u202F\u205F\u3000]+" ],
             [ shacl:class <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
                 shacl:nodeKind shacl:BlankNode ;
                 shacl:path <https://w3id.org/linkml/tests/kitchen_sink/has_medical_history> ],
@@ -82,6 +82,30 @@ Example Output:
                 shacl:nodeKind shacl:BlankNode ;
                 shacl:path <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ] ;
         shacl:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Person> .
+
+
+Patterns
+^^^^^^^^
+
+A LinkML ``pattern`` is a Python regular expression, and a value conforms where Python's
+``re.search`` finds it. SHACL's ``sh:pattern`` is an XPath regular expression
+(`SHACL §4.4.3 <https://www.w3.org/TR/shacl/#PatternConstraintComponent>`__,
+`XPath Functions 3.1 §5.6 <https://www.w3.org/TR/xpath-functions-31/#regex-syntax>`__), which
+is also searched in the value but reads some constructs differently, while Python-based engines
+such as pyshacl compile it with Python's ``re``. The generator writes each pattern in forms that
+both read with Python's meaning: ``.`` as ``[^\n]``, ``\s`` and ``\S`` as explicit character
+classes (in the example above), ``(?:`` as a group, ``{,n}`` as ``{0,n}``, a literal ``{`` or
+``}`` escaped, and an escape that XPath does not have, such as ``\/``, as the character itself.
+Two constructs stay as written, as no form reads alike in both:
+
+* ``\w`` and ``\W``: XPath's ``\w`` excludes ``_`` and includes symbols, and Python's ``re``
+  has no ``\p{...}`` to write Python's ``\w`` with;
+* ``$``: Python's ``$`` also matches before a final line feed, XPath's only at the end.
+
+A pattern with a construct XPath does not have, such as a lookahead or a backreference, is
+written as it is. ``equals_string`` and ``equals_string_in`` become ``sh:in``, also on a type.
+A shape has at most one ``sh:in``, so where a slot, its type or enum and its expanded
+``subproperty_of`` give more than one list, the one list holds the values that all of them allow.
 
 
 Command Line

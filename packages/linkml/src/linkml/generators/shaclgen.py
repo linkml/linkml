@@ -10,6 +10,7 @@ from jsonasobj2 import JsonObj, as_dict
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
+from rdflib.term import Node
 
 from linkml._version import __version__
 from linkml.generators.common.annotations import declared_annotation
@@ -18,7 +19,14 @@ from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
-from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
+from linkml.utils.pattern_dialects import regex_for_xpath
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ElementName,
+    PresenceEnum,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.rdf_terms import TermKind, type_term, value_term
@@ -370,7 +378,7 @@ class ShaclGenerator(Generator):
                                 if v is not None:
                                     g.add((t_node, p, v))
 
-                            self._add_type(t_node_pv, r)
+                            self._add_type(g, t_node_pv, r)
                             range_list.append(t_node)
                         elif r in sv.all_enums():
                             en_node = BNode()
@@ -394,7 +402,7 @@ class ShaclGenerator(Generator):
                         # A branch may combine range + pattern (e.g. range: string
                         # with pattern: "^...") or specify pattern alone (no range).
                         if any.pattern:
-                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
+                            g.add((range_list[-1], SH.pattern, Literal(regex_for_xpath(any.pattern))))
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
@@ -417,23 +425,17 @@ class ShaclGenerator(Generator):
                             else:
                                 prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
                     elif r in sv.all_types():
-                        self._add_type(prop_pv, r)
+                        self._add_type(g, prop_pv, r, s)
                     elif r in sv.all_enums():
-                        self._add_enum(g, prop_pv, r)
+                        self._add_enum(g, prop_pv, r, s)
                     else:
                         add_simple_data_type(prop_pv, r)
-                    if s.equals_string:
-                        # Map equal_string and equal_string_in to sh:in
-                        self._and_equals_string(g, prop_pv, [s.equals_string])
-                    if s.equals_string_in:
-                        # Map equal_string and equal_string_in to sh:in
-                        self._and_equals_string(g, prop_pv, s.equals_string_in)
-                    if self.expand_subproperty_of and s.subproperty_of:
-                        # Map subproperty_of to sh:in with slot descendants
-                        self._add_subproperty_constraint(g, prop_pv, s)
+                    if r not in sv.all_types() and r not in sv.all_enums():
+                        # _add_type and _add_enum write them together with the values the range allows
+                        self._add_in(g, prop_pv, *self._allowed_values(s), name=s.name)
 
                 if s.pattern:
-                    prop_pv(SH.pattern, Literal(s.pattern))
+                    prop_pv(SH.pattern, Literal(regex_for_xpath(s.pattern)))
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -711,19 +713,18 @@ class ShaclGenerator(Generator):
             range_ref += self.suffix
         func(SH["node"], URIRef(range_ref))
 
-    def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
+    def _add_enum(self, g: Graph, func: Callable, r: ElementName, slot: SlotDefinition | None = None) -> None:
+        """Add the permissible values of the enum *r* and the values that *slot* allows as ``sh:in``.
+
+        See :meth:`_add_in`.
+        """
         sv = self.schemaview
         enum = sv.get_enum(r)
-        pv_node = BNode()
-        Collection(
-            g,
-            pv_node,
-            [
-                URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
-                for pv_name, pv in enum.permissible_values.items()
-            ],
-        )
-        func(SH["in"], pv_node)
+        values = [
+            URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
+            for pv_name, pv in enum.permissible_values.items()
+        ]
+        self._add_in(g, func, values, *self._allowed_values(slot), name=slot.name if slot else r)
 
     # SHACL §4.1.3 node kinds for the node term kinds of LinkML types.
     _SH_NODE_KINDS: ClassVar[dict[TermKind, URIRef]] = {
@@ -732,48 +733,62 @@ class ShaclGenerator(Generator):
         TermKind.BLANK_NODE_OR_IRI: SH.BlankNodeOrIRI,
     }
 
-    def _add_type(self, func: Callable, r: ElementName) -> None:
+    def _add_type(self, g: Graph, func: Callable, r: ElementName, slot: SlotDefinition | None = None) -> None:
+        """Add the constraints of the type *r* with *func*: its node kind or datatype, for literals its pattern,
+        and the values that *slot* and a literal type allow (:meth:`_add_in`)."""
         sv = self.schemaview
         # Types can inherit URI and pattern constraints.
         rt = sv.induced_type(r)
         term = type_term(sv, r) if rt.uri else None
+        restricted: list[SlotDefinition | TypeDefinition] = [] if slot is None else [slot]
         if term is not None and term.kind.is_node:
             func(SH.nodeKind, self._SH_NODE_KINDS[term.kind])
         elif term is not None:
             func(SH.nodeKind, SH.Literal)
             func(SH.datatype, URIRef(term.datatype))
             if rt.pattern:
-                func(SH.pattern, Literal(rt.pattern))
+                func(SH.pattern, Literal(regex_for_xpath(rt.pattern)))
+            restricted.append(rt)
             if rt.annotations and self.include_annotations:
                 self._add_annotations(func, rt)
         else:
             logger.error(f"No URI for type {rt.name}")
+        self._add_in(g, func, *self._allowed_values(*restricted), name=slot.name if slot else r)
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
-        pv_node = BNode()
-        Collection(
-            g,
-            pv_node,
-            [Literal(v) for v in values],
-        )
-        func(SH["in"], pv_node)
+    def _allowed_values(self, *elements: SlotDefinition | TypeDefinition | None) -> list[list[Node]]:
+        """The lists of values that *elements* allow: one for each ``equals_string`` and ``equals_string_in``, and
+        for a slot with ``subproperty_of``, if it is expanded, its descendants (:meth:`_get_subproperty_values`)."""
+        lists: list[list[Node]] = []
+        for element in elements:
+            if element is None:
+                continue
+            if element.equals_string is not None:
+                lists.append([Literal(element.equals_string)])
+            if element.equals_string_in:
+                lists.append([Literal(value) for value in element.equals_string_in])
+            if isinstance(element, SlotDefinition) and self.expand_subproperty_of and element.subproperty_of:
+                if descendants := self._get_subproperty_values(element):
+                    lists.append(descendants)
+        return lists
 
-    def _add_subproperty_constraint(self, g: Graph, func: Callable, slot) -> None:
+    @staticmethod
+    def _add_in(g: Graph, func: Callable, *lists: list[Node], name: str) -> None:
+        """Add the values that all *lists* allow with *func* as ``sh:in``, if there is a list.
+
+        A shape has at most one value for ``sh:in`` (SHACL §4.8.3), and two would each have to hold, so the one list
+        holds the values that are in every list, in the order of the first, and is empty if there are none.
+
+        :param name: the slot, type or enum that the lists restrict, for the warning about an empty list
         """
-        Add sh:in constraint from subproperty_of slot hierarchy.
-
-        Following metamodel semantics: "any ontological child (related to X via
-        an is_a relationship), is a valid value for the slot"
-
-        :param g: RDF graph to add to
-        :param func: Function to call with predicate and object
-        :param slot: SlotDefinition with subproperty_of set
-        """
-        values = self._get_subproperty_values(slot)
-        if values:
-            pv_node = BNode()
-            Collection(g, pv_node, values)
-            func(SH["in"], pv_node)
+        if not lists:
+            return
+        allowed = [value for value in lists[0] if all(value in other for other in lists[1:])]
+        if not allowed and all(lists):
+            logger.warning(f"The values that {name!r} allows have none in common, so sh:in admits no value")
+        node = BNode() if allowed else RDF.nil
+        if allowed:
+            Collection(g, node, allowed)
+        func(SH["in"], node)
 
     def _get_subproperty_values(self, slot) -> list:
         """

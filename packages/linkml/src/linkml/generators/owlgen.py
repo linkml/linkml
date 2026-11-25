@@ -2,7 +2,6 @@
 
 import logging
 import os
-import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Sequence
 from copy import copy
@@ -24,6 +23,7 @@ from linkml.generators.common.annotations import declared_annotation
 from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
+from linkml.utils.pattern_dialects import regex_as_xsd
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -56,234 +56,6 @@ _T = TypeVar("_T")
 
 SWRL = rdflib.Namespace("http://www.w3.org/2003/11/swrl#")
 SWRLB = rdflib.Namespace("http://www.w3.org/2003/11/swrlb#")
-
-# Python's \s and \w over the characters XML allows, as the inside of a class: the XML
-# Schema \s is only tab, line feed, carriage return and space, and the XML Schema \w
-# excludes "_" and includes symbols. U+0085 has no escape, so it stands as itself.
-_CLASS_ESCAPES = {"s": "\\s\\p{Z}\x85", "w": r"\p{L}\p{N}_"}
-# Python's "." also matches a carriage return. The XML Schema "." matches neither a
-# carriage return nor a line feed, so any characters are spelled out, rather than as
-# [\s\S], which reasoners that read a pattern as a dk.brics automaton misread.
-_DOT = r"(.|\r)"
-_ANY = r"(.|\n|\r)*"
-# Python's "$" also matches before a line feed that ends the value.
-_END = r"\n?"
-# Python reads only ASCII digits in a quantifier.
-_REPEAT = re.compile(r"\{([0-9]*)(?:(,)([0-9]*))?\}")
-# The characters a range of a class is split around, in code point order, with their escapes
-_RANGE_SPLITS = {"\t": r"\t", "\n": r"\n", "\r": r"\r"} | {char: "\\" + char for char in "-[\\]^"}
-
-
-def _xsd_char(char: str, in_class: bool) -> str | None:
-    """Escape a literal character for an XML Schema regular expression, or return None if XML excludes it."""
-    if not (char in "\t\n\r" or " " <= char <= "\ud7ff" or "\ue000" <= char <= "\ufffd" or char >= "\U00010000"):
-        return None
-    return "\\" + char if char in ("\\[]-^" if in_class else ".\\?*+{}()[]|") else char
-
-
-def _xsd_escape(char: str, in_class: bool) -> str | None:
-    """Translate the escape ``\\char`` of a Python regular expression, or return None.
-
-    In a class, :func:`_xsd_class` translates ``\\S`` and ``\\W`` itself.
-    """
-    if char in "dDnrt":
-        return "\\" + char
-    if char in "sw":
-        chars = _CLASS_ESCAPES[char]
-        return chars if in_class else f"[{chars}]"
-    if char in "SW":
-        return f"[^{_CLASS_ESCAPES[char.lower()]}]"
-    if char.isascii() and char.isalnum():
-        # backreferences, \b, \A, \Z, \x, \u and the like
-        return None
-    return _xsd_char(char, in_class)
-
-
-def _xsd_class_item(pattern: str, pos: int) -> tuple[str | None, int]:
-    """Translate the character or escape at ``pattern[pos]`` of a class, or return None."""
-    if pattern[pos] == "\\":
-        return _xsd_escape(pattern[pos + 1], in_class=True), pos + 2
-    return _xsd_char(pattern[pos], in_class=True), pos + 1
-
-
-def _range_end(pattern: str, pos: int) -> str:
-    """Return the character that the end of a range at ``pattern[pos]`` stands for."""
-    if pattern[pos] != "\\":
-        return pattern[pos]
-    return {"n": "\n", "r": "\r", "t": "\t"}.get(pattern[pos + 1], pattern[pos + 1])
-
-
-def _plain_range(start: int, end: int) -> str:
-    # C0 controls other than tab, LF and CR are not XML characters.
-    start = max(start, 0x20)
-    if start > end:
-        return ""
-    return chr(start) if start == end else f"{chr(start)}-{chr(end)}"
-
-
-def _xsd_range(low: str, high: str) -> str:
-    """Translate the range from ``low`` to ``high`` of a character class.
-
-    XML Schema allows an escaped character at either end of a range, but libxml2 and
-    elementpath misread some of these ranges. The range is therefore split around
-    each character that needs an escape, which then stands alone.
-    """
-    parts: list[str] = []
-    start = ord(low)
-    for char, escape in _RANGE_SPLITS.items():
-        if start <= ord(char) <= ord(high):
-            parts += [_plain_range(start, ord(char) - 1), escape]
-            start = ord(char) + 1
-    parts.append(_plain_range(start, ord(high)))
-    return "".join(parts)
-
-
-def _xsd_class(pattern: str, pos: int) -> tuple[str | None, int]:
-    """Translate the character class whose "[" precedes ``pattern[pos]``.
-
-    XML Schema cannot add a negated class to a class, so a class with ``\\S`` or
-    ``\\W`` becomes a choice of classes, or a class subtraction if it is negated.
-    """
-    negated = pattern.startswith("^", pos)
-    pos += negated
-    first = pos
-    parts: list[str] = []
-    # for each \S or \W, the characters it does not match
-    negations: list[str] = []
-    # Python reads a "]" right after "[" or "[^" as a literal.
-    while pattern[pos] != "]" or pos == first:
-        if pattern.startswith(("\\S", "\\W"), pos):
-            negations.append(_CLASS_ESCAPES[pattern[pos + 1].lower()])
-            pos += 2
-            continue
-        start = pos
-        part, pos = _xsd_class_item(pattern, pos)
-        if part is not None and pattern[pos] == "-" and pattern[pos + 1] != "]":
-            high, end = _xsd_class_item(pattern, pos + 1)
-            part = high and _xsd_range(_range_end(pattern, start), _range_end(pattern, pos + 1))
-            pos = end
-        if part is None:
-            return None, pos
-        parts.append(part)
-    items = "".join(parts)
-    pos += 1
-    if not negations:
-        return f"[{'^' if negated else ''}{items}]", pos
-    if not negated:
-        choices = ([f"[{items}]"] if items else []) + [f"[^{chars}]" for chars in negations]
-        return (choices[0] if len(choices) == 1 else f"({'|'.join(choices)})"), pos
-    if len(negations) > 1:
-        # the characters each of them does not match, which no subtraction expresses
-        return None, pos
-    # the characters the \S or \W does not match and no other item matches
-    return (f"[{negations[0]}-[{items}]]" if items else f"[{negations[0]}]"), pos
-
-
-def _xsd_quantifier(pattern: str, pos: int) -> tuple[str | None, int]:
-    """Translate the quantifier at ``pattern[pos]``, or a "{" that Python reads as a literal."""
-    if pattern[pos] == "{":
-        match = _REPEAT.match(pattern, pos)
-        if match is None or match.group() == "{}":
-            return "\\{", pos + 1
-        low, comma, high = match.groups()
-        quantifier, pos = f"{{{low or 0}{comma or ''}{high or ''}}}", match.end()
-    else:
-        quantifier, pos = pattern[pos], pos + 1
-    if pattern.startswith("+", pos):
-        # possessive quantifiers reject strings the greedy ones match
-        return None, pos
-    # a lazy quantifier matches the same strings as a greedy one
-    return quantifier, pos + pattern.startswith("?", pos)
-
-
-def _is_regex(pattern: str) -> bool:
-    try:
-        re.compile(pattern)
-    except (re.error, OverflowError, RecursionError, ValueError):
-        return False
-    return True
-
-
-def _xsd_branch(body: list[str], starts: bool, ends: bool) -> str:
-    # A search finds an unanchored branch that begins or ends with ".*" without it.
-    if not starts and body[:2] == [_DOT, "*"]:
-        body = body[2:]
-    if not ends and body[-2:] == [_DOT, "*"]:
-        body = body[:-2]
-    if not body and not (starts and ends):
-        return _ANY
-    return ("" if starts else _ANY) + "".join(body) + (_END if ends else _ANY)
-
-
-def _regex_as_xsd(pattern: str) -> str | None:
-    """Translate a LinkML ``pattern`` into an XML Schema regular expression.
-
-    The result matches exactly the values in which Python's ``re.search``, as used by
-    LinkML's validators, finds the pattern. An XML Schema regular expression matches
-    the whole value and reads ``^`` and ``$`` as ordinary characters (XML Schema 1.1
-    Part 2, Appendix G). Each top-level branch therefore loses its anchors and gets
-    ``(.|\\n|\\r)*`` at an end without one, and ``\\n?`` at an end with one, as
-    Python's ``$`` also matches before a line feed that ends the value. Python's
-    ``.``, ``\\s`` and ``\\w`` are spelled out, non-capturing groups become groups,
-    and lazy quantifiers greedy ones.
-
-    :param pattern: the regular expression, in Python's dialect
-    :return: the XML Schema regular expression, or None if the pattern is invalid or
-        uses what XML Schema cannot express, such as a lookaround, a backreference,
-        an anchor inside a group or a character that XML excludes
-    """
-    if not _is_regex(pattern):
-        return None
-    # A structured pattern without partial_match resolves to "^(?:syntax)$", which
-    # matches the whole value with any branch of the syntax, anchored or not.
-    whole = pattern.startswith("^(?:") and pattern.endswith(")$") and _is_regex(pattern[4:-2])
-    if whole:
-        pattern = pattern[4:-2]
-    branches: list[str] = []
-    body: list[str] = []
-    depth = 0
-    starts = ends = False
-    pos = 0
-    while pos < len(pattern):
-        char = pattern[pos]
-        pos += 1
-        if ends and char not in "|$":
-            return None
-        if char == "|" and not depth:
-            branches.append(_xsd_branch(body, starts or whole, ends or whole))
-            body, starts, ends = [], False, False
-            continue
-        token: str | None = char
-        if char == "^":
-            if body:
-                return None
-            starts, token = True, ""
-        elif char == "$":
-            ends, token = True, ""
-        elif char == "\\":
-            token, pos = _xsd_escape(pattern[pos], in_class=False), pos + 1
-        elif char == "[":
-            token, pos = _xsd_class(pattern, pos)
-        elif char == "(":
-            if pattern.startswith("?", pos):
-                if not pattern.startswith("?:", pos):
-                    return None
-                pos += 2
-            depth += 1
-        elif char == ")":
-            depth -= 1
-        elif char == ".":
-            token = _DOT
-        elif char in "*+?{":
-            token, pos = _xsd_quantifier(pattern, pos - 1)
-        elif char != "|":
-            token = _xsd_char(char, in_class=False)
-        if token is None:
-            return None
-        if token:
-            body.append(token)
-    branches.append(_xsd_branch(body, starts or whole, ends or whole))
-    return "|".join(branches)
 
 
 @unique
@@ -403,7 +175,7 @@ class OwlSchemaGenerator(Generator):
     """rdfs:Datatype, owl:Thing"""
 
     _omitted_patterns: int = field(default=0, init=False, repr=False)
-    """Number of patterns left out so far, as XML Schema has no equivalent of them"""
+    """Number of patterns left out so far (see :meth:`_xsd_pattern`)"""
 
     _lossy_types: set[str] = field(default_factory=set, init=False, repr=False)
     """Types whose definition leaves out a pattern"""
@@ -630,7 +402,7 @@ class OwlSchemaGenerator(Generator):
             else {
                 name
                 for name in sv.all_types(imports=True)
-                if (pattern := sv.induced_type(name).pattern) is not None and _regex_as_xsd(pattern) is None
+                if (pattern := sv.induced_type(name).pattern) is not None and regex_as_xsd(pattern) is None
             }
         )
         for prefix in self.metamodel.schema.emit_prefixes:
@@ -1160,7 +932,7 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
 
             if slot.has_member:
-                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
+                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot, owltypes)
                 if has_member_expr:
                     owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
@@ -1308,6 +1080,9 @@ class OwlSchemaGenerator(Generator):
         is_literal = None
         if owl_types:
             is_literal = RDFS.Datatype in owl_types
+        elif this_owl_types == {OWL.Thing}:
+            # the values of a class, or of a type whose values are nodes, are not literals
+            is_literal = False
         constraints_exprs, constraints_owltypes = self.add_constraints(slot, is_literal=is_literal)
         this_owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)
@@ -1328,7 +1103,7 @@ class OwlSchemaGenerator(Generator):
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
             # facets of non-literal values are skipped below
-            XSD.pattern: self._xsd_pattern(element) if is_literal is not False else None,
+            XSD.pattern: self._xsd_pattern(element, on_literals=is_literal is not False),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
@@ -1386,8 +1161,13 @@ class OwlSchemaGenerator(Generator):
     def _xsd_pattern(
         self,
         element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+        on_literals: bool = True,
     ) -> str | None:
-        """Resolve the pattern of an element and translate it to an XML Schema regular expression."""
+        """Resolve the pattern of an element and translate it to an XML Schema regular expression.
+
+        A pattern is left out, and counted in :attr:`_omitted_patterns`, if XML Schema cannot express it, or if
+        it is not *on_literals*: a facet restricts literals, not the IRI of a node.
+        """
         pattern = element.pattern
         # OWL also processes anonymous expressions, which cannot be induced.
         # Named definitions that reach this point without a pattern are raw
@@ -1395,8 +1175,20 @@ class OwlSchemaGenerator(Generator):
         if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
             pattern = self.schemaview.resolve_pattern(element)
         if pattern is None:
+            if element.structured_pattern is not None:
+                # SchemaView resolves the structured pattern of a definition only, and the other
+                # generators leave that of an anonymous expression out too.
+                self._omitted_patterns += 1
+                logger.warning(
+                    f"The structured pattern {element.structured_pattern.syntax!r} of an anonymous expression is not "
+                    "resolved; no xsd:pattern is generated for it"
+                )
             return None
-        xsd_pattern = _regex_as_xsd(pattern)
+        if not on_literals:
+            self._omitted_patterns += 1
+            logger.warning(f"Pattern {pattern!r} is on values that are not literals; no xsd:pattern restricts them")
+            return None
+        xsd_pattern = regex_as_xsd(pattern)
         if xsd_pattern is None:
             self._omitted_patterns += 1
             logger.warning(f"Pattern {pattern!r} has no XML Schema equivalent; no xsd:pattern is generated for it")
@@ -1405,9 +1197,9 @@ class OwlSchemaGenerator(Generator):
     def _unless_pattern_omitted(self, what: str, build: Callable[[], _T]) -> _T | None:
         """Return what *build* returns, or None if it leaves out a pattern.
 
-        Leaving out a pattern that has no XML Schema equivalent admits more values,
-        which stays sound where a constraint must hold. Under a negation, or in a union
-        that then loses an operand, it admits fewer values, so *build* is undone instead.
+        Leaving out a pattern (:meth:`_xsd_pattern`) admits more values, which stays
+        sound where a constraint must hold. Under a negation, or in a union that then
+        loses an operand, it admits fewer values, so *build* is undone instead.
 
         :param what: the expression *build* translates, for the warning
         :param build: a function that translates the expression into ``self.graph``
@@ -1419,7 +1211,7 @@ class OwlSchemaGenerator(Generator):
         finally:
             scratch, self.graph = self.graph, graph
         if self._omitted_patterns != omitted:
-            logger.warning(f"{what} is left out, as it needs a pattern that has no XML Schema equivalent")
+            logger.warning(f"{what} is left out, as it needs a pattern that no xsd:pattern states")
             return None
         self.graph += scratch
         return result
@@ -1472,7 +1264,7 @@ class OwlSchemaGenerator(Generator):
                 self._add_annotation_property_axioms(slot, slot_uri)
             return
 
-        range_expr = self.transform_class_slot_expression(None, slot)
+        range_expr = self.transform_class_slot_expression(None, slot, owl_types=self.slot_node_owltypes(slot))
         if range_expr:
             self.graph.add((slot_uri, RDFS.range, range_expr))
         if slot.domain:

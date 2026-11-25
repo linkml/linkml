@@ -835,6 +835,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             constraints.add_keyword("maximum", schema_type.maximum_value)
             constraints.add_keyword("const", schema_type.equals_string)
             constraints.add_keyword("const", schema_type.equals_number)
+            if schema_type.equals_string_in:
+                constraints.add_keyword("enum", schema_type.equals_string_in)
         constraints.add_keyword("pattern", slot.pattern)
         constraints.add_keyword("minimum", slot.minimum_value)
         constraints.add_keyword("maximum", slot.maximum_value)
