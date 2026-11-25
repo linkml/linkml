@@ -61,6 +61,7 @@ version = None
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 META = CurieNamespace('meta', 'https://w3id.org/linkml/')
 RDFS = CurieNamespace('rdfs', 'http://example.org/UNKNOWN/rdfs/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = CurieNamespace('', 'https://example.com/test44/')

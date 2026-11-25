@@ -64,7 +64,10 @@ version = None
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SCT = CurieNamespace('sct', 'http://snomed.info/id/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = SCT
 
 
