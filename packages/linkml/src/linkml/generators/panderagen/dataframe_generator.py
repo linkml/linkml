@@ -113,7 +113,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
             )
         return self.environments[template_path].get_template(template_filename)
 
-    def serialize(self, directory: str = None, rendered_module: OODocument | None = None) -> str:
+    def serialize(self, directory: str | None = None, rendered_module: OODocument | None = None) -> str:
         """
         Serialize the dataframe schema to a Python module as a string
         """
@@ -164,7 +164,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
         return code
 
-    def compile_dataframe_model(self, module_name: str = None) -> ModuleType:
+    def compile_dataframe_model(self, module_name: str | None = None) -> ModuleType:
         """
         Generates and compiles Dataframe model.
 
@@ -183,7 +183,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         specification: list[tuple[str, type, str, str, str]],
         package_name: str,
         schema: str,
-        directory: str = None,
+        directory: str | None = None,
         **args,
     ):
         """

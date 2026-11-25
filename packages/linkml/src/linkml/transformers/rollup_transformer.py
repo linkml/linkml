@@ -57,7 +57,7 @@ class RollupTransformer(ModelTransformer):
         self._descendant_classes: set[str] = set()
         self._class_to_slot_map: dict[str, set[str]] = {}
 
-    def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> SchemaDefinition:
+    def transform(self, tgt_schema_name: str | None = None, top_class: ClassDefinitionName = None) -> SchemaDefinition:
         """
         Transform the schema by flattening the inheritance hierarchy.
 

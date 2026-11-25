@@ -15,7 +15,9 @@ from tests.linkml_runtime.support.test_environment import TestEnvironment, TestE
 class LoaderDumperTestCase(TestEnvironmentTestCase):
     env = TestEnvironment(__file__)
 
-    def dump_test(self, filename: str, dumper: Callable[[str], None], comparator: Callable[[str], str] = None) -> bool:
+    def dump_test(
+        self, filename: str, dumper: Callable[[str], None], comparator: Callable[[str], str] | None = None
+    ) -> bool:
         """
         Invoke the dumper passing it the output file name and then compare the result to an expected output
         :param filename: non-pathed file name to dump to and test
@@ -32,7 +34,7 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
             actual = actual_f.read()
         return self.env.eval_single_file(expected_file, actual, comparator=comparator)
 
-    def dumps_test(self, filename: str, dumper: Callable[[], str], comparator: Callable[[], str] = None) -> bool:
+    def dumps_test(self, filename: str, dumper: Callable[[], str], comparator: Callable[[], str] | None = None) -> bool:
         """
         Invoke the string dumper and evaluate the results
         :param filename: filename to test

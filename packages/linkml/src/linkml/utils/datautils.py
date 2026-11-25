@@ -25,7 +25,7 @@ aliases = {
 }
 
 
-def _get_format(path: str, specified_format: str = None, default=None):
+def _get_format(path: str, specified_format: str | None = None, default=None):
     if specified_format is None:
         if path is None:
             if default is None:

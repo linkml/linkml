@@ -36,7 +36,7 @@ def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_
     sv.set_modified()
 
 
-def roll_down(sv: SchemaView, classes: list[CLASS_NAME] = None, mixins=True, is_a=True, delete=True) -> None:
+def roll_down(sv: SchemaView, classes: list[CLASS_NAME] | None = None, mixins=True, is_a=True, delete=True) -> None:
     """
     rolls down to a set of descendant classes
 

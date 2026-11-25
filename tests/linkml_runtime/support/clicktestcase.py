@@ -95,7 +95,7 @@ class ClickTestCase(TestEnvironmentTestCase):
         filtr: Optional[Callable[[str], str]] = None,
         is_directory: bool = False,
         add_yaml: bool = True,
-        comparator: Callable[[type(unittest.TestCase), str, str, str], str] = None,
+        comparator: Callable[[type(unittest.TestCase), str, str, str], str] | None = None,
     ) -> None:
         """Execute a command test
 

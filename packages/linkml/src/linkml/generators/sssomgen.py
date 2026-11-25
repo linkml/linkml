@@ -153,7 +153,7 @@ class SSSOMGenerator(Generator):
     def visit_enum(self, enum: EnumDefinition) -> None:
         self.definition_extract_info(enum)
 
-    def end_schema(self, context: str = None, **_) -> None:
+    def end_schema(self, context: str | None = None, **_) -> None:
         metadata = {}
         schema: SchemaDefinition = self.schema
 

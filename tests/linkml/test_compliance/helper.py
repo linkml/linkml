@@ -310,7 +310,7 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
 
 
 def _generate_framework_output(
-    schema: dict, framework: str, mappings: list = None
+    schema: dict, framework: str, mappings: list | None = None
 ) -> tuple[Generator, str, Path | None]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
@@ -474,15 +474,15 @@ def _get_linkml_types() -> dict:
 def _make_schema(
     test: Callable,
     name: str,
-    schema: dict = None,
-    classes: dict = None,
-    slots: dict = None,
-    types: dict = None,
-    prefixes: dict = None,
-    core_elements: list = None,
-    post_process: Callable = None,
+    schema: dict | None = None,
+    classes: dict | None = None,
+    slots: dict | None = None,
+    types: dict | None = None,
+    prefixes: dict | None = None,
+    core_elements: list | None = None,
+    post_process: Callable | None = None,
     merge_type_imports=True,
-    imported_schemas: list[dict] = None,
+    imported_schemas: list[dict] | None = None,
     mappings: dict[str, Any] | None = None,
     unsatisfiable: bool = False,
     **kwargs,
@@ -748,9 +748,9 @@ def check_data(
     valid: bool,
     should_warn: bool = False,
     expected_behavior: ValidationBehavior | tuple[ValidationBehavior, str] = ValidationBehavior.IMPLEMENTS,
-    target_class: str = None,
-    description: str = None,
-    coerced: dict = None,
+    target_class: str | None = None,
+    description: str | None = None,
+    coerced: dict | None = None,
     exclude_rdf=False,
     strip_nulls: bool = True,
 ):
@@ -1050,7 +1050,7 @@ def _warn_robot_missing_for_owl_compliance() -> None:
 
 
 def robot_check_coherency(
-    data_path: str | Path, ontology_path: str | Path, output_path: str | Path = None
+    data_path: str | Path, ontology_path: str | Path, output_path: str | Path | None = None
 ) -> bool | None:
     """
     Check the data validates using an OWL reasoner, executed by robot.
@@ -1102,7 +1102,7 @@ def robot_check_coherency(
 TREE_NODE = tuple[int]
 
 
-def generate_tree_nodes(depth=3, num_siblings=2, path: list[int] = None) -> Iterator[TREE_NODE]:
+def generate_tree_nodes(depth=3, num_siblings=2, path: list[int] | None = None) -> Iterator[TREE_NODE]:
     """
     Generate a tree of data names, with depth `depth`.
 
