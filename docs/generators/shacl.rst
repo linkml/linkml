@@ -19,6 +19,8 @@ To run:
 
    gen-shacl personinfo.yaml > personinfo.shacl.ttl
 
+Rules whose pre/postcondition patterns are not recognized are skipped with a warning naming the class and rule.
+
 
 
 Docs

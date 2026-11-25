@@ -461,7 +461,7 @@ class ShaclGenerator(Generator):
 
         Each recognised rule is converted into an ``sh:SPARQLConstraint``
         attached to *shape_uri*.  Unrecognised patterns are logged at
-        ``DEBUG`` level and silently skipped.
+        ``WARNING`` level and skipped.
 
         Currently recognised patterns:
 
@@ -512,11 +512,12 @@ class ShaclGenerator(Generator):
 
             sparql_query = self._rule_to_sparql(sv, cls, rule)
             if sparql_query is None:
-                logger.debug(
-                    "Skipping unsupported rule pattern in class %r: %s",
-                    cls.name,
-                    getattr(rule, "description", "(no description)"),
-                )
+                if self.emit_rules:
+                    logger.warning(
+                        "Rule not emitted as SHACL: class=%s rule=%r",
+                        cls.name,
+                        getattr(rule, "description", None),
+                    )
                 continue
 
             constraint = BNode()
@@ -951,9 +952,11 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help=(
         "Emit sh:sparql constraints from LinkML rules: blocks. "
-        "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
-        "are translated into SHACL-SPARQL constraints on the corresponding "
-        "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+        "When enabled (default), the recognised rule patterns (boolean-guard and "
+        "exclusive-value) are translated into SHACL-SPARQL constraints on the "
+        "corresponding sh:NodeShape; rules whose pre/postcondition patterns are "
+        "not recognised are skipped with a warning naming the class and rule. "
+        "Use --no-emit-rules to suppress rule generation."
     ),
 )
 @click.option(
