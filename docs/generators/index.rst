@@ -83,6 +83,7 @@ languages such as Python, Javascript, or Java.
    golang
    typescript
    rust
+   zod
 
 Database
 --------
