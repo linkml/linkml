@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from dataclasses import dataclass
 from enum import Enum
 
@@ -73,6 +74,13 @@ class RelationshipType(pydantic.BaseModel):
         return f"{self.left_cardinality}{self.identifying}{self.right_cardinality}"
 
 
+def _erd_entity_name(name: str) -> str:
+    """Quote an entity name that Mermaid would not read as a single plain identifier."""
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+        return name
+    return f'"{name}"'
+
+
 class Entity(pydantic.BaseModel):
     """Entity in an ER diagram."""
 
@@ -81,7 +89,7 @@ class Entity(pydantic.BaseModel):
 
     def __str__(self):
         attrs = "\n".join([str(a) for a in self.attributes])
-        return f"{self.name} {{\n{attrs}\n}}"
+        return f"{_erd_entity_name(self.name)} {{\n{attrs}\n}}"
 
 
 class Relationship(pydantic.BaseModel):
@@ -93,7 +101,9 @@ class Relationship(pydantic.BaseModel):
     relationship_label: str = None
 
     def __str__(self):
-        return f'{self.first_entity} {self.relationship_type} {self.second_entity} : "{self.relationship_label}"'
+        first = _erd_entity_name(self.first_entity)
+        second = _erd_entity_name(self.second_entity)
+        return f'{first} {self.relationship_type} {second} : "{self.relationship_label}"'
 
 
 class ERDiagram(pydantic.BaseModel):
