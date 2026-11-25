@@ -15,6 +15,7 @@ from linkml.generators.docgen import cli as gen_doc
 from linkml.generators.dotgen import cli as gen_graphviz
 from linkml.generators.erdiagramgen import cli as gen_erdiagram
 from linkml.generators.excelgen import cli as gen_excel
+from linkml.generators.frictionlessgen import cli as gen_frictionless
 from linkml.generators.golanggen import cli as gen_golang
 from linkml.generators.golrgen import cli as gen_golr_views
 from linkml.generators.graphqlgen import cli as gen_graphql
@@ -102,6 +103,7 @@ generate.add_command(gen_jsonld_context, name="jsonld-context")
 generate.add_command(gen_prefix_map, name="prefix-map")
 generate.add_command(gen_csv, name="csv")
 generate.add_command(gen_graphviz, name="graphviz")
+generate.add_command(gen_frictionless, name="frictionless")
 generate.add_command(gen_golang, name="golang")
 generate.add_command(gen_golr_views, name="golr-views")
 generate.add_command(gen_graphql, name="graphql")

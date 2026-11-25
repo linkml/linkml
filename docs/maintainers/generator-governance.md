@@ -125,6 +125,19 @@ Generates Excel workbooks with sheets per class, columns per slot, and dropdown 
 | Corey Cox | @amc-corey-cox | 1 |
 | David Linke | @dalito | 1 |
 
+### Frictionless Generator (`gen-frictionless`)
+
+Generates a Frictionless Data Package, with a Table Schema for each class, from the schema.
+
+This generator is a wrapper around [ohi LinkML](https://linkml.ohi.dev/).
+
+**Issues and PRs**: [NeverBlink-OSS/ohi](https://github.com/NeverBlink-OSS/ohi)
+
+| Contributor | GitHub | Lines |
+|-------------| --- | --- |
+| Piotr Sowiński | @Ostrzyciel | — |
+| Kacper Grzymkowski | @niegrzybkowski | — |
+
 ### Golang Generator (`gen-golang`)
 
 Generates Go structs from a LinkML schema.

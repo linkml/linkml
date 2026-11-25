@@ -31,6 +31,9 @@ does not support these options.
 Upstream issue: https://github.com/NeverBlink-OSS/ohi/issues/210
 """
 
+PRUNING_MODES = ("skip", "schema", "tree_root")
+"""Pruning modes accepted by ohi LinkML."""
+
 
 def bindings():
     """Import the ohi LinkML Python bindings.

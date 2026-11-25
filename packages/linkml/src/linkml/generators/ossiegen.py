@@ -17,11 +17,8 @@ from typing import Any, ClassVar
 
 import click
 
-from linkml.generators.common.ohi import OhiBackedGenerator, print_versions
+from linkml.generators.common.ohi import PRUNING_MODES, OhiBackedGenerator, print_versions
 from linkml.utils.generator import shared_arguments
-
-PRUNING_MODES = ("skip", "schema", "tree_root")
-"""Pruning modes ohi LinkML accepts, spelled as in its own CLI."""
 
 
 @dataclass
@@ -47,7 +44,7 @@ class OssieGenerator(OhiBackedGenerator):
     ...         range: integer
     ... '''
     >>> print(OssieGenerator(schema).serialize())
-    version: 0.2.0.dev0
+    version: 0.3.0.dev0
     name: personinfo
     prefixes:
       personinfo: https://example.org/personinfo/
@@ -72,7 +69,7 @@ class OssieGenerator(OhiBackedGenerator):
     file_extension: ClassVar[str] = "ossie.yaml"
 
     pruning_mode: str = "skip"
-    """Which classes, enums and types become concepts. One of :data:`PRUNING_MODES`."""
+    """Which classes, enums and types become concepts. One of :data:`~linkml.generators.common.ohi.PRUNING_MODES`."""
 
     tree_root: str | None = None
     """Class to prune from instead of the schema's own ``tree_root``. Only valid with
