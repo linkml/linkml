@@ -2079,3 +2079,50 @@ classes:
     generated = json.loads(JsonSchemaGenerator(str(schema_file)).serialize())
 
     assert generated["$defs"]["MyClass"]["properties"]["value"]["type"] == ["string", "null"]
+
+
+def test_imported_structured_pattern_uses_root_settings(tmp_path: Path) -> None:
+    """An imported module without settings gets the root schema's settings (issue 4135)."""
+    (tmp_path / "ids.yaml").write_text(
+        """
+id: https://example.org/ids
+name: ids
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Sample:
+    attributes:
+      id:
+        identifier: true
+        structured_pattern:
+          syntax: "^{prefix}:smp-[0-9]+$"
+          interpolated: true
+"""
+    )
+    root = tmp_path / "root.yaml"
+    root.write_text(
+        """
+id: https://example.org/root
+name: root
+imports:
+  - linkml:types
+  - ids
+settings:
+  prefix: "ex"
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      samples:
+        range: Sample
+        multivalued: true
+        inlined_as_list: true
+"""
+    )
+    schema = json.loads(JsonSchemaGenerator(str(root)).serialize())
+
+    assert schema["$defs"]["Sample"]["properties"]["id"]["pattern"] == "^(?:^ex:smp-[0-9]+$)$"
+    jsonschema.validate({"samples": [{"id": "ex:smp-1"}]}, schema)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({"samples": [{"id": "{prefix}:smp-1"}]}, schema)
