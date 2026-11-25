@@ -98,7 +98,7 @@ dev = [
   "coverage>=7.16.2",
   "uv",
   "myst-nb>=1.4.0",
-  "sphinx-design>=0.7.0",
+  "sphinx-design>=0.8.0",
   "rich>=15.0.0",
   "gql>=4.4.0",
 ]
@@ -141,7 +141,7 @@ docs = [
   "matplotlib>=3.11.2",
   "sphinx-jinja >= 2.0.2",
   "sphinxcontrib-programoutput>=0.20",
-  "sphinx-design>=0.7.0",
+  "sphinx-design>=0.8.0",
 ]
 
 [tool.uv.sources]
