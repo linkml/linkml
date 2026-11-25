@@ -300,13 +300,25 @@ class OwlSchemaGenerator(Generator):
         :meth:`add_slot` gives them. A slot that is not an annotation property is
         an object or a data property (:meth:`slot_owl_type`), so the declarations
         do not depend on whether imports are merged.
+
+        This holds for an imported ontology generated with the same options. A
+        ``linkml:`` import is not: it names an ontology the LinkML metamodel
+        publishes, which this run does not generate, so its slots are left out and
+        the predicates the schema shares with them keep their declaration.
         """
         sv = self.schemaview
+        published = {
+            schema.name for imp, schema in sv.schema_map.items() if imp.startswith(f"{METAMODEL_NAMESPACE_NAME}:")
+        }
         local_slots = sv.all_slots(imports=False, attributes=False)
         local_classes = sv.all_classes(imports=False)
-        slots = [slot for name, slot in sv.all_slots(attributes=False).items() if name not in local_slots]
+        slots = [
+            slot
+            for name, slot in sv.all_slots(attributes=False).items()
+            if name not in local_slots and sv.in_schema(name) not in published
+        ]
         for name, cls in sv.all_classes().items():
-            if name not in local_classes:
+            if name not in local_classes and sv.in_schema(name) not in published:
                 slots.extend(cls.attributes.values())
         return {self._prop_uri(slot) for slot in slots if not self.is_annotation_property(slot)}
 

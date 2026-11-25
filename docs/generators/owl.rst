@@ -114,7 +114,9 @@ reserved vocabulary, such as ``skos:definition`` and ``skos:inScheme`` for eleme
 metadata, is declared as an annotation property, as OWL 2 DL requires a declaration
 for each property (§5.8.1). With ``--no-mergeimports``, a predicate that is the IRI of
 an object or data property of an imported schema is not declared again, as the imported
-ontology declares it; the declarations do not depend on whether imports are merged.
+ontology declares it; the declarations do not depend on whether imports are merged. This
+assumes the imported ontologies are generated with the same options, so it does not apply
+to ``linkml:`` imports, whose ontologies the metamodel publishes.
 Slots without the role keep their object or data property projection, also when a
 metaclass declares them; LinkML then puns the annotated element as an individual, as it
 does for all metadata.

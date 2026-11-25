@@ -309,3 +309,30 @@ def test_declarations_do_not_depend_on_merged_imports(tmp_path, native):
     imported = _graph(tmp_path / "b.yaml", use_native_uris=native)
     assert _roles(_graph(source, use_native_uris=native, mergeimports=False), imported) == merged
     assert all(len(roles) == 1 for roles in merged.values())
+
+
+METAMODEL_EXTENSION = """
+id: https://example.org/c
+name: c
+title: A metamodel extension
+description: A schema that imports the metamodel.
+prefixes:
+  ex: https://example.org/m/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:meta]
+default_prefix: ex
+classes:
+  Thing:
+    description: A thing.
+"""
+
+
+@pytest.mark.parametrize("native", [True, False])
+def test_metadata_predicates_stay_declared_with_linkml_imports(native):
+    """A ``linkml:`` import names an ontology the metamodel publishes, not one generated with these
+    options: its slots, mapped to ``dcterms:title`` or ``skos:definition``, do not keep the schema
+    from declaring its metadata predicates as annotation properties without merged imports."""
+    graph = _graph(METAMODEL_EXTENSION, use_native_uris=native, mergeimports=False)
+    for predicate in (DCTERMS.title, SKOS.definition, SKOS.inScheme):
+        assert (None, predicate, None) in graph, predicate
+        assert set(graph.objects(predicate, RDF.type)) == {OWL.AnnotationProperty}, predicate
