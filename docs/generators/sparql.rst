@@ -54,6 +54,22 @@ specifically permitted properties are used when the domain is Person.
     }
 
 
+Schemas that import other schemas
+---------------------------------
+
+By default, ``gen-sparql`` writes queries for the classes of the schema it is
+given and of every schema that schema imports. With ``--no-mergeimports``, it
+writes queries only for the classes of the schema it is given:
+
+.. code:: bash
+
+   gen-sparql --no-mergeimports -d /path/to/sparql-queries/ personinfo.yaml
+
+The imports are still read. A class is checked against the slots it inherits
+from an imported class, and a range that names an imported class also accepts
+that class's descendants. Each query declares the prefixes of the imported
+schemas too, so it runs on its own.
+
 Docs
 ----
 
