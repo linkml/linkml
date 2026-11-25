@@ -9,6 +9,9 @@ from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -16,6 +19,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassRule,
     PermissibleValue,
 )
+from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
@@ -1512,3 +1516,53 @@ def test_boolean_expressions_over_enums_of_literals_are_data_ranges(
     assert not set(g.subjects(OWL.complementOf, None))
     for slot in ("unit_or_size", "not_unit", "unused"):
         assert set(g.objects(EX[slot], RDF.type)) == {OWL.DatatypeProperty}
+
+
+_LITERAL_ENUM_SCHEMA = """
+id: https://example.org/units
+name: units
+prefixes:
+  linkml: https://w3id.org/linkml/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  ex: https://example.org/units/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+enums:
+  UnitEnum:
+    implements:
+      - rdfs:Literal
+    permissible_values:
+      m:
+      cm:
+slots:
+  id:
+    identifier: true
+    range: uriorcurie
+  unit:
+    range: UnitEnum
+classes:
+  Measurement:
+    slots: [id, unit]
+"""
+
+
+@pytest.mark.parametrize("type_objects", [False, True])
+def test_dumped_value_of_enum_of_literals_is_in_its_datatype(type_objects: bool) -> None:
+    """The RDF dumper writes a permissible value without a meaning as a literal. In OWL, its slot
+    is a data property (OWL 2 §5.4), whose range is the enum's datatype, an enumeration that holds
+    this literal (§7.4), so the data that LinkML writes fits the ontology."""
+    module = compile_python(PythonGenerator(_LITERAL_ENUM_SCHEMA).serialize())
+    data = rdflib_dumper.as_rdf_graph(module.Measurement(id="ex:r1", unit="cm"), SchemaView(_LITERAL_ENUM_SCHEMA))
+    owl = Graph().parse(
+        data=OwlSchemaGenerator(_LITERAL_ENUM_SCHEMA, type_objects=type_objects, metaclasses=False).serialize(),
+        format="turtle",
+    )
+    ex = Namespace("https://example.org/units/")
+    [value] = data.objects(ex.r1, ex.unit)
+    assert value == Literal("cm")
+    assert set(owl.objects(ex.unit, RDF.type)) == {OWL.DatatypeProperty}
+    assert owl.value(ex.unit, RDFS.range) == ex.UnitEnum
+    [data_range] = owl.objects(ex.UnitEnum, OWL.equivalentClass)
+    assert value in set(Collection(owl, owl.value(data_range, OWL.oneOf)))

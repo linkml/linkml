@@ -37,13 +37,12 @@ Mapping
       nodes: ``uri``, ``uriorcurie`` and the types derived from them, ``objectidentifier`` and
       ``nodeidentifier`` (see :ref:`links-and-uri-references`)
     - if the range is an enum, an ObjectProperty is used, unless every permissible value of
-      the enum is a literal (``rdfs:Literal``): such an enum is a datatype, and a DataProperty
-      is used for a slot that ranges over such an enum if each of its ranges is such an enum
-      or, without ``type_objects``, a type whose values are literals. The ranges of a slot are
-      those given by its ``range``, ``range_expression``, which is a class expression if it
-      has slot conditions, ``any_of``, ``all_of``, ``exactly_one_of``, ``none_of`` and
-      ``all_members`` (or, if these give none, the default range) and by its ``has_member``
-      (see `OWL Output Patterns`_)
+      the enum is a literal (``rdfs:Literal``, see `OWL Output Patterns`_). Such an enum is a
+      datatype, and a DataProperty is used if every range of the slot is such an enum or,
+      without ``type_objects``, a type whose values are literals. The ranges of a slot are
+      its ``range`` and those in its ``any_of``, ``all_of``, ``exactly_one_of``, ``none_of``
+      and ``all_members`` (or the default range if these give none), and those in its
+      ``has_member``; a ``range_expression`` with slot conditions counts as a class.
     - otherwise DataProperty is used
     - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used,
       except for a slot that ranges only over enums of literals;
