@@ -1733,6 +1733,104 @@ classes:
     assert_mdfile_does_not_contain(subset_file, "# Class:")
 
 
+CLASH_SCHEMA = """\
+id: https://example.org/clash
+name: {schema_name}
+default_prefix: ex
+prefixes:
+  ex: https://example.org/clash/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+classes:
+{classes}
+"""
+
+
+@pytest.mark.parametrize(
+    "schema_name,classes,pages,link",
+    [
+        pytest.param(
+            "clash",
+            "  Asset:\n  Holding:\n    attributes:\n      Asset:\n        range: Asset\n",
+            {"Asset": "# Class: Asset", "Asset-slot": "# Slot: Asset"},
+            ("Holding", "[Asset](Asset-slot.md)"),
+            id="class-and-slot",
+        ),
+        pytest.param(
+            "clash",
+            "  Holding:\n    attributes:\n      index:\n",
+            {"index": "# clash", "index-slot": "# Slot: index"},
+            ("Holding", "[index](index-slot.md)"),
+            id="index-and-slot",
+        ),
+        pytest.param(
+            "Holding",
+            "  Holding:\n",
+            {"Holding": "# Class: Holding", "Holding-schema": "# Holding"},
+            ("index", "[Holding](Holding.md)"),
+            id="module-and-class",
+        ),
+        pytest.param(
+            "clash",
+            "  Account:\n    attributes:\n      account:\n",
+            {"Account": "# Class: Account", "account-slot": "# Slot: account"},
+            ("Account", "[account](account-slot.md)"),
+            id="names-differ-only-in-case",
+        ),
+    ],
+)
+def test_page_name_clash(tmp_path, caplog, schema_name, classes, pages, link):
+    """Two pages that would share a file name, ignoring case, both get written and linked."""
+    schema_yaml = CLASH_SCHEMA.format(schema_name=schema_name, classes=classes)
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.docgen"):
+        gen.serialize(directory=str(tmp_path))
+
+    for page, heading in pages.items():
+        assert_mdfile_contains(tmp_path / f"{page}.md", heading)
+    renamed = next(page for page in pages if "-" in page)
+    assert f"writing it to {renamed} instead" in caplog.text
+    linking_page, link_text = link
+    assert_mdfile_contains(tmp_path / f"{linking_page}.md", link_text)
+
+
+def test_page_name_clash_absent_in_subfolders(tmp_path, caplog):
+    """With one folder per kind, a slot named like a class keeps its own name."""
+    schema_yaml = CLASH_SCHEMA.format(
+        schema_name="clash",
+        classes="  Asset:\n  Holding:\n    attributes:\n      Asset:\n        range: Asset\n",
+    )
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True, subfolder_type_separation=True)
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.docgen"):
+        gen.serialize(directory=str(tmp_path))
+
+    assert_mdfile_contains(tmp_path / "classes" / "Asset.md", "# Class: Asset")
+    assert_mdfile_contains(tmp_path / "slots" / "Asset.md", "# Slot: Asset")
+    assert "instead" not in caplog.text
+
+
+def test_subset_page_in_schema_without_classes(tmp_path):
+    """A schema with a subset and no classes gets a subset page, not ``UnboundLocalError``."""
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+subsets:
+  basic:
+    description: A subset in a schema with no classes.
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    assert_mdfile_contains(tmp_path / "basic.md", "# Subset: basic")
+
+
 TABLE_SEPARATOR = re.compile(r"^\|(\s*:?-{3,}:?\s*\|)+\s*$")
 LIST_ITEM = re.compile(r"^\s*([-*]|\d+\.) ")
 
