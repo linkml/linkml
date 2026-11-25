@@ -133,6 +133,8 @@ Overview
 Command Line
 ------------
 
+``--normalize-prefixes`` is described under :ref:`prefix-normalization`.
+
 .. code:: bash
 
    linkml generate yarrrml path/to/schema.yaml > mappings.yml
