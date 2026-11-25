@@ -1,0 +1,38 @@
+id: https://example.org/spec/core
+name: core
+title: Core
+description: The architecture document, with nodes and the controls that apply to them.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  spec: https://example.org/spec/
+imports:
+  - linkml:types
+  - control
+  - vendor
+  - notes
+default_prefix: spec
+default_range: string
+classes:
+  Architecture:
+    tree_root: true
+    attributes:
+      nodes:
+        range: Node
+        multivalued: true
+        inlined_as_list: true
+      controls:
+        description: Controls keyed by their identifier.
+        range: ControlDetail
+        multivalued: true
+        inlined: true
+  Node:
+    attributes:
+      unique_id:
+        identifier: true
+      check_interval:
+        range: TimeUnit
+      vendor:
+        range: VendorInfo
+        inlined: true
+      note:
+        range: note_text

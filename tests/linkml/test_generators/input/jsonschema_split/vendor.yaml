@@ -1,0 +1,15 @@
+id: https://vendor.example.com/schemas/vendor
+name: vendor
+title: Vendor
+prefixes:
+  linkml: https://w3id.org/linkml/
+  vendor: https://vendor.example.com/schemas/
+imports:
+  - linkml:types
+default_prefix: vendor
+default_range: string
+classes:
+  VendorInfo:
+    attributes:
+      vendor_name:
+        required: true

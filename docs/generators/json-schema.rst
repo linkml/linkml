@@ -387,6 +387,116 @@ With ``--no-include-null`` the optional string slot above is emitted as
 validation. The default (``--include-null``) preserves the previous behaviour.
 
 
+Dialect
+^^^^^^^
+
+The generated document declares JSON Schema draft 2019-09 in ``$schema`` by
+default. Use ``--draft 2020-12`` to declare draft 2020-12 instead:
+
+.. code:: bash
+
+   gen-json-schema --draft 2020-12 personinfo.yaml
+
+Only ``$schema`` changes, because the generator uses only keywords that mean
+the same in both drafts. ``linkml-validate`` reads ``$schema`` and validates
+with the matching dialect.
+
+
+Definition names
+^^^^^^^^^^^^^^^^
+
+Classes and enums become entries under ``$defs``, keyed in CamelCase by
+default (``node interface`` becomes ``NodeInterface``), or by the name as
+written under ``--preserve-names``. A published specification may name its
+definitions in another style. ``--def-name-style`` chooses the style of every
+key and of every ``$ref`` that points at one:
+
+.. code:: bash
+
+   gen-json-schema --def-name-style kebab-case personinfo.yaml
+
+The styles are ``CamelCase``, ``camelCase``, ``snake_case``, ``kebab-case``
+and ``preserve``. With ``kebab-case``, the class ``ControlDetail`` is keyed
+``control-detail`` and referenced as ``#/$defs/control-detail``. If two names
+give the same key, as ``HttpServer`` and ``HTTPServer`` do in ``kebab-case``,
+the generator stops with an error instead of letting one definition replace
+the other.
+
+The option sets the names of definitions only. Property names still come
+from the slot name or its ``alias``, under the rules of ``--preserve-names``. Under
+``--use-curies``, class definitions are keyed by CURIE whatever the style.
+
+
+One document per module
+^^^^^^^^^^^^^^^^^^^^^^^
+
+By default the generator writes one document that covers the schema and
+everything it imports. With ``--split``, it writes one document per schema
+module instead, so the output follows the structure of the model. Published
+specifications are often a set of JSON Schema files that refer to each other,
+and a modular LinkML schema can reproduce that layout.
+
+In split mode:
+
+* each class and enum is written to the document of the module that defines it;
+* each document's ``$id`` is the module's URI, given by ``--split-pattern``,
+  which defaults to the module's ``id``;
+* a ``$ref`` to an element of another module points at that module's URI,
+  as a relative reference when both URIs share scheme, host and parent path
+  (``control.json#/$defs/ControlDetail``), and in full otherwise;
+* under ``--use-curies``, a URI is shortened with the prefixes of the module
+  that defines the element, so every document gives the element the same key;
+* each document takes its root class from the module's own ``tree_root``,
+  except that ``--top-class`` names the root of the input module's document;
+* a class from another module that is the range of a slot inlined as a
+  dictionary gets a private copy, without a required identifier, in the
+  referring document.
+
+``--split-pattern`` is a jinja template that is given each module's schema
+definition as ``schema``. Without ``--split`` it has no effect, and the
+generator warns. ``--output-directory`` writes the document of every
+module that defines a class or an enum, named after the last path segment of
+its URI:
+
+.. code:: bash
+
+   gen-json-schema --split --draft 2020-12 \
+     --split-pattern 'https://example.org/release/1.3/meta/{{ schema.name }}.json' \
+     --output-directory meta/ \
+     core.yaml
+
+Without ``--output-directory``, ``--split`` prints the input module's
+document only. From Python, ``JsonSchemaGenerator.generate_split`` writes the
+documents and also accepts ``split_context``, a dictionary of further
+variables for the template. Before writing anything, ``--output-directory`` and
+``generate_split`` check that each file name is a plain name on every platform,
+that no two modules share a file, and that every ``$ref`` between the documents
+names a definition.
+
+In ``gen-project``, ``split: true`` under ``generator_args`` for ``jsonschema``
+writes the document of every module to ``jsonschema/``, named after its URI. A
+``split_pattern`` such as
+``https://example.org/meta/{{ schema.name }}.schema.json`` keeps the file
+names that ``gen-project`` gives without split.
+
+A validator resolves the references between documents by ``$id``. With the
+``referencing`` library that ``jsonschema`` uses, register each document under
+its ``$id`` and validate against the root document:
+
+.. code:: python
+
+   import json
+   from pathlib import Path
+
+   from jsonschema import Draft202012Validator
+   from referencing import Registry, Resource
+
+   documents = [json.loads(p.read_text()) for p in Path("meta").glob("*.json")]
+   registry = Registry().with_resources((d["$id"], Resource.from_contents(d)) for d in documents)
+   core = next(d for d in documents if d["$id"].endswith("/core.json"))
+   Draft202012Validator(core, registry=registry).validate(instance)
+
+
 Patterns
 ^^^^^^^^
 

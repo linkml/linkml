@@ -86,6 +86,25 @@ def test_directory_arg_scoped_per_generator_not_globally_stripped(kitchen_sink_p
     assert captured["directory"] == "passthrough-value"
 
 
+def test_projectgen_writes_split_json_schema_documents(input_path, tmp_path):
+    """With ``split`` in generator_args, gen-project writes the document of every module, named after its URI."""
+    config = ProjectConfiguration()
+    config.directory = tmp_path
+    config.includes = ["jsonschema"]
+    config.generator_args["jsonschema"] = {
+        "split": True,
+        "split_pattern": "https://example.org/meta/{{ schema.name }}.schema.json",
+    }
+    ProjectGenerator().generate(input_path("jsonschema_split/core.yaml"), config)
+
+    assert sorted(p.name for p in (tmp_path / "jsonschema").iterdir()) == [
+        "control.schema.json",
+        "core.schema.json",
+        "units.schema.json",
+        "vendor.schema.json",
+    ]
+
+
 def test_projectgen_java_default_package_without_config(kitchen_sink_path, tmp_path):
     """Without generator_args for java, the normal package precedence (schema annotation, then
     the `example` default) still applies via gen-project, unaffected by the constructor/serialize
@@ -126,6 +145,31 @@ def test_generate_rejects_bad_config_before_generating_anything(kitchen_sink_pat
     config.generator_args["java"] = {"package": "1bad.pkg"}
 
     with pytest.raises(click.UsageError, match="is not a valid Java package name"):
+        ProjectGenerator().generate(kitchen_sink_path, config)
+
+    assert not out_dir.exists()
+
+
+@pytest.mark.parametrize(
+    ("arguments", "message"),
+    [
+        pytest.param({"draft": "draft-07"}, "jsonschema: Unknown JSON Schema draft 'draft-07'", id="draft"),
+        pytest.param(
+            {"def_name_style": "Title Case"}, "jsonschema: Unknown definition name style 'Title Case'", id="style"
+        ),
+    ],
+)
+def test_generate_rejects_bad_json_schema_options_before_generating_anything(
+    kitchen_sink_path, tmp_path, arguments, message
+):
+    """An unknown ``draft`` or ``def_name_style`` stops gen-project before any generator writes output."""
+    out_dir = tmp_path / "out"
+    config = ProjectConfiguration()
+    config.directory = out_dir
+    config.includes = ["graphql", "jsonschema"]  # graphql iterates first in GEN_MAP
+    config.generator_args["jsonschema"] = arguments
+
+    with pytest.raises(click.UsageError, match=re.escape(message)):
         ProjectGenerator().generate(kitchen_sink_path, config)
 
     assert not out_dir.exists()
