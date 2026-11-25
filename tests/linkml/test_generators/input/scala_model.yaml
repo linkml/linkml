@@ -1,0 +1,55 @@
+id: https://example.org/scalamodel
+name: scalamodel
+description: Test schema for the Scala generator.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  sm: https://example.org/scalamodel/
+  schema: http://schema.org/
+default_prefix: sm
+default_range: string
+emit_prefixes:
+  - sm
+  - schema
+imports:
+  - linkml:types
+  # Any schema with a class of its own will do.
+  # Used to test that imported classes end up in the same package.
+  - core
+
+classes:
+  NamedThing:
+    abstract: true
+    slots:
+      - uid
+      - full_name
+
+  Person:
+    is_a: NamedThing
+    description: A human being
+    slots:
+      - age
+      - vital_status
+
+  Organization:
+    is_a: NamedThing
+    class_uri: schema:Organization
+
+slots:
+  uid:
+    identifier: true
+  full_name:
+  age:
+    range: AgeInYears
+  vital_status:
+    range: VitalStatus
+
+types:
+  AgeInYears:
+    typeof: integer
+    minimum_value: 0
+
+enums:
+  VitalStatus:
+    permissible_values:
+      ALIVE:
+      DEAD:

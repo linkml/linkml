@@ -47,7 +47,7 @@ class OssieGenerator(OhiBackedGenerator):
     ...         range: integer
     ... '''
     >>> print(OssieGenerator(schema).serialize())
-    version: 0.2.0.dev0
+    version: 0.3.0.dev0
     name: personinfo
     prefixes:
       personinfo: https://example.org/personinfo/

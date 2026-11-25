@@ -532,6 +532,19 @@ Includes `rustgen/` subpackage.
 | Kevin Schaper | @kevinschaper | 159 |
 | Corey Cox | @amc-corey-cox | 10 |
 
+### Scala Generator (`gen-scala`)
+
+Generates Scala classes from the schema.
+
+This generator is a wrapper around [ohi LinkML](https://linkml.ohi.dev/).
+
+**Issues and PRs**: [NeverBlink-OSS/ohi](https://github.com/NeverBlink-OSS/ohi)
+
+| Contributor | GitHub | Lines |
+|-------------| --- | --- |
+| Piotr Sowiński | @Ostrzyciel | — |
+| Kacper Grzymkowski | @niegrzybkowski | — |
+
 ### SHACL Generator (`gen-shacl`)
 
 Generates SHACL shapes for RDF data validation against a LinkML schema.

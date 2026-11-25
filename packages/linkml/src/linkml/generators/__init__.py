@@ -15,6 +15,7 @@ from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.rustgen import RustGenerator
+from linkml.generators.scalagen import ScalaGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
@@ -41,6 +42,7 @@ __all__ = [
     "pythongen",
     "pydanticgen",
     "rdfgen",
+    "scalagen",
     "shexgen",
     "shaclgen",
     "sssomgen",
@@ -59,6 +61,7 @@ __all__ = [
     "JSONLDGenerator",
     "JsonSchemaGenerator",
     "RustGenerator",
+    "ScalaGenerator",
     "ShaclGenerator",
     "ShExGenerator",
     "SQLAlchemyGenerator",
