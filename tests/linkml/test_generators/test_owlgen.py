@@ -2014,6 +2014,20 @@ _CONDITION_RANGE_CASES = {
         """,
         {"Child": {"max_width": {XSD.float}}},
     ),
+    # whether the filler is a class or a data range follows the slot the name stands for, also in its
+    # underscored form: values of uriorcurie are nodes, so the filler is owl:Thing, not the default_range
+    "node_typed_slot_named_in_its_underscored_form": (
+        """\
+        slots:
+          exact mappings: {range: uriorcurie, multivalued: true}
+        classes:
+          Unit:
+            slots: [exact mappings]
+            any_of:
+              - slot_conditions: {exact_mappings: {required: true}}
+        """,
+        {"Unit": {"exact_mappings": {OWL.Thing}}},
+    ),
     # a slot without a range of its own has the range it inherits from its parent slot
     "slot_that_inherits_its_range": (
         """\
@@ -2162,6 +2176,34 @@ def test_condition_without_a_range_of_its_own_is_vacuous_where_it_repeats_the_gl
     )
     assert _fillers(g, _RX.Image, _RX.width) == set()
     assert _fillers(g, _RX.Image, _RX.size) == {XSD.integer}
+
+
+def test_condition_is_vacuous_where_it_repeats_the_range_the_slot_inherits() -> None:
+    """With ``skip_vacuous_local_range_axioms`` a restriction to the range a slot inherits from its parent
+    slot is left out: the parent's ``rdfs:range`` declares it for the slot through ``rdfs:subPropertyOf``."""
+    g = _condition_range_graph(
+        """\
+        slots:
+          measure: {range: float}
+          width: {is_a: measure}
+          dimensions: {range: Dimensions}
+        classes:
+          Dimensions:
+            slots: [width]
+          Image:
+            slots: [dimensions]
+            slot_usage:
+              dimensions:
+                range_expression:
+                  slot_conditions:
+                    width: {required: true}
+        """,
+        skip_vacuous_local_range_axioms=True,
+    )
+    assert (_RX.width, RDFS.subPropertyOf, _RX.measure) in g
+    assert (_RX.measure, RDFS.range, XSD.float) in g
+    assert _fillers(g, _RX.Dimensions, _RX.width) == set()
+    assert _fillers(g, _RX.Image, _RX.width) == set()
 
 
 @pytest.mark.parametrize(
