@@ -505,7 +505,7 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
         core_elements=["any_of", "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework not in [OWL]:
+    if framework not in [OWL, SHACL]:
         # TODO: rdflib transformer has issues around ranges
         expected_behavior = ValidationBehavior.INCOMPLETE
     # TODO: rdflib transformer has issues around ranges
@@ -632,8 +632,22 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
         core_elements=[op, "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework not in [JSON_SCHEMA]:
+    if framework not in [JSON_SCHEMA, SHACL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
+    elif framework == SHACL and 5 in (name, family_name, given_name):
+        # SHACL validation makes its instances through python dataclasses, which coerce
+        # the integer to a string, so the range violation never reaches the shapes. A
+        # row can then only be detected through the operator itself.
+        present = [value is not None for value in (name, family_name, given_name)]
+        members = [present[0], present[1] and present[2]]
+        operator_holds = {
+            "any_of": any(members),
+            "all_of": all(members),
+            "exactly_one_of": sum(members) == 1,
+            "none_of": not any(members),
+        }[op]
+        if operator_holds:
+            expected_behavior = ValidationBehavior.INCOMPLETE
 
     data = {SLOT_S1: name, SLOT_S2: family_name, SLOT_S3: given_name}
     if nest:
@@ -1435,8 +1449,8 @@ def test_class_boolean_with_expressions(
     """
     if (s1_range == CLASS_ANY or s2_range == CLASS_ANY) and framework not in [PYDANTIC]:
         pytest.skip("Class Any not supported in this test")
-    if framework == SHACL:
-        pytest.skip("shaclgen does not support boolean expressions yet")
+    if framework == SHACL and CLASS_D in (s1_range, s2_range):
+        pytest.skip("the harness writes a reference as an untyped node, which the slot's sh:class rejects")
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("panderagen does not support boolean expressions yet")
     if s1_range.endswith("*"):
@@ -2889,7 +2903,7 @@ def test_range_expression_nesting(framework, data_name, instance, is_valid):
         core_elements=["range_expression"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework not in [JSON_SCHEMA, OWL]:
+    if framework not in [JSON_SCHEMA, OWL, SHACL]:
         if not is_valid:
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(

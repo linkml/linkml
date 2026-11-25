@@ -647,9 +647,9 @@ def _schema_with_value_disallowed() -> SchemaDefinition:
 
 
 def test_cache_hit_preserves_value_disallowed_not_keyword():
-    """A slot with value_presence=ABSENT produces a root-level `not` keyword.
-    Cache-hit must carry it through from defs_class so the validator rejects
-    instances that include the forbidden field."""
+    """A slot with value_presence=ABSENT produces a root-level `not: {required}`
+    in `allOf`.  Cache-hit must carry it through from defs_class so the
+    validator rejects instances that include the forbidden field."""
     schema = _schema_with_value_disallowed()
 
     cold = ValidationContext(schema, "ForbidsX").json_schema_validator(
@@ -661,8 +661,9 @@ def test_cache_hit_preserves_value_disallowed_not_keyword():
         closed=False, include_range_class_descendants=False
     )
 
-    assert "not" in cold.schema, cold.schema
-    assert "not" in warm.schema, "value_disallowed `not` keyword must survive cache-hit"
+    forbids = {"not": {"required": ["forbidden_field"]}}
+    assert forbids in cold.schema.get("allOf", []), cold.schema
+    assert forbids in warm.schema.get("allOf", []), "value_disallowed `not` keyword must survive cache-hit"
 
     # Instance includes the forbidden field -> both validators reject
     bad = {"forbidden_field": "anything", "other_field": "ok"}
@@ -677,18 +678,19 @@ def test_cache_hit_preserves_value_disallowed_not_keyword():
 
 
 def test_cache_hit_does_not_leak_value_disallowed_not_to_target_without():
-    """Warming with ForbidsX places `not` at root in cached. Hitting cache for
-    Plain (which has no value_disallowed slots) must NOT inherit `not`."""
+    """Warming with ForbidsX places `not: {required}` at root in cached. Hitting
+    cache for Plain (which has no value_disallowed slots) must NOT inherit it."""
     schema = _schema_with_value_disallowed()
     cache_key = _make_cache_key(schema, include_range_class_descendants=False)
 
     ValidationContext(schema, "ForbidsX").json_schema_validator(closed=False, include_range_class_descendants=False)
-    assert "not" in _json_schema_cache[cache_key]
+    forbids = {"not": {"required": ["forbidden_field"]}}
+    assert forbids in _json_schema_cache[cache_key].get("allOf", [])
 
     validator = ValidationContext(schema, "Plain").json_schema_validator(
         closed=False, include_range_class_descendants=False
     )
-    assert "not" not in validator.schema, validator.schema.get("not")
+    assert forbids not in validator.schema.get("allOf", []), validator.schema.get("allOf")
 
     # Plain has no constraint against `forbidden_field` — the leak would falsely
     # reject this. Confirm it doesn't.
