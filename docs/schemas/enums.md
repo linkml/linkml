@@ -69,6 +69,40 @@ enums:
 ```
 
 
+## Hierarchical Permissible Values
+
+Permissible values can form a hierarchy using the [is_a](https://w3id.org/linkml/is_a) slot.
+This is how you specify a *parent* for a permissible value: a more specific value points at a more general one in the same enumeration.
+
+For example, the [Biolink Model](https://github.com/biolink/biolink-model/blob/56bb3a024d8c88c0ce75267cc7d0b8a1baf7f88e/biolink-model.yaml#L11885) uses this pattern in `DirectionQualifierEnum`, where `upregulated` is a kind of `increased`, and `downregulated` is a kind of `decreased`:
+
+```yaml
+enums:
+  DirectionQualifierEnum:
+    permissible_values:
+      increased:
+      upregulated:
+        is_a: increased
+      decreased:
+      downregulated:
+        is_a: decreased
+```
+
+You can retrieve this hierarchy programmatically with [SchemaView](../developers/schemaview).
+`SchemaView.permissible_value_ancestors` returns the transitive parent closure of a permissible value. By default the result is reflexive, so the starting value is included:
+
+```python
+from linkml_runtime import SchemaView
+
+sv = SchemaView("schema.yaml")
+sv.permissible_value_ancestors("upregulated", "DirectionQualifierEnum")
+```
+
+This returns `["upregulated", "increased"]`.
+
+Related methods include `permissible_value_parents` for the direct parent, `permissible_value_children` for direct children, and `permissible_value_descendants` for the transitive child closure.
+
+
 ## Working with Enums in Python
 
 Enumerations are mapped directly to Python enums. See
