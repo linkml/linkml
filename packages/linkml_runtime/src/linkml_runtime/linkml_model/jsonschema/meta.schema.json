@@ -652,6 +652,13 @@
                         "null"
                     ]
                 },
+                "is_open": {
+                    "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
                 "matches": {
                     "anyOf": [
                         {
@@ -6527,6 +6534,13 @@
                         "null"
                     ]
                 },
+                "is_open": {
+                    "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
                 "keywords": {
                     "description": "Keywords or tags used to describe the element",
                     "items": {
@@ -7126,6 +7140,13 @@
                         "null"
                     ]
                 },
+                "is_open": {
+                    "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
                 "keywords": {
                     "description": "Keywords or tags used to describe the element",
                     "items": {
@@ -7425,6 +7446,13 @@
                     },
                     "type": [
                         "array",
+                        "null"
+                    ]
+                },
+                "is_open": {
+                    "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+                    "type": [
+                        "boolean",
                         "null"
                     ]
                 },

@@ -385,6 +385,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/is_open",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/include",
                         "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
                         "min": 0,
@@ -3729,6 +3736,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/is_open",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/include",
                         "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
                         "min": 0,
@@ -3851,6 +3865,13 @@
                         "valueExpr": "https://w3id.org/linkml/PermissibleValue",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/is_open",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
                      },
                      {
                         "type": "TripleConstraint",

@@ -1,19 +1,37 @@
 import logging
 import os
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from typing import Any
 
-from jsonschema.exceptions import best_match
+from jsonschema.exceptions import ValidationError, best_match
 
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
-from linkml.validator.validation_context import ValidationContext
+from linkml.validator.validation_context import OPEN_ENUM_KEYWORD, ValidationContext
 
 logger = logging.getLogger(__name__)
 
 
+def _open_enum_errors(errors: Iterable[ValidationError]) -> Iterator[ValidationError]:
+    """Yield the errors that the open-enum keyword raised, including those under ``anyOf`` or ``oneOf``."""
+    for error in errors:
+        if error.validator == OPEN_ENUM_KEYWORD:
+            yield error
+        else:
+            yield from _open_enum_errors(error.context)
+
+
+def _located(error: ValidationError) -> str:
+    """Return the error's message followed by the path of the value it concerns."""
+    return f"{error.message} in /{'/'.join(str(p) for p in error.absolute_path)}"
+
+
 class JsonschemaValidationPlugin(ValidationPlugin):
     """A validation plugin which validates instances using a JSON Schema validator.
+
+    The JSON Schema lets an open enum (``is_open: true``) take any string, so the plugin
+    validates a second time when the schema has an open enum, and reports a value the
+    enum does not list as a warning.
 
     :param closed: If ``True``, additional properties are not allowed on instances.
         Defaults to ``False``.
@@ -92,7 +110,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         for error in validator.iter_errors(instance):
             error_context = [ctx.message for ctx in error.context]
             best_error = best_match([error])
-            message = f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}"
+            message = _located(best_error)
 
             severity = Severity.ERROR
             if self.allow_null_for_optional_enums:
@@ -110,4 +128,21 @@ class JsonschemaValidationPlugin(ValidationPlugin):
                 message=message,
                 context=error_context,
                 source=best_error,
+            )
+
+        open_enum_validator = context.open_enum_validator(
+            closed=self.closed,
+            include_range_class_descendants=self.include_range_class_descendants,
+            path_override=self.json_schema_path,
+        )
+        if open_enum_validator is None:
+            return
+        for error in _open_enum_errors(open_enum_validator.iter_errors(instance)):
+            yield ValidationResult(
+                type="open enum",
+                severity=Severity.WARN,
+                instance=instance,
+                instantiates=context.target_class,
+                message=_located(error),
+                source=error,
             )

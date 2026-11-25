@@ -120,18 +120,20 @@ message AnonymousEnumExpression {
   PvFormulaOptions pv_formula = 4;
   // A list of possible values for a slot range
   repeated PermissibleValue permissible_values = 5;
+  // Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.
+  bool is_open = 6;
   // An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
-  repeated AnonymousEnumExpression include = 6;
+  repeated AnonymousEnumExpression include = 7;
   // An enum expression that yields a list of permissible values that are to be subtracted from the enum
-  repeated AnonymousEnumExpression minus = 7;
+  repeated AnonymousEnumExpression minus = 8;
   // An enum definition that is used as the basis to create a new enum
-  repeated EnumDefinition inherits = 8;
+  repeated EnumDefinition inherits = 9;
   // Specifies a query for obtaining a list of permissible values based on graph reachability
-  ReachabilityQuery reachable_from = 9;
+  ReachabilityQuery reachable_from = 10;
   // Specifies a match query that is used to calculate the list of permissible values
-  MatchQuery matches = 10;
+  MatchQuery matches = 11;
   // A list of identifiers that are used to construct a set of permissible values
-  repeated string concepts = 11;
+  repeated string concepts = 12;
 }
 // An abstract parent class for any nested expression
 message AnonymousExpression {
@@ -1270,18 +1272,20 @@ message EnumDefinition {
   PvFormulaOptions pv_formula = 55;
   // A list of possible values for a slot range
   repeated PermissibleValue permissible_values = 56;
+  // Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.
+  bool is_open = 57;
   // An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
-  repeated AnonymousEnumExpression include = 57;
+  repeated AnonymousEnumExpression include = 58;
   // An enum expression that yields a list of permissible values that are to be subtracted from the enum
-  repeated AnonymousEnumExpression minus = 58;
+  repeated AnonymousEnumExpression minus = 59;
   // An enum definition that is used as the basis to create a new enum
-  repeated EnumDefinition inherits = 59;
+  repeated EnumDefinition inherits = 60;
   // Specifies a query for obtaining a list of permissible values based on graph reachability
-  ReachabilityQuery reachable_from = 60;
+  ReachabilityQuery reachable_from = 61;
   // Specifies a match query that is used to calculate the list of permissible values
-  MatchQuery matches = 61;
+  MatchQuery matches = 62;
   // A list of identifiers that are used to construct a set of permissible values
-  repeated string concepts = 62;
+  repeated string concepts = 63;
 }
 // An expression that constrains the range of a slot
 message EnumExpression {
@@ -1295,18 +1299,20 @@ message EnumExpression {
   PvFormulaOptions pv_formula = 4;
   // A list of possible values for a slot range
   repeated PermissibleValue permissible_values = 5;
+  // Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values if available). If false (runtime default), the enumeration is closed and data values MUST be drawn from the set of permissible values.
+  bool is_open = 6;
   // An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
-  repeated AnonymousEnumExpression include = 6;
+  repeated AnonymousEnumExpression include = 7;
   // An enum expression that yields a list of permissible values that are to be subtracted from the enum
-  repeated AnonymousEnumExpression minus = 7;
+  repeated AnonymousEnumExpression minus = 8;
   // An enum definition that is used as the basis to create a new enum
-  repeated EnumDefinition inherits = 8;
+  repeated EnumDefinition inherits = 9;
   // Specifies a query for obtaining a list of permissible values based on graph reachability
-  ReachabilityQuery reachable_from = 9;
+  ReachabilityQuery reachable_from = 10;
   // Specifies a match query that is used to calculate the list of permissible values
-  MatchQuery matches = 10;
+  MatchQuery matches = 11;
   // A list of identifiers that are used to construct a set of permissible values
-  repeated string concepts = 11;
+  repeated string concepts = 12;
 }
 // usage example and description
 message Example {

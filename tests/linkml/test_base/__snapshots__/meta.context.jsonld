@@ -457,6 +457,10 @@
          "@type": "xsd:boolean",
          "@id": "is_grouping_slot"
       },
+      "is_open": {
+         "@type": "xsd:boolean",
+         "@id": "is_open"
+      },
       "is_usage_slot": {
          "@type": "xsd:boolean",
          "@id": "is_usage_slot"

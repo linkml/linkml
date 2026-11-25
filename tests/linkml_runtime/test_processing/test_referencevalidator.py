@@ -1156,5 +1156,44 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         self.assertEqual(num_warnings, len(report.warnings()))
 
 
+@pytest.mark.parametrize(
+    ("is_open", "value", "expect_error"),
+    [
+        (True, "A", False),  # in-set value on open enum: no problem
+        (True, "D", False),  # out-of-set value on open enum: accepted (info, not error)
+        (False, "A", False),  # in-set value on closed enum: no problem
+        (False, "D", True),  # out-of-set value on closed enum: error
+    ],
+)
+def test_normalize_open_enum(is_open, value, expect_error):
+    """Open enums accept values outside their permissible values (reported at INFO severity)."""
+    sb = SchemaBuilder()
+    sb.add_enum("TestEnum", permissible_values=["A", "B", "C"], is_open=is_open)
+    sb.add_defaults()
+    normalizer = ReferenceValidator(SchemaView(sb.schema))
+
+    report = Report()
+    output = normalizer.normalize_enum(value, normalizer.derived_schema.enums["TestEnum"], report)
+
+    assert output == value
+    assert bool(report.errors()) == expect_error
+
+
+def test_open_enum_out_of_set_value_is_info_not_error():
+    """An out-of-set value on an open enum is surfaced as a non-error (INFO) result."""
+    sb = SchemaBuilder()
+    sb.add_enum("TestEnum", permissible_values=["A"], is_open=True)
+    sb.add_defaults()
+    normalizer = ReferenceValidator(SchemaView(sb.schema))
+
+    report = Report()
+    normalizer.normalize_enum("Z", normalizer.derived_schema.enums["TestEnum"], report)
+
+    assert report.errors() == []
+    assert len(report.results) == 1
+    assert str(report.results[0].severity) == "INFO"
+    assert report.results[0].type == ConstraintType.PermissibleValueConstraint
+
+
 if __name__ == "__main__":
     unittest.main()

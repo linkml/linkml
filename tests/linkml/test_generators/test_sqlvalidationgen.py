@@ -1288,3 +1288,41 @@ def test_interop_class_without_identifier_executes(no_identifier_schema, tmp_pat
     assert (table_name, column_name, constraint_type) == ("Measurement", "value", "range")
     assert record_id is None
     assert invalid_value == -1
+
+
+@pytest.mark.parametrize(
+    ("is_open", "expect_enum_constraint"),
+    [
+        (False, True),
+        (None, True),
+        (True, False),
+    ],
+)
+def test_open_enum_skips_membership_constraint(is_open, expect_enum_constraint):
+    """An open enum must not generate a NOT IN membership validation query."""
+    from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("status", range="StatusEnum"))
+    enum_def = EnumDefinition(
+        name="StatusEnum",
+        is_open=is_open,
+        permissible_values={
+            "active": PermissibleValue(text="active"),
+            "inactive": PermissibleValue(text="inactive"),
+        },
+    )
+    b.schema.enums["StatusEnum"] = enum_def
+    b.add_class("Record", slots=["id", "status"])
+    b.add_defaults()
+
+    gen = SQLValidationGenerator(b.schema)
+    queries = gen.generate_validation_queries()
+
+    enum_constraint_present = "NOT IN" in queries and "active" in queries
+
+    assert enum_constraint_present == expect_enum_constraint, (
+        f"Expected enum constraint to be {expect_enum_constraint} for is_open={is_open!r}, "
+        f"but got {enum_constraint_present}"
+    )
