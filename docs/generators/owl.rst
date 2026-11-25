@@ -30,16 +30,16 @@ Mapping
 ^^^^^^^
 
 * Each LinkML class maps to an OWL class
-* Each LinkML slot maps to an OWL property, whose kind the values of the ranges of the slot
-  decide. The ranges of a slot are those given by its ``range``, ``range_expression``, which
-  is a class expression if it has slot conditions, ``any_of``, ``all_of``, ``exactly_one_of``,
-  ``none_of`` and ``all_members`` (or, if these give none, the default range) and by its
-  ``has_member``. A branch of ``any_of`` or ``exactly_one_of`` without a range, for example
-  with only a ``pattern``, has the range of the expression it is in, or else of the slot, or
-  else the default range. A range of ``Any`` (``linkml:Any``) adds nothing to the other ranges
-  of a slot, so a slot whose range is ``Any``, further constrained by ``any_of`` (see Unions as
-  ranges in `Advanced features <https://linkml.io/linkml/schemas/advanced.html>`_), ranges
-  over the operands of ``any_of``
+* Each LinkML slot maps to an OWL property, whose kind depends on the values of the slot's
+  ranges. The ranges of a slot are its ``range``, or else the one it inherits through
+  ``is_a`` and its mixins, and those in its ``any_of``, ``all_of``, ``exactly_one_of``,
+  ``none_of`` and ``all_members`` (or the default range if these give none), and those in its
+  ``has_member``; a ``range_expression`` with slot conditions counts as a class. A branch of
+  ``any_of`` or ``exactly_one_of`` without a range, for example with only a ``pattern``,
+  has the range of the expression it is in, or else of the slot, or else
+  the default range. ``Any`` (``linkml:Any``) adds nothing to the other ranges of a slot, so
+  a slot whose range is ``Any`` and whose ``any_of`` lists ranges (see Unions as ranges in
+  `Advanced features <https://linkml.io/linkml/schemas/advanced.html>`_) ranges over those
 
     - if the values of each range are literals, a DataProperty is used. These are the ranges
       that are types, except those below, and enums whose permissible values are all

@@ -878,7 +878,11 @@ class OwlSchemaGenerator(Generator):
                 x = self.transform_class_slot_expression(cls, slot, slot, owltypes)
                 x = x or self._literal_enum_range(slot, cls)
             if restricted and not x:
-                range = sv.schema.default_range
+                range = self._inherited_range(top_slot)
+                if range in sv.all_types() and self._type_values_are_nodes(range):
+                    # its values are IRIs or blank nodes, which no datatype has
+                    range = None
+                range = range or sv.schema.default_range
                 # A slot that ranges over nodes is an object property, so a datatype is no filler for it.
                 if range and OWL.Thing not in owltypes and not (False in kinds and self._values_are_literals(range)):
                     if range in sv.all_types():
@@ -1416,9 +1420,10 @@ class OwlSchemaGenerator(Generator):
         for IRIs and blank nodes (:meth:`_values_are_literals`). The values of a class
         expression are nodes.
 
-        The ranges of *slot* are those given by its ``range``, ``range_expression``, boolean
-        expressions and ``all_members``, or, with *default*, the default range if these give
-        none, and those given by its ``has_member``. A ``range_expression`` gives a class
+        The ranges of *slot* are those given by its ``range``, or else the range it inherits
+        (:meth:`_inherited_range`), its ``range_expression``, boolean expressions and
+        ``all_members``, or, with *default*, the default range if these give none, and those
+        given by its ``has_member``. A ``range_expression`` gives a class
         expression if it has slot conditions, also in its boolean expressions, and else nothing.
         A branch of ``any_of`` or ``exactly_one_of`` that gives none, such as one with only a
         ``pattern``, has the range of the expression it is in, or else that of the slot, or else
@@ -1437,9 +1442,13 @@ class OwlSchemaGenerator(Generator):
                 for x in getattr(expr, k) or []
             )
 
-        def kinds_of(expr: SlotDefinition | AnonymousSlotExpression, outer: str | None) -> set[bool]:
-            # outer: the range of the expression that *expr* is in, or else that of the slot
-            outer = expr.range or outer
+        def kinds_of(
+            expr: SlotDefinition | AnonymousSlotExpression, outer: str | None, expr_range: str | None = None
+        ) -> set[bool]:
+            # outer: the range of the expression that *expr* is in, or else that of the slot;
+            # expr_range: the range *expr* inherits, if it has none of its own
+            expr_range = expr.range or expr_range
+            outer = expr_range or outer
             kinds: set[bool] = set()
             for k in ("any_of", "exactly_one_of"):
                 for branch in getattr(expr, k, None) or []:
@@ -1451,22 +1460,46 @@ class OwlSchemaGenerator(Generator):
                 kinds |= kinds_of(expr.all_members, outer)
             if expr.range_expression and gives_class_expression(expr.range_expression):
                 kinds.add(False)
-            if expr.range:
-                if not any(expr.range in elements for elements in (sv.all_classes(), sv.all_enums(), sv.all_types())):
-                    raise ValueError(f"Unknown range {expr.range}")
-                if not (kinds and self._is_any(expr.range)):
-                    kinds.add(self._values_are_literals(expr.range))
+            if expr_range:
+                if not any(expr_range in elements for elements in (sv.all_classes(), sv.all_enums(), sv.all_types())):
+                    raise ValueError(f"Unknown range {expr_range}")
+                if not (kinds and self._is_any(expr_range)):
+                    kinds.add(self._values_are_literals(expr_range))
             return kinds
 
         # An entry of a class without a range has that of the slot it names.
         name = getattr(slot, "name", None)
-        outer = (sv.get_slot(name).range if name in sv.all_slots() else None) or sv.schema.default_range
-        kinds = kinds_of(slot, outer)
+        named = sv.get_slot(name) if name in sv.all_slots() else None
+        named_range = (named.range or self._inherited_range(named)) if named is not None else None
+        outer = named_range or sv.schema.default_range
+        slot_range = slot.range or self._inherited_range(slot)
+        kinds = kinds_of(slot, outer, slot_range)
         if not kinds and default and sv.schema.default_range:
             kinds = {self._values_are_literals(sv.schema.default_range)}
         if slot.has_member:
-            kinds |= kinds_of(slot.has_member, slot.range or outer)
+            kinds |= kinds_of(slot.has_member, slot_range or outer)
         return kinds
+
+    def _inherited_range(self, slot: SlotDefinition | AnonymousSlotExpression) -> str | None:
+        """The range that *slot*, a slot without a range of its own, inherits through ``is_a``
+        and its mixins.
+
+        Of the metaslots that give ranges only ``range`` is inherited, and only by a slot, not
+        by an attribute: :meth:`SchemaView.induced_slot` takes it from the first ancestor in
+        :meth:`SchemaView.slot_ancestors` order that has one. ``induced_slot`` also gives the
+        default range, which is not inherited, so the ancestors are read here.
+        """
+        sv = self.schemaview
+        if slot.range or not (getattr(slot, "is_a", None) or getattr(slot, "mixins", None)):
+            return None
+        # an attribute, or an entry of a class, that shares the name of a slot has not its ancestors
+        if slot.name not in sv.all_slots(attributes=False) or sv.get_slot(slot.name, attributes=False) is not slot:
+            return None
+        for ancestor in sv.slot_ancestors(slot.name, reflexive=False):
+            definition = sv.get_slot(ancestor, attributes=False)
+            if definition is not None and definition.range:
+                return definition.range
+        return None
 
     def _misfit(self, slot: SlotDefinition) -> str | None:
         """Why OWL cannot restrict the values of *slot*, a slot or an entry of a class or of a

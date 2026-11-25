@@ -1792,6 +1792,50 @@ def test_values_that_a_property_cannot_have_are_not_restricted(caplog, default_r
         assert caplog.messages.count(message) == 1, message
 
 
+@pytest.mark.parametrize("default_range", [None, "string"])
+def test_slot_has_the_kind_of_the_range_it_inherits(default_range: str | None) -> None:
+    """A slot without a range inherits that of its nearest ancestor through ``is_a`` and its
+    mixins, as ``SchemaView.induced_slot`` gives it, and so a sub-property has the kind of its
+    super-property (OWL 2 §9.2.1, §9.3.1) instead of that of the default range."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_slot("ref", range="Person")
+    sb.add_slot("owner", is_a="ref")
+    sb.add_slot("previous_owner", is_a="owner")
+    sb.add_slot("holder", mixins=["ref"])
+    sb.add_slot("size", range="integer")
+    sb.add_slot("width", is_a="size")
+    sb.add_slot("reference", range="uriorcurie")
+    sb.add_slot("homepage", is_a="reference")
+    # a nearer ancestor's range comes first
+    sb.add_slot("label", is_a="ref", range="string")
+    sb.add_slot("short_label", is_a="label")
+    sb.add_class(
+        "Car",
+        slots=["owner", "previous_owner", "holder", "width", "short_label", "homepage"],
+        slot_usage={"owner": {"required": True}},
+    )
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb)
+    for prop in (EX.ref, EX.owner, EX.previous_owner, EX.holder, EX.reference, EX.homepage):
+        assert set(g.objects(prop, RDF.type)) == {OWL.ObjectProperty}, prop
+    for prop in (EX.size, EX.width, EX.short_label):
+        assert set(g.objects(prop, RDF.type)) == {OWL.DatatypeProperty}, prop
+    # the fillers of a class's restrictions have the kind of the property
+    expected = {
+        EX.owner: {OWL.Thing, EX.Person},
+        EX.previous_owner: {OWL.Thing, EX.Person},
+        EX.holder: {OWL.Thing, EX.Person},
+        EX.width: {XSD.integer},
+        EX.short_label: {XSD.string},
+        EX.homepage: {OWL.Thing},
+    }
+    for prop, fillers in expected.items():
+        restrictions = [r for r in g.objects(EX.Car, RDFS.subClassOf) if (r, OWL.onProperty, prop) in g]
+        assert {g.value(r, OWL.allValuesFrom) for r in restrictions} - {None} <= fillers, prop
+
+
 def test_attribute_of_several_classes_has_the_kind_of_its_definitions(caplog) -> None:
     """An attribute that several classes define has the kind of property that their definitions
     give, not that of the slot without a range that SchemaView gives for its name alone, so a
