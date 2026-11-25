@@ -71,10 +71,16 @@ def temp_db(typedb_driver):
     typedb_driver.databases.get(db_name).delete()
 
 
+# Schemas that must survive a round trip through a real server. Generation alone does
+# not catch kind mismatches or relations that relate nothing; only a load does.
+LOADABLE_SCHEMAS = ["organization.yaml", "kitchen_sink.yaml", "typedb_mappings.yaml"]
+
+
 @pytest.mark.integration
-def test_schema_loads_without_errors(typedb_driver, temp_db):
+@pytest.mark.parametrize("schema_name", LOADABLE_SCHEMAS)
+def test_schema_loads_without_errors(typedb_driver, temp_db, schema_name):
     """Generated TypeQL schema is accepted by TypeDB without errors."""
-    schema = TypeDBGenerator(_INPUT_DIR / "organization.yaml").serialize()
+    schema = TypeDBGenerator(_INPUT_DIR / schema_name).serialize()
 
     with typedb_driver.transaction(temp_db, TransactionType.SCHEMA) as tx:
         tx.query(schema).resolve()
@@ -130,11 +136,11 @@ def test_relation_types_defined_in_db(typedb_driver, temp_db):
         tx.commit()
 
     with typedb_driver.transaction(temp_db, TransactionType.READ) as tx:
-        boss_result = list(tx.query('match $t sub has-boss; fetch { "t": $t };').resolve())
-        emp_result = list(tx.query('match $t sub has-employees; fetch { "t": $t };').resolve())
+        boss_result = list(tx.query('match $t sub has_boss; fetch { "t": $t };').resolve())
+        emp_result = list(tx.query('match $t sub has_employees; fetch { "t": $t };').resolve())
 
-    assert len(boss_result) >= 1, "has-boss relation type not found"
-    assert len(emp_result) >= 1, "has-employees relation type not found"
+    assert len(boss_result) >= 1, "has_boss relation type not found"
+    assert len(emp_result) >= 1, "has_employees relation type not found"
 
 
 @pytest.mark.integration

@@ -1,0 +1,143 @@
+id: https://example.org/typedb_mappings
+name: typedb_mappings
+title: TypeDB mapping coverage
+description: >-
+  Exercises the LinkML constructs whose TypeQL translation is easy to get wrong in ways
+  only a live server catches: relationship classes and their role specialization, range
+  narrowing via slot_usage, reified statements with and without class-ranged slots, a
+  class-ranged slot whose range is a mixin, and an entity whose is_a parent is emitted
+  as a relation.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/typedb_mappings/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  NamedThing:
+    abstract: true
+    attributes:
+      id:
+        identifier: true
+      name:
+        range: string
+      aliases:
+        range: string
+        multivalued: true
+
+  HasProvenance:
+    mixin: true
+    attributes:
+      created_on:
+        range: datetime
+
+  Gene:
+    is_a: NamedThing
+    mixins:
+      - HasProvenance
+    attributes:
+      symbol:
+        range: string
+        required: true
+      classification:
+        range: gene_classification_enum
+
+  Disease:
+    is_a: NamedThing
+
+  Publication:
+    is_a: NamedThing
+    attributes:
+      year:
+        range: integer
+
+  Association:
+    represents_relationship: true
+    abstract: true
+    attributes:
+      subject:
+        range: NamedThing
+      object:
+        range: NamedThing
+      evidence:
+        range: Publication
+        multivalued: true
+      confidence:
+        range: float
+
+  # Narrows two roles along is_a: both get specialized `relates ... as ...`.
+  GeneToDiseaseAssociation:
+    is_a: Association
+    slot_usage:
+      subject:
+        range: Gene
+      object:
+        range: Disease
+
+  # Reified statement with a class-ranged slot: becomes a relation via the
+  # SchemaView.is_relationship fallback, no represents_relationship needed.
+  ReifiedEdge:
+    class_uri: rdf:Statement
+    attributes:
+      subject:
+        range: Gene
+      predicate:
+        range: uriorcurie
+      object:
+        range: Disease
+
+  # Reified statement with only scalar slots: has no role to relate, so it must stay
+  # an entity ([SVL41] otherwise).
+  CurieEdge:
+    class_uri: rdf:Statement
+    attributes:
+      subject:
+        range: uriorcurie
+      predicate:
+        range: uriorcurie
+      object:
+        range: uriorcurie
+
+  # is_a parent is emitted as a relation, so no cross-kind `sub` ([DEX29] otherwise).
+  AssociationNote:
+    is_a: Association
+    represents_relationship: false
+    attributes:
+      note:
+        range: string
+
+  Cohort:
+    is_a: NamedThing
+    slots:
+      - members
+      - lead
+
+  # Narrows a class-ranged slot on an ordinary entity, which emits a sub-relation.
+  GeneCohort:
+    is_a: Cohort
+    slot_usage:
+      members:
+        range: Gene
+
+slots:
+  members:
+    range: NamedThing
+    multivalued: true
+  lead:
+    range: HasProvenance
+
+enums:
+  gene_classification_enum:
+    permissible_values:
+      protein_coding:
+        description: codes for a protein
+      non_coding:
+        description: transcribed but not translated
+      pseudogene:
+        description: a non-functional relative of a gene
