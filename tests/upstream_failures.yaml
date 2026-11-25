@@ -1,0 +1,5 @@
+# Live upstream/network test failures that persisted across a delayed re-run in the
+# weekly metamodel-compat workflow. Maintained by that workflow; see
+# tests/upstream_failures.py for how to resolve an entry (fix it and delete the
+# entry, or add `accepted: <reason>` to quarantine it as a strict xfail).
+failures: []
