@@ -5,6 +5,7 @@ from enum import Enum
 import pytest
 from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
+from rdflib.compare import isomorphic
 from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
@@ -94,8 +95,8 @@ def test_owlgen(kitchen_sink_path, metaclasses, type_objects):
 @pytest.mark.parametrize(
     ("partial_match", "expected_pattern"),
     [
-        (False, r"[a-z]+"),
-        (True, r".*([a-z]+).*"),
+        (False, r"[a-z]+\n?"),
+        (True, r"(.|\n|\r)*[a-z]+(.|\n|\r)*"),
     ],
 )
 def test_as_graph_materializes_xsd_structured_patterns(partial_match: bool, expected_pattern: str) -> None:
@@ -130,6 +131,357 @@ classes:
     patterns = list(graph.objects(None, XSD.pattern))
     assert Literal(expected_pattern) in patterns, patterns
     assert value_slot.pattern is None
+
+
+def test_patterns_become_xsd_facets(caplog) -> None:
+    """A pattern becomes an xsd:pattern facet, or none with a warning if XML Schema cannot express it."""
+    generator = OwlSchemaGenerator(
+        """
+id: https://example.org/pattern
+name: pattern
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+slots:
+  code:
+    pattern: "^[a-z_]+$"
+  label:
+    pattern: "^(?!-)[a-z-]+$"
+  name:
+    all_of:
+      - pattern: "^[a-z]+$"
+      - pattern: "^(?!x)"
+  owner:
+    range: C
+classes:
+  C:
+    slots:
+      - code
+      - label
+      - name
+      - owner
+    slot_usage:
+      owner:
+        pattern: "^(?=y)"
+""",
+        metaclasses=False,
+        type_objects=False,
+    )
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = generator.as_graph()
+
+    # a conjunction keeps the patterns it can express
+    assert set(graph.objects(None, XSD.pattern)) == {Literal(r"[a-z_]+\n?"), Literal(r"[a-z]+\n?")}
+    assert any("'^(?!-)[a-z-]+$' has no XML Schema equivalent" in msg for msg in caplog.messages)
+    # no facet restricts the values of an object-valued slot, so its pattern is left out without being translated
+    assert any("'^(?=y)' is on values that are not literals" in msg for msg in caplog.messages)
+    assert not any("'^(?=y)' has no XML Schema equivalent" in msg for msg in caplog.messages)
+
+
+LOSSY_SCHEMA = """
+id: https://example.org/lossy
+name: lossy
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: Folded
+imports:
+  - linkml:types
+types:
+  Folded:
+    typeof: string
+    pattern: "PATTERN"
+slots:
+  code:
+    range: string
+  kind:
+    range: string
+  note:
+    description: a slot without a range of its own, which has the default_range
+classes:
+  C:
+    slots:
+      - code
+      - kind
+      - note
+"""
+
+
+@pytest.mark.parametrize(
+    "construct",
+    [
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        any_of:
+          - pattern: "PATTERN"
+          - pattern: "^y$"
+""",
+            id="slot any_of",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        any_of:
+          - range: Folded
+          - pattern: "^y$"
+""",
+            id="slot any_of with a type",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        exactly_one_of:
+          - pattern: "PATTERN"
+          - pattern: "^y$"
+""",
+            id="slot exactly_one_of",
+        ),
+        pytest.param(
+            """
+    slot_usage:
+      code:
+        none_of:
+          - pattern: "PATTERN"
+""",
+            id="slot none_of",
+        ),
+        pytest.param(
+            """
+    any_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+      - slot_conditions:
+          kind:
+            pattern: "^y$"
+""",
+            id="class any_of",
+        ),
+        pytest.param(
+            """
+    exactly_one_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+      - slot_conditions:
+          kind:
+            pattern: "^y$"
+""",
+            id="class exactly_one_of",
+        ),
+        pytest.param(
+            """
+    none_of:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+""",
+            id="class none_of",
+        ),
+        pytest.param(
+            """
+    none_of:
+      - slot_conditions:
+          note: {}
+""",
+            id="class none_of with the default range",
+        ),
+        pytest.param(
+            """
+    rules:
+      - preconditions:
+          slot_conditions:
+            code:
+              pattern: "PATTERN"
+        postconditions:
+          slot_conditions:
+            kind:
+              pattern: "^y$"
+""",
+            id="rule",
+        ),
+        pytest.param(
+            """
+    classification_rules:
+      - slot_conditions:
+          code:
+            pattern: "PATTERN"
+""",
+            id="classification rule",
+        ),
+    ],
+)
+def test_expressions_needing_an_inexpressible_pattern_are_left_out(construct: str, caplog) -> None:
+    """Leaving out a pattern admits more values, so a negation or union that needs one is left out as a whole."""
+
+    def as_graph(pattern: str, construct: str) -> Graph:
+        schema = (LOSSY_SCHEMA + construct).replace("PATTERN", pattern)
+        return OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = as_graph("(?i)^x$", construct)
+
+    assert isomorphic(graph, as_graph("(?i)^x$", ""))
+    assert any(msg.endswith("is left out, as it needs a pattern that no xsd:pattern states") for msg in caplog.messages)
+    # the expression is generated where XML Schema can express its pattern
+    assert not isomorphic(as_graph("^x$", construct), as_graph("^x$", ""))
+
+
+NODES_SCHEMA = """
+id: https://example.org/nodes
+name: nodes
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+slots:
+  org:
+    range: RANGE
+SLOT
+classes:
+  Org:
+    attributes:
+      id:
+        identifier: true
+  C:
+    slots:
+      - org
+CLASS
+"""
+
+_NODE_PATTERN_NONE_OF = """
+    none_of:
+      - slot_conditions:
+          org:
+            pattern: "^x"
+"""
+
+
+@pytest.mark.parametrize(
+    ("range_name", "slot", "construct"),
+    [
+        pytest.param("Org", "", _NODE_PATTERN_NONE_OF, id="class none_of"),
+        pytest.param("uriorcurie", "", _NODE_PATTERN_NONE_OF, id="class none_of on IRIs"),
+        pytest.param(
+            "Org",
+            "",
+            """
+    rules:
+      - preconditions:
+          slot_conditions:
+            org:
+              pattern: "^x"
+        postconditions:
+          slot_conditions:
+            org:
+              required: true
+""",
+            id="rule",
+        ),
+        pytest.param(
+            "Org",
+            """
+    none_of:
+      - pattern: "^x"
+""",
+            "",
+            id="slot none_of",
+        ),
+    ],
+)
+def test_expressions_needing_a_pattern_on_nodes_are_left_out(
+    range_name: str, slot: str, construct: str, caplog
+) -> None:
+    """A facet restricts literals, not the IRI of a node, so a pattern on a slot whose values are nodes is left
+    out like one XML Schema cannot express, also in the range of the slot itself. An expression that needs it is
+    left out too: with the pattern left out but the negation kept, ``none_of`` would deny the class every
+    instance."""
+
+    def as_graph(slot: str, construct: str) -> Graph:
+        schema = NODES_SCHEMA.replace("RANGE", range_name).replace("SLOT", slot).replace("CLASS", construct)
+        return OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = as_graph(slot, construct)
+
+    assert isomorphic(graph, as_graph("", ""))
+    assert not set(graph.objects(None, XSD.pattern))
+    assert any("'^x' is on values that are not literals" in msg for msg in caplog.messages)
+    assert any(msg.endswith("is left out, as it needs a pattern that no xsd:pattern states") for msg in caplog.messages)
+
+
+def test_a_member_pattern_on_nodes_is_left_out(caplog) -> None:
+    """``has_member`` on a slot whose values are nodes states no facet either, and with only a pattern no axiom."""
+    member = """
+    slot_usage:
+      org:
+        multivalued: true
+        has_member:
+          pattern: "^x"
+"""
+    schema = NODES_SCHEMA.replace("RANGE", "Org").replace("SLOT", "").replace("CLASS", member)
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+
+    assert not set(graph.objects(None, XSD.pattern))
+    assert not set(graph.objects(None, OWL.someValuesFrom))
+    assert any("'^x' is on values that are not literals" in msg for msg in caplog.messages)
+
+
+def test_equals_string_on_literals_becomes_one_of() -> None:
+    """equals_string compares the whole value, so it is a one-literal owl:oneOf and not an xsd:pattern."""
+    graph = OwlSchemaGenerator(
+        """
+id: https://example.org/equals
+name: equals
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+types:
+  JsonLd:
+    typeof: string
+    equals_string: application/ld+json
+slots:
+  media_type:
+    range: string
+  format:
+    range: JsonLd
+  document:
+    range: Document
+classes:
+  Document:
+    slots:
+      - media_type
+      - format
+  C:
+    slots:
+      - document
+    slot_usage:
+      document:
+        range_expression:
+          slot_conditions:
+            media_type:
+              equals_string: application/ld+json
+""",
+        metaclasses=False,
+        type_objects=False,
+    ).as_graph()
+
+    one_ofs = [list(Collection(graph, members)) for members in graph.objects(None, OWL.oneOf)]
+    assert one_ofs == [[Literal("application/ld+json")]] * 2
+    assert not list(graph.objects(None, XSD.pattern))
 
 
 def test_rdfs_profile(kitchen_sink_path):
@@ -1266,3 +1618,95 @@ def test_cli_ontology_uri_suffix(kitchen_sink_path, args: list[str], expected_su
     g = Graph()
     g.parse(data=result.output, format="turtle")
     assert _ontology_iris(g) == {URIRef(f"https://w3id.org/linkml/tests/kitchen_sink{expected_suffix}")}
+
+
+def _pattern_schema(body: str) -> str:
+    return (
+        """
+id: https://example.org/p
+name: p
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+"""
+        + body
+    )
+
+
+def test_equals_string_keeps_a_pattern_and_is_negated_as_a_data_range() -> None:
+    """A pattern next to equals_string stays a facet, and none_of an equals_string excludes the one literal
+    (a complement of the restriction to a one-literal owl:oneOf), not the values a pattern finds."""
+    schema = _pattern_schema(
+        """
+types:
+  Code:
+    typeof: string
+    pattern: "^[a-z]+$"
+    equals_string: abc
+slots:
+  code:
+    range: Code
+  label:
+    range: string
+classes:
+  C:
+    slots: [code, label]
+    none_of:
+      - slot_conditions:
+          label:
+            equals_string: xyz
+"""
+    )
+    graph = OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+    assert set(graph.objects(None, XSD.pattern)) == {Literal(r"[a-z]+\n?")}
+    one_ofs = {tuple(Collection(graph, members)): node for node, members in graph.subject_objects(OWL.oneOf)}
+    assert set(one_ofs) == {(Literal("abc"),), (Literal("xyz"),)}
+    (restriction,) = graph.subjects(OWL.allValuesFrom, one_ofs[(Literal("xyz"),)])
+    assert (restriction, OWL.onProperty, URIRef("https://example.org/label")) in graph
+    assert (None, OWL.complementOf, restriction) in graph
+
+
+def test_structured_pattern_of_an_anonymous_expression_leaves_its_any_of_out(caplog) -> None:
+    """SchemaView resolves the structured pattern of a definition only. An any_of operand with one would
+    otherwise give no restriction, and the union would admit fewer values than LinkML's validators."""
+    schema = _pattern_schema(
+        """
+slots:
+  code:
+    range: string
+    any_of:
+      - structured_pattern:
+          syntax: "^a$"
+      - pattern: "^b$"
+classes:
+  C:
+    slots: [code]
+"""
+    )
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        graph = OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+    assert set(graph.objects(None, XSD.pattern)) == set()
+    assert any("structured pattern '^a$' of an anonymous expression is not resolved" in msg for msg in caplog.messages)
+    assert any(msg.startswith("The any_of of slot 'code' is left out") for msg in caplog.messages)
+
+
+def test_pattern_of_an_object_valued_slot_is_not_a_facet_of_its_range() -> None:
+    """The values of a class-ranged slot are individuals, which an xsd:pattern facet cannot restrict."""
+    schema = _pattern_schema(
+        """
+slots:
+  owner:
+    range: D
+    pattern: "^y"
+classes:
+  D: {}
+  C:
+    slots: [owner]
+"""
+    )
+    graph = OwlSchemaGenerator(schema, metaclasses=False, type_objects=False).as_graph()
+    assert set(graph.objects(None, XSD.pattern)) == set()
+    assert list(graph.objects(URIRef("https://example.org/owner"), RDFS.range)) == [URIRef("https://example.org/D")]

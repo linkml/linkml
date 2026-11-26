@@ -3,7 +3,7 @@
 import logging
 import os
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
@@ -23,6 +23,7 @@ from linkml.generators.common.annotations import declared_annotation
 from linkml.utils.deprecation import XSD_ANYURI_AS_IRI_OPTION, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.language_tags import LanguageTagResolver
+from linkml.utils.pattern_dialects import regex_as_xsd
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -172,6 +173,12 @@ class OwlSchemaGenerator(Generator):
 
     node_owltypes: defaultdict[OWL_EXPRESSION, set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
+
+    _omitted_patterns: int = field(default=0, init=False, repr=False)
+    """Number of patterns left out so far (see :meth:`_xsd_pattern`)"""
+
+    _lossy_types: set[str] = field(default_factory=set, init=False, repr=False)
+    """Types whose definition leaves out a pattern"""
 
     simplify: bool = True
     """Reduce complex expressions to simpler forms"""
@@ -387,6 +394,17 @@ class OwlSchemaGenerator(Generator):
         # initialize the rdflib Graph where all axiom triples will be added
         graph = Graph(identifier=base)
         self.graph = graph
+        self._omitted_patterns = 0
+        # With type_objects, a type is a class that carries no facets.
+        self._lossy_types = (
+            set()
+            if self.type_objects
+            else {
+                name
+                for name in sv.all_types(imports=True)
+                if (pattern := sv.induced_type(name).pattern) is not None and regex_as_xsd(pattern) is None
+            }
+        )
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in schema.prefixes.values():
@@ -655,7 +673,9 @@ class OwlSchemaGenerator(Generator):
 
         # rules yield OWL GCI subClassOf axioms
         for rule in cls.rules:
-            pre_node = condition_to_bnode(rule.preconditions)
+            pre_node = self._unless_pattern_omitted(
+                f"A rule of {cls.name!r}", lambda: condition_to_bnode(rule.preconditions)
+            )
             if not pre_node:
                 continue
             pre_node = self._intersection_of([pre_node, subject_expr])
@@ -665,7 +685,9 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((pre_node, RDFS.subClassOf, post_node))
         # classification rules yield OWL GCI subClassOf axioms
         for expr in cls.classification_rules:
-            ixn_listnode = condition_to_bnode(expr)
+            ixn_listnode = self._unless_pattern_omitted(
+                f"A classification rule of {cls.name!r}", lambda: condition_to_bnode(expr)
+            )
             if not ixn_listnode:
                 continue
             self.graph.add((ixn_listnode, RDFS.subClassOf, subject_expr))
@@ -775,40 +797,49 @@ class OwlSchemaGenerator(Generator):
         sv = self.schemaview
         own_slots = self.get_own_slots(cls)
         owl_exprs: list[OWL_EXPRESSION] = []
+        owner = f"class {cls.name!r}" if isinstance(cls, ClassDefinition) else "a class expression"
+
+        def exactly_one_of() -> OWL_VALUE | None:
+            if isinstance(cls, ClassDefinition):
+                sub_exprs: list[OWL_EXPRESSION] = self._present(
+                    self.transform_class_expression(x) for x in cls.exactly_one_of
+                )
+                listnode = BNode()
+                Collection(self.graph, listnode, sub_exprs)
+                self.graph.add((self._class_uri(cls.name), OWL.disjointUnionOf, listnode))
+                return None
+            sub_sub_exprs: list[OWL_EXPRESSION] = []
+            for i, x in enumerate(cls.exactly_one_of):
+                operand_expr = self.transform_class_expression(x)
+                if not operand_expr:
+                    continue
+                rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
+                neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
+                pos_expr = self._intersection_of([operand_expr, neg_expr])
+                if pos_expr:
+                    sub_sub_exprs.append(pos_expr)
+            return self._union_of(sub_sub_exprs)
+
         if cls.any_of:
-            any_of_expr = self._union_of([self.transform_class_expression(x) for x in cls.any_of])
+            any_of_expr = self._unless_pattern_omitted(
+                f"The any_of of {owner}",
+                lambda: self._union_of([self.transform_class_expression(x) for x in cls.any_of]),
+            )
             if any_of_expr:
                 owl_exprs.append(any_of_expr)
         if cls.exactly_one_of:
-            sub_exprs: list[OWL_EXPRESSION] = self._present(
-                self.transform_class_expression(x) for x in cls.exactly_one_of
-            )
-            if isinstance(cls, ClassDefinition):
-                cls_uri = self._class_uri(cls.name)
-                listnode = BNode()
-                Collection(graph, listnode, sub_exprs)
-                graph.add((cls_uri, OWL.disjointUnionOf, listnode))
-            else:
-                sub_sub_exprs: list[OWL_EXPRESSION] = []
-                for i, x in enumerate(cls.exactly_one_of):
-                    operand_expr = self.transform_class_expression(x)
-                    if not operand_expr:
-                        continue
-                    rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
-                    neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
-                    pos_expr = self._intersection_of([operand_expr, neg_expr])
-                    if pos_expr:
-                        sub_sub_exprs.append(pos_expr)
-                union_expr = self._union_of(sub_sub_exprs)
-                if union_expr:
-                    owl_exprs.append(union_expr)
-                # owl_exprs.extend(sub_exprs)
+            union_expr = self._unless_pattern_omitted(f"The exactly_one_of of {owner}", exactly_one_of)
+            if union_expr:
+                owl_exprs.append(union_expr)
         if cls.all_of:
             all_of_expr = self._intersection_of([self.transform_class_expression(x) for x in cls.all_of])
             if all_of_expr:
                 owl_exprs.append(all_of_expr)
         if cls.none_of:
-            none_of_expr = self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of])
+            none_of_expr = self._unless_pattern_omitted(
+                f"The none_of of {owner}",
+                lambda: self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of]),
+            )
             if none_of_expr:
                 owl_exprs.append(none_of_expr)
         for slot in own_slots:
@@ -826,7 +857,7 @@ class OwlSchemaGenerator(Generator):
                 range = sv.schema.default_range
                 if range and OWL.Thing not in owltypes:
                     if range in sv.all_types():
-                        x = self._type_uri(range)
+                        x = self._referenced_type_uri(range)
                     elif range in sv.all_enums():
                         x = self._enum_uri(range)
                     elif range in sv.all_classes():
@@ -901,7 +932,7 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
 
             if slot.has_member:
-                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
+                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot, owltypes)
                 if has_member_expr:
                     owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
@@ -987,13 +1018,18 @@ class OwlSchemaGenerator(Generator):
             )
             return rdflib_nodes or None
 
-        if any_of_rdflib_nodes := _get_slot_nodes(slot.any_of):
+        if any_of_rdflib_nodes := self._unless_pattern_omitted(
+            f"The any_of of slot {main_slot.name!r}", lambda: _get_slot_nodes(slot.any_of)
+        ):
             owl_exprs.append(self._union_of(any_of_rdflib_nodes))
         if all_of_rdflib_nodes := _get_slot_nodes(slot.all_of):
             owl_exprs.append(self._intersection_of(all_of_rdflib_nodes))
-        if none_of_rdflib_nodes := _get_slot_nodes(slot.none_of):
+        if none_of_rdflib_nodes := self._unless_pattern_omitted(
+            f"The none_of of slot {main_slot.name!r}", lambda: _get_slot_nodes(slot.none_of)
+        ):
             owl_exprs.append(self._complement_of_union_of(none_of_rdflib_nodes))
-        if slot.exactly_one_of:
+
+        def exactly_one_of() -> list[OWL_EXPRESSION]:
             disj_exprs: list[OWL_EXPRESSION] = []
             for i, operand in enumerate(slot.exactly_one_of):
                 operand_expr = self.transform_class_slot_expression(cls, operand, main_slot, owl_types)
@@ -1010,6 +1046,11 @@ class OwlSchemaGenerator(Generator):
                 )
                 if pos_expr:
                     disj_exprs.append(pos_expr)
+            return disj_exprs
+
+        if slot.exactly_one_of and (
+            disj_exprs := self._unless_pattern_omitted(f"The exactly_one_of of slot {main_slot.name!r}", exactly_one_of)
+        ):
             exactly_one_expr = self._union_of(disj_exprs, owl_types=owl_types)
             if exactly_one_expr:
                 owl_exprs.append(exactly_one_expr)
@@ -1026,7 +1067,7 @@ class OwlSchemaGenerator(Generator):
                     self.slot_is_literal_map[main_slot.name].add(True)
                     this_owl_types.add(RDFS.Literal)
                     typ = sv.get_type(slot_range)
-                    owl_exprs.append(self._type_uri(typ.name))
+                    owl_exprs.append(self._referenced_type_uri(typ.name))
             elif slot_range in sv.all_enums(imports=True):
                 # TODO: enums fill this in
                 owl_exprs.append(self._enum_uri(EnumDefinitionName(slot_range)))
@@ -1039,6 +1080,9 @@ class OwlSchemaGenerator(Generator):
         is_literal = None
         if owl_types:
             is_literal = RDFS.Datatype in owl_types
+        elif this_owl_types == {OWL.Thing}:
+            # the values of a class, or of a type whose values are nodes, are not literals
+            is_literal = False
         constraints_exprs, constraints_owltypes = self.add_constraints(slot, is_literal=is_literal)
         this_owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)
@@ -1058,16 +1102,17 @@ class OwlSchemaGenerator(Generator):
         constraints = {
             XSD.minInclusive: element.minimum_value,
             XSD.maxInclusive: element.maximum_value,
-            XSD.pattern: self._structured_pattern_as_xsd(element),
+            # facets of non-literal values are skipped below
+            XSD.pattern: self._xsd_pattern(element, on_literals=is_literal is not False),
         }
         if element.equals_number is not None:
             constraints[XSD.minInclusive] = element.equals_number
             constraints[XSD.maxInclusive] = element.equals_number
         if element.equals_string is not None:
             equals_string = element.equals_string
-            if is_literal is None:
-                # Enum-ranged slots sit between literals and URIs in OWL.
-                # Build a proper "owl:oneOf" datatype so that rules like
+            if is_literal is not False:
+                # The value of a literal slot, or of an enum-ranged slot, which sits between
+                # literals and URIs in OWL. Build a proper "owl:oneOf" datatype so that rules like
                 # `none_of: [{equals_string: "X"}]` produce a valid
                 # owl:datatypeComplementOf instead of being silently dropped.
                 one_of_expr = self._boolean_expression(
@@ -1076,8 +1121,6 @@ class OwlSchemaGenerator(Generator):
                 if one_of_expr:
                     owl_exprs.append(one_of_expr)
                     owl_types.add(RDFS.Literal)
-            elif is_literal:
-                constraints[XSD.pattern] = equals_string
             else:
                 eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
                 owl_exprs.append(eq_uri)
@@ -1115,28 +1158,69 @@ class OwlSchemaGenerator(Generator):
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
 
-    def _structured_pattern_as_xsd(
+    def _xsd_pattern(
         self,
         element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+        on_literals: bool = True,
     ) -> str | None:
-        """Resolve a structured pattern and translate it to XML Schema regex semantics."""
+        """Resolve the pattern of an element and translate it to an XML Schema regular expression.
+
+        A pattern is left out, and counted in :attr:`_omitted_patterns`, if XML Schema cannot express it, or if
+        it is not *on_literals*: a facet restricts literals, not the IRI of a node.
+        """
         pattern = element.pattern
-        structured_pattern = element.structured_pattern
         # OWL also processes anonymous expressions, which cannot be induced.
         # Named definitions that reach this point without a pattern are raw
         # schema elements, so resolve them locally without mutating the schema.
         if pattern is None and isinstance(element, SlotDefinition | TypeDefinition):
             pattern = self.schemaview.resolve_pattern(element)
-        if pattern is None or structured_pattern is None:
-            return pattern
-        inner = pattern
-        if inner.startswith("^(?:") and inner.endswith(")$"):
-            inner = inner[4:-2]
-        if inner.startswith("^") and inner.endswith("$"):
-            inner = inner[1:-1]
-        if structured_pattern.partial_match:
-            return f".*({inner}).*"
-        return inner
+        if pattern is None:
+            if element.structured_pattern is not None:
+                # SchemaView resolves the structured pattern of a definition only, and the other
+                # generators leave that of an anonymous expression out too.
+                self._omitted_patterns += 1
+                logger.warning(
+                    f"The structured pattern {element.structured_pattern.syntax!r} of an anonymous expression is not "
+                    "resolved; no xsd:pattern is generated for it"
+                )
+            return None
+        if not on_literals:
+            self._omitted_patterns += 1
+            logger.warning(f"Pattern {pattern!r} is on values that are not literals; no xsd:pattern restricts them")
+            return None
+        xsd_pattern = regex_as_xsd(pattern)
+        if xsd_pattern is None:
+            self._omitted_patterns += 1
+            logger.warning(f"Pattern {pattern!r} has no XML Schema equivalent; no xsd:pattern is generated for it")
+        return xsd_pattern
+
+    def _unless_pattern_omitted(self, what: str, build: Callable[[], _T]) -> _T | None:
+        """Return what *build* returns, or None if it leaves out a pattern.
+
+        Leaving out a pattern (:meth:`_xsd_pattern`) admits more values, which stays
+        sound where a constraint must hold. Under a negation, or in a union that then
+        loses an operand, it admits fewer values, so *build* is undone instead.
+
+        :param what: the expression *build* translates, for the warning
+        :param build: a function that translates the expression into ``self.graph``
+        """
+        omitted, graph = self._omitted_patterns, self.graph
+        self.graph = Graph()
+        try:
+            result = build()
+        finally:
+            scratch, self.graph = self.graph, graph
+        if self._omitted_patterns != omitted:
+            logger.warning(f"{what} is left out, as it needs a pattern that no xsd:pattern states")
+            return None
+        self.graph += scratch
+        return result
+
+    def _referenced_type_uri(self, name: str) -> URIRef:
+        """Return the URI of a type an expression refers to, counting the pattern its definition leaves out."""
+        if name in self._lossy_types:
+            self._omitted_patterns += 1
+        return self._type_uri(name)
 
     def add_slot(self, slot: SlotDefinition, attribute: bool = False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
@@ -1180,7 +1264,7 @@ class OwlSchemaGenerator(Generator):
                 self._add_annotation_property_axioms(slot, slot_uri)
             return
 
-        range_expr = self.transform_class_slot_expression(None, slot)
+        range_expr = self.transform_class_slot_expression(None, slot, owl_types=self.slot_node_owltypes(slot))
         if range_expr:
             self.graph.add((slot_uri, RDFS.range, range_expr))
         if slot.domain:

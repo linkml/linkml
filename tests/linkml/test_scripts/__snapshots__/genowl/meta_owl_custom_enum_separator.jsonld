@@ -3054,39 +3054,6 @@
     "@id": "http://www.w3.org/2001/XMLSchema#string",
     "@type": [
       "http://www.w3.org/2000/01/rdf-schema#Datatype"
-    ],
-    "http://www.w3.org/2002/07/owl#equivalentClass": [
-      {
-        "@id": "_:Nfc51e84fd5e7487899048778adc9e9e9"
-      }
-    ]
-  },
-  {
-    "@id": "_:Nfc51e84fd5e7487899048778adc9e9e9",
-    "@type": [
-      "http://www.w3.org/2000/01/rdf-schema#Datatype"
-    ],
-    "http://www.w3.org/2002/07/owl#onDatatype": [
-      {
-        "@id": "http://www.w3.org/2001/XMLSchema#string"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#withRestrictions": [
-      {
-        "@list": [
-          {
-            "@id": "_:Nd5ef5efd3ab44636a80458b71a5b3c39"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "@id": "_:Nd5ef5efd3ab44636a80458b71a5b3c39",
-    "http://www.w3.org/2001/XMLSchema#pattern": [
-      {
-        "@value": "^[\\\\+\\\\d+ +][\\\\d\\\\- ]+$"
-      }
     ]
   },
   {
@@ -3134,7 +3101,7 @@
     "@id": "_:N191d431baef547be8d340719cda7b847",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$"
+        "@value": "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?"
       }
     ]
   },
@@ -4609,7 +4576,7 @@
     "@id": "_:Nd6c99288f539428eaada2feb506ebad8",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^\\S+ \\S+$"
+        "@value": "[^\\s\\p{Z}\u0085]+ [^\\s\\p{Z}\u0085]+\\n?"
       }
     ]
   },
@@ -4720,7 +4687,7 @@
     "@id": "_:N9da993386f5947019db3b9e12906a0d3",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$"
+        "@value": "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?"
       }
     ]
   },

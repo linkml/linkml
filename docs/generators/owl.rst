@@ -70,6 +70,25 @@ Mapping
 
 .. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
+Patterns
+^^^^^^^^
+
+A LinkML ``pattern`` is a Python regular expression, and a value conforms where Python's
+``re.search`` finds it. OWL 2 takes ``xsd:pattern`` from XML Schema, whose regular expressions
+match the whole value and read ``^`` and ``$`` as ordinary characters, with other meanings for
+``.``, ``\s`` and ``\w``
+(`XML Schema 1.1 Part 2, Appendix G <https://www.w3.org/TR/xmlschema11-2/#regexs>`__).
+The generator translates each pattern so that the facet admits the values LinkML accepts:
+``^[a-z_]+$`` becomes ``[a-z_]+\n?``, as Python's ``$`` also matches before a final line feed,
+and ``[a-z]+`` becomes ``(.|\n|\r)*[a-z]+(.|\n|\r)*``. A pattern that XML Schema cannot express,
+such as one with a lookahead or a backreference, gets no facet and a warning, as does a pattern on
+a slot whose values are objects, since a facet restricts literals only. Where leaving the
+facet out would make an expression exclude *more* values (``none_of``, an ``any_of`` operand,
+``exactly_one_of``, the preconditions of a rule, a classification rule), the expression is left
+out as well, so the ontology admits more values, never fewer.
+
+``equals_string`` on a literal becomes an ``owl:oneOf`` of that one literal.
+
 Annotation values
 ^^^^^^^^^^^^^^^^^
 

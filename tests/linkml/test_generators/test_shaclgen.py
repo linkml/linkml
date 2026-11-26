@@ -1,3 +1,5 @@
+import logging
+import re
 from collections import Counter
 from typing import Any
 
@@ -8,6 +10,7 @@ from rdflib.collection import Collection
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
+from linkml.utils.pattern_dialects import regex_for_xpath
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
@@ -52,8 +55,10 @@ def test_as_graph_materializes_structured_patterns(input_path) -> None:
 
     graph = generator.as_graph()
 
-    assert Literal(r"^(?:\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, SH.pattern)
-    assert Literal(r"^(?:\S+@\S+{\.\w}+)$") in graph.objects(None, SH.pattern)
+    # written in forms that Python and XPath read alike, see test_pattern_patterns_read_alike_in_python_and_xpath
+    not_space = "[^\\s\x85\xa0\u1680\u2000-\u200a\u2028-\u2029\u202f\u205f\u3000]"
+    assert Literal(r"^(\d+[\.\d+] (centimeter|meter|inch))$") in graph.objects(None, SH.pattern)
+    assert Literal(rf"^({not_space}+@{not_space}+\{{\.\w\}}+)$") in graph.objects(None, SH.pattern)
     assert height_slot.pattern is None
     assert email_type.pattern is None
 
@@ -2891,7 +2896,7 @@ def test_any_of_with_pattern(input_path):
     assert list(g.objects(int_branches[0], SH.pattern)) == []
 
     # Case 3: MixedBranches — code slot has 3 branches:
-    #   [sh:datatype xsd:integer], [sh:pattern "^CUSTOM-.*$"], [sh:datatype xsd:string + sh:pattern "^STD-[0-9]+$"]
+    #   [sh:datatype xsd:integer], [sh:pattern "^CUSTOM-[^\n]*$"], [sh:datatype xsd:string + sh:pattern "^STD-[0-9]+$"]
     branches = get_or_branch_nodes(f"{prefix}MixedBranches", "code")
     assert len(branches) == 3, f"Expected 3 branches, got {len(branches)}"
     # Exactly 2 branches should have sh:pattern
@@ -2899,7 +2904,8 @@ def test_any_of_with_pattern(input_path):
     assert len(pattern_branches) == 2, f"Expected 2 pattern branches, got {len(pattern_branches)}"
     # Collect the patterns
     patterns = sorted(str(list(g.objects(b, SH.pattern))[0]) for b in pattern_branches)
-    assert patterns == ["^CUSTOM-.*$", "^STD-[0-9]+$"]
+    # "." as both Python and XPath read it (linkml.utils.pattern_dialects.regex_for_xpath)
+    assert patterns == [r"^CUSTOM-[^\n]*$", "^STD-[0-9]+$"]
     # The integer-only branch should have no pattern
     no_pattern = [b for b in branches if not list(g.objects(b, SH.pattern))]
     assert len(no_pattern) == 1
@@ -2972,3 +2978,170 @@ def test_any_of_with_pattern_pyshacl_end_to_end(input_path):
     for value in ('"x1"', '"za"'):
         ok, _ = conforms(f"{prefixes}\nex:t2 a ex:SlotPatternWithAnyOf ; ex:tag {value} .")
         assert not ok, f"tag {value} violates the slot pattern or matches no branch and must be rejected"
+
+
+_PATTERN_SCHEMA = """
+id: https://example.org/patterns
+name: patterns
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+types:
+  JsonLd:
+    typeof: string
+    equals_string: application/ld+json
+  Code:
+    typeof: string
+    pattern: "^[a-z]+.[0-9]$"
+slots:
+  name:
+    range: string
+    pattern: "^\\\\S+ \\\\S+$"
+  link:
+    range: string
+    pattern: "^https?:\\\\/\\\\/"
+  code:
+    range: Code
+  media_type:
+    range: JsonLd
+classes:
+  Record:
+    slots: [name, link, code, media_type]
+"""
+
+
+@pytest.mark.parametrize(
+    ("slot", "value"),
+    [
+        ("name", "Fred Bloggs"),
+        ("name", "Fred\u00a0Bloggs"),
+        ("name", "Fred  Bloggs"),
+        ("link", "https://example.org"),
+        ("link", "ftp://example.org"),
+        ("code", "abc\r1"),
+        ("code", "abc\n1"),
+        ("media_type", "application/ld+json"),
+        ("media_type", "application/lddjson"),
+    ],
+)
+def test_pattern_patterns_read_alike_in_python_and_xpath(slot: str, value: str) -> None:
+    """``sh:pattern`` is an XPath regular expression (SHACL §4.4.3), which Python-based engines such as
+    pyshacl compile with Python's ``re``. The pattern is written in forms both read with Python's
+    meaning, so pyshacl accepts exactly the values LinkML's ``re.search`` accepts; ``equals_string``
+    on a type becomes ``sh:in``."""
+    from pyshacl import validate
+
+    shapes = rdflib.Graph().parse(data=ShaclGenerator(_PATTERN_SCHEMA).serialize(), format="turtle")
+    ex = rdflib.Namespace("https://example.org/")
+    data = rdflib.Graph()
+    data.add((ex.r, RDF.type, ex.Record))
+    data.add((ex.r, ex[slot], Literal(value)))
+    conforms, _, report = validate(data, shacl_graph=shapes)
+    schema = ShaclGenerator(_PATTERN_SCHEMA).schemaview
+    induced = schema.induced_slot(slot, "Record")
+    typ = schema.induced_type(induced.range) if induced.range in schema.all_types() else None
+    pattern = induced.pattern or (typ.pattern if typ else None)
+    expected = (pattern is None or re.search(pattern, value) is not None) and (
+        typ is None or typ.equals_string is None or typ.equals_string == value
+    )
+    assert conforms == expected, report
+    if pattern is not None:
+        assert Literal(regex_for_xpath(pattern)) in shapes.objects(None, SH.pattern)
+
+
+_ALLOWED_STRINGS_SCHEMA = """
+id: https://example.org/allowed
+name: allowed
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+types:
+  Codes:
+    typeof: string
+    equals_string_in: [a, b, c]
+  Fixed:
+    typeof: string
+    equals_string: x
+    equals_string_in: [x, y]
+  Disjoint:
+    typeof: string
+    equals_string: z
+    equals_string_in: [x, y]
+  Relations:
+    typeof: string
+    equals_string_in: [part_of, x]
+enums:
+  Relation:
+    permissible_values:
+      related_to:
+      part_of:
+      other:
+slots:
+  related_to: {}
+  part_of:
+    is_a: related_to
+  codes:
+    range: Codes
+  fixed:
+    range: Fixed
+  disjoint:
+    range: Disjoint
+  pair:
+    range: string
+    equals_string: b
+    equals_string_in: [a, b]
+  typed_relation:
+    range: Relations
+    subproperty_of: related_to
+  relation:
+    range: string
+    equals_string_in: [x, part_of, related_to]
+    subproperty_of: related_to
+  enum_relation:
+    range: Relation
+    subproperty_of: related_to
+classes:
+  Record:
+    slots: [codes, fixed, disjoint, pair, typed_relation, relation, enum_relation]
+"""
+
+
+@pytest.mark.parametrize(
+    ("slot", "allowed"),
+    [
+        ("codes", ["a", "b", "c"]),
+        ("fixed", ["x"]),
+        ("disjoint", []),
+        ("pair", ["b"]),
+        ("typed_relation", ["part_of"]),
+        ("relation", ["part_of", "related_to"]),
+        ("enum_relation", ["related_to", "part_of"]),
+    ],
+)
+def test_allowed_values_become_one_sh_in(slot: str, allowed: list[str], caplog) -> None:
+    """A shape has at most one value for ``sh:in`` (SHACL §4.8.3). The ``equals_string`` and
+    ``equals_string_in`` of a slot or of its type, the permissible values of its enum and its
+    expanded ``subproperty_of`` therefore become one list of the values that all of them allow,
+    which pyshacl then accepts and no other value. A list without values comes with a warning."""
+    from pyshacl import validate
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.shaclgen"):
+        shacl = ShaclGenerator(_ALLOWED_STRINGS_SCHEMA).serialize()
+    shapes = rdflib.Graph().parse(data=shacl, format="turtle")
+    ex = rdflib.Namespace("https://example.org/")
+    (prop,) = shapes.subjects(SH.path, ex[slot])
+    (values,) = shapes.objects(prop, SH["in"])
+    assert list(Collection(shapes, values)) == [Literal(value) for value in allowed]
+    assert (f"The values that {slot!r} allows have none in common" in caplog.text) == (not allowed)
+    for value in ["a", "b", "c", "x", "y", "z", "related_to", "part_of", "other"]:
+        data = rdflib.Graph()
+        data.add((ex.r, RDF.type, ex.Record))
+        data.add((ex.r, ex[slot], Literal(value)))
+        conforms, _, report = validate(data, shacl_graph=shapes)
+        assert conforms == (value in allowed), report

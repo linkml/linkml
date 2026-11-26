@@ -13,8 +13,7 @@
 @prefix schema1: <http://schema.org/> .
 dcterms:title a owl:AnnotationProperty .
 xsd:integer a rdfs:Datatype .
-xsd:string a rdfs:Datatype ;
-	owl:equivalentClass _:c14n173 .
+xsd:string a rdfs:Datatype .
 skos:altLabel a owl:AnnotationProperty .
 skos:closeMatch a owl:AnnotationProperty .
 skos:definition a owl:AnnotationProperty .
@@ -571,7 +570,6 @@ _:c14n103 a owl:Restriction ;
 _:c14n104 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty ks:slot_with_space_1 .
-_:c14n105 xsd:pattern "^[\\\\+\\\\d+ +][\\\\d\\\\- ]+$" .
 _:c14n106 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:tests\/core\/name .
@@ -780,9 +778,6 @@ _:c14n171 a owl:Restriction ;
 	owl:onProperty linkml:tests\/core\/used .
 _:c14n172 rdf:first ks:CordialnessEnum\#hateful ;
 	rdf:rest _:c14n216 .
-_:c14n173 a rdfs:Datatype ;
-	owl:onDatatype xsd:string ;
-	owl:withRestrictions _:c14n298 .
 _:c14n174 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty ks:in_location .
@@ -1136,8 +1131,6 @@ _:c14n296 rdf:first ks:EmploymentEventType ;
 	rdf:rest rdf:nil .
 _:c14n297 rdf:first _:c14n36 ;
 	rdf:rest rdf:nil .
-_:c14n298 rdf:first _:c14n105 ;
-	rdf:rest rdf:nil .
 _:c14n299 rdf:first _:c14n300 ;
 	rdf:rest rdf:nil .
 _:c14n3 a owl:Restriction ;
@@ -1146,18 +1139,18 @@ _:c14n3 a owl:Restriction ;
 _:c14n30 a owl:Restriction ;
 	owl:allValuesFrom ks:Place ;
 	owl:onProperty ks:in_location .
-_:c14n300 xsd:pattern "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$" .
+_:c14n300 xsd:pattern "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?" .
 _:c14n301 rdf:first _:c14n33 ;
 	rdf:rest rdf:nil .
 _:c14n302 rdf:first _:c14n303 ;
 	rdf:rest rdf:nil .
-_:c14n303 xsd:pattern "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$" .
+_:c14n303 xsd:pattern "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?" .
 _:c14n31 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty ks:cordialness .
 _:c14n32 rdf:first ks:CordialnessEnum ;
 	rdf:rest _:c14n294 .
-_:c14n33 xsd:pattern "^\\S+ \\S+$" .
+_:c14n33 xsd:pattern "[^\\s\\p{Z}]+ [^\\s\\p{Z}]+\\n?" .
 _:c14n34 rdf:first ks:LongEnum\#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern ;
 	rdf:rest _:c14n93 .
 _:c14n35 rdf:first "foo" ;

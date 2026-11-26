@@ -5,6 +5,15 @@ schema:
   imports:
     - https://w3id.org/linkml/types
 
+  types:
+    Codes:
+      typeof: string
+      equals_string_in: [a, b, c]
+    Fixed:
+      typeof: string
+      equals_string: x
+      equals_string_in: [x, y]
+
   slots:
     string_constant:
       range: string
@@ -52,6 +61,10 @@ schema:
           minimum_value: 10
         - range: string
           pattern: "[nN]/?[aA]"
+    string_type_in:
+      range: Codes
+    string_type_fixed:
+      range: Fixed
 
   classes:
     Test:
@@ -68,6 +81,8 @@ schema:
         - string_exactly_one_pattern
         - string_none_of
         - integer_over_ten_or_string_na
+        - string_type_in
+        - string_type_fixed
 
 data_cases:
   - data:
@@ -150,3 +165,13 @@ data_cases:
   - data:
       integer_over_ten_or_string_na: false
     error_message: False is not valid under any of the given schemas
+  - data:
+      string_type_in: b
+  - data:
+      string_type_in: d
+    error_message: "'d' is not one of"
+  - data:
+      string_type_fixed: x
+  - data:
+      string_type_fixed: y
+    error_message: "'x' was expected"

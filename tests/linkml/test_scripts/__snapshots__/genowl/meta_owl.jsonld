@@ -2253,7 +2253,7 @@
     "@id": "_:Nc293a232418b41128dc0d593a2a6db6f",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$"
+        "@value": "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?"
       }
     ]
   },
@@ -4100,39 +4100,6 @@
     "@id": "http://www.w3.org/2001/XMLSchema#string",
     "@type": [
       "http://www.w3.org/2000/01/rdf-schema#Datatype"
-    ],
-    "http://www.w3.org/2002/07/owl#equivalentClass": [
-      {
-        "@id": "_:N1e0e538c43444782a89b6302ef3764f9"
-      }
-    ]
-  },
-  {
-    "@id": "_:N1e0e538c43444782a89b6302ef3764f9",
-    "@type": [
-      "http://www.w3.org/2000/01/rdf-schema#Datatype"
-    ],
-    "http://www.w3.org/2002/07/owl#onDatatype": [
-      {
-        "@id": "http://www.w3.org/2001/XMLSchema#string"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#withRestrictions": [
-      {
-        "@list": [
-          {
-            "@id": "_:Nf7a802763e05436e8f9079b1a4cca88a"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "@id": "_:Nf7a802763e05436e8f9079b1a4cca88a",
-    "http://www.w3.org/2001/XMLSchema#pattern": [
-      {
-        "@value": "^[\\\\+\\\\d+ +][\\\\d\\\\- ]+$"
-      }
     ]
   },
   {
@@ -5588,7 +5555,7 @@
     "@id": "_:Nf5c163c1c4e2404eaec2208f2f926c92",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^\\S+ \\S+$"
+        "@value": "[^\\s\\p{Z}\u0085]+ [^\\s\\p{Z}\u0085]+\\n?"
       }
     ]
   },
@@ -5699,7 +5666,7 @@
     "@id": "_:Nf1938d7dbc024d33b8c165e4ba8c22da",
     "http://www.w3.org/2001/XMLSchema#pattern": [
       {
-        "@value": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$"
+        "@value": "[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\(.|\\r)[A-Z]+(-[0-9]{4})?\\n?"
       }
     ]
   },
