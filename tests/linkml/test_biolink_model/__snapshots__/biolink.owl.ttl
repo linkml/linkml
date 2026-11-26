@@ -1483,7 +1483,7 @@ biolink:GenomicEntity a owl:Class , linkml:ClassDefinition ;
 	skos:narrowMatch STY:T028 , <http://purl.obolibrary.org/obo/GENO_0000897> .
 biolink:GenomicSequenceLocalization a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "genomic sequence localization" ;
-	rdfs:subClassOf biolink:SequenceAssociation , _:c14n1001 , _:c14n1011 , _:c14n1061 , _:c14n1157 , _:c14n1324 , _:c14n1414 , _:c14n151 , _:c14n1532 , _:c14n1633 , _:c14n1701 , _:c14n1744 , _:c14n1751 , _:c14n1811 , _:c14n183 , _:c14n1871 , _:c14n1885 , _:c14n435 , _:c14n463 , _:c14n733 , _:c14n84 , _:c14n864 , _:c14n876 , _:c14n887 , _:c14n970 ;
+	rdfs:subClassOf biolink:SequenceAssociation , _:c14n1001 , _:c14n1011 , _:c14n1061 , _:c14n1157 , _:c14n1324 , _:c14n1414 , _:c14n1532 , _:c14n1633 , _:c14n1701 , _:c14n1744 , _:c14n1751 , _:c14n1811 , _:c14n183 , _:c14n1871 , _:c14n1885 , _:c14n435 , _:c14n463 , _:c14n84 , _:c14n864 , _:c14n876 , _:c14n887 , _:c14n970 , _:new0 , _:new1 ;
 	skos:broadMatch dcid:Chromosome ;
 	skos:definition "A relationship between a sequence feature and a nucleic acid entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig." ;
 	skos:exactMatch dcid:GenomeAnnotation ;
@@ -7622,9 +7622,6 @@ _:c14n1508 a owl:Restriction ;
 _:c14n1509 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:predicate .
-_:c14n151 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty biolink:start_interbase_coordinate .
 _:c14n1510 owl:unionOf _:c14n1514 .
 _:c14n1511 a owl:Restriction ;
 	owl:minCardinality 1 ;
@@ -10794,9 +10791,6 @@ _:c14n731 rdf:first biolink:AgentTypeEnum\#computational_model ;
 _:c14n732 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:full_name .
-_:c14n733 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty biolink:end_interbase_coordinate .
 _:c14n734 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty biolink:xref .
@@ -11687,3 +11681,9 @@ _:c14n998 a owl:Restriction ;
 _:c14n999 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty biolink:predicate .
+_:new0 a owl:Restriction ;
+	owl:allValuesFrom linkml:Integer ;
+	owl:onProperty biolink:start_interbase_coordinate .
+_:new1 a owl:Restriction ;
+	owl:allValuesFrom linkml:Integer ;
+	owl:onProperty biolink:end_interbase_coordinate .

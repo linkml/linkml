@@ -197,9 +197,6 @@
     ],
     "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
       {
-        "@id": "_:Nb5c9fe17e07543fca32efed49e36450e"
-      },
-      {
         "@id": "_:N07b007b715fd4c33bbd8c4921cc98b5e"
       },
       {
@@ -245,22 +242,6 @@
     "http://www.w3.org/2004/02/skos/core#inScheme": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
-      }
-    ]
-  },
-  {
-    "@id": "_:Nb5c9fe17e07543fca32efed49e36450e",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#Restriction"
-    ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#onProperty": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/cordialness"
       }
     ]
   },
@@ -526,9 +507,6 @@
     ],
     "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
       {
-        "@id": "_:Ncc834fed9a354f8783c533534b204b45"
-      },
-      {
         "@id": "_:N2e76e85afe2b4de1bba4fe89d2c08b42"
       },
       {
@@ -538,40 +516,6 @@
     "http://www.w3.org/2004/02/skos/core#inScheme": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
-      }
-    ]
-  },
-  {
-    "@id": "_:Ncc834fed9a354f8783c533534b204b45",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#Restriction"
-    ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "_:N203c4cb6b4c44d0da4959f4e59aac4a3"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#onProperty": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute4"
-      }
-    ]
-  },
-  {
-    "@id": "_:N203c4cb6b4c44d0da4959f4e59aac4a3",
-    "http://www.w3.org/2002/07/owl#unionOf": [
-      {
-        "@list": [
-          {
-            "@id": "http://www.w3.org/2001/XMLSchema#integer"
-          },
-          {
-            "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
-          },
-          {
-            "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType"
-          }
-        ]
       }
     ]
   },
@@ -993,9 +937,6 @@
   },
   {
     "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute3",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#DatatypeProperty"
-    ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
         "@value": "attribute3"
@@ -1005,6 +946,9 @@
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
       }
+    ],
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
     ]
   },
   {
@@ -1136,16 +1080,10 @@
         "@id": "_:N5b6d860e0f4c4bcf9dad47b47c754e68"
       },
       {
-        "@id": "_:N2a1ad22ba8ba47b6b0a2a1ac4070bb7c"
-      },
-      {
         "@id": "_:N56db2c53fbc443e6aea35f6b79baa2fd"
       },
       {
         "@id": "_:Na9f020e0e82641b28fff2a1833acf30d"
-      },
-      {
-        "@id": "_:Nfbf1acc038cc4008a6726ae6c571bef6"
       },
       {
         "@id": "_:N7d87621257e34b62bdf954bf5974cba6"
@@ -1217,22 +1155,6 @@
     ]
   },
   {
-    "@id": "_:N2a1ad22ba8ba47b6b0a2a1ac4070bb7c",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#Restriction"
-    ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#onProperty": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/related_to"
-      }
-    ]
-  },
-  {
     "@id": "_:N56db2c53fbc443e6aea35f6b79baa2fd",
     "@type": [
       "http://www.w3.org/2002/07/owl#Restriction"
@@ -1263,22 +1185,6 @@
     "http://www.w3.org/2002/07/owl#onProperty": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink/related_to"
-      }
-    ]
-  },
-  {
-    "@id": "_:Nfbf1acc038cc4008a6726ae6c571bef6",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#Restriction"
-    ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#onProperty": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/type"
       }
     ]
   },
@@ -4836,9 +4742,6 @@
   },
   {
     "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute4",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#DatatypeProperty"
-    ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
         "@value": "attribute4"
@@ -4848,6 +4751,9 @@
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
       }
+    ],
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
     ]
   },
   {
@@ -4900,9 +4806,6 @@
   },
   {
     "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute2",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#DatatypeProperty"
-    ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
         "@value": "attribute2"
@@ -4912,6 +4815,9 @@
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
       }
+    ],
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
     ]
   },
   {
@@ -6505,9 +6411,6 @@
         "@id": "_:Nb54011402446439682056e3195c0b795"
       },
       {
-        "@id": "_:N61d49718643745bab104003f98ad18f6"
-      },
-      {
         "@id": "_:Nd96bfec8ba6c4fc0a43b58fb9007aa27"
       },
       {
@@ -6573,37 +6476,6 @@
     "http://www.w3.org/2002/07/owl#onProperty": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink/employed_at"
-      }
-    ]
-  },
-  {
-    "@id": "_:N61d49718643745bab104003f98ad18f6",
-    "@type": [
-      "http://www.w3.org/2002/07/owl#Restriction"
-    ],
-    "http://www.w3.org/2002/07/owl#allValuesFrom": [
-      {
-        "@id": "_:N514fde345e9f488bbc79164c7ab1d968"
-      }
-    ],
-    "http://www.w3.org/2002/07/owl#onProperty": [
-      {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/type"
-      }
-    ]
-  },
-  {
-    "@id": "_:N514fde345e9f488bbc79164c7ab1d968",
-    "http://www.w3.org/2002/07/owl#unionOf": [
-      {
-        "@list": [
-          {
-            "@id": "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum"
-          },
-          {
-            "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType"
-          }
-        ]
       }
     ]
   },

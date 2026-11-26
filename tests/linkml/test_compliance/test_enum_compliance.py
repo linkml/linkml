@@ -8,7 +8,7 @@ import re
 from copy import deepcopy
 
 import pytest
-from rdflib import OWL, RDF
+from rdflib import OWL, RDF, RDFS
 
 import tests.linkml.test_compliance.helper as helper
 from tests.linkml.test_compliance.helper import (
@@ -293,6 +293,13 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
                         "X": {"implements": ["rdfs:Literal"]},
                         "Y": {"implements": ["rdfs:Literal"]},
                     },
+                    "_mappings": {
+                        helper.OWL: [
+                            (EXAMPLE_NS[ENUM_E], RDF.type, RDFS.Datatype),
+                            (EXAMPLE_NS[ENUM_E], OWL.equivalentClass, None),
+                            (EXAMPLE_NS[SLOT_S1], RDF.type, OWL.DatatypeProperty),
+                        ],
+                    },
                 },
             },
             "X",
@@ -321,8 +328,6 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
     """
     if enum_name == "ints":
         pytest.skip("non-string enums not yet supported")
-    if enum_name == "literals":
-        pytest.skip("mapping enums to OWL literals not yet supported")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -337,7 +342,7 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
         enum_name,
         framework,
         classes=classes,
-        enums=enums,
+        enums=deepcopy(enums),
         prefixes={"schema": "http://schema.org/"},
         core_elements=["enum_definitions", "permissible_values", "meaning"],
     )

@@ -30,14 +30,42 @@ Mapping
 ^^^^^^^
 
 * Each LinkML class maps to an OWL class
-* Each LinkML slot maps to an OWL property
+* Each LinkML slot maps to an OWL property, whose kind depends on the values of the slot's
+  ranges. The ranges of a slot are its ``range``, or else the one it inherits through
+  ``is_a`` and its mixins, and those in its ``any_of``, ``all_of``, ``exactly_one_of``,
+  ``none_of`` and ``all_members`` (or the default range if these give none), and those in its
+  ``has_member``; a ``range_expression`` with slot conditions counts as a class. A branch of
+  ``any_of`` or ``exactly_one_of`` without a range, for example with only a ``pattern``,
+  has the range of the expression it is in, or else of the slot, or else
+  the default range. ``Any`` (``linkml:Any``) adds nothing to the other ranges of a slot, so
+  a slot whose range is ``Any`` and whose ``any_of`` lists ranges (see Unions as ranges in
+  `Advanced features <https://linkml.io/linkml/schemas/advanced.html>`_) ranges over those
 
-    - if the range of the slot is class, then an ObjectProperty is used
-    - an ObjectProperty is also used when the range is a type whose values are IRIs or blank
-      nodes: ``uri``, ``uriorcurie`` and the types derived from them, ``objectidentifier`` and
-      ``nodeidentifier`` (see :ref:`links-and-uri-references`)
-    - otherwise DataProperty is used
-    - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used;
+    - if the values of each range are literals, a DataProperty is used. These are the ranges
+      that are types, except those below, and enums whose permissible values are all
+      literals (``rdfs:Literal``), which are datatypes (see `OWL Output Patterns`_)
+    - if the values of each range are IRIs or blank nodes, an ObjectProperty is used. These
+      are the ranges that are classes, class expressions, other enums, and types whose values
+      are IRIs or blank nodes: ``uri``, ``uriorcurie`` and the types derived from them,
+      ``objectidentifier`` and ``nodeidentifier`` (see :ref:`links-and-uri-references`)
+    - neither an object nor a data property has both literals and IRIs or blank nodes as
+      values, so a slot that ranges over both, for example with ``any_of`` a type and a class,
+      is left an ObjectProperty without a range, and its values are not restricted; a
+      warning is logged
+    - likewise, values that the property of a slot cannot have are not restricted, and a
+      warning is logged: for example, where a class narrows a slot whose range is a type to a
+      class, or the range of a slot that implements a property role it does not fit. A
+      class expression with a condition on such a slot, which OWL cannot state, is left out
+      where leaving out only the condition could make an axiom stronger: a rule or
+      classification rule with it, and the whole ``any_of`` or ``exactly_one_of`` of a class
+      with it as an operand; of ``all_of`` and ``none_of``, only that operand is left out.
+      The values of a slot are not restricted either where such a condition is in its
+      ``range_expression``, or in that of its ``has_member``, its ``all_members`` or an
+      operand of its ``any_of``, ``all_of``, ``exactly_one_of`` or ``none_of``
+    - a slot without ranges is a DataProperty if the classes that use it narrow it to ranges
+      whose values are literals, and otherwise an ObjectProperty
+    - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used,
+      except for a slot that ranges only over enums of literals;
       instead of having ranges of type be mapped to literals, these map to class-shadows of
       literals, that have a data property ``value``.
       This can be useful in some scenarios - for example, if you want to use the same property and
@@ -129,7 +157,7 @@ CLI Options for Controlling Enum/PV Generation
 
   - ``owl:Class`` (default) - PVs become OWL classes, enum uses ``owl:unionOf``
   - ``owl:NamedIndividual`` - PVs become named individuals, enum uses ``owl:oneOf``
-  - ``rdfs:Literal`` - PVs become RDF literals, enum uses ``owl:oneOf``
+  - ``rdfs:Literal`` - PVs become RDF literals, the enum is a datatype that uses ``owl:oneOf``
 
 * ``--enum-iri-separator`` - Changes the separator character in enum IRIs (default: ``#``)
 
@@ -222,10 +250,23 @@ The choice of permissible value type affects the generated OWL structure:
 
 **rdfs:Literal:**
 
+An enum whose permissible values are all literals is a datatype, and a slot with this
+range is a data property:
+
 .. code-block:: turtle
 
-    :StatusEnum a owl:Class ;
-        owl:oneOf ( "active" "inactive" ) .
+    :StatusEnum a rdfs:Datatype ;
+        owl:equivalentClass [ a rdfs:Datatype ;
+            owl:oneOf ( "active" "inactive" ) ] .
+    :status a owl:DatatypeProperty ;
+        rdfs:range :StatusEnum .
+
+OWL 2 has no subtype axiom for datatypes, as ``rdfs:subClassOf`` is for classes, so the
+parent enums of such an enum (``is_a``, ``mixins``, and ``inherits`` with
+``--enum-inherits-as-subclass-of``) are not emitted, and an enum that stays a class does
+not get such an enum as a parent either; the generator warns when it drops a parent.
+An enum without permissible values, or with values that are not all literals, stays a
+class.
 
 Mixed Types in One Enum
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -351,7 +392,9 @@ OWL-DL, and the resulting RDF triples are said to be [OWL Full](https://www.w3.o
 For example, if you have slots in your schema that have an `Any`
 range, then there is no direct translation of that slot to an OWL-DL
 property, since each property needs to explicitly commit to being a
-`DatatypeProperty` or `ObjectProperty` in OWL-DL.
+`DatatypeProperty` or `ObjectProperty` in OWL-DL. Likewise, a slot that ranges over both
+literals and IRIs or blank nodes becomes an `ObjectProperty` whose values are not
+restricted (see `Mapping`_).
 
 Other examples
 ^^^^^^^^^^^^^^

@@ -60,7 +60,7 @@ skos:relatedMatch a owl:Class , linkml:AliasPredicateEnum ;
 sh:order a owl:AnnotationProperty .
 linkml:AliasPredicateEnum a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "alias_predicate_enum" ;
-	owl:unionOf _:c14n349 ;
+	owl:unionOf _:new18 ;
 	skos:definition "permissible values for the relationship between an element and an alias" ;
 	skos:inScheme linkml:meta ;
 	sh:order 5 ;
@@ -92,7 +92,7 @@ linkml:AnonymousEnumExpression a owl:Class , linkml:ClassDefinition ;
 	skos:inScheme linkml:meta .
 linkml:AnonymousExpression a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "anonymous_expression" ;
-	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Expression , linkml:Extensible , _:c14n191 ;
+	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Expression , linkml:Extensible , _:new6 ;
 	skos:definition "An abstract parent class for any nested expression" ;
 	skos:inScheme linkml:meta ;
 	skos:note "anonymous expressions are useful for when it is necessary to build a complex expression without introducing a named element for each sub-expression" .
@@ -115,7 +115,7 @@ linkml:Anything a owl:Class , linkml:ClassDefinition ;
 	skos:inScheme linkml:meta .
 linkml:ArrayExpression a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "array_expression" ;
-	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible , _:c14n124 , _:c14n198 , _:c14n341 , _:c14n35 , _:c14n437 , _:c14n671 , _:c14n70 , _:c14n728 , _:c14n74 , _:c14n780 , _:c14n790 ;
+	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible , _:c14n124 , _:c14n198 , _:c14n341 , _:c14n35 , _:c14n437 , _:c14n70 , _:c14n728 , _:c14n74 , _:c14n780 , _:c14n790 , _:new55 ;
 	skos:definition "defines the dimensions of an array" ;
 	skos:inScheme linkml:meta .
 linkml:ClassDefinition a owl:Class , linkml:ClassDefinition ;
@@ -151,7 +151,7 @@ linkml:CommonMetadata a owl:Class , linkml:ClassDefinition ;
 linkml:Definition a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "definition" ;
 	rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element_definition> ;
-	rdfs:subClassOf linkml:Element , _:c14n111 , _:c14n229 , _:c14n23 , _:c14n304 , _:c14n324 , _:c14n336 , _:c14n351 , _:c14n398 , _:c14n417 , _:c14n446 , _:c14n481 , _:c14n537 , _:c14n542 , _:c14n647 , _:c14n677 , _:c14n729 , _:c14n740 , _:c14n742 , _:c14n806 ;
+	rdfs:subClassOf linkml:Element , _:c14n111 , _:c14n229 , _:c14n23 , _:c14n304 , _:c14n324 , _:c14n336 , _:c14n398 , _:c14n417 , _:c14n446 , _:c14n481 , _:c14n537 , _:c14n542 , _:c14n647 , _:c14n677 , _:c14n729 , _:c14n740 , _:c14n742 , _:c14n806 , _:new57 ;
 	skos:definition "abstract base class for core metaclasses" ;
 	skos:inScheme linkml:meta .
 linkml:DimensionExpression a owl:Class , linkml:ClassDefinition ;
@@ -162,7 +162,7 @@ linkml:DimensionExpression a owl:Class , linkml:ClassDefinition ;
 linkml:Element a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "element" ;
 	rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element> ;
-	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible , _:c14n165 , _:c14n186 , _:c14n209 , _:c14n255 , _:c14n258 , _:c14n273 , _:c14n274 , _:c14n285 , _:c14n314 , _:c14n346 , _:c14n562 , _:c14n584 , _:c14n588 , _:c14n597 , _:c14n64 , _:c14n713 , _:c14n733 , _:c14n737 , _:c14n810 , _:c14n89 , _:c14n99 ;
+	rdfs:subClassOf linkml:Annotatable , linkml:CommonMetadata , linkml:Extensible , _:c14n165 , _:c14n186 , _:c14n209 , _:c14n255 , _:c14n258 , _:c14n273 , _:c14n274 , _:c14n285 , _:c14n314 , _:c14n346 , _:c14n562 , _:c14n584 , _:c14n588 , _:c14n597 , _:c14n64 , _:c14n713 , _:c14n737 , _:c14n810 , _:c14n89 , _:c14n99 , _:new39 ;
 	skos:altLabel "data element" , "object" ;
 	skos:definition "A named element in the model" ;
 	skos:inScheme linkml:meta .
@@ -192,7 +192,7 @@ linkml:Example a owl:Class , linkml:ClassDefinition ;
 	skos:inScheme linkml:meta .
 linkml:Expression a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "expression" ;
-	rdfs:subClassOf _:c14n366 ;
+	rdfs:subClassOf _:new1 ;
 	skos:definition "general mixin for any class that can represent some form of expression" ;
 	skos:inScheme linkml:meta .
 linkml:Extensible a owl:Class , linkml:ClassDefinition ;
@@ -248,7 +248,7 @@ linkml:ObligationLevelEnum\#REQUIRED a owl:Class , linkml:ObligationLevelEnum ;
 	skos:definition "The metadata element is required to be present in the model" .
 linkml:ObligationLevelEnum a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "obligation_level_enum" ;
-	owl:unionOf _:c14n416 ;
+	owl:unionOf _:new9 ;
 	skos:definition "The level of obligation or recommendation strength for a metadata element" ;
 	skos:inScheme linkml:meta ;
 	sh:order 10 ;
@@ -288,7 +288,7 @@ linkml:PresenceEnum\#UNCOMMITTED a owl:Class , linkml:PresenceEnum ;
 	rdfs:subClassOf linkml:PresenceEnum .
 linkml:PresenceEnum a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "presence_enum" ;
-	owl:unionOf _:c14n377 ;
+	owl:unionOf _:new38 ;
 	skos:definition "enumeration of conditions by which a slot value should be set" ;
 	skos:inScheme linkml:meta ;
 	sh:order 11 ;
@@ -315,7 +315,7 @@ linkml:PvFormulaOptions\#URI a owl:Class , linkml:PvFormulaOptions ;
 	skos:definition "The permissible values are the set of code URIs in the code set" .
 linkml:PvFormulaOptions a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "pv_formula_options" ;
-	owl:unionOf _:c14n78 ;
+	owl:unionOf _:new7 ;
 	skos:definition "The formula used to generate the set of permissible values from the code_set values" ;
 	skos:inScheme linkml:meta ;
 	sh:order 1 ;
@@ -335,7 +335,7 @@ linkml:RelationalRoleEnum\#OTHER_ROLE a owl:Class , linkml:RelationalRoleEnum ;
 	skos:definition "a slot with this role connects a relationship to a node that is not subject/object/predicate" .
 linkml:RelationalRoleEnum a owl:Class , linkml:EnumDefinition ;
 	rdfs:label "relational_role_enum" ;
-	owl:unionOf _:c14n308 ;
+	owl:unionOf _:new47 ;
 	skos:definition "enumeration of roles a slot on a relationship class can play" ;
 	skos:inScheme linkml:meta ;
 	sh:order 3 ;
@@ -356,7 +356,7 @@ linkml:Setting a owl:Class , linkml:ClassDefinition ;
 	skos:inScheme linkml:meta .
 linkml:SlotDefinition a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "slot_definition" ;
-	rdfs:subClassOf linkml:Definition , linkml:SlotExpression , _:c14n0 , _:c14n105 , _:c14n107 , _:c14n125 , _:c14n127 , _:c14n130 , _:c14n137 , _:c14n150 , _:c14n17 , _:c14n171 , _:c14n178 , _:c14n179 , _:c14n199 , _:c14n20 , _:c14n206 , _:c14n210 , _:c14n22 , _:c14n220 , _:c14n233 , _:c14n234 , _:c14n235 , _:c14n239 , _:c14n249 , _:c14n251 , _:c14n259 , _:c14n271 , _:c14n275 , _:c14n277 , _:c14n284 , _:c14n290 , _:c14n293 , _:c14n3 , _:c14n30 , _:c14n300 , _:c14n305 , _:c14n313 , _:c14n318 , _:c14n321 , _:c14n322 , _:c14n326 , _:c14n33 , _:c14n333 , _:c14n343 , _:c14n357 , _:c14n36 , _:c14n374 , _:c14n376 , _:c14n378 , _:c14n380 , _:c14n402 , _:c14n406 , _:c14n407 , _:c14n415 , _:c14n422 , _:c14n423 , _:c14n428 , _:c14n439 , _:c14n44 , _:c14n444 , _:c14n448 , _:c14n462 , _:c14n467 , _:c14n472 , _:c14n475 , _:c14n492 , _:c14n496 , _:c14n497 , _:c14n499 , _:c14n50 , _:c14n501 , _:c14n511 , _:c14n516 , _:c14n532 , _:c14n541 , _:c14n546 , _:c14n548 , _:c14n555 , _:c14n559 , _:c14n564 , _:c14n565 , _:c14n578 , _:c14n579 , _:c14n58 , _:c14n580 , _:c14n585 , _:c14n59 , _:c14n611 , _:c14n619 , _:c14n624 , _:c14n640 , _:c14n649 , _:c14n658 , _:c14n674 , _:c14n675 , _:c14n680 , _:c14n687 , _:c14n691 , _:c14n693 , _:c14n696 , _:c14n700 , _:c14n701 , _:c14n703 , _:c14n710 , _:c14n734 , _:c14n743 , _:c14n777 , _:c14n781 , _:c14n786 , _:c14n789 , _:c14n801 , _:c14n811 , _:c14n83 , _:c14n85 , _:c14n98 ;
+	rdfs:subClassOf linkml:Definition , linkml:SlotExpression , _:c14n0 , _:c14n105 , _:c14n107 , _:c14n125 , _:c14n127 , _:c14n130 , _:c14n137 , _:c14n150 , _:c14n17 , _:c14n171 , _:c14n178 , _:c14n179 , _:c14n199 , _:c14n20 , _:c14n206 , _:c14n210 , _:c14n22 , _:c14n220 , _:c14n233 , _:c14n234 , _:c14n235 , _:c14n239 , _:c14n249 , _:c14n251 , _:c14n259 , _:c14n271 , _:c14n275 , _:c14n277 , _:c14n284 , _:c14n290 , _:c14n293 , _:c14n3 , _:c14n30 , _:c14n300 , _:c14n305 , _:c14n313 , _:c14n318 , _:c14n321 , _:c14n322 , _:c14n33 , _:c14n333 , _:c14n343 , _:c14n357 , _:c14n36 , _:c14n374 , _:c14n376 , _:c14n378 , _:c14n380 , _:c14n402 , _:c14n406 , _:c14n407 , _:c14n415 , _:c14n422 , _:c14n423 , _:c14n428 , _:c14n439 , _:c14n44 , _:c14n444 , _:c14n448 , _:c14n462 , _:c14n467 , _:c14n472 , _:c14n475 , _:c14n492 , _:c14n496 , _:c14n497 , _:c14n499 , _:c14n50 , _:c14n501 , _:c14n511 , _:c14n516 , _:c14n532 , _:c14n541 , _:c14n546 , _:c14n548 , _:c14n555 , _:c14n559 , _:c14n564 , _:c14n565 , _:c14n578 , _:c14n579 , _:c14n58 , _:c14n580 , _:c14n585 , _:c14n59 , _:c14n611 , _:c14n619 , _:c14n624 , _:c14n640 , _:c14n649 , _:c14n658 , _:c14n674 , _:c14n675 , _:c14n680 , _:c14n687 , _:c14n691 , _:c14n693 , _:c14n696 , _:c14n700 , _:c14n701 , _:c14n703 , _:c14n710 , _:c14n734 , _:c14n743 , _:c14n777 , _:c14n781 , _:c14n786 , _:c14n789 , _:c14n801 , _:c14n811 , _:c14n83 , _:c14n85 , _:c14n98 , _:new35 ;
 	skos:altLabel "attribute" , "column" , "field" , "property" , "slot" , "variable" ;
 	skos:closeMatch qb:ComponentProperty , rdf:Property ;
 	skos:definition "an element that describes how instances are related to other instances" ;
@@ -404,7 +404,7 @@ linkml:UniqueKey a owl:Class , linkml:ClassDefinition ;
 	sh:order 20 .
 linkml:UnitOfMeasure a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "UnitOfMeasure" ;
-	rdfs:subClassOf _:c14n103 , _:c14n143 , _:c14n184 , _:c14n228 , _:c14n24 , _:c14n240 , _:c14n244 , _:c14n272 , _:c14n289 , _:c14n301 , _:c14n306 , _:c14n331 , _:c14n404 , _:c14n438 , _:c14n447 , _:c14n47 , _:c14n547 , _:c14n614 , _:c14n659 , _:c14n717 , _:c14n761 , _:c14n773 , _:c14n782 , _:c14n88 ;
+	rdfs:subClassOf _:c14n103 , _:c14n143 , _:c14n184 , _:c14n228 , _:c14n24 , _:c14n240 , _:c14n244 , _:c14n272 , _:c14n289 , _:c14n301 , _:c14n306 , _:c14n331 , _:c14n404 , _:c14n438 , _:c14n447 , _:c14n547 , _:c14n614 , _:c14n659 , _:c14n717 , _:c14n761 , _:c14n773 , _:c14n782 , _:c14n88 , _:new44 ;
 	skos:definition "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
 	skos:exactMatch qudt:Unit ;
 	skos:inScheme linkml:units .
@@ -1264,7 +1264,7 @@ linkml:maximum_cardinality a owl:ObjectProperty , linkml:SlotDefinition ;
 linkml:maximum_number_dimensions a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain linkml:ArrayExpression ;
 	rdfs:label "maximum_number_dimensions" ;
-	rdfs:range _:c14n180 ;
+	rdfs:range _:new30 ;
 	skos:definition "maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False" ;
 	skos:inScheme linkml:meta ;
 	skos:note "maximum_number_dimensions cannot be less than minimum_number_dimensions" .
@@ -1671,7 +1671,7 @@ linkml:slot_definitions a owl:ObjectProperty , linkml:SlotDefinition ;
 linkml:slot_group a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain linkml:SlotDefinition ;
 	rdfs:label "slot_group" ;
-	rdfs:range _:c14n621 ;
+	rdfs:range _:new56 ;
 	skos:definition "allows for grouping of related slots into a grouping slot that serves the role of a group" ;
 	skos:inScheme linkml:meta ;
 	skos:note "slot groups do not change the semantics of a model but are a useful way of visually grouping related slots" .
@@ -2031,8 +2031,6 @@ _:c14n109 a owl:Restriction ;
 _:c14n11 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:source_nodes .
-_:c14n110 rdf:first linkml:EnumDefinition ;
-	rdf:rest _:c14n835 .
 _:c14n111 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:mixin .
@@ -2120,8 +2118,6 @@ _:c14n136 a owl:Restriction ;
 _:c14n137 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:inverse .
-_:c14n138 rdf:first linkml:SubsetDefinition ;
-	rdf:rest _:c14n654 .
 _:c14n139 a owl:Restriction ;
 	owl:allValuesFrom linkml:PatternExpression ;
 	owl:onProperty linkml:structured_pattern .
@@ -2149,8 +2145,6 @@ _:c14n145 a owl:Restriction ;
 _:c14n146 a owl:Restriction ;
 	owl:allValuesFrom linkml:AnonymousEnumExpression ;
 	owl:onProperty linkml:include .
-_:c14n147 rdf:first linkml:RelationalRoleEnum\#OTHER_ROLE ;
-	rdf:rest rdf:nil .
 _:c14n148 a owl:Restriction ;
 	owl:allValuesFrom linkml:EnumBinding ;
 	owl:onProperty linkml:bindings .
@@ -2181,8 +2175,6 @@ _:c14n155 a owl:Restriction ;
 _:c14n156 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:interpolated .
-_:c14n157 rdf:first linkml:PvFormulaOptions\#FHIR_CODING ;
-	rdf:rest _:c14n397 .
 _:c14n158 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:bidirectional .
@@ -2258,7 +2250,6 @@ _:c14n179 a owl:Restriction ;
 _:c14n18 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:array .
-_:c14n180 owl:intersectionOf _:c14n830 .
 _:c14n181 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:extension_value .
@@ -2292,7 +2283,6 @@ _:c14n19 a owl:Restriction ;
 _:c14n190 a owl:Restriction ;
 	owl:allValuesFrom linkml:SlotDefinition ;
 	owl:onProperty linkml:slots .
-_:c14n191 owl:unionOf _:c14n221 .
 _:c14n192 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:title .
@@ -2315,7 +2305,7 @@ _:c14n198 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:exact_number_dimensions .
 _:c14n199 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:symmetric .
 _:c14n2 a owl:Restriction ;
 	owl:maxCardinality 1 ;
@@ -2392,8 +2382,6 @@ _:c14n22 a owl:Restriction ;
 _:c14n220 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:locally_reflexive .
-_:c14n221 rdf:first linkml:AnonymousClassExpression ;
-	rdf:rest _:c14n72 .
 _:c14n222 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:alias .
@@ -2472,8 +2460,6 @@ _:c14n244 a owl:Restriction ;
 _:c14n245 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:default_range .
-_:c14n246 rdf:first linkml:TypeExpression ;
-	rdf:rest rdf:nil .
 _:c14n247 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:license .
@@ -2525,10 +2511,6 @@ _:c14n260 a owl:Restriction ;
 _:c14n261 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:implements .
-_:c14n262 rdf:first skos:relatedMatch ;
-	rdf:rest _:c14n657 .
-_:c14n263 rdf:first skos:narrowerMatch ;
-	rdf:rest rdf:nil .
 _:c14n264 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:comments .
@@ -2676,8 +2658,6 @@ _:c14n306 a owl:Restriction ;
 _:c14n307 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:extension_tag .
-_:c14n308 rdf:first rdf:subject ;
-	rdf:rest _:c14n656 .
 _:c14n309 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:unit .
@@ -2694,7 +2674,7 @@ _:c14n312 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:multivalued .
 _:c14n313 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:transitive .
 _:c14n314 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -2735,9 +2715,6 @@ _:c14n324 a owl:Restriction ;
 _:c14n325 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:import_from .
-_:c14n326 a owl:Restriction ;
-	owl:allValuesFrom _:c14n823 ;
-	owl:onProperty linkml:slot_group .
 _:c14n327 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:identifier_pattern .
@@ -2810,23 +2787,18 @@ _:c14n347 a owl:Restriction ;
 _:c14n348 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:unit .
-_:c14n349 rdf:first skos:exactMatch ;
-	rdf:rest _:c14n262 .
 _:c14n35 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:maximum_number_dimensions .
 _:c14n350 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:is_direct .
-_:c14n351 owl:unionOf _:c14n474 .
 _:c14n352 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:disjoint_with .
 _:c14n353 a owl:Restriction ;
 	owl:allValuesFrom linkml:AnyValue ;
 	owl:onProperty linkml:extension_value .
-_:c14n354 rdf:first _:c14n695 ;
-	rdf:rest _:c14n836 .
 _:c14n355 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:description .
@@ -2863,7 +2835,6 @@ _:c14n364 a owl:Restriction ;
 _:c14n365 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:annotations .
-_:c14n366 owl:unionOf _:c14n618 .
 _:c14n367 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:pv_formula .
@@ -2895,10 +2866,8 @@ _:c14n375 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:broad_mappings .
 _:c14n376 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:asymmetric .
-_:c14n377 rdf:first linkml:PresenceEnum\#UNCOMMITTED ;
-	rdf:rest _:c14n678 .
 _:c14n378 a owl:Restriction ;
 	owl:allValuesFrom linkml:Definition ;
 	owl:onProperty linkml:owner .
@@ -2962,8 +2931,6 @@ _:c14n395 a owl:Restriction ;
 _:c14n396 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:is_a .
-_:c14n397 rdf:first linkml:PvFormulaOptions\#LABEL ;
-	rdf:rest rdf:nil .
 _:c14n398 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:mixin .
@@ -3025,10 +2992,8 @@ _:c14n414 a owl:Restriction ;
 	owl:allValuesFrom linkml:ExtraSlotsExpression ;
 	owl:onProperty linkml:extra_slots .
 _:c14n415 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:locally_reflexive .
-_:c14n416 rdf:first linkml:ObligationLevelEnum\#REQUIRED ;
-	rdf:rest _:c14n521 .
 _:c14n417 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:abstract .
@@ -3074,8 +3039,6 @@ _:c14n429 a owl:Restriction ;
 _:c14n43 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:inlined_as_list .
-_:c14n430 rdf:first linkml:PresenceEnum\#ABSENT ;
-	rdf:rest rdf:nil .
 _:c14n431 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:traverse_up .
@@ -3163,10 +3126,6 @@ _:c14n456 a owl:Restriction ;
 _:c14n457 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:deprecated_element_has_possible_replacement .
-_:c14n458 rdf:first linkml:SlotExpression ;
-	rdf:rest _:c14n246 .
-_:c14n459 rdf:first linkml:Definition ;
-	rdf:rest _:c14n560 .
 _:c14n46 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:deprecated_element_has_possible_replacement .
@@ -3200,7 +3159,6 @@ _:c14n468 a owl:Restriction ;
 _:c14n469 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:open_world .
-_:c14n47 owl:unionOf _:c14n354 .
 _:c14n470 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:implicit_prefix .
@@ -3213,8 +3171,6 @@ _:c14n472 a owl:Restriction ;
 _:c14n473 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:any_of .
-_:c14n474 rdf:first linkml:ClassDefinition ;
-	rdf:rest _:c14n110 .
 _:c14n475 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:relational_role .
@@ -3288,7 +3244,7 @@ _:c14n496 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:singular_name .
 _:c14n497 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:irreflexive .
 _:c14n498 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -3371,8 +3327,6 @@ _:c14n52 a owl:Restriction ;
 _:c14n520 a owl:Restriction ;
 	owl:allValuesFrom linkml:Anything ;
 	owl:onProperty linkml:maximum_value .
-_:c14n521 rdf:first linkml:ObligationLevelEnum\#RECOMMENDED ;
-	rdf:rest _:c14n533 .
 _:c14n522 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:syntax .
@@ -3388,8 +3342,6 @@ _:c14n525 a owl:Restriction ;
 _:c14n526 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:minimum_value .
-_:c14n527 rdf:first _:c14n702 ;
-	rdf:rest rdf:nil .
 _:c14n528 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:relationship_types .
@@ -3408,10 +3360,6 @@ _:c14n531 a owl:Restriction ;
 _:c14n532 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:is_class_field .
-_:c14n533 rdf:first linkml:ObligationLevelEnum\#OPTIONAL ;
-	rdf:rest _:c14n534 .
-_:c14n534 rdf:first linkml:ObligationLevelEnum\#EXAMPLE ;
-	rdf:rest _:c14n645 .
 _:c14n535 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:prefix_prefix .
@@ -3445,9 +3393,6 @@ _:c14n543 a owl:Restriction ;
 _:c14n544 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:generation_date .
-_:c14n545 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:iec61360code .
 _:c14n546 a owl:Restriction ;
 	owl:allValuesFrom linkml:RelationalRoleEnum ;
 	owl:onProperty linkml:relational_role .
@@ -3496,8 +3441,6 @@ _:c14n559 a owl:Restriction ;
 _:c14n56 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:reachable_from .
-_:c14n560 rdf:first linkml:SchemaDefinition ;
-	rdf:rest _:c14n138 .
 _:c14n561 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:alias .
@@ -3508,7 +3451,7 @@ _:c14n563 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:literal_form .
 _:c14n564 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
+	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:reflexive .
 _:c14n565 a owl:Restriction ;
 	owl:minCardinality 0 ;
@@ -3648,8 +3591,6 @@ _:c14n604 a owl:Restriction ;
 _:c14n605 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:enum_range .
-_:c14n606 rdf:first linkml:PvFormulaOptions\#CURIE ;
-	rdf:rest _:c14n627 .
 _:c14n607 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uriorcurie ;
 	owl:onProperty linkml:see_also .
@@ -3686,8 +3627,6 @@ _:c14n616 a owl:Restriction ;
 _:c14n617 a owl:Restriction ;
 	owl:allValuesFrom linkml:Integer ;
 	owl:onProperty linkml:exact_cardinality .
-_:c14n618 rdf:first linkml:EnumExpression ;
-	rdf:rest _:c14n458 .
 _:c14n619 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:key .
@@ -3697,7 +3636,6 @@ _:c14n62 a owl:Restriction ;
 _:c14n620 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:allowed .
-_:c14n621 owl:intersectionOf _:c14n832 .
 _:c14n622 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:code_set_tag .
@@ -3713,14 +3651,9 @@ _:c14n625 a owl:Restriction ;
 _:c14n626 a owl:Restriction ;
 	owl:allValuesFrom linkml:PvFormulaOptions ;
 	owl:onProperty linkml:pv_formula .
-_:c14n627 rdf:first linkml:PvFormulaOptions\#URI ;
-	rdf:rest _:c14n157 .
 _:c14n628 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:inlined_as_list .
-_:c14n629 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:symbol .
 _:c14n63 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:categories .
@@ -3769,10 +3702,6 @@ _:c14n642 a owl:Restriction ;
 _:c14n643 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:equals_string_in .
-_:c14n644 rdf:first rdf:predicate ;
-	rdf:rest _:c14n77 .
-_:c14n645 rdf:first linkml:ObligationLevelEnum\#DISCOURAGED ;
-	rdf:rest rdf:nil .
 _:c14n646 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:required .
@@ -3800,15 +3729,9 @@ _:c14n652 a owl:Restriction ;
 _:c14n653 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:maximum_cardinality .
-_:c14n654 rdf:first linkml:TypeDefinition ;
-	rdf:rest rdf:nil .
 _:c14n655 a owl:Restriction ;
 	owl:allValuesFrom linkml:Boolean ;
 	owl:onProperty linkml:deactivated .
-_:c14n656 rdf:first rdf:object ;
-	rdf:rest _:c14n644 .
-_:c14n657 rdf:first skos:broaderMatch ;
-	rdf:rest _:c14n263 .
 _:c14n658 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:locally_reflexive .
@@ -3854,9 +3777,6 @@ _:c14n67 a owl:Restriction ;
 _:c14n670 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:followed_by .
-_:c14n671 a owl:Restriction ;
-	owl:allValuesFrom _:c14n817 ;
-	owl:onProperty linkml:maximum_number_dimensions .
 _:c14n672 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:attributes .
@@ -3875,8 +3795,6 @@ _:c14n676 a owl:Restriction ;
 _:c14n677 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:abstract .
-_:c14n678 rdf:first linkml:PresenceEnum\#PRESENT ;
-	rdf:rest _:c14n430 .
 _:c14n679 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:default_prefix .
@@ -3931,9 +3849,6 @@ _:c14n693 a owl:Restriction ;
 _:c14n694 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:open_world .
-_:c14n695 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:ucum_code .
 _:c14n696 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:usage_slot_name .
@@ -3958,9 +3873,6 @@ _:c14n700 a owl:Restriction ;
 _:c14n701 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:alias .
-_:c14n702 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:exact_mappings .
 _:c14n703 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:subproperty_of .
@@ -4015,8 +3927,6 @@ _:c14n718 a owl:Restriction ;
 _:c14n719 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:value .
-_:c14n72 rdf:first linkml:AnonymousSlotExpression ;
-	rdf:rest rdf:nil .
 _:c14n720 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty linkml:prefix_prefix .
@@ -4059,7 +3969,6 @@ _:c14n731 a owl:Restriction ;
 _:c14n732 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:any_of .
-_:c14n733 owl:unionOf _:c14n459 .
 _:c14n734 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:readonly .
@@ -4177,8 +4086,6 @@ _:c14n768 a owl:Restriction ;
 _:c14n769 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:alt_description_source .
-_:c14n77 rdf:first linkml:RelationalRoleEnum\#NODE ;
-	rdf:rest _:c14n147 .
 _:c14n770 a owl:Restriction ;
 	owl:allValuesFrom linkml:Ncname ;
 	owl:onProperty linkml:prefix_prefix .
@@ -4209,8 +4116,6 @@ _:c14n778 a owl:Restriction ;
 _:c14n779 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:all_members .
-_:c14n78 rdf:first linkml:PvFormulaOptions\#CODE ;
-	rdf:rest _:c14n606 .
 _:c14n780 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:dimensions .
@@ -4334,54 +4239,12 @@ _:c14n815 a owl:Restriction ;
 _:c14n816 a owl:Restriction ;
 	owl:allValuesFrom linkml:Uri ;
 	owl:onProperty linkml:from_schema .
-_:c14n817 owl:intersectionOf _:c14n818 .
-_:c14n818 rdf:first _:c14n820 ;
-	rdf:rest _:c14n819 .
-_:c14n819 rdf:first linkml:Anything ;
-	rdf:rest rdf:nil .
 _:c14n82 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:status .
-_:c14n820 a rdfs:Datatype ;
-	owl:unionOf _:c14n821 .
-_:c14n821 rdf:first linkml:Integer ;
-	rdf:rest _:c14n822 .
-_:c14n822 rdf:first linkml:Boolean ;
-	rdf:rest rdf:nil .
-_:c14n823 owl:intersectionOf _:c14n824 .
-_:c14n824 rdf:first _:c14n826 ;
-	rdf:rest _:c14n825 .
-_:c14n825 rdf:first linkml:SlotDefinition ;
-	rdf:rest rdf:nil .
-_:c14n826 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:is_grouping_slot .
-_:c14n827 rdf:first linkml:Boolean ;
-	rdf:rest rdf:nil .
-_:c14n828 rdf:first linkml:Integer ;
-	rdf:rest _:c14n827 .
-_:c14n829 a rdfs:Datatype ;
-	owl:unionOf _:c14n828 .
 _:c14n83 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:symmetric .
-_:c14n830 rdf:first _:c14n829 ;
-	rdf:rest _:c14n831 .
-_:c14n831 rdf:first linkml:Anything ;
-	rdf:rest rdf:nil .
-_:c14n832 rdf:first _:c14n834 ;
-	rdf:rest _:c14n833 .
-_:c14n833 rdf:first linkml:SlotDefinition ;
-	rdf:rest rdf:nil .
-_:c14n834 a owl:Restriction ;
-	owl:allValuesFrom linkml:String ;
-	owl:onProperty linkml:is_grouping_slot .
-_:c14n835 rdf:first linkml:SlotDefinition ;
-	rdf:rest rdf:nil .
-_:c14n836 rdf:first _:c14n545 ;
-	rdf:rest _:c14n837 .
-_:c14n837 rdf:first _:c14n629 ;
-	rdf:rest _:c14n527 .
 _:c14n84 a owl:Restriction ;
 	owl:allValuesFrom linkml:String ;
 	owl:onProperty linkml:alias .
@@ -4433,3 +4296,128 @@ _:c14n98 a owl:Restriction ;
 _:c14n99 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:definition_uri .
+_:new0 rdf:first rdf:predicate ;
+	rdf:rest _:new58 .
+_:new1 owl:unionOf _:new2 .
+_:new10 rdf:first _:new11 ;
+	rdf:rest _:new59 .
+_:new11 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:is_grouping_slot .
+_:new12 rdf:first linkml:Boolean ;
+	rdf:rest rdf:nil .
+_:new13 rdf:first _:new14 ;
+	rdf:rest _:new61 .
+_:new14 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:ucum_code .
+_:new15 rdf:first linkml:PresenceEnum\#PRESENT ;
+	rdf:rest _:new16 .
+_:new16 rdf:first linkml:PresenceEnum\#ABSENT ;
+	rdf:rest rdf:nil .
+_:new17 rdf:first linkml:SchemaDefinition ;
+	rdf:rest _:new37 .
+_:new18 rdf:first skos:exactMatch ;
+	rdf:rest _:new45 .
+_:new19 rdf:first linkml:Integer ;
+	rdf:rest _:new25 .
+_:new2 rdf:first linkml:EnumExpression ;
+	rdf:rest _:new54 .
+_:new20 rdf:first linkml:ObligationLevelEnum\#OPTIONAL ;
+	rdf:rest _:new21 .
+_:new21 rdf:first linkml:ObligationLevelEnum\#EXAMPLE ;
+	rdf:rest _:new51 .
+_:new22 rdf:first linkml:EnumDefinition ;
+	rdf:rest _:new23 .
+_:new23 rdf:first linkml:SlotDefinition ;
+	rdf:rest rdf:nil .
+_:new24 rdf:first linkml:ObligationLevelEnum\#RECOMMENDED ;
+	rdf:rest _:new20 .
+_:new25 rdf:first linkml:Boolean ;
+	rdf:rest rdf:nil .
+_:new26 owl:unionOf _:new19 .
+_:new27 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:exact_mappings .
+_:new28 rdf:first skos:narrowerMatch ;
+	rdf:rest rdf:nil .
+_:new29 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:symbol .
+_:new3 rdf:first linkml:TypeDefinition ;
+	rdf:rest rdf:nil .
+_:new30 owl:unionOf _:new31 .
+_:new31 rdf:first linkml:Integer ;
+	rdf:rest _:new12 .
+_:new32 rdf:first linkml:PvFormulaOptions\#URI ;
+	rdf:rest _:new33 .
+_:new33 rdf:first linkml:PvFormulaOptions\#FHIR_CODING ;
+	rdf:rest _:new34 .
+_:new34 rdf:first linkml:PvFormulaOptions\#LABEL ;
+	rdf:rest rdf:nil .
+_:new35 a owl:Restriction ;
+	owl:allValuesFrom _:new4 ;
+	owl:onProperty linkml:slot_group .
+_:new36 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:iec61360code .
+_:new37 rdf:first linkml:SubsetDefinition ;
+	rdf:rest _:new3 .
+_:new38 rdf:first linkml:PresenceEnum\#UNCOMMITTED ;
+	rdf:rest _:new15 .
+_:new39 owl:unionOf _:new40 .
+_:new4 owl:intersectionOf _:new5 .
+_:new40 rdf:first linkml:Definition ;
+	rdf:rest _:new17 .
+_:new41 rdf:first rdf:object ;
+	rdf:rest _:new0 .
+_:new42 rdf:first linkml:ClassDefinition ;
+	rdf:rest _:new22 .
+_:new43 rdf:first linkml:AnonymousSlotExpression ;
+	rdf:rest rdf:nil .
+_:new44 owl:unionOf _:new13 .
+_:new45 rdf:first skos:relatedMatch ;
+	rdf:rest _:new52 .
+_:new46 rdf:first linkml:RelationalRoleEnum\#OTHER_ROLE ;
+	rdf:rest rdf:nil .
+_:new47 rdf:first rdf:subject ;
+	rdf:rest _:new41 .
+_:new48 rdf:first linkml:SlotDefinition ;
+	rdf:rest rdf:nil .
+_:new49 rdf:first _:new29 ;
+	rdf:rest _:new50 .
+_:new5 rdf:first _:new62 ;
+	rdf:rest _:new48 .
+_:new50 rdf:first _:new27 ;
+	rdf:rest rdf:nil .
+_:new51 rdf:first linkml:ObligationLevelEnum\#DISCOURAGED ;
+	rdf:rest rdf:nil .
+_:new52 rdf:first skos:broaderMatch ;
+	rdf:rest _:new28 .
+_:new53 rdf:first linkml:AnonymousClassExpression ;
+	rdf:rest _:new43 .
+_:new54 rdf:first linkml:SlotExpression ;
+	rdf:rest _:new60 .
+_:new55 a owl:Restriction ;
+	owl:allValuesFrom _:new26 ;
+	owl:onProperty linkml:maximum_number_dimensions .
+_:new56 owl:intersectionOf _:new10 .
+_:new57 owl:unionOf _:new42 .
+_:new58 rdf:first linkml:RelationalRoleEnum\#NODE ;
+	rdf:rest _:new46 .
+_:new59 rdf:first linkml:SlotDefinition ;
+	rdf:rest rdf:nil .
+_:new6 owl:unionOf _:new53 .
+_:new60 rdf:first linkml:TypeExpression ;
+	rdf:rest rdf:nil .
+_:new61 rdf:first _:new36 ;
+	rdf:rest _:new49 .
+_:new62 a owl:Restriction ;
+	owl:allValuesFrom linkml:String ;
+	owl:onProperty linkml:is_grouping_slot .
+_:new7 rdf:first linkml:PvFormulaOptions\#CODE ;
+	rdf:rest _:new8 .
+_:new8 rdf:first linkml:PvFormulaOptions\#CURIE ;
+	rdf:rest _:new32 .
+_:new9 rdf:first linkml:ObligationLevelEnum\#REQUIRED ;
+	rdf:rest _:new24 .

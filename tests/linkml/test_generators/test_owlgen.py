@@ -9,6 +9,9 @@ from rdflib.namespace import OWL, RDF, XSD
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import rdflib_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -16,6 +19,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassRule,
     PermissibleValue,
 )
+from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
@@ -621,7 +625,8 @@ def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
 
 
 def _owl_graph(sb: SchemaBuilder, **gen_kwargs) -> Graph:
-    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False, **gen_kwargs)
+    gen_kwargs = {"metaclasses": False, "type_objects": False, **gen_kwargs}
+    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, **gen_kwargs)
     g = Graph()
     g.parse(data=gen.serialize(), format="turtle")
     return g
@@ -1266,3 +1271,761 @@ def test_cli_ontology_uri_suffix(kitchen_sink_path, args: list[str], expected_su
     g = Graph()
     g.parse(data=result.output, format="turtle")
     assert _ontology_iris(g) == {URIRef(f"https://w3id.org/linkml/tests/kitchen_sink{expected_suffix}")}
+
+
+def _unit_schema(permissible_values: list[PermissibleValue], **enum_kwargs) -> SchemaBuilder:
+    """Return a SchemaBuilder with a class Thing whose slot unit ranges over UnitEnum."""
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=permissible_values, **enum_kwargs)
+    sb.add_slot("unit", range="UnitEnum")
+    sb.add_class("Thing", slots=["unit"])
+    sb.add_defaults()
+    return sb
+
+
+@pytest.mark.parametrize("type_objects", [False, True])
+@pytest.mark.parametrize("declared_on", ["generator", "enum", "permissible_values"])
+def test_enum_of_literals_is_a_datatype(declared_on: str, type_objects: bool) -> None:
+    """An enum whose permissible values are all literals is a datatype, and its slots are data properties.
+
+    OWL 2 DL does not let an IRI be both a class and a datatype (§5.8.1), and the datatype
+    is defined as an enumeration of its literals (§9.4).
+    """
+    literal = ["rdfs:Literal"]
+    pvs = [PermissibleValue(text=t, implements=literal if declared_on == "permissible_values" else []) for t in "mk"]
+    sb = _unit_schema(pvs, implements=literal if declared_on == "enum" else [])
+    gen_kwargs = {"default_permissible_value_type": "rdfs:Literal"} if declared_on == "generator" else {}
+    g = _owl_graph(sb, type_objects=type_objects, **gen_kwargs)
+    assert set(g.objects(EX.UnitEnum, RDF.type)) == {RDFS.Datatype}
+    [data_range] = g.objects(EX.UnitEnum, OWL.equivalentClass)
+    assert isinstance(data_range, BNode)
+    assert (data_range, RDF.type, RDFS.Datatype) in g
+    assert set(Collection(g, g.value(data_range, OWL.oneOf))) == {Literal("m"), Literal("k")}
+    assert set(g.objects(EX.unit, RDF.type)) == {OWL.DatatypeProperty}
+
+
+@pytest.mark.parametrize(
+    "permissible_values",
+    [[], [PermissibleValue(text="m"), PermissibleValue(text="k", implements=["owl:NamedIndividual"])]],
+    ids=["no_values", "mixed_values"],
+)
+def test_enum_not_only_of_literals_stays_a_class(permissible_values: list[PermissibleValue]) -> None:
+    """Only an enum with permissible values, all of them literals, is a datatype."""
+    g = _owl_graph(_unit_schema(permissible_values, implements=["rdfs:Literal"]))
+    assert set(g.objects(EX.UnitEnum, RDF.type)) == {OWL.Class}
+    assert set(g.objects(EX.unit, RDF.type)) == {OWL.ObjectProperty}
+
+
+@pytest.mark.parametrize(
+    "parent",
+    [{"is_a": "LengthEnum"}, {"mixins": ["LengthEnum"]}, {"inherits": ["LengthEnum"]}],
+    ids=["is_a", "mixins", "inherits"],
+)
+def test_enum_of_literals_has_no_parents(caplog, parent: dict) -> None:
+    """OWL 2 has no subtype axiom for datatypes, so the parents of a datatype enum are not emitted."""
+    sb = _unit_schema([PermissibleValue(text="m")], **parent)
+    sb.add_enum("LengthEnum", permissible_values=["m", "km"])
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(
+            sb, default_permissible_value_type="rdfs:Literal", add_root_classes=True, enum_inherits_as_subclass_of=True
+        )
+    assert not set(g.objects(EX.UnitEnum, RDFS.subClassOf))
+    assert not set(g.objects(EX.LengthEnum, RDFS.subClassOf))
+    assert "Enum 'UnitEnum' is a datatype in OWL, so its parent enums are not emitted" in caplog.messages
+
+
+@pytest.mark.parametrize("mixins_as_expressions", [False, True])
+def test_class_enum_has_no_datatype_parents(caplog, mixins_as_expressions: bool) -> None:
+    """An enum that stays a class does not get a datatype enum as parent: no IRI is both (§5.8.1)."""
+    sb = SchemaBuilder()
+    sb.add_enum("LengthEnum", permissible_values=["m", "km"])
+    sb.add_enum("AnyUnit", inherits=["LengthEnum"])
+    sb.add_enum("SubLength", is_a="LengthEnum")
+    sb.add_enum("MixLength", mixins=["LengthEnum"])
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(
+            sb,
+            default_permissible_value_type="rdfs:Literal",
+            enum_inherits_as_subclass_of=True,
+            mixins_as_expressions=mixins_as_expressions,
+        )
+    assert set(g.objects(EX.LengthEnum, RDF.type)) == {RDFS.Datatype}
+    assert not set(g.subject_predicates(EX.LengthEnum))
+    for child in ("AnyUnit", "SubLength", "MixLength"):
+        assert set(g.objects(EX[child], RDF.type)) == {OWL.Class}
+        assert (
+            f"Enum {child!r} is a class in OWL and its parent 'LengthEnum' is a datatype, so that parent is not emitted"
+            in caplog.messages
+        )
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+@pytest.mark.parametrize("type_objects", [False, True])
+@pytest.mark.parametrize("refined_in", ["subclass", "subclass_of_narrowing_parent", "class_expression"])
+def test_refined_slot_of_enum_of_literals_keeps_its_range(
+    refined_in: str, type_objects: bool, default_range: str | None
+) -> None:
+    """A slot of such an enum, refined without a range, is restricted to the enum, a data range.
+
+    A subclass ``slot_usage`` keeps the range its parent gives, the ``slot_conditions`` of a class
+    expression the range of the slot. The default range, or ``owl:Thing`` without one, is a class
+    with ``type_objects`` or without a default range, which a data property cannot have (§5.8.1).
+    """
+    sb = _unit_schema([PermissibleValue(text=t) for t in "mk"])
+    required = {"unit": {"required": True}}
+    if refined_in == "class_expression":
+        sb.add_class("Thing", slots=["unit"], any_of=[{"slot_conditions": required}], replace_if_present=True)
+    else:
+        if refined_in == "subclass_of_narrowing_parent":
+            sb.add_enum("AnyUnitEnum", permissible_values=["m", "k", "mm"])
+            sb.schema.slots["unit"].range = "AnyUnitEnum"
+            sb.add_class("Thing", slots=["unit"], slot_usage={"unit": {"range": "UnitEnum"}}, replace_if_present=True)
+        sb.add_class("Child", is_a="Thing", slot_usage=required)
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal", type_objects=type_objects)
+    restrictions = set(g.subjects(OWL.onProperty, EX.unit))
+    assert {g.value(r, OWL.allValuesFrom) for r in restrictions} - {None} == {EX.UnitEnum}
+    assert set(g.objects(EX.unit, RDF.type)) == {OWL.DatatypeProperty}
+
+
+def test_slot_of_enum_of_literals_or_a_class_stays_an_object_property() -> None:
+    """With type_objects, a slot that ranges over an enum of literals and a class stays an object property."""
+    sb = _unit_schema([PermissibleValue(text="m")])
+    sb.add_slot("unit_or_thing", any_of=[{"range": "UnitEnum"}, {"range": "Thing"}])
+    sb.add_class("Thing", slots=["unit", "unit_or_thing"], replace_if_present=True)
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal", type_objects=True)
+    assert set(g.objects(EX.unit, RDF.type)) == {OWL.DatatypeProperty}
+    assert set(g.objects(EX.unit_or_thing, RDF.type)) == {OWL.ObjectProperty}
+
+
+@pytest.mark.parametrize("type_objects", [False, True])
+def test_slot_of_enums_of_literals_and_types(type_objects: bool) -> None:
+    """A slot of an enum of literals and a type with literal values is a data property.
+
+    With type_objects, the type is a class, and the slots stay object properties. Without, the
+    enum as the range of ``unit_and_text`` would make it an object property, and ``unit_or_text``,
+    which has no range and no class uses, would be one by default. The values of ``uriorcurie``
+    are IRIs, so ``unit_or_iri`` stays one.
+    """
+    sb = _unit_schema([PermissibleValue(text="m")])
+    sb.add_slot("unit_and_text", range="UnitEnum", any_of=[{"range": "string"}])
+    sb.add_slot("unit_or_text", any_of=[{"range": "UnitEnum"}, {"range": "string"}])
+    sb.add_slot("unit_or_iri", any_of=[{"range": "UnitEnum"}, {"range": "uriorcurie"}])
+    sb.add_class("Thing", slots=["unit", "unit_and_text"], replace_if_present=True)
+    sb.schema.default_range = None
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal", type_objects=type_objects)
+    expected = {OWL.ObjectProperty} if type_objects else {OWL.DatatypeProperty}
+    assert set(g.objects(EX.unit_and_text, RDF.type)) == expected
+    assert set(g.objects(EX.unit_or_text, RDF.type)) == expected
+    assert set(g.objects(EX.unit_or_iri, RDF.type)) == {OWL.ObjectProperty}
+
+
+@pytest.mark.parametrize("type_objects", [False, True])
+@pytest.mark.parametrize(
+    "default_range,unit,some_unit",
+    [
+        ("UnitEnum", OWL.DatatypeProperty, OWL.DatatypeProperty),
+        ("Thing", OWL.ObjectProperty, OWL.ObjectProperty),
+        (None, OWL.ObjectProperty, OWL.DatatypeProperty),
+    ],
+    ids=["enum", "class", "none"],
+)
+def test_default_range_and_members_of_enums_of_literals(
+    default_range: str | None, unit: URIRef, some_unit: URIRef, type_objects: bool
+) -> None:
+    """The ranges of a slot include those of ``all_members`` and ``has_member``, and the default range.
+
+    A restriction on a slot gets the default range if neither its ``range`` nor its expressions
+    give one; ``has_member`` gives a restriction of its own, and ``range_expression`` a class
+    expression if it has slot conditions. A slot without any range keeps the kind it has
+    without enums of literals.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"])
+    sb.add_slot("unit")
+    sb.add_slot("all_units", multivalued=True, all_members={"range": "UnitEnum"})
+    sb.add_slot("some_unit", multivalued=True, has_member={"range": "UnitEnum"})
+    sb.add_slot("units_of_things", range="UnitEnum", multivalued=True, all_members={"range": "Thing"})
+    sb.add_slot("units_and_a_thing", range="UnitEnum", multivalued=True, has_member={"range": "Thing"})
+    with_units = {"slot_conditions": {"units_of_things": {"range": "UnitEnum"}}}
+    sb.add_slot("thing_with_units", range_expression={"any_of": [with_units]})
+    sb.add_slot(
+        "units_and_a_thing_with_units", range="UnitEnum", multivalued=True, has_member={"range_expression": with_units}
+    )
+    sb.add_slot("units_without_expression", range="UnitEnum", range_expression={})
+    sb.add_class("Thing", slots=["unit", "all_units", "some_unit", "units_of_things", "units_and_a_thing"])
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal", type_objects=type_objects)
+    assert set(g.objects(EX.unit, RDF.type)) == {unit}
+    assert set(g.objects(EX.all_units, RDF.type)) == {OWL.DatatypeProperty}
+    assert set(g.objects(EX.units_without_expression, RDF.type)) == {OWL.DatatypeProperty}
+    assert set(g.objects(EX.some_unit, RDF.type)) == {some_unit}
+    for slot in ("units_of_things", "units_and_a_thing", "thing_with_units", "units_and_a_thing_with_units"):
+        assert set(g.objects(EX[slot], RDF.type)) == {OWL.ObjectProperty}, slot
+    if default_range == "UnitEnum":
+        assert {g.value(r, OWL.allValuesFrom) for r in g.subjects(OWL.onProperty, EX.unit)} - {None} == {EX.UnitEnum}
+
+
+def test_slot_narrowed_to_an_enum_of_literals_is_a_data_property() -> None:
+    """A slot without a range that a class narrows to such an enum is a data property, as for a type."""
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"])
+    sb.add_slot("unit")
+    sb.add_class("Thing", slots=["unit"], slot_usage={"unit": {"range": "UnitEnum"}})
+    sb.add_defaults()
+    sb.schema.default_range = None
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal")
+    assert set(g.objects(EX.unit, RDF.type)) == {OWL.DatatypeProperty}
+
+
+def test_condition_on_an_undeclared_slot_keeps_the_default_range() -> None:
+    """A class expression can name a slot that is not declared, which has no enum to restrict it to."""
+    sb = _unit_schema([PermissibleValue(text="m")])
+    sb.add_class(
+        "Thing", slots=["unit"], any_of=[{"slot_conditions": {"other": {"required": True}}}], replace_if_present=True
+    )
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal")
+    assert {g.value(r, OWL.allValuesFrom) for r in g.subjects(OWL.onProperty, EX.other)} - {None} == {XSD.string}
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+@pytest.mark.parametrize("type_objects", [False, True])
+def test_boolean_expressions_over_enums_of_literals_are_data_ranges(
+    type_objects: bool, default_range: str | None
+) -> None:
+    """``any_of`` over datatype enums is a union of data ranges (§7.2), ``none_of`` a complement (§7.3).
+
+    A slot whose ranges are all such enums is a data property in every mode, also if no class uses it.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"])
+    sb.add_enum("SizeEnum", permissible_values=["S", "L"])
+    sb.add_slot("unit_or_size", any_of=[{"range": "UnitEnum"}, {"range": "SizeEnum"}])
+    sb.add_slot("not_unit", none_of=[{"range": "UnitEnum"}])
+    sb.add_slot("unused", any_of=[{"range": "UnitEnum"}, {"range": "SizeEnum"}])
+    sb.add_class("Thing", slots=["unit_or_size", "not_unit"])
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb, default_permissible_value_type="rdfs:Literal", type_objects=type_objects)
+    unions = set(g.subjects(OWL.unionOf, None))
+    assert unions
+    assert all((union, RDF.type, RDFS.Datatype) in g for union in unions)
+    assert set(g.subjects(OWL.datatypeComplementOf, EX.UnitEnum))
+    assert not set(g.subjects(OWL.complementOf, None))
+    for slot in ("unit_or_size", "not_unit", "unused"):
+        assert set(g.objects(EX[slot], RDF.type)) == {OWL.DatatypeProperty}
+
+
+_LITERAL_ENUM_SCHEMA = """
+id: https://example.org/units
+name: units
+prefixes:
+  linkml: https://w3id.org/linkml/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  ex: https://example.org/units/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+enums:
+  UnitEnum:
+    implements:
+      - rdfs:Literal
+    permissible_values:
+      m:
+      cm:
+slots:
+  id:
+    identifier: true
+    range: uriorcurie
+  unit:
+    range: UnitEnum
+classes:
+  Measurement:
+    slots: [id, unit]
+"""
+
+
+@pytest.mark.parametrize("type_objects", [False, True])
+def test_dumped_value_of_enum_of_literals_is_in_its_datatype(type_objects: bool) -> None:
+    """The RDF dumper writes a permissible value without a meaning as a literal. In OWL, its slot
+    is a data property (OWL 2 §5.4), whose range is the enum's datatype, an enumeration that holds
+    this literal (§7.4), so the data that LinkML writes fits the ontology."""
+    module = compile_python(PythonGenerator(_LITERAL_ENUM_SCHEMA).serialize())
+    data = rdflib_dumper.as_rdf_graph(module.Measurement(id="ex:r1", unit="cm"), SchemaView(_LITERAL_ENUM_SCHEMA))
+    owl = Graph().parse(
+        data=OwlSchemaGenerator(_LITERAL_ENUM_SCHEMA, type_objects=type_objects, metaclasses=False).serialize(),
+        format="turtle",
+    )
+    ex = Namespace("https://example.org/units/")
+    [value] = data.objects(ex.r1, ex.unit)
+    assert value == Literal("cm")
+    assert set(owl.objects(ex.unit, RDF.type)) == {OWL.DatatypeProperty}
+    assert owl.value(ex.unit, RDFS.range) == ex.UnitEnum
+    [data_range] = owl.objects(ex.UnitEnum, OWL.equivalentClass)
+    assert value in set(Collection(owl, owl.value(data_range, OWL.oneOf)))
+
+
+def _all_values_from(g: Graph, slot: str) -> set:
+    """Return the fillers of the ``owl:allValuesFrom`` restrictions on *slot*."""
+    return {g.value(r, OWL.allValuesFrom) for r in g.subjects(OWL.onProperty, EX[slot])} - {None}
+
+
+def test_slot_of_classes_is_an_object_property_with_their_union_as_range() -> None:
+    """A slot whose ranges are all classes is an object property, also if the default range is a type.
+
+    Its range is the union of the classes (OWL 2 §8.1.2, §9.2.6). A subclass that refines it
+    without a range restricts it to ``owl:Thing``, as no datatype, such as the default range,
+    fills an object property restriction (§8.2.2), and so it does a slot of an enum that is a class.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Wheel")
+    sb.add_class("Door")
+    sb.add_enum("KindEnum", permissible_values=["scalar", "vector"])
+    sb.add_slot("part", multivalued=True, any_of=[{"range": "Wheel"}, {"range": "Door"}])
+    sb.add_slot("kind", range="KindEnum")
+    sb.add_class("Car", slots=["part", "kind"])
+    sb.add_class("Truck", is_a="Car", slot_usage={"part": {"required": True}, "kind": {"required": True}})
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert set(g.objects(EX.part, RDF.type)) == {OWL.ObjectProperty}
+    fillers = _all_values_from(g, "part")
+    unions = set(g.objects(EX.part, RDFS.range)) | {f for f in fillers if isinstance(f, BNode)}
+    assert len(unions) == 2
+    for union in unions:
+        assert set(Collection(g, g.value(union, OWL.unionOf))) == {EX.Wheel, EX.Door}
+    assert fillers - unions == {OWL.Thing}
+    assert _all_values_from(g, "kind") == {EX.KindEnum, OWL.Thing}
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+@pytest.mark.parametrize(
+    "ranges",
+    [["float", "Quantity"], ["UnitEnum", "Quantity"], ["UnitEnum", "KindEnum"]],
+    ids=["type_and_class", "enum_of_literals_and_class", "enum_of_literals_and_class_enum"],
+)
+def test_slot_of_literals_and_nodes_has_no_range(caplog, ranges: list[str], default_range: str | None) -> None:
+    """A slot that ranges over both literals and nodes, in its ``any_of`` or with its ``has_member``,
+    is an object property without a range, and gen-owl warns about it once, not in each class.
+
+    Neither an object nor a data property has both (OWL 2 §5.3, §5.4, §5.8.1), so the values of
+    the slot are not restricted, also where a subclass refines it without a range. A subclass that
+    narrows it to nodes restricts it, and its cardinalities stay.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"], implements=["rdfs:Literal"])
+    sb.add_enum("KindEnum", permissible_values=["scalar", "vector"])
+    sb.add_class("Quantity")
+    sb.add_slot("speed", any_of=[{"range": r} for r in ranges])
+    sb.add_slot("readings", range=ranges[0], multivalued=True, has_member={"range": ranges[1]})
+    sb.add_class("Vehicle", slots=["speed", "readings"])
+    sb.add_class("Car", is_a="Vehicle", slot_usage={"speed": {"required": True}})
+    sb.add_class("Train", is_a="Vehicle", slot_usage={"speed": {"range": ranges[1]}})
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    for slot in ("speed", "readings"):
+        assert set(g.objects(EX[slot], RDF.type)) == {OWL.ObjectProperty}, slot
+        assert not set(g.objects(EX[slot], RDFS.range)), slot
+        message = (
+            f"Slot {slot!r} ranges over both literals and nodes, which neither an object nor a data "
+            "property can have, so it has no range and its values are not restricted"
+        )
+        assert caplog.messages.count(message) == 1, slot
+    assert not [m for m in caplog.messages if m.startswith("In class")]
+    assert _all_values_from(g, "speed") == {EX[ranges[1]]}
+    assert not _all_values_from(g, "readings")
+    assert not set(g.subjects(OWL.someValuesFrom))
+    assert not {u for u in g.subjects(OWL.unionOf) if isinstance(u, BNode)}
+    assert Literal(1) in {g.value(r, OWL.minCardinality) for r in g.subjects(OWL.onProperty, EX.speed)}
+
+
+def test_branch_without_a_range_has_the_range_of_the_slot(caplog) -> None:
+    """A branch of ``any_of`` without a range, such as one with only a ``pattern``, has the range
+    of the expression it is in, or else of the slot, which a class that refines the slot takes
+    from the slot, or else the default range.
+
+    So a slot with a branch of an enum that is a class and a branch of only a pattern over the
+    default range, a type, ranges over literals and nodes, and has no range, also if the branch is
+    in another expression. A slot with such branches in an expression whose range is a class, or
+    that a class refines with them where its range is a class, ranges over nodes.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("LicenseEnum", permissible_values=["MIT", "Apache-2.0"])
+    sb.add_class("Agent")
+    sb.add_class("Person", is_a="Agent")
+    sb.add_slot("license", any_of=[{"range": "LicenseEnum"}, {"pattern": "^LicenseRef-"}])
+    sb.add_slot("rights", any_of=[{"range": "Agent"}, {"any_of": [{"range": "LicenseEnum"}, {"pattern": "^x"}]}])
+    sb.add_slot("author", any_of=[{"range": "Agent", "any_of": [{"range": "Person"}, {"pattern": "^X"}]}])
+    sb.add_slot("holder", range="Agent")
+    sb.add_class("Package", slots=["license", "rights", "author", "holder"])
+    sb.add_class("Book", is_a="Package", slot_usage={"holder": {"any_of": [{"range": "Person"}, {"pattern": "^O"}]}})
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    for name in ("license", "rights"):
+        assert set(g.objects(EX[name], RDF.type)) == {OWL.ObjectProperty}
+        assert not set(g.objects(EX[name], RDFS.range))
+        assert not _all_values_from(g, name)
+    for name in ("author", "holder"):
+        assert set(g.objects(EX[name], RDF.type)) == {OWL.ObjectProperty}
+        assert not [message for message in caplog.messages if repr(name) in message]
+
+
+def test_class_expression_that_owl_cannot_state_is_left_out(caplog) -> None:
+    """A class expression with a condition on a slot that ranges over both literals and nodes,
+    which neither an object nor a data property can have, is left out where leaving out only the
+    condition could make an axiom stronger: the ``any_of`` or ``exactly_one_of`` that it is an
+    operand of, a rule with it in its preconditions or its postconditions, and a classification
+    rule with it.
+
+    Of ``all_of`` and ``none_of``, only that operand is left out, which makes the axiom weaker,
+    also where the condition is in an expression in the operand. A slot whose ``range_expression``
+    has such a condition, also that of its ``has_member``, of its ``all_members`` or of a branch
+    of its ``any_of``, has no range, and its values are not restricted.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Quantity")
+    sb.add_class("Base")
+    sb.add_class("Sub", is_a="Base")
+    sb.add_slot("speed", any_of=[{"range": "float"}, {"range": "Quantity"}])
+    sb.add_slot("part", range="Base")
+    fast = {"slot_conditions": {"speed": {"minimum_value": 3}}}
+    narrow = {"slot_conditions": {"part": {"range": "Sub"}}}
+    sb.add_slot("fast_part", range="Base", range_expression=fast)
+    sb.add_slot("fast_parts", range="Base", multivalued=True, has_member={"range_expression": fast})
+    sb.add_slot("fast_or_sub", any_of=[{"range": "Sub"}, {"range": "Base", "range_expression": fast}])
+    sb.add_slot("fast_list", range="Base", multivalued=True, all_members={"range_expression": fast})
+    sb.add_class("Vehicle", slots=["speed", "part"], any_of=[fast, narrow])
+    sb.add_class("Car", slots=["speed", "part"], none_of=[fast, narrow])
+    sb.add_class("Van", slots=["speed", "part"], exactly_one_of=[fast, narrow])
+    sb.add_class("Tram", slots=["speed", "part"], all_of=[{"any_of": [fast, narrow]}])
+    sb.add_class(
+        "Truck",
+        slots=["speed", "part"],
+        rules=[{"preconditions": fast, "postconditions": narrow}, {"preconditions": narrow, "postconditions": fast}],
+    )
+    sb.add_class(
+        "Bike", slots=["speed", "part"], classification_rules=[{"slot_conditions": {**fast["slot_conditions"]}}]
+    )
+    sb.add_class("Garage", slots=["fast_part", "fast_parts", "fast_or_sub", "fast_list"])
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    assert not set(g.subjects(XSD.minInclusive))
+    assert not set(g.subjects(OWL.someValuesFrom))
+    assert len(set(g.subjects(OWL.allValuesFrom, EX.Sub))) == 1
+    assert not set(g.objects(EX.Bike, OWL.equivalentClass))
+    reason = "slot 'speed' ranges over both literals and nodes, which neither an object nor a data property can have"
+    for name in ("fast_part", "fast_parts", "fast_or_sub", "fast_list"):
+        assert not set(g.objects(EX[name], RDFS.range)), name
+        assert not _all_values_from(g, name), name
+        message = (
+            f"Slot {name!r} ranges over a class expression in which {reason}, so it has no range and its values "
+            "are not restricted"
+        )
+        assert message in caplog.messages
+    for message in (
+        f"The any_of of class 'Vehicle' is not emitted, since in one of its operands {reason}",
+        f"An operand of the none_of of class 'Car' is not emitted, since in it {reason}",
+        f"The exactly_one_of of class 'Van' is not emitted, since in one of its operands {reason}",
+        f"An operand of the all_of of class 'Tram' is not emitted, since in it {reason}",
+        f"A rule of class 'Truck' is not emitted, since in it {reason}",
+        f"A classification rule of class 'Bike' is not emitted, since in it {reason}",
+    ):
+        assert message in caplog.messages
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+def test_values_that_a_property_cannot_have_are_not_restricted(caplog, default_range: str | None) -> None:
+    """Where a slot ranges over values that its property cannot have, literals for an object
+    property or nodes for a data property (OWL 2 §5.3, §5.4), its values are not restricted,
+    with a warning: where a class narrows it, for an attribute, and for the range of a slot
+    that implements a property role, which has that role also without a range, with or
+    without a default range.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"], implements=["rdfs:Literal"])
+    sb.add_class("Quantity")
+    sb.add_slot("speed", any_of=[{"range": "float"}, {"range": "Quantity"}])
+    sb.add_slot("unit", any_of=[{"range": "UnitEnum"}, {"range": "Quantity"}])
+    sb.add_slot("label", range="string")
+    sb.add_slot("amount", range="Quantity", implements=["owl:DatatypeProperty"])
+    sb.add_slot("weight", implements=["owl:DatatypeProperty"])
+    sb.add_class("Vehicle", slots=["speed", "unit", "label", "amount", "weight"])
+    sb.add_class(
+        "Car",
+        is_a="Vehicle",
+        slot_usage={
+            "speed": {"range": "float"},
+            "unit": {"range": "UnitEnum"},
+            "label": {"range": "Quantity"},
+            "weight": {"range": "Quantity"},
+        },
+    )
+    sb.add_class("Sensor", attributes={"reading": {"any_of": [{"range": "float"}, {"range": "Quantity"}]}})
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    for name in ("speed", "unit", "amount", "reading"):
+        assert not _all_values_from(g, name), name
+    assert EX.Quantity not in _all_values_from(g, "weight")
+    assert _all_values_from(g, "label") == {XSD.string}
+    assert set(g.objects(EX.amount, RDF.type)) == {OWL.DatatypeProperty}
+    assert not set(g.objects(EX.amount, RDFS.range))
+    literals = "ranges over literals, but it is an object property, so its values there are not restricted"
+    nodes = "ranges over nodes, but it is a data property, so its values there are not restricted"
+    for message in (
+        f"In class 'Car', slot 'speed' {literals}",
+        f"In class 'Car', slot 'unit' {literals}",
+        f"In class 'Car', slot 'label' {nodes}",
+        f"In class 'Car', slot 'weight' {nodes}",
+        "In class 'Sensor', slot 'reading' ranges over both literals and nodes, which neither an object nor a data "
+        "property can have, so its values there are not restricted",
+        "Slot 'amount' ranges over nodes, but it is a data property, so it has no range and its values are not "
+        "restricted",
+    ):
+        assert caplog.messages.count(message) == 1, message
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+def test_slot_has_the_kind_of_the_range_it_inherits(default_range: str | None) -> None:
+    """A slot without a range inherits that of its nearest ancestor through ``is_a`` and its
+    mixins, as ``SchemaView.induced_slot`` gives it, and so a sub-property has the kind of its
+    super-property (OWL 2 §9.2.1, §9.3.1) instead of that of the default range."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_slot("ref", range="Person")
+    sb.add_slot("owner", is_a="ref")
+    sb.add_slot("previous_owner", is_a="owner")
+    sb.add_slot("holder", mixins=["ref"])
+    sb.add_slot("size", range="integer")
+    sb.add_slot("width", is_a="size")
+    sb.add_slot("reference", range="uriorcurie")
+    sb.add_slot("homepage", is_a="reference")
+    # a nearer ancestor's range comes first
+    sb.add_slot("label", is_a="ref", range="string")
+    sb.add_slot("short_label", is_a="label")
+    sb.add_class(
+        "Car",
+        slots=["owner", "previous_owner", "holder", "width", "short_label", "homepage"],
+        slot_usage={"owner": {"required": True}},
+    )
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb)
+    for prop in (EX.ref, EX.owner, EX.previous_owner, EX.holder, EX.reference, EX.homepage):
+        assert set(g.objects(prop, RDF.type)) == {OWL.ObjectProperty}, prop
+    for prop in (EX.size, EX.width, EX.short_label):
+        assert set(g.objects(prop, RDF.type)) == {OWL.DatatypeProperty}, prop
+    # the fillers of a class's restrictions have the kind of the property
+    expected = {
+        EX.owner: {OWL.Thing, EX.Person},
+        EX.previous_owner: {OWL.Thing, EX.Person},
+        EX.holder: {OWL.Thing, EX.Person},
+        EX.width: {XSD.integer},
+        EX.short_label: {XSD.string},
+        EX.homepage: {OWL.Thing},
+    }
+    for prop, fillers in expected.items():
+        restrictions = [r for r in g.objects(EX.Car, RDFS.subClassOf) if (r, OWL.onProperty, prop) in g]
+        assert {g.value(r, OWL.allValuesFrom) for r in restrictions} - {None} <= fillers, prop
+
+
+def test_attribute_of_several_classes_has_the_kind_of_its_definitions(caplog) -> None:
+    """An attribute that several classes define has the kind of property that their definitions
+    give, not that of the slot without a range that SchemaView gives for its name alone, so a
+    subclass that narrows it to literals does not restrict it. Where its definitions, also that of
+    a slot of its name, give different kinds, it has no single kind, and each class restricts it
+    to its range.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_class("Dimensions")
+    sb.add_slot("size", range="float")
+    sb.add_class("Car", attributes={"owner": {"range": "Person"}, "size": {"range": "Dimensions"}})
+    sb.add_class("Boat", slots=["size"], attributes={"owner": {"range": "Person"}})
+    sb.add_class("Yacht", is_a="Boat", slot_usage={"owner": {"range": "string"}})
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    assert set(g.objects(EX.owner, RDF.type)) == {OWL.ObjectProperty}
+    expected = {
+        (EX.Car, EX.owner): {EX.Person},
+        (EX.Boat, EX.owner): {EX.Person},
+        (EX.Yacht, EX.owner): set(),
+        (EX.Car, EX.size): {EX.Dimensions},
+        (EX.Boat, EX.size): {XSD.float},
+    }
+    for (cls, prop), fillers in expected.items():
+        restrictions = [r for r in g.objects(cls, RDFS.subClassOf) if (r, OWL.onProperty, prop) in g]
+        assert {g.value(r, OWL.allValuesFrom) for r in restrictions} - {None} == fillers, (cls, prop)
+    assert [message for message in caplog.messages if "not restricted" in message] == [
+        "In class 'Yacht', slot 'owner' ranges over literals, but it is an object property, so its values there are "
+        "not restricted"
+    ]
+
+
+@pytest.mark.parametrize(
+    "slot",
+    [
+        {"any_of": [{"range": "float"}, {"range": "Typo"}]},
+        {"range": "float", "multivalued": True, "has_member": {"range": "Typo"}},
+    ],
+    ids=["any_of", "has_member"],
+)
+def test_unknown_range_is_an_error(slot: dict) -> None:
+    """A range that is no class, enum or type is an error, also beside a range of literals."""
+    sb = SchemaBuilder()
+    sb.add_slot("speed", **slot)
+    sb.add_class("Vehicle", slots=["speed"])
+    sb.add_defaults()
+    with pytest.raises(ValueError, match="Unknown range Typo"):
+        _owl_graph(sb)
+
+
+@pytest.mark.parametrize(
+    "ranges", [["integer", "boolean"], ["MissingValueEnum", "VitalStatusEnum"]], ids=["types", "enums_of_literals"]
+)
+def test_any_of_with_range_any_has_the_ranges_of_its_operands(caplog, ranges: list[str]) -> None:
+    """A slot whose range is ``linkml:Any`` and further constrained by ``any_of`` ranges over its
+    operands, so over data ranges it is a data property with their union as range (OWL 2 §7.2).
+
+    ``linkml:Any`` is the class URI of the range, whatever its name, and a slot of that range
+    alone is an object property.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("MissingValueEnum", permissible_values=["INVALID", "NOT_PROVIDED"], implements=["rdfs:Literal"])
+    sb.add_enum("VitalStatusEnum", permissible_values=["LIVING", "DECEASED"], implements=["rdfs:Literal"])
+    sb.add_class("Anything", class_uri="linkml:Any")
+    sb.add_slot("status", range="Anything", any_of=[{"range": r} for r in ranges])
+    sb.add_slot("note", range="Anything")
+    sb.add_class("Person", slots=["status", "note"])
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    assert set(g.objects(EX.status, RDF.type)) == {OWL.DatatypeProperty}
+    for union in set(g.objects(EX.status, RDFS.range)) | _all_values_from(g, "status"):
+        assert (union, RDF.type, RDFS.Datatype) in g
+        assert len(list(Collection(g, g.value(union, OWL.unionOf)))) == 2
+    assert set(g.objects(EX.note, RDF.type)) == {OWL.ObjectProperty}
+    assert not [message for message in caplog.messages if "'status'" in message]
+
+
+def test_has_member_branch_without_a_range_has_the_range_of_the_entry(caplog) -> None:
+    """A branch of the ``has_member`` of a class's entry for a slot that gives no range has the
+    range of the entry, not that of the slot.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Anything", class_uri="linkml:Any")
+    sb.add_slot("scores", range="Anything", multivalued=True)
+    has_member = {"any_of": [{"minimum_value": 90}, {"maximum_value": 10}]}
+    sb.add_class("Exam", slots=["scores"], slot_usage={"scores": {"range": "integer", "has_member": has_member}})
+    sb.add_defaults()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        _owl_graph(sb)
+    assert [message for message in caplog.messages if "'scores'" in message] == [
+        "In class 'Exam', slot 'scores' ranges over literals, but it is an object property, so its values there are "
+        "not restricted"
+    ]
+
+
+@pytest.mark.parametrize(
+    "narrowed,role",
+    [
+        (["KindEnum"], OWL.ObjectProperty),
+        (["KindEnum", "UnitEnum"], OWL.ObjectProperty),
+        (["integer"], OWL.DatatypeProperty),
+        (["uriorcurie"], OWL.ObjectProperty),
+    ],
+    ids=["class_enum", "class_enum_and_enum_of_literals", "type", "type_of_nodes"],
+)
+def test_slot_narrowed_by_classes_has_the_kind_of_their_ranges(caplog, narrowed: list[str], role: URIRef) -> None:
+    """A slot without a range has the kind of the ranges that the classes that use it narrow it
+    to: a data property for a type of literals, and an object property for a type of nodes or an
+    enum that is a class, also if another class narrows it to an enum of literals.
+
+    Its kind is known, as for a class, so it is not guessed, and neither an object nor a data
+    property has both literals and nodes as values (OWL 2 §5.3, §5.4).
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("KindEnum", permissible_values=["scalar", "vector"])
+    sb.add_enum("UnitEnum", permissible_values=["m", "k"], implements=["rdfs:Literal"])
+    sb.add_slot("unit")
+    for i, enum in enumerate(narrowed):
+        sb.add_class(f"Thing{i}", slots=["unit"], slot_usage={"unit": {"range": enum}})
+    sb.add_defaults()
+    sb.schema.default_range = None
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+    assert set(g.objects(EX.unit, RDF.type)) == {role}
+    assert "Guessing type for unit" not in caplog.messages
+
+
+def test_union_of_a_class_enum_and_a_type_object_is_a_class_expression() -> None:
+    """With ``type_objects``, a type is a class, so ``any_of`` over a type and an enum that is a
+    class, and ``exactly_one_of`` over types, are class expressions (OWL 2 §8.1), not data ranges
+    (§7.2, §7.3).
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("KindEnum", permissible_values=["scalar", "vector"])
+    sb.add_slot("kind", any_of=[{"range": "KindEnum"}, {"range": "string"}])
+    sb.add_slot("count_or_name", exactly_one_of=[{"range": "integer"}, {"range": "string"}])
+    sb.add_class("Thing", slots=["kind", "count_or_name"])
+    sb.add_defaults()
+    g = _owl_graph(sb, type_objects=True)
+    for name in ("kind", "count_or_name"):
+        assert set(g.objects(EX[name], RDF.type)) == {OWL.ObjectProperty}
+    unions = {union for union in g.subjects(OWL.unionOf) if isinstance(union, BNode)}
+    assert len(unions) == 4
+    assert not any((union, RDF.type, RDFS.Datatype) in g for union in unions)
+    assert set(g.subjects(OWL.complementOf)) and not set(g.subjects(OWL.datatypeComplementOf))
+
+
+def test_intersection_of_a_class_enum_and_a_constraint_is_not_a_data_range() -> None:
+    """An enum that is a class is a class expression (OWL 2 §8.1), as a class is, so its
+    intersection with the data range of a constraint on the slot, here ``equals_string_in``,
+    is not typed ``rdfs:Datatype`` (§7.1).
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("KindEnum", permissible_values=["scalar", "vector"])
+    sb.add_slot("kind", range="KindEnum", equals_string_in=["scalar"])
+    sb.add_class("Thing", slots=["kind"])
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    intersections = {
+        e for e in g.subjects(OWL.intersectionOf) if EX.KindEnum in Collection(g, g.value(e, OWL.intersectionOf))
+    }
+    assert intersections
+    assert not any((e, RDF.type, RDFS.Datatype) in g for e in intersections)
+
+
+@pytest.mark.parametrize("default_range", [None, "string"])
+def test_exactly_one_of_and_none_of_over_data_ranges_are_data_ranges(default_range: str | None) -> None:
+    """``exactly_one_of`` over data ranges is a union of intersections of each with the complement
+    of the others, and ``none_of`` a complement: all data ranges (OWL 2 §7.1–§7.3), also over the
+    facets of a type and as operands of another expression.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("count_or_name", exactly_one_of=[{"range": "integer"}, {"range": "string"}])
+    sb.add_slot(
+        "count_or_text", exactly_one_of=[{"range": "integer"}, {"any_of": [{"range": "string"}, {"range": "date"}]}]
+    )
+    sb.add_slot("code", range="string", exactly_one_of=[{"pattern": "^a"}, {"pattern": "^b"}])
+    sb.add_slot("size", range="integer", exactly_one_of=[{"maximum_value": 5}, {"minimum_value": 3}])
+    sb.add_slot("neither", range="string", any_of=[{"none_of": [{"pattern": "^a"}]}, {"none_of": [{"pattern": "b$"}]}])
+    slots = ["count_or_name", "count_or_text", "code", "size", "neither"]
+    sb.add_class("Thing", slots=slots)
+    sb.add_defaults()
+    sb.schema.default_range = default_range
+    g = _owl_graph(sb)
+    expressions = {e for p in (OWL.unionOf, OWL.intersectionOf, OWL.datatypeComplementOf) for e in g.subjects(p)}
+    assert set(g.subjects(OWL.unionOf))
+    assert all((e, RDF.type, RDFS.Datatype) in g for e in expressions)
+    assert not set(g.subjects(OWL.complementOf))
+    for slot in slots:
+        assert set(g.objects(EX[slot], RDF.type)) == {OWL.DatatypeProperty}, slot

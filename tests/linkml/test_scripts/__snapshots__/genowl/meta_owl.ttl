@@ -123,7 +123,7 @@ ks:AnyOfEnums a owl:Class ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:AnyOfMix a owl:Class ;
 	rdfs:label "AnyOfMix" ;
-	rdfs:subClassOf _:c14n161 , _:c14n3 , _:c14n99 ;
+	rdfs:subClassOf _:c14n3 , _:c14n99 ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:AnyOfSimpleType a owl:Class ;
 	rdfs:label "AnyOfSimpleType" ;
@@ -185,7 +185,7 @@ ks:DiagnosisType a owl:Class ;
 	linkml:permissible_values ks:DiagnosisType\#TODO .
 ks:EmploymentEvent a owl:Class ;
 	rdfs:label "EmploymentEvent" ;
-	rdfs:subClassOf ks:Event , _:c14n101 , _:c14n114 , _:c14n117 , _:c14n219 , _:c14n23 , _:c14n26 ;
+	rdfs:subClassOf ks:Event , _:c14n101 , _:c14n117 , _:c14n219 , _:c14n23 , _:c14n26 ;
 	skos:inScheme linkml:tests\/kitchen_sink ;
 	sh:order 6 .
 ks:EmploymentEventType a owl:Class ;
@@ -213,7 +213,7 @@ ks:FakeClass a owl:Class ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:FamilialRelationship a owl:Class ;
 	rdfs:label "FamilialRelationship" ;
-	rdfs:subClassOf ks:Relationship , _:c14n123 , _:c14n135 , _:c14n21 , _:c14n221 , _:c14n233 , _:c14n24 , _:c14n25 , _:c14n31 , _:c14n66 ;
+	rdfs:subClassOf ks:Relationship , _:c14n135 , _:c14n21 , _:c14n221 , _:c14n24 , _:c14n25 , _:c14n31 , _:c14n66 ;
 	skos:inScheme linkml:tests\/kitchen_sink ;
 	sh:order 5 .
 ks:FamilialRelationshipType\#CHILD_OF a owl:Class ;
@@ -363,7 +363,7 @@ ks:ProcedureConcept a owl:Class ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:Relationship a owl:Class ;
 	rdfs:label "Relationship" ;
-	rdfs:subClassOf _:c14n10 , _:c14n100 , _:c14n102 , _:c14n137 , _:c14n14 , _:c14n142 , _:c14n149 , _:c14n163 , _:c14n164 , _:c14n17 , _:c14n196 , _:c14n199 , _:c14n203 , _:c14n58 , _:c14n64 ;
+	rdfs:subClassOf _:c14n10 , _:c14n100 , _:c14n102 , _:c14n137 , _:c14n14 , _:c14n142 , _:c14n149 , _:c14n164 , _:c14n17 , _:c14n196 , _:c14n199 , _:c14n203 , _:c14n58 , _:c14n64 ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:SubSubClass2 a owl:Class ;
 	rdfs:label "Sub sub class 2" ;
@@ -404,13 +404,13 @@ ks:altitude a owl:DatatypeProperty ;
 ks:attribute1 a owl:DatatypeProperty ;
 	rdfs:label "attribute1" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
-ks:attribute2 a owl:DatatypeProperty ;
+ks:attribute2 a owl:ObjectProperty ;
 	rdfs:label "attribute2" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
-ks:attribute3 a owl:DatatypeProperty ;
+ks:attribute3 a owl:ObjectProperty ;
 	rdfs:label "attribute3" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
-ks:attribute4 a owl:DatatypeProperty ;
+ks:attribute4 a owl:ObjectProperty ;
 	rdfs:label "attribute4" ;
 	skos:inScheme linkml:tests\/kitchen_sink .
 ks:attribute5 a owl:DatatypeProperty ;
@@ -591,13 +591,8 @@ _:c14n110 a owl:Restriction ;
 _:c14n111 a owl:Restriction ;
 	owl:allValuesFrom ks:BirthEvent ;
 	owl:onProperty ks:has_birth_event .
-_:c14n112 rdf:first xsd:integer ;
-	rdf:rest _:c14n88 .
 _:c14n113 rdf:first "human" ;
 	rdf:rest rdf:nil .
-_:c14n114 a owl:Restriction ;
-	owl:allValuesFrom _:c14n264 ;
-	owl:onProperty ks:type .
 _:c14n115 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty linkml:tests\/core\/was_informed_by .
@@ -624,9 +619,6 @@ _:c14n121 rdf:first ks:LifeStatusEnum\#LIVING ;
 _:c14n122 a owl:Restriction ;
 	owl:allValuesFrom ks:FamilialRelationship ;
 	owl:onProperty ks:has_familial_relationships .
-_:c14n123 a owl:Restriction ;
-	owl:allValuesFrom ks:FamilialRelationshipType ;
-	owl:onProperty ks:type .
 _:c14n124 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty ks:has_birth_event .
@@ -743,15 +735,9 @@ _:c14n16 a owl:Restriction ;
 _:c14n160 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty ks:married_to .
-_:c14n161 a owl:Restriction ;
-	owl:allValuesFrom _:c14n262 ;
-	owl:onProperty ks:attribute4 .
 _:c14n162 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:tests\/core\/description .
-_:c14n163 a owl:Restriction ;
-	owl:allValuesFrom ks:CordialnessEnum ;
-	owl:onProperty ks:cordialness .
 _:c14n164 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty linkml:tests\/core\/started_at_time .
@@ -968,9 +954,6 @@ _:c14n231 a owl:Restriction ;
 _:c14n232 a owl:Restriction ;
 	owl:allValuesFrom _:c14n261 ;
 	owl:onProperty ks:attribute6 .
-_:c14n233 a owl:Restriction ;
-	owl:allValuesFrom ks:Person ;
-	owl:onProperty ks:related_to .
 _:c14n234 a owl:Restriction ;
 	owl:minCardinality 1 ;
 	owl:onProperty linkml:tests\/core\/id .
@@ -1057,9 +1040,7 @@ _:c14n260 a rdfs:Datatype ;
 	owl:oneOf _:c14n187 .
 _:c14n261 a rdfs:Datatype ;
 	owl:oneOf _:c14n35 .
-_:c14n262 owl:unionOf _:c14n112 .
 _:c14n263 owl:unionOf _:c14n256 .
-_:c14n264 owl:unionOf _:c14n32 .
 _:c14n265 owl:unionOf _:c14n138 .
 _:c14n266 a rdfs:Datatype ;
 	owl:onDatatype xsd:integer ;
@@ -1128,11 +1109,7 @@ _:c14n291 rdf:first _:c14n292 ;
 _:c14n292 xsd:maxInclusive 999 .
 _:c14n293 a rdfs:Datatype ;
 	owl:intersectionOf _:c14n108 .
-_:c14n294 rdf:first ks:EmploymentEventType ;
-	rdf:rest rdf:nil .
 _:c14n295 rdf:first ks:EmploymentEventType ;
-	rdf:rest rdf:nil .
-_:c14n296 rdf:first ks:EmploymentEventType ;
 	rdf:rest rdf:nil .
 _:c14n297 rdf:first _:c14n36 ;
 	rdf:rest rdf:nil .
@@ -1155,8 +1132,6 @@ _:c14n303 xsd:pattern "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$" .
 _:c14n31 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty ks:cordialness .
-_:c14n32 rdf:first ks:CordialnessEnum ;
-	rdf:rest _:c14n294 .
 _:c14n33 xsd:pattern "^\\S+ \\S+$" .
 _:c14n34 rdf:first ks:LongEnum\#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern ;
 	rdf:rest _:c14n93 .
@@ -1322,8 +1297,6 @@ _:c14n86 a owl:Restriction ;
 _:c14n87 a owl:Restriction ;
 	owl:minCardinality 0 ;
 	owl:onProperty ks:is_living .
-_:c14n88 rdf:first ks:Person ;
-	rdf:rest _:c14n296 .
 _:c14n89 rdf:first ks:LongEnum\#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern ;
 	rdf:rest _:c14n53 .
 _:c14n9 a owl:Restriction ;
