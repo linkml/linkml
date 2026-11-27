@@ -151,6 +151,54 @@ def test_exceeded_max_warnings_flag(runner):
         assert "warning  Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
 
 
+@pytest.mark.parametrize(
+    "warning_options",
+    [
+        pytest.param(["--ignore-warnings"], id="ignore-warnings"),
+        pytest.param(["--max-warnings", "100"], id="max-warnings"),
+        pytest.param(["--ignore-warnings", "--max-warnings", "100"], id="both"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("schema", "expected_diagnostics"),
+    [
+        pytest.param(
+            """
+id: http://example.org/test
+name: test
+
+classes:
+  person:
+    description: a person
+""",
+            (
+                "error    Schema does not have class with `tree_root: true`  (tree_root_class)",
+                "warning  Class has name 'person'  (standard_naming)",
+            ),
+            id="lint-rule-error-and-warning",
+        ),
+        pytest.param(
+            "id: http://example.org/test\n",
+            ("error    In <root>: 'name' is a required property  (valid-schema)",),
+            id="metamodel-error",
+        ),
+    ],
+)
+def test_error_exit_code_with_warning_allowances(
+    runner: CliRunner, warning_options: list[str], schema: str, expected_diagnostics: tuple[str, ...]
+) -> None:
+    """Warning allowances must preserve failure for lint-rule and metamodel errors."""
+    config_file = "config.yaml"
+    with runner.isolated_filesystem():
+        Path(SCHEMA_FILE).write_text(schema)
+        write_config_file(config_file, extends_recommended=True)
+
+        result = runner.invoke(main, ["--config", config_file, *warning_options, SCHEMA_FILE])
+        assert result.exit_code == 2
+        for diagnostic in expected_diagnostics:
+            assert diagnostic in result.stdout
+
+
 def test_no_schema_errors(runner):
     with runner.isolated_filesystem():
         with open(SCHEMA_FILE, "w") as f:
