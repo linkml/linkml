@@ -243,6 +243,15 @@ class OwlSchemaGenerator(Generator):
     language-tagged.  Conforms to :rfc:`5646` (BCP 47).
     """
 
+    exclude_metaslots: Iterable[str] = field(default_factory=list)
+    """Names of metamodel slots whose values are left out of the element metadata.
+
+    For example ``["from_schema"]`` leaves out ``skos:inScheme`` on every class and
+    property. This applies to the metadata of classes, slots, types, enums, permissible
+    values and the ontology header; ``annotations`` are not affected. By default
+    nothing is excluded.
+    """
+
     # Metaslot ranges that represent human-readable text (eligible for language tags).
     # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, enums, …)
     # is technical and must never be language-tagged.
@@ -340,6 +349,10 @@ class OwlSchemaGenerator(Generator):
         self._language_resolver = LanguageTagResolver(self.default_language)
         if self.xsd_anyuri_as_iri is not None:
             deprecation_warning(XSD_ANYURI_AS_IRI_OPTION, stack_level=4)
+        self.exclude_metaslots = frozenset(self.exclude_metaslots)
+        unknown = self.exclude_metaslots - set(self.metamodel_schemaview.all_slots())
+        if unknown:
+            raise ValueError(f"Not metamodel slots, cannot exclude: {', '.join(sorted(unknown))}")
         super().__post_init__()
 
     def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
@@ -455,6 +468,8 @@ class OwlSchemaGenerator(Generator):
                 # ignore if unset or an empty list
                 continue
             metaslot_name = sn_mappings.get(metaslot_name).name
+            if metaslot_name in self.exclude_metaslots:
+                continue
             metaslot = msv.induced_slot(metaslot_name, e.class_name)
             metaslot_curie = msv.get_uri(metaslot, native=False, expand=False)
             if metaslot_curie.startswith("linkml:"):
@@ -2007,6 +2022,15 @@ class OwlSchemaGenerator(Generator):
         "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
         "skos:definition and other text annotations are emitted with the "
         "specified language tag.  Element-level in_language overrides this."
+    ),
+)
+@click.option(
+    "--exclude-metaslot",
+    "exclude_metaslots",
+    multiple=True,
+    help=(
+        "Name of a metamodel slot whose values are left out of the element metadata, "
+        "e.g. from_schema to leave out skos:inScheme. Can be repeated."
     ),
 )
 @click.option(

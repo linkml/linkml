@@ -116,6 +116,26 @@ for each property (§5.8.1). Slots without the role keep their object or data pr
 projection, also when a metaclass declares them; LinkML then puns the annotated element
 as an individual, as it does for all metadata.
 
+Leaving out element metadata
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The generator writes the value of every metamodel slot that is mapped outside the
+``linkml:`` namespace. For example ``from_schema``, which SchemaView sets on every
+element, is written as ``skos:inScheme``, and ``title`` as ``dcterms:title``.
+``--exclude-metaslot`` names a metamodel slot to leave out; it can be repeated:
+
+.. code-block:: bash
+
+   gen-owl --exclude-metaslot from_schema --exclude-metaslot title my_schema.yaml
+
+This applies to classes, slots, types, enums, permissible values and the ontology
+header, and the declarations of the predicates that are left out go with them.
+``annotations`` are not affected. A name that is not a metamodel slot is an error.
+
+``skos:inScheme`` points at the schema ``id``, while the ontology IRI is the ``id`` with
+``--ontology-uri-suffix`` (``.owl.ttl`` by default) appended. Use ``--ontology-uri-suffix ""``
+to make the two the same.
+
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
