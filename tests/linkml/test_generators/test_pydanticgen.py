@@ -131,7 +131,7 @@ enums:
 
 
 def test_pydantic_enum_without_values():
-    """An enum that lists no permissible values validates as a string and has a JSON Schema."""
+    """An enum with no permissible values validates as a plain string, as a regular enum does, and has a JSON Schema."""
     unit_test_schema = """
 id: unit_test
 name: unit_test
@@ -146,16 +146,22 @@ imports:
 enums:
   OpenEnum:
     description: an open set of codes
+  ClosedEnum:
+    permissible_values:
+      IE:
 
 classes:
   Thing:
     attributes:
       code:
         range: OpenEnum
+      closed_code:
+        range: ClosedEnum
 """
     mod = PydanticGenerator(schema=unit_test_schema).compile_module()
-    thing = mod.Thing(code="IE")
+    thing = mod.Thing(code="IE", closed_code="IE")
     assert type(thing.code) is str
+    assert type(thing.closed_code) is str
     assert thing.code == "IE"
     with pytest.raises(ValidationError):
         mod.Thing(code=1)
