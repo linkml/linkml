@@ -67,6 +67,19 @@ def assert_mdfile_contains(
         assert found
 
 
+def test_link_mermaid_keeps_an_absolute_url():
+    """An absolute type URL is returned unchanged (#4290)."""
+    gen = DocGenerator.__new__(DocGenerator)
+    with patch.object(
+        DocGenerator,
+        "link",
+        return_value="[uri](http://www.w3.org/2001/XMLSchema#anyURI)",
+    ):
+        assert gen.link_mermaid(None) == "http://www.w3.org/2001/XMLSchema#anyURI"
+    with patch.object(DocGenerator, "link", return_value="[Person](Person.md)"):
+        assert gen.link_mermaid(None) == "../Person/"
+
+
 def test_latex_generation(kitchen_sink_path, tmp_path):
     """Tests minimal latex generation"""
     gen = DocGenerator(kitchen_sink_path, mergeimports=True, no_types_dir=True, format="latex")
