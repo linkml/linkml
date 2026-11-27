@@ -13,6 +13,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.common.naming import escape_python_keyword
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
@@ -1316,18 +1317,20 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             else:
                 keyed = True
             if identifier:
+                # underscored name, as in data and dataclass field (``term id`` -> ``term_id``)
+                key_name = super().slot_name(identifier)
                 if not slot.inlined_as_list:
                     rlines.append(
                         f'self._normalize_inlined_as_dict(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
                 else:
                     rlines.append(
                         f'self._normalize_inlined_as_list(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
             else:
@@ -1445,11 +1448,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             return ""
 
     def gen_slot(self, slot: SlotDefinition) -> str:
-        python_slot_name = underscore(slot.name)
         # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
         # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
-        if keyword.iskeyword(python_slot_name):
-            python_slot_name = python_slot_name + "_"
+        python_slot_name = escape_python_keyword(underscore(slot.name))
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)

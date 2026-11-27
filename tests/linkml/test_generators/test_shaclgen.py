@@ -400,7 +400,7 @@ def test_ifabsent(input_path):
             # pyoxigraph's RDFC-1.0 serialization drops explicit ^^xsd:string
             # per RDF 1.1 (plain literals and xsd:string are equivalent).
             # Accept either form for xsd:string typed values.
-            expected = Literal(default_value, datatype=datatype)
+            expected = default_value if isinstance(default_value, URIRef) else Literal(default_value, datatype=datatype)
             if (subject, SH.defaultValue, expected) in g:
                 return
             if datatype and str(datatype) == "http://www.w3.org/2001/XMLSchema#string":
@@ -446,10 +446,10 @@ def test_ifabsent(input_path):
         "2024-02-08T09:39:25",
         datatype=ShaclDataType.DATETIME.uri_ref,
     )
+    # A uri value is an IRI (sh:nodeKind sh:IRI), so its default is one too.
     check_slot_default_value(
         URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_uri"),
-        "https://w3id.org/linkml/tests/kitchen_sink/ifabsent_boolean",
-        datatype=ShaclDataType.URI.uri_ref,
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_boolean"),
     )
     check_slot_default_value(URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_not_literal"), "heartfelt")
 

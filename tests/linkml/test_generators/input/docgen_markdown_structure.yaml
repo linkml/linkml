@@ -1,0 +1,233 @@
+id: https://example.org/docgen_markdown_structure
+name: docgen_markdown_structure
+title: Docgen Markdown Structure
+description: |-
+  Exercises every conditional section of the docgen templates so that the
+  Markdown structure of the generated pages can be checked.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/docgen_markdown_structure/
+  schema: http://schema.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+subsets:
+  core_subset:
+    description: A subset with classes, slots and enums in it
+
+types:
+  ConstrainedString:
+    typeof: string
+    uri: ex:ConstrainedString
+    pattern: "^[a-z]+$"
+    minimum_value: 1
+    maximum_value: 10
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+      partial_match: true
+    equals_string: abc
+    implicit_prefix: ex
+  ExpressionType:
+    typeof: string
+    any_of:
+      - pattern: "^a"
+      - pattern: "^b"
+    all_of:
+      - pattern: "^."
+    exactly_one_of:
+      - pattern: "^c"
+    none_of:
+      - pattern: "^d"
+
+slots:
+  plain_slot:
+    description: A slot with nothing but a range
+  required_slot:
+    description: Only cardinality follows the Type and Range table
+    required: true
+  readonly_slot:
+    description: Only Slot Characteristics follows the Type and Range table
+    readonly: "yes"
+  minimum_value_slot:
+    description: Only Value Constraints follows the Type and Range table
+    range: integer
+    minimum_value: 0
+  list_slot:
+    multivalued: true
+    list_elements_ordered: true
+    list_elements_unique: true
+    identifier: true
+    in_subset:
+      - core_subset
+  constrained_slot:
+    description: Additional Constraints follows the Type and Range table
+    structured_pattern:
+      syntax: "{word}"
+      interpolated: true
+    equals_string: foo
+    equals_string_in:
+      - foo
+      - bar
+    equals_number: 3
+    unit:
+      ucum_code: m
+      symbol: m
+    implicit_prefix: ex
+  relational_slot:
+    description: Relationship Properties follows the Type and Range table
+    symmetric: true
+    transitive: true
+    inverse: plain_slot
+  advanced_slot:
+    description: Advanced Properties follows the Type and Range table
+    subproperty_of: plain_slot
+    disjoint_with:
+      - readonly_slot
+    children_are_mutually_disjoint: true
+    value_presence: PRESENT
+    type_mappings:
+      - framework: python
+        type: str
+  expression_slot:
+    description: Expressions & Logic follows the Type and Range table
+    any_of:
+      - range: string
+      - range: integer
+    all_of:
+      - pattern: "^."
+    exactly_one_of:
+      - range: string
+    none_of:
+      - range: boolean
+    equals_expression: "{plain_slot}"
+  mixin_slot:
+    mixin: true
+  mixed_slot:
+    mixins:
+      - mixin_slot
+  status_slot:
+    range: StatusEnum
+  metadata_slot:
+    description: |-
+      First description line.
+      Second description line.
+    categories:
+      - schema:Thing
+    keywords:
+      - keyword
+    aliases:
+      - alias
+    comments:
+      - a comment
+    todos:
+      - a todo
+    see_also:
+      - https://example.org/see_also
+    notes:
+      - a note
+    status: ex:testing
+    rank: 1
+    annotations:
+      purpose: testing
+    exact_mappings:
+      - schema:name
+    examples:
+      - value: example value
+
+classes:
+  Mixin:
+    mixin: true
+    slots:
+      - mixin_slot
+  Parent:
+    abstract: true
+    slots:
+      - plain_slot
+  Thing:
+    is_a: Parent
+    mixins:
+      - Mixin
+    class_uri: schema:Thing
+    tree_root: true
+    in_subset:
+      - core_subset
+    id_prefixes:
+      - ex
+    defining_slots:
+      - list_slot
+    slots:
+      - required_slot
+      - readonly_slot
+      - minimum_value_slot
+      - list_slot
+      - constrained_slot
+      - relational_slot
+      - advanced_slot
+      - expression_slot
+      - mixed_slot
+      - status_slot
+      - metadata_slot
+    unique_keys:
+      main_key:
+        unique_key_slots:
+          - list_slot
+        consider_nulls_inequal: true
+    any_of:
+      - slot_conditions:
+          required_slot:
+            required: true
+    slot_conditions:
+      readonly_slot:
+        required: true
+    rules:
+      - title: a rule
+        preconditions:
+          slot_conditions:
+            required_slot:
+              equals_string: x
+        postconditions:
+          slot_conditions:
+            readonly_slot:
+              required: true
+
+enums:
+  StatusEnum:
+    enum_uri: ex:StatusEnum
+    in_subset:
+      - core_subset
+    permissible_values:
+      active:
+        description: Active
+        title: Active title
+      retired:
+        deprecated: no longer used
+  CodeSetEnum:
+    code_set: ex:codes
+    code_set_tag: v1
+    code_set_version: "1.0"
+    pv_formula: CODE
+  ReachableEnum:
+    reachable_from:
+      source_ontology: ex:onto
+      source_nodes:
+        - ex:root
+      relationship_types:
+        - ex:part_of
+  OperationsEnum:
+    inherits:
+      - StatusEnum
+    include:
+      - reachable_from:
+          source_ontology: ex:onto
+          source_nodes:
+            - ex:root
+          is_direct: true
+      - concepts:
+          - ex:concept
+    minus:
+      - permissible_values:
+          retired: {}

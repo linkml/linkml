@@ -14,7 +14,7 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 RUN=uv run
 
 lint-fix:
-	$(RUN) tox -e format
+	uvx pre-commit run --all-files
 
 format: lint-fix
 

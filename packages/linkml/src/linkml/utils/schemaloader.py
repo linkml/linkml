@@ -32,6 +32,9 @@ from linkml_runtime.utils.metamodelcore import Bool
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import TypedNode
 
+# Namespace given to a prefix that is used but not declared; not a declaration of the schema.
+UNKNOWN_NAMESPACE = "http://example.org/UNKNOWN/"
+
 lgr = logging.getLogger(__name__)
 
 
@@ -1067,7 +1070,7 @@ class SchemaLoader:
         if prefix:
             if prefix not in self.namespaces:
                 self.logger.warning(f"{TypedNode.yaml_loc(prefix_or_curie_or_uri)}Unrecognized prefix: {prefix}")
-                self.namespaces[prefix] = f"http://example.org/UNKNOWN/{prefix}/"
+                self.namespaces[prefix] = f"{UNKNOWN_NAMESPACE}{prefix}/"
             else:
                 case_adjusted_prefix = self.namespaces.prefix_for(prefix_or_curie_or_uri, case_shift=True)
                 if case_adjusted_prefix != prefix:
