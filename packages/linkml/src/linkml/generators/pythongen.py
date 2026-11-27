@@ -13,6 +13,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
+from linkml.generators.common.naming import escape_python_keyword
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
@@ -293,7 +294,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 # Enumerations
 {self.gen_enumerations()}
-
+{self.gen_post_enum_references()}
 # Slots
 {self.gen_slotdefs()}"""
 
@@ -452,22 +453,41 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             class AnnotationTagPid(ThingPid):   # ThingPid must be defined first
                 pass
 
-        Order matters: because ``_sort_classes`` puts every data class after its parent,
-        but is ignorant about wrapper-class inheritance, so wrappers can still come out
-        in the wrong order, causing a ``NameError`` on import.
+        Order matters: "_sort_classes" puts every data class after its parent
+        but is ignorant of wrapper-class inheritance, so wrappers can still come
+        out in the wrong order, causing a ``NameError`` on import. Collection
+        (:meth:`_collect_references`) and dependency-ordered emission
+        (:meth:`_render_references`) keep parents ahead of their children.
 
-        Approach: collect first, then emit in dependency order
-        -------------------------------------------------
-        1. Walk classes in sorted order and record each wrapper class plus its parent.
-        2. Before writing any wrapper, recursively write its parent first.
-           If the parent is an imported type (e.g. ``URIorCURIE``) it is already
-           available so stop immediately.
+        Wrappers whose ultimate base is an enum are deferred and emitted by
+        :meth:`gen_post_enum_references` after the Enumerations section, since
+        enum classes are defined later in the generated file.
         """
-        # Step 1: record every wrapper class without writing anything yet.
-        # ref_info: name -> (parent name, source line to emit)
-        # emit_order: original iteration order, used as sibling tie-breaker
+        return self._render_references(enum_rooted=False)
+
+    def gen_post_enum_references(self) -> str:
+        """Emit class-reference wrappers whose ultimate base is an enum.
+
+        These must be emitted after the Enumerations section because the wrapper
+        "class FooBar(BarEnum): pass" requires "BarEnum" to already exist.
+        See :meth:`gen_references` for the general wrapper mechanism.
+        """
+        return self._render_references(enum_rooted=True)
+
+    def _collect_references(self) -> tuple[dict[str, tuple[str, str]], list[str], set[str]]:
+        """Walk classes in sorted order and record each wrapper class plus its parent.
+
+        No output is written here; emission is deferred to :meth:`_render_references`
+        so that parents can be written before children.
+
+        :return: tuple of (ref_info, emit_order, enum_names) where
+            ref_info maps wrapper name -> (parent name, source line to emit),
+            emit_order preserves discovery order, and
+            enum_names is the set of camelcased enum names defined in this schema.
+        """
         ref_info: dict[str, tuple[str, str]] = {}
         emit_order: list[str] = []
+        enum_names = {camelcase(e.name) for e in self.schema.enums.values() if not e.imported_from}
 
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
@@ -492,29 +512,63 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                         emit_order.append(classname)
                         break  # Only the first primary key matters.
 
-        # Step 2: write each wrapper only after its parent has been written.
+        return ref_info, emit_order, enum_names
+
+    def _render_references(self, enum_rooted: bool) -> str:
+        """Render wrappers collected by :meth:`_collect_references`, partitioned
+        by whether their root base is an enum.
+
+        Each wrapper is written only after its parent has been written. If the
+        parent is an imported type (e.g. URIorCURIE) or a locally-defined
+        enum it is already available and the recursion stops.
+
+        :param enum_rooted: when True, emit only wrappers whose transitive base is
+            a locally-defined enum; when False, emit all other wrappers.
+        """
+        ref_info, emit_order, enum_names = self._collect_references()
+
+        def _root_base(name: str) -> str:
+            """Walk parent chain to find the ultimate (non-wrapper) base name."""
+            seen: set[str] = set()
+            current = name
+            while current in ref_info and current not in seen:
+                seen.add(current)
+                current = ref_info[current][0]
+            return current
+
         emitted: set[str] = set()
         in_progress: set[str] = set()
         rval: list[str] = []
 
         def _emit(name: str) -> None:
             if name in emitted or name not in ref_info:
-                return  # Already written, or imported type — nothing to do.
+                return  # Already written, or imported/enum type - nothing to do.
             if name in in_progress:
                 raise ValueError(f"Cyclic wrapper inheritance at {name}")
             in_progress.add(name)
             parent_cls, line = ref_info[name]
             try:
-                _emit(parent_cls)  # Write the parent first.
+                # Treat parent as external (do not recurse) when it is an enum
+                # defined locally, even if a wrapper happens to share its name.
+                if parent_cls not in enum_names:
+                    _emit(parent_cls)  # Write the parent first.
             finally:
                 in_progress.discard(name)
             emitted.add(name)
             rval.append(line)
 
         for name in emit_order:
+            is_enum_rooted = _root_base(name) in enum_names
+            if is_enum_rooted != enum_rooted:
+                continue
             _emit(name)
 
-        return "\n\n\n".join(rval)
+        if not rval:
+            return ""
+        body = "\n\n\n".join(rval)
+        # When emitting post-enum wrappers, frame with surrounding blank lines so
+        # the section is separated from the Enumerations and Slots sections.
+        return f"\n\n{body}\n" if enum_rooted else body
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
@@ -1250,7 +1304,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
-        elif slot.inlined:
+        elif slot.inlined and slot.range in self.schema.classes:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
             if not identifier:
@@ -1263,18 +1317,20 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             else:
                 keyed = True
             if identifier:
+                # underscored name, as in data and dataclass field (``term id`` -> ``term_id``)
+                key_name = super().slot_name(identifier)
                 if not slot.inlined_as_list:
                     rlines.append(
                         f'self._normalize_inlined_as_dict(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
                 else:
                     rlines.append(
                         f'self._normalize_inlined_as_list(slot_name="{aliased_slot_name}", '
                         f"slot_type={base_type_name}, "
-                        f'key_name="{self.aliased_slot_name(identifier)}", '
+                        f'key_name="{key_name}", '
                         f"keyed={keyed})"
                     )
             else:
@@ -1392,11 +1448,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             return ""
 
     def gen_slot(self, slot: SlotDefinition) -> str:
-        python_slot_name = underscore(slot.name)
         # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
         # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
-        if keyword.iskeyword(python_slot_name):
-            python_slot_name = python_slot_name + "_"
+        python_slot_name = escape_python_keyword(underscore(slot.name))
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)

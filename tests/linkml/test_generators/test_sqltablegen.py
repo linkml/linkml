@@ -98,7 +98,7 @@ def test_dialect() -> None:
     slots = ["full name", "description", "age"]
     b.add_class(DUMMY_CLASS, slots, description="My dummy class")
     b.add_defaults()
-    for dialect in ["postgresql", "sqlite", "mysql"]:
+    for dialect in ["postgresql", "sqlite", "mysql", "mssql"]:
         gen = SQLTableGenerator(b.schema, dialect=dialect)
         ddl = gen.generate_ddl()
 
@@ -114,6 +114,10 @@ def test_dialect() -> None:
             # newer versions of linkml-runtime enforce required for identifier slots
             assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl or "id INTEGER AUTO_INCREMENT" in ddl
             assert "COMMENT" in ddl
+        if dialect == "mssql":
+            # comments go through sp_addextendedproperty, which needs a schema name (#2800)
+            assert "N'My dummy class', 'schema', dbo, 'table'" in ddl
+            assert "'column', age" in ddl
 
 
 def test_generate_ddl(schema: str) -> None:

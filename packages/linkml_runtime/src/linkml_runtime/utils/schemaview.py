@@ -734,7 +734,7 @@ class SchemaView:
         """
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
-            for c in self.all_classes().values():
+            for c in self.all_classes(imports=imports).values():
                 for aname, a in c.attributes.items():
                     if aname not in slots:
                         slots[aname] = a
@@ -891,7 +891,7 @@ class SchemaView:
         :param slot_name: name of the slot to be retrieved
         :param imports: include import closure
         :param attributes: include attributes
-        :param strict: raise ValueError is not found
+        :param strict: raise ValueError if not found
         :return: slot definition
         """
         slot = self.all_slots(imports=imports, attributes=False).get(slot_name, None)
@@ -915,8 +915,9 @@ class SchemaView:
     ) -> SubsetDefinition | None:
         """Retrieve a subset from the schema.
 
-        :param subset_name: name of the subsey to be retrieved
+        :param subset_name: name of the subset to be retrieved
         :param imports: include import closure
+        :param strict: raise ValueError if not found
         :return: subset definition
         """
         s = self.all_subsets(imports).get(subset_name, None)

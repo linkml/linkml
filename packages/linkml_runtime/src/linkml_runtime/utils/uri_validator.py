@@ -323,18 +323,21 @@ safe_CURIE = rf"""(?P<safe_CURIE>
 # -----------------------------------------------------------------------------
 #
 ### Compile the regular expressions for better performance
+#
+# Each pattern ends in \Z, not $, because $ also matches before a final newline,
+# and no URI or CURIE holds one.
 
-uri_validator = re.compile(f"^{URI}$", re.VERBOSE)
+uri_validator = re.compile(rf"^{URI}\Z", re.VERBOSE)
 
 # uri_ref_validator = re.compile(f"^{URI_reference}$", re.VERBOSE)
 
-uri_relative_ref_validator = re.compile(f"^{relative_ref}$", re.VERBOSE)
+uri_relative_ref_validator = re.compile(rf"^{relative_ref}\Z", re.VERBOSE)
 
-abs_uri_validator = re.compile(f"^{absolute_URI}$", re.VERBOSE)
+abs_uri_validator = re.compile(rf"^{absolute_URI}\Z", re.VERBOSE)
 
-curie_validator = re.compile(f"^{CURIE}$", re.VERBOSE)
+curie_validator = re.compile(rf"^{CURIE}\Z", re.VERBOSE)
 
-safe_curie_validator = re.compile(f"^{safe_CURIE}$", re.VERBOSE)
+safe_curie_validator = re.compile(rf"^{safe_CURIE}\Z", re.VERBOSE)
 
 # -----------------------------------------------------------------------------
 #

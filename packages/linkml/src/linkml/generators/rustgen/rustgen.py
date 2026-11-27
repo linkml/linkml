@@ -139,7 +139,7 @@ PYTHON_IMPORTS = Imports(
     imports=[
         Import(
             module="pyo3",
-            version="0.25.0",
+            version="0.29.3",
             objects=[ObjectImport(name="prelude::*"), ObjectImport(name="FromPyObject")],
             feature_flag="pyo3",
             features=["chrono"],
@@ -152,7 +152,7 @@ STUBGEN_IMPORTS = Imports(
     imports=[
         Import(
             module="pyo3-stub-gen",
-            version="0.13.1",
+            version="0.23.1",
             objects=[
                 ObjectImport(name="define_stub_info_gatherer"),
                 ObjectImport(name="derive::gen_stub_pyclass"),

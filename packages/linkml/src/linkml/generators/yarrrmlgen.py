@@ -10,6 +10,7 @@ import yaml
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition
+from linkml_runtime.utils.rdf_terms import TermKind, type_term
 
 
 class FlowList(list):
@@ -343,10 +344,14 @@ class YarrrmlGenerator(Generator):
 
             # Scalar values and datatype mapping
             datatype = None
-            t = sv.get_type(s.range) if s.range else None
-
-            if t:
-                datatype = sv.get_uri(t, expand=False)
+            if s.range in sv.all_types():
+                term = type_term(sv, s.range)
+                if term.kind.is_node:
+                    # YARRRML term types are iri, blank and literal; a kind that admits IRIs maps to iri.
+                    term_type = "blank" if term.kind is TermKind.BLANK_NODE else "iri"
+                    po.append({"p": pred, "o": {"value": f"$({var})", "type": term_type}})
+                    continue
+                datatype = sv.induced_type(s.range).uri
 
             if datatype:
                 po.append({"p": pred, "o": {"value": f"$({var})", "datatype": str(datatype)}})

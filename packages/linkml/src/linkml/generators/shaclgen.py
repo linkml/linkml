@@ -3,6 +3,7 @@ import os
 import string
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import ClassVar
 
 import click
 from jsonasobj2 import JsonObj, as_dict
@@ -11,7 +12,8 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
-from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
+from linkml.generators.common.annotations import declared_annotation
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
@@ -19,6 +21,7 @@ from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, PresenceEnum
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+from linkml_runtime.utils.rdf_terms import TermKind, type_term, value_term
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
@@ -142,6 +145,9 @@ class ShaclGenerator(Generator):
     ignores any per-slot ``in_language``.
     """
 
+    diff_stable: bool = False
+    """Reduce blank-node label churn. See :ref:`rdf-in-version-control`."""
+
     emit_rules: bool = True
     """Emit ``sh:sparql`` constraints from LinkML ``rules:`` blocks.
 
@@ -196,7 +202,7 @@ class ShaclGenerator(Generator):
     def serialize(self, **args) -> str:
         g = self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, diff_stable=self.diff_stable)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -269,7 +275,20 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
 
-                prop_pv(SH.path, slot_uri)
+                is_ordered_list = s.multivalued and s.list_elements_ordered
+                if is_ordered_list:
+                    # Ordered multivalued slots are serialized as an rdf:List (see issue #3531),
+                    # so the value constraints must apply to each list member rather than to the
+                    # list head. Use a SHACL sequence path that steps through the slot, walks the
+                    # rdf:rest spine, then reads each rdf:first:
+                    #   sh:path ( <slot> [ sh:zeroOrMorePath rdf:rest ] rdf:first )
+                    rest_path = BNode()
+                    g.add((rest_path, SH.zeroOrMorePath, RDF.rest))
+                    seq_path = BNode()
+                    Collection(g, seq_path, [slot_uri, rest_path, RDF.first])
+                    prop_pv(SH.path, seq_path)
+                else:
+                    prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
                 prop_pv_text(SH.name, s.title)
@@ -290,8 +309,17 @@ class ShaclGenerator(Generator):
                     ).strip()
                     if msg_text:
                         g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
+                # Cardinality. For an ordered list the path is a SHACL sequence path over
+                # rdf:List members; SHACL value nodes are a *set*, so sh:minCount/sh:maxCount
+                # would count distinct member values, not list length -- a false violation on
+                # (a a b) with minimum_cardinality 3, a false pass on (a a a a) with
+                # maximum_cardinality 3. We therefore only assert non-emptiness (sh:minCount 1)
+                # for ordered lists and skip length-based counts. See #3531 / PR #3693 review.
                 # minCount
-                if s.minimum_cardinality is not None:
+                if is_ordered_list:
+                    if s.required or s.minimum_cardinality or s.exact_cardinality:
+                        prop_pv_literal(SH.minCount, 1)
+                elif s.minimum_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
                 elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
@@ -300,8 +328,11 @@ class ShaclGenerator(Generator):
                 # would cause spurious violations on every instance.
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
-                # maxCount
-                if s.maximum_cardinality is not None:
+                # maxCount (skipped for ordered lists: list length is not expressible over a
+                # set-valued sequence path)
+                if is_ordered_list:
+                    pass
+                elif s.maximum_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.maximum_cardinality)
                 elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.exact_cardinality)
@@ -359,6 +390,11 @@ class ShaclGenerator(Generator):
 
                             add_simple_data_type(st_node_pv, r)
                             range_list.append(st_node)
+                        # Propagate pattern constraint to the branch node.
+                        # A branch may combine range + pattern (e.g. range: string
+                        # with pattern: "^...") or specify pattern alone (no range).
+                        if any.pattern:
+                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
@@ -386,8 +422,6 @@ class ShaclGenerator(Generator):
                         self._add_enum(g, prop_pv, r)
                     else:
                         add_simple_data_type(prop_pv, r)
-                    if s.pattern:
-                        prop_pv(SH.pattern, Literal(s.pattern))
                     if s.equals_string:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, [s.equals_string])
@@ -398,11 +432,17 @@ class ShaclGenerator(Generator):
                         # Map subproperty_of to sh:in with slot descendants
                         self._add_subproperty_constraint(g, prop_pv, s)
 
+                if s.pattern:
+                    prop_pv(SH.pattern, Literal(s.pattern))
+
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
 
                 default_value = ifabsent_processor.process_slot(s, c)
                 if default_value:
+                    if s.range in sv.all_types() and type_term(sv, s.range).kind.is_node:
+                        # The default is a value of the slot, so it has the slot's term kind.
+                        default_value = value_term(sv, s.range, str(default_value))
                     prop_pv(SH.defaultValue, default_value)
 
             if self.emit_rules:
@@ -685,40 +725,23 @@ class ShaclGenerator(Generator):
         )
         func(SH["in"], pv_node)
 
-    # Type URIs denoting non-literal (IRI or blank-node) values.
-    # SHACL §4.8.1 <https://www.w3.org/TR/shacl/#NodeKindConstraintComponent>
-    # defines sh:IRI, sh:BlankNode, and sh:BlankNodeOrIRI as valid node kinds.
-    # These URIs map to sh:IRI or sh:BlankNodeOrIRI constraints (never sh:Literal).
-    _NON_LITERAL_TYPE_URIS = frozenset(
-        {
-            "xsd:anyURI",  # uri, uriorcurie → sh:IRI
-            "http://www.w3.org/ns/shex#nonLiteral",  # nodeidentifier → sh:BlankNodeOrIRI
-            "http://www.w3.org/ns/shex#iri",  # future-proofing → sh:IRI
-        }
-    )
-    # IRI-only subset: uri/uriorcurie must be strict IRI references (sh:IRI),
-    # while nodeidentifier (shex:nonLiteral) allows blank nodes too (sh:BlankNodeOrIRI).
-    # See RDF 1.1 §3.2–3.3 <https://www.w3.org/TR/rdf11-concepts/#section-IRIs>.
-    _IRI_ONLY_TYPE_URIS = frozenset(
-        {
-            "xsd:anyURI",
-        }
-    )
+    # SHACL §4.1.3 node kinds for the node term kinds of LinkML types.
+    _SH_NODE_KINDS: ClassVar[dict[TermKind, URIRef]] = {
+        TermKind.IRI: SH.IRI,
+        TermKind.BLANK_NODE: SH.BlankNode,
+        TermKind.BLANK_NODE_OR_IRI: SH.BlankNodeOrIRI,
+    }
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
         # Types can inherit URI and pattern constraints.
         rt = sv.induced_type(r)
-        type_uri = rt.uri
-        expanded = sv.get_uri(rt, expand=True) if type_uri else None
-        if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
-            if type_uri in self._IRI_ONLY_TYPE_URIS:
-                func(SH.nodeKind, SH.IRI)
-            else:
-                func(SH.nodeKind, SH.BlankNodeOrIRI)
-        elif type_uri:
+        term = type_term(sv, r) if rt.uri else None
+        if term is not None and term.kind.is_node:
+            func(SH.nodeKind, self._SH_NODE_KINDS[term.kind])
+        elif term is not None:
             func(SH.nodeKind, SH.Literal)
-            func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
+            func(SH.datatype, URIRef(term.datatype))
             if rt.pattern:
                 func(SH.pattern, Literal(rt.pattern))
             if rt.annotations and self.include_annotations:
@@ -756,17 +779,17 @@ class ShaclGenerator(Generator):
         """
         Get all valid values from slot hierarchy for subproperty_of constraint.
 
-        Values are formatted according to range type:
-        - uri/uriorcurie: Returns URIRef objects with full URIs
-        - string: Returns Literal objects with slot names
+        Values take the term kind of the slot's range type:
+        - IRI types (uri, uriorcurie): URIRef objects with full URIs
+        - literal types (string, curie): Literal objects with slot names or CURIEs
 
         :param slot: SlotDefinition with subproperty_of set
         :return: List of URIRef or Literal objects for sh:in constraint
         """
         sv = self.schemaview
 
-        # SHACL uses full URIs for URI-like ranges
-        use_uris = is_uri_range(sv, slot.range)
+        # sh:in matches terms exactly (SHACL §4.8.3), so the values take the slot's term kind.
+        use_uris = slot.range in sv.all_types() and type_term(sv, slot.range).kind.is_node
 
         # Get string values from shared utility
         # For URI ranges, get full URIs; for string ranges, get formatted names
@@ -787,6 +810,10 @@ class ShaclGenerator(Generator):
         if type(annotations) is JsonObj:
             annotations = as_dict(annotations)
         for a in annotations.values():
+            declared = declared_annotation(sv, item, a["tag"], a["value"], self._resolve_language(item))
+            if declared is not None:
+                func(declared.predicate, declared.value)
+                continue
             # If ':' is in the tag, treat it as a CURIE, otherwise string Literal
             if ":" in a["tag"]:
                 N_predicate = URIRef(sv.expand_curie(a["tag"]))
@@ -927,6 +954,15 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "When enabled (default), recognised rule patterns (e.g. boolean-guard) "
         "are translated into SHACL-SPARQL constraints on the corresponding "
         "sh:NodeShape. Use --no-emit-rules to suppress rule generation."
+    ),
+)
+@click.option(
+    "--diff-stable/--no-diff-stable",
+    default=False,
+    show_default=True,
+    help=(
+        "Reduce blank-node label churn across edits. See "
+        "https://linkml.io/linkml/howtos/collaborative-development.html#rdf-in-version-control"
     ),
 )
 @click.version_option(__version__, "-V", "--version")

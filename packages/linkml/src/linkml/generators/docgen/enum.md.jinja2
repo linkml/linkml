@@ -76,16 +76,16 @@ URI: {{ gen.uri_link(element) }}
 **Enum URI:** {{ gen.uri_link(element.enum_uri) }}
 {% endif %}
 
-{%- set has_enum_source = element.code_set or element.pv_formula or element.reachable_from
+{% set has_enum_source = element.code_set or element.pv_formula or element.reachable_from
     or element.matches or element.concepts %}
 
-{%- if has_enum_source %}
+{% if has_enum_source %}
 ## Enumeration Source
 
-{%- if element.code_set %}
+{% if element.code_set %}
 **Code Set:** {{ gen.uri_link(element.code_set) }}
 
-{%- if element.code_set_tag %}
+{% if element.code_set_tag %}
 - **Tag:** {{ element.code_set_tag }}
 {%- endif %}
 {%- if element.code_set_version %}
@@ -93,14 +93,14 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 {%- endif %}
 
-{%- if element.pv_formula %}
+{% if element.pv_formula %}
 **Permissible Value Formula:** {{ element.pv_formula }}
 {%- endif %}
 
-{%- if element.reachable_from %}
+{% if element.reachable_from %}
 **Reachable From:**
 
-{%- if element.reachable_from.source_ontology %}
+{% if element.reachable_from.source_ontology %}
 - **Source:** {{ gen.link(element.reachable_from.source_ontology) }}
 {%- endif %}
 {%- if element.reachable_from.source_nodes %}
@@ -111,13 +111,13 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 {%- endif %}
 
-{%- if element.matches %}
+{% if element.matches %}
 **Matches:**
 
 - **Expression:** `{{ element.matches.string_expression }}`
 {%- endif %}
 
-{%- if element.concepts %}
+{% if element.concepts %}
 **Concepts:** {{ gen.uri_links(element.concepts) | join(', ') }}
 {%- endif %}
 
@@ -132,7 +132,7 @@ URI: {{ gen.uri_link(element) }}
 {%- endfor -%}
 ## Permissible Values
 
-{%- if has_pv_extras.found %}
+{% if has_pv_extras.found %}
 | Value | Meaning | Description | Additional Info |
 | --- | --- | --- | --- |
 {% for pv in element.permissible_values.values() -%}
@@ -154,23 +154,23 @@ URI: {{ gen.uri_link(element) }}
 _This is a dynamic enum_
 {% endif %}
 
-{%- set has_enum_ops = element.inherits or element.include or element.minus %}
+{% set has_enum_ops = element.inherits or element.include or element.minus %}
 
-{%- if has_enum_ops %}
+{% if has_enum_ops %}
 ## Enumeration Operations
 
-{%- if element.inherits %}
+{% if element.inherits %}
 **Inherits From:** {{ gen.links(element.inherits) | join(', ') }}
 {%- endif %}
 
-{%- if element.include %}
+{% if element.include %}
 **Includes:**
 {% for expr in element.include -%}
 {{ render_enum_expression(expr) }}
 {%- endfor %}
 {%- endif %}
 
-{%- if element.minus %}
+{% if element.minus %}
 **Excludes:**
 {% for expr in element.minus -%}
 {{ render_enum_expression(expr) }}

@@ -1643,6 +1643,30 @@ def test_all_slots_induced_slots(schema_view_with_imports: SchemaView) -> None:
             assert s.from_schema == "https://w3id.org/linkml/tests/core"
 
 
+@pytest.mark.parametrize(("imports", "expected"), [(True, ["imported_attr", "local_attr"]), (False, ["local_attr"])])
+def test_all_slots_attributes_follow_imports(imports: bool, expected: list[str]) -> None:
+    """Test that ``all_slots`` takes attributes only from the classes ``imports`` selects.
+
+    Without imports, an attribute of an imported class is as foreign as the class itself,
+    which ``all_classes(imports=False)`` already leaves out.
+    """
+    imported = {
+        "id": "https://example.org/imported",
+        "name": "imported",
+        "prefixes": {"linkml": "https://w3id.org/linkml/"},
+        "imports": ["linkml:types"],
+        "classes": {"Imported": {"attributes": {"imported_attr": {"range": "string"}}}},
+    }
+    root = SchemaDefinition(
+        id="https://example.org/root",
+        name="root",
+        imports=["linkml:types", "https://example.org/imported"],
+        classes=[ClassDefinition(name="Local", attributes={"local_attr": {"range": "string"}})],
+    )
+    view = SchemaView(root, importmap={"https://example.org/imported": imported})
+    assert sorted(view.all_slots(imports=imports)) == expected
+
+
 def test_all_types_induced_types(schema_view_with_imports: SchemaView) -> None:
     """Test all_types and the induced_type functions."""
     view = schema_view_with_imports

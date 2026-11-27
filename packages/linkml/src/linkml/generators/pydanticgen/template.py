@@ -1,12 +1,7 @@
 import sys
 from importlib.util import find_spec
 from keyword import iskeyword
-from typing import Any, ClassVar, Literal, get_args
-
-try:
-    from typing import Self
-except ImportError:
-    from typing_extensions import Self
+from typing import Any, ClassVar, Literal, Self, get_args
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field, computed_field, field_validator, model_validator

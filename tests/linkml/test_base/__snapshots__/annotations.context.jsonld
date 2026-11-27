@@ -8,7 +8,7 @@
          "@id": "annotations"
       },
       "tag": {
-         "@type": "xsd:anyURI",
+         "@type": "@id",
          "@id": "tag"
       },
       "value": {

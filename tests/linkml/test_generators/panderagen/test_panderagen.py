@@ -4,7 +4,7 @@ import re
 import pytest
 
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import PanderaDataframeGenerator, cli
+from linkml.generators.panderagen import PanderaDataframeGenerator, PolarsSchemaDataframeGenerator, cli
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
 np = pytest.importorskip("numpy", reason="NumPY not installed")
@@ -298,3 +298,83 @@ def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class,
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output
+
+
+def test_keyword_named_columns():
+    """A column named after a Python keyword, such as from, has the attribute from_ with the alias from, and its
+    checks still apply."""
+    from linkml.generators.panderagen.dataframe_generator import DataframeGenerator
+    from linkml.generators.panderagen.panderagen import PANDERA_GROUP
+
+    schema = """id: https://example.org/keywords
+name: keywords
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      id:
+        identifier: true
+      from:
+      class:
+        range: integer
+        minimum_value: 1
+"""
+    try:
+        modules = DataframeGenerator.compile_package_from_specification(PANDERA_GROUP, "keyword_package", schema)
+        window = modules["panderagen_class_based"].Window
+        df = pl.DataFrame({"id": ["w1"], "from": ["2026-01-01"], "class": [2]})
+        assert window.validate(df).columns == ["id", "from", "class"]
+        with pytest.raises(pandera.errors.SchemaError):
+            window.validate(df.with_columns(pl.lit(0).alias("class")))
+    finally:
+        DataframeGenerator.cleanup_package("keyword_package")
+
+
+def test_keyword_column_collision():
+    """A class with the columns from and from_ fails to generate a class-based model, because both would have the
+    attribute from_. The polars schema names its columns with strings, so it accepts both."""
+    schema = """id: https://example.org/keyword-collision
+name: keyword-collision
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Window:
+    attributes:
+      from:
+      from_:
+"""
+    with pytest.raises(ValueError, match="slots 'from' and 'from_' would both be the Python field 'from_'"):
+        PanderaDataframeGenerator(schema).serialize()
+    code = PolarsSchemaDataframeGenerator(schema).serialize()
+    assert '"from":' in code
+    assert '"from_":' in code
+
+
+@pytest.mark.parametrize("flag", ["--mergeimports", "--no-mergeimports"])
+def test_cli_accepts_mergeimports_flag(cli_runner, test_inputs_dir, flag):
+    """``gen-pandera`` must accept the standard ``--mergeimports/--no-mergeimports`` flag.
+
+    Regression: every other LinkML generator CLI declares this option via
+    ``shared_arguments``, but ``gen-pandera`` rolls its own decorator stack
+    and used to omit it. A user passing ``--mergeimports`` would hit
+    ``Error: No such option: --mergeimports`` even though the underlying
+    ``DataframeGenerator`` (via the ``Generator`` dataclass field) accepts
+    the kwarg perfectly well. Both polarities of the flag are exercised so
+    a future refactor that drops one side is caught.
+    """
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    result = cli_runner.invoke(cli, [flag, schema_path])
+
+    assert result.exit_code == 0, result.output
+    # Sanity-check that the run produced real output, not just a clean
+    # parse-and-exit. ``Organization`` is the canonical class in this fixture.
+    assert "class Organization(" in result.output
