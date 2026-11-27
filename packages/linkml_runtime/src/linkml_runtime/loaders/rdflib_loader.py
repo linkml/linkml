@@ -97,8 +97,9 @@ class RDFLibLoader(Loader):
         # Step 2: walk RDF graph starting from root subjects, constructing dict tree
         node_tuples_to_visit: list[tuple[VALID_SUBJECT, ClassDefinitionName]]  ## nodes and their type still to visit
         node_tuples_to_visit = [(subject, target_class.class_name) for subject in root_subjects]
-        uri_to_slot: dict[str, SlotDefinition]  ## lookup table for RDF predicates -> slots
-        uri_to_slot = {URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.all_slots().values()}
+        global_uri_to_slot: dict[URIRef, SlotDefinition]  ## fallback lookup table for RDF predicates -> slots
+        global_uri_to_slot = {URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.all_slots().values()}
+        class_uri_to_slot: dict[ClassDefinitionName, dict[URIRef, SlotDefinition]] = {}
         processed: set[VALID_SUBJECT] = set()  ## track nodes already visited, or already scheduled
         for n, _ in node_tuples_to_visit:
             processed.add(n)
@@ -122,6 +123,11 @@ class RDFLibLoader(Loader):
                         raise ValueError(f"Ambiguous types for {subject} == {type_classes}")
                     logger.info(f"Replacing {subject_class} with {type_classes}")
                     subject_class = type_classes[0].name
+            if subject_class not in class_uri_to_slot:
+                class_uri_to_slot[subject_class] = {
+                    URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.class_induced_slots(subject_class)
+                }
+            uri_to_slot = class_uri_to_slot[subject_class]
             # process all triples for this node
             for _, p, o in graph.triples((subject, None, None)):
                 processed_triples.add((subject, p, o))
@@ -130,13 +136,16 @@ class RDFLibLoader(Loader):
                     logger.debug(
                         f"Ignoring RDF.type for {subject} {o}, we automatically infer this from {subject_class}"
                     )
-                elif p not in uri_to_slot:
+                elif p not in uri_to_slot and p not in global_uri_to_slot:
                     if ignore_unmapped_predicates:
                         unmapped_predicates.add(p)
                     else:
                         raise MappingError(f"No pred for {p} {type(p)}")
                 else:
-                    slot = schemaview.induced_slot(uri_to_slot[p].name, subject_class)
+                    if p in uri_to_slot:
+                        slot = uri_to_slot[p]
+                    else:
+                        slot = schemaview.induced_slot(global_uri_to_slot[p].name, subject_class)
                     range_applicable_elements = schemaview.slot_applicable_range_elements(slot)
                     is_inlined = schemaview.is_inlined(slot)
                     slot_name = underscore(slot.name)
