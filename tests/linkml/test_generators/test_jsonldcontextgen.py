@@ -508,7 +508,7 @@ slots:
         [False, "int_dict", ""],
         [True, "int_list", "@set"],
         [True, "int_inlined_list", "@set"],
-        [True, "int_dict", "@index"],
+        [True, "int_dict", "@id"],
     ],
 )
 def test_container_list(input_path, fix_container, attribute, container_type):

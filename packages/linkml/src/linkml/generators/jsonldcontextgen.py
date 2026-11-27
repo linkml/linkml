@@ -353,6 +353,28 @@ class ContextGenerator(Generator):
 
         return True, str(namespace)
 
+    def _container(self, slot: SlotDefinition) -> dict[str, str]:
+        """Return the JSON-LD container of a multivalued *slot*.
+
+        - Inlined as a dict keyed by the range's ``identifier``: an id map
+          (JSON-LD 1.1 §4.6.3), so each key is the IRI of its node.
+        - Inlined as a dict keyed by the range's ``key``: a property-based index
+          map (§4.6.1.1) on the key slot, so each key is the value of that slot.
+        - ``list_elements_ordered``: a list (§4.3.1), which keeps the order.
+        - Otherwise a set.
+        """
+        if slot.inlined and not slot.inlined_as_list:
+            key_name = self.class_identifier(slot.range)
+            if key_name is not None:
+                key_slot = self.schema.slots[key_name]
+                if key_slot.identifier:
+                    return {"@container": "@id"}
+                return {"@container": "@index", "@index": self.namespaces.uri_for(key_slot.slot_uri)}
+            return {"@container": "@index"}
+        if slot.list_elements_ordered:
+            return {"@container": "@list"}
+        return {"@container": "@set"}
+
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if self.exclude_imports and slot.name not in self._local_slots:
             return
@@ -401,10 +423,7 @@ class ContextGenerator(Generator):
                         slot_def["@type"] = coercion
 
                 if self.fix_multivalue_containers and slot.multivalued:
-                    if slot.inlined and not slot.inlined_as_list:
-                        slot_def["@container"] = "@index"
-                    else:
-                        slot_def["@container"] = "@set"
+                    slot_def.update(self._container(slot))
 
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
@@ -575,7 +594,10 @@ class ContextGenerator(Generator):
     "--fix-multivalue-containers/--no-fix-multivalue-containers",
     default=False,
     show_default=True,
-    help="For multivalued attributes declare a fix container type ('@set' for lists, '@index' for dictionaries).",
+    help=(
+        "For multivalued slots declare a container: '@id' for dicts keyed by identifier, '@index' on the key slot "
+        "for dicts keyed by key, '@list' for list_elements_ordered and '@set' otherwise."
+    ),
 )
 @click.option(
     "--exclude-imports/--include-imports",

@@ -93,6 +93,19 @@ Example (``ex`` is the schema's ``default_prefix``):
 With ``gen-jsonld-context --use-curies``, ``id`` remains the context key and maps to
 ``@id``; ``demo_id`` is keyed as ``demo:id``.
 
+Containers for multivalued slots
+--------------------------------
+
+By default no ``@container`` is emitted. With ``--fix-multivalue-containers`` each
+multivalued slot gets the container for its form:
+
+- inlined as a dict keyed by the range's ``identifier``: ``"@container": "@id"``, so each
+  key is the IRI of its node;
+- inlined as a dict keyed by the range's ``key``: ``"@container": "@index"`` with
+  ``"@index"`` set to the key slot, so each key is the value of that slot;
+- ``list_elements_ordered: true``: ``"@container": "@list"``, so the order is kept;
+- any other multivalued slot: ``"@container": "@set"``.
+
 Treatment of OBO prefixes
 -------------------------
 
