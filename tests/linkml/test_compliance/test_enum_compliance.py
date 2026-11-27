@@ -120,11 +120,8 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
-    if pvs == [] and framework not in [JSON_SCHEMA]:
-        # only JSON Schema and pydantic1 supports empty enums
-        # (pydantiggen will generate a string extension, but
-        # with pydantic2, automatic casting doesn't behave the same way;
-        # see https://github.com/linkml/linkml/issues/1792)
+    if pvs == [] and framework not in [JSON_SCHEMA, PYDANTIC]:
+        # only JSON Schema and pydantic support empty enums
         # Currently OWL validation depends on python->ttl
         expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(

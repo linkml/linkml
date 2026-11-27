@@ -155,7 +155,7 @@ classes:
 """
     mod = PydanticGenerator(schema=unit_test_schema).compile_module()
     thing = mod.Thing(code="IE")
-    assert isinstance(thing.code, mod.OpenEnum)
+    assert type(thing.code) is str
     assert thing.code == "IE"
     with pytest.raises(ValidationError):
         mod.Thing(code=1)
