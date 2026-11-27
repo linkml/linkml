@@ -468,6 +468,8 @@ class DocGenerator(Generator):
             return md_link
         link = md_link.rsplit("(")[-1][:-1]
         link = link.removesuffix(".md")
+        if link.startswith(("http://", "https://")):
+            return link
         return f"../{link}/"
 
     def link(self, e: Definition | DefinitionName, index_link: bool = False) -> str:
