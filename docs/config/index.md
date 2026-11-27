@@ -9,7 +9,7 @@ Config values can be set (in order of priority from high to low, where higher
 priorities override lower priorities)
 
 * in the arguments passed to the class constructor (not user configurable)
-* in environment variables like `export LINKML_LOG_DIR=~/`
+* in environment variables like `export LINKML_LOG__DIR="$HOME/.local/state/linkml/log"`
 * in a `.env` file in the working directory
 * in a `linkml_config.yaml` file in the working directory
 * in the `tool.linkml.config` table in a `pyproject.toml` file in the working directory
@@ -48,8 +48,21 @@ When setting values from the cli, keys for nested models are separated with a `.
 
 Keys are case-insensitive, i.e. these are equivalent::
 
-    export LINKML_LOG__DIR=~/
-    export linkml_log__dir=~/
+    export LINKML_LOG__DIR="$HOME/.local/state/linkml/log"
+    export linkml_log__dir="$HOME/.local/state/linkml/log"
+
+## Paths
+
+LinkML does not automatically expand `~` in configuration paths. In YAML, TOML,
+and `.env` files, `~/.config/linkml` is a literal relative path. Using it for
+`user_dir` creates a directory named `~` under the working directory instead of
+using your home directory. A quoted CLI argument such as `'~/.config/linkml'`
+also remains literal.
+
+In Bash, an unquoted `~` can be expanded by the shell. The shell examples here
+use `"$HOME/..."` so that Bash expands the home directory before passing the
+value to LinkML, including when the path contains spaces. In configuration files,
+write the resulting absolute path directly.
 
 ## CLI
 
@@ -87,14 +100,23 @@ overridden by any local configs in `.env` files or otherwise.
 
 ## Examples
 
+These examples assume a Unix-like system where the home directory is
+`/home/alex`. Replace the file examples' paths with absolute, writable paths on
+your system. The shell examples use `$HOME` to select the current user's home
+directory. Each tab shows an alternative configuration source; higher-priority
+sources override lower-priority ones.
+
+The CLI tab selects the global configuration file with `LINKML_USER_DIR` and
+`LINKML_CONFIG_FILE` before setting values. Keep these environment variables set
+when reading or updating that file later so that commands use the same location.
 
 `````{tab-set}
 ````{tab-item} linkml_config.yaml
 ```{code-block} yaml
-user_dir: ~/.config/linkml
+user_dir: /home/alex/.config/linkml
 config_file: linkml_config.yaml
 log:
-  dir: /var/log/linkml
+  dir: /home/alex/.local/state/linkml/log
   level_file: INFO
   level_stream: WARNING
   file_n: 5
@@ -102,19 +124,19 @@ log:
 ````
 ````{tab-item} env vars
 ```{code-block} bash
-export LINKML_USER_DIR='~/.config/linkml'
+export LINKML_USER_DIR="$HOME/.config/linkml"
 export LINKML_CONFIG_FILE='linkml_config.yaml'
-export LINKML_LOG__DIR='/var/log/linkml'
+export LINKML_LOG__DIR="$HOME/.local/state/linkml/log"
 export LINKML_LOG__LEVEL_FILE='INFO'
 export LINKML_LOG__LEVEL_STREAM='WARNING'
 export LINKML_LOG__FILE_N=5
 ```
 ````
 ````{tab-item} .env file
-```{code-block} python
-LINKML_USER_DIR='~/.config/linkml'
+```{code-block} text
+LINKML_USER_DIR='/home/alex/.config/linkml'
 LINKML_CONFIG_FILE='linkml_config.yaml'
-LINKML_LOG__DIR='/var/log/linkml'
+LINKML_LOG__DIR='/home/alex/.local/state/linkml/log'
 LINKML_LOG__LEVEL_FILE='INFO'
 LINKML_LOG__LEVEL_STREAM='WARNING'
 LINKML_LOG__FILE_N=5
@@ -123,11 +145,11 @@ LINKML_LOG__FILE_N=5
 ````{tab-item} pyproject.toml
 ```{code-block} toml
 [tool.linkml.config]
-user_dir = "~/.config/linkml"
+user_dir = "/home/alex/.config/linkml"
 config_file = "linkml_config.yaml"
 
 [tool.linkml.config.log]
-dir = "/var/log/linkml"
+dir = "/home/alex/.local/state/linkml/log"
 level_file = "INFO"
 level_stream = "WARNING"
 file_n = 5
@@ -136,9 +158,9 @@ file_n = 5
 ````
 ````{tab-item} cli
 ```{code-block} bash
-linkml config set user_dir '~/.config/linkml'
-linkml config set config_file 'linkml_config.yaml'
-linkml config set log.dir '/var/log/linkml'
+export LINKML_USER_DIR="$HOME/.config/linkml"
+export LINKML_CONFIG_FILE='linkml_config.yaml'
+linkml config set log.dir "$HOME/.local/state/linkml/log"
 linkml config set log.level_file 'info'
 linkml config set log.level_stream 'warning'
 linkml config set log.file_n 5

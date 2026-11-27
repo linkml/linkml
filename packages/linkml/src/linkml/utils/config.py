@@ -155,13 +155,16 @@ class GlobalConfig(BaseSettings):
         high priorities override lower priorities:
 
         * in the arguments passed to the class constructor (not user configurable)
-        * in environment variables like ``export LINKML_LOG_DIR=~/``
+        * in environment variables like ``export LINKML_LOG__DIR="$HOME/.local/state/linkml/log"``
         * in a ``.env`` file in the working directory
         * in a ``linkml_config.yaml`` file in the working directory
         * in the ``tool.linkml.config`` table in a ``pyproject.toml`` file in the working directory
         * in the global ``linkml_config.yaml`` file in the platform-specific data directory
           (use ``linkml config get config_file`` to find its location)
         * the default values in the :class:`.GlobalConfig` model
+
+        LinkML does not expand ``~`` in configuration paths. In the environment-variable
+        example above, the shell expands ``$HOME`` before LinkML reads the value.
         """
         return (
             init_settings,
