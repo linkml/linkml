@@ -47,7 +47,7 @@ dependencies = [
     "prefixmaps >=0.1.4",
     "curies>=0.14.6",
     "pyoxigraph>=0.5.13",
-    "pydantic>=2.14.3,<3.0.0",
+    "pydantic>=2.14.4,<3.0.0",
 ]
 
 [dependency-groups]
