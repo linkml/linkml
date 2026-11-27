@@ -393,7 +393,7 @@ def template_enum_slot_description(oas_version: str = DEFAULT_OAS_VERSION) -> st
 
 
 def template_open_enum(oas_version: str = DEFAULT_OAS_VERSION) -> str:
-    """Compose a template whose referenced class has slots ranged to an enum with no values.
+    """Compose a template whose referenced class has slots ranged to an enum that lists no permissible values.
 
     :param oas_version: the OpenAPI version the template advertises
     """
@@ -1391,10 +1391,10 @@ def test_inline_enums_preserves_slot_description(tmp_path, oas_version):
 
 
 def test_enum_without_values_is_a_string(tmp_path, oas_version):
-    """Test that an enum listing no permissible values becomes a string schema.
+    """Test that an enum that lists no permissible values becomes a string schema.
 
-    The v3.1.0 path builds its schemas from PydanticGenerator models, so it needs a JSON
-    Schema for such an enum from them. Both versions must emit ``type: string`` for the
+    The v3.1.0 path builds its schemas from PydanticGenerator models, so those models
+    must give such an enum a JSON Schema. Both versions must emit ``type: string`` for the
     enum and keep the ``$ref`` from each slot ranged to it.
     """
     schema_path = load_schema(SCHEMA_OPEN_ENUM)
