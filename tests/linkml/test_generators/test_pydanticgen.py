@@ -130,6 +130,45 @@ enums:
         assert f"\n{line}\n" in gen_output
 
 
+def test_pydantic_enum_without_values():
+    """An enum with no permissible values validates as a plain string, as a regular enum does, and has a JSON Schema."""
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+
+enums:
+  OpenEnum:
+    description: an open set of codes
+  ClosedEnum:
+    permissible_values:
+      IE:
+
+classes:
+  Thing:
+    attributes:
+      code:
+        range: OpenEnum
+      closed_code:
+        range: ClosedEnum
+"""
+    mod = PydanticGenerator(schema=unit_test_schema).compile_module()
+    thing = mod.Thing(code="IE", closed_code="IE")
+    assert type(thing.code) is str
+    assert type(thing.closed_code) is str
+    assert thing.code == "IE"
+    with pytest.raises(ValidationError):
+        mod.Thing(code=1)
+    code = mod.Thing.model_json_schema()["properties"]["code"]
+    assert {"type": "string"} in code["anyOf"]
+
+
 def test_pydantic_enum_titles():
     unit_test_schema = """
 id: unit_test
