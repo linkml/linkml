@@ -3228,6 +3228,57 @@ classes:
     assert view.modifications == 0
 
 
+def test_induced_slot_keeps_from_schema_of_imported_slot(tmp_path: Path) -> None:
+    """Verify that refining an imported slot via slot_usage keeps the slot's from_schema
+    and URI in the imported schema, while the slot_usage's structured pattern is still
+    resolved with the settings of the class's schema (linkml/linkml#4301)."""
+    (tmp_path / "imported.yaml").write_text(
+        """
+id: https://example.org/imported
+name: imported
+prefixes:
+  imported: https://example.org/imported/
+default_prefix: imported
+settings:
+  word: "[a-z]+"
+slots:
+  value:
+    range: string
+"""
+    )
+    root_schema = tmp_path / "root.yaml"
+    root_schema.write_text(
+        """
+id: https://example.org/root
+name: root
+prefixes:
+  root: https://example.org/root/
+default_prefix: root
+imports:
+  - imported
+settings:
+  word: "[0-9]+"
+classes:
+  Container:
+    slots:
+      - value
+    slot_usage:
+      value:
+        structured_pattern:
+          syntax: "{word}"
+          interpolated: true
+"""
+    )
+    view = SchemaView(root_schema)
+
+    induced_slot = view.induced_slot("value", "Container")
+
+    assert induced_slot.from_schema == "https://example.org/imported"
+    assert view.get_uri(induced_slot, expand=True) == "https://example.org/imported/value"
+    assert view.get_uri(induced_slot, expand=True) == view.get_uri(view.get_slot("value"), expand=True)
+    assert induced_slot.pattern == r"^(?:[0-9]+)$"
+
+
 def test_induced_attribute_resolves_pattern_without_schema_slot() -> None:
     """Verify that pattern resolution works on an attribute when no schema-level slot
     definition exists."""
