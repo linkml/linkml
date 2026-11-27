@@ -175,8 +175,12 @@ Inlining Enums
 By default enumerations are declared as separate schemas in the
 ``components/schemas`` of the resulting OAD (OpenAPI Description) document.
 
-An enumeration that lists no permissible values, such as a dynamic enum
-defined by ``reachable_from``, becomes a ``type: string`` schema.
+An enumeration that lists no permissible values becomes a ``type: string``
+schema. For an open enumeration, one with no other value-set constraint, that
+schema is exact: it accepts any string. For an enum whose values come from
+another constraint, such as ``inherits``, ``include`` or ``reachable_from``, the
+generator does not derive those values, so the schema is a fallback that also
+accepts strings outside the enum's value set.
 
 Using the *inline_enums* option (object constructor boolean argument
 ``inline_enums``, CLI flag ``--inline-enums``) it's possible to change
