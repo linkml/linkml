@@ -230,11 +230,10 @@ class ShaclGenerator(Generator):
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
 
-            if self.closed:
-                if c.mixin or c.abstract:
-                    shape_pv(SH.closed, Literal(False))
-                else:
-                    shape_pv(SH.closed, Literal(True))
+            if self.closed and not (c.mixin or c.abstract):
+                shape_pv(SH.closed, Literal(True))
+                # sh:ignoredProperties has an effect only on closed shapes (SHACL §4.8.1)
+                shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
             else:
                 shape_pv(SH.closed, Literal(False))
             if c.title is not None:
@@ -247,8 +246,6 @@ class ShaclGenerator(Generator):
                 # on NodeShapes causes RDFS-aware validators to incorrectly infer
                 # the NodeShape is also a PropertyShape. See issue #3059.
                 shape_pv(RDFS.comment, Literal(c.description, lang=self._resolve_language(c)))
-
-            shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
             if c.annotations and self.include_annotations:
                 self._add_annotations(shape_pv, c)

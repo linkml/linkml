@@ -83,6 +83,10 @@ Example Output:
                 shacl:path <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ] ;
         shacl:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Person> .
 
+By default shapes are closed (``sh:closed true``), except the shapes of mixins and
+abstract classes. Only closed shapes get ``sh:ignoredProperties``, as it has no effect
+on an open shape. ``--non-closed`` makes every shape open.
+
 
 Command Line
 ^^^^^^^^^^^^
