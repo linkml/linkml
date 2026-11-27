@@ -1794,20 +1794,22 @@ class SchemaView:
         schema = schemas_by_id.get(schema_id, self.schema)
         return PatternResolver(SchemaView(schema))
 
-    def resolve_pattern(self, definition: SlotDefinition | TypeDefinition) -> str | None:
+    def resolve_pattern(self, definition: SlotDefinition | TypeDefinition, schema_id: str | None = None) -> str | None:
         """Return the effective regular-expression pattern for a slot or type definition.
 
         Structured patterns are resolved using settings from the schema that defined the
         supplied definition. The definition and underlying schemas are not modified.
 
         :param definition: slot or type definition whose pattern should be resolved
+        :param schema_id: id of the schema whose settings to use, defaults to the
+            definition's ``from_schema`` (or this view's schema if that is unset)
         :return: asserted or materialized regular-expression pattern, if present
         """
         structured_pattern = definition.structured_pattern
         if structured_pattern is None:
             return definition.pattern
 
-        resolver = self._pattern_resolver(str(definition.from_schema or self.schema.id))
+        resolver = self._pattern_resolver(str(schema_id or definition.from_schema or self.schema.id))
         pattern = structured_pattern.syntax
         if structured_pattern.interpolated:
             pattern = resolver.resolve(pattern)
@@ -1919,8 +1921,9 @@ class SchemaView:
             slot_usage = copy(asserted_slot_usage)
             # A slot_usage is defined as part of its owning class, so interpolate its
             # structured pattern using that class's schema rather than the base slot's.
-            slot_usage.from_schema = owning_class.from_schema
-            slot_usage.pattern = self.resolve_pattern(slot_usage)
+            # Pass the schema explicitly: setting `from_schema` on the copy would be
+            # inherited by the induced slot below.
+            slot_usage.pattern = self.resolve_pattern(slot_usage, schema_id=owning_class.from_schema)
             resolved_slot_usages.append((class_ancestor, slot_usage))
 
         # iterate through all metaslots, and potentially populate metaslot value for induced slot
